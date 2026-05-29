@@ -143,6 +143,54 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </tbody>
       </table>
 
+      <h2>Component API and event contracts</h2>
+      <p>
+        A strong <strong>frontend component API design interview</strong> answer treats every component boundary
+        as a contract: what data enters, what events leave, what state is controlled, and how failures are exposed.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Contract surface</th>
+            <th>Owns</th>
+            <th>Interview decision</th>
+            <th>Failure mode</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Component props</td>
+            <td>Visual state, selected value, disabled/error/loading flags, labels</td>
+            <td>Which props are required, controlled, derived, or optional</td>
+            <td>Parent components need to know implementation internals</td>
+          </tr>
+          <tr>
+            <td>Callbacks/events</td>
+            <td>onSelect, onDismiss, onRetry, onLoadMore, onSearchChange</td>
+            <td>Whether events are user intent, state transition, or side-effect trigger</td>
+            <td>Event naming hides debounce, cancellation, or async timing</td>
+          </tr>
+          <tr>
+            <td>Store actions</td>
+            <td>Shared UI transitions like open modal, dismiss toast, selected row</td>
+            <td>What belongs in shared state versus local component state</td>
+            <td>Global store becomes a dumping ground for local interaction state</td>
+          </tr>
+          <tr>
+            <td>Server events</td>
+            <td>Streaming message, notification received, feed item updated</td>
+            <td>How the UI dedupes, orders, and acknowledges realtime updates</td>
+            <td>Duplicate or out-of-order events render confusing UI</td>
+          </tr>
+          <tr>
+            <td>Error contracts</td>
+            <td>Retryable, fatal, field-level, global, partial, and permission errors</td>
+            <td>Which error maps to inline feedback, toast, disabled action, or fallback UI</td>
+            <td>Every error looks identical and recovery is unclear</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>Interaction Model and User Flows</h2>
       <ol>
         <li>User triggers action (type, click, keyboard command).</li>
@@ -240,6 +288,44 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td>Live feedback</td>
             <td>Loading/error/success announcements are polite and concise</td>
             <td>Announcements fire once per meaningful update</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Keyboard, focus, and ARIA contract</h2>
+      <p>
+        The <strong>keyboard navigation frontend interview</strong> signal is not just "supports keyboard."
+        Name the key map, focus transitions, and <strong>ARIA live regions frontend interview</strong> behavior
+        that protect the primary task under loading, error, and success states.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Pattern</th>
+            <th>Keyboard and focus contract</th>
+            <th>ARIA or announcement note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Combobox/listbox</td>
+            <td>ArrowDown/ArrowUp moves active option, Enter selects, Escape clears or closes, focus stays on input</td>
+            <td>Use combobox/listbox roles with aria-activedescendant and concise result-count updates</td>
+          </tr>
+          <tr>
+            <td>Dialog/modal</td>
+            <td>Trap focus while open, restore focus to trigger, close on Escape when safe</td>
+            <td>Use role dialog, aria-labelledby, and explicit error announcement if submit fails</td>
+          </tr>
+          <tr>
+            <td>Toast/live feedback</td>
+            <td>Do not steal focus; actions remain keyboard reachable if the toast is actionable</td>
+            <td>Use polite live regions for status and assertive only for urgent failures</td>
+          </tr>
+          <tr>
+            <td>Data grid/list</td>
+            <td>Use roving tabindex or managed focus; preserve focus after sort, filter, or refresh</td>
+            <td>Announce selected, expanded, loading, and empty states without repeating full content</td>
           </tr>
         </tbody>
       </table>
@@ -351,6 +437,53 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td>Accessibility</td>
             <td>Keyboard failure rate and focus-loss events</td>
             <td>Prevent invisible accessibility regressions</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Prompt-specific interface decisions</h2>
+      <p>
+        Use prompt-specific rows to prove your <strong>frontend state to UI mapping</strong> is not generic.
+        The best answers name the component API, interaction flow, accessibility path, and degraded UX for the prompt.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Prompt</th>
+            <th>Interface decision to call out</th>
+            <th>Route</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Real-time Search</td>
+            <td>Combobox/listbox contract, active option, loading/empty/error/stale states, stale request cancellation, keyboard selection</td>
+            <td><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Practice prompt</a></td>
+          </tr>
+          <tr>
+            <td>News Feed</td>
+            <td>Feed card boundaries, composer behavior, optimistic reaction state, skeletons, and infinite-load affordance</td>
+            <td><a [routerLink]="['/', 'system-design', 'news-feed-timeline']">Practice prompt</a></td>
+          </tr>
+          <tr>
+            <td>Dashboard Widgets</td>
+            <td>Drag/resize handles, keyboard reorder fallback, widget isolation, layout save state, and error recovery</td>
+            <td><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Practice prompt</a></td>
+          </tr>
+          <tr>
+            <td>AI Chat</td>
+            <td>Textarea commands, streaming message state, send retry, draft persistence, and focus recovery</td>
+            <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">Practice prompt</a></td>
+          </tr>
+          <tr>
+            <td>Notification Toast</td>
+            <td>Global queue, stacking, timers, dismiss action, live region, reduced motion, and degraded delivery state</td>
+            <td><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Practice prompt</a></td>
+          </tr>
+          <tr>
+            <td>Design System Architecture</td>
+            <td>Component API contracts, tokens, variants, docs examples, deprecation state, and migration behavior</td>
+            <td><a [routerLink]="['/', 'system-design', 'component-design-system-architecture']">Practice prompt</a></td>
           </tr>
         </tbody>
       </table>
@@ -485,6 +618,34 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li>Responsive behavior is defined across viewport classes.</li>
         <li>Performance and interface telemetry plan is included.</li>
       </ul>
+
+      <h2>Interface FAQ</h2>
+      <h3>What is frontend interface design in system design interviews?</h3>
+      <p>
+        Frontend interface design is the RADIO step where architecture and data choices become component
+        boundaries, component APIs, user interaction flows, UI states, accessibility behavior, and degraded UX.
+      </p>
+      <h3>What should a frontend component API include?</h3>
+      <p>
+        Include props, callbacks or events, controlled and uncontrolled state boundaries, error and loading states,
+        accessibility semantics, and extension points that do not leak implementation details.
+      </p>
+      <h3>How do I explain keyboard and focus behavior?</h3>
+      <p>
+        Describe the keyboard map, tab order, arrow-key behavior where relevant, focus transitions after async
+        updates or dialogs, and ARIA/live-region announcements for loading, error, and success states.
+      </p>
+      <h3>How should I map UI states in a frontend system design interview?</h3>
+      <p>
+        Map each state to what the user sees, which actions remain available, how focus behaves, and what telemetry
+        proves the state is working: idle, loading, success, empty, error, stale, and partial.
+      </p>
+      <h3>How is Interface different from Data or Optimizations?</h3>
+      <p>
+        Data defines entities, ownership, cache keys, and API contracts. Interface defines component responsibility,
+        component APIs, interactions, accessibility, responsive behavior, and user-visible failure states.
+        Optimizations tune performance and rollout risk.
+      </p>
 
       <h2>Next</h2>
       <ul>
