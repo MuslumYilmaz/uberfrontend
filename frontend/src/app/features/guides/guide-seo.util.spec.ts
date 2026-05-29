@@ -343,6 +343,72 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend interface design intent on the system design UX page', () => {
+    const ux = SYSTEM.find((entry) => entry.slug === 'ux');
+    expect(ux).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      ux!
+    );
+
+    expect(meta.title).toBe('Frontend Interface Design System Design Guide');
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/ux');
+    expect(meta.description).toBe(
+      'Design frontend interface contracts for interviews with component boundaries, component APIs, UI states, keyboard focus, accessibility, and degraded UX.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend interface design system design');
+    expect(meta.keywords).toContain('frontend system design interface guide');
+    expect(meta.keywords).toContain('frontend component API design interview');
+    expect(meta.keywords).toContain('frontend accessibility system design');
+    expect(meta.keywords).toContain('frontend UI states interview');
+    expect(meta.keywords).toContain('frontend interaction flow interview');
+    expect(meta.keywords).toContain('keyboard navigation frontend interview');
+    expect(meta.keywords).toContain('ARIA live regions frontend interview');
+    expect(meta.keywords).toContain('frontend state to UI mapping');
+    expect(meta.keywords).toContain('frontend degraded UX interview');
+    expect(meta.keywords).toContain('frontend responsive interface design');
+    expect(meta.keywords).toContain('what is frontend interface design in system design interviews');
+    expect(meta.keywords).toContain('what should a frontend component API include');
+    expect(meta.keywords).toContain('how to explain keyboard and focus behavior in frontend interview');
+    expect(meta.keywords).toContain('how to map UI states in frontend system design');
+    expect(meta.keywords).toContain('frontend component props events callbacks interview');
+    expect(meta.keywords).toContain('frontend accessibility contract system design');
+    expect(meta.keywords).toContain('combobox keyboard navigation frontend interview');
+    expect(meta.keywords).toContain('frontend interface design autocomplete system design');
+    expect(meta.keywords).toContain('notification toast ARIA live region system design');
+    expect(meta.keywords).toContain('dashboard widgets keyboard drag resize frontend system design');
+    expect(meta.keywords).not.toContain('frontend system design interview questions');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend interface design system design');
+    expect(article?.keywords).toContain('frontend component API design interview');
+    expect(article?.keywords).toContain('keyboard navigation frontend interview');
+    expect(article?.keywords).toContain('frontend degraded UX interview');
+    expect(article?.keywords).toContain('frontend component props events callbacks interview');
+    expect(article?.keywords).toContain('notification toast ARIA live region system design');
+    expect(article?.keywords).toContain('dashboard widgets keyboard drag resize frontend system design');
+    expect(faqPage?.name).toBe('Frontend interface design system design FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is frontend interface design in system design interviews?',
+      'What should a frontend component API include?',
+      'How do I explain keyboard and focus behavior?',
+      'How should I map UI states in a frontend system design interview?',
+      'How is Interface different from Data or Optimizations?',
+    ]);
+  });
+
   it('targets 5-step answer method intent on the framework quick-start page', () => {
     const framework = SYSTEM.find((entry) => entry.slug === 'framework');
     expect(framework).toBeDefined();
