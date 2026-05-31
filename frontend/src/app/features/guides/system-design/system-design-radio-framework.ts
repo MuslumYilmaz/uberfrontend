@@ -360,8 +360,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <span>Keep one core flow as the thread while the product surface changes.</span>
           </div>
           <div class="asset-signal">
-            <strong>Use RADIO without rambling through requirements, architecture, data, interface, and optimizations</strong>
-            <span>Move from scope to production trade-offs with explicit artifacts at each step.</span>
+            <strong>Turn a broad prompt into a 45-minute frontend system design interview answer.</strong>
+            <span>Use RADIO to clarify scope, sketch architecture, define data and interface contracts, and close with measurable trade-offs.</span>
           </div>
         </div>
       </section>
