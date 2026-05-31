@@ -537,8 +537,8 @@ export const SYSTEM: GuideEntry[] = [
         minutes: 20,
         summary: 'Use RADIO as a frontend system design interview answer template with a 45-minute structure, checklist, and examples.',
         seo: {
-            title: 'RADIO Framework for Frontend System Design',
-            description: 'Use the RADIO framework for frontend system design interviews with a 45-minute answer template, checklist, examples, and R/A/D/I/O trade-offs.',
+            title: 'RADIO Framework: Frontend System Design Answer Template',
+            description: 'Use RADIO to structure a 45-minute frontend system design interview answer: clarify scope, draw architecture, define data/API contracts, and close trade-offs.',
             primaryKeyword: 'RADIO framework frontend system design',
             keywords: [
                 'frontend system design interview answer template',

@@ -28,6 +28,8 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     expect(text).toContain('Use this if your interviewer asks: "How would you design X?"');
     expect(text).toContain('Copyable 45-minute answer structure');
     expect(text).toContain('Works for autocomplete, news feed, chat, dashboards, and design systems');
+    expect(text).toContain('Turn a broad prompt into a 45-minute frontend system design interview answer.');
+    expect(text).toContain('Use RADIO to clarify scope, sketch architecture, define data and interface contracts, and close with measurable trade-offs.');
     expect(text).toContain('RADIO framework snapshot');
     expect(text).toContain('RADIO framework frontend system design snapshot');
     expect(text).toContain('What each RADIO step proves to the interviewer');
