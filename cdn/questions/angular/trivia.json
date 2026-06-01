@@ -6389,12 +6389,20 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. The production trap is that many patterns only ignore old responses instead of truly aborting the request.",
+    "description": "Yes: unsubscribing from an Angular HttpClient Observable aborts the in-progress browser request. In interviews, explain that switchMap, takeUntil, and AsyncPipe cancel because they unsubscribe; ignoring a stale response is not cancellation.",
     "answer": {
       "blocks": [
         {
           "type": "text",
           "text": "<strong>Core idea</strong><br><br>An Angular <code>HttpClient</code> request is just an Observable wrapper around a browser request. <strong>The only thing that can actually cancel it is unsubscribing from that Observable</strong>. When you unsubscribe, Angular tells the browser to abort the underlying request (via <code>AbortController</code> or XHR abort)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Official docs anchor</strong><br><br>Angular's <a href=\"https://angular.dev/guide/http/making-requests\" target=\"_blank\" rel=\"noopener\">Making requests</a> guide describes <code>HttpClient</code> Observables as cold request blueprints: subscribing starts the browser request, and unsubscribing aborts an in-progress request. That is why <code>AsyncPipe</code>, <code>switchMap</code>, and lifecycle teardown can cancel stale HTTP work."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Do you need to unsubscribe from every HttpClient call?</strong><br><br>Not usually for memory-leak prevention after a normal response, because Angular <code>HttpClient</code> Observables usually complete when the response returns. But yes, you should unsubscribe when the request is still in flight and the UI intent or component lifetime has moved on. That teardown aborts the browser request and avoids stale callbacks touching destroyed UI."
         },
         {
           "type": "list",
@@ -6452,12 +6460,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>takeUntil pattern (component lifecycle)</strong>"
+          "text": "<strong>takeUntilDestroyed pattern (component lifecycle)</strong><br><br>In modern Angular, prefer <code>takeUntilDestroyed()</code> for manual subscriptions tied to a component lifetime. The older <code>takeUntil(destroy$)</code> subject pattern is still common in older codebases, but it should not be the first answer for new Angular code."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "this.http.get('/api/data').pipe(\n  takeUntil(this.destroy$)\n).subscribe();\n\nngOnDestroy() {\n  this.destroy$.next();\n  this.destroy$.complete();\n}"
+          "code": "import { HttpClient } from '@angular/common/http';\nimport { DestroyRef, inject } from '@angular/core';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\n\nexport class DataComponent {\n  private readonly destroyRef = inject(DestroyRef);\n  private readonly http = inject(HttpClient);\n\n  ngOnInit() {\n    this.http.get('/api/data').pipe(\n      takeUntilDestroyed(this.destroyRef)\n    ).subscribe();\n  }\n}"
         },
         {
           "type": "text",
@@ -6507,6 +6515,15 @@
           "text": "<strong>Important nuance: canceling the browser request vs canceling server work</strong><br><br>When Angular aborts the request, the <em>browser connection</em> is closed. The server may or may not stop processing—this depends entirely on server implementation. From the frontend point of view, however, the request is gone."
         },
         {
+          "type": "text",
+          "text": "<strong>How to verify this in Angular tests</strong><br><br>In HttpClient tests, Angular's <a href=\"https://angular.dev/api/common/http/testing/TestRequest\" target=\"_blank\" rel=\"noopener\"><code>TestRequest.cancelled</code></a> flag is the official proof point. Subscribe to the request, capture it with <code>HttpTestingController</code>, unsubscribe before flushing, and assert that the request was marked cancelled. <a href=\"https://angular.dev/api/common/http/testing/HttpTestingController\" target=\"_blank\" rel=\"noopener\"><code>HttpTestingController.verify({ ignoreCancelled: true })</code></a> is useful only when cancelled requests are intentionally not the assertion target; do not use it to hide missing <code>expectOne</code> checks."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "const sub = service.loadUser().subscribe();\nconst req = httpMock.expectOne('/api/user');\n\nsub.unsubscribe();\n\nexpect(req.cancelled).toBeTrue();"
+        },
+        {
           "type": "list",
           "columns": [
             "Angular pattern",
@@ -6553,6 +6570,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>When switchMap is the wrong answer</strong><br><br><code>switchMap</code> is right for latest-only reads like typeahead, autocomplete, filters, and route-driven detail fetches. It is the wrong default for save, payment, checkout, analytics, or mutation flows where every request must complete. In those cases, choose the flattening operator from the UX contract: <code>concatMap</code> to queue writes, <code>mergeMap</code> to allow safe parallel writes, or <code>exhaustMap</code> to ignore repeat clicks while one request is already running."
+        },
+        {
+          "type": "text",
           "text": "<strong>Senior-level pitfall</strong><br><br>Using <code>shareReplay</code> without <code>refCount</code> can keep an HTTP request (or its subscription) alive forever, making it impossible to cancel later even if components unsubscribe."
         },
         {
@@ -6570,7 +6591,7 @@
       "cancellation",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-05-31",
     "interviewFocus": {
       "summary": "This Angular interview question tests whether you can distinguish true HttpClient cancellation from ignoring stale responses, explain unsubscribe ownership, and defend the RxJS operator choice.",
       "tests": [
@@ -6580,8 +6601,8 @@
       ]
     },
     "seo": {
-      "title": "Angular HttpClient Cancellation Interview Question",
-      "description": "Practice explaining Angular HttpClient cancellation in interviews: unsubscribe, switchMap, takeUntil, AsyncPipe cleanup, and stale-response traps."
+      "title": "Angular HttpClient Cancellation: Unsubscribe Abort Interview Answer",
+      "description": "Yes: unsubscribing from an Angular HttpClient Observable aborts an in-progress request. Practice switchMap, AsyncPipe, takeUntilDestroyed, and stale-response traps."
     },
     "incidentCard": {
       "title": "Request Cancellation Check",

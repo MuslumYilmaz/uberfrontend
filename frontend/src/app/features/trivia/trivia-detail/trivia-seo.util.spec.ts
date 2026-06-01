@@ -90,6 +90,29 @@ describe('trivia-seo.util', () => {
     expect(description.toLowerCase()).not.toContain('frontend interview prep routine');
   });
 
+  it('preserves answer-first Angular HttpClient cancellation SEO override', () => {
+    const question = {
+      id: 'angular-http-what-actually-cancels-request',
+      title: 'What Actually Cancels an HTTP Request in Angular?',
+      technology: 'angular',
+      seo: {
+        title: 'Angular HttpClient Cancellation: Unsubscribe Abort Interview Answer',
+        description:
+          'Yes: unsubscribing from an Angular HttpClient Observable aborts an in-progress request. Practice switchMap, AsyncPipe, takeUntilDestroyed, and stale-response traps.',
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
+
+    expect(title).toBe(
+      'Angular HttpClient Cancellation: Unsubscribe Abort Interview Answer'
+    );
+    expect(description).toBe(
+      'Yes: unsubscribing from an Angular HttpClient Observable aborts an in-progress request. Practice switchMap, AsyncPipe, takeUntilDestroyed, and stale-response traps.'
+    );
+  });
+
   it('normalizes docs-style explicit seo metadata into interview answer intent', () => {
     const title = seoTitleForQuestion({
       id: 'react-usememo-vs-usecallback',
