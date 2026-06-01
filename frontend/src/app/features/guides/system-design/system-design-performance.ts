@@ -8,9 +8,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
     <fa-guide-shell
-      title="O - Optimizations Deep Dive for Frontend System Design Interviews"
+      title="Frontend System Design Performance Optimization Guide"
       [minutes]="18"
-      [tags]="['system design', 'optimizations', 'web vitals', 'radio framework']"
+      [tags]="['system design', 'performance', 'Core Web Vitals', 'RADIO framework']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
@@ -18,10 +18,54 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>If You Remember One Thing</h2>
       <p>
-        In a <strong>system design interview</strong>, optimization is not a random checklist.
-        In the <strong>RADIO framework</strong>, O means choosing the top bottlenecks, picking the
-        highest-leverage fixes, and proving impact with metrics. That is the difference between
-        generic advice and senior <strong>frontend system design</strong> reasoning.
+        In a <strong>frontend system design performance optimization</strong> answer, do not list
+        random tactics. Name the critical user journey, set a performance budget, diagnose the
+        dominant bottleneck, choose the top two fixes, and prove the result with metrics. In the
+        <strong>RADIO framework</strong>, O means turning Requirements, Architecture, Data, and
+        Interface decisions into measurable performance trade-offs.
+      </p>
+
+      <h2>What to Optimize, Measure, and Prioritize</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Interview move</th>
+            <th>Strong answer</th>
+            <th>Why it ranks as senior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Optimize</td>
+            <td>Primary task path first: initial route, first useful interaction, data refresh, and recovery states</td>
+            <td>Connects performance to user outcome instead of tooling preference</td>
+          </tr>
+          <tr>
+            <td>Measure</td>
+            <td>Core Web Vitals, route p95, JavaScript cost, API latency, error budget, and task completion</td>
+            <td>Shows you can prove impact before and after the change</td>
+          </tr>
+          <tr>
+            <td>Prioritize</td>
+            <td>Pick two changes by impact, effort, confidence, ownership, and regression risk</td>
+            <td>Prevents over-engineering and keeps the answer realistic for production</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Interview Answer Template</h2>
+      <p>
+        Use this 60-90 second script when an interviewer asks how you would optimize a frontend
+        system. It keeps the answer concrete without skipping diagnosis.
+      </p>
+      <p>
+        "I will optimize the critical journey first. I will set budgets for LCP, INP, CLS,
+        route p95, and client-visible errors, then trace the path across network, server,
+        JavaScript, rendering, and data joins. If the top bottleneck is startup JavaScript,
+        I will split and defer non-critical code. If it is interaction work, I will reduce
+        render scope, dedupe requests, or virtualize heavy lists. I will ship the top two
+        changes behind a canary, monitor the before/after metrics, and define rollback
+        triggers so performance does not trade away reliability or accessibility."
       </p>
 
       <h2>What Optimizations Must Produce</h2>
@@ -65,7 +109,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <h2>Inputs from R, A, D, and I (Why O is Last)</h2>
       <p>
         Strong <strong>system design interview preparation</strong> treats optimizations as consequence,
-        not guesswork. You optimize what earlier steps decided is important.
+        not guesswork. You optimize what earlier steps decided is important:
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-requirements']">requirements</a>,
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">architecture</a>,
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">data</a>, and
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">interface</a>.
       </p>
       <table>
         <thead>
@@ -100,6 +148,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </table>
 
       <h2>Performance Budget and SLOs</h2>
+      <p>
+        In a <strong>frontend performance budget interview</strong> answer, connect each target
+        to a user-visible SLO. The point is not to memorize numbers; it is to show that
+        performance choices are measurable, owned, and safe to roll out.
+      </p>
       <table>
         <thead>
           <tr>
@@ -137,6 +190,59 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </tbody>
       </table>
 
+      <h2>Metrics to Mention</h2>
+      <p>
+        A strong <strong>frontend performance metrics interview</strong> answer uses Core Web
+        Vitals for field experience, then adds route-level and task-level signals for the
+        system design prompt in front of you.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric family</th>
+            <th>Use it for</th>
+            <th>Interview cue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LCP</td>
+            <td>First useful content on the critical route</td>
+            <td>"I will track p75 LCP by route and device class."</td>
+          </tr>
+          <tr>
+            <td>INP</td>
+            <td>Real interaction responsiveness after the page is usable</td>
+            <td>"I will use INP instead of older FID language for responsiveness."</td>
+          </tr>
+          <tr>
+            <td>CLS</td>
+            <td>Visual stability during async loads, ads, images, and skeleton swaps</td>
+            <td>"I will reserve layout space so async data does not shift controls."</td>
+          </tr>
+          <tr>
+            <td>TTFB and transfer</td>
+            <td>Server latency, CDN behavior, compression, and cache hit rate</td>
+            <td>"I will separate origin delay from browser rendering delay."</td>
+          </tr>
+          <tr>
+            <td>JavaScript cost</td>
+            <td>Parse, execute, hydration, render loops, and long tasks</td>
+            <td>"I will profile main-thread work before adding memoization."</td>
+          </tr>
+          <tr>
+            <td>Route p95 and error budget</td>
+            <td>User-critical flow latency, partial failures, and visible errors</td>
+            <td>"I will protect the slow tail, not only average latency."</td>
+          </tr>
+          <tr>
+            <td>Task metric</td>
+            <td>Search success, checkout completion, feed engagement, or dashboard use</td>
+            <td>"I will verify the optimization improves the user outcome."</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>Bottleneck Identification Framework</h2>
       <ol>
         <li>Trace one primary user journey end-to-end.</li>
@@ -161,6 +267,40 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         package to bring LCP down, then reduce interaction cost with request dedupe,
         lighter row rendering, or virtualization so INP drops under the target budget.
         That sequence shows prioritization, not just awareness of performance tools.
+      </p>
+
+      <h2>Scenario Playbook</h2>
+      <h3>Typeahead Performance System Design</h3>
+      <p>
+        In a <a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">typeahead performance system design</a>,
+        optimize the keystroke-to-suggestion path. Start with p95 suggestion latency and INP,
+        then choose debounce, cancellation, request dedupe, short TTL cache, and minimal row
+        rendering. Call out stale suggestions and zero-result quality as trade-offs.
+      </p>
+
+      <h3>Infinite Scroll Virtualization System Design</h3>
+      <p>
+        In an <a [routerLink]="['/', 'system-design', 'infinite-scroll-list']">infinite scroll virtualization system design</a>,
+        optimize scroll smoothness, memory growth, and pagination latency. Use cursor pagination,
+        windowed rendering, stable item heights where possible, image sizing, and backpressure.
+        Mention accessibility risks around focus, announcement, and restoring scroll position.
+      </p>
+
+      <h3>Dashboard Performance System Design</h3>
+      <p>
+        In a dashboard, optimize first useful render before expensive chart interactivity. Defer
+        non-critical widgets, split chart libraries, cache shaped responses, and use progressive
+        disclosure for dense panels. For high-frequency updates, practice the
+        <a [routerLink]="['/', 'system-design', 'live-chart-high-frequency-updates']">live chart performance system design</a>
+        and discuss coalescing, downsampling, and moving heavy work off the main thread.
+      </p>
+
+      <h3>Form Interaction Latency Frontend Interview</h3>
+      <p>
+        In a <a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">form interaction latency frontend interview</a>
+        or checkout flow, optimize input responsiveness, validation timing, autosave reliability,
+        and recovery after failures. Avoid blocking the main thread with synchronous validation,
+        keep optimistic states reversible, and protect trust with clear save and error states.
       </p>
 
       <h2>Optimization Levers by Layer</h2>
@@ -243,6 +383,44 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </tbody>
       </table>
 
+      <h2>Interviewer Scoring Rubric</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Weak answer</th>
+            <th>Strong answer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Diagnosis</td>
+            <td>Starts with "add caching" or "use lazy loading"</td>
+            <td>Baselines the critical path and names the dominant bottleneck</td>
+          </tr>
+          <tr>
+            <td>Metrics</td>
+            <td>Talks about "fast" without budgets</td>
+            <td>Uses LCP, INP, CLS, route p95, and task success thresholds</td>
+          </tr>
+          <tr>
+            <td>Prioritization</td>
+            <td>Lists ten unrelated optimizations</td>
+            <td>Chooses the top two by user impact, effort, confidence, and risk</td>
+          </tr>
+          <tr>
+            <td>Trade-offs</td>
+            <td>Frames every optimization as pure upside</td>
+            <td>Calls out cache staleness, waterfalls, server cost, a11y, and rollback risk</td>
+          </tr>
+          <tr>
+            <td>Validation</td>
+            <td>Stops after implementation details</td>
+            <td>Defines canary metrics, alert thresholds, and rollback triggers</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>Trade-offs and Regression Risks</h2>
       <table>
         <thead>
@@ -280,6 +458,15 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           </tr>
         </tbody>
       </table>
+
+      <h2>Common Mistakes</h2>
+      <ul>
+        <li><strong>Random optimization lists:</strong> naming memoization, lazy loading, and CDN without a bottleneck makes the answer sound tactical, not architectural.</li>
+        <li><strong>Average-only metrics:</strong> averages hide slow devices and long-tail interactions. Prefer p75 Core Web Vitals and p95 route or interaction budgets.</li>
+        <li><strong>Using FID as the main metric:</strong> FID is older interview vocabulary. Use INP for responsiveness and mention FID only if the prompt uses it.</li>
+        <li><strong>Over-caching:</strong> aggressive cache layers can serve stale or unauthorized data unless ownership, TTL, tags, and invalidation are explicit.</li>
+        <li><strong>Ignoring accessibility:</strong> virtualization, skeletons, optimistic UI, and animation can break focus, announcements, reduced motion, or keyboard flow.</li>
+      </ul>
 
       <h2>Reliability and Resilience Optimizations</h2>
       <ul>
@@ -353,6 +540,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li>"I am setting measurable budgets before naming optimization tactics."</li>
         <li>"I will prioritize two changes with highest impact and lowest delivery risk."</li>
         <li>"Trade-off here: better LCP versus higher server cost and cache complexity."</li>
+        <li>"For responsiveness, I will use INP as the main Core Web Vitals signal."</li>
         <li>"I am optimizing p95 behavior, not only average metrics."</li>
         <li>"I will keep stale and partial behavior explicit so reliability does not regress."</li>
         <li>"I am validating wins with A/B or canary metrics, not intuition."</li>
@@ -478,6 +666,15 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li>You described rollout and rollback, not just ideal-state changes.</li>
       </ul>
 
+      <h2>Practice Prompts to Reinforce This</h2>
+      <ul>
+        <li><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Typeahead performance system design with debounce and caching</a></li>
+        <li><a [routerLink]="['/', 'system-design', 'infinite-scroll-list']">Infinite scroll virtualization system design</a></li>
+        <li><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard performance system design with draggable panels</a></li>
+        <li><a [routerLink]="['/', 'system-design', 'live-chart-high-frequency-updates']">Live chart performance system design</a></li>
+        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Form interaction latency frontend interview prompt</a></li>
+      </ul>
+
       <h2>Next</h2>
       <ul>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">Back to RADIO cheat sheet</a></li>
@@ -485,6 +682,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">A - Architecture deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">One-page checklist for interviews</a></li>
       </ul>
     </fa-guide-shell>
   `,

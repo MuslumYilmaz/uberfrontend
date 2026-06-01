@@ -16,7 +16,11 @@ import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { SYSTEM } from '../../../shared/guides/guide.registry';
-import { pickSystemDesignGuideSlug, SystemDesignGuideSlug } from './system-design-guide-link.util';
+import {
+  performanceGuideAnchorForQuestion,
+  pickSystemDesignGuideSlug,
+  SystemDesignGuideSlug,
+} from './system-design-guide-link.util';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { SystemDesignDetailResolved } from '../../../core/resolvers/question-detail.resolver';
@@ -659,9 +663,13 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private buildBlueprintGuideLink(slug: SystemDesignGuideSlug): BlueprintGuideLink {
+    const performanceAnchor = slug === 'performance'
+      ? performanceGuideAnchorForQuestion(this.q())
+      : null;
+
     return {
       slug,
-      title: this.guideTitleBySlug.get(slug) || slug,
+      title: performanceAnchor || this.guideTitleBySlug.get(slug) || slug,
       route: ['/', 'guides', 'system-design-blueprint', slug],
     };
   }

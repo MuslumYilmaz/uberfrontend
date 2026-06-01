@@ -750,9 +750,9 @@ export class SystemDesignIndexComponent implements OnInit {
     },
     {
       letter: 'O',
-      title: 'Optimizations',
+      title: 'Performance optimization',
       window: '38-45 min',
-      detail: 'Close with performance budgets, reliability, security, observability, rollout, and explicit tradeoffs.',
+      detail: 'Close with Core Web Vitals, performance budgets, bottleneck prioritization, reliability, rollout, and explicit tradeoffs.',
       route: ['/', 'guides', 'system-design-blueprint', 'performance'],
       path: '/guides/system-design-blueprint/performance',
     },

@@ -846,16 +846,66 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'performance',
-        title: 'O - Optimizations Deep Dive for Frontend System Design Interviews',
+        title: 'Frontend System Design Performance Optimization Guide',
         minutes: 18,
-        summary: 'Master optimization strategy in a frontend system design interview with performance budgets, bottleneck prioritization, trade-offs, and rollout validation.',
+        summary: 'Learn frontend system design performance optimization for interviews with Core Web Vitals, budgets, bottleneck diagnosis, trade-offs, rollout, and validation.',
         seo: {
-            title: 'O - Optimizations Deep Dive for Frontend System Design Interviews',
-            description: 'Master optimization strategy in a frontend system design interview with performance budgets, bottleneck prioritization, trade-offs, and rollout validation.',
-            primaryKeyword: 'optimizations deep dive for frontend system design interviews',
-            keywords: ['optimizations deep dive for frontend system design interviews', 'frontend system design performance', 'performance budgets interview'],
+            title: 'Frontend System Design Performance Optimization Guide',
+            description: 'Discuss frontend system design performance in interviews with Core Web Vitals, budgets, bottleneck diagnosis, trade-offs, rollout, and validation.',
+            primaryKeyword: 'frontend system design performance optimization',
+            keywords: [
+                'frontend system design performance',
+                'frontend system design interview optimization',
+                'frontend performance budget interview',
+                'Core Web Vitals interview',
+                'INP frontend interview',
+                'LCP frontend interview',
+                'frontend performance metrics interview',
+                'performance budget frontend system design',
+                'frontend bottleneck diagnosis interview',
+                'frontend rendering performance interview',
+                'frontend caching tradeoffs interview',
+                'frontend system design observability',
+                'frontend performance SLO interview',
+                'typeahead performance system design',
+                'infinite scroll virtualization system design',
+                'dashboard performance system design',
+                'live chart performance system design',
+                'form interaction latency frontend interview',
+            ],
+            faqPage: {
+                name: 'Frontend system design performance optimization FAQ',
+                items: [
+                    {
+                        question: 'How should I discuss performance in a frontend system design interview?',
+                        answer: 'Start with the primary user journey, set measurable budgets, diagnose the dominant bottleneck, prioritize the top two fixes, and close with trade-offs, monitoring, rollout, and rollback criteria.',
+                    },
+                    {
+                        question: 'What is a frontend performance budget in a system design interview?',
+                        answer: 'A frontend performance budget is a small set of measurable limits for the critical journey, such as LCP, INP, CLS, route p95 latency, JavaScript cost, error rate, and task completion. It turns optimization from preference into an explicit interview constraint.',
+                    },
+                    {
+                        question: 'Which Core Web Vitals should I mention in a frontend interview?',
+                        answer: 'Mention LCP for perceived load speed, INP for responsiveness, and CLS for visual stability. Then connect those Core Web Vitals to route p95 latency, JavaScript execution cost, error budget, and the business task in the prompt.',
+                    },
+                    {
+                        question: 'How do I diagnose frontend performance bottlenecks in a system design interview?',
+                        answer: 'Trace the primary user path across network, server response, payload size, JavaScript parse and execution, rendering, data joins, and interaction work. Use p75 Core Web Vitals and p95 route or interaction latency so the slow tail is visible.',
+                    },
+                    {
+                        question: 'Is INP better than FID for frontend interview answers?',
+                        answer: 'Yes. INP is the current Core Web Vitals responsiveness metric, so interview answers should prefer INP while mentioning FID only as an older metric if the prompt uses it.',
+                    },
+                    {
+                        question: 'What trade-offs should I call out for frontend performance optimization?',
+                        answer: 'Common trade-offs include faster first paint versus server cost, aggressive caching versus stale data, code splitting versus waterfalls, virtualization versus accessibility, and optimistic UI versus rollback complexity.',
+                    },
+                ],
+            },
+            searchIntent: 'Find an interview-focused frontend system design performance optimization guide that explains budgets, Core Web Vitals, bottleneck diagnosis, scenario trade-offs, rollout, and validation.',
+            readerPromise: 'Use this performance optimization guide to explain Core Web Vitals, bottleneck diagnosis, top-two prioritization, trade-offs, observability, rollout, and interview-ready scripts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-01',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-performance')

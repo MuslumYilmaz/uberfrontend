@@ -14,6 +14,7 @@ import {
   SystemDesignListItem,
   SystemDesignListResolved,
 } from '../../core/resolvers/question-list.resolver';
+import { performanceGuideAnchorForQuestion } from './system-design-detail/system-design-guide-link.util';
 
 type FormatCategory = 'application' | 'component' | 'realtime' | 'ai-product';
 
@@ -360,6 +361,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     const id = String(item?.id || '').trim();
     const title = String(item?.title || id).trim();
     if (!id || !title) return null;
+    const description = String(item.description || '').trim();
 
     const tags = Array.isArray(item.tags) ? item.tags.map((tag) => String(tag)) : [];
     const formatCategory = this.deriveFormatCategory(id, title, tags);
@@ -369,7 +371,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     return {
       id,
       title,
-      description: String(item.description || '').trim(),
+      description,
       tags,
       type: 'system-design',
       access: item.access === 'premium' ? 'premium' : 'free',
@@ -380,8 +382,8 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
       formatLabel: format.title,
       formatDetail: format.detail,
       answerFocus,
-      summary: this.toSummary(item.description),
-      ...this.guideFor(formatCategory, tags),
+      summary: this.toSummary(description),
+      ...this.guideFor({ id, title, description, tags }, formatCategory, tags),
     };
   }
 
@@ -450,9 +452,18 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   }
 
   private guideFor(
+    question: Pick<SystemDesignViewItem, 'id' | 'title' | 'description' | 'tags'>,
     category: FormatCategory,
     tags: string[],
   ): Pick<SystemDesignViewItem, 'guideRoute' | 'guideLabel'> {
+    const performanceAnchor = performanceGuideAnchorForQuestion(question);
+    if (performanceAnchor) {
+      return {
+        guideRoute: ['/', 'guides', 'system-design-blueprint', 'performance'],
+        guideLabel: performanceAnchor,
+      };
+    }
+
     const normalized = tags.map((tag) => tag.toLowerCase());
     if (category === 'realtime' || normalized.includes('performance') || normalized.includes('caching')) {
       return {
