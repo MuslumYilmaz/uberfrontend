@@ -95,6 +95,24 @@ describe('SystemDesignDetailComponent', () => {
     expect(component.supportingGuideLinks().some((link) => link.slug === 'radio-framework')).toBeFalse();
   });
 
+  it('uses cluster keyword anchor text for the recommended performance guide', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.q.set({
+      id: 'live-chart-high-frequency-updates',
+      title: 'Live Chart Rendering',
+      description: 'Handle high-frequency updates without blocking the UI.',
+      tags: ['charts', 'real-time', 'performance'],
+      access: 'free',
+    });
+
+    expect(component.recommendedBlueprintGuide().slug).toBe('performance');
+    expect(component.recommendedBlueprintGuide().title).toBe('live chart performance system design');
+    expect(component.guideLinks().find((link) => link.slug === 'performance')?.title)
+      .toBe('live chart performance system design');
+  });
+
   it('uses explicit RADIO requirements metadata for the recommended blueprint guide', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;

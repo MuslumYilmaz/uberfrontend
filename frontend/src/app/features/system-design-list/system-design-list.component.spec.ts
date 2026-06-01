@@ -161,6 +161,73 @@ describe('SystemDesignListComponent', () => {
     expect(detailLink?.textContent || '').toContain('AI Chat Textarea Design');
   });
 
+  it('uses keyword-focused performance guide anchors for cluster prompts', async () => {
+    const { fixture } = await createComponent([
+      {
+        id: 'realtime-search-debounce-cache',
+        title: 'Real-time Search with Debounce & Caching',
+        description: 'Design typeahead with debounce, caching, and stale response handling.',
+        tags: ['search', 'debounce', 'caching'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'intermediate',
+        companies: [],
+      },
+      {
+        id: 'infinite-scroll-list',
+        title: 'Infinite Scroll List System Design',
+        description: 'Design a paginated list with virtualized rendering.',
+        tags: ['infinite-scroll', 'virtualization', 'performance'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'intermediate',
+        companies: [],
+      },
+      {
+        id: 'dashboard-widgets-draggable-resizable',
+        title: 'Dashboard with Draggable & Resizable Widgets',
+        description: 'Design a widget dashboard that keeps drag and resize smooth.',
+        tags: ['dashboard', 'drag-drop', 'performance'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'hard',
+        companies: [],
+      },
+      {
+        id: 'live-chart-high-frequency-updates',
+        title: 'Live Chart Rendering',
+        description: 'Design a chart that renders high-frequency streaming updates.',
+        tags: ['charts', 'real-time', 'performance'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'hard',
+        companies: [],
+      },
+      {
+        id: 'multi-step-form-autosave',
+        title: 'Multi-step Form with Autosave',
+        description: 'Design validation and autosave without input latency.',
+        tags: ['forms', 'autosave', 'validation'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'intermediate',
+        companies: [],
+      },
+    ]);
+
+    const links = Array.from(
+      fixture.nativeElement.querySelectorAll('.sd-prompt-card__guide'),
+    ) as HTMLAnchorElement[];
+    const labels = links.map((link) => link.textContent?.replace(/\s+/g, ' ').trim());
+
+    expect(labels).toContain('typeahead performance system design');
+    expect(labels).toContain('infinite scroll virtualization performance');
+    expect(labels).toContain('dashboard performance system design');
+    expect(labels).toContain('live chart performance system design');
+    expect(labels).toContain('form interaction latency frontend interview');
+    expect(links.every((link) => link.getAttribute('href') === '/guides/system-design-blueprint/performance')).toBeTrue();
+  });
+
   it('renders keyword strategy sections and priority internal links', async () => {
     const { fixture } = await createComponent();
     const host = fixture.nativeElement as HTMLElement;

@@ -1,4 +1,8 @@
-import { buildSystemDesignGuideRoute, pickSystemDesignGuideSlug } from './system-design-guide-link.util';
+import {
+  buildSystemDesignGuideRoute,
+  performanceGuideAnchorForQuestion,
+  pickSystemDesignGuideSlug,
+} from './system-design-guide-link.util';
 
 describe('system-design-guide-link.util', () => {
   it('prefers explicit guide slug when provided', () => {
@@ -43,6 +47,20 @@ describe('system-design-guide-link.util', () => {
     });
 
     expect(slug).toBe('performance');
+  });
+
+  it('provides keyword-focused performance guide anchors for cluster prompts', () => {
+    expect(performanceGuideAnchorForQuestion({ id: 'realtime-search-debounce-cache' }))
+      .toBe('typeahead performance system design');
+    expect(performanceGuideAnchorForQuestion({ id: 'infinite-scroll-list' }))
+      .toBe('infinite scroll virtualization performance');
+    expect(performanceGuideAnchorForQuestion({ id: 'dashboard-widgets-draggable-resizable' }))
+      .toBe('dashboard performance system design');
+    expect(performanceGuideAnchorForQuestion({ id: 'live-chart-high-frequency-updates' }))
+      .toBe('live chart performance system design');
+    expect(performanceGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
+      .toBe('form interaction latency frontend interview');
+    expect(performanceGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
   });
 
   it('maps architecture questions to architecture guide', () => {

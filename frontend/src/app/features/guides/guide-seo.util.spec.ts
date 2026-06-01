@@ -409,6 +409,58 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend system design performance optimization intent', () => {
+    const performance = SYSTEM.find((entry) => entry.slug === 'performance');
+    expect(performance).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      performance!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Performance Optimization Guide');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/performance');
+    expect(meta.description).toBe(
+      'Discuss frontend system design performance in interviews with Core Web Vitals, budgets, bottleneck diagnosis, trade-offs, rollout, and validation.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend system design performance optimization');
+    expect(meta.keywords).toContain('frontend performance budget interview');
+    expect(meta.keywords).toContain('Core Web Vitals interview');
+    expect(meta.keywords).toContain('INP frontend interview');
+    expect(meta.keywords).toContain('frontend performance metrics interview');
+    expect(meta.keywords).toContain('frontend performance SLO interview');
+    expect(meta.keywords).toContain('frontend bottleneck diagnosis interview');
+    expect(meta.keywords).toContain('typeahead performance system design');
+    expect(meta.keywords).toContain('infinite scroll virtualization system design');
+    expect(meta.keywords).toContain('dashboard performance system design');
+    expect(meta.keywords).toContain('live chart performance system design');
+    expect(meta.keywords).toContain('form interaction latency frontend interview');
+    expect(meta.keywords?.length || 0).toBeLessThanOrEqual(22);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.dateModified).toBe('2026-06-01T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design performance optimization');
+    expect(article?.keywords).toContain('frontend performance budget interview');
+    expect(article?.keywords).toContain('Core Web Vitals interview');
+    expect(article?.keywords).toContain('typeahead performance system design');
+    expect(faqPage?.name).toBe('Frontend system design performance optimization FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How should I discuss performance in a frontend system design interview?',
+      'What is a frontend performance budget in a system design interview?',
+      'Which Core Web Vitals should I mention in a frontend interview?',
+      'How do I diagnose frontend performance bottlenecks in a system design interview?',
+      'Is INP better than FID for frontend interview answers?',
+      'What trade-offs should I call out for frontend performance optimization?',
+    ]);
+  });
+
   it('targets 5-step answer method intent on the framework quick-start page', () => {
     const framework = SYSTEM.find((entry) => entry.slug === 'framework');
     expect(framework).toBeDefined();

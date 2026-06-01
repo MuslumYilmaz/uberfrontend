@@ -55,6 +55,8 @@ describe('SystemDesignIndexComponent', () => {
     expect(pageText).toContain('What should a frontend system design checklist include?');
     expect(pageText).toContain('Browser experience, rendering strategy, client state');
     expect(pageText).toContain('RADIO framework');
+    expect(pageText).toContain('Performance optimization');
+    expect(pageText).toContain('Core Web Vitals');
     expect(hasLink('/machine-coding')).toBeTrue();
     expect(hasLink('/tracks/foundations-30d/preview')).toBeTrue();
   });

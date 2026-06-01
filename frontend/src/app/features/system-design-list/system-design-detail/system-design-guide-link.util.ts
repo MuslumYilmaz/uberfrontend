@@ -109,6 +109,14 @@ const TIE_BREAK_ORDER: readonly SystemDesignGuideSlug[] = [
   'checklist',
 ];
 
+const PERFORMANCE_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
+  'realtime-search-debounce-cache': 'typeahead performance system design',
+  'infinite-scroll-list': 'infinite scroll virtualization performance',
+  'dashboard-widgets-draggable-resizable': 'dashboard performance system design',
+  'live-chart-high-frequency-updates': 'live chart performance system design',
+  'multi-step-form-autosave': 'form interaction latency frontend interview',
+};
+
 function normalize(value: string | null | undefined): string {
   return String(value || '')
     .trim()
@@ -188,6 +196,13 @@ export function pickSystemDesignGuideSlug(
   question?: GuideAwareQuestion | null
 ): SystemDesignGuideSlug {
   return extractExplicitGuideSlug(question) || scoreFromKeywords(question);
+}
+
+export function performanceGuideAnchorForQuestion(
+  question?: GuideAwareQuestion | null
+): string | null {
+  const id = normalizeToken(question?.id);
+  return id ? PERFORMANCE_GUIDE_ANCHORS_BY_ID[id] || null : null;
 }
 
 export function buildSystemDesignGuideRoute(
