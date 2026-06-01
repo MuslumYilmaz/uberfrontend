@@ -101,8 +101,11 @@ describe('SystemDesignIndexComponent', () => {
     expect(chapterCards.length).toBe(SYSTEM.length);
     expect(text()).toContain('Front-End System Design: What It Really Tests');
     expect(text()).toContain('Frontend System Design Interview Framework: RADIO Answer Template');
+    expect(text()).toContain('Frontend System Design Interview Rubric and Scorecard');
+    expect(text()).toContain('Use a frontend system design interview rubric to score requirements');
     expect(text()).toContain('One-Page Checklist for Interviews');
     expect(hasLink('/guides/system-design-blueprint/intro')).toBeTrue();
+    expect(hasLink('/guides/system-design-blueprint/evaluation')).toBeTrue();
     expect(hasLink('/guides/system-design-blueprint/checklist')).toBeTrue();
   });
 

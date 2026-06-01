@@ -91,6 +91,7 @@ describe('SystemDesignDetailComponent', () => {
     const slugs = component.guideLinks().map((link) => link.slug);
     expect(slugs[0]).toBe('radio-framework');
     expect(slugs[1]).toBe('performance');
+    expect(slugs).toContain('evaluation');
     expect(new Set(slugs).size).toBe(slugs.length);
     expect(component.supportingGuideLinks().some((link) => link.slug === 'radio-framework')).toBeFalse();
   });
@@ -111,6 +112,8 @@ describe('SystemDesignDetailComponent', () => {
     expect(component.recommendedBlueprintGuide().title).toBe('live chart performance system design');
     expect(component.guideLinks().find((link) => link.slug === 'performance')?.title)
       .toBe('live chart performance system design');
+    expect(component.guideLinks().find((link) => link.slug === 'evaluation')?.title)
+      .toBe('live chart system design interview evaluation');
   });
 
   it('uses explicit RADIO requirements metadata for the recommended blueprint guide', () => {

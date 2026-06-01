@@ -117,6 +117,15 @@ const PERFORMANCE_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'multi-step-form-autosave': 'form interaction latency frontend interview',
 };
 
+const EVALUATION_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
+  'realtime-search-debounce-cache': 'autocomplete frontend system design rubric',
+  'infinite-scroll-list': 'infinite scroll system design evaluation',
+  'dashboard-widgets-draggable-resizable': 'dashboard frontend system design scorecard',
+  'live-chart-high-frequency-updates': 'live chart system design interview evaluation',
+  'multi-step-form-autosave': 'multi-step form frontend system design rubric',
+  'component-design-system-architecture': 'design system architecture interview rubric',
+};
+
 function normalize(value: string | null | undefined): string {
   return String(value || '')
     .trim()
@@ -203,6 +212,13 @@ export function performanceGuideAnchorForQuestion(
 ): string | null {
   const id = normalizeToken(question?.id);
   return id ? PERFORMANCE_GUIDE_ANCHORS_BY_ID[id] || null : null;
+}
+
+export function evaluationGuideAnchorForQuestion(
+  question?: GuideAwareQuestion | null
+): string | null {
+  const id = normalizeToken(question?.id);
+  return id ? EVALUATION_GUIDE_ANCHORS_BY_ID[id] || null : null;
 }
 
 export function buildSystemDesignGuideRoute(

@@ -1,5 +1,6 @@
 import {
   buildSystemDesignGuideRoute,
+  evaluationGuideAnchorForQuestion,
   performanceGuideAnchorForQuestion,
   pickSystemDesignGuideSlug,
 } from './system-design-guide-link.util';
@@ -61,6 +62,22 @@ describe('system-design-guide-link.util', () => {
     expect(performanceGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
       .toBe('form interaction latency frontend interview');
     expect(performanceGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
+  });
+
+  it('provides keyword-focused evaluation guide anchors for cluster prompts', () => {
+    expect(evaluationGuideAnchorForQuestion({ id: 'realtime-search-debounce-cache' }))
+      .toBe('autocomplete frontend system design rubric');
+    expect(evaluationGuideAnchorForQuestion({ id: 'infinite-scroll-list' }))
+      .toBe('infinite scroll system design evaluation');
+    expect(evaluationGuideAnchorForQuestion({ id: 'dashboard-widgets-draggable-resizable' }))
+      .toBe('dashboard frontend system design scorecard');
+    expect(evaluationGuideAnchorForQuestion({ id: 'live-chart-high-frequency-updates' }))
+      .toBe('live chart system design interview evaluation');
+    expect(evaluationGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
+      .toBe('multi-step form frontend system design rubric');
+    expect(evaluationGuideAnchorForQuestion({ id: 'component-design-system-architecture' }))
+      .toBe('design system architecture interview rubric');
+    expect(evaluationGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
   });
 
   it('maps architecture questions to architecture guide', () => {

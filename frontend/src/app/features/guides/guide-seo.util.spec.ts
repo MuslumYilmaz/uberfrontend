@@ -461,6 +461,58 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend system design interview rubric intent on the evaluation page', () => {
+    const evaluation = SYSTEM.find((entry) => entry.slug === 'evaluation');
+    expect(evaluation).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      evaluation!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Interview Rubric and Scorecard');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/evaluation');
+    expect(meta.description).toBe(
+      'Use a frontend system design interview rubric to score requirements, architecture, state, interfaces, performance, trade-offs, and communication.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend system design interview rubric');
+    expect(meta.keywords).toContain('frontend system design interview scorecard');
+    expect(meta.keywords).toContain('frontend system design evaluation criteria');
+    expect(meta.keywords).toContain('what interviewers look for frontend system design');
+    expect(meta.keywords).toContain('frontend system design interview signals');
+    expect(meta.keywords).toContain('senior frontend system design interview rubric');
+    expect(meta.keywords).toContain('frontend architecture interview rubric');
+    expect(meta.keywords).toContain('frontend system design strong hire signals');
+    expect(meta.keywords).toContain('frontend system design weak signals');
+    expect(meta.keywords).toContain('frontend system design communication signals');
+    expect(meta.keywords).toContain('frontend state management interview rubric');
+    expect(meta.keywords).toContain('frontend performance accessibility interview rubric');
+    expect(meta.keywords).toContain('autocomplete frontend system design rubric');
+    expect(meta.keywords).toContain('infinite scroll system design evaluation');
+    expect(meta.keywords).toContain('dashboard frontend system design scorecard');
+    expect(meta.keywords).toContain('design system architecture interview rubric');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.dateModified).toBe('2026-06-01T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design interview rubric');
+    expect(article?.keywords).toContain('frontend system design interview scorecard');
+    expect(faqPage?.name).toBe('Frontend system design interview rubric FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How are frontend system design interviews scored?',
+      'What is a strong hire signal in frontend system design?',
+      'How do I use a frontend system design scorecard after a mock interview?',
+      'What do senior frontend system design answers include?',
+      'What are red flags in frontend system design interviews?',
+    ]);
+  });
+
   it('targets 5-step answer method intent on the framework quick-start page', () => {
     const framework = SYSTEM.find((entry) => entry.slug === 'framework');
     expect(framework).toBeDefined();
