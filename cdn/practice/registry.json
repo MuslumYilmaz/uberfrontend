@@ -1344,7 +1344,7 @@
     "route": "/angular/trivia/angular-http-what-actually-cancels-request",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. The production trap is that many patterns only ignore old responses inste…",
+    "summary": "Yes: unsubscribing from an Angular HttpClient Observable aborts the in-progress browser request. In interviews, explain that switchMap, takeUntil, and AsyncPipe cancel because they unsubscribe; ignoring a stale response…",
     "tags": [
       "angular",
       "http",
@@ -1354,7 +1354,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-05-31",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-http-what-actually-cancels-request"
   },
