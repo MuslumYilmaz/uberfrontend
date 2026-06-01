@@ -17,6 +17,7 @@ import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { SYSTEM } from '../../../shared/guides/guide.registry';
 import {
+  evaluationGuideAnchorForQuestion,
   performanceGuideAnchorForQuestion,
   pickSystemDesignGuideSlug,
   SystemDesignGuideSlug,
@@ -145,6 +146,7 @@ const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
   'intro',
   'framework',
   'performance',
+  'evaluation',
   'state-data',
 ];
 
@@ -666,10 +668,13 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const performanceAnchor = slug === 'performance'
       ? performanceGuideAnchorForQuestion(this.q())
       : null;
+    const evaluationAnchor = slug === 'evaluation'
+      ? evaluationGuideAnchorForQuestion(this.q())
+      : null;
 
     return {
       slug,
-      title: performanceAnchor || this.guideTitleBySlug.get(slug) || slug,
+      title: performanceAnchor || evaluationAnchor || this.guideTitleBySlug.get(slug) || slug,
       route: ['/', 'guides', 'system-design-blueprint', slug],
     };
   }
