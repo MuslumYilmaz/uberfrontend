@@ -424,7 +424,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this intro to understand what frontend system design interviews test, how frontend scope differs from backend design, which signals interviewers score, and when to move into RADIO and practice prompts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-intro.component')
@@ -533,12 +533,12 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'Frontend System Design Interview Framework: RADIO Answer Template',
+        title: 'Frontend System Design Interview Prep: The RADIO Framework',
         minutes: 20,
-        summary: 'Use RADIO as a frontend system design interview answer template with a 45-minute structure, checklist, and examples.',
+        summary: 'Use the RADIO framework to structure frontend system design interview prep across requirements, architecture, data, interfaces, performance, and closing scripts.',
         seo: {
-            title: 'RADIO Framework: Frontend System Design Answer Template',
-            description: 'Use RADIO to structure a 45-minute frontend system design interview answer: clarify scope, draw architecture, define data/API contracts, and close trade-offs.',
+            title: 'Frontend System Design Interview Prep: The RADIO Framework',
+            description: 'Use RADIO to structure frontend system design interview prep: requirements, architecture, data model, interfaces, performance trade-offs, and closing scripts.',
             primaryKeyword: 'RADIO framework frontend system design',
             keywords: [
                 'frontend system design interview answer template',
@@ -583,7 +583,7 @@ export const SYSTEM: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-18',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
@@ -591,21 +591,19 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-requirements',
-        title: 'R - Requirements Deep Dive for Frontend System Design Interviews',
+        title: 'Frontend System Design Requirements Checklist',
         minutes: 16,
-        summary: 'Master requirements in frontend system design interviews with a repeatable script, scope box, metrics, and edge-case checklist before architecture.',
+        summary: 'Use this requirements checklist to ask better frontend system design clarifying questions, lock scope, define constraints, and hand off to architecture.',
         seo: {
-            title: 'Frontend System Design Requirements Exploration',
-            description: 'Use RADIO Requirements to clarify frontend system design interview scope, constraints, functional requirements, NFRs, and success metrics before architecture.',
-            primaryKeyword: 'frontend system design requirements exploration',
+            title: 'Frontend System Design Requirements Checklist',
+            description: 'Ask better frontend system design interview clarifying questions, lock scope, define requirements, success metrics, and hand off to architecture.',
+            primaryKeyword: 'frontend system design requirements checklist',
             keywords: [
                 'frontend system design clarifying questions',
-                'frontend system design requirements checklist',
                 'RADIO requirements frontend system design',
                 'first 5 minutes frontend system design interview',
                 'functional and non-functional requirements frontend system design',
                 'requirements questions frontend system design interview',
-                'requirements deep dive for frontend system design interviews',
                 'frontend system design requirements',
                 'what clarifying questions should I ask in frontend system design',
                 'frontend system design requirements before architecture',
@@ -613,16 +611,16 @@ export const SYSTEM: GuideEntry[] = [
                 'frontend system design success metrics',
                 'frontend system design assumptions and risk log',
                 'frontend system design architecture handoff',
-                'requirements exploration autocomplete frontend system design',
+                'requirements checklist autocomplete frontend system design',
                 'requirements questions news feed frontend system design',
                 'requirements checklist dashboard frontend system design',
             ],
             faqPage: {
-                name: 'Frontend system design requirements exploration FAQ',
+                name: 'Frontend system design requirements checklist FAQ',
                 items: [
                     {
-                        question: 'What is Requirements exploration in frontend system design?',
-                        answer: 'Requirements exploration is the RADIO step where you clarify the user flow, scope, constraints, functional requirements, non-functional requirements, success metrics, and risks before drawing architecture.',
+                        question: 'What is a frontend system design requirements checklist?',
+                        answer: 'A frontend system design requirements checklist is the RADIO step where you clarify the user flow, scope, constraints, functional requirements, non-functional requirements, success metrics, and risks before drawing architecture.',
                     },
                     {
                         question: 'What clarifying questions should I ask first?',
@@ -642,9 +640,9 @@ export const SYSTEM: GuideEntry[] = [
                     },
                 ],
             },
-            readerPromise: 'Use RADIO Requirements to turn clarifying questions into a scope box, functional and non-functional requirements, success metrics, and a clean architecture handoff.',
+            readerPromise: 'Use this frontend system design requirements checklist to turn clarifying questions into a scope box, functional and non-functional requirements, success metrics, and a clean architecture handoff.',
             publishedAt: '2026-02-18',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-requirements')
@@ -709,7 +707,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this architecture guide to choose client-side boundaries, rendering strategy, BFF trade-offs, cache layers, and an interview-ready frontend architecture diagram.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-architecture')
@@ -774,7 +772,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this data guide to separate server state, client state, URL state, API contracts, cache keys, invalidation, optimistic updates, and interview-ready UI states.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-state')
@@ -838,7 +836,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this interface guide to define component boundaries, component APIs, UI states, keyboard/focus behavior, accessibility, degraded UX, and interview-ready prompt decisions.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-ux')
@@ -905,7 +903,7 @@ export const SYSTEM: GuideEntry[] = [
             searchIntent: 'Find an interview-focused frontend system design performance optimization guide that explains budgets, Core Web Vitals, bottleneck diagnosis, scenario trade-offs, rollout, and validation.',
             readerPromise: 'Use this performance optimization guide to explain Core Web Vitals, bottleneck diagnosis, top-two prioritization, trade-offs, observability, rollout, and interview-ready scripts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-01',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-performance')
@@ -971,7 +969,7 @@ export const SYSTEM: GuideEntry[] = [
             readerPromise: 'Use this scorecard to grade frontend system design answers across requirements, architecture, state, interfaces, performance, accessibility, trade-offs, and communication.',
             uniqueAngle: 'RADIO-mapped rubric with weak, solid, and strong-hire signals plus a self-review loop tied to FrontendAtlas practice prompts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-01',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-evaluation')
@@ -979,16 +977,60 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'pitfalls',
-        title: 'Traps and Anti-Patterns to Avoid',
-        minutes: 8,
-        summary: 'Common mistakes candidates fall into and how to avoid them under pressure.',
+        title: 'Frontend System Design Interview Pitfalls and Red Flags',
+        minutes: 11,
+        summary: 'Avoid frontend system design mistakes with red flags, repair scripts, RADIO mapping, and scenario-specific fixes.',
         seo: {
-            title: 'Frontend System Design Interview Pitfalls and How to Avoid Them',
-            description: 'Avoid common interview mistakes like over-design, vague assumptions, and missing trade-offs, with practical fixes you can apply during real rounds.',
+            title: 'Frontend System Design Interview Pitfalls and Red Flags',
+            description: 'Avoid frontend system design interview pitfalls with red flags, repair scripts, and fixes for architecture, state, APIs, performance, and accessibility.',
             primaryKeyword: 'frontend system design interview pitfalls',
-            keywords: ['frontend system design interview pitfalls', 'system design anti patterns', 'system design mistakes to avoid'],
+            keywords: [
+                'frontend system design mistakes',
+                'frontend system design red flags',
+                'frontend system design anti patterns',
+                'frontend system design interview mistakes',
+                'frontend system design common mistakes',
+                'system design mistakes to avoid frontend',
+                'frontend architecture interview mistakes',
+                'frontend performance interview mistakes',
+                'frontend accessibility system design mistakes',
+                'frontend state management interview mistakes',
+                'frontend API contract interview mistakes',
+                'frontend system design interviewer hints',
+                'frontend system design loading error empty states',
+                'frontend system design over engineering',
+                'frontend system design tradeoff mistakes',
+            ],
+            faqPage: {
+                name: 'Frontend system design interview pitfalls FAQ',
+                items: [
+                    {
+                        question: 'What are the biggest frontend system design interview pitfalls?',
+                        answer: 'The biggest pitfalls are skipping requirements, giving backend-only answers, listing buzzwords, ignoring state ownership, hand-waving API and component contracts, missing accessibility or performance, and rambling without checkpoints.',
+                    },
+                    {
+                        question: 'How do I recover if my frontend system design answer gets messy?',
+                        answer: 'Pause, restate the primary user flow, name the constraint you are optimizing for, choose the next artifact, and ask the interviewer whether to go deeper on architecture, data, interface, or performance.',
+                    },
+                    {
+                        question: 'Why are backend-only answers a red flag in frontend system design?',
+                        answer: 'Frontend rounds score browser rendering, client state, component contracts, user-visible failure states, accessibility, and performance. Backend awareness helps, but it should support the UI design instead of replacing it.',
+                    },
+                    {
+                        question: 'What frontend performance mistakes should I avoid in system design interviews?',
+                        answer: 'Avoid random optimization lists. Tie performance work to a bottleneck, metric, budget, trade-off, rollout plan, and validation method for the user-critical path.',
+                    },
+                    {
+                        question: 'How do pitfalls differ from a frontend system design checklist?',
+                        answer: 'A checklist confirms coverage before you finish. Pitfalls identify weak signals as they happen and give repair scripts for recovering during the interview.',
+                    },
+                ],
+            },
+            searchIntent: 'Find frontend system design interview mistakes, red flags, and repair scripts that explain what to avoid and what to say instead during real rounds.',
+            readerPromise: 'Use this pitfalls guide to catch weak signals, recover messy answers, and connect fixes to RADIO, rubric scoring, checklist review, and practice prompts.',
+            uniqueAngle: 'Frontend-specific red flags with repair scripts, RADIO mapping, and scenario prompts instead of a generic system design mistake list.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-pitfalls')
@@ -996,16 +1038,63 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'checklist',
-        title: 'One-Page Checklist for Interviews',
-        minutes: 6,
-        summary: 'A quick mental map to keep in mind for any system design question.',
+        title: 'Frontend System Design Interview Checklist: Final Review',
+        minutes: 10,
+        summary: 'Run a frontend system design final review across requirements, architecture, state, APIs, accessibility, performance, trade-offs, and closing.',
         seo: {
-            title: 'Frontend System Design Interview Checklist: One-Page Final Review',
-            description: 'Use this one-page interview checklist before system design rounds to verify requirements, architecture, trade-offs, risks, and communication flow.',
+            title: 'Frontend System Design Interview Checklist: Final Review',
+            description: 'Use a frontend system design interview checklist to review requirements, rendering, state, APIs, accessibility, performance, trade-offs, and closing scripts.',
             primaryKeyword: 'frontend system design interview checklist',
-            keywords: ['frontend system design interview checklist', 'system design final review checklist', 'system design prep checklist'],
+            keywords: [
+                'frontend system design checklist',
+                'frontend system design final review',
+                'frontend system design cheatsheet',
+                'frontend system design interview prep checklist',
+                'frontend architecture interview checklist',
+                'frontend system design final pass',
+                'frontend system design review checklist',
+                'frontend system design last minute checklist',
+                'frontend system design closing script',
+                'senior frontend system design checklist',
+                'frontend state and API checklist',
+                'frontend UI states checklist',
+                'frontend accessibility performance checklist',
+                'frontend system design tradeoffs checklist',
+            ],
+            faqPage: {
+                name: 'Frontend system design interview checklist FAQ',
+                items: [
+                    {
+                        question: 'What should a frontend system design interview checklist include?',
+                        answer: 'A strong checklist should cover requirements, non-goals, rendering strategy, state ownership, API and component contracts, loading and failure states, accessibility, performance, observability, trade-offs, rollout risk, and closing summary.',
+                    },
+                    {
+                        question: 'When should I use a frontend system design final review checklist?',
+                        answer: 'Use it during the last few minutes of a mock or real interview, and again after practice, to catch missing evidence before the answer ends.',
+                    },
+                    {
+                        question: 'How is this checklist different from a rubric?',
+                        answer: 'A rubric scores answer quality. This checklist is a final pass that helps you verify coverage and close gaps before the interviewer has to ask.',
+                    },
+                    {
+                        question: 'What frontend-specific checks are easy to miss?',
+                        answer: 'Candidates often miss loading, empty, error, stale, and partial states; focus behavior; cache invalidation; route-level performance; degraded UX; and observability.',
+                    },
+                    {
+                        question: 'How do I close a frontend system design interview answer?',
+                        answer: 'Close by summarizing the scoped user path, architecture choice, state and API contracts, biggest trade-off, known risk, and validation plan.',
+                    },
+                    {
+                        question: 'Is this checklist a replacement for a full frontend system design guide?',
+                        answer: 'No. Use the full guide or RADIO framework to structure the answer, then use this checklist as the final review pass for missing requirements, contracts, UI states, accessibility, performance, trade-offs, and closing.',
+                    },
+                ],
+            },
+            searchIntent: 'Find a frontend system design interview checklist for last-minute review, final answer coverage, and closing scripts before or during a system design round.',
+            readerPromise: 'Use this final review checklist to catch missing requirements, architecture, state, API, UI state, accessibility, performance, trade-off, and closing evidence.',
+            uniqueAngle: 'Frontend-specific final pass with pass/warn/fail checks, timed review, scenario prompts, and links back to rubric, pitfalls, performance, and RADIO.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-checklist')

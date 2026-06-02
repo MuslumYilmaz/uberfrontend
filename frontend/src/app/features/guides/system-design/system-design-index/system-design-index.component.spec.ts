@@ -52,7 +52,7 @@ describe('SystemDesignIndexComponent', () => {
     expect(pageText).toContain('Most asked frontend system design prompts');
     expect(pageText).toContain('Recommended study order');
     expect(pageText).toContain('Frontend system design blueprint FAQ');
-    expect(pageText).toContain('What should a frontend system design checklist include?');
+    expect(pageText).toContain('What should a frontend system design interview checklist include?');
     expect(pageText).toContain('Browser experience, rendering strategy, client state');
     expect(pageText).toContain('RADIO framework');
     expect(pageText).toContain('Performance optimization');
@@ -100,12 +100,17 @@ describe('SystemDesignIndexComponent', () => {
 
     expect(chapterCards.length).toBe(SYSTEM.length);
     expect(text()).toContain('Front-End System Design: What It Really Tests');
-    expect(text()).toContain('Frontend System Design Interview Framework: RADIO Answer Template');
+    expect(text()).toContain('Frontend System Design Interview Prep: The RADIO Framework');
     expect(text()).toContain('Frontend System Design Interview Rubric and Scorecard');
     expect(text()).toContain('Use a frontend system design interview rubric to score requirements');
-    expect(text()).toContain('One-Page Checklist for Interviews');
+    expect(text()).toContain('Frontend System Design Interview Pitfalls and Red Flags');
+    expect(text()).toContain('Avoid frontend system design mistakes with red flags');
+    expect(text()).toContain('Frontend System Design Interview Checklist: Final Review');
+    expect(text()).toContain('Run a frontend system design final review across requirements');
+    expect(text()).toContain('Use the frontend system design final review checklist');
     expect(hasLink('/guides/system-design-blueprint/intro')).toBeTrue();
     expect(hasLink('/guides/system-design-blueprint/evaluation')).toBeTrue();
+    expect(hasLink('/guides/system-design-blueprint/pitfalls')).toBeTrue();
     expect(hasLink('/guides/system-design-blueprint/checklist')).toBeTrue();
   });
 
@@ -143,7 +148,7 @@ describe('SystemDesignIndexComponent', () => {
       'How is frontend system design different from backend system design?',
       'How do I use RADIO in a 45-minute frontend system design interview?',
       'What are the most asked frontend system design interview questions?',
-      'What should a frontend system design checklist include?',
+      'What should a frontend system design interview checklist include?',
     ]);
   });
 });

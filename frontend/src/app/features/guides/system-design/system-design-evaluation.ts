@@ -172,7 +172,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           <tr>
             <td>Final pass</td>
             <td>Red flags, missing trade-offs, and closing summary</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">Checklist</a></td>
+            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">Frontend system design final review</a></td>
           </tr>
         </tbody>
       </table>
@@ -271,7 +271,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </ul>
       <p>
         If one of these shows up repeatedly, use the
-        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">pitfalls guide</a>
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">frontend system design red flags</a>
         before another mock.
       </p>
 

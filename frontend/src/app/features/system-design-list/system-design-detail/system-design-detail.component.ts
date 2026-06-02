@@ -19,6 +19,7 @@ import { SYSTEM } from '../../../shared/guides/guide.registry';
 import {
   evaluationGuideAnchorForQuestion,
   performanceGuideAnchorForQuestion,
+  pitfallsGuideAnchorForQuestion,
   pickSystemDesignGuideSlug,
   SystemDesignGuideSlug,
 } from './system-design-guide-link.util';
@@ -147,6 +148,7 @@ const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
   'framework',
   'performance',
   'evaluation',
+  'pitfalls',
   'state-data',
 ];
 
@@ -671,10 +673,13 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const evaluationAnchor = slug === 'evaluation'
       ? evaluationGuideAnchorForQuestion(this.q())
       : null;
+    const pitfallsAnchor = slug === 'pitfalls'
+      ? pitfallsGuideAnchorForQuestion(this.q())
+      : null;
 
     return {
       slug,
-      title: performanceAnchor || evaluationAnchor || this.guideTitleBySlug.get(slug) || slug,
+      title: performanceAnchor || evaluationAnchor || pitfallsAnchor || this.guideTitleBySlug.get(slug) || slug,
       route: ['/', 'guides', 'system-design-blueprint', slug],
     };
   }

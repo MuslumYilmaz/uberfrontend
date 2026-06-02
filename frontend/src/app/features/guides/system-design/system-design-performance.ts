@@ -682,7 +682,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">A - Architecture deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">One-page checklist for interviews</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">Frontend accessibility performance checklist</a></li>
       </ul>
     </fa-guide-shell>
   `,

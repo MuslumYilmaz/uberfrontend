@@ -483,13 +483,14 @@ type FaqItem = {
       <h1 class="hero-title">Frontend System Design Interview Blueprint</h1>
       <p class="hero-sub">
         Use this frontend system design interview blueprint with the RADIO framework,
-        a 45-minute interview flow, checklist, examples, and real prompts.
+        a 45-minute interview flow, a frontend system design interview checklist,
+        examples, and real prompts.
       </p>
       <div class="pill-row" aria-label="Frontend system design blueprint coverage">
         <span class="pill fa-chip fa-chip--label">RADIO framework</span>
         <span class="pill fa-chip fa-chip--label">45-minute answer flow</span>
         <span class="pill fa-chip fa-chip--label">Frontend architecture</span>
-        <span class="pill fa-chip fa-chip--label">Interview checklist</span>
+        <span class="pill fa-chip fa-chip--label">Final review checklist</span>
       </div>
       <div class="prep-links" aria-label="Related frontend interview hubs">
         <a [routerLink]="['/system-design']">Frontend system design questions</a>
@@ -860,8 +861,8 @@ export class SystemDesignIndexComponent implements OnInit {
     },
     {
       step: 'Step 5',
-      title: 'Run a final checklist pass',
-      detail: 'Use a one-page checklist to catch missing tradeoffs before company-specific prep.',
+      title: 'Run a final review checklist',
+      detail: 'Use the frontend system design final review checklist to catch missing trade-offs and closing-script gaps before company-specific prep.',
       cta: 'Open checklist',
       route: ['/', 'guides', 'system-design-blueprint', 'checklist'],
       path: '/guides/system-design-blueprint/checklist',
@@ -890,7 +891,7 @@ export class SystemDesignIndexComponent implements OnInit {
         'Common frontend system design interview questions include infinite scroll, notification systems, autocomplete search, news feeds, AI chat UI, design system architecture, live comments, and draggable dashboards.',
     },
     {
-      question: 'What should a frontend system design checklist include?',
+      question: 'What should a frontend system design interview checklist include?',
       answer:
         'A frontend system design checklist should include requirements, state ownership, API contracts, failure states, accessibility, performance budgets, observability, rollout risk, and tradeoff narration.',
     },

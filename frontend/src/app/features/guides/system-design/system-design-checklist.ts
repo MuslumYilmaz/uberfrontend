@@ -8,183 +8,190 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
     <fa-guide-shell
-      title="One-Page Checklist for Interviews"
-      [minutes]="7"
-      [tags]="['system design','checklist','cheatsheet']"
+      title="Frontend System Design Interview Checklist: Final Review"
+      [minutes]="10"
+      [tags]="['system design', 'checklist', 'final review', 'cheatsheet']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
       [readerPromise]="readerPromise || undefined">
 
+      <h2>If You Remember One Thing</h2>
       <p>
-        A quick mental map for any front-end system design interview. 
-        Use this to keep your answer structured under pressure.
+        Use this <strong>frontend system design interview checklist</strong> in the
+        last few minutes of a mock or real round. It catches missing evidence before
+        the interviewer has to ask: requirements, rendering, state, contracts, UI
+        states, accessibility, performance, observability, trade-offs, and the close.
+      </p>
+      <p>
+        This page is the final pass. Use the
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'evaluation']">rubric</a>
+        to score your answer, the
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">pitfalls guide</a>
+        to repair weak signals, and this checklist to verify coverage before you stop.
       </p>
 
-      <h2>Before you start (30–60s)</h2>
-      <ul>
-        <li><strong>Clarify users:</strong> public vs internal, mobile vs desktop.</li>
-        <li><strong>Clarify goals:</strong> SEO? fast first load? logged-in speed?</li>
-        <li><strong>Scope v1:</strong> must-haves vs nice-to-haves.</li>
-      </ul>
-
-      <h2>Five-step flow (the spine)</h2>
-      <ol>
-        <li><strong>Clarify:</strong> users, use cases, non-goals.</li>
-        <li><strong>Decompose:</strong> name core components.</li>
-        <li><strong>Choose rendering/architecture:</strong> with a reason.</li>
-        <li><strong>Cross-cutting:</strong> performance, a11y, i18n, testing.</li>
-        <li><strong>Trade-offs & next steps:</strong> v1 now, scale later.</li>
-      </ol>
-
-      <h2>Rendering choice: quick picks</h2>
+      <h2>10-Minute Final Review Runbook</h2>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Context</th>
-            <th style="text-align:left;">Leaning</th>
-            <th style="text-align:left;">Why</th>
+            <th>Time</th>
+            <th>Review area</th>
+            <th>What to confirm out loud</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Public marketing / SEO</td>
-            <td><strong>SSR / SSG</strong></td>
-            <td>Fast first paint, indexable content</td>
+            <td>1 min</td>
+            <td>Scope and success metrics</td>
+            <td>Primary user, v1 flow, non-goals, success metric, and the constraint that changes the design.</td>
           </tr>
           <tr>
-            <td>Internal dashboard / auth</td>
-            <td><strong>CSR</strong></td>
-            <td>Simple deploy, fast iteration</td>
+            <td>2 min</td>
+            <td>Architecture and rendering</td>
+            <td>Route shape, rendering choice, ownership boundary, and why this is not over-built for v1.</td>
           </tr>
           <tr>
-            <td>Mixed static + interactive</td>
-            <td><strong>Islands / Hybrid</strong></td>
-            <td>Static shell; hydrate only what’s needed</td>
+            <td>2 min</td>
+            <td>State, data, and API contracts</td>
+            <td>Server state, UI state, URL state, cache keys, mutations, API shape, and component contracts.</td>
           </tr>
           <tr>
-            <td>Very large org / many teams</td>
-            <td><strong>Microfrontends</strong></td>
-            <td>Team autonomy, independent deploys</td>
+            <td>2 min</td>
+            <td>UI states, accessibility, and performance</td>
+            <td>Loading, empty, error, stale, partial states, focus behavior, and the top performance budget.</td>
+          </tr>
+          <tr>
+            <td>2 min</td>
+            <td>Trade-offs, risks, and validation</td>
+            <td>Biggest trade-off, rollback or rollout trigger, observability, and how you know the design works.</td>
+          </tr>
+          <tr>
+            <td>1 min</td>
+            <td>Closing script</td>
+            <td>Summarize the selected path, risk, validation plan, and what you would deepen next.</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>State, data flow & fetching</h2>
+      <h2>Pass / Warn / Fail Checklist</h2>
       <table>
         <thead>
           <tr>
-            <th style="text-align:left;">Decision</th>
-            <th style="text-align:left;">Default</th>
-            <th style="text-align:left;">Notes</th>
+            <th>Axis</th>
+            <th>Pass</th>
+            <th>Warn</th>
+            <th>Fail</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>State split</td>
-            <td>UI local • minimal global • server cache</td>
-            <td>Normalize server data by <code>id</code></td>
+            <td>Requirements and non-goals</td>
+            <td>User, v1 scope, non-goals, scale, constraints, and success metric are explicit.</td>
+            <td>Scope is mostly clear, but success metric or non-goals are vague.</td>
+            <td>You started drawing before the problem was shaped.</td>
           </tr>
           <tr>
-            <td>Flow</td>
-            <td>Unidirectional</td>
-            <td>View → Action → Store/Cache → View</td>
+            <td>Rendering and architecture choice</td>
+            <td>SSR, SSG, CSR, hybrid, or microfrontend choice is tied to product constraints.</td>
+            <td>The architecture works, but the rendering trade-off is not justified.</td>
+            <td>You named tools or boxes without explaining why they fit.</td>
           </tr>
           <tr>
-            <td>Fetching</td>
-            <td>On demand + prefetch</td>
-            <td>Prefetch likely next route; use cursors</td>
+            <td>State ownership and cache invalidation</td>
+            <td>Server state, local UI state, URL state, cache keys, freshness, and invalidation are separated.</td>
+            <td>State types are named, but stale data or writes are under-specified.</td>
+            <td>Everything goes into one vague global store.</td>
           </tr>
           <tr>
-            <td>Refresh</td>
-            <td>Background on focus/reconnect</td>
-            <td>Keep UI responsive while refreshing</td>
+            <td>API and component contracts</td>
+            <td>API response shape, component responsibility, props/events, auth, pagination, and errors are clear.</td>
+            <td>Components are named, but contracts or transitions are incomplete.</td>
+            <td>The diagram has no testable interface boundaries.</td>
+          </tr>
+          <tr>
+            <td>Loading, empty, error, stale, partial states</td>
+            <td>Each user-visible state has a UI behavior and recovery path.</td>
+            <td>Happy path and errors are covered, but stale or partial behavior is missing.</td>
+            <td>The answer assumes everything succeeds.</td>
+          </tr>
+          <tr>
+            <td>Accessibility and responsive behavior</td>
+            <td>Focus, keyboard, labels, announcements, reduced motion, and responsive constraints are covered where relevant.</td>
+            <td>Accessibility is mentioned, but not tied to the interaction.</td>
+            <td>The answer only describes visual layout.</td>
+          </tr>
+          <tr>
+            <td>Performance, reliability, and observability</td>
+            <td>Top bottleneck, budget, Core Web Vitals or route metric, degraded UX, logging, and alert signal are named.</td>
+            <td>Performance tactics are listed, but measurement or reliability is vague.</td>
+            <td>Optimizations are random and unvalidated.</td>
+          </tr>
+          <tr>
+            <td>Trade-offs, rollout, and closing summary</td>
+            <td>Alternatives, chosen trade-off, rollout risk, rollback trigger, and final summary are clear.</td>
+            <td>Trade-offs are mentioned, but the close does not tie the answer together.</td>
+            <td>The answer ends abruptly or sounds like every choice is pure upside.</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>Caching & invalidation</h2>
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Layer</th>
-            <th style="text-align:left;">Use</th>
-            <th style="text-align:left;">Invalidation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>HTTP / CDN</td>
-            <td>Static assets, GET APIs</td>
-            <td>TTL, purge on deploy</td>
-          </tr>
-          <tr>
-            <td>App memory</td>
-            <td>Normalized entities</td>
-            <td>Tag/event-based after writes</td>
-          </tr>
-          <tr>
-            <td>Service Worker</td>
-            <td>Shell + recent data, offline</td>
-            <td>Versioned precache; sync queue</td>
-          </tr>
-        </tbody>
-      </table>
-      <p><em>One-liner:</em> “SWR for reads; tag-based invalidation on writes.”</p>
-
-      <h2>Real-time & offline</h2>
+      <h2>Final Checks by Area</h2>
+      <h3>Rendering and architecture</h3>
       <ul>
-        <li><strong>Start simple:</strong> polling → upgrade to SSE/WebSocket if needed.</li>
-        <li><strong>Offline:</strong> SW cache shell, queue writes, handle conflicts (version/merge).</li>
+        <li><strong>Public, SEO-heavy route:</strong> Did you justify SSR or SSG and explain hydration cost?</li>
+        <li><strong>Authenticated app:</strong> Did you explain why CSR or a hybrid shell is enough?</li>
+        <li><strong>Large organization:</strong> Did you separate team ownership from runtime complexity before choosing microfrontends?</li>
       </ul>
 
-      <h2>Performance quick fixes (symptom → fix)</h2>
+      <h3>State, data, and contracts</h3>
       <ul>
-        <li><strong>Page feels slow to load:</strong> optimize images, inline above-the-fold CSS, split bundles.</li>
-        <li><strong>Clicks feel laggy:</strong> reduce JS, debounce handlers, move heavy work off main thread.</li>
-        <li><strong>Layout jumps around:</strong> reserve dimensions for images/ads, load fonts predictably.</li>
-        <li><strong>Scrolling is janky:</strong> virtualize long lists, throttle scroll, keep frames smooth.</li>
+        <li><strong>State split:</strong> Did you separate server cache, local UI state, URL state, and persisted drafts?</li>
+        <li><strong>Fetching:</strong> Did you name request timing, pagination, prefetch, refresh, cancellation, and stale response behavior?</li>
+        <li><strong>Contracts:</strong> Did you define API shape, component props/events, validation, auth, and failure transitions?</li>
       </ul>
 
-      <h2>Cross-cutting essentials</h2>
+      <h3>Performance and reliability</h3>
       <ul>
-        <li><strong>a11y:</strong> semantic HTML, focus order, keyboard support, contrast.</li>
-        <li><strong>i18n:</strong> text expansion, RTL, locale formats (dates/numbers/currency).</li>
-        <li><strong>Testing:</strong> happy paths + errors + empty states; contract tests for APIs.</li>
+        <li><strong>Load path:</strong> Did you name the route budget, bundle split, image/font strategy, and fallback UI?</li>
+        <li><strong>Interaction path:</strong> Did you mention INP risk, main-thread work, debounce/throttle, virtualization, or worker boundaries where relevant?</li>
+        <li><strong>Observability:</strong> Did you name the event, metric, log, or alert that proves the design works in production?</li>
       </ul>
 
-      <h2>Close strong (1–2 sentences)</h2>
+      <h2>Scenario-Specific Final Checks</h2>
+      <ul>
+        <li><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Typeahead final review</a>: request ordering, stale suggestions, keyboard navigation, latency budget, and no-result state.</li>
+        <li><a [routerLink]="['/', 'system-design', 'infinite-scroll-list']">Infinite scroll final review</a>: cursor state, virtualization, scroll restoration, partial failure, and screen-reader access.</li>
+        <li><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard widgets final review</a>: layout ownership, resize/drag cost, persistence, panel isolation, and degraded loading.</li>
+        <li><a [routerLink]="['/', 'system-design', 'live-chart-high-frequency-updates']">Live chart final review</a>: sampling, backpressure, render loop, memory bounds, dropped updates, and alerting.</li>
+        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Multi-step form final review</a>: draft ownership, validation timing, autosave conflict, interaction latency, and recovery after failed saves.</li>
+        <li><a [routerLink]="['/', 'system-design', 'component-design-system-architecture']">Design system final review</a>: token governance, API stability, accessibility contracts, versioning, adoption, and bundle cost.</li>
+      </ul>
+
+      <h2>30-Second Closing Script</h2>
       <blockquote>
-        “For v1, I’d ship <em>X</em> for speed. If <em>Y</em> becomes a priority, we’ll evolve to <em>Z</em>. 
-        Trade-offs: we optimize for A now, and revisit B at scale.”
+        "I scoped the primary user path, chose the rendering and architecture around
+        that path, separated state and API contracts, covered loading, error,
+        accessibility, and performance behavior, and named the biggest trade-off.
+        I would validate this with [metric] and revisit [risk] if [trigger] happens."
       </blockquote>
 
-      <h2>Phrases that score</h2>
+      <h2>Last-Minute Phrases That Score</h2>
       <ul>
-        <li>“Given the need for <strong>X</strong>, I’d pick <strong>Y</strong> because it optimizes for <strong>Z</strong>.”</li>
-        <li>“Must-haves for v1 are…, nice-to-haves later are…”</li>
-        <li>“We’ll keep UI state local, minimal global, and treat server data as a cache.”</li>
-        <li>“We’ll start with polling; if interaction requires it, move to SSE/WebSocket.”</li>
+        <li>"For v1, I will optimize for the primary task and keep the expansion path explicit."</li>
+        <li>"This belongs in server state because freshness matters; this stays local because it only drives the component."</li>
+        <li>"The contract should make loading, empty, error, stale, and partial states explicit."</li>
+        <li>"The trade-off is faster first content versus more server work, so I would validate it per route."</li>
+        <li>"I will pause here: do you want me to go deeper on data ownership, interface states, or performance?"</li>
       </ul>
 
-      <h2>Red flags to avoid</h2>
+      <h2>What To Review Next</h2>
       <ul>
-        <li>Jumping into diagrams without clarifying scope.</li>
-        <li>Listing buzzwords without a reason tied to context.</li>
-        <li>Designing for a billion users in v1.</li>
-        <li>Forgetting a11y/i18n/offline or error/empty states.</li>
-        <li>Rambling without structure.</li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'evaluation']">Frontend system design interview rubric</a>: score the strength of your answer.</li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">Frontend system design mistakes to avoid</a>: repair weak signals during the answer.</li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Frontend system design performance guide</a>: deepen metrics, budgets, and validation.</li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">RADIO framework answer structure</a>: rebuild the full answer flow.</li>
       </ul>
-
-      <h2>Mini runbook (10–15s to say out loud)</h2>
-      <ol>
-        <li>“Users & goals are …; v1 scope is …”</li>
-        <li>“Components: …”</li>
-        <li>“Rendering: choose … because …”</li>
-        <li>“Perf/a11y/i18n considerations: …”</li>
-        <li>“Trade-offs now; next steps at scale: …”</li>
-      </ol>
-
     </fa-guide-shell>
   `,
 })

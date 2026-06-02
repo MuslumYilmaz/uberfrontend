@@ -23,8 +23,8 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     const host = fixture.nativeElement as HTMLElement;
     const text = host.textContent || '';
 
-    expect(text).toContain('Frontend System Design Interview Framework: RADIO Answer Template');
-    expect(text).toContain('frontend system design interview framework');
+    expect(text).toContain('Frontend System Design Interview Prep: The RADIO Framework');
+    expect(text).toContain('frontend system design interview prep framework');
     expect(text).toContain('Use this if your interviewer asks: "How would you design X?"');
     expect(text).toContain('Copyable 45-minute answer structure');
     expect(text).toContain('Works for autocomplete, news feed, chat, dashboards, and design systems');

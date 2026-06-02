@@ -108,15 +108,15 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('RADIO Framework: Frontend System Design Answer Template');
+    expect(meta.title).toBe('Frontend System Design Interview Prep: The RADIO Framework');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(meta.description).toBe(
-      'Use RADIO to structure a 45-minute frontend system design interview answer: clarify scope, draw architecture, define data/API contracts, and close trade-offs.',
+      'Use RADIO to structure frontend system design interview prep: requirements, architecture, data model, interfaces, performance trade-offs, and closing scripts.',
     );
-    expect(meta.description).toMatch(/frontend system design interview answer/i);
-    expect(meta.description).toMatch(/45-minute/i);
-    expect(meta.description).toMatch(/data\/API contracts/i);
+    expect(meta.description).toMatch(/frontend system design interview prep/i);
+    expect(meta.description).toMatch(/requirements/i);
+    expect(meta.description).toMatch(/data model/i);
     expect(meta.description).toMatch(/trade-offs/i);
     expect(meta.keywords).toContain('RADIO framework frontend system design');
     expect(meta.keywords).toContain('frontend system design interview answer template');
@@ -140,7 +140,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
     expect(article?.keywords).toContain('RADIO framework frontend system design');
     expect(article?.keywords).toContain('frontend system design interview answer template');
     expect(article?.keywords).toContain('frontend system design interface API taxonomy');
@@ -155,7 +155,7 @@ describe('guide-seo.util', () => {
     ]);
   });
 
-  it('targets Requirements exploration intent on the RADIO requirements page', () => {
+  it('targets Requirements checklist intent on the RADIO requirements page', () => {
     const requirements = SYSTEM.find((entry) => entry.slug === 'radio-requirements');
     expect(requirements).toBeDefined();
 
@@ -166,28 +166,27 @@ describe('guide-seo.util', () => {
       requirements!
     );
 
-    expect(meta.title).toBe('Frontend System Design Requirements Exploration');
+    expect(meta.title).toBe('Frontend System Design Requirements Checklist');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-requirements');
     expect(meta.description).toBe(
-      'Use RADIO Requirements to clarify frontend system design interview scope, constraints, functional requirements, NFRs, and success metrics before architecture.',
+      'Ask better frontend system design interview clarifying questions, lock scope, define requirements, success metrics, and hand off to architecture.',
     );
     expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
-    expect(meta.keywords).toContain('frontend system design requirements exploration');
-    expect(meta.keywords).toContain('frontend system design clarifying questions');
     expect(meta.keywords).toContain('frontend system design requirements checklist');
+    expect(meta.keywords).toContain('frontend system design clarifying questions');
     expect(meta.keywords).toContain('RADIO requirements frontend system design');
     expect(meta.keywords).toContain('first 5 minutes frontend system design interview');
     expect(meta.keywords).toContain('functional and non-functional requirements frontend system design');
     expect(meta.keywords).toContain('requirements questions frontend system design interview');
-    expect(meta.keywords).toContain('requirements deep dive for frontend system design interviews');
+    expect(meta.keywords).not.toContain('requirements deep dive for frontend system design interviews');
     expect(meta.keywords).toContain('what clarifying questions should I ask in frontend system design');
     expect(meta.keywords).toContain('frontend system design requirements before architecture');
     expect(meta.keywords).toContain('frontend system design scope box');
     expect(meta.keywords).toContain('frontend system design success metrics');
     expect(meta.keywords).toContain('frontend system design assumptions and risk log');
     expect(meta.keywords).toContain('frontend system design architecture handoff');
-    expect(meta.keywords).toContain('requirements exploration autocomplete frontend system design');
+    expect(meta.keywords).toContain('requirements checklist autocomplete frontend system design');
     expect(meta.keywords).toContain('requirements questions news feed frontend system design');
     expect(meta.keywords).toContain('requirements checklist dashboard frontend system design');
 
@@ -197,15 +196,16 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
-    expect(article?.keywords).toContain('frontend system design requirements exploration');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design requirements checklist');
     expect(article?.keywords).toContain('functional and non-functional requirements frontend system design');
     expect(article?.keywords).toContain('frontend system design architecture handoff');
     expect(article?.keywords).toContain('requirements checklist dashboard frontend system design');
-    expect(faqPage?.name).toBe('Frontend system design requirements exploration FAQ');
+    expect(article?.keywords).toContain('requirements checklist autocomplete frontend system design');
+    expect(faqPage?.name).toBe('Frontend system design requirements checklist FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);
     expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
-      'What is Requirements exploration in frontend system design?',
+      'What is a frontend system design requirements checklist?',
       'What clarifying questions should I ask first?',
       'What is the difference between functional and non-functional requirements?',
       'How long should Requirements take in a frontend system design interview?',
@@ -261,7 +261,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design architecture guide');
     expect(article?.keywords).toContain('frontend architecture diagram interview');
     expect(article?.keywords).toContain('frontend system design BFF');
@@ -326,7 +326,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend state and data model system design');
     expect(article?.keywords).toContain('frontend API contracts interview');
     expect(article?.keywords).toContain('frontend system design cache keys');
@@ -390,7 +390,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend interface design system design');
     expect(article?.keywords).toContain('frontend component API design interview');
     expect(article?.keywords).toContain('keyboard navigation frontend interview');
@@ -444,7 +444,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-01T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design performance optimization');
     expect(article?.keywords).toContain('frontend performance budget interview');
     expect(article?.keywords).toContain('Core Web Vitals interview');
@@ -499,7 +499,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-01T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview rubric');
     expect(article?.keywords).toContain('frontend system design interview scorecard');
     expect(faqPage?.name).toBe('Frontend system design interview rubric FAQ');
@@ -510,6 +510,108 @@ describe('guide-seo.util', () => {
       'How do I use a frontend system design scorecard after a mock interview?',
       'What do senior frontend system design answers include?',
       'What are red flags in frontend system design interviews?',
+    ]);
+  });
+
+  it('targets frontend system design interview pitfalls intent on the pitfalls page', () => {
+    const pitfalls = SYSTEM.find((entry) => entry.slug === 'pitfalls');
+    expect(pitfalls).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      pitfalls!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Interview Pitfalls and Red Flags');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/pitfalls');
+    expect(meta.description).toBe(
+      'Avoid frontend system design interview pitfalls with red flags, repair scripts, and fixes for architecture, state, APIs, performance, and accessibility.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend system design interview pitfalls');
+    expect(meta.keywords).toContain('frontend system design mistakes');
+    expect(meta.keywords).toContain('frontend system design red flags');
+    expect(meta.keywords).toContain('frontend system design anti patterns');
+    expect(meta.keywords).toContain('frontend system design interview mistakes');
+    expect(meta.keywords).toContain('frontend system design common mistakes');
+    expect(meta.keywords).toContain('frontend architecture interview mistakes');
+    expect(meta.keywords).toContain('frontend performance interview mistakes');
+    expect(meta.keywords).toContain('frontend accessibility system design mistakes');
+    expect(meta.keywords).toContain('frontend state management interview mistakes');
+    expect(meta.keywords).toContain('frontend system design interviewer hints');
+    expect(meta.keywords).toContain('frontend system design loading error empty states');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design interview pitfalls');
+    expect(article?.keywords).toContain('frontend system design red flags');
+    expect(faqPage?.name).toBe('Frontend system design interview pitfalls FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What are the biggest frontend system design interview pitfalls?',
+      'How do I recover if my frontend system design answer gets messy?',
+      'Why are backend-only answers a red flag in frontend system design?',
+      'What frontend performance mistakes should I avoid in system design interviews?',
+      'How do pitfalls differ from a frontend system design checklist?',
+    ]);
+  });
+
+  it('targets frontend system design interview checklist intent on the checklist page', () => {
+    const checklist = SYSTEM.find((entry) => entry.slug === 'checklist');
+    expect(checklist).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      checklist!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Interview Checklist: Final Review');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/checklist');
+    expect(meta.description).toBe(
+      'Use a frontend system design interview checklist to review requirements, rendering, state, APIs, accessibility, performance, trade-offs, and closing scripts.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(checklist!.seo?.keywords?.length).toBe(14);
+    expect(checklist!.seo?.keywords).not.toContain('frontend system design interview checklist');
+    expect(meta.keywords).toContain('frontend system design interview checklist');
+    expect(meta.keywords).toContain('frontend system design checklist');
+    expect(meta.keywords).toContain('frontend system design final review');
+    expect(meta.keywords).toContain('frontend system design cheatsheet');
+    expect(meta.keywords).toContain('frontend system design interview prep checklist');
+    expect(meta.keywords).toContain('frontend architecture interview checklist');
+    expect(meta.keywords).toContain('frontend system design final pass');
+    expect(meta.keywords).toContain('frontend system design review checklist');
+    expect(meta.keywords).toContain('frontend system design last minute checklist');
+    expect(meta.keywords).toContain('frontend system design closing script');
+    expect(meta.keywords).toContain('senior frontend system design checklist');
+    expect(meta.keywords).toContain('frontend state and API checklist');
+    expect(meta.keywords).toContain('frontend UI states checklist');
+    expect(meta.keywords).toContain('frontend accessibility performance checklist');
+    expect(meta.keywords).toContain('frontend system design tradeoffs checklist');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design interview checklist');
+    expect(article?.keywords).toContain('frontend system design final review');
+    expect(faqPage?.name).toBe('Frontend system design interview checklist FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What should a frontend system design interview checklist include?',
+      'When should I use a frontend system design final review checklist?',
+      'How is this checklist different from a rubric?',
+      'What frontend-specific checks are easy to miss?',
+      'How do I close a frontend system design interview answer?',
+      'Is this checklist a replacement for a full frontend system design guide?',
     ]);
   });
 
@@ -585,7 +687,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
     expect(article?.keywords).toContain('what frontend system design interviews test');
     expect(faqPage?.name).toBe('Frontend system design interview overview FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);
