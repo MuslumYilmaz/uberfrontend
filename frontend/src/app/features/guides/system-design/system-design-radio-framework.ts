@@ -856,7 +856,12 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         <li><strong>Final recap:</strong> I would ship the simple path first, instrument the risky flow, and use real metrics to decide the next iteration.</li>
       </ol>
 
-      <h2>One-page checklist</h2>
+      <h2>Frontend system design interview checklist</h2>
+      <p>
+        After the RADIO pass, use the
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">frontend system design interview checklist</a>
+        to catch final-review gaps before you stop.
+      </p>
       <table>
         <thead>
           <tr>

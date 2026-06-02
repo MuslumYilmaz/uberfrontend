@@ -424,7 +424,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this intro to understand what frontend system design interviews test, how frontend scope differs from backend design, which signals interviewers score, and when to move into RADIO and practice prompts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-intro.component')
@@ -583,7 +583,7 @@ export const SYSTEM: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-18',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
@@ -905,7 +905,7 @@ export const SYSTEM: GuideEntry[] = [
             searchIntent: 'Find an interview-focused frontend system design performance optimization guide that explains budgets, Core Web Vitals, bottleneck diagnosis, scenario trade-offs, rollout, and validation.',
             readerPromise: 'Use this performance optimization guide to explain Core Web Vitals, bottleneck diagnosis, top-two prioritization, trade-offs, observability, rollout, and interview-ready scripts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-01',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-performance')
@@ -971,7 +971,7 @@ export const SYSTEM: GuideEntry[] = [
             readerPromise: 'Use this scorecard to grade frontend system design answers across requirements, architecture, state, interfaces, performance, accessibility, trade-offs, and communication.',
             uniqueAngle: 'RADIO-mapped rubric with weak, solid, and strong-hire signals plus a self-review loop tied to FrontendAtlas practice prompts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-01',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-evaluation')
@@ -1040,16 +1040,63 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'checklist',
-        title: 'One-Page Checklist for Interviews',
-        minutes: 6,
-        summary: 'A quick mental map to keep in mind for any system design question.',
+        title: 'Frontend System Design Interview Checklist: Final Review',
+        minutes: 10,
+        summary: 'Run a frontend system design final review across requirements, architecture, state, APIs, accessibility, performance, trade-offs, and closing.',
         seo: {
-            title: 'Frontend System Design Interview Checklist: One-Page Final Review',
-            description: 'Use this one-page interview checklist before system design rounds to verify requirements, architecture, trade-offs, risks, and communication flow.',
+            title: 'Frontend System Design Interview Checklist: Final Review',
+            description: 'Use a frontend system design interview checklist to review requirements, rendering, state, APIs, accessibility, performance, trade-offs, and closing scripts.',
             primaryKeyword: 'frontend system design interview checklist',
-            keywords: ['frontend system design interview checklist', 'system design final review checklist', 'system design prep checklist'],
+            keywords: [
+                'frontend system design checklist',
+                'frontend system design final review',
+                'frontend system design cheatsheet',
+                'frontend system design interview prep checklist',
+                'frontend architecture interview checklist',
+                'frontend system design final pass',
+                'frontend system design review checklist',
+                'frontend system design last minute checklist',
+                'frontend system design closing script',
+                'senior frontend system design checklist',
+                'frontend state and API checklist',
+                'frontend UI states checklist',
+                'frontend accessibility performance checklist',
+                'frontend system design tradeoffs checklist',
+            ],
+            faqPage: {
+                name: 'Frontend system design interview checklist FAQ',
+                items: [
+                    {
+                        question: 'What should a frontend system design interview checklist include?',
+                        answer: 'A strong checklist should cover requirements, non-goals, rendering strategy, state ownership, API and component contracts, loading and failure states, accessibility, performance, observability, trade-offs, rollout risk, and closing summary.',
+                    },
+                    {
+                        question: 'When should I use a frontend system design final review checklist?',
+                        answer: 'Use it during the last few minutes of a mock or real interview, and again after practice, to catch missing evidence before the answer ends.',
+                    },
+                    {
+                        question: 'How is this checklist different from a rubric?',
+                        answer: 'A rubric scores answer quality. This checklist is a final pass that helps you verify coverage and close gaps before the interviewer has to ask.',
+                    },
+                    {
+                        question: 'What frontend-specific checks are easy to miss?',
+                        answer: 'Candidates often miss loading, empty, error, stale, and partial states; focus behavior; cache invalidation; route-level performance; degraded UX; and observability.',
+                    },
+                    {
+                        question: 'How do I close a frontend system design interview answer?',
+                        answer: 'Close by summarizing the scoped user path, architecture choice, state and API contracts, biggest trade-off, known risk, and validation plan.',
+                    },
+                    {
+                        question: 'Is this checklist a replacement for a full frontend system design guide?',
+                        answer: 'No. Use the full guide or RADIO framework to structure the answer, then use this checklist as the final review pass for missing requirements, contracts, UI states, accessibility, performance, trade-offs, and closing.',
+                    },
+                ],
+            },
+            searchIntent: 'Find a frontend system design interview checklist for last-minute review, final answer coverage, and closing scripts before or during a system design round.',
+            readerPromise: 'Use this final review checklist to catch missing requirements, architecture, state, API, UI state, accessibility, performance, trade-off, and closing evidence.',
+            uniqueAngle: 'Frontend-specific final pass with pass/warn/fail checks, timed review, scenario prompts, and links back to rubric, pitfalls, performance, and RADIO.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-checklist')

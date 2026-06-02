@@ -219,7 +219,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           <a [routerLink]="['/guides/system-design-blueprint/performance']">Optimizations</a>.
         </li>
         <li>Apply the framework to real <a [routerLink]="['/system-design']">frontend system design prompts</a>.</li>
-        <li>Finish each practice round with the <a [routerLink]="['/guides/system-design-blueprint/checklist']">one-page checklist</a>.</li>
+        <li>Finish each practice round with the <a [routerLink]="['/guides/system-design-blueprint/checklist']">frontend system design interview checklist</a>.</li>
       </ol>
 
       <h2>The mindset shift</h2>

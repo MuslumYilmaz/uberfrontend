@@ -192,7 +192,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td>Final pass</td>
             <td>Ending without a risk summary</td>
             <td>Close with scope, architecture choice, biggest trade-off, and validation plan.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">Final checklist</a></td>
+            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">Frontend system design interview checklist</a></td>
           </tr>
         </tbody>
       </table>
@@ -220,7 +220,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Use this page for mistake repair, the
         <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'evaluation']">evaluation rubric</a>
         for scoring, and the
-        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">checklist</a>
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">frontend system design final review</a>
         for your final review.
       </p>
     </fa-guide-shell>
