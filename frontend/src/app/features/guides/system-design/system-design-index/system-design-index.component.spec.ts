@@ -103,9 +103,12 @@ describe('SystemDesignIndexComponent', () => {
     expect(text()).toContain('Frontend System Design Interview Framework: RADIO Answer Template');
     expect(text()).toContain('Frontend System Design Interview Rubric and Scorecard');
     expect(text()).toContain('Use a frontend system design interview rubric to score requirements');
+    expect(text()).toContain('Frontend System Design Interview Pitfalls and Red Flags');
+    expect(text()).toContain('Avoid frontend system design mistakes with red flags');
     expect(text()).toContain('One-Page Checklist for Interviews');
     expect(hasLink('/guides/system-design-blueprint/intro')).toBeTrue();
     expect(hasLink('/guides/system-design-blueprint/evaluation')).toBeTrue();
+    expect(hasLink('/guides/system-design-blueprint/pitfalls')).toBeTrue();
     expect(hasLink('/guides/system-design-blueprint/checklist')).toBeTrue();
   });
 

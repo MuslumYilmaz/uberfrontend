@@ -175,6 +175,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li>Forgetting a11y/i18n/offline or error/empty states.</li>
         <li>Rambling without structure.</li>
       </ul>
+      <p>
+        For mid-answer recovery scripts, use the
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">frontend system design mistakes to avoid</a>
+        guide before this final checklist.
+      </p>
 
       <h2>Mini runbook (10–15s to say out loud)</h2>
       <ol>

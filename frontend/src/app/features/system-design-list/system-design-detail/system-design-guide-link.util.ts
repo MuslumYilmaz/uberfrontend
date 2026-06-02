@@ -126,6 +126,15 @@ const EVALUATION_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'component-design-system-architecture': 'design system architecture interview rubric',
 };
 
+const PITFALLS_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
+  'realtime-search-debounce-cache': 'typeahead system design mistakes',
+  'infinite-scroll-list': 'infinite scroll frontend system design mistakes',
+  'dashboard-widgets-draggable-resizable': 'dashboard frontend system design pitfalls',
+  'live-chart-high-frequency-updates': 'live chart system design pitfalls',
+  'multi-step-form-autosave': 'multi step form autosave system design mistakes',
+  'component-design-system-architecture': 'design system architecture interview mistakes',
+};
+
 function normalize(value: string | null | undefined): string {
   return String(value || '')
     .trim()
@@ -219,6 +228,13 @@ export function evaluationGuideAnchorForQuestion(
 ): string | null {
   const id = normalizeToken(question?.id);
   return id ? EVALUATION_GUIDE_ANCHORS_BY_ID[id] || null : null;
+}
+
+export function pitfallsGuideAnchorForQuestion(
+  question?: GuideAwareQuestion | null
+): string | null {
+  const id = normalizeToken(question?.id);
+  return id ? PITFALLS_GUIDE_ANCHORS_BY_ID[id] || null : null;
 }
 
 export function buildSystemDesignGuideRoute(

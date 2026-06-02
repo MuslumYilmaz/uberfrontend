@@ -979,16 +979,60 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'pitfalls',
-        title: 'Traps and Anti-Patterns to Avoid',
-        minutes: 8,
-        summary: 'Common mistakes candidates fall into and how to avoid them under pressure.',
+        title: 'Frontend System Design Interview Pitfalls and Red Flags',
+        minutes: 11,
+        summary: 'Avoid frontend system design mistakes with red flags, repair scripts, RADIO mapping, and scenario-specific fixes.',
         seo: {
-            title: 'Frontend System Design Interview Pitfalls and How to Avoid Them',
-            description: 'Avoid common interview mistakes like over-design, vague assumptions, and missing trade-offs, with practical fixes you can apply during real rounds.',
+            title: 'Frontend System Design Interview Pitfalls and Red Flags',
+            description: 'Avoid frontend system design interview pitfalls with red flags, repair scripts, and fixes for architecture, state, APIs, performance, and accessibility.',
             primaryKeyword: 'frontend system design interview pitfalls',
-            keywords: ['frontend system design interview pitfalls', 'system design anti patterns', 'system design mistakes to avoid'],
+            keywords: [
+                'frontend system design mistakes',
+                'frontend system design red flags',
+                'frontend system design anti patterns',
+                'frontend system design interview mistakes',
+                'frontend system design common mistakes',
+                'system design mistakes to avoid frontend',
+                'frontend architecture interview mistakes',
+                'frontend performance interview mistakes',
+                'frontend accessibility system design mistakes',
+                'frontend state management interview mistakes',
+                'frontend API contract interview mistakes',
+                'frontend system design interviewer hints',
+                'frontend system design loading error empty states',
+                'frontend system design over engineering',
+                'frontend system design tradeoff mistakes',
+            ],
+            faqPage: {
+                name: 'Frontend system design interview pitfalls FAQ',
+                items: [
+                    {
+                        question: 'What are the biggest frontend system design interview pitfalls?',
+                        answer: 'The biggest pitfalls are skipping requirements, giving backend-only answers, listing buzzwords, ignoring state ownership, hand-waving API and component contracts, missing accessibility or performance, and rambling without checkpoints.',
+                    },
+                    {
+                        question: 'How do I recover if my frontend system design answer gets messy?',
+                        answer: 'Pause, restate the primary user flow, name the constraint you are optimizing for, choose the next artifact, and ask the interviewer whether to go deeper on architecture, data, interface, or performance.',
+                    },
+                    {
+                        question: 'Why are backend-only answers a red flag in frontend system design?',
+                        answer: 'Frontend rounds score browser rendering, client state, component contracts, user-visible failure states, accessibility, and performance. Backend awareness helps, but it should support the UI design instead of replacing it.',
+                    },
+                    {
+                        question: 'What frontend performance mistakes should I avoid in system design interviews?',
+                        answer: 'Avoid random optimization lists. Tie performance work to a bottleneck, metric, budget, trade-off, rollout plan, and validation method for the user-critical path.',
+                    },
+                    {
+                        question: 'How do pitfalls differ from a frontend system design checklist?',
+                        answer: 'A checklist confirms coverage before you finish. Pitfalls identify weak signals as they happen and give repair scripts for recovering during the interview.',
+                    },
+                ],
+            },
+            searchIntent: 'Find frontend system design interview mistakes, red flags, and repair scripts that explain what to avoid and what to say instead during real rounds.',
+            readerPromise: 'Use this pitfalls guide to catch weak signals, recover messy answers, and connect fixes to RADIO, rubric scoring, checklist review, and practice prompts.',
+            uniqueAngle: 'Frontend-specific red flags with repair scripts, RADIO mapping, and scenario prompts instead of a generic system design mistake list.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-02',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-pitfalls')

@@ -513,6 +513,54 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend system design interview pitfalls intent on the pitfalls page', () => {
+    const pitfalls = SYSTEM.find((entry) => entry.slug === 'pitfalls');
+    expect(pitfalls).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      pitfalls!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Interview Pitfalls and Red Flags');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/pitfalls');
+    expect(meta.description).toBe(
+      'Avoid frontend system design interview pitfalls with red flags, repair scripts, and fixes for architecture, state, APIs, performance, and accessibility.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords).toContain('frontend system design interview pitfalls');
+    expect(meta.keywords).toContain('frontend system design mistakes');
+    expect(meta.keywords).toContain('frontend system design red flags');
+    expect(meta.keywords).toContain('frontend system design anti patterns');
+    expect(meta.keywords).toContain('frontend system design interview mistakes');
+    expect(meta.keywords).toContain('frontend system design common mistakes');
+    expect(meta.keywords).toContain('frontend architecture interview mistakes');
+    expect(meta.keywords).toContain('frontend performance interview mistakes');
+    expect(meta.keywords).toContain('frontend accessibility system design mistakes');
+    expect(meta.keywords).toContain('frontend state management interview mistakes');
+    expect(meta.keywords).toContain('frontend system design interviewer hints');
+    expect(meta.keywords).toContain('frontend system design loading error empty states');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.keywords).toContain('frontend system design interview pitfalls');
+    expect(article?.keywords).toContain('frontend system design red flags');
+    expect(faqPage?.name).toBe('Frontend system design interview pitfalls FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What are the biggest frontend system design interview pitfalls?',
+      'How do I recover if my frontend system design answer gets messy?',
+      'Why are backend-only answers a red flag in frontend system design?',
+      'What frontend performance mistakes should I avoid in system design interviews?',
+      'How do pitfalls differ from a frontend system design checklist?',
+    ]);
+  });
+
   it('targets 5-step answer method intent on the framework quick-start page', () => {
     const framework = SYSTEM.find((entry) => entry.slug === 'framework');
     expect(framework).toBeDefined();

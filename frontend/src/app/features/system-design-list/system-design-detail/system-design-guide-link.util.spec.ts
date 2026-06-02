@@ -2,6 +2,7 @@ import {
   buildSystemDesignGuideRoute,
   evaluationGuideAnchorForQuestion,
   performanceGuideAnchorForQuestion,
+  pitfallsGuideAnchorForQuestion,
   pickSystemDesignGuideSlug,
 } from './system-design-guide-link.util';
 
@@ -78,6 +79,22 @@ describe('system-design-guide-link.util', () => {
     expect(evaluationGuideAnchorForQuestion({ id: 'component-design-system-architecture' }))
       .toBe('design system architecture interview rubric');
     expect(evaluationGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
+  });
+
+  it('provides keyword-focused pitfalls guide anchors for cluster prompts', () => {
+    expect(pitfallsGuideAnchorForQuestion({ id: 'realtime-search-debounce-cache' }))
+      .toBe('typeahead system design mistakes');
+    expect(pitfallsGuideAnchorForQuestion({ id: 'infinite-scroll-list' }))
+      .toBe('infinite scroll frontend system design mistakes');
+    expect(pitfallsGuideAnchorForQuestion({ id: 'dashboard-widgets-draggable-resizable' }))
+      .toBe('dashboard frontend system design pitfalls');
+    expect(pitfallsGuideAnchorForQuestion({ id: 'live-chart-high-frequency-updates' }))
+      .toBe('live chart system design pitfalls');
+    expect(pitfallsGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
+      .toBe('multi step form autosave system design mistakes');
+    expect(pitfallsGuideAnchorForQuestion({ id: 'component-design-system-architecture' }))
+      .toBe('design system architecture interview mistakes');
+    expect(pitfallsGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
   });
 
   it('maps architecture questions to architecture guide', () => {

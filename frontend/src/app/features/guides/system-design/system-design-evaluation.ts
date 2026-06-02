@@ -271,7 +271,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </ul>
       <p>
         If one of these shows up repeatedly, use the
-        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">pitfalls guide</a>
+        <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">frontend system design red flags</a>
         before another mock.
       </p>
 
