@@ -6601,8 +6601,8 @@
       ]
     },
     "seo": {
-      "title": "Angular HttpClient Cancellation: Unsubscribe Abort Interview Answer",
-      "description": "Yes: unsubscribing from an Angular HttpClient Observable aborts an in-progress request. Practice switchMap, AsyncPipe, takeUntilDestroyed, and stale-response traps."
+      "title": "Angular HttpClient: Does Unsubscribe Cancel Requests?",
+      "description": "Yes: unsubscribing from Angular HttpClient aborts in-flight requests. switchMap, takeUntilDestroyed, and AsyncPipe cancel; ignoring stale results does not."
     },
     "incidentCard": {
       "title": "Request Cancellation Check",

@@ -4,6 +4,7 @@ const TITLE_MAX_LEN = 54;
 const DESCRIPTION_MAX_LEN = 155;
 const INTERVIEW_TITLE_SUFFIX = ': Interview Answer';
 const INTERVIEW_INTENT_RE = /\b(interview(?:s)?|prep(?:aration)?|practice|candidate(?:s)?|round(?:s)?|follow[\s-]?ups?|drill(?:s)?|question(?:s)?|answer(?:s)?)\b/i;
+const ANSWER_FIRST_RE = /^(yes|no|it depends)\s*:/i;
 
 const TECH_LABELS: Record<string, string> = {
   javascript: 'JavaScript',
@@ -152,6 +153,10 @@ function hasInterviewIntent(value: string): boolean {
   return INTERVIEW_INTENT_RE.test(String(value || ''));
 }
 
+function hasAnswerFirstIntent(value: string): boolean {
+  return ANSWER_FIRST_RE.test(String(value || '').trim());
+}
+
 function ensureFrameworkInConcept(concept: string, framework: string): string {
   const normalizedConcept = sanitizeSerpText(concept, 70);
   if (!normalizedConcept) return framework;
@@ -174,12 +179,15 @@ function interviewAnswerTitle(
 export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>): string {
   const rawExplicit = rawQuestionSeoTitle(q);
   const rawExplicitHasInterviewIntent = hasInterviewIntent(rawExplicit);
+  const rawDescriptionHasAnswerFirstIntent = hasAnswerFirstIntent(rawQuestionSeoDescription(q));
   const explicit = rawExplicitHasInterviewIntent
     ? sanitizeSerpText(rawExplicit, Math.max(TITLE_MAX_LEN, rawExplicit.length))
     : sanitizeSerpText(rawExplicit, TITLE_MAX_LEN);
   const framework = frameworkLabel(q.technology);
   if (explicit) {
-    return rawExplicitHasInterviewIntent ? explicit : interviewAnswerTitle(q, framework);
+    return rawExplicitHasInterviewIntent || rawDescriptionHasAnswerFirstIntent
+      ? explicit
+      : interviewAnswerTitle(q, framework);
   }
 
   const questionTitle = normalizedQuestionTitle(q);
@@ -218,12 +226,15 @@ export function seoDescriptionForQuestion(
 ): string {
   const rawExplicit = rawQuestionSeoDescription(q);
   const rawExplicitHasInterviewIntent = hasInterviewIntent(rawExplicit);
+  const rawExplicitHasAnswerFirstIntent = hasAnswerFirstIntent(rawExplicit);
   const explicit = rawExplicitHasInterviewIntent
     ? sanitizeSerpText(rawExplicit, Math.max(DESCRIPTION_MAX_LEN, rawExplicit.length))
     : sanitizeSerpText(rawExplicit, DESCRIPTION_MAX_LEN);
   const framework = frameworkLabel(q.technology || tech);
   if (explicit) {
-    return rawExplicitHasInterviewIntent ? explicit : interviewAnswerDescription(q, framework);
+    return rawExplicitHasInterviewIntent || rawExplicitHasAnswerFirstIntent
+      ? explicit
+      : interviewAnswerDescription(q, framework);
   }
 
   const concept = titleConcept(q)
