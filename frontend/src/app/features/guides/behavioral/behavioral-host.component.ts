@@ -49,7 +49,7 @@ export class BehavioralHostComponent implements OnDestroy {
     private seo = inject(SeoService);
     private sub?: Subscription;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-    protected readonly showShellHeading = signal(true);
+    protected readonly showShellHeading = signal(!this.isBrowser);
     protected readonly shellHeading = signal('');
 
     ngOnInit() {
