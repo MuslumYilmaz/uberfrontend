@@ -8,9 +8,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
     <fa-guide-shell
-      title="R - Requirements Deep Dive for Frontend System Design Interviews"
+      title="Frontend System Design Requirements Checklist"
       [minutes]="16"
-      [tags]="['system design', 'radio framework', 'requirements']"
+      [tags]="['system design', 'radio framework', 'requirements checklist']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
@@ -18,10 +18,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>If You Remember One Thing</h2>
       <p>
-        In a <strong>system design interview</strong>, requirements are where seniority is most visible.
-        Treat <strong>RADIO Requirements</strong> as the first 5-8 minute checkpoint: clarify the user flow,
-        ask design-changing clarifying questions, define scope, constraints, and measurable outcomes,
-        then move into architecture with a defensible frontend system design answer.
+        Use this <strong>frontend system design requirements checklist</strong> as the <strong>RADIO Requirements</strong>
+        step. In the first 5-8 minute checkpoint, ask design-changing clarifying questions, lock scope, define functional and
+        non-functional requirements, choose success metrics, and hand off to architecture with a defensible answer.
       </p>
 
       <h2>Why Requirements Decide the Interview</h2>
@@ -449,9 +448,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </ul>
 
       <h2>Requirements FAQ</h2>
-      <h3>What is Requirements exploration in frontend system design?</h3>
+      <h3>What is a frontend system design requirements checklist?</h3>
       <p>
-        Requirements exploration is the RADIO step where you clarify the user flow, scope,
+        A frontend system design requirements checklist is the RADIO step where you clarify the user flow, scope,
         constraints, functional requirements, non-functional requirements, success metrics,
         and risks before drawing architecture.
       </p>
@@ -489,7 +488,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">A - Architecture deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">O - Optimizations deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Performance optimization guide</a></li>
       </ul>
     </fa-guide-shell>
   `,

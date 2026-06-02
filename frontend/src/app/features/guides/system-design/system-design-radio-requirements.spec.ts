@@ -32,9 +32,10 @@ describe('SystemDesignRadioRequirementsArticle', () => {
   it('renders Requirements exploration outputs, clarifying questions, prompt examples, and FAQ', () => {
     const pageText = text();
 
-    expect(pageText).toContain('R - Requirements Deep Dive for Frontend System Design Interviews');
+    expect(pageText).toContain('Frontend System Design Requirements Checklist');
     expect(pageText).toContain('RADIO Requirements');
     expect(pageText).toContain('first 5-8 minute checkpoint');
+    expect(pageText).toContain('ask design-changing clarifying questions');
     expect(pageText).toContain('What the Requirements step must produce');
     expect(pageText).toContain('frontend system design requirements checklist');
     expect(pageText).toContain('Primary user flow');
@@ -49,7 +50,7 @@ describe('SystemDesignRadioRequirementsArticle', () => {
     expect(pageText).toContain('Dashboard widgets');
     expect(pageText).toContain('Notification system');
     expect(pageText).toContain('Requirements FAQ');
-    expect(pageText).toContain('What is Requirements exploration in frontend system design?');
+    expect(pageText).toContain('What is a frontend system design requirements checklist?');
     expect(pageText).toContain('What clarifying questions should I ask first?');
     expect(pageText).toContain('What is the difference between functional and non-functional requirements?');
     expect(pageText).toContain('How long should Requirements take in a frontend system design interview?');

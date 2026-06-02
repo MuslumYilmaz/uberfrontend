@@ -335,9 +335,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
       <fa-guide-shell
-      title="Frontend System Design Interview Framework: RADIO Answer Template"
+      title="Frontend System Design Interview Prep: The RADIO Framework"
       [minutes]="20"
-      [tags]="['system design', 'answer template', 'radio framework']"
+      [tags]="['system design', 'interview prep', 'radio framework']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
@@ -368,7 +368,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>If You Remember Only One Thing (60 seconds)</h2>
       <p>
-        RADIO is a practical <strong>frontend system design interview framework</strong>, not just an acronym to
+        RADIO is a practical <strong>frontend system design interview prep framework</strong>, not just an acronym to
         memorize. Use the RADIO method when you need to move from requirements to architecture, data model, interface,
         and optimizations without rambling. In a 45-minute or 60-minute interview, Requirements defines scope,
         Architecture explains the system shape, Data model covers contracts and state, Interface maps user behavior,
@@ -1099,11 +1099,11 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         <li><a [routerLink]="['/', 'system-design']">Frontend system design questions bank</a></li>
         <li><a [routerLink]="['/', 'system-design', 'infinite-scroll-list']">Practice infinite scroll frontend system design</a></li>
         <li><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Practice notification system frontend design</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-requirements']">R - Requirements deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-requirements']">Frontend system design requirements checklist</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">A - Architecture deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">O - Optimizations deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Performance optimization guide</a></li>
       </ul>
 
       <h2>Self-check</h2>

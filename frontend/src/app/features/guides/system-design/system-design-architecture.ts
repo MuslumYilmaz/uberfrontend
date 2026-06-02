@@ -41,7 +41,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </li>
         <li>
           For budgets and tuning tactics, continue with
-          <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">O - Optimizations deep dive</a>.
+          <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Performance optimization guide</a>.
         </li>
       </ul>
 
@@ -651,7 +651,7 @@ Client side:
       <ul>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a></li>
-        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">O - Optimizations deep dive</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Performance optimization guide</a></li>
       </ul>
     </fa-guide-shell>
   `,

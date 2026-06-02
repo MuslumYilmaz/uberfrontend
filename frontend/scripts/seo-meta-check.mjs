@@ -266,9 +266,9 @@ const criticalRouteContracts = [
   },
   {
     route: '/guides/system-design-blueprint/radio-framework',
-    title: 'Frontend System Design Answer Template',
-    h1: 'Frontend System Design Interview Framework',
-    descriptionTerms: ['RADIO', '45-minute frontend system design interview answer', 'data/API contracts', 'trade-offs'],
+    title: 'Frontend System Design Interview Prep',
+    h1: 'Frontend System Design Interview Prep',
+    descriptionTerms: ['RADIO', 'frontend system design interview prep', 'data model', 'performance trade-offs', 'closing scripts'],
     bodyTerms: [
       'Use this if your interviewer asks',
       'How would you design X?',
