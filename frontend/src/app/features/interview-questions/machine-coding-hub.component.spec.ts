@@ -96,7 +96,7 @@ describe('MachineCodingHubComponent', () => {
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(payload.title).toBe('Frontend Machine Coding Interview Questions');
-    expect(payload.description).toContain('Practice frontend machine coding questions with React UI prompts');
+    expect(payload.description).toContain('UI coding interview questions with React, Angular, Vue');
     expect(payload.canonical).toBe('/machine-coding');
     expect(payload.keywords).toContain('frontend machine coding questions');
     expect(payload.keywords).toContain('frontend UI coding interview questions');

@@ -248,7 +248,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         icon: 'pi pi-book',
         open: false,
         children: [
-          { key: 'guide-interview-blueprint', type: 'link', label: 'Interview Blueprint', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
+          { key: 'guide-interview-blueprint', type: 'link', label: 'Interview Playbook Hub', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
           { key: 'guide-behavioral', type: 'link', label: 'Behavioral Prep', to: '/guides/behavioral', icon: 'pi pi-users' },
           { key: 'guide-system-design-blueprint', type: 'link', label: 'System Design Blueprint', to: '/guides/system-design-blueprint', icon: 'pi pi-sitemap' },
         ],

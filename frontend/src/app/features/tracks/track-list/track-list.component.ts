@@ -356,9 +356,9 @@ export class TrackListComponent implements OnInit {
       kicker: 'Step 3',
       title: 'Validate with role-focused guides',
       description:
-        'After each track block, use blueprint guides to tighten communication quality and architecture reasoning.',
-      route: ['/guides/interview-blueprint'],
-      ctaLabel: 'Open interview blueprint',
+        'After each track block, use the frontend interview preparation guide to tighten communication quality and architecture reasoning.',
+      route: ['/guides/interview-blueprint/intro'],
+      ctaLabel: 'Open frontend interview preparation guide',
     },
     {
       kicker: 'Step 4',

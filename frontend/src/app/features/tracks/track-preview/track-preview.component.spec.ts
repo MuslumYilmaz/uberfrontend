@@ -85,7 +85,7 @@ describe('TrackPreviewComponent', () => {
     const primary = findLink(host, 'Start Day 1');
     const library = findLink(host, 'Open Question Library');
 
-    expect(h1?.textContent?.trim()).toBe('7-Day Frontend Interview Prep Plan');
+    expect(h1?.textContent?.trim()).toBe('Crash Track: 7-Day Frontend Interview Prep Plan');
     expect(text).toContain('30');
     expect(text).toContain('questions');
     expect(text).toContain('2');
@@ -153,7 +153,7 @@ describe('TrackPreviewComponent', () => {
     const primary = findLink(host, 'Start Day 1');
     const library = findLink(host, 'Open Question Library');
 
-    expect(h1?.textContent?.trim()).toBe('30-Day Frontend Interview Preparation Roadmap');
+    expect(h1?.textContent?.trim()).toBe('Foundations Track: 30-Day Frontend Interview Preparation Roadmap');
     expect(text).toContain('113');
     expect(text).toContain('questions');
     expect(text).toContain('5');
@@ -172,14 +172,14 @@ describe('TrackPreviewComponent', () => {
     const routed = await createRoutedComponent('crash-7d');
     let host = routed.fixture.nativeElement as HTMLElement;
 
-    expect(host.querySelector('h1')?.textContent?.trim()).toBe('7-Day Frontend Interview Prep Plan');
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Crash Track: 7-Day Frontend Interview Prep Plan');
 
     await routed.setSlug('foundations-30d');
     host = routed.fixture.nativeElement as HTMLElement;
     const primary = findLink(host, 'Start Day 1');
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
 
-    expect(host.querySelector('h1')?.textContent?.trim()).toBe('30-Day Frontend Interview Preparation Roadmap');
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Foundations Track: 30-Day Frontend Interview Preparation Roadmap');
     expect(primary?.getAttribute('href')).toBe('/javascript/coding/js-number-clamp');
     expect(payload.title).toBe('30-Day Frontend Interview Preparation Roadmap');
   });

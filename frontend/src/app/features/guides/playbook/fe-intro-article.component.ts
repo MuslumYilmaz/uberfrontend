@@ -6,7 +6,7 @@
 //   - Explain what companies truly evaluate and why.
 //   - Provide an actionable prep framework + short checklists.
 // Authoring notes
-//   - Keep it practical, 8–10 min read max.
+//   - Keep it practical, 14-16 min read max.
 //   - Prefer examples, checklists, and small patterns over long prose.
 // -----------------------------------------------------------------------------
 
@@ -76,6 +76,47 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       font-size: 1.05rem;
     }
 
+    .freshness {
+      margin: 0 0 1rem;
+      color: #b6c4d8;
+      font-size: 0.95rem;
+    }
+
+    .toc {
+      margin: 1rem 0 1.4rem;
+      padding: 0.9rem 1rem;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .toc strong {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: #f3f7ff;
+    }
+
+    .toc ul {
+      display: grid;
+      gap: 0.35rem;
+      margin: 0;
+      padding-left: 1rem;
+    }
+
+    .next-practice {
+      display: grid;
+      gap: 0.6rem;
+      margin: 0.7rem 0 1rem;
+    }
+
+    .next-practice a {
+      display: block;
+      padding: 0.72rem 0.85rem;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      background: rgba(255,255,255,.035);
+    }
+
     /* Links: subtle by default, clear on hover */
     .guide-content a {
       color: #7CC2FF;
@@ -137,15 +178,19 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
   <fa-guide-shell
-    title="Frontend Interview Preparation Guide: Process, Rounds, and Plan"
-    subtitle="A clear map of interview stages, evaluation criteria, and a practical prep plan for frontend roles."
-    [minutes]="10"
-    [tags]="['overview','strategy','checklists']"
+    title="Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions"
+    subtitle="A clear map of frontend interview rounds, question categories, evaluation criteria, and a practical 30-day prep roadmap."
+    [minutes]="16"
+    [tags]="['overview','roadmap','questions']"
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
     [readerPromise]="readerPromise || undefined"
   >
+    <div class="freshness">
+      Last updated: June 2026 | Author: FrontendAtlas Team | Reviewed by FrontendAtlas
+    </div>
+
     <!-- Opening -->
     <p>
       Front-end interviews often feel like a lottery. One company throws you an
@@ -177,8 +222,18 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       decisions like a teammate people would trust in production.
     </p>
 
+    <nav class="toc" aria-label="Frontend interview preparation guide sections">
+      <strong>Use this guide to answer four prep questions quickly:</strong>
+      <ul>
+        <li><a href="#interview-rounds">Which frontend interview rounds should I expect?</a></li>
+        <li><a href="#question-categories">Which frontend interview questions should I practice?</a></li>
+        <li><a href="#roadmap">What should my 30-day frontend interview roadmap look like?</a></li>
+        <li><a href="#practice-next">Where should I practice next?</a></li>
+      </ul>
+    </nav>
+
     <!-- Section 1 -->
-    <h2>The big picture</h2>
+    <h2 id="interview-rounds">The big picture</h2>
     <ul>
       <li>There’s no universal format — expect a mix of coding, UI builds, debugging, and system design.</li>
       <li>Trend: less whiteboard puzzles, more domain-relevant tasks (widgets, JS utilities, async/state bugs).</li>
@@ -238,7 +293,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     </ol>
 
     <!-- Section 3 -->
-    <h2>What interviewers actually score</h2>
+    <h2 id="scoring">What interviewers actually score</h2>
     <ul>
       <li><strong>Correctness & scope control:</strong> you ship something working, even if minimal.</li>
       <li><strong>Code quality under time:</strong> readable names, small functions, no unnecessary complexity.</li>
@@ -375,6 +430,81 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   cover 80% of what interviewers actually care about.
 </p>
 
+    <h2 id="question-categories">Common frontend interview question categories</h2>
+    <p>
+      When candidates search for frontend interview questions, they usually need more
+      than a random list. They need to know which category the question belongs to,
+      what signal it tests, and how to practice it without wasting time.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Question category</th>
+          <th>Examples</th>
+          <th>Best practice format</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>JavaScript utilities</strong></td>
+          <td><code>debounce</code>, <code>throttle</code>, <code>memoize</code>, event emitters</td>
+          <td>Write from memory, explain edge cases, then test async behavior.</td>
+        </tr>
+        <tr>
+          <td><strong>UI components</strong></td>
+          <td>Modal, tabs, accordion, autocomplete, virtual list</td>
+          <td>Ship an MVP first, then add keyboard navigation, empty state, and loading state.</td>
+        </tr>
+        <tr>
+          <td><strong>Browser and CSS</strong></td>
+          <td>Rendering pipeline, stacking context, event loop, responsive layout</td>
+          <td>Explain the mental model, then connect it to a real debugging scenario.</td>
+        </tr>
+        <tr>
+          <td><strong>Frontend system design</strong></td>
+          <td>News feed, chat UI, dashboard, notifications, design system architecture</td>
+          <td>Clarify requirements, choose state boundaries, define APIs, and discuss trade-offs.</td>
+        </tr>
+        <tr>
+          <td><strong>Behavioral and collaboration</strong></td>
+          <td>Conflict, missed deadline, accessibility trade-off, performance regression</td>
+          <td>Prepare STAR stories with concrete metrics and frontend-specific decisions.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Prep paths by level</h2>
+    <p>
+      The same frontend interview preparation guide should not send every candidate
+      through the same sequence. Use your level to decide what gets most of your reps.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>Primary focus</th>
+          <th>Do not skip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Junior</strong></td>
+          <td>JavaScript fundamentals, DOM, CSS layout, and simple UI tasks.</td>
+          <td>Verbal explanations. Practice saying why your solution works.</td>
+        </tr>
+        <tr>
+          <td><strong>Mid-level</strong></td>
+          <td>Timed coding, component API decisions, async state, and testing trade-offs.</td>
+          <td>Edge cases: loading, empty, error, accessibility, and cancellation.</td>
+        </tr>
+        <tr>
+          <td><strong>Senior</strong></td>
+          <td>Frontend system design, architecture, performance, reliability, and team impact stories.</td>
+          <td>Scope control. Senior loops punish candidates who overbuild before clarifying constraints.</td>
+        </tr>
+      </tbody>
+    </table>
+
     <!-- Section 6 -->
     <h2>Resume preparation</h2>
     <p>
@@ -435,16 +565,17 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     </ul>
 
     <!-- Section 8 -->
-    <h2>4-week prep plan (lightweight)</h2>
+    <h2 id="roadmap">30-day frontend interview roadmap</h2>
     <p>
-      If you’ve only got a month, here’s a focused schedule that builds skills layer by layer.
-      The goal isn’t perfection — it’s consistency and confidence across the question types that actually show up.
+      If you have a month, use the schedule below as a compact frontend interview
+      roadmap. The goal is not maximum volume. The goal is to build reliable reps
+      across the question types that actually show up in frontend loops.
     </p>
 
     <table>
       <thead>
         <tr>
-          <th>Week</th>
+          <th>Days</th>
           <th>Focus</th>
           <th>Daily reps</th>
           <th>Why it matters</th>
@@ -452,36 +583,50 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </thead>
       <tbody>
         <tr>
-          <td><strong>1</strong></td>
+          <td><strong>1-7</strong></td>
           <td>JS + Browser fundamentals</td>
           <td>Do 3 quick quiz cards + 1 small JS utility each day</td>
           <td>Sharp recall of event loop, async/await, DOM quirks means less panic when you see trivia or debugging prompts.</td>
         </tr>
         <tr>
-          <td><strong>2</strong></td>
+          <td><strong>8-15</strong></td>
           <td>UI components</td>
           <td>Build 1 component/day (modal, dropdown, autocomplete) with keyboard support</td>
           <td>Most companies test if you can ship usable UI fast. By the end of this week you’ll have a toolkit of reusable patterns in your muscle memory.</td>
         </tr>
         <tr>
-          <td><strong>3</strong></td>
+          <td><strong>16-23</strong></td>
           <td>System design (FE)</td>
           <td>Take 1 design prompt → sketch a diagram → write a 5–6 line summary</td>
           <td>Prevents blank stares in senior interviews. Practicing diagrams trains you to explain data flow, state, and trade-offs under time pressure.</td>
         </tr>
         <tr>
-          <td><strong>4</strong></td>
-          <td>Mocks & review</td>
-          <td>Do 2 × 45-min practice interviews + write retro notes</td>
+          <td><strong>24-30</strong></td>
+          <td>Mocks, behavioral, and review</td>
+          <td>Do 2 x 45-min practice interviews + write retro notes</td>
           <td>Builds interview stamina. Reviewing your mistakes here saves you from repeating them in the real loop.</td>
         </tr>
       </tbody>
     </table>
 
 <p>
-  💡 Pro tip: Don’t cram. Even 30–45 minutes a day beats a single 6-hour binge.
-  Treat this plan like a workout routine — small, consistent reps compound.
+  Pro tip: Don’t cram. Even 30-45 minutes a day beats a single 6-hour binge.
+  Treat this plan like a workout routine: small, consistent reps compound.
 </p>
+
+    <h2>4-6 week variant</h2>
+    <p>
+      If your fundamentals are rusty, stretch the same roadmap to 4-6 weeks. Spend
+      the extra time on JavaScript, CSS layout, and browser behavior before you add
+      harder UI or system design prompts.
+    </p>
+    <ol>
+      <li><strong>Week 1:</strong> JavaScript fundamentals, event loop, promises, and DOM APIs.</li>
+      <li><strong>Week 2:</strong> CSS layout, accessibility basics, browser rendering, and debugging.</li>
+      <li><strong>Week 3:</strong> Timed JavaScript utilities and small UI components.</li>
+      <li><strong>Week 4:</strong> Larger UI builds, testing strategy, and API/state trade-offs.</li>
+      <li><strong>Weeks 5-6:</strong> Frontend system design, behavioral stories, mocks, and targeted review.</li>
+    </ol>
 
     <!-- Section 9 -->
     <h2>Common pitfalls</h2>
@@ -508,45 +653,35 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </li>
     </ul>
     <!-- Section 10 -->
-    <h2>You don’t have to do this alone</h2>
+    <h2 id="practice-next">What to practice next</h2>
     <p>
-      Prepping can feel overwhelming, but remember — this platform is built to
-      help you practice the exact interview skills you’ve just read about.
+      Prepping can feel overwhelming, so move from this frontend interview
+      preparation guide into one focused practice surface. Choose the weakest
+      category from your last mock instead of opening every resource at once.
     </p>
-    <ul>
-      <li>
-        <strong><a [routerLink]="['/coding']">Coding practice</a>:</strong> Tackle real
-        front-end coding challenges with our editor, from small utilities
-        (<code>debounce</code>, <code>memoize</code>) to full UI widgets. Get instant
-        feedback as if you were in a live round.
-      </li>
-      <li>
-        <strong><a [routerLink]="['/guides','system-design-blueprint']">System design drills</a>:</strong>
-        Walk through structured prompts for client-side design problems —
-        caching, state modeling, performance trade-offs. We’ll nudge you to cover
-        MVP first, then scale up.
-      </li>
-      <li>
-        <strong>
-          <a
-            [routerLink]="['/coding']"
-            [queryParams]="{ kind: 'trivia' }"
-          >
-            Trivia & quick checks
-          </a>:
-        </strong>
-        Short quiz-style questions on JavaScript, CSS, browsers, and HTTP. Great for
-        filling idle 10-minute blocks and strengthening recall.
-      </li>
-      <li>
-        <strong><a [routerLink]="['/guides','behavioral']">Behavioral prep</a>:</strong> STAR templates
-        and reflection prompts to help you build strong stories (failure, conflict,
-        leadership, learning).
-      </li>
-    </ul>
+    <div class="next-practice">
+      <a [routerLink]="['/guides','interview-blueprint','coding-interviews']">
+        Frontend coding interview questions and prep guide: map prompts, rubric, and timed strategy.
+      </a>
+      <a [routerLink]="['/guides','interview-blueprint','ui-interviews']">
+        Frontend UI interview practice: build accessible components with edge states.
+      </a>
+      <a [routerLink]="['/guides','system-design-blueprint']">
+        Frontend system design practice: use RADIO, examples, and real architecture prompts.
+      </a>
+      <a [routerLink]="['/guides','framework-prep']">
+        Framework prep paths: choose JavaScript, React, Angular, or Vue interview preparation.
+      </a>
+      <a [routerLink]="['/coding']">
+        Question library: practice frontend interview questions in the coding workspace.
+      </a>
+      <a [routerLink]="['/guides','behavioral']">
+        Behavioral interview blueprint: prepare STAR stories around frontend impact.
+      </a>
+    </div>
     <p>
-      👉 In short: don’t just read — practice here, review your mistakes, and
-      build interview muscle memory before the real thing.
+      In short: don’t just read. Practice here, review your mistakes, and build
+      interview muscle memory before the real thing.
     </p>
   </fa-guide-shell>
   `

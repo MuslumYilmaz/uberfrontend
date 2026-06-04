@@ -513,7 +513,7 @@ const MASTER_SHORT_ANSWERS: MasterShortAnswerItem[] = [
     q: 'How should I approach a frontend interview question?',
     a: 'Start by clarifying requirements, inputs, output states, and user interactions before writing code. Then build the smallest working version, cover edge cases, and explain how you would test failure states. This prevents overbuilding and makes trade-offs visible while there is still time to adjust.',
     route: ['/guides', 'interview-blueprint', 'intro'],
-    cta: 'Review the interview blueprint',
+    cta: 'Read the frontend interview preparation guide',
     category: 'rounds',
     level: 'beginner',
   },

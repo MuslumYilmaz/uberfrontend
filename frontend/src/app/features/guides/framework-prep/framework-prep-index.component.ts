@@ -776,7 +776,7 @@ export class FrameworkPrepIndexComponent implements OnInit {
     },
     {
       text: 'Clearer explanations for framework rendering, state, and tradeoffs.',
-      route: ['/guides/interview-blueprint'],
+      route: ['/guides/interview-blueprint/intro'],
     },
     {
       text: 'Better consistency across screening, machine coding, and onsite interviews.',
@@ -860,6 +860,7 @@ export class FrameworkPrepIndexComponent implements OnInit {
     { label: 'Angular interview preparation path', route: ['/guides/framework-prep/angular-prep-path'] },
     { label: 'Vue interview preparation path', route: ['/guides/framework-prep/vue-prep-path'] },
     { label: 'HTML and CSS interview questions', route: ['/html-css/interview-questions'] },
+    { label: 'Frontend interview preparation guide', route: ['/guides/interview-blueprint/intro'] },
     { label: 'Interview blueprint hub', route: ['/guides/interview-blueprint'] },
     { label: 'Study Plans', route: ['/tracks'] },
     { label: 'Frontend system design', route: ['/system-design'] },

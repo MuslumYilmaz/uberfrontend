@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { SeoService } from '../../../../core/services/seo.service';
 import { PLAYBOOK, PLAYBOOK_GROUPS } from '../../../../shared/guides/guide.registry';
 import { OfflineBannerComponent } from "../../../../shared/components/offline-banner/offline-banner";
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/components/prep-signal-grid/prep-signal-grid.component';
@@ -65,7 +66,7 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
     }
 
     .section { margin: 28px 0; }
-    .sec-head { margin-bottom: 10px; color: var(--uf-text-primary); }
+    .sec-head { margin: 0 0 10px; color: var(--uf-text-primary); }
 
     .card {
       position: relative;
@@ -115,14 +116,14 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
   `],
   template: `
     <div class="wrap fa-body">
-      <h1 class="hero-title fa-page-title">Frontend Interview Playbook</h1>
-      <div class="hero-sub fa-meta-text">A practical frontend interview playbook covering coding, UI, JavaScript, system design, and behavioral prep.</div>
+      <h1 class="hero-title fa-page-title">Frontend Interview Playbook Hub</h1>
+      <div class="hero-sub fa-meta-text">A practical hub for frontend interview preparation guides covering coding, UI, JavaScript, system design, framework paths, fundamentals, and resume prep.</div>
       <div class="hero-sub fa-meta-text">
-        Want the platform overview first?
-        <a [routerLink]="['/']">Start from the frontend interview preparation roadmap homepage</a>.
+        Need the full sequence first?
+        <a [routerLink]="['/guides','interview-blueprint','intro']">Start with the Frontend interview preparation guide</a>.
       </div>
       <div class="pill-row">
-        <span class="pill fa-chip fa-chip--label">End-to-end playbook</span>
+        <span class="pill fa-chip fa-chip--label">Interview playbook hub</span>
         <span class="pill fa-chip fa-chip--label">Tips for all question types</span>
         <span class="pill fa-chip fa-chip--label">500+ practice questions</span>
       </div>
@@ -145,7 +146,7 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
       </section>
 
       <div *ngFor="let g of groups" class="section">
-        <div class="sec-head fa-section-title">{{ g.title }}</div>
+        <h2 class="sec-head fa-section-title">{{ g.title }}</h2>
 
         <a *ngFor="let it of g.items"
            class="card" [routerLink]="routeForSlug(it.slug)">
@@ -163,7 +164,12 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
     </div>
   `
 })
-export class PlaybookIndexComponent {
+export class PlaybookIndexComponent implements OnInit {
+  private readonly seo = inject(SeoService);
+  private readonly canonicalPath = '/guides/interview-blueprint';
+  readonly pageTitle = 'Frontend Interview Playbook Hub';
+  readonly pageDescription = 'Use this frontend interview playbook hub to choose guides for coding, UI, JavaScript, system design, behavioral prep, framework paths, fundamentals, and resume prep.';
+
   readonly prepOutcomes: PrepSignalItem[] = [
     'Know exactly what to practice each week for frontend interview preparation.',
     'Move from random solving to a repeatable interview roadmap.',
@@ -177,11 +183,30 @@ export class PlaybookIndexComponent {
   ];
 
   readonly prepSequence: PrepSignalItem[] = [
-    { text: 'Interview process', route: ['/guides/interview-blueprint/intro'] },
-    { text: 'Coding rounds', route: ['/guides/interview-blueprint/coding-interviews'] },
+    { text: 'Frontend interview preparation guide', route: ['/guides/interview-blueprint/intro'] },
+    { text: 'Frontend coding interview questions and prep guide', route: ['/guides/interview-blueprint/coding-interviews'] },
     { text: 'UI rounds', route: ['/guides/interview-blueprint/ui-interviews'] },
     { text: 'System design rounds', route: ['/guides/interview-blueprint/system-design'] },
   ];
+
+  readonly faqItems = [
+    {
+      question: 'What is the Frontend Interview Playbook Hub?',
+      answer: 'It is the FrontendAtlas guide hub for choosing the right frontend interview preparation guide, coding round guide, UI interview guide, system design guide, framework path, fundamentals check, or resume prep resource.',
+    },
+    {
+      question: 'Where should I start?',
+      answer: 'Start with the Frontend interview preparation guide, then move into coding, UI, JavaScript, system design, and behavioral prep based on your weakest interview round.',
+    },
+    {
+      question: 'Is this hub the same as the full preparation guide?',
+      answer: 'No. This hub organizes the guide cluster. The full frontend interview preparation guide explains the rounds, roadmap, question categories, and next practice sequence in one article.',
+    },
+  ];
+
+  ngOnInit(): void {
+    this.publishSeo();
+  }
 
   routeForSlug(slug: string): string[] {
     if (String(slug).endsWith('-prep-path')) {
@@ -198,4 +223,100 @@ export class PlaybookIndexComponent {
 
   /** Global numbering: slug -> 1..N across all sections */
   readonly globalIdx = PLAYBOOK_GLOBAL_INDEX;
+
+  private publishSeo(): void {
+    const canonicalUrl = this.seo.buildCanonicalUrl(this.canonicalPath);
+    const itemList = {
+      '@type': 'ItemList',
+      '@id': `${canonicalUrl}#frontend-interview-playbook-guides`,
+      name: 'Frontend interview playbook guide cluster',
+      itemListElement: PLAYBOOK_GROUPS.flatMap((group) => group.items).map((item, index) => {
+        const entry = PLAYBOOK_ENTRIES.get(item.slug);
+        const path = this.pathForSlug(item.slug);
+        return {
+          '@type': 'ListItem',
+          position: index + 1,
+          name: entry?.title || item.slug,
+          url: this.seo.buildCanonicalUrl(path),
+        };
+      }),
+    };
+
+    const collectionPage = {
+      '@type': 'CollectionPage',
+      '@id': canonicalUrl,
+      url: canonicalUrl,
+      name: this.pageTitle,
+      description: this.pageDescription,
+      inLanguage: 'en',
+      about: [
+        { '@type': 'Thing', name: 'frontend interview playbook hub' },
+        { '@type': 'Thing', name: 'frontend interview preparation guides' },
+        { '@type': 'Thing', name: 'frontend interview prep guide cluster' },
+      ],
+      mainEntity: itemList,
+    };
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Guides',
+          item: this.seo.buildCanonicalUrl('/guides'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: this.pageTitle,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    const faqPage = {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#faq`,
+      url: canonicalUrl,
+      name: 'Frontend interview playbook hub FAQ',
+      mainEntity: this.faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    };
+
+    this.seo.updateTags({
+      title: this.pageTitle,
+      description: this.pageDescription,
+      keywords: [
+        'frontend interview playbook hub',
+        'frontend interview preparation guides',
+        'frontend interview prep guide cluster',
+        'frontend coding interview guide',
+        'frontend UI interview guide',
+        'frontend system design interview guide',
+        'JavaScript interview preparation guide',
+      ],
+      canonical: this.canonicalPath,
+      jsonLd: [collectionPage, breadcrumb, itemList, faqPage],
+    });
+  }
+
+  private pathForSlug(slug: string): string {
+    if (String(slug).endsWith('-prep-path')) {
+      return `/guides/framework-prep/${slug}`;
+    }
+    return `/guides/interview-blueprint/${slug}`;
+  }
 }
