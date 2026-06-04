@@ -182,7 +182,6 @@ export class HeaderComponent implements OnInit {
         subtitle: 'Open the full Question Library when you want broader coverage, filters, and every practice format.',
         icon: 'pi-bolt',
         route: ['/coding'],
-        queryParams: { reset: 1 },
       },
       {
         key: 'study_plans',

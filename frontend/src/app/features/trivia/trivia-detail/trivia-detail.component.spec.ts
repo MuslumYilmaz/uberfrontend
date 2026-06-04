@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, ReplaySubject } from 'rxjs';
 import { ActivityService } from '../../../core/services/activity.service';
@@ -278,20 +278,31 @@ describe('TriviaDetailComponent', () => {
     expect(faq).toBeUndefined();
   });
 
-  it('renders crawlable sidebar and practice entry links', async () => {
+  it('renders non-crawlable sidebar buttons and crawlable practice entry links', async () => {
     const fixture = await createLoadedFixture();
+    const router = TestBed.inject(Router);
+    const navigateSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
-    const sideLink = fixture.nativeElement.querySelector('.side-list a.side-item') as HTMLAnchorElement | null;
-    expect(sideLink).toBeTruthy();
-    expect(sideLink?.getAttribute('href') || '').toContain('/javascript/trivia/q1');
+    const sideButton = fixture.nativeElement.querySelector('.side-list button.side-item') as HTMLButtonElement | null;
+    expect(sideButton).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.side-list a.side-item')).toBeNull();
+
+    sideButton?.click();
+    expect(navigateSpy).toHaveBeenCalledWith(['/', 'javascript', 'trivia', 'q1'], jasmine.objectContaining({
+      state: jasmine.objectContaining({
+        session: jasmine.objectContaining({
+          index: 0,
+        }),
+      }),
+    }));
 
     const framePrimary = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-primary"]') as HTMLAnchorElement | null;
     const framePlan = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-plan"]') as HTMLAnchorElement | null;
     const frameHub = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-hub"]') as HTMLAnchorElement | null;
 
-    expect(framePrimary?.getAttribute('href') || '').toContain('/coding?kind=trivia&reset=1');
+    expect(framePrimary?.getAttribute('href') || '').toContain('/javascript/interview-questions');
     expect(framePlan?.getAttribute('href') || '').toContain('/tracks/javascript-prep-path/mastery');
-    expect(frameHub?.getAttribute('href') || '').toContain('/javascript/interview-questions');
+    expect(frameHub?.getAttribute('href') || '').toContain('/interview-questions/essential');
   });
 
   it('hydrates the current question from a lightweight resolver payload while keeping list entries as summaries', async () => {
@@ -313,7 +324,8 @@ describe('TriviaDetailComponent', () => {
 
     expect(fixture.nativeElement.querySelector('h1.title')?.textContent || '').toContain('What is closure?');
     expect(fixture.nativeElement.textContent || '').toContain('Closure captures lexical scope');
-    expect(fixture.nativeElement.querySelectorAll('.side-list a.side-item').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('.side-list button.side-item').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('.side-list a.side-item').length).toBe(0);
     expect(fixture.nativeElement.querySelector('.similar-list')).toBeTruthy();
     expect((fixture.componentInstance.question() as any)?.answer).toBe(fullQuestion.answer);
     expect((fixture.componentInstance.questionsList[0] as any).answer).toBeUndefined();
@@ -354,7 +366,7 @@ describe('TriviaDetailComponent', () => {
 
     const footerLeft = fixture.nativeElement.querySelector('[data-testid="footer-left"]') as HTMLAnchorElement | null;
     expect(footerLeft?.textContent || '').toContain('Question Library');
-    expect(footerLeft?.getAttribute('href') || '').toContain('/coding?kind=trivia&reset=1');
+    expect(footerLeft?.getAttribute('href') || '').toContain('/coding');
   });
 
   it('maps trivia detail tech to interview hub routes', () => {

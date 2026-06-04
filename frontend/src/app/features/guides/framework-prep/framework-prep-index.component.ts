@@ -602,6 +602,7 @@ export class FrameworkPrepIndexComponent implements OnInit {
     { label: 'Vue.js interview questions', route: ['/vue/interview-questions'] },
     { label: 'HTML interview questions', route: ['/html/interview-questions'] },
     { label: 'CSS interview questions', route: ['/css/interview-questions'] },
+    { label: 'HTML and CSS interview questions', route: ['/html-css/interview-questions'] },
   ];
 
   readonly choosePathCards = [
@@ -650,7 +651,6 @@ export class FrameworkPrepIndexComponent implements OnInit {
       detail: 'Add framework-specific rendering, state ownership, data fetching, forms, tests, and machine coding drills that expose implementation tradeoffs.',
       cta: 'Frontend coding practice',
       route: ['/coding'],
-      queryParams: { reset: 1 },
     },
     {
       title: 'Senior and staff frontend',
@@ -672,7 +672,6 @@ export class FrameworkPrepIndexComponent implements OnInit {
       detail: 'Practice React machine coding interview preparation with filters, forms, timers, fetch flows, lists, and component state. Angular and Vue candidates should translate the same drills into their framework.',
       cta: 'Question Library',
       route: ['/coding'],
-      queryParams: { reset: 1 },
     },
     {
       title: 'Framework deep dive',
@@ -706,7 +705,6 @@ export class FrameworkPrepIndexComponent implements OnInit {
       detail: 'Build UI drills that force rendering, state, events, accessibility, and tests to work together instead of reviewing concepts in isolation.',
       cta: 'Practice coding',
       route: ['/coding'],
-      queryParams: { reset: 1 },
     },
     {
       title: 'Add mixed prep',
@@ -772,11 +770,10 @@ export class FrameworkPrepIndexComponent implements OnInit {
     {
       text: 'Faster implementation decisions during coding rounds.',
       route: ['/coding'],
-      queryParams: { reset: 1 },
     },
     {
       text: 'Clearer explanations for framework rendering, state, and tradeoffs.',
-      route: ['/guides/interview-blueprint'],
+      route: ['/guides/interview-blueprint/intro'],
     },
     {
       text: 'Better consistency across screening, machine coding, and onsite interviews.',
@@ -798,7 +795,6 @@ export class FrameworkPrepIndexComponent implements OnInit {
     {
       text: 'Run coding + concept drills in your selected framework.',
       route: ['/coding'],
-      queryParams: { reset: 1 },
     },
     {
       text: 'Close with frontend system design and company-specific prep.',
@@ -860,11 +856,12 @@ export class FrameworkPrepIndexComponent implements OnInit {
     { label: 'Angular interview preparation path', route: ['/guides/framework-prep/angular-prep-path'] },
     { label: 'Vue interview preparation path', route: ['/guides/framework-prep/vue-prep-path'] },
     { label: 'HTML and CSS interview questions', route: ['/html-css/interview-questions'] },
+    { label: 'Frontend interview preparation guide', route: ['/guides/interview-blueprint/intro'] },
     { label: 'Interview blueprint hub', route: ['/guides/interview-blueprint'] },
     { label: 'Study Plans', route: ['/tracks'] },
     { label: 'Frontend system design', route: ['/system-design'] },
     { label: 'Company Prep', route: ['/companies'] },
-    { label: 'Question Library', route: ['/coding'], queryParams: { reset: 1 } },
+    { label: 'Question Library', route: ['/coding'] },
   ];
 
   private publishSeo(): void {

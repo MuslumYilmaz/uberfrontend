@@ -1557,7 +1557,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('Question Library');
     expect(fixture.nativeElement.textContent || '').toContain('Framework interview hubs');
     expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]')?.getAttribute('href') || '').toContain('/machine-coding');
-    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]')?.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]')?.getAttribute('href') || '').toContain('/coding');
     expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-5"]')?.getAttribute('href') || '').toContain('/react/interview-questions');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -1639,10 +1639,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Angular interview prep path');
     expect(firstItem.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
     expect(secondItem.getAttribute('href') || '').toContain('/interview-questions/essential');
-    expect(thirdItem.getAttribute('href') || '').toContain('/coding?tech=angular&reset=1');
+    expect(thirdItem.getAttribute('href') || '').toContain('/coding?tech=angular');
     expect(fourthItem.getAttribute('href') || '').toContain('/guides/framework-prep/angular-prep-path');
     expect(fifthItem.textContent || '').toContain('Final-round coverage');
-    expect(fifthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
+    expect(fifthItem.getAttribute('href') || '').toContain('/system-design');
   });
 
   it('renders HTML and CSS answer-first coverage while preserving format-category links', async () => {
@@ -1782,8 +1782,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-make-element-responsive"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-flexbox-navbar"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-grid-card-gallery"]')).toBeTruthy();
-    expect(codingViewAll.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css&kind=coding&reset=1');
-    expect(thirdItem.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css&reset=1');
+    expect(codingViewAll.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css&kind=coding');
+    expect(thirdItem.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];

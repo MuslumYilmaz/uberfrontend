@@ -62,7 +62,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     </p>
     <p>
     A strong resume should also tee up the next screens. If your bullets naturally lead into
-    <a [routerLink]="['/guides/interview-blueprint/coding-interviews']">coding interview conversations</a>
+      <a [routerLink]="['/guides/interview-blueprint/coding-interviews']">Frontend coding interview questions and prep guide</a>
     or a sharper <a [routerLink]="['/guides/interview-blueprint/system-design']">front-end system design story</a>,
     recruiters can already see how you might perform once you reach the interview loop.
     </p>

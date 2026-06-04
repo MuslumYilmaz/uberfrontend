@@ -42,8 +42,7 @@ export class MarketingHeaderComponent {
     {
       label: 'Question Library',
       route: ['/coding'],
-      queryParams: { reset: '1' },
-      destination: '/coding?reset=1',
+      destination: '/coding',
       activeMatch: 'question-library',
     },
     {

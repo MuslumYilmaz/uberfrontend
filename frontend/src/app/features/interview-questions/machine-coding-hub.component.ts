@@ -363,7 +363,7 @@ export class MachineCodingHubComponent implements OnInit {
       label: 'JavaScript utility rounds',
       description: 'Debounce, throttle, Promise utilities, deep clone, currying, and async reasoning.',
       route: ['/coding'],
-      queryParams: { view: 'formats', category: 'js-fn', reset: 1 },
+      queryParams: { view: 'formats', category: 'js-fn' },
       path: '/coding',
     },
     {
@@ -388,7 +388,7 @@ export class MachineCodingHubComponent implements OnInit {
       label: 'HTML/CSS UI coding',
       description: 'Layout, semantics, responsive UI, accessibility, and visual-state implementation prompts.',
       route: ['/coding'],
-      queryParams: { view: 'formats', category: 'html-css', reset: 1 },
+      queryParams: { view: 'formats', category: 'html-css' },
       path: '/coding',
     },
     {
@@ -402,6 +402,18 @@ export class MachineCodingHubComponent implements OnInit {
       description: 'Use the full prep sequence when you need daily practice instead of random prompt browsing.',
       route: ['/tracks', 'foundations-30d', 'preview'],
       path: '/tracks/foundations-30d/preview',
+    },
+    {
+      label: 'Frontend coding interview questions and prep guide',
+      description: 'Map UI coding, JavaScript utility, browser, framework, and debugging prompts before timed practice.',
+      route: ['/guides', 'interview-blueprint', 'coding-interviews'],
+      path: '/guides/interview-blueprint/coding-interviews',
+    },
+    {
+      label: 'Frontend interview preparation guide',
+      description: 'Review the full interview loop, question categories, scoring signals, and prep roadmap.',
+      route: ['/guides', 'interview-blueprint', 'intro'],
+      path: '/guides/interview-blueprint/intro',
     },
     {
       label: 'Company prep',
@@ -504,7 +516,7 @@ export class MachineCodingHubComponent implements OnInit {
     this.seo.updateTags({
       title: 'Frontend Machine Coding Interview Questions',
       description:
-        'Practice frontend machine coding questions with React UI prompts, async widgets, forms, tables, a 60-minute strategy, rubric, and guided checks.',
+        'Practice frontend machine coding and UI coding interview questions with React, Angular, Vue, async widgets, forms, tables, rubric, and guided study plans.',
       canonical: canonicalPath,
       keywords: [
         'frontend machine coding questions',

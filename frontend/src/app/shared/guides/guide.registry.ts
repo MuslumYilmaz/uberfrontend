@@ -18,6 +18,14 @@ export type GuideSeo = {
             answer: string;
         }>;
     };
+    itemList?: {
+        name?: string;
+        items: Array<{
+            name: string;
+            description?: string;
+            url?: string;
+        }>;
+    };
     publishedAt?: string;
     updatedAt?: string;
     author?: GuideAuthor;
@@ -75,16 +83,63 @@ function inferBase(registry: GuideEntry[]): string | null {
 export const PLAYBOOK: GuideEntry[] = [
     {
         slug: 'intro',
-        title: 'Frontend Interview Preparation Guide: Process, Rounds, and Plan',
-        minutes: 10,
-        summary: 'Understand each interview stage, what frontend hiring teams evaluate, and how to build a realistic prep plan that leads to stronger interview performance.',
+        title: 'Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions',
+        minutes: 16,
+        summary: 'Understand frontend interview rounds, what hiring teams evaluate, which questions to practice, and how to follow a realistic prep roadmap.',
         seo: {
-            title: 'Frontend Interview Preparation Guide: Process, Rounds, and Plan',
-            description: 'Understand each interview stage, what frontend hiring teams evaluate, and how to build a realistic prep plan that leads to stronger interview performance.',
+            title: 'Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions',
+            description: 'Prepare for frontend interviews with a 2026 guide to rounds, coding and UI questions, system design, behavioral prep, and a 30-day roadmap.',
             primaryKeyword: 'frontend interview preparation guide',
-            keywords: ['frontend interview preparation guide', 'frontend interview process', 'frontend interview rounds'],
+            keywords: [
+                'frontend interview preparation guide',
+                'frontend interview prep guide',
+                'frontend interview roadmap',
+                'frontend interview questions',
+                'frontend developer interview preparation',
+                'front end interview prep',
+                '30 day frontend interview roadmap',
+                'frontend coding interview preparation',
+                'frontend UI interview preparation',
+                'frontend system design interview preparation',
+            ],
+            faqPage: {
+                name: 'Frontend interview preparation guide FAQ',
+                items: [
+                    {
+                        question: 'How should I prepare for a frontend interview in 2026?',
+                        answer: 'Start with JavaScript and browser fundamentals, then practice frontend coding prompts, UI component builds, frontend system design, and behavioral stories in a weekly sequence instead of jumping randomly between topics.',
+                    },
+                    {
+                        question: 'What rounds are common in frontend interviews?',
+                        answer: 'Most frontend loops include a recruiter screen, a live coding or JavaScript round, a UI or machine-coding task, sometimes a frontend system design round, and a behavioral or hiring manager conversation.',
+                    },
+                    {
+                        question: 'Do frontend interviews include algorithms?',
+                        answer: 'Yes, but frontend candidates usually see practical data structures, async code, DOM problems, array and map transformations, and moderate algorithms rather than deep competitive-programming puzzles.',
+                    },
+                    {
+                        question: 'How long does frontend interview preparation take?',
+                        answer: 'A focused 30-day plan works for candidates with existing frontend experience. Newer candidates should use a 4-6 week plan that leaves more time for fundamentals, UI builds, and mock interviews.',
+                    },
+                    {
+                        question: 'What should senior frontend engineers practice?',
+                        answer: 'Senior candidates should practice frontend system design, architecture trade-offs, performance, accessibility, testing strategy, and clear communication around product constraints and team decisions.',
+                    },
+                    {
+                        question: 'What is the best way to practice frontend interview questions?',
+                        answer: 'Use timed reps: solve one JavaScript or UI prompt, explain your approach out loud, test edge cases, then write a short retro that links the miss to the next focused practice block.',
+                    },
+                ],
+            },
+            readerPromise: 'Use this frontend interview preparation guide to understand the 2026 interview loop, pick the right practice roadmap, and move into coding, UI, system design, and behavioral drills with clear next steps.',
             publishedAt: '2025-08-30',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-03',
+            author: {
+                type: 'Organization',
+                name: 'FrontendAtlas Team',
+            },
+            factCheckedAt: '2026-06-03',
+            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fe-intro-article.component')
@@ -92,16 +147,92 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'coding-interviews',
-        title: 'Frontend Coding Interviews: Solve Prompts Under Pressure',
-        minutes: 12,
-        summary: 'A practical framework to turn ambiguous prompts into working solutions fast, avoid common coding-round mistakes, and communicate clearly under time limits.',
+        title: 'Frontend Coding Interview Questions and Prep Guide (2026)',
+        minutes: 18,
+        summary: 'Prepare for frontend coding interviews with UI coding interview questions, JavaScript utility prompts, a scoring rubric, and 45/60-minute strategies.',
         seo: {
-            title: 'Frontend Coding Interviews: Solve Prompts Under Pressure',
-            description: 'A practical framework to turn ambiguous prompts into working solutions fast, avoid common coding-round mistakes, and communicate clearly under time limits.',
-            primaryKeyword: 'frontend coding interviews',
-            keywords: ['frontend coding interviews', 'frontend coding interview tips', 'frontend coding rounds'],
+            title: 'Frontend Coding Interview Questions and Prep Guide (2026)',
+            description: 'Prepare for frontend coding interviews with UI coding interview questions, JavaScript utilities, a 60-minute strategy, rubric, and practice links.',
+            primaryKeyword: 'frontend coding interview questions',
+            keywords: [
+                'frontend coding interview questions',
+                'frontend coding interview prep',
+                'frontend machine coding questions',
+                'frontend UI coding interview questions',
+                'React UI coding interview questions',
+                'JavaScript coding interview questions',
+                'frontend coding interview practice',
+                'UI component coding interview questions',
+                'frontend coding rounds',
+            ],
+            faqPage: {
+                name: 'Frontend coding interview questions and prep guide FAQ',
+                items: [
+                    {
+                        question: 'What questions are asked in frontend coding interviews?',
+                        answer: 'Frontend coding interviews usually mix UI component prompts, JavaScript utility functions, async bugs, browser behavior, CSS/layout details, framework state questions, and follow-up discussion about accessibility, testing, and performance.',
+                    },
+                    {
+                        question: 'How do I prepare for a frontend coding interview?',
+                        answer: 'Practice timed frontend coding prompts, start with requirements and a small working version, add edge cases, explain tradeoffs out loud, and review one miss after every session before moving to the next problem.',
+                    },
+                    {
+                        question: 'Is a frontend coding interview the same as LeetCode?',
+                        answer: 'No. Some roles include algorithms, but frontend coding interviews often reward product UI behavior, DOM or framework state, async correctness, accessibility, and practical debugging more than pure data-structure puzzles.',
+                    },
+                    {
+                        question: 'Should I use React or vanilla JavaScript in frontend coding interviews?',
+                        answer: 'Use the tool the interviewer allows and your target role expects. React is common for UI rounds, but vanilla JavaScript fundamentals still matter for event handling, promises, DOM behavior, debounce, throttle, and state timing.',
+                    },
+                    {
+                        question: 'How are frontend UI coding interviews evaluated?',
+                        answer: 'Interviewers score visible correctness, state design, component boundaries, async behavior, empty/loading/error states, accessibility, tests or manual verification, and how clearly you narrate tradeoffs under time pressure.',
+                    },
+                    {
+                        question: 'What should I do in the first 10 minutes of a 60-minute coding interview?',
+                        answer: 'Clarify the prompt, define the smallest working scope, list edge cases, sketch state and events, then start shipping a visible baseline before adding polish or abstractions.',
+                    },
+                ],
+            },
+            itemList: {
+                name: '25 frontend coding interview questions to practice',
+                items: [
+                    { name: 'Build accessible autocomplete with debounce and keyboard selection', description: 'Tests async state, stale responses, focus management, loading states, and accessible suggestion behavior.', url: '#question-1' },
+                    { name: 'Implement a dropdown menu with mouse, keyboard, and Escape behavior', description: 'Tests event handling, focus movement, outside-click handling, and accessible trigger/menu state.', url: '#question-2' },
+                    { name: 'Build a modal dialog with focus trap and dismissal behavior', description: 'Tests portals or overlays, keyboard handling, body scroll control, and accessible labeling.', url: '#question-3' },
+                    { name: 'Create tabs with roving keyboard focus', description: 'Tests component state, ARIA tab semantics, controlled selection, and predictable keyboard navigation.', url: '#question-4' },
+                    { name: 'Build an accordion or FAQ component', description: 'Tests controlled and uncontrolled state, multiple-open behavior, and semantic disclosure patterns.', url: '#question-5' },
+                    { name: 'Implement a star rating component', description: 'Tests hover state, keyboard input, form value handling, precision, and reusable component API design.', url: '#question-6' },
+                    { name: 'Build a paginated and sortable data table', description: 'Tests derived state, row identity, sorting, pagination, empty states, and scalable rendering.', url: '#question-7' },
+                    { name: 'Build a nested checkbox tree with indeterminate parents', description: 'Tests recursive data, derived selection state, parent-child propagation, and edge cases.', url: '#question-8' },
+                    { name: 'Implement a file explorer tree from nested JSON', description: 'Tests recursion, expansion state, keyboard-friendly structure, and async-loading follow-ups.', url: '#question-9' },
+                    { name: 'Build a multi-step form with validation and persisted draft state', description: 'Tests form state, validation timing, persistence, navigation, and recovery from invalid input.', url: '#question-10' },
+                    { name: 'Implement debounce', description: 'Tests timers, closures, cancellation, argument forwarding, and this binding.', url: '#question-11' },
+                    { name: 'Implement throttle', description: 'Tests timer scheduling, leading/trailing calls, and high-frequency event control.', url: '#question-12' },
+                    { name: 'Implement once or memoize', description: 'Tests closures, cache keys, return values, and repeated-call behavior.', url: '#question-13' },
+                    { name: 'Build a promise pool with a concurrency limit', description: 'Tests async control flow, queues, ordering, errors, and resource limits.', url: '#question-14' },
+                    { name: 'Implement a cancellable fetch wrapper that ignores stale responses', description: 'Tests AbortController, request identity, race conditions, and stale UI prevention.', url: '#question-15' },
+                    { name: 'Write an event delegation helper for dynamic list items', description: 'Tests DOM traversal, bubbling, matching selectors, and cleanup.', url: '#question-16' },
+                    { name: 'Build an LRU cache for API responses', description: 'Tests maps, ordering, eviction policy, and performance tradeoffs.', url: '#question-17' },
+                    { name: 'Flatten nested data or safely deep clone an object', description: 'Tests recursion, circular references, arrays, objects, and practical limits.', url: '#question-18' },
+                    { name: 'Explain async versus defer and script loading behavior', description: 'Tests browser parsing, resource loading, execution order, and render-blocking impact.', url: '#question-19' },
+                    { name: 'Debug event loop ordering with promises and timers', description: 'Tests microtasks, macrotasks, rendering timing, and async explanation quality.', url: '#question-20' },
+                    { name: 'Fix layout shift in a responsive card grid', description: 'Tests CSS layout, image sizing, content constraints, and Core Web Vitals awareness.', url: '#question-21' },
+                    { name: 'Build responsive navigation with an accessible mobile menu', description: 'Tests CSS, semantic buttons, focus behavior, viewport constraints, and interaction states.', url: '#question-22' },
+                    { name: 'Debug stale state in a React search component', description: 'Tests hooks, closures, effects, request races, and derived state.', url: '#question-23' },
+                    { name: 'Build an optimistic todo list with rollback on failure', description: 'Tests mutation state, error recovery, temporary IDs, and user feedback.', url: '#question-24' },
+                    { name: 'Design a shopping cart or transfer list with derived totals and selection', description: 'Tests state modeling, derived values, immutable updates, and product edge cases.', url: '#question-25' },
+                ],
+            },
+            readerPromise: 'Use this frontend coding interview questions and prep guide to map likely coding prompts, understand the scoring rubric, practice a 45/60-minute strategy, and move into hands-on FrontendAtlas drills.',
             publishedAt: '2025-08-30',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-03',
+            author: {
+                type: 'Organization',
+                name: 'FrontendAtlas Team',
+            },
+            factCheckedAt: '2026-06-03',
+            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fe-coding-article.component')

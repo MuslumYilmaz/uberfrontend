@@ -741,8 +741,8 @@ export const routes: Routes = [
         component: PlaybookIndexComponent,
         data: {
           seo: {
-            title: 'Frontend Interview Playbook',
-            description: 'Use this frontend interview playbook to plan coding, UI, JavaScript, system design, and behavioral rounds with a practical checklist.',
+            title: 'Frontend Interview Playbook Hub',
+            description: 'Use this frontend interview playbook hub to choose guides for coding, UI, JavaScript, system design, behavioral prep, framework paths, fundamentals, and resume prep.',
           },
         },
       },
@@ -1155,7 +1155,7 @@ export const routes: Routes = [
       seo: {
         title: 'Frontend Machine Coding Interview Questions',
         description:
-          'Practice frontend machine coding questions with React UI prompts, async widgets, forms, tables, a 60-minute strategy, rubric, and guided checks.',
+          'Practice frontend machine coding and UI coding interview questions with React, Angular, Vue, async widgets, forms, tables, rubric, and guided study plans.',
         keywords: [
           'frontend machine coding questions',
           'frontend UI coding interview questions',

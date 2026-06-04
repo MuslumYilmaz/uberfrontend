@@ -97,6 +97,105 @@ describe('guide-seo.util', () => {
     expect(article.dateModified).toBe('2025-03-15T00:00:00.000Z');
   });
 
+  it('targets frontend interview preparation guide intent on the playbook intro page', () => {
+    const intro = PLAYBOOK.find((entry) => entry.slug === 'intro');
+    expect(intro).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      intro!
+    );
+
+    expect(meta.title).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/intro');
+    expect(meta.description).toBe(
+      'Prepare for frontend interviews with a 2026 guide to rounds, coding and UI questions, system design, behavioral prep, and a 30-day roadmap.',
+    );
+    expect(meta.keywords).toContain('frontend interview preparation guide');
+    expect(meta.keywords).toContain('frontend interview prep guide');
+    expect(meta.keywords).toContain('frontend interview roadmap');
+    expect(meta.keywords).toContain('frontend interview questions');
+    expect(meta.keywords).toContain('30 day frontend interview roadmap');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
+    expect(article?.dateModified).toBe('2026-06-03T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(faqPage?.name).toBe('Frontend interview preparation guide FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How should I prepare for a frontend interview in 2026?',
+      'What rounds are common in frontend interviews?',
+      'Do frontend interviews include algorithms?',
+      'How long does frontend interview preparation take?',
+      'What should senior frontend engineers practice?',
+      'What is the best way to practice frontend interview questions?',
+    ]);
+  });
+
+  it('targets frontend coding interview questions intent with FAQ and ItemList schema', () => {
+    const coding = PLAYBOOK.find((entry) => entry.slug === 'coding-interviews');
+    expect(coding).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      coding!
+    );
+
+    expect(meta.title).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/coding-interviews');
+    expect(meta.description).toBe(
+      'Prepare for frontend coding interviews with UI coding interview questions, JavaScript utilities, a 60-minute strategy, rubric, and practice links.',
+    );
+    expect(meta.keywords).toContain('frontend coding interview questions');
+    expect(meta.keywords).toContain('frontend coding interview prep');
+    expect(meta.keywords).toContain('frontend machine coding questions');
+    expect(meta.keywords).toContain('frontend UI coding interview questions');
+    expect(meta.keywords).toContain('React UI coding interview questions');
+    expect(meta.keywords).toContain('JavaScript coding interview questions');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
+    expect(article?.dateModified).toBe('2026-06-03T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('25 frontend coding interview questions to practice');
+    expect(itemList?.itemListElement?.length).toBe(25);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Build accessible autocomplete with debounce and keyboard selection');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/guides/interview-blueprint/coding-interviews#question-1');
+    expect(itemList?.itemListElement?.[24]?.name).toBe('Design a shopping cart or transfer list with derived totals and selection');
+    expect(faqPage?.name).toBe('Frontend coding interview questions and prep guide FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What questions are asked in frontend coding interviews?',
+      'How do I prepare for a frontend coding interview?',
+      'Is a frontend coding interview the same as LeetCode?',
+      'Should I use React or vanilla JavaScript in frontend coding interviews?',
+      'How are frontend UI coding interviews evaluated?',
+      'What should I do in the first 10 minutes of a 60-minute coding interview?',
+    ]);
+  });
+
   it('targets frontend system design interview intent on the RADIO framework page', () => {
     const radio = SYSTEM.find((entry) => entry.slug === 'radio-framework');
     expect(radio).toBeDefined();

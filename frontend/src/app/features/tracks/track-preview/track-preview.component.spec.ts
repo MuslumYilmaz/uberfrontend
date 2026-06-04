@@ -85,7 +85,7 @@ describe('TrackPreviewComponent', () => {
     const primary = findLink(host, 'Start Day 1');
     const library = findLink(host, 'Open Question Library');
 
-    expect(h1?.textContent?.trim()).toBe('7-Day Frontend Interview Prep Plan');
+    expect(h1?.textContent?.trim()).toBe('Crash Track: 7-Day Frontend Interview Prep Plan');
     expect(text).toContain('30');
     expect(text).toContain('questions');
     expect(text).toContain('2');
@@ -95,9 +95,7 @@ describe('TrackPreviewComponent', () => {
     expect(text).toContain('ready');
     expect(text).toContain('May 2026');
     expect(primary?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
-    expect(library?.getAttribute('href')).toContain('/coding');
-    expect(library?.getAttribute('href')).toContain('reset=1');
-    expect(library?.getAttribute('href')).toContain('src=track_preview_crash-7d');
+    expect(library?.getAttribute('href')).toBe('/coding');
   });
 
   it('renders seven task-preview day cards with free and premium signals', async () => {
@@ -153,7 +151,7 @@ describe('TrackPreviewComponent', () => {
     const primary = findLink(host, 'Start Day 1');
     const library = findLink(host, 'Open Question Library');
 
-    expect(h1?.textContent?.trim()).toBe('30-Day Frontend Interview Preparation Roadmap');
+    expect(h1?.textContent?.trim()).toBe('Foundations Track: 30-Day Frontend Interview Preparation Roadmap');
     expect(text).toContain('113');
     expect(text).toContain('questions');
     expect(text).toContain('5');
@@ -163,23 +161,21 @@ describe('TrackPreviewComponent', () => {
     expect(text).toContain('ready');
     expect(text).toContain('May 2026');
     expect(primary?.getAttribute('href')).toBe('/javascript/coding/js-number-clamp');
-    expect(library?.getAttribute('href')).toContain('/coding');
-    expect(library?.getAttribute('href')).toContain('reset=1');
-    expect(library?.getAttribute('href')).toContain('src=track_preview_foundations-30d');
+    expect(library?.getAttribute('href')).toBe('/coding');
   });
 
   it('updates the preview title when navigating between preview slugs in the reused component', async () => {
     const routed = await createRoutedComponent('crash-7d');
     let host = routed.fixture.nativeElement as HTMLElement;
 
-    expect(host.querySelector('h1')?.textContent?.trim()).toBe('7-Day Frontend Interview Prep Plan');
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Crash Track: 7-Day Frontend Interview Prep Plan');
 
     await routed.setSlug('foundations-30d');
     host = routed.fixture.nativeElement as HTMLElement;
     const primary = findLink(host, 'Start Day 1');
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
 
-    expect(host.querySelector('h1')?.textContent?.trim()).toBe('30-Day Frontend Interview Preparation Roadmap');
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Foundations Track: 30-Day Frontend Interview Preparation Roadmap');
     expect(primary?.getAttribute('href')).toBe('/javascript/coding/js-number-clamp');
     expect(payload.title).toBe('30-Day Frontend Interview Preparation Roadmap');
   });

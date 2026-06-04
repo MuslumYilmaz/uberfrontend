@@ -239,7 +239,6 @@ export class TrackListComponent implements OnInit {
     {
       label: 'Question Library',
       route: ['/coding'],
-      queryParams: { reset: 1 },
       toneClass: 'hero-link--iq-master',
     },
     {
@@ -304,6 +303,18 @@ export class TrackListComponent implements OnInit {
       toneClass: 'hero-link--iq-vue',
     },
     {
+      label: 'HTML',
+      description: 'Semantics, forms, metadata, accessibility, and browser defaults.',
+      route: ['/html/interview-questions'],
+      toneClass: 'hero-link--iq-html',
+    },
+    {
+      label: 'CSS',
+      description: 'Cascade, layout, selectors, responsive UI, and styling tradeoffs.',
+      route: ['/css/interview-questions'],
+      toneClass: 'hero-link--iq-css',
+    },
+    {
       label: 'HTML/CSS',
       description: 'Semantics, accessibility, layout, cascade, and styling flow.',
       route: ['/html-css/interview-questions'],
@@ -356,9 +367,9 @@ export class TrackListComponent implements OnInit {
       kicker: 'Step 3',
       title: 'Validate with role-focused guides',
       description:
-        'After each track block, use blueprint guides to tighten communication quality and architecture reasoning.',
-      route: ['/guides/interview-blueprint'],
-      ctaLabel: 'Open interview blueprint',
+        'After each track block, use the frontend interview preparation guide to tighten communication quality and architecture reasoning.',
+      route: ['/guides/interview-blueprint/intro'],
+      ctaLabel: 'Open frontend interview preparation guide',
     },
     {
       kicker: 'Step 4',

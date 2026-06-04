@@ -464,8 +464,8 @@ const FOUNDATIONS_30D_SAMPLE_IDS = [
 const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
   'crash-7d': {
     audience: 'Built for short timelines when you need one high-yield week instead of a long curriculum.',
-    purpose: 'This 7-day frontend interview prep plan compresses the highest-signal JavaScript, UI, and frontend system design drills into a repeatable sprint.',
-    heroTitle: '7-Day Frontend Interview Prep Plan',
+    purpose: 'This Crash Track 7-day frontend interview prep plan compresses the highest-signal JavaScript, UI, and frontend system design drills into a repeatable sprint.',
+    heroTitle: 'Crash Track: 7-Day Frontend Interview Prep Plan',
     heroKicker: 'Start today',
     heroMetrics: [
       { value: '30', label: 'questions' },
@@ -641,7 +641,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
     ],
     supportLinks: [
       { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'], path: '/javascript/interview-questions' },
-      { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      { label: 'Question Library', route: ['/coding'], path: '/coding' },
       { label: 'Company Prep', route: ['/companies'], path: '/companies' },
     ],
     faq: [
@@ -675,12 +675,12 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       },
     ],
     primaryCta: { label: 'Start Day 1', route: ['/javascript', 'coding', 'js-debounce'], path: '/javascript/coding/js-debounce' },
-    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding' },
   },
   'foundations-30d': {
     audience: 'Built for candidates who want a full-month sequence across fundamentals, frameworks, and architecture communication.',
-    purpose: 'This 30-day frontend interview preparation roadmap gives you a foundations runway so implementation speed, concept clarity, and system design coverage improve together.',
-    heroTitle: '30-Day Frontend Interview Preparation Roadmap',
+    purpose: 'This Foundations Track 30-day frontend interview preparation roadmap gives you a week-by-week roadmap for JavaScript fundamentals and browser basics, UI coding, framework Q&A, system design, mock rounds and company prep.',
+    heroTitle: 'Foundations Track: 30-Day Frontend Interview Preparation Roadmap',
     heroKicker: '30-day roadmap',
     heroMetrics: [
       { value: '113', label: 'questions' },
@@ -887,7 +887,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       'Add Company Prep in the final week to rehearse target-specific patterns without losing structure.',
     ],
     supportLinks: [
-      { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      { label: 'Question Library', route: ['/coding'], path: '/coding' },
       { label: 'Framework Prep Guide', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
       { label: 'Company Prep', route: ['/companies'], path: '/companies' },
     ],
@@ -918,7 +918,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       },
     ],
     primaryCta: { label: 'Start Day 1', route: ['/javascript', 'coding', 'js-number-clamp'], path: '/javascript/coding/js-number-clamp' },
-    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding' },
   },
 };
 
@@ -1216,7 +1216,7 @@ export class TrackPreviewComponent implements OnInit {
         'Use guides and Company Prep after the plan to sharpen the final rounds you care about.',
       ],
       supportLinks: [
-        { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+        { label: 'Question Library', route: ['/coding'], path: '/coding' },
         { label: 'Framework Prep Guide', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
         { label: 'Company Prep', route: ['/companies'], path: '/companies' },
       ],
@@ -1226,7 +1226,7 @@ export class TrackPreviewComponent implements OnInit {
           answer: 'It lets you evaluate the plan scope, sequence, and sample questions before you unlock the full route.',
         },
       ],
-      primaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      primaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding' },
     };
   }
 

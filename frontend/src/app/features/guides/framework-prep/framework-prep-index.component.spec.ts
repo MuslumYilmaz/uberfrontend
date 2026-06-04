@@ -94,7 +94,7 @@ describe('FrameworkPrepIndexComponent', () => {
     expect(hasLink(fixture, '/guides/framework-prep/react-prep-path')).toBeTrue();
     expect(hasLink(fixture, '/guides/framework-prep/angular-prep-path')).toBeTrue();
     expect(hasLink(fixture, '/guides/framework-prep/vue-prep-path')).toBeTrue();
-    expect(hasLink(fixture, '/coding?reset=1')).toBeTrue();
+    expect(hasLink(fixture, '/coding')).toBeTrue();
     expect(hasLink(fixture, '/tracks')).toBeTrue();
     expect(hasLink(fixture, '/system-design')).toBeTrue();
     expect(hasLink(fixture, '/companies')).toBeTrue();

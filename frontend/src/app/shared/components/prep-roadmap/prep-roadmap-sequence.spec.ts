@@ -14,4 +14,9 @@ describe('prep roadmap switcher route matching', () => {
     expect(findPrepRoadmapSwitcherItem('/coding')?.id).toBe('question_library');
     expect(findPrepRoadmapSwitcherItem('/tracks')?.id).toBe('study_plans');
   });
+
+  it('maps final-round routes to system design instead of a query-param coding view', () => {
+    expect(findPrepRoadmapSwitcherItem('/system-design')?.id).toBe('final_rounds');
+    expect(findPrepRoadmapSwitcherItem('/coding?view=formats&category=system')?.id).toBe('final_rounds');
+  });
 });

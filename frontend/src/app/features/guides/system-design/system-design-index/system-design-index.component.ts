@@ -495,6 +495,7 @@ type FaqItem = {
       <div class="prep-links" aria-label="Related frontend interview hubs">
         <a [routerLink]="['/system-design']">Frontend system design questions</a>
         <a [routerLink]="['/machine-coding']">Machine coding hub</a>
+        <a [routerLink]="['/guides/interview-blueprint/intro']">Frontend interview preparation guide</a>
         <a [routerLink]="['/guides/interview-blueprint']">Interview blueprint hub</a>
         <a [routerLink]="['/guides/framework-prep']">Framework prep paths</a>
         <a [routerLink]="['/tracks', 'foundations-30d', 'preview']">30-day guided plan</a>
@@ -900,6 +901,7 @@ export class SystemDesignIndexComponent implements OnInit {
   readonly supportLinks: HubLink[] = [
     { label: 'Frontend system design questions', route: ['/', 'system-design'], path: '/system-design' },
     { label: 'Machine coding hub', route: ['/', 'machine-coding'], path: '/machine-coding' },
+    { label: 'Frontend interview preparation guide', route: ['/', 'guides', 'interview-blueprint', 'intro'], path: '/guides/interview-blueprint/intro' },
     { label: 'Interview blueprint hub', route: ['/', 'guides', 'interview-blueprint'], path: '/guides/interview-blueprint' },
     { label: 'Framework prep paths', route: ['/', 'guides', 'framework-prep'], path: '/guides/framework-prep' },
     { label: '30-day guided plan', route: ['/', 'tracks', 'foundations-30d', 'preview'], path: '/tracks/foundations-30d/preview' },

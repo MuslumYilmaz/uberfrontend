@@ -311,9 +311,9 @@ type FrameworkPrepConfig = {
 
 const BLUEPRINT_BASE: SequenceStep[] = [
   {
-    title: 'Coding Interviews framework',
+    title: 'Frontend coding interview questions and prep guide',
     link: ['/', 'guides', 'interview-blueprint', 'coding-interviews'],
-    note: 'Use this to structure prompt clarifications, scope, and delivery under time pressure.',
+    note: 'Use this to map likely coding prompts, scoring signals, scope, and delivery under time pressure.',
   },
   {
     title: 'JavaScript Interviews patterns',
@@ -733,8 +733,8 @@ function onInput(value) {
           detail:
             'Replay one solution out loud, name the trade-off, state two edge cases, and log one prevention rule for the next session.',
           link: {
-            label: 'Use the interview blueprint',
-            route: ['/', 'guides', 'interview-blueprint'],
+            label: 'Read the frontend interview preparation guide',
+            route: ['/', 'guides', 'interview-blueprint', 'intro'],
           },
         },
       ],
@@ -7933,13 +7933,13 @@ export class FrameworkPrepPathArticle {
       {
         label: `${config.label} coding question library filter`,
         route: ['/coding'],
-        queryParams: { tech: config.tech, kind: 'coding', reset: '1' },
+        queryParams: { tech: config.tech, kind: 'coding' },
         note: 'Apply the path with implementation drills and edge-case checks.',
       },
       {
         label: `${config.label} trivia question library filter`,
         route: ['/coding'],
-        queryParams: { tech: config.tech, kind: 'trivia', reset: '1' },
+        queryParams: { tech: config.tech, kind: 'trivia' },
         note: 'Practice concise explanations for framework concepts and trade-offs.',
       },
       {

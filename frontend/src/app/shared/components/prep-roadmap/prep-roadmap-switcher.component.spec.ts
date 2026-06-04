@@ -68,8 +68,8 @@ describe('PrepRoadmapSwitcherComponent', () => {
     expect(active.getAttribute('data-testid')).toBe('prep-roadmap-switcher-item-2');
     expect(active.textContent || '').toContain('FrontendAtlas Essential 60');
     expect(guide.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
-    expect(library.getAttribute('href') || '').toContain('/coding?reset=1');
-    expect(finalRounds.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
+    expect(library.getAttribute('href') || '').toBe('/coding');
+    expect(finalRounds.getAttribute('href') || '').toBe('/system-design');
   });
 
   it('treats the system formats coding view as final-round coverage', async () => {

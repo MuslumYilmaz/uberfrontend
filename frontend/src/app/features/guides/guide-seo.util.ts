@@ -78,6 +78,56 @@ function buildFaqPageSchema(canonical: string, faqPage: GuideSeo['faqPage'] | un
   };
 }
 
+function buildItemListSchema(canonical: string, itemList: GuideSeo['itemList'] | undefined): Record<string, any> | null {
+  const rawItems = itemList?.items;
+  if (!Array.isArray(rawItems)) return null;
+
+  const itemListElement = rawItems
+    .map((item, index) => ({
+      position: index + 1,
+      name: normalizeText(item?.name || ''),
+      description: normalizeText(item?.description || ''),
+      url: normalizeItemUrl(canonical, item?.url),
+    }))
+    .filter((item) => item.name)
+    .map((item) => {
+      const out: Record<string, any> = {
+        '@type': 'ListItem',
+        position: item.position,
+        name: item.name,
+      };
+      if (item.description) out['description'] = item.description;
+      if (item.url) out['url'] = item.url;
+      return out;
+    });
+
+  if (!itemListElement.length) return null;
+
+  return {
+    '@type': 'ItemList',
+    '@id': `${canonical}#questions`,
+    url: canonical,
+    name: normalizeText(itemList?.name || 'Guide item list'),
+    itemListElement,
+  };
+}
+
+function normalizeItemUrl(canonical: string, input: string | undefined): string | undefined {
+  const raw = normalizeText(input || '');
+  if (!raw) return undefined;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (raw.startsWith('#')) return `${canonical}${raw}`;
+  if (raw.startsWith('/')) {
+    try {
+      const { origin } = new URL(canonical);
+      return `${origin}${raw}`;
+    } catch {
+      return raw;
+    }
+  }
+  return `${canonical}#${raw.replace(/[^a-z0-9_-]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}`;
+}
+
 function buildAuthorSchema(author: GuideAuthor | undefined): Record<string, any> {
   const type = author?.type === 'Person' ? 'Person' : DEFAULT_GUIDE_AUTHOR.type;
   const name = normalizeText(author?.name || DEFAULT_GUIDE_AUTHOR.name);
@@ -183,6 +233,10 @@ export function buildGuideDetailSeo(
     },
   };
   const faqPage = buildFaqPageSchema(canonical, entry.seo?.faqPage);
+  const itemList = buildItemListSchema(canonical, entry.seo?.itemList);
+  const jsonLd: Record<string, any>[] = [breadcrumb, article];
+  if (itemList) jsonLd.push(itemList);
+  if (faqPage) jsonLd.push(faqPage);
 
   return {
     title,
@@ -190,6 +244,6 @@ export function buildGuideDetailSeo(
     keywords,
     canonical,
     ogType: 'article',
-    jsonLd: faqPage ? [breadcrumb, article, faqPage] : [breadcrumb, article],
+    jsonLd,
   };
 }
