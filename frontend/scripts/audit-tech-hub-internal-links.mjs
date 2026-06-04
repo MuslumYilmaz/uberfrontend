@@ -13,6 +13,7 @@ const TARGETS = [
   '/vue/interview-questions',
   '/html/interview-questions',
   '/css/interview-questions',
+  '/html-css/interview-questions',
 ];
 
 const EDITORIAL_SOURCES = [

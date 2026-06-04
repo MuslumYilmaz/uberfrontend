@@ -41,7 +41,7 @@ describe('MachineCodingHubComponent', () => {
     expect(text).toContain('React machine coding');
     expect(text).toContain('System design follow-up');
     expect(text).toContain('30-day guided plan');
-    expect(primaryCta?.getAttribute('href') || '').toContain('/coding?view=formats&category=ui&reset=1');
+    expect(primaryCta?.getAttribute('href') || '').toContain('/coding?view=formats&category=ui');
     expect(planCta?.getAttribute('href') || '').toContain('/tracks/foundations-30d/preview');
   });
 

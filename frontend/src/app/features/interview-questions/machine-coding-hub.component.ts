@@ -363,7 +363,7 @@ export class MachineCodingHubComponent implements OnInit {
       label: 'JavaScript utility rounds',
       description: 'Debounce, throttle, Promise utilities, deep clone, currying, and async reasoning.',
       route: ['/coding'],
-      queryParams: { view: 'formats', category: 'js-fn', reset: 1 },
+      queryParams: { view: 'formats', category: 'js-fn' },
       path: '/coding',
     },
     {
@@ -388,7 +388,7 @@ export class MachineCodingHubComponent implements OnInit {
       label: 'HTML/CSS UI coding',
       description: 'Layout, semantics, responsive UI, accessibility, and visual-state implementation prompts.',
       route: ['/coding'],
-      queryParams: { view: 'formats', category: 'html-css', reset: 1 },
+      queryParams: { view: 'formats', category: 'html-css' },
       path: '/coding',
     },
     {

@@ -6170,7 +6170,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
           title: 'Question Library',
           description: 'Broaden into more coding and concept coverage by format, stack, difficulty, and weak area.',
           route: ['/coding'],
-          queryParams: { reset: 1 },
           meta: 'Broader coding + concepts',
           tone: 'structured',
         },
@@ -6235,8 +6234,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         step: 5,
         title: 'Final-round coverage',
         description: 'Add system design, behavioral, and company-style follow-ups after the framework baseline is stable.',
-        route: ['/coding'],
-        queryParams: { view: 'formats', category: 'system' },
+        route: ['/system-design'],
         meta: 'System design, behavioral, company rounds',
         tone: 'advanced',
       },
@@ -6487,7 +6485,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         category: 'html-css',
       };
       if (kind) queryParams['kind'] = kind;
-      queryParams['reset'] = 1;
       return { route: ['/coding'], queryParams };
     }
 
@@ -6495,7 +6492,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const primaryTech = this.primaryTechForLibrary();
     if (primaryTech) queryParams['tech'] = primaryTech;
     if (kind) queryParams['kind'] = kind;
-    queryParams['reset'] = 1;
     return { route: ['/coding'], queryParams };
   }
 

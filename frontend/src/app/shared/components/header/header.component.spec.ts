@@ -140,7 +140,7 @@ describe('HeaderComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-practice_types"]')).toBeFalsy();
     expect(guide.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
     expect(essential.getAttribute('href') || '').toContain('/interview-questions/essential');
-    expect(questionLibrary.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(questionLibrary.getAttribute('href') || '').toContain('/coding');
     expect(studyPlans.getAttribute('href') || '').toContain('/tracks');
     expect(analytics.track).toHaveBeenCalledWith('header_study_opened', jasmine.any(Object));
     expect(analytics.track).toHaveBeenCalledWith(
@@ -168,7 +168,7 @@ describe('HeaderComponent', () => {
     (fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement).click();
     expect(analytics.track).toHaveBeenCalledWith(
       'header_study_browse_full_library_clicked',
-      jasmine.objectContaining({ destination: 'question_library', route: '/coding?reset=1' }),
+      jasmine.objectContaining({ destination: 'question_library', route: '/coding' }),
     );
   });
 

@@ -641,7 +641,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
     ],
     supportLinks: [
       { label: 'JavaScript interview questions', route: ['/javascript/interview-questions'], path: '/javascript/interview-questions' },
-      { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      { label: 'Question Library', route: ['/coding'], path: '/coding' },
       { label: 'Company Prep', route: ['/companies'], path: '/companies' },
     ],
     faq: [
@@ -675,7 +675,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       },
     ],
     primaryCta: { label: 'Start Day 1', route: ['/javascript', 'coding', 'js-debounce'], path: '/javascript/coding/js-debounce' },
-    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding' },
   },
   'foundations-30d': {
     audience: 'Built for candidates who want a full-month sequence across fundamentals, frameworks, and architecture communication.',
@@ -887,7 +887,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       'Add Company Prep in the final week to rehearse target-specific patterns without losing structure.',
     ],
     supportLinks: [
-      { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      { label: 'Question Library', route: ['/coding'], path: '/coding' },
       { label: 'Framework Prep Guide', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
       { label: 'Company Prep', route: ['/companies'], path: '/companies' },
     ],
@@ -918,7 +918,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       },
     ],
     primaryCta: { label: 'Start Day 1', route: ['/javascript', 'coding', 'js-number-clamp'], path: '/javascript/coding/js-number-clamp' },
-    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+    secondaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding' },
   },
 };
 
@@ -1216,7 +1216,7 @@ export class TrackPreviewComponent implements OnInit {
         'Use guides and Company Prep after the plan to sharpen the final rounds you care about.',
       ],
       supportLinks: [
-        { label: 'Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+        { label: 'Question Library', route: ['/coding'], path: '/coding' },
         { label: 'Framework Prep Guide', route: ['/guides/framework-prep'], path: '/guides/framework-prep' },
         { label: 'Company Prep', route: ['/companies'], path: '/companies' },
       ],
@@ -1226,7 +1226,7 @@ export class TrackPreviewComponent implements OnInit {
           answer: 'It lets you evaluate the plan scope, sequence, and sample questions before you unlock the full route.',
         },
       ],
-      primaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding', queryParams: { reset: 1 } },
+      primaryCta: { label: 'Open Question Library', route: ['/coding'], path: '/coding' },
     };
   }
 

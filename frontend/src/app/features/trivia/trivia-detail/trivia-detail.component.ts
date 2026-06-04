@@ -777,18 +777,22 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onSidebarQuestionClick(q: QuestionListEntry) {
+  navigateSidebarQuestion(q: QuestionListEntry) {
     this.closeQnav();
     this.saveSidebarScrollPosition();
     this.ensurePracticeBuilt(q.id);
-  }
-
-  sidebarQuestionRoute(q: QuestionListEntry): any[] {
-    return ['/', this.tech, 'trivia', q.id];
-  }
-
-  sidebarNavState(q: QuestionListEntry) {
-    return this.buildNavState(q.id);
+    const targetPath = `/${this.tech}/trivia/${q.id}`;
+    const context = this.triviaAnalyticsContext();
+    if (context) {
+      this.analytics.track('trivia_internal_link_clicked', {
+        ...context,
+        location: 'sidebar',
+        target_path: targetPath,
+      });
+    }
+    this.router.navigate(['/', this.tech, 'trivia', q.id], {
+      state: this.buildNavState(q.id),
+    });
   }
 
   toggleQnav() {
@@ -865,6 +869,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   interviewQuestionsHubCtaLabel(): string {
     return `Practice more ${this.interviewQuestionsHubLabel()}`;
+  }
+
+  isHtmlCssTech(): boolean {
+    const tech = (this.tech || '').toLowerCase();
+    return tech === 'html' || tech === 'css';
   }
 
   interviewTopicUiLabel(): string {

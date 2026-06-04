@@ -1200,7 +1200,7 @@ describe('DashboardComponent', () => {
       'tech_lanes',
     ]);
     expect(hrefs[0]).toContain('/interview-questions/essential');
-    expect(hrefs[1]).toContain('/coding?reset=1');
+    expect(hrefs[1]).toContain('/coding');
     expect(hrefs[2]).toContain('/tracks');
     expect(hrefs[3]).toContain('/companies');
     expect(hrefs[4]).toContain('/focus-areas');

@@ -68,7 +68,7 @@ describe('MarketingHeaderComponent', () => {
     expect(labels).not.toContain('System Design');
     expect(primaryLinks.map((link) => link.getAttribute('href'))).toEqual([
       '/interview-questions/essential',
-      '/coding?reset=1',
+      '/coding',
       '/tracks',
     ]);
     expect(utilityLabels).toEqual(['Pricing', 'Log in']);

@@ -151,7 +151,7 @@ describe('ShowcasePageComponent', () => {
     expect(pageText.toLowerCase()).not.toContain('company-flavored');
     expect(pageText.toLowerCase()).not.toContain('your own prompts');
     expect(libraryCta).toBeTruthy();
-    expect(libraryCta?.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(libraryCta?.getAttribute('href') || '').toBe('/coding');
   });
 
   it('places the interactive demo before the recommended preparation roadmap', () => {
@@ -223,9 +223,9 @@ describe('ShowcasePageComponent', () => {
     expect(thirdItem.textContent).toContain('Frontend machine coding questions');
     expect(thirdItem.getAttribute('href') || '').toContain('/machine-coding');
     expect(fourthItem.textContent).toContain('Question Library');
-    expect(fourthItem.getAttribute('href') || '').toContain('/coding?reset=1');
+    expect(fourthItem.getAttribute('href') || '').toBe('/coding');
     const fifthItem = page.querySelector('[data-testid="prep-roadmap-item-5"]') as HTMLAnchorElement;
     expect(fifthItem.textContent).toContain('Final-round coverage');
-    expect(fifthItem.getAttribute('href') || '').toContain('/coding?view=formats&category=system');
+    expect(fifthItem.getAttribute('href') || '').toBe('/system-design');
   });
 });

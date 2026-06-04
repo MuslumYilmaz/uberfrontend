@@ -7933,13 +7933,13 @@ export class FrameworkPrepPathArticle {
       {
         label: `${config.label} coding question library filter`,
         route: ['/coding'],
-        queryParams: { tech: config.tech, kind: 'coding', reset: '1' },
+        queryParams: { tech: config.tech, kind: 'coding' },
         note: 'Apply the path with implementation drills and edge-case checks.',
       },
       {
         label: `${config.label} trivia question library filter`,
         route: ['/coding'],
-        queryParams: { tech: config.tech, kind: 'trivia', reset: '1' },
+        queryParams: { tech: config.tech, kind: 'trivia' },
         note: 'Practice concise explanations for framework concepts and trade-offs.',
       },
       {

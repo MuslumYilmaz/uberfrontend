@@ -34,6 +34,8 @@ describe('TrackListComponent', () => {
     const reactHub = native.querySelector('a[href="/react/interview-questions"]');
     const angularHub = native.querySelector('a[href="/angular/interview-questions"]');
     const vueHub = native.querySelector('a[href="/vue/interview-questions"]');
+    const htmlHub = native.querySelector('a[href="/html/interview-questions"]');
+    const cssHub = native.querySelector('a[href="/css/interview-questions"]');
     const htmlCssHub = native.querySelector('a[href="/html-css/interview-questions"]');
     const systemHub = native.querySelector('a[href="/system-design"]');
     const machineHub = native.querySelector('a[href="/machine-coding"]');
@@ -44,6 +46,8 @@ describe('TrackListComponent', () => {
     expect(reactHub).toBeTruthy();
     expect(angularHub).toBeTruthy();
     expect(vueHub).toBeTruthy();
+    expect(htmlHub).toBeTruthy();
+    expect(cssHub).toBeTruthy();
     expect(htmlCssHub).toBeTruthy();
     expect(systemHub).toBeTruthy();
     expect(machineHub).toBeTruthy();
@@ -138,6 +142,8 @@ describe('TrackListComponent', () => {
     expect(native.querySelector('a[href="/react/interview-questions"]')).toBeTruthy();
     expect(native.querySelector('a[href="/angular/interview-questions"]')).toBeTruthy();
     expect(native.querySelector('a[href="/vue/interview-questions"]')).toBeTruthy();
+    expect(native.querySelector('a[href="/html/interview-questions"]')).toBeTruthy();
+    expect(native.querySelector('a[href="/css/interview-questions"]')).toBeTruthy();
     expect(native.querySelector('a[href="/html-css/interview-questions"]')).toBeTruthy();
   });
 

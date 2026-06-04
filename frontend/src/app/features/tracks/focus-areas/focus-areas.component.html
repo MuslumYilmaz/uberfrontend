@@ -19,7 +19,7 @@
         </div>
       </ng-container>
       <div class="hero-actions">
-        <a class="hero-cta" [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Open Question Library</a>
+        <a class="hero-cta" [routerLink]="['/coding']">Open Question Library</a>
         <a class="hero-cta hero-cta--secondary" [routerLink]="['/tracks', 'foundations-30d', 'preview']">Open 30-day study plan</a>
         <a class="hero-cta hero-cta--secondary" [routerLink]="['/companies']">Open Company Prep</a>
       </div>
@@ -37,7 +37,7 @@
           <li>Move into one Study Plan, then finish with Company Prep in your final week.</li>
         </ul>
         <div class="prep-guide__links">
-          <a [routerLink]="['/coding']" [queryParams]="{ reset: 1 }">Question Library</a>
+          <a [routerLink]="['/coding']">Question Library</a>
           <a [routerLink]="['/guides/framework-prep']">Framework Prep Guide</a>
           <a [routerLink]="['/tracks', 'crash-7d', 'preview']">7-day crash study plan</a>
         </div>
@@ -48,7 +48,7 @@
           *ngFor="let row of stats.rows"
           class="row fa-card fa-card--interactive"
           [routerLink]="['/coding']"
-          [queryParams]="{ topic: row.id, reset: 1 }"
+          [queryParams]="{ topic: row.id }"
           [attr.aria-label]="'Open ' + row.title + ' questions'"
         >
           <div class="row-main">

@@ -239,7 +239,6 @@ export class TrackListComponent implements OnInit {
     {
       label: 'Question Library',
       route: ['/coding'],
-      queryParams: { reset: 1 },
       toneClass: 'hero-link--iq-master',
     },
     {
@@ -302,6 +301,18 @@ export class TrackListComponent implements OnInit {
       description: 'Reactivity, component contracts, router, and state tradeoffs.',
       route: ['/vue/interview-questions'],
       toneClass: 'hero-link--iq-vue',
+    },
+    {
+      label: 'HTML',
+      description: 'Semantics, forms, metadata, accessibility, and browser defaults.',
+      route: ['/html/interview-questions'],
+      toneClass: 'hero-link--iq-html',
+    },
+    {
+      label: 'CSS',
+      description: 'Cascade, layout, selectors, responsive UI, and styling tradeoffs.',
+      route: ['/css/interview-questions'],
+      toneClass: 'hero-link--iq-css',
     },
     {
       label: 'HTML/CSS',

@@ -3,12 +3,12 @@
     <ng-template #questionListTpl>
         <ul class="side-list">
             <li *ngFor="let q of sidebarQuestions; trackBy: trackByQuestionId">
-                <a
+                <button
+                    type="button"
                     class="side-item"
                     [class.is-active]="isActive(q)"
-                    [routerLink]="sidebarQuestionRoute(q)"
-                    [state]="sidebarNavState(q)"
-                    (click)="onSidebarQuestionClick(q)">
+                    [attr.aria-current]="isActive(q) ? 'page' : null"
+                    (click)="navigateSidebarQuestion(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
                         <span class="chip chip-premium" *ngIf="q.access === 'premium'">Premium</span>
@@ -16,7 +16,7 @@
                     <div class="side-item-tail">
                         <app-fa-glyph class="side-item-tail__icon" icon="fa-solid fa-chevron-right" *ngIf="!isActive(q)"></app-fa-glyph>
                     </div>
-                </a>
+                </button>
             </li>
         </ul>
     </ng-template>
@@ -90,9 +90,8 @@
                         class="practice-frame__cta practice-frame__cta--primary"
                         data-testid="trivia-practice-frame-primary"
                         data-trivia-link-zone="prep_bridge"
-                        [routerLink]="['/coding']"
-                        [queryParams]="{ kind: 'trivia', reset: 1 }">
-                        Practice interview questions
+                        [routerLink]="interviewQuestionsHubRoute()">
+                        {{ interviewQuestionsHubCtaLabel() }}
                     </a>
                     <a
                         class="practice-frame__cta"
@@ -105,8 +104,8 @@
                         class="practice-frame__link"
                         data-testid="trivia-practice-frame-hub"
                         data-trivia-link-zone="prep_bridge"
-                        [routerLink]="interviewQuestionsHubRoute()">
-                        {{ interviewQuestionsHubCtaLabel() }}
+                        [routerLink]="['/interview-questions/essential']">
+                        Open Essential 60
                     </a>
                 </div>
             </section>
@@ -299,8 +298,17 @@
                         Use this as one explanation rep, then continue with the {{ interviewQuestionsHubLabel() }} cluster or a guided prep path.
                     </p>
                     <div class="prep-bridge__links">
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/interview-questions']">Open frontend interview questions</a>
                         <a data-trivia-link-zone="prep_bridge" [routerLink]="interviewQuestionsHubRoute()">{{ interviewQuestionsHubCtaLabel() }}</a>
-                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/coding']" [queryParams]="{ kind: 'trivia', reset: 1 }">Practice more interview concept questions</a>
+                        <a *ngIf="isHtmlCssTech()" data-trivia-link-zone="prep_bridge" [routerLink]="['/html-css/interview-questions']">Open HTML/CSS interview questions</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/interview-questions/essential']">Open Essential 60</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/machine-coding']">Open Machine Coding Hub</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/coding']">Open Question Library</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/system-design']">Open system design questions</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/guides/interview-blueprint/intro']">Open interview preparation guide</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/guides/system-design-blueprint']">Open system design blueprint</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/guides/framework-prep']">Open framework prep paths</a>
+                        <a data-trivia-link-zone="prep_bridge" [routerLink]="['/tracks']">Open Study Plans</a>
                         <a data-trivia-link-zone="prep_bridge" [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
                         <a data-trivia-link-zone="prep_bridge" [routerLink]="['/companies']">Browse company questions</a>
                         <a *ngIf="hasFrameworkPrepPath()" data-trivia-link-zone="prep_bridge" [routerLink]="frameworkPrepRoute()">{{ frameworkPrepCtaLabel() }}</a>
@@ -459,7 +467,7 @@
 
 <!-- Footer -->
 <app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
-    [practiceLeftLabel]="'Question Library'" [practiceLeftRoute]="['/coding']" [practiceLeftQueryParams]="{ kind: 'trivia', reset: 1 }"
+    [practiceLeftLabel]="'Question Library'" [practiceLeftRoute]="['/coding']"
     [showSubmit]="true" [submitLabel]="submitLabel()" [submitDisabled]="isCompletionPending()"
     (submit)="markComplete()" (prev)="prev()" (next)="next()" (back)="backToReturn()">
 </app-footer>

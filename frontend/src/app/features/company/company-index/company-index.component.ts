@@ -54,7 +54,7 @@ export class CompanyIndexComponent implements OnInit {
   ];
 
   companyPrepSequence: PrepSignalItem[] = [
-    { text: 'Question Library', route: ['/coding'], queryParams: { reset: 1 } },
+    { text: 'Question Library', route: ['/coding'] },
     { text: 'Focus Areas', route: ['/focus-areas'] },
     { text: 'Study Plans', route: ['/tracks'] },
     { text: 'Company Prep', route: ['/companies'] },
@@ -67,6 +67,7 @@ export class CompanyIndexComponent implements OnInit {
     { label: 'Vue.js interview questions', route: ['/vue/interview-questions'], path: '/vue/interview-questions' },
     { label: 'HTML interview questions', route: ['/html/interview-questions'], path: '/html/interview-questions' },
     { label: 'CSS interview questions', route: ['/css/interview-questions'], path: '/css/interview-questions' },
+    { label: 'HTML and CSS interview questions', route: ['/html-css/interview-questions'], path: '/html-css/interview-questions' },
     { label: 'Frontend machine coding questions', route: ['/machine-coding'], path: '/machine-coding' },
     { label: 'Frontend system design interview questions', route: ['/system-design'], path: '/system-design' },
   ];
