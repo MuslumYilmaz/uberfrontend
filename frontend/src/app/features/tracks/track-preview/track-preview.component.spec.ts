@@ -95,9 +95,7 @@ describe('TrackPreviewComponent', () => {
     expect(text).toContain('ready');
     expect(text).toContain('May 2026');
     expect(primary?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
-    expect(library?.getAttribute('href')).toContain('/coding');
-    expect(library?.getAttribute('href')).toContain('reset=1');
-    expect(library?.getAttribute('href')).toContain('src=track_preview_crash-7d');
+    expect(library?.getAttribute('href')).toBe('/coding');
   });
 
   it('renders seven task-preview day cards with free and premium signals', async () => {
@@ -163,9 +161,7 @@ describe('TrackPreviewComponent', () => {
     expect(text).toContain('ready');
     expect(text).toContain('May 2026');
     expect(primary?.getAttribute('href')).toBe('/javascript/coding/js-number-clamp');
-    expect(library?.getAttribute('href')).toContain('/coding');
-    expect(library?.getAttribute('href')).toContain('reset=1');
-    expect(library?.getAttribute('href')).toContain('src=track_preview_foundations-30d');
+    expect(library?.getAttribute('href')).toBe('/coding');
   });
 
   it('updates the preview title when navigating between preview slugs in the reused component', async () => {
