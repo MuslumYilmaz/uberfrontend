@@ -1,6 +1,6 @@
 // features/guides/playbook/js-problems-article.component.ts
 // -----------------------------------------------------------------------------
-// JavaScript Problems That Actually Show Up
+// JavaScript Interview Questions and Patterns
 // -----------------------------------------------------------------------------
 
 import { Component, Input } from '@angular/core';
@@ -8,288 +8,557 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-    standalone: true,
-    imports: [GuideShellComponent, RouterModule],
-    template: `
+  standalone: true,
+  imports: [GuideShellComponent, RouterModule],
+  styles: `
+    a {
+      color: #4ea1ff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s, text-decoration 0.2s;
+    }
+    a:hover {
+      color: #82c7ff;
+      text-decoration: underline;
+    }
+    .freshness {
+      margin: 0 0 16px;
+      color: color-mix(in srgb, var(--uf-text-tertiary) 86%, transparent);
+      font-size: 12px;
+    }
+    .practice-proof {
+      display: grid;
+      gap: 14px;
+      margin: 18px 0 24px;
+      padding: 14px;
+      border: 1px solid var(--uf-border-subtle);
+      border-left: 3px solid color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 82%, transparent);
+    }
+    .proof-stats,
+    .pattern-grid,
+    .worked-grid,
+    .format-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      padding-left: 0;
+      list-style: none;
+    }
+    .proof-stats {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .proof-stat,
+    .pattern-card,
+    .worked-panel,
+    .format-link {
+      min-width: 0;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      padding: 12px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 74%, transparent);
+    }
+    .proof-stat strong {
+      display: block;
+      color: var(--uf-text-primary);
+      font-size: 1rem;
+    }
+    .proof-stat span {
+      display: block;
+      color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+      font-size: 0.86rem;
+    }
+    .proof-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .proof-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 8px 12px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface) 88%, transparent);
+    }
+    .proof-cta--primary {
+      color: var(--uf-bg);
+      background: var(--uf-accent);
+      border-color: color-mix(in srgb, var(--uf-accent) 84%, var(--uf-border-subtle));
+    }
+    .pattern-card,
+    .format-link {
+      display: grid;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .pattern-card:hover,
+    .format-link:hover {
+      text-decoration: none;
+      border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+    }
+    .pattern-card h3,
+    .worked-panel h3,
+    .format-link strong {
+      margin: 0;
+      color: var(--uf-text-primary);
+    }
+    .pattern-card p,
+    .worked-panel p,
+    .format-link span {
+      margin: 0;
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+    }
+    .pattern-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent);
+    }
+    .pattern-meta span {
+      padding: 2px 8px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--uf-surface) 82%, transparent);
+    }
+    .pattern-card__focus {
+      font-size: 0.88rem;
+    }
+    .question-map li {
+      margin-bottom: 10px;
+    }
+    .question-map a {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .worked-grid {
+      margin: 14px 0;
+    }
+    .worked-panel ul {
+      margin-bottom: 0;
+    }
+    .code-wrap {
+      overflow-x: auto;
+      margin: 14px 0;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 88%, transparent);
+    }
+    .code-wrap pre {
+      margin: 0;
+      padding: 12px;
+      min-width: 520px;
+      color: var(--uf-text-primary);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .mini-table {
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    .mini-table table {
+      width: 100%;
+      min-width: 620px;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+    .mini-table th,
+    .mini-table td {
+      border: 1px solid var(--uf-border-subtle);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .mini-table th {
+      color: var(--uf-text-primary);
+      background: color-mix(in srgb, var(--uf-surface-alt) 86%, transparent);
+    }
+  `,
+  template: `
   <fa-guide-shell
-    title="Frontend JavaScript Interviews: Problems, Patterns, and Answer Strategy"
-    subtitle="Core JavaScript patterns interviewers ask most and how to explain your approach under pressure."
-    [minutes]="14"
-    [tags]="['javascript','coding','practice']"
+    title="JavaScript Coding Interview Questions and Patterns for Frontend Engineers (2026)"
+    subtitle="A practice-first map for frontend JavaScript coding interview questions: async, promises, closures, DOM utilities, output tracing, and direct drills."
+    [minutes]="18"
+    [tags]="['javascript','practice','interview-map']"
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
-      [readerPromise]="readerPromise || undefined"
+    [readerPromise]="readerPromise || undefined"
   >
-    <!-- Opening -->
-    <p>
-    Front-end interviews aren’t about solving obscure CS puzzles like
-    <em>“invert a binary tree”</em>. Instead, they test whether you can
-    <strong>use JavaScript the way you actually use it at work</strong>:
-    shaping data for the UI, handling async flows without breaking, and
-    explaining why the browser behaves the way it does.
-    </p>
-    <p>
-    In other words — do you know how to <em>transform arrays and objects</em>,
-    <em>manage promises and timing</em>, and <em>reason about the event loop
-    and rendering</em> when things get messy? That’s what interviewers care about.
-    </p>
-    <p>
-    This section focuses only on the <strong>real patterns and problems
-    that show up repeatedly in interviews</strong>, so you don’t waste time
-    grinding topics you’ll never be asked.
-    </p>
-
-    <!-- Section 1 -->
-    <h2>1. Array &amp; Object transformations</h2>
-    <p>
-    A huge chunk of front-end work is <strong>shaping data for the UI</strong>.  
-    That’s why interviews often throw you prompts about arrays and objects.  
-    They’re checking whether you can move from raw data → the format a component needs,  
-    without getting stuck on the basics.
-    </p>
-
-    <h3>Example: <code>groupBy</code></h3>
-    <p><strong>Prompt:</strong> Write a <code>groupBy</code> function that groups items by a key function.</p>
-
-    <pre><code class="language-ts">function groupBy&lt;T&gt;(arr: T[], fn: (item: T) =&gt; string): Record&lt;string, T[]&gt; &#123;
-    return arr.reduce((acc, item) =&gt; &#123;
-        const key = fn(item);
-        (acc[key] ||= []).push(item);
-        return acc;
-    &#125;, &#123;&#125; as Record&lt;string, T[]&gt;);
-    &#125;
-
-    // Quick test
-    console.log(groupBy([6.1, 4.2, 6.3], Math.floor));
-    // =&gt; &#123; "6": [6.1, 6.3], "4": [4.2] &#125;
-    </code></pre>
-
+    <div class="freshness" data-testid="js-guide-freshness">
+      Last updated: June 2026 | Author: FrontendAtlas Team | Reviewed by FrontendAtlas
+    </div>
 
     <p>
-    <strong>Why this matters in interviews:</strong>  
-    They want to see if you can take a fuzzy requirement (“group items by …”)  
-    and quickly turn it into working code. This is the same skill you’d use when  
-    formatting API results for a chart or table.
+      This page is not another JavaScript Q&A dump. Use it as a practice map for the
+      frontend JavaScript coding interview questions that engineers are asked to implement,
+      trace, and explain under time pressure.
     </p>
-
-    <ul>
-    <li><strong>Edge cases:</strong> empty arrays, duplicate keys, non-string keys.</li>
-    <li><strong>Clarity:</strong> narrate what <code>reduce</code> does step by step.</li>
-    <li><strong>Improvement instinct:</strong> mention when you’d use <code>Map</code> instead of an object.</li>
-    </ul>
-
     <p>
-    👉 Want more reps? Check out the  
-    <a [routerLink]="['/coding']">coding practice area</a> for related drills:  
-    <code>chunk</code>, <code>flatten</code>, <code>unique</code>.
+      The companion <a [routerLink]="['/javascript','interview-questions']">JavaScript interview questions hub</a>
+      covers short-answer concept review. This guide points you to direct drills,
+      edge cases, and worked examples so you can turn those concepts into interview-ready reps.
     </p>
 
-    <!-- Section 2 -->
-    <h2>2. Async &amp; control flow</h2>
+    <div class="practice-proof" data-testid="js-guide-practice-proof">
+      <div class="proof-stats" aria-label="FrontendAtlas JavaScript practice proof">
+        <div class="proof-stat">
+          <strong>500+</strong>
+          <span>practice questions</span>
+        </div>
+        <div class="proof-stat">
+          <strong>JavaScript</strong>
+          <span>function drills</span>
+        </div>
+        <div class="proof-stat">
+          <strong>Live</strong>
+          <span>editor + checks</span>
+        </div>
+        <div class="proof-stat">
+          <strong>Async + DOM</strong>
+          <span>patterns</span>
+        </div>
+      </div>
+      <div class="proof-actions" aria-label="JavaScript guide practice actions">
+        <a class="proof-cta proof-cta--primary" [routerLink]="['/coding']" [queryParams]="{ view: 'formats', category: 'js-fn' }">
+          Start JavaScript function drills
+        </a>
+        <a class="proof-cta" [routerLink]="['/javascript','interview-questions']">
+          Review JavaScript Q&amp;A
+        </a>
+      </div>
+    </div>
+
+    <h2 id="most-asked-javascript-coding-interview-patterns">Most asked JavaScript coding interview patterns</h2>
     <p>
-    Much of front-end work is about <strong>timing</strong> — responding to rapid user
-    input, waiting for network calls, or controlling animations. Interviewers want to see if
-    you understand <em>when</em> code runs, not just <em>what</em> runs.
+      These are the patterns that show up repeatedly because they test real frontend work:
+      timers, async composition, data shaping, browser events, identity, and edge-case discipline.
+    </p>
+    <div class="pattern-grid" data-testid="js-guide-pattern-cards">
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-debounce']" data-testid="js-pattern-debounce">
+        <div class="pattern-meta"><span>Timers</span><span>Must know</span></div>
+        <h3>Debounce</h3>
+        <p>Requirement: delay execution until calls stop for a quiet period.</p>
+        <p class="pattern-card__focus">Test focus: last args, context, cancellation, leading/trailing policy.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-throttle']" data-testid="js-pattern-throttle">
+        <div class="pattern-meta"><span>Timers</span><span>Events</span></div>
+        <h3>Throttle</h3>
+        <p>Requirement: run at most once per window while high-frequency events continue.</p>
+        <p class="pattern-card__focus">Test focus: leading call, trailing call, dropped events, timer cleanup.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-promise-all']" data-testid="js-pattern-promise-all">
+        <div class="pattern-meta"><span>Promises</span><span>Async</span></div>
+        <h3>Promise.all</h3>
+        <p>Requirement: resolve values in input order and reject as soon as one task fails.</p>
+        <p class="pattern-card__focus">Test focus: fail-fast, empty input, non-promise values, ordering.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','trivia','js-promise-combinators-all-allsettled-race-any']" data-testid="js-pattern-promise-combinators">
+        <div class="pattern-meta"><span>Promises</span><span>Concept</span></div>
+        <h3>Promise combinators</h3>
+        <p>Requirement: choose between all, allSettled, race, and any for product behavior.</p>
+        <p class="pattern-card__focus">Test focus: partial failure, first result, first fulfillment, retries.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','trivia','js-event-loop']" data-testid="js-pattern-event-loop">
+        <div class="pattern-meta"><span>Runtime</span><span>Output</span></div>
+        <h3>Event loop tracing</h3>
+        <p>Requirement: predict output when sync code, promises, timers, and await mix.</p>
+        <p class="pattern-card__focus">Test focus: microtasks before timers, await continuation, rendering timing.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','trivia','js-closures']" data-testid="js-pattern-closures">
+        <div class="pattern-meta"><span>Scope</span><span>Core</span></div>
+        <h3>Closures</h3>
+        <p>Requirement: explain retained lexical scope and implement small stateful functions.</p>
+        <p class="pattern-card__focus">Test focus: loop capture, stale callbacks, retained memory, factories.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-implement-bind']" data-testid="js-pattern-this-bind">
+        <div class="pattern-meta"><span>this</span><span>Polyfill</span></div>
+        <h3>this, bind, new, instanceof</h3>
+        <p>Requirement: reason about call-site binding and implement native-like helpers.</p>
+        <p class="pattern-card__focus">Test focus: constructor calls, prototypes, arrow functions, partial args.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-array-prototype-reduce']" data-testid="js-pattern-array-methods">
+        <div class="pattern-meta"><span>Arrays</span><span>Polyfill</span></div>
+        <h3>Array map/filter/reduce</h3>
+        <p>Requirement: implement or explain array transformations without mutating source data.</p>
+        <p class="pattern-card__focus">Test focus: sparse arrays, callback args, initial value, return shape.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-group-by']" data-testid="js-pattern-groupby-flatten">
+        <div class="pattern-meta"><span>Data shaping</span><span>Recursion</span></div>
+        <h3>GroupBy and flatten</h3>
+        <p>Requirement: reshape nested or grouped data into the form a UI can render.</p>
+        <p class="pattern-card__focus">Test focus: empty inputs, key coercion, depth, recursion boundaries.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-deep-clone']" data-testid="js-pattern-deep-clone">
+        <div class="pattern-meta"><span>Objects</span><span>References</span></div>
+        <h3>Deep clone and deep equal</h3>
+        <p>Requirement: compare or copy nested values while naming practical limits.</p>
+        <p class="pattern-card__focus">Test focus: arrays, dates, cycles, functions, object identity.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-event-emitter-mini']" data-testid="js-pattern-event-emitter">
+        <div class="pattern-meta"><span>Pub/sub</span><span>State</span></div>
+        <h3>EventEmitter</h3>
+        <p>Requirement: subscribe, emit, unsubscribe, and preserve listener ordering.</p>
+        <p class="pattern-card__focus">Test focus: once handlers, removal during emit, duplicate listeners.</p>
+      </a>
+      <a class="pattern-card" [routerLink]="['/javascript','coding','js-delegated-events-2']" data-testid="js-pattern-dom-delegation">
+        <div class="pattern-meta"><span>DOM</span><span>Events</span></div>
+        <h3>DOM event delegation</h3>
+        <p>Requirement: handle dynamic children through one parent listener.</p>
+        <p class="pattern-card__focus">Test focus: closest target, containment, bubbling, cleanup.</p>
+      </a>
+    </div>
+
+    <h2 id="javascript-coding-interview-question-map">25 JavaScript coding interview questions to practice</h2>
+    <p>
+      Treat this as a checklist, not a memorization list. For each prompt, state the
+      requirement, name edge cases, implement a baseline, and verify at least one failing path.
     </p>
 
-    <h3>Example: <code>debounce</code></h3>
-    <p><strong>Prompt:</strong> Collapse multiple rapid calls into one after a quiet period.</p>
-    <pre><code class="language-ts">function debounce&lt;T extends (...args:any[]) =&gt; void&gt;(fn: T, ms = 200) &#123;
-    let id: any;
-    return (...args: Parameters&lt;T&gt;) =&gt; &#123;
-        clearTimeout(id);
-        id = setTimeout(() =&gt; fn(...args), ms);
-    &#125;;
-    &#125;
-
-    // Quick test
-    const log = debounce(console.log, 300);
-    log("first");
-    log("second"); 
-    // only "second" prints after ~300ms
-    </code></pre>
-
-    <p><strong>Edge cases to watch for:</strong></p>
-    <ul>
-    <li>Calls with different arguments — does the last one always win?</li>
-    <li>What if the function throws? Should the timer still reset?</li>
-    <li>Immediate vs delayed — sometimes you want the <em>first</em> call to fire instantly, not the last.</li>
-    </ul>
-
-    <p><strong>Variations worth practicing:</strong></p>
-    <ol>
-    <li><code>throttle</code> → run at most once per X ms, no matter how many calls.</li>
-    <li>Retry with backoff → retry a failing API with increasing delays (e.g. 100ms, 200ms, 400ms).</li>
-    <li>A mini <code>Promise.all</code> → combine multiple async tasks and return results in order.</li>
+    <h3>Async, timers, and runtime ordering</h3>
+    <ol class="question-map" data-testid="js-guide-question-map">
+      <li id="question-1"><a [routerLink]="['/javascript','coding','js-debounce']">Implement debounce with trailing, leading, and cancel behavior.</a></li>
+      <li id="question-2"><a [routerLink]="['/javascript','coding','js-throttle']">Implement throttle for scroll or resize events.</a></li>
+      <li id="question-3"><a [routerLink]="['/javascript','coding','js-promise-all']">Implement Promise.all with fail-fast semantics.</a></li>
+      <li id="question-4"><a [routerLink]="['/javascript','trivia','js-promise-combinators-all-allsettled-race-any']">Choose between Promise.all, allSettled, race, and any.</a></li>
+      <li id="question-5"><a [routerLink]="['/javascript','trivia','js-event-loop']">Trace event loop output with promises and timers.</a></li>
+      <li id="question-6"><a [routerLink]="['/javascript','trivia','js-microtasks-vs-macrotasks']">Explain microtasks versus macrotasks.</a></li>
+      <li id="question-7"><a [routerLink]="['/javascript','coding','js-sleep']">Implement sleep or delay as a Promise utility.</a></li>
+      <li id="question-8"><a [routerLink]="['/javascript','coding','js-concurrency-map-limit']">Build a concurrency-limited async map.</a></li>
+      <li id="question-9"><a [routerLink]="['/javascript','coding','js-take-latest']">Implement takeLatest to ignore stale async responses.</a></li>
     </ol>
 
-    <p>
-    👉 You can practice these patterns in the 
-    <a [routerLink]="['/coding']">coding practice area</a>. They come up frequently
-    because they mirror <strong>real FE work</strong>: debouncing search inputs,
-    throttling scroll listeners, retrying flaky APIs, or coordinating async flows.
-    </p>
-
-    <!-- Section 3 -->
-    <h2>3. Event loop &amp; browser ordering</h2>
-    <p>
-    A lot of “tricky” JS questions are really just about <strong>the event loop</strong> —
-    knowing why code runs in a certain order.  
-    This shows whether you understand how browsers schedule work.
-    </p>
-
-    <h3>Microtasks vs macrotasks</h3>
-    <pre><code class="language-ts">console.log("A");
-
-    setTimeout(() =&gt; console.log("B"), 0);
-
-    Promise.resolve().then(() =&gt; console.log("C"));
-
-    console.log("D");
-
-    // Output: A, D, C, B
-    </code></pre>
-
-    <p><strong>Why this happens:</strong></p>
-    <ol>
-    <li><strong>Sync code first:</strong> Logs <code>A</code>, then <code>D</code>.</li>
-    <li><strong>Microtasks next:</strong> Promise callbacks (<code>C</code>) run right after sync code, before timers.</li>
-    <li><strong>Macrotasks last:</strong> <code>setTimeout</code> callbacks (<code>B</code>) run on the next tick.</li>
+    <h3>Scope, functions, objects, and arrays</h3>
+    <ol class="question-map" start="10">
+      <li id="question-10"><a [routerLink]="['/javascript','trivia','js-closures']">Explain closures with a stateful counter or callback example.</a></li>
+      <li id="question-11"><a [routerLink]="['/javascript','coding','js-implement-bind']">Implement Function.prototype.bind.</a></li>
+      <li id="question-12"><a [routerLink]="['/javascript','coding','js-implement-new']">Implement the new operator.</a></li>
+      <li id="question-13"><a [routerLink]="['/javascript','coding','js-implement-instanceof']">Implement instanceof using the prototype chain.</a></li>
+      <li id="question-14"><a [routerLink]="['/javascript','coding','js-array-prototype-map']">Implement Array.prototype.map.</a></li>
+      <li id="question-15"><a [routerLink]="['/javascript','coding','js-array-prototype-reduce']">Implement Array.prototype.reduce.</a></li>
+      <li id="question-16"><a [routerLink]="['/javascript','trivia','js-map-filter-reduce']">Explain when to use map, filter, or reduce.</a></li>
+      <li id="question-17"><a [routerLink]="['/javascript','coding','js-group-by']">Implement groupBy for UI-ready data shaping.</a></li>
+      <li id="question-18"><a [routerLink]="['/javascript','coding','js-flatten-depth']">Flatten nested arrays to a given depth.</a></li>
+      <li id="question-19"><a [routerLink]="['/javascript','coding','js-deep-clone']">Implement deep clone and name unsupported values.</a></li>
+      <li id="question-20"><a [routerLink]="['/javascript','coding','js-deep-equal']">Implement deep equal for nested arrays and objects.</a></li>
     </ol>
 
-    <p><strong>Things to know for interviews:</strong></p>
-    <ul>
-    <li><code>Promise.then</code> and <code>queueMicrotask</code> always run before <code>setTimeout</code>/<code>setInterval</code>.</li>
-    <li><code>requestAnimationFrame</code> runs before the next paint (great for UI work).</li>
-    <li><code>async/await</code> is just Promise sugar — the code after <code>await</code> goes into the microtask queue.</li>
-    </ul>
-
-    <p>
-    👉 Practice with small snippets in the 
-    <a [routerLink]="['/coding']">coding practice area</a>.  
-    Change the order (e.g. mix <code>await</code>, <code>setTimeout</code>, <code>Promise</code>) 
-    and predict the output before running it. This builds the instinct interviewers look for.
-    </p>
-
-    <!-- Section 4 -->
-    <h2>4. DOM &amp; UI utilities</h2>
-    <p>
-    Frameworks (React, Angular, Vue) usually hide the DOM from you — but in interviews, 
-    you’re often asked to prove you understand the raw mechanics.  
-    Expect small tasks like <strong>event delegation, toggles, or DOM queries</strong>.
-    </p>
-
-    <h3>Example: Event delegation helper</h3>
-    <pre><code class="language-ts">function delegate(
-    parent: Element,
-    selector: string,
-    type: string,
-    handler: (e: Event) =&gt; void
-    ) {{ '{' }}
-    parent.addEventListener(type, (e) =&gt; {{ '{' }}
-        const target = (e.target as Element).closest(selector);
-        if (target &amp;&amp; parent.contains(target)) {{ '{' }}
-        handler(e);
-        {{ '}' }}
-    {{ '}' }});
-    {{ '}' }}
-
-    // Usage
-    delegate(document.body, "button.delete", "click", (e) =&gt; {{ '{' }}
-    console.log("Delete button clicked!", e.target);
-    {{ '}' }});
-    </code></pre>
-
-    <p><strong>Why it matters:</strong></p>
-    <ul>
-    <li><strong>Performance:</strong> Instead of 100 listeners on 100 buttons, you attach one on the parent.</li>
-    <li><strong>Dynamic UIs:</strong> Works even if new elements are added later.</li>
-    <li><strong>Knowledge check:</strong> Proves you understand <em>event bubbling</em> and <em>containment</em>.</li>
-    </ul>
-
-    <h3>Other utilities worth drilling</h3>
-    <ul>
-    <li><strong>Class toggler:</strong> Add/remove CSS classes cleanly with <code>classList.toggle</code>.</li>
-    <li><strong>Query shorthand:</strong> Tiny helpers for <code>document.querySelector</code> / <code>querySelectorAll</code>.</li>
-    <li><strong>Focus trap:</strong> For modals — keep keyboard navigation inside until closed.</li>
-    <li><strong>Lazy image loader:</strong> Use <code>IntersectionObserver</code> to swap <code>src</code> when in view.</li>
-    </ul>
-
-    <p>
-    👉 These show up in <a [routerLink]="['/coding']">UI widget drills</a> — modal, dropdown, 
-    autocomplete. Practicing raw DOM utilities makes you faster when the timer is ticking.
-    </p>
-
-    <!-- Section 5 -->
-    <h2>5. Testing instinct (even without Jest)</h2>
-    <p>
-    In interviews you usually don’t have a full test suite — but you can still show
-    strong testing instincts. Interviewers notice when you think about edge cases
-    without being prompted. It makes you look senior and reduces the “will this break
-    in prod?” worry.
-    </p>
-
-    <ol>
-    <li>
-        <strong>Log normal and edge cases.</strong><br />
-        Don’t just test the happy path. If you wrote a <code>debounce</code>, try calling
-        it 10 times in 100ms. If you wrote a <code>groupBy</code>, try duplicate keys.
-    </li>
-    <li>
-        <strong>Try empty, null, and extreme inputs.</strong><br />
-        “What happens if the array is empty?” or “What if the timeout is 0?”.
-        Interviewers love hearing you ask this out loud before running it.
-    </li>
-    <li>
-        <strong>State your expected output before running.</strong><br />
-        Example: “If I pass <code>[1,2,3]</code> and group by odd/even, I expect
-        <code>{{ '{' }} odd: [1,3], even: [2] {{ '}' }}</code>.”  
-        Shows you’re not guessing — you’re reasoning.
-    </li>
-    <li>
-        <strong>Use quick manual checks.</strong><br />
-        A <code>console.log</code> after each step is enough. You don’t need Jest or
-        Cypress here — just visible proof your function behaves as claimed.
-    </li>
-    <li>
-        <strong>Highlight trade-offs.</strong><br />
-        “This works fine for small arrays, but on 10k items I’d avoid nested loops.”
-        This is bonus credit: it shows maturity.
-    </li>
+    <h3>DOM, stateful helpers, and production-grade utilities</h3>
+    <ol class="question-map" start="21">
+      <li id="question-21"><a [routerLink]="['/javascript','coding','js-event-emitter-mini']">Build a mini EventEmitter.</a></li>
+      <li id="question-22"><a [routerLink]="['/javascript','coding','js-delegated-events-2']">Write a delegated event handler for dynamic elements.</a></li>
+      <li id="question-23"><a [routerLink]="['/javascript','coding','js-curry-function']">Implement curry for fixed-arity functions.</a></li>
+      <li id="question-24"><a [routerLink]="['/javascript','coding','js-memoize-function']">Implement memoize with a clear cache-key policy.</a></li>
+      <li id="question-25"><a [routerLink]="['/javascript','coding','js-create-lru-cache']">Build an LRU cache with bounded memory.</a></li>
     </ol>
 
+    <h2 id="worked-examples">Worked examples: how to narrate the hard parts</h2>
     <p>
-    👉 Practicing this habit in the 
-    <a [routerLink]="['/coding']">coding practice area</a> will make it automatic in real interviews.
+      These examples are intentionally compact. The goal is to show the interview
+      shape: clarify the contract, model state, handle edge cases, and link the implementation
+      to a direct drill.
     </p>
 
-    <!-- Closing -->
-    <h2>Wrap-up</h2>
+    <h3>Debounce worked example</h3>
     <p>
-    None of these problems are meant to trick you — they’re a window into how you think
-    and whether you can <strong>ship, verify, and explain</strong> under pressure.
-    Interviewers care less about pixel-perfect code and more about whether you can
-    build something that works, test it with a few edge cases, and walk them through
-    your reasoning.
+      Practice route: <a [routerLink]="['/javascript','coding','js-debounce']">/javascript/coding/js-debounce</a>.
     </p>
+    <div class="worked-grid" data-testid="js-guide-worked-examples">
+      <article class="worked-panel">
+        <h3>Clarify checklist</h3>
+        <ul>
+          <li>Should the first call fire immediately or only after the quiet period?</li>
+          <li>Should the returned function expose <code>cancel</code> or <code>flush</code>?</li>
+          <li>Should the wrapper preserve <code>this</code>, arguments, and return value?</li>
+        </ul>
+      </article>
+      <article class="worked-panel">
+        <h3>Timer and closure state model</h3>
+        <ul>
+          <li>Keep one timer id in closure state.</li>
+          <li>Replace the timer on every call so the latest call wins.</li>
+          <li>Store last args and context before scheduling the trailing call.</li>
+        </ul>
+      </article>
+      <article class="worked-panel">
+        <h3>Leading/trailing/cancel policy</h3>
+        <ul>
+          <li>Define whether leading and trailing can both fire in one window.</li>
+          <li>Cancel clears the timer and drops pending args.</li>
+          <li>Flush runs a pending trailing call immediately if supported.</li>
+        </ul>
+      </article>
+      <article class="worked-panel">
+        <h3>Edge-case tests</h3>
+        <ul>
+          <li>Call it three times quickly and expect only the last args.</li>
+          <li>Use a method to confirm <code>this</code> is preserved.</li>
+          <li>Cancel before the wait and expect no call.</li>
+        </ul>
+      </article>
+    </div>
+    <div class="code-wrap">
+      <pre><code>let timerId: ReturnType&lt;typeof setTimeout&gt; | null = null;
+
+return function debounced(this: unknown, ...args: unknown[]) &#123;
+  const context = this;
+  if (timerId) clearTimeout(timerId);
+  timerId = setTimeout(() =&gt; &#123;
+    timerId = null;
+    fn.apply(context, args);
+  &#125;, wait);
+&#125;;</code></pre>
+    </div>
+
+    <h3>Promise.all worked example</h3>
     <p>
-    Remember, <em>clarity beats cleverness</em>. A simple, working solution +
-    thoughtful narration puts you ahead of most candidates who either freeze,
-    over-engineer, or stay silent.
+      Practice route: <a [routerLink]="['/javascript','coding','js-promise-all']">/javascript/coding/js-promise-all</a>.
     </p>
+    <div class="worked-grid">
+      <article class="worked-panel">
+        <h3>Contract</h3>
+        <p>Resolve an array of values in the same order as input, regardless of completion order.</p>
+      </article>
+      <article class="worked-panel">
+        <h3>Fail-fast policy</h3>
+        <p>Reject immediately when any input rejects; do not wait for slower tasks to settle.</p>
+      </article>
+      <article class="worked-panel">
+        <h3>Boundary cases</h3>
+        <p>Empty input resolves to <code>[]</code>. Non-promise values are wrapped with <code>Promise.resolve</code>.</p>
+      </article>
+      <article class="worked-panel">
+        <h3>State model</h3>
+        <p>Track <code>results[index]</code> and a settled count. Resolve when count equals input length.</p>
+      </article>
+    </div>
+    <div class="code-wrap">
+      <pre><code>const results = new Array(inputs.length);
+let settled = 0;
+
+inputs.forEach((input, index) =&gt; &#123;
+  Promise.resolve(input).then((value) =&gt; &#123;
+    results[index] = value;
+    settled += 1;
+    if (settled === inputs.length) resolve(results);
+  &#125;, reject);
+&#125;);</code></pre>
+    </div>
+
+    <h3>Event loop worked example</h3>
     <p>
-    👉 Next step: practice these patterns under a timer in the
-    <a [routerLink]="['/coding']">coding practice area</a>. Try one utility (like
-    <code>debounce</code>) or one widget (like a dropdown) each day. With steady
-    reps, this flow will feel natural when it matters most.
+      Concept routes:
+      <a [routerLink]="['/javascript','trivia','js-event-loop']">/javascript/trivia/js-event-loop</a>
+      and
+      <a [routerLink]="['/javascript','trivia','js-microtasks-vs-macrotasks']">/javascript/trivia/js-microtasks-vs-macrotasks</a>.
     </p>
+    <div class="mini-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Queue</th>
+            <th>Interview wording</th>
+            <th>Common miss</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sync stack</td>
+            <td>Run top-level code first.</td>
+            <td>Jumping to timers before finishing normal function calls.</td>
+          </tr>
+          <tr>
+            <td>Microtasks</td>
+            <td>Promise callbacks and await continuations run before timers.</td>
+            <td>Treating <code>await</code> as if it blocks the whole thread.</td>
+          </tr>
+          <tr>
+            <td>Macrotasks</td>
+            <td>Timers run in a later task after microtasks drain.</td>
+            <td>Assuming <code>setTimeout(..., 0)</code> means immediate execution.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-wrap">
+      <pre><code>console.log('sync');
+setTimeout(() =&gt; console.log('timer'), 0);
+Promise.resolve().then(() =&gt; console.log('microtask'));
+
+(async () =&gt; &#123;
+  await null;
+  console.log('await continuation');
+&#125;)();
+
+// Output: sync, microtask, await continuation, timer</code></pre>
+    </div>
+
+    <h2 id="choose-your-practice-format">Choose your practice format</h2>
+    <p>
+      Stay in the JavaScript function lane when the round is utility-heavy, then move
+      into UI or framework surfaces when the interviewer expects a visible component.
+    </p>
+    <div class="format-grid" data-testid="js-guide-format-links">
+      <a class="format-link" [routerLink]="['/coding']" [queryParams]="{ view: 'formats', category: 'js-fn' }">
+        <strong>JavaScript functions</strong>
+        <span>Debounce, throttle, promises, arrays, objects, DOM helpers, and caches.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/javascript','interview-questions']">
+        <strong>Concepts and Q&amp;A</strong>
+        <span>Short-answer review for closures, event loop, promises, this, prototypes, and browser APIs.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/react','interview-questions']">
+        <strong>React UI coding</strong>
+        <span>Use this when JavaScript utility prompts turn into hook or component follow-ups.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/guides','interview-blueprint','coding-interviews']">
+        <strong>Frontend coding guide</strong>
+        <span>Use the broader UI and machine-coding map for component-heavy rounds.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/guides','framework-prep','javascript-prep-path']">
+        <strong>JavaScript prep path</strong>
+        <span>Use the roadmap when misses cluster around async, closures, and runtime behavior.</span>
+      </a>
+    </div>
+
+    <h2 id="javascript-interview-faq">FAQ</h2>
+    <div data-testid="js-guide-faq">
+      <h3>What are the most asked JavaScript coding interview questions?</h3>
+      <p>
+        Common prompts include debounce, throttle, Promise.all, event loop tracing,
+        closures, this binding, array helpers, deep clone/equal, EventEmitter, and DOM event delegation.
+      </p>
+      <h3>How should I practice JavaScript utility function interview questions?</h3>
+      <p>
+        Start with one direct drill, state the input/output contract, name edge cases, implement
+        a baseline, then test cancellation, ordering, context, empty input, and repeated calls.
+      </p>
+      <h3>Which JavaScript promise interview questions should I practice?</h3>
+      <p>
+        Prioritize Promise.all, Promise combinators, sleep, concurrency-limited map, takeLatest,
+        and stale-response handling because they expose ordering, rejection, and async race behavior.
+      </p>
+      <h3>How do I prepare for JavaScript event loop output questions?</h3>
+      <p>
+        Trace sync code first, then microtasks, then macrotasks. Write the expected output before running,
+        and explain how await schedules the continuation as promise work.
+      </p>
+      <h3>Is this different from JavaScript interview questions and answers?</h3>
+      <p>
+        Yes. The JavaScript interview questions and answers hub is for short-answer concept review.
+        This guide is a practice map that connects high-frequency patterns to direct coding and concept drills.
+      </p>
+    </div>
   </fa-guide-shell>
   `
 })
 export class JsProblemsArticle {
-    @Input() prev: any[] | null = null;
-    @Input() next: any[] | null = null;
-    @Input() leftNav: any;
+  @Input() prev: any[] | null = null;
+  @Input() next: any[] | null = null;
+  @Input() leftNav: any;
   @Input() readerPromise: string | null = null;
 }

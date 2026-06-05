@@ -30,7 +30,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       font-size: 12px;
     }
     .signal-list,
-    .next-links {
+    .next-links,
+    .proof-stats,
+    .prompt-card-grid,
+    .worked-grid,
+    .format-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 12px;
@@ -42,6 +46,102 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       border-left: 3px solid color-mix(in srgb, var(--uf-accent) 42%, var(--uf-border-subtle));
       padding: 10px 12px;
       background: color-mix(in srgb, var(--uf-surface-alt) 72%, transparent);
+    }
+    .practice-proof {
+      display: grid;
+      gap: 14px;
+      margin: 18px 0 24px;
+      padding: 14px;
+      border: 1px solid var(--uf-border-subtle);
+      border-left: 3px solid color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 82%, transparent);
+    }
+    .proof-stats {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .proof-stat {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface) 84%, transparent);
+    }
+    .proof-stat strong {
+      display: block;
+      color: var(--uf-text-primary);
+      font-size: 1rem;
+    }
+    .proof-stat span {
+      display: block;
+      color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+      font-size: 0.86rem;
+    }
+    .proof-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .proof-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 8px 12px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface) 88%, transparent);
+    }
+    .proof-cta--primary {
+      color: var(--uf-bg);
+      background: var(--uf-accent);
+      border-color: color-mix(in srgb, var(--uf-accent) 84%, var(--uf-border-subtle));
+    }
+    .prompt-card,
+    .worked-panel,
+    .format-link {
+      min-width: 0;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      padding: 12px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 74%, transparent);
+    }
+    .prompt-card {
+      display: grid;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .prompt-card:hover {
+      text-decoration: none;
+      border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+    }
+    .prompt-card h3,
+    .worked-panel h3,
+    .format-link strong {
+      margin: 0;
+      color: var(--uf-text-primary);
+    }
+    .prompt-card p,
+    .worked-panel p,
+    .format-link span {
+      margin: 0;
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+    }
+    .prompt-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent);
+    }
+    .prompt-meta span {
+      padding: 2px 8px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--uf-surface) 82%, transparent);
+    }
+    .prompt-card__focus {
+      font-size: 0.88rem;
     }
     .question-list li {
       margin-bottom: 10px;
@@ -71,6 +171,36 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       border-left: 3px solid color-mix(in srgb, var(--uf-accent) 42%, var(--uf-border-subtle));
       padding-left: 14px;
     }
+    .worked-grid {
+      margin: 14px 0;
+    }
+    .worked-panel ul {
+      margin-bottom: 0;
+    }
+    .code-wrap {
+      overflow-x: auto;
+      margin: 14px 0;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 88%, transparent);
+    }
+    .code-wrap pre {
+      margin: 0;
+      padding: 12px;
+      min-width: 520px;
+      color: var(--uf-text-primary);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .format-link {
+      display: grid;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .format-link:hover {
+      text-decoration: none;
+      border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+    }
   `,
   template: `
   <fa-guide-shell
@@ -97,6 +227,35 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       move into <a [routerLink]="['/machine-coding']">Frontend machine coding questions</a>
       or the <a [routerLink]="['/coding']">coding practice workspace</a>.
     </p>
+
+    <div class="practice-proof" data-testid="coding-guide-practice-proof">
+      <div class="proof-stats" aria-label="FrontendAtlas coding practice proof">
+        <div class="proof-stat">
+          <strong>500+</strong>
+          <span>practice questions</span>
+        </div>
+        <div class="proof-stat">
+          <strong>3</strong>
+          <span>guided plans</span>
+        </div>
+        <div class="proof-stat">
+          <strong>Live</strong>
+          <span>editor + checks</span>
+        </div>
+        <div class="proof-stat">
+          <strong>Most asked</strong>
+          <span>prompts</span>
+        </div>
+      </div>
+      <div class="proof-actions" aria-label="Coding guide practice actions">
+        <a class="proof-cta proof-cta--primary" [routerLink]="['/machine-coding']">
+          Start machine coding practice
+        </a>
+        <a class="proof-cta" [routerLink]="['/coding']" [queryParams]="{ view: 'formats', category: 'ui' }">
+          Browse UI coding formats
+        </a>
+      </div>
+    </div>
 
     <h2 id="what-front-end-coding-interviews-test">What frontend coding interviews test</h2>
     <p>
@@ -149,6 +308,75 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <h2 id="most-asked-frontend-coding-prompts">Most asked frontend coding prompts</h2>
+    <p>
+      Start with these high-signal prompts before browsing the full question bank.
+      Each one maps to the behavior interviewers usually break first: state ownership,
+      async timing, edge cases, accessibility, and explanation quality.
+    </p>
+    <div class="prompt-card-grid" data-testid="coding-guide-prompt-cards">
+      <a class="prompt-card" [routerLink]="['/react','coding','react-debounced-search']" data-testid="coding-prompt-debounced-search">
+        <div class="prompt-meta"><span>Must know</span><span>Async UI</span></div>
+        <h3>Debounced Search</h3>
+        <p>Requirement: debounce input, fetch results, show loading/error states, and keep the latest query authoritative.</p>
+        <p class="prompt-card__focus">Test focus: slow response cannot overwrite newer results.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-autocomplete-search-starter']" data-testid="coding-prompt-autocomplete">
+        <div class="prompt-meta"><span>Must know</span><span>Keyboard</span></div>
+        <h3>Autocomplete</h3>
+        <p>Requirement: fetch suggestions, support keyboard selection, handle empty/no-results/error states, and preserve focus.</p>
+        <p class="prompt-card__focus">Test focus: Arrow keys, Escape, selection, and stale responses.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-contact-form-starter']" data-testid="coding-prompt-contact-form">
+        <div class="prompt-meta"><span>Forms</span><span>HTTP</span></div>
+        <h3>Contact Form</h3>
+        <p>Requirement: collect fields, validate required input, submit over HTTP, and surface API feedback.</p>
+        <p class="prompt-card__focus">Test focus: disabled submit, invalid fields, retry, and success state.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-multi-step-signup']" data-testid="coding-prompt-multi-step">
+        <div class="prompt-meta"><span>Forms</span><span>State</span></div>
+        <h3>Multi-step Signup</h3>
+        <p>Requirement: persist step data, validate before advancing, support back navigation, and recover from invalid drafts.</p>
+        <p class="prompt-card__focus">Test focus: step ownership, partial progress, and navigation boundaries.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-nested-checkboxes']" data-testid="coding-prompt-nested-checkbox">
+        <div class="prompt-meta"><span>Tree state</span><span>Derived</span></div>
+        <h3>Nested Checkbox Tree</h3>
+        <p>Requirement: sync parent, child, and indeterminate states across recursive nested data.</p>
+        <p class="prompt-card__focus">Test focus: partial selection, select-all, deselect, and stable derived state.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-pagination-table']" data-testid="coding-prompt-data-table">
+        <div class="prompt-meta"><span>Tables</span><span>Pagination</span></div>
+        <h3>Data Table</h3>
+        <p>Requirement: paginate rows, sort predictably, handle empty pages, and keep row identity stable.</p>
+        <p class="prompt-card__focus">Test focus: page reset, empty results, sort order, and client/server tradeoffs.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-shopping-cart']" data-testid="coding-prompt-shopping-cart">
+        <div class="prompt-meta"><span>Collections</span><span>Totals</span></div>
+        <h3>Shopping Cart</h3>
+        <p>Requirement: add/remove items, update quantities, derive totals, and block invalid cart states.</p>
+        <p class="prompt-card__focus">Test focus: quantity boundaries, immutable updates, and derived totals.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-nested-comments']" data-testid="coding-prompt-nested-comments">
+        <div class="prompt-meta"><span>Recursive UI</span><span>Local state</span></div>
+        <h3>Nested Comments</h3>
+        <p>Requirement: render nested replies, add comments at the right level, and keep edit/reply state scoped.</p>
+        <p class="prompt-card__focus">Test focus: one active reply input, deep nesting, and stable item identity.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-tabs-switcher']" data-testid="coding-prompt-tabs">
+        <div class="prompt-meta"><span>Component API</span><span>Keyboard</span></div>
+        <h3>Tabs</h3>
+        <p>Requirement: switch panels, preserve active tab state, support arrow keys, and connect labels to panels.</p>
+        <p class="prompt-card__focus">Test focus: roving focus, disabled tabs, and active panel rendering.</p>
+      </a>
+      <a class="prompt-card" [routerLink]="['/react','coding','react-accordion-faq']" data-testid="coding-prompt-accordion">
+        <div class="prompt-meta"><span>Disclosure</span><span>A11y</span></div>
+        <h3>Accordion</h3>
+        <p>Requirement: open one or many panels, use semantic controls, and keep keyboard behavior predictable.</p>
+        <p class="prompt-card__focus">Test focus: controlled state, disabled panels, and disclosure semantics.</p>
+      </a>
     </div>
 
     <h2 id="frontend-coding-interview-questions">25 frontend coding interview questions to practice</h2>
@@ -270,23 +498,91 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       compresses async state, keyboard UX, stale network responses, and accessibility
       into one prompt.
     </p>
-    <div class="mini-case">
-      <h3>Junior answer</h3>
-      <p>
-        Builds an input, shows suggestions for a query, handles click selection,
-        and can explain the state variables. This is acceptable if the prompt is short.
-      </p>
-      <h3>Mid-level answer</h3>
-      <p>
-        Adds debounce, loading, no-results, stale response protection, keyboard
-        highlight, Escape behavior, and manual checks for slow network responses.
-      </p>
-      <h3>Senior answer</h3>
-      <p>
-        Separates data fetching from presentation, names cache and cancellation
-        tradeoffs, explains combobox semantics, covers analytics or ranking limits,
-        and gives a production-hardening plan without overbuilding the interview solution.
-      </p>
+    <p>
+      Open the hands-on version when you want to implement it:
+      <a [routerLink]="['/react','coding','react-autocomplete-search-starter']">Autocomplete Search Bar (Hooks)</a>.
+    </p>
+    <div class="worked-grid" data-testid="coding-guide-worked-example">
+      <article class="worked-panel">
+        <h3>Clarify first</h3>
+        <ul>
+          <li>What data shape does the suggestion API return?</li>
+          <li>Should empty input clear results immediately?</li>
+          <li>Which interactions must work by keyboard, mouse, blur, and Escape?</li>
+        </ul>
+      </article>
+      <article class="worked-panel">
+        <h3>State model</h3>
+        <ul>
+          <li><code>query</code>, <code>status</code>, <code>results</code>, <code>highlightedIndex</code>, <code>selectedItem</code>.</li>
+          <li><code>requestId</code> or <code>AbortController</code> for stale response protection.</li>
+          <li>Optional cache only after the baseline behavior works.</li>
+        </ul>
+      </article>
+      <article class="worked-panel">
+        <h3>Stale response policy</h3>
+        <ul>
+          <li>Increment a request token before every fetch.</li>
+          <li>Ignore any response whose token is not the latest token.</li>
+          <li>Reset loading only for the active request.</li>
+        </ul>
+      </article>
+      <article class="worked-panel">
+        <h3>Keyboard and a11y checks</h3>
+        <ul>
+          <li>Arrow keys move highlight without losing input focus.</li>
+          <li>Enter selects, Escape closes, and blur/click behavior is intentional.</li>
+          <li>Use combobox/listbox semantics when the custom UI needs them.</li>
+        </ul>
+      </article>
+    </div>
+    <div class="code-wrap">
+      <pre><code>type AutocompleteState = &#123;
+  query: string;
+  status: 'idle' | 'loading' | 'success' | 'empty' | 'error';
+  results: Suggestion[];
+  highlightedIndex: number;
+  selectedItem: Suggestion | null;
+&#125;;
+
+// Interview-safe stale response guard:
+// only the newest request is allowed to update visible results.
+let latestRequestId = 0;
+const requestId = ++latestRequestId;
+const results = await fetchSuggestions(query);
+if (requestId !== latestRequestId) return;</code></pre>
+    </div>
+
+    <h2 id="choose-your-practice-format">Choose your practice format</h2>
+    <p>
+      Use <a [routerLink]="['/machine-coding']">Frontend machine coding questions</a>
+      as the main hands-on route, then jump into the exact format your interview loop expects.
+    </p>
+    <div class="format-grid" data-testid="coding-guide-format-links">
+      <a class="format-link" [routerLink]="['/coding']" [queryParams]="{ view: 'formats', category: 'js-fn' }">
+        <strong>JavaScript utilities</strong>
+        <span>Debounce, throttle, promise utilities, closures, and async control flow.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/react','interview-questions']">
+        <strong>React machine coding</strong>
+        <span>Hooks, state ownership, lists, forms, async UI, and component boundaries.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/angular','interview-questions']">
+        <strong>Angular machine coding</strong>
+        <span>Components, forms, RxJS flows, services, and template state.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/vue','interview-questions']">
+        <strong>Vue machine coding</strong>
+        <span>Composition API, reactivity, forms, events, and component communication.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/coding']" [queryParams]="{ view: 'formats', category: 'html-css' }">
+        <strong>HTML/CSS UI coding</strong>
+        <span>Layouts, semantics, responsive states, accessibility, and visual correctness.</span>
+      </a>
+      <a class="format-link" [routerLink]="['/system-design']">
+        <strong>System design follow-up</strong>
+        <span>Turn the working UI into architecture, caching, performance, and tradeoff discussion.</span>
+      </a>
     </div>
 
     <h2 id="common-mistakes">Common mistakes</h2>
