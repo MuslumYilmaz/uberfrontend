@@ -157,7 +157,7 @@ describe('guide-seo.util', () => {
     expect(meta.title).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/coding-interviews');
     expect(meta.description).toBe(
-      'Prepare for frontend coding interviews with UI coding interview questions, JavaScript utilities, a 60-minute strategy, rubric, and practice links.',
+      'Prepare for frontend coding interviews with UI coding questions, JS utilities, most-asked machine coding prompts, live practice links, rubric, and strategy.',
     );
     expect(meta.keywords).toContain('frontend coding interview questions');
     expect(meta.keywords).toContain('frontend coding interview prep');
@@ -174,7 +174,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
-    expect(article?.dateModified).toBe('2026-06-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -193,6 +193,65 @@ describe('guide-seo.util', () => {
       'Should I use React or vanilla JavaScript in frontend coding interviews?',
       'How are frontend UI coding interviews evaluated?',
       'What should I do in the first 10 minutes of a 60-minute coding interview?',
+    ]);
+  });
+
+  it('targets JavaScript coding interview questions intent with practice-map FAQ and ItemList schema', () => {
+    const jsGuide = PLAYBOOK.find((entry) => entry.slug === 'javascript-interviews');
+    expect(jsGuide).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      jsGuide!
+    );
+
+    expect(meta.title).toBe('JavaScript Coding Interview Questions: Frontend Practice');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/javascript-interviews');
+    expect(meta.description).toBe(
+      'Practice frontend JavaScript coding interview questions with debounce, throttle, Promise.all, event loop, closures, DOM delegation, EventEmitter, and drills.',
+    );
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords?.[0]).toBe('javascript coding interview questions');
+    expect(meta.keywords).toContain('javascript coding interview questions');
+    expect(meta.keywords).toContain('frontend javascript interview questions');
+    expect(meta.keywords).toContain('javascript interview practice');
+    expect(meta.keywords).toContain('javascript interview patterns');
+    expect(meta.keywords).toContain('javascript utility function interview questions');
+    expect(meta.keywords).toContain('most asked javascript coding interview questions');
+    expect(meta.keywords).toContain('javascript event loop interview questions');
+    expect(meta.keywords).toContain('implement promise all javascript interview question');
+    expect(meta.keywords).toContain('javascript debounce interview question');
+    expect(meta.keywords).toContain('event delegation javascript interview question');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('JavaScript Coding Interview Questions: Frontend Practice');
+    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('25 JavaScript coding interview questions to practice');
+    expect(itemList?.itemListElement?.length).toBe(25);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Implement debounce with trailing, leading, and cancel behavior');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/javascript/coding/js-debounce');
+    expect(itemList?.itemListElement?.[24]?.name).toBe('Build an LRU cache with bounded memory');
+    expect(faqPage?.name).toBe('JavaScript coding interview questions practice map FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What are the most asked JavaScript coding interview questions?',
+      'How should I practice JavaScript utility function interview questions?',
+      'Which JavaScript promise interview questions should I practice?',
+      'How do I prepare for JavaScript event loop output questions?',
+      'Is this different from JavaScript interview questions and answers?',
     ]);
   });
 
