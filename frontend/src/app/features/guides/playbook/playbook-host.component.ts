@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, inject, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
@@ -43,12 +43,13 @@ type GuideArticleInputs = {
     <app-offline-banner></app-offline-banner>
 `
 })
-export class PlaybookHostComponent implements OnDestroy {
+export class PlaybookHostComponent implements AfterViewInit, OnDestroy {
     @ViewChild('vc', { read: ViewContainerRef, static: true }) vc!: ViewContainerRef;
 
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private seo = inject(SeoService);
+    private hostRef = inject(ElementRef<HTMLElement>);
     private sub?: Subscription;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     protected readonly showShellHeading = signal(!this.isBrowser);
@@ -69,6 +70,10 @@ export class PlaybookHostComponent implements OnDestroy {
 
     ngOnDestroy() {
         this.sub?.unsubscribe();
+    }
+
+    ngAfterViewInit() {
+        if (this.isBrowser) this.hideShellHeading();
     }
 
     private toTitle(slug: string): string {
@@ -140,6 +145,11 @@ export class PlaybookHostComponent implements OnDestroy {
             sections: leftNavSections,
         };
 
+        if (!resolved && this.isBrowser) {
+            this.hideShellHeading();
+            return;
+        }
+
         this.seo.updateTags(
             buildGuideDetailSeo(this.seo, hostConfig.seoSectionTitle, hostConfig.guideBase, current)
         );
@@ -153,13 +163,22 @@ export class PlaybookHostComponent implements OnDestroy {
             ref.instance.next = mappedNext;
             ref.instance.readerPromise = current.seo?.readerPromise || null;
             ref.instance.leftNav = leftNav;
-            this.showShellHeading.set(false);
+            this.hideShellHeading();
         } catch {
             return;
         }
 
         // Ensure we start at the top for each article
         if (this.isBrowser) window.scrollTo({ top: 0 });
+    }
+
+    private hideShellHeading() {
+        this.showShellHeading.set(false);
+        if (!this.isBrowser) return;
+
+        queueMicrotask(() => {
+            this.hostRef.nativeElement.querySelector('.guide-ssr-shell')?.remove();
+        });
     }
 
     private getHostConfig(): {
