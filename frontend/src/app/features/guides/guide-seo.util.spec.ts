@@ -255,6 +255,198 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets DSA for frontend interviews intent with practice-map FAQ and ItemList schema', () => {
+    const dsaGuide = PLAYBOOK.find((entry) => entry.slug === 'dsa-for-fe');
+    expect(dsaGuide).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      dsaGuide!
+    );
+
+    expect(meta.title).toBe('DSA for Frontend Interviews: Questions & JS Drills');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/dsa-for-fe');
+    expect(meta.description).toBe(
+      'Practice DSA for frontend interviews with algorithm interview questions, arrays, hash maps, stacks, queues, LRU cache, Big-O, and JavaScript drills.',
+    );
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords?.[0]).toBe('dsa for frontend interviews');
+    expect(meta.keywords).toContain('frontend dsa interview prep');
+    expect(meta.keywords).toContain('frontend algorithm interview questions');
+    expect(meta.keywords).toContain('javascript data structures interview');
+    expect(meta.keywords).toContain('frontend data structures and algorithms');
+    expect(meta.keywords).toContain('frontend coding interview dsa');
+    expect(meta.keywords).toContain('do frontend interviews ask algorithms');
+    expect(meta.keywords).toContain('javascript dsa practice');
+    expect(meta.keywords).toContain('frontend dsa study plan');
+    expect(meta.keywords).toContain('groupby javascript interview question');
+    expect(meta.keywords).toContain('array shift o(n) interview');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('DSA for Frontend Interviews: Questions & JS Drills');
+    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('20 frontend DSA questions to practice');
+    expect(itemList?.itemListElement?.length).toBe(20);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Implement Array.prototype.reduce');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/javascript/coding/js-array-prototype-reduce');
+    expect(itemList?.itemListElement?.[3]?.url).toBe('https://frontendatlas.com/javascript/coding/js-group-by');
+    expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/guides/interview-blueprint/dsa-for-fe#question-10');
+    expect(itemList?.itemListElement?.[19]?.name).toBe('Explain the Big-O trade-off for a large filtered list');
+    expect(faqPage?.name).toBe('DSA for frontend interviews FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'Is DSA required for frontend interviews?',
+      'Do frontend interviews ask algorithm questions?',
+      'What DSA should frontend engineers prioritize?',
+      'How should I practice JavaScript DSA for frontend interviews?',
+      'How much LeetCode should I do for frontend interviews?',
+    ]);
+  });
+
+  it('targets frontend UI interview questions intent with component-practice FAQ and ItemList schema', () => {
+    const uiGuide = PLAYBOOK.find((entry) => entry.slug === 'ui-interviews');
+    expect(uiGuide).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      uiGuide!
+    );
+
+    expect(meta.title).toBe('Frontend UI Interview Questions: Component Coding Practice');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/ui-interviews');
+    expect(meta.description).toBe(
+      'Practice frontend UI coding interview questions with modal, autocomplete, tabs, data tables, React components, accessibility, and keyboard support.',
+    );
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords?.[0]).toBe('frontend ui interview questions');
+    expect(meta.keywords).toContain('frontend ui interview prep');
+    expect(meta.keywords).toContain('frontend component interview');
+    expect(meta.keywords).toContain('frontend ui interview questions');
+    expect(meta.keywords).toContain('frontend ui coding interview');
+    expect(meta.keywords).toContain('frontend component interview questions');
+    expect(meta.keywords).toContain('frontend machine coding ui questions');
+    expect(meta.keywords).toContain('accessible component interview');
+    expect(meta.keywords).toContain('react ui coding interview');
+    expect(meta.keywords).toContain('react autocomplete interview question');
+    expect(meta.keywords).toContain('keyboard accessibility interview questions frontend');
+    expect(meta.keywords).toContain('focus trap modal interview question');
+    expect(meta.keywords).toContain('html css javascript ui interview questions');
+    expect(meta.keywords).toContain('most asked frontend ui interview prompts');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend UI Interview Questions: Component Coding Practice');
+    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('12 frontend UI interview questions and component prompts to practice');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Modal / Confirm Dialog');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/html/coding/html-dialog-confirm-a11y');
+    expect(itemList?.itemListElement?.[1]?.url).toBe('https://frontendatlas.com/react/coding/react-autocomplete-search-starter');
+    expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/react/coding/react-pagination-table');
+    expect(itemList?.itemListElement?.[11]?.name).toBe('Progress Bar');
+    expect(faqPage?.name).toBe('Frontend UI interview questions FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What are the most common frontend UI interview questions?',
+      'How do I practice frontend UI coding interview questions?',
+      'Which React UI component questions should I practice?',
+      'How do interviewers score accessibility and keyboard support?',
+      'Is this different from frontend machine coding interviews?',
+    ]);
+  });
+
+  it('targets component API design interview intent with FAQ and ItemList schema', () => {
+    const apiGuide = PLAYBOOK.find((entry) => entry.slug === 'api-design');
+    expect(apiGuide).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      apiGuide!
+    );
+
+    expect(meta.title).toBe('Component API Design for Frontend Interviews');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/api-design');
+    expect(meta.description).toBe(
+      'Practice component API design for frontend interviews with React props, events, slots, controlled state, compound components, accessibility, and UI drills.',
+    );
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords?.[0]).toBe('component api design');
+    expect(meta.keywords).toContain('component api design for frontend interviews');
+    expect(meta.keywords).toContain('frontend component api design');
+    expect(meta.keywords).toContain('react component api design');
+    expect(meta.keywords).toContain('component api design interview');
+    expect(meta.keywords).toContain('controlled uncontrolled component interview');
+    expect(meta.keywords).toContain('compound components interview');
+    expect(meta.keywords).toContain('react compound components interview');
+    expect(meta.keywords).toContain('props vs slots component api');
+    expect(meta.keywords).toContain('controlled vs uncontrolled component api');
+    expect(meta.keywords).toContain('accessibility as component api');
+    expect(meta.keywords).toContain('props events tradeoffs');
+    expect(meta.keywords).toContain('frontend component design interview');
+    expect(meta.keywords).toContain('reusable component api design');
+    expect(meta.keywords).toContain('react props events slots');
+    expect(meta.keywords).toContain('accessible component api');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Component API Design for Frontend Interviews');
+    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('10 component API design interview prompts to practice');
+    expect(itemList?.itemListElement?.length).toBe(10);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Modal / Confirm Dialog API');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/html/coding/html-dialog-confirm-a11y');
+    expect(itemList?.itemListElement?.[1]?.url).toBe('https://frontendatlas.com/react/coding/react-tabs-switcher');
+    expect(itemList?.itemListElement?.[3]?.url).toBe('https://frontendatlas.com/react/coding/react-autocomplete-search-starter');
+    expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/react/coding/react-pagination-table');
+    expect(itemList?.itemListElement?.[9]?.name).toBe('Progress Bar API');
+    expect(faqPage?.name).toBe('Component API design for frontend interviews FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is component API design?',
+      'How do I practice component API design for frontend interviews?',
+      'What is the controlled vs uncontrolled component API pattern?',
+      'When should I use compound components or slots?',
+      'How should component APIs expose events and accessibility?',
+    ]);
+  });
+
   it('targets frontend system design interview intent on the RADIO framework page', () => {
     const radio = SYSTEM.find((entry) => entry.slug === 'radio-framework');
     expect(radio).toBeDefined();
