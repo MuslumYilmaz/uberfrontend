@@ -126,7 +126,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
-    expect(article?.dateModified).toBe('2026-06-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-04T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -174,7 +174,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
-    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -293,7 +293,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('DSA for Frontend Interviews: Questions & JS Drills');
-    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -357,7 +357,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend UI Interview Questions: Component Coding Practice');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -423,7 +423,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Component API Design for Frontend Interviews');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -1094,6 +1094,82 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets JavaScript interview preparation intent with study-plan FAQ and ItemList schema', () => {
+    const jsPrep = PLAYBOOK.find((entry) => entry.slug === 'javascript-prep-path');
+    expect(jsPrep).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Framework Prep',
+      'framework-prep',
+      jsPrep!
+    );
+
+    expect(meta.title).toBe('JavaScript Interview Preparation Path: 7/14/30-Day Study Plan');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/framework-prep/javascript-prep-path');
+    expect(meta.description).toBe(
+      'JavaScript interview preparation for frontend engineers: follow a 7/14/30-day study plan for async, closures, event loop, promises, and utility drills.',
+    );
+    expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords?.[0]).toBe('javascript interview preparation');
+    expect(meta.keywords).toContain('javascript interview prep path');
+    expect(meta.keywords).toContain('javascript interview study plan');
+    expect(meta.keywords).toContain('javascript interview preparation path');
+    expect(meta.keywords).toContain('javascript interview preparation roadmap');
+    expect(meta.keywords).toContain('javascript coding interview preparation');
+    expect(meta.keywords).toContain('frontend javascript interview prep');
+    expect(meta.keywords).toContain('frontend javascript interview preparation');
+    expect(meta.keywords).toContain('frontend javascript coding interview preparation');
+    expect(meta.keywords).toContain('javascript interview practice');
+    expect(meta.keywords).toContain('javascript event loop interview prep');
+    expect(meta.keywords).toContain('javascript event loop output questions practice');
+    expect(meta.keywords).toContain('microtasks macrotasks interview prep');
+    expect(meta.keywords).toContain('promise all interview practice javascript');
+    expect(meta.keywords).toContain('javascript promise combinators interview prep');
+    expect(meta.keywords).toContain('take latest javascript interview practice');
+    expect(meta.keywords).toContain('javascript closures interview prep');
+    expect(meta.keywords).toContain('this keyword javascript interview prep');
+    expect(meta.keywords).toContain('hoisting tdz javascript interview prep');
+    expect(meta.keywords).toContain('javascript async interview preparation');
+    expect(meta.keywords).toContain('javascript utility function interview practice');
+    expect(meta.keywords).toContain('javascript throttle interview prep');
+    expect(meta.keywords).toContain('javascript reduce polyfill interview practice');
+    expect(meta.keywords).toContain('javascript deep clone interview prep');
+    expect(meta.keywords).not.toContain('javascript interview questions and answers');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.headline).toBe('JavaScript Interview Preparation Path: 7/14/30-Day Study Plan');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(article?.keywords).toContain('javascript coding interview preparation');
+    expect(itemList?.name).toBe('12 JavaScript interview prep patterns to practice');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Event loop output');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/javascript/trivia/js-event-loop');
+    expect(itemList?.itemListElement?.[3]?.url).toBe('https://frontendatlas.com/javascript/coding/js-promise-all');
+    expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/javascript/coding/js-event-emitter-mini');
+    expect(itemList?.itemListElement?.[10]?.url).toBe('https://frontendatlas.com/javascript/coding/js-delegated-events-2');
+    expect(itemList?.itemListElement?.[11]?.name).toBe('takeLatest / concurrency');
+    expect(faqPage?.name).toBe('JavaScript interview preparation FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How do I prepare for a JavaScript interview?',
+      'What is the best JavaScript interview study plan for frontend engineers?',
+      'How should I practice JavaScript event loop and output questions?',
+      'How do I practice JavaScript utility function interview questions?',
+      'Do I need LeetCode for JavaScript-heavy frontend interviews?',
+      'How long does JavaScript interview preparation usually take?',
+    ]);
+  });
+
   it('targets React preparation long-tail queries on the React prep path', () => {
     const reactPrep = PLAYBOOK.find((entry) => entry.slug === 'react-prep-path');
     expect(reactPrep).toBeDefined();
@@ -1106,22 +1182,298 @@ describe('guide-seo.util', () => {
     );
 
     expect(meta.title).toBe('How to Prepare for a React Interview: 7/14/30-Day Plan');
-    expect(meta.description).toContain('React interview preparation');
-    expect(meta.description).toContain('study plan');
+    expect(meta.description).toBe(
+      'React interview preparation path for frontend engineers: hooks, effects, state, rendering, coding drills, testing, performance, and a 7/14/30-day plan.',
+    );
     expect(meta.description).toContain('hooks');
+    expect(meta.description).toContain('effects');
     expect(meta.description).toContain('testing');
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords?.[0]).toBe('how to prepare for react interview');
     expect(meta.keywords).toContain('how to prepare for react interview');
+    expect(meta.keywords).toContain('react interview preparation');
+    expect(meta.keywords).toContain('react interview study plan');
+    expect(meta.keywords).toContain('react interview prep path');
+    expect(meta.keywords).toContain('react interview roadmap');
+    expect(meta.keywords).toContain('react interview preparation for frontend engineers');
+    expect(meta.keywords).toContain('react hooks interview prep');
     expect(meta.keywords).toContain('react coding interview preparation');
+    expect(meta.keywords).toContain('react coding interview questions');
+    expect(meta.keywords).toContain('react hooks and effects interview');
+    expect(meta.keywords).toContain('react useeffect interview questions');
+    expect(meta.keywords).toContain('react useeffect cleanup interview');
+    expect(meta.keywords).toContain('react useeffect dependencies interview');
+    expect(meta.keywords).toContain('react stale closure interview');
+    expect(meta.keywords).toContain('react hooks pitfalls interview');
+    expect(meta.keywords).toContain('react custom hooks interview preparation');
+    expect(meta.keywords).toContain('react rendering interview questions');
+    expect(meta.keywords).toContain('react reconciliation interview prep');
+    expect(meta.keywords).toContain('react keys interview question');
+    expect(meta.keywords).toContain('react state management interview questions');
+    expect(meta.keywords).toContain('react context performance interview');
+    expect(meta.keywords).toContain('react memoization interview questions');
+    expect(meta.keywords).toContain('usememo usecallback react interview');
+    expect(meta.keywords).toContain('react performance optimization interview');
+    expect(meta.keywords).toContain('react component coding interview');
+    expect(meta.keywords).toContain('react machine coding interview questions');
+    expect(meta.keywords).toContain('react ui coding interview');
+    expect(meta.keywords).toContain('react debounced search interview');
+    expect(meta.keywords).toContain('react autocomplete interview question');
+    expect(meta.keywords).toContain('react contact form interview question');
+    expect(meta.keywords).toContain('react transfer list interview question');
+    expect(meta.keywords).toContain('react tabs interview question');
     expect(meta.keywords).toContain('senior react interview preparation');
+    expect(meta.keywords).toContain('junior react interview preparation');
+    expect(meta.keywords).toContain('mid level react interview prep');
+    expect(meta.keywords).toContain('do i need leetcode for react interviews');
+    expect(meta.keywords).toContain('what to study first for react interview');
+    expect(meta.keywords).toContain('how long to prepare for react interview');
+    expect(meta.keywords).toContain('react interview topics for frontend developers');
 
     const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(article?.headline).toBe('How to Prepare for a React Interview: 7/14/30-Day Plan');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
     expect(article?.keywords).toContain('react interview preparation 7 days');
+    expect(article?.keywords).toContain('react interview preparation 14 days');
+    expect(article?.keywords).toContain('react interview preparation 30 days');
+    expect(itemList?.name).toBe('12 React interview prep patterns to practice');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('useEffect cleanup + dependencies');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/react/trivia/react-useeffect-purpose');
+    expect(itemList?.itemListElement?.[1]?.url).toBe('https://frontendatlas.com/react/trivia/react-stale-state-closures');
+    expect(itemList?.itemListElement?.[4]?.url).toBe('https://frontendatlas.com/react/trivia/react-context-performance-issues');
+    expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/react/coding/react-debounced-search');
+    expect(itemList?.itemListElement?.[6]?.url).toBe('https://frontendatlas.com/react/coding/react-autocomplete-search-starter');
+    expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/react/coding/react-tabs-switcher');
+    expect(itemList?.itemListElement?.[11]?.name).toBe('Multi-step Signup');
     expect(faqPage?.name).toBe('React interview preparation FAQ');
-    expect(faqPage?.mainEntity?.length).toBe(5);
-    expect(faqPage?.mainEntity?.[0]?.name).toBe('How do I prepare for a React interview?');
+    expect(faqPage?.mainEntity?.length).toBe(15);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How do I prepare for a React interview?',
+      'What should I study first for a React interview?',
+      'How long does it take to prepare for a React interview?',
+      'How should I practice React coding interview questions?',
+      'How do I prepare for a senior React interview?',
+      'Do I need LeetCode for React interviews?',
+      'What is the practical difference between topics, trivia, and coding prompts?',
+      'How long does it realistically take to get interview-ready?',
+      'Which React hooks and effects questions should I practice?',
+      'What React rendering and performance topics matter most?',
+      'When should I use useMemo, useCallback, or React.memo?',
+      'Context vs lifting state vs external store: how should I reason in interviews?',
+      'Controlled vs uncontrolled forms: what mental model should I use?',
+      'Do I need to know class components in 2026?',
+      'How much browser/DOM knowledge is expected for React roles?',
+    ]);
+  });
+
+  it('targets Angular preparation intent with study-plan FAQ and ItemList schema', () => {
+    const angularPrep = PLAYBOOK.find((entry) => entry.slug === 'angular-prep-path');
+    expect(angularPrep).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Framework Prep',
+      'framework-prep',
+      angularPrep!
+    );
+
+    expect(meta.title).toBe('Angular Interview Preparation Path: 7/14/30-Day Plan');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/framework-prep/angular-prep-path');
+    expect(meta.description).toBe(
+      'Angular interview preparation path for frontend engineers: RxJS, change detection, signals, DI, forms, testing, coding drills, and a 7/14/30-day plan.',
+    );
+    expect(meta.keywords?.[0]).toBe('angular interview preparation');
+    expect(meta.keywords).toContain('angular interview prep path');
+    expect(meta.keywords).toContain('angular interview study plan');
+    expect(meta.keywords).toContain('how to prepare for angular interview');
+    expect(meta.keywords).toContain('angular coding interview preparation');
+    expect(meta.keywords).toContain('frontend angular interview prep');
+    expect(meta.keywords).toContain('angular rxjs interview questions');
+    expect(meta.keywords).toContain('angular change detection interview');
+    expect(meta.keywords).toContain('angular onpush interview questions');
+    expect(meta.keywords).toContain('angular signals interview questions');
+    expect(meta.keywords).toContain('angular dependency injection interview');
+    expect(meta.keywords).toContain('angular reactive forms interview');
+    expect(meta.keywords).toContain('angular testing interview questions');
+    expect(meta.keywords).toContain('senior angular interview preparation');
+    expect(meta.keywords).toContain('angular interview preparation 7 days');
+    expect(meta.keywords).toContain('angular interview preparation 14 days');
+    expect(meta.keywords).toContain('angular interview preparation 30 days');
+    expect(meta.keywords).toContain('angular interview roadmap');
+    expect(meta.keywords).toContain('switchmap vs mergemap angular interview');
+    expect(meta.keywords).toContain('angular http cancellation interview');
+    expect(meta.keywords).toContain('angular stale response interview');
+    expect(meta.keywords).toContain('angular async pipe interview questions');
+    expect(meta.keywords).toContain('angular observables interview questions');
+    expect(meta.keywords).toContain('angular onpush change detection interview');
+    expect(meta.keywords).toContain('markforcheck vs detectchanges interview');
+    expect(meta.keywords).toContain('angular zonejs interview questions');
+    expect(meta.keywords).toContain('angular controlvalueaccessor interview');
+    expect(meta.keywords).toContain('angular zoneless interview questions');
+    expect(meta.keywords).toContain('signals vs rxjs angular interview');
+    expect(meta.keywords).toContain('angular standalone components interview');
+    expect(meta.keywords).toContain('angular ssr hydration interview');
+    expect(meta.keywords).toContain('angular incremental hydration interview');
+    expect(meta.keywords).toContain('modern angular interview questions');
+    expect(meta.keywords).toContain('angular hierarchical dependency injection interview');
+    expect(meta.keywords).toContain('angular frontend coding interview');
+    expect(meta.keywords).toContain('angular debounced search interview');
+    expect(meta.keywords).toContain('angular autocomplete interview question');
+    expect(meta.keywords).toContain('angular data table interview question');
+    expect(meta.keywords).not.toContain('angular interview questions and answers');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.headline).toBe('Angular Interview Preparation Path: 7/14/30-Day Plan');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(article?.keywords).toContain('angular interview preparation');
+    expect(article?.keywords).toContain('angular coding interview questions');
+    expect(itemList?.name).toBe('12 Angular interview prep patterns to practice');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Change Detection triggers');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/angular/trivia/angular-change-detection-strategies');
+    expect(itemList?.itemListElement?.[1]?.url).toBe('https://frontendatlas.com/angular/trivia/angular-onpush-change-detection-debugging-real-bug');
+    expect(itemList?.itemListElement?.[2]?.url).toBe('https://frontendatlas.com/angular/trivia/angular-observables-rxjs');
+    expect(itemList?.itemListElement?.[3]?.url).toBe('https://frontendatlas.com/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use');
+    expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/angular/trivia/angular-dependency-injection');
+    expect(itemList?.itemListElement?.[7]?.url).toBe('https://frontendatlas.com/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding');
+    expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/angular/coding/angular-debounced-search');
+    expect(itemList?.itemListElement?.[10]?.url).toBe('https://frontendatlas.com/angular/coding/angular-autocomplete-search-starter');
+    expect(itemList?.itemListElement?.[11]?.name).toBe('Data Table / Pagination');
+    expect(faqPage?.name).toBe('Angular interview preparation FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(8);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How do I prepare for an Angular interview?',
+      'What is the best Angular interview study plan for frontend engineers?',
+      'Which Angular RxJS interview questions should I practice?',
+      'How do I prepare for Angular change detection and OnPush questions?',
+      'Which Angular signals and modern Angular topics matter in interviews?',
+      'How should I practice Angular coding interview questions?',
+      'How do I prepare for a senior Angular interview?',
+      'Do I need LeetCode for Angular interviews?',
+    ]);
+  });
+
+  it('targets Vue preparation intent with study-plan FAQ and ItemList schema', () => {
+    const vuePrep = PLAYBOOK.find((entry) => entry.slug === 'vue-prep-path');
+    expect(vuePrep).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Framework Prep',
+      'framework-prep',
+      vuePrep!
+    );
+
+    expect(meta.title).toBe('Vue Interview Preparation Path: 7/14/30-Day Study Plan');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/framework-prep/vue-prep-path');
+    expect(meta.description).toBe(
+      'Vue interview preparation path for frontend engineers: reactivity, Composition API, Pinia, Router, nextTick, coding drills, and a 7/14/30-day plan.',
+    );
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+    expect(meta.keywords?.[0]).toBe('vue interview preparation');
+    expect(meta.keywords).toContain('vue interview prep path');
+    expect(meta.keywords).toContain('vue interview study plan');
+    expect(meta.keywords).toContain('how to prepare for vue interview');
+    expect(meta.keywords).toContain('vue coding interview preparation');
+    expect(meta.keywords).toContain('frontend vue interview prep');
+    expect(meta.keywords).toContain('vue interview preparation for frontend engineers');
+    expect(meta.keywords).toContain('vue interview roadmap');
+    expect(meta.keywords).toContain('vue interview preparation 7 days');
+    expect(meta.keywords).toContain('vue interview preparation 14 days');
+    expect(meta.keywords).toContain('vue interview preparation 30 days');
+    expect(meta.keywords).toContain('vue reactivity interview questions');
+    expect(meta.keywords).toContain('vue ref vs reactive interview');
+    expect(meta.keywords).toContain('ref vs reactive vue interview question');
+    expect(meta.keywords).toContain('computed vs watch vue interview');
+    expect(meta.keywords).toContain('watch vs watcheffect vue interview');
+    expect(meta.keywords).toContain('vue nexttick interview question');
+    expect(meta.keywords).toContain('vue reactivity destructuring trap');
+    expect(meta.keywords).toContain('vue shallowref interview question');
+    expect(meta.keywords).toContain('vue composition api interview');
+    expect(meta.keywords).toContain('vue options api vs composition api interview');
+    expect(meta.keywords).toContain('vue composables interview questions');
+    expect(meta.keywords).toContain('vue pinia interview questions');
+    expect(meta.keywords).toContain('pinia vs vuex interview');
+    expect(meta.keywords).toContain('vue state management interview');
+    expect(meta.keywords).toContain('vue router guard interview');
+    expect(meta.keywords).toContain('vue router navigation guard interview');
+    expect(meta.keywords).toContain('vue lazy routes interview');
+    expect(meta.keywords).toContain('vue storeToRefs interview');
+    expect(meta.keywords).toContain('vue slots interview question');
+    expect(meta.keywords).toContain('vue scoped slots interview');
+    expect(meta.keywords).toContain('vue emits props interview');
+    expect(meta.keywords).toContain('vue component communication interview');
+    expect(meta.keywords).toContain('vue component API interview');
+    expect(meta.keywords).toContain('vue v-for keys interview');
+    expect(meta.keywords).toContain('vue virtual dom interview');
+    expect(meta.keywords).toContain('vue performance interview questions');
+    expect(meta.keywords).toContain('vue testing interview questions');
+    expect(meta.keywords).toContain('nuxt vue interview questions');
+    expect(meta.keywords).toContain('vue ssr interview questions');
+    expect(meta.keywords).toContain('vue migration vuex to pinia interview');
+    expect(meta.keywords).toContain('vue coding interview questions');
+    expect(meta.keywords).toContain('vue debounced search interview');
+    expect(meta.keywords).toContain('vue tabs interview question');
+    expect(meta.keywords).toContain('vue data table interview question');
+    expect(meta.keywords).toContain('vue shopping cart interview question');
+    expect(meta.keywords).toContain('vue todo list interview question');
+    expect(meta.keywords).toContain('vue pagination table interview');
+    expect(meta.keywords).not.toContain('vue interview questions and answers');
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(article?.headline).toBe('Vue Interview Preparation Path: 7/14/30-Day Study Plan');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(article?.keywords).toContain('vue interview preparation');
+    expect(article?.keywords).toContain('vue coding interview questions');
+    expect(itemList?.name).toBe('12 Vue interview prep patterns to practice');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Reactivity system');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/vue/trivia/vue-reactivity-system');
+    expect(itemList?.itemListElement?.[1]?.url).toBe('https://frontendatlas.com/vue/trivia/vue-ref-vs-reactive-difference-traps');
+    expect(itemList?.itemListElement?.[2]?.url).toBe('https://frontendatlas.com/vue/trivia/vue-computed-vs-watchers');
+    expect(itemList?.itemListElement?.[3]?.url).toBe('https://frontendatlas.com/vue/trivia/vue-nexttick-dom-update-queue');
+    expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/vue/trivia/vue-router-navigation');
+    expect(itemList?.itemListElement?.[7]?.url).toBe('https://frontendatlas.com/vue/trivia/vue-v-for-keys-why-not-index');
+    expect(itemList?.itemListElement?.[8]?.url).toBe('https://frontendatlas.com/vue/coding/vue-debounced-search');
+    expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/vue/coding/vue-tabs-switcher');
+    expect(itemList?.itemListElement?.[10]?.url).toBe('https://frontendatlas.com/vue/coding/vue-pagination-table');
+    expect(itemList?.itemListElement?.[11]?.name).toBe('Shopping Cart / store state');
+    expect(faqPage?.name).toBe('Vue interview preparation FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(8);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How do I prepare for a Vue interview?',
+      'What is the best Vue interview study plan for frontend engineers?',
+      'Which Vue reactivity interview questions should I practice?',
+      'How should I explain ref vs reactive in Vue interviews?',
+      'How do I practice Vue coding interview questions?',
+      'Do I need Nuxt for Vue interviews?',
+      'How do I prepare for a senior Vue interview?',
+      'Do I need LeetCode for Vue interviews?',
+    ]);
   });
 });

@@ -11,6 +11,37 @@ type RouteLink = {
   note: string;
 };
 
+type ReactPrepPatternCard = {
+  title: string;
+  meta: string[];
+  prepGoal: string;
+  testFocus: string;
+  route: any[];
+  linkLabel: string;
+  testId: string;
+};
+
+type ReactWorkedExample = {
+  title: string;
+  scenario: string;
+  contract: string[];
+  route: any[];
+  linkLabel: string;
+};
+
+type ReactInterviewExpectation = {
+  level: string;
+  focus: string;
+  scoreSignals: string[];
+};
+
+type AngularPrepPatternCard = ReactPrepPatternCard;
+type AngularWorkedExample = ReactWorkedExample;
+type AngularInterviewExpectation = ReactInterviewExpectation;
+type VuePrepPatternCard = ReactPrepPatternCard;
+type VueWorkedExample = ReactWorkedExample;
+type VueInterviewExpectation = ReactInterviewExpectation;
+
 type FrameworkPracticeNextConfig = {
   label: string;
   tech: 'javascript' | 'react' | 'angular' | 'vue';
@@ -39,6 +70,582 @@ const FRAMEWORK_PRACTICE_NEXT: Record<string, FrameworkPracticeNextConfig> = {
     questionHubRoute: ['/', 'vue', 'interview-questions'],
   },
 };
+
+const REACT_PREP_PATTERNS: ReactPrepPatternCard[] = [
+  {
+    title: 'useEffect cleanup + dependencies',
+    meta: ['Hooks', 'Effects'],
+    prepGoal: 'Explain useEffect cleanup, dependency-driven reruns, setup timing, and why effects synchronize with external systems.',
+    testFocus: 'Missing dependencies, runaway effects, stale closure callbacks, timer/listener cleanup, and Strict Mode surprises.',
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    linkLabel: 'Practice useEffect trivia',
+    testId: 'react-prep-pattern-useeffect',
+  },
+  {
+    title: 'Stale closures + state snapshots',
+    meta: ['State', 'Closures'],
+    prepGoal: 'Trace why handlers and async callbacks read old values, then choose functional updates, refs, or state redesign deliberately.',
+    testFocus: 'Intervals, delayed callbacks, async search, setState snapshots, latest value refs, and stale response guards.',
+    route: ['/react', 'trivia', 'react-stale-state-closures'],
+    linkLabel: 'Practice stale closures',
+    testId: 'react-prep-pattern-stale-closures',
+  },
+  {
+    title: 'Keys + list identity',
+    meta: ['Rendering', 'Lists'],
+    prepGoal: 'Answer React rendering interview questions with reconciliation, stable identity, state preservation, and why index keys fail.',
+    testFocus: 'Keys interview question variants: insert/delete/reorder behavior, transfer list moves, selected-row state, and dynamic form rows.',
+    route: ['/react', 'trivia', 'react-keys-in-lists'],
+    linkLabel: 'Practice keys trivia',
+    testId: 'react-prep-pattern-keys',
+  },
+  {
+    title: 'Memoization trade-offs',
+    meta: ['Performance', 'Memo'],
+    prepGoal: 'Explain when React.memo, useMemo, and useCallback remove meaningful work and when they add noise.',
+    testFocus: 'Referential equality, expensive derivations, unstable props, dependency mistakes, and premature optimization.',
+    route: ['/react', 'trivia', 'react-usememo-vs-usecallback'],
+    linkLabel: 'Practice memoization',
+    testId: 'react-prep-pattern-memoization',
+  },
+  {
+    title: 'Context performance',
+    meta: ['State', 'Boundaries'],
+    prepGoal: 'Choose context boundaries by ownership and update frequency instead of treating Context as a global store.',
+    testFocus: 'Provider fan-out, broad rerenders, split providers, selector patterns, and state that should stay local.',
+    route: ['/react', 'trivia', 'react-context-performance-issues'],
+    linkLabel: 'Practice context performance',
+    testId: 'react-prep-pattern-context',
+  },
+  {
+    title: 'Debounced Search',
+    meta: ['Async UI', 'Timers'],
+    prepGoal: 'Use this React coding interview preparation drill to build query state, delayed fetch, loading/error/empty states, and deterministic latest-wins behavior.',
+    testFocus: 'Timer cleanup, rapid typing, stale response guard, cancel/ignore policy, and disabled/empty UI states.',
+    route: ['/react', 'coding', 'react-debounced-search'],
+    linkLabel: 'Practice debounced search',
+    testId: 'react-prep-pattern-debounced-search',
+  },
+  {
+    title: 'Autocomplete',
+    meta: ['Combobox', 'Async'],
+    prepGoal: 'Use this React component coding interview drill to model input value, selected value, suggestions, keyboard behavior, loading, empty, and error states.',
+    testFocus: 'Stale responses, Escape/Enter/arrow keys, option identity, empty results, and blur/selection timing.',
+    route: ['/react', 'coding', 'react-autocomplete-search-starter'],
+    linkLabel: 'Practice autocomplete',
+    testId: 'react-prep-pattern-autocomplete',
+  },
+  {
+    title: 'Contact Form',
+    meta: ['Forms', 'Submit'],
+    prepGoal: 'Use this React UI coding interview drill to implement controlled fields, validation timing, submit state, error recovery, and accessible labels.',
+    testFocus: 'Disabled submit, duplicate submission, async failure, field-level errors, reset, and required-field behavior.',
+    route: ['/react', 'coding', 'react-contact-form-starter'],
+    linkLabel: 'Practice contact form',
+    testId: 'react-prep-pattern-contact-form',
+  },
+  {
+    title: 'Transfer List',
+    meta: ['Lists', 'Identity'],
+    prepGoal: 'Move items between lists while preserving stable IDs, selected state, disabled states, and derived counts.',
+    testFocus: 'Reorder/delete edge cases, duplicate moves, selection reset, source mutation, and key identity bugs.',
+    route: ['/react', 'coding', 'react-transfer-list'],
+    linkLabel: 'Practice transfer list',
+    testId: 'react-prep-pattern-transfer-list',
+  },
+  {
+    title: 'Tabs',
+    meta: ['State', 'A11y'],
+    prepGoal: 'Control active tab state, map tab ids to panels, and explain keyboard/ARIA expectations.',
+    testFocus: 'Disabled tabs, roving tabindex, Home/End keys, default active value, and panel persistence policy.',
+    route: ['/react', 'coding', 'react-tabs-switcher'],
+    linkLabel: 'Practice tabs',
+    testId: 'react-prep-pattern-tabs',
+  },
+  {
+    title: 'Dynamic Table',
+    meta: ['Data UI', 'Keys'],
+    prepGoal: 'Render rows and columns from descriptors while keeping accessors, fallback values, and stable row keys clear.',
+    testFocus: 'Missing fields, changing columns, sort follow-ups, memoized derived rows, and large-list rendering cost.',
+    route: ['/react', 'coding', 'react-dynamic-table'],
+    linkLabel: 'Practice dynamic table',
+    testId: 'react-prep-pattern-dynamic-table',
+  },
+  {
+    title: 'Multi-step Signup',
+    meta: ['Forms', 'Flow'],
+    prepGoal: 'Coordinate step state, validation, preserved form values, navigation guards, and async submit recovery.',
+    testFocus: 'Back/next validation, disabled submit, partial reset, error recovery, and state ownership across steps.',
+    route: ['/react', 'coding', 'react-multi-step-signup'],
+    linkLabel: 'Practice multi-step signup',
+    testId: 'react-prep-pattern-multi-step',
+  },
+];
+
+const REACT_WORKED_EXAMPLES: ReactWorkedExample[] = [
+  {
+    title: 'useEffect + stale response',
+    scenario: 'A profile panel fetches when userId changes, then older requests sometimes overwrite the newest result.',
+    contract: [
+      'Dependency contract: userId and fetch client are the only inputs that should trigger setup.',
+      'Cleanup: cancel or ignore old in-flight work whenever userId changes or the component unmounts.',
+      'Ignore/cancel policy: store request identity or AbortController and update UI only for the latest request.',
+      'Interview check: name loading, success, error, and stale-response behavior before coding.',
+    ],
+    route: ['/react', 'trivia', 'react-useeffect-purpose'],
+    linkLabel: 'Practice effect reasoning',
+  },
+  {
+    title: 'Debounced Search',
+    scenario: 'A search input should wait for typing to pause, show loading, and never render old results after a faster later query.',
+    contract: [
+      'State model: query, debouncedQuery, status, results, error, and latest request identity.',
+      'Timer cleanup: clear the pending timeout on query changes and unmount.',
+      'Stale response guard: only commit results for the current debounced query/request id.',
+      'UI checks: empty query, loading, error, empty results, rapid typing, and retry/reset behavior.',
+    ],
+    route: ['/react', 'coding', 'react-debounced-search'],
+    linkLabel: 'Practice debounced search',
+  },
+  {
+    title: 'Controlled Form',
+    scenario: 'A contact form needs accessible validation, disabled submit, and a clear recovery path after async failure.',
+    contract: [
+      'Validation timing: decide blur, submit, or live validation and keep messages tied to fields.',
+      'Disabled submit: block invalid or pending submissions without hiding errors.',
+      'Async recovery: keep user input, show failure, allow retry, and prevent duplicate submits.',
+      'Interview check: label association, required fields, success reset, and network failure state.',
+    ],
+    route: ['/react', 'coding', 'react-contact-form-starter'],
+    linkLabel: 'Practice controlled form',
+  },
+  {
+    title: 'Keys / Transfer List',
+    scenario: 'A transfer list moves selected items between columns and breaks when items are reordered or removed.',
+    contract: [
+      'Stable IDs: keys and selection should use item ids, not index positions.',
+      'Derived selection: clear moved ids and derive counts from source lists rather than mutating cached totals.',
+      'Edge cases: reorder/delete edge cases, duplicate move, empty column, and disabled item policy.',
+      'Interview check: explain how key choice preserves component identity and prevents state moving to the wrong row.',
+    ],
+    route: ['/react', 'coding', 'react-transfer-list'],
+    linkLabel: 'Practice transfer list',
+  },
+];
+
+const REACT_INTERVIEW_EXPECTATIONS: ReactInterviewExpectation[] = [
+  {
+    level: 'Junior React interviews',
+    focus: 'Components, props/state, controlled forms, basic hooks, and predictable UI behavior.',
+    scoreSignals: [
+      'Build the requested component without losing state ownership.',
+      'Explain props vs state, keys, controlled inputs, and basic useEffect cleanup.',
+      'Handle loading, empty, error, and reset states when prompted.',
+    ],
+  },
+  {
+    level: 'Mid-level React interviews',
+    focus: 'Effects, stale closures, rendering behavior, UI coding, and async edge cases.',
+    scoreSignals: [
+      'Predict rerenders, dependency changes, and stale callback behavior.',
+      'Ship a small UI prompt with cleanup, disabled states, and validation.',
+      'Connect trivia answers to direct implementation decisions.',
+    ],
+  },
+  {
+    level: 'Senior React interviews',
+    focus: 'State ownership, context boundaries, performance, testing strategy, and trade-off communication.',
+    scoreSignals: [
+      'Choose component boundaries and data ownership with clear trade-offs.',
+      'Explain performance fixes only when a real hotspot or boundary exists.',
+      'Name validation, testing, accessibility, and failure modes before handoff.',
+    ],
+  },
+];
+
+const ANGULAR_PREP_PATTERNS: AngularPrepPatternCard[] = [
+  {
+    title: 'Change Detection triggers',
+    meta: ['Rendering', 'Zones'],
+    prepGoal: 'Practice Angular change detection interview reasoning: Default vs OnPush, input references, events, AsyncPipe, and zone-triggered checks.',
+    testFocus: 'Trigger paths, mutation vs immutable updates, markForCheck(), detectChanges(), runOutsideAngular(), and zoneless follow-ups.',
+    route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
+    linkLabel: 'Practice change detection',
+    testId: 'angular-prep-pattern-change-detection',
+  },
+  {
+    title: 'OnPush debugging',
+    meta: ['Debugging', 'OnPush'],
+    prepGoal: 'Debug an Angular OnPush change detection interview bug by naming the missing trigger before choosing immutable updates, AsyncPipe, or explicit change marking.',
+    testFocus: 'Stale rows, mutated arrays, async callbacks, markForCheck vs detectChanges, and production-style root-cause narration.',
+    route: ['/angular', 'trivia', 'angular-onpush-change-detection-debugging-real-bug'],
+    linkLabel: 'Practice OnPush debugging',
+    testId: 'angular-prep-pattern-onpush',
+  },
+  {
+    title: 'RxJS Observables',
+    meta: ['RxJS', 'Streams'],
+    prepGoal: 'Answer Angular RxJS interview questions with cold vs hot Observables, Subjects, AsyncPipe, teardown, and stream ownership.',
+    testFocus: 'Nested subscriptions, leaks, shareReplay lifetime, Angular AsyncPipe interview questions, auto-unsubscribe, and composable stream boundaries.',
+    route: ['/angular', 'trivia', 'angular-observables-rxjs'],
+    linkLabel: 'Practice RxJS observables',
+    testId: 'angular-prep-pattern-rxjs-observables',
+  },
+  {
+    title: 'switchMap / mergeMap / exhaustMap / concatMap',
+    meta: ['RxJS', 'Operators'],
+    prepGoal: 'Choose the flattening operator by UX contract: cancel, parallelize, queue, or ignore while busy.',
+    testFocus: 'switchMap vs mergeMap, duplicate submit, ordered saves, race conditions, teardown, and stale response behavior.',
+    route: ['/angular', 'trivia', 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use'],
+    linkLabel: 'Practice operator choice',
+    testId: 'angular-prep-pattern-rxjs-operators',
+  },
+  {
+    title: 'HTTP cancellation / stale responses',
+    meta: ['HTTP', 'Async UI'],
+    prepGoal: 'Practice Angular HTTP cancellation interview reasoning so old Angular responses cannot overwrite newer user intent.',
+    testFocus: 'switchMap cancellation, AbortController limits, ignore policies, loading/error/empty states, and retry placement.',
+    route: ['/angular', 'trivia', 'angular-http-what-actually-cancels-request'],
+    linkLabel: 'Practice HTTP cancellation',
+    testId: 'angular-prep-pattern-http-cancellation',
+  },
+  {
+    title: 'Dependency Injection hierarchy',
+    meta: ['DI', 'Architecture'],
+    prepGoal: 'State provider scope, instance lifetime, and override boundaries before writing or debugging Angular DI code.',
+    testFocus: 'root vs feature vs component providers, lazy-route instances, InjectionToken usage, multi providers, and test overrides.',
+    route: ['/angular', 'trivia', 'angular-dependency-injection'],
+    linkLabel: 'Practice dependency injection',
+    testId: 'angular-prep-pattern-di',
+  },
+  {
+    title: 'Routing guards / lazy loading',
+    meta: ['Router', 'UX'],
+    prepGoal: 'Separate access control, prefetch, code splitting, and fallback behavior in Angular routing answers.',
+    testFocus: 'CanActivate vs CanMatch, resolver trade-offs, lazy boundaries, preloading, route events, and unauthorized flows.',
+    route: ['/angular', 'trivia', 'angular-routing'],
+    linkLabel: 'Practice Angular routing',
+    testId: 'angular-prep-pattern-routing',
+  },
+  {
+    title: 'ControlValueAccessor / forms',
+    meta: ['Forms', 'CVA'],
+    prepGoal: 'Design reusable Angular form controls with value propagation, touched/dirty state, disabled state, and validator contracts.',
+    testFocus: 'Reactive forms, async validators, updateValueAndValidity(), registerOnChange, registerOnTouched, and reset behavior.',
+    route: ['/angular', 'trivia', 'angular-controlvalueaccessor-vs-custom-two-way-binding'],
+    linkLabel: 'Practice CVA forms',
+    testId: 'angular-prep-pattern-cva',
+  },
+  {
+    title: 'Performance optimization',
+    meta: ['Performance', 'Modern Angular'],
+    prepGoal: 'Answer modern Angular interview questions by prioritizing real bottlenecks across change detection, trackBy, lazy loading, signals, zoneless mode, and rendering cost.',
+    testFocus: 'Profiling language, large lists, unnecessary checks, SSR/hydration trade-offs, signals vs RxJS angular interview follow-ups, and premature optimization.',
+    route: ['/angular', 'trivia', 'angular-performance-optimization'],
+    linkLabel: 'Practice performance',
+    testId: 'angular-prep-pattern-performance',
+  },
+  {
+    title: 'Debounced Search',
+    meta: ['Coding', 'RxJS'],
+    prepGoal: 'Build an Angular coding interview preparation drill with input stream, debounce, switchMap, status state, and latest-wins UI.',
+    testFocus: 'Rapid typing, empty query, stale response guard, loading/error/empty states, and subscription ownership.',
+    route: ['/angular', 'coding', 'angular-debounced-search'],
+    linkLabel: 'Practice debounced search',
+    testId: 'angular-prep-pattern-debounced-search',
+  },
+  {
+    title: 'Autocomplete',
+    meta: ['Coding', 'Async UI'],
+    prepGoal: 'Use this Angular coding interview preparation component drill to build input value, selected value, suggestions, keyboard behavior, async status, and component boundaries.',
+    testFocus: 'Stale responses, option identity, blur/selection timing, Escape/Enter keys, empty results, and accessible labels.',
+    route: ['/angular', 'coding', 'angular-autocomplete-search-starter'],
+    linkLabel: 'Practice autocomplete',
+    testId: 'angular-prep-pattern-autocomplete',
+  },
+  {
+    title: 'Data Table / Pagination',
+    meta: ['Coding', 'Data UI'],
+    prepGoal: 'Use this Angular coding interview preparation data UI drill to ship row identity, derived page state, filtering/sorting hooks, and testable data boundaries.',
+    testFocus: 'Stable trackBy ids, empty pages, page reset on filter, async data, large-list cost, and off-by-one pagination.',
+    route: ['/angular', 'coding', 'angular-pagination-table'],
+    linkLabel: 'Practice data table',
+    testId: 'angular-prep-pattern-data-table',
+  },
+];
+
+const ANGULAR_WORKED_EXAMPLES: AngularWorkedExample[] = [
+  {
+    title: 'RxJS stale response',
+    scenario: 'A search box fires multiple requests and a slower older response overwrites the newest results.',
+    contract: [
+      'Input stream: model valueChanges or a Subject with debounceTime and distinctUntilChanged before the request boundary.',
+      'switchMap cancellation: use switchMap when the latest query should win and explain what cancellation does and does not guarantee.',
+      'State model: loading, results, error, empty state, and latest request ownership stay explicit.',
+      'Interview check: test rapid typing, empty query, network failure, retry, and stale response behavior.',
+    ],
+    route: ['/angular', 'coding', 'angular-debounced-search'],
+    linkLabel: 'Practice Angular debounced search',
+  },
+  {
+    title: 'OnPush view bug',
+    scenario: 'A child row does not update after a parent mutates an array and the candidate reaches for detectChanges too early.',
+    contract: [
+      'Trigger path: state which input, event, AsyncPipe emission, or manual mark should cause the next check.',
+      'Immutable update: replace arrays/objects instead of mutating references when OnPush relies on identity.',
+      'AsyncPipe: prefer stream emissions in the template when it clarifies ownership and teardown.',
+      'Patch policy: compare markForCheck vs detectChanges and avoid random manual checks without root-cause reasoning.',
+    ],
+    route: ['/angular', 'trivia', 'angular-onpush-change-detection-debugging-real-bug'],
+    linkLabel: 'Practice OnPush debugging',
+  },
+  {
+    title: 'Reactive Form / CVA',
+    scenario: 'A reusable input works visually but fails validation, disabled state, and touched/dirty integration.',
+    contract: [
+      'Form contract: value propagation, touched/dirty contract, disabled state, reset behavior, and validation timing are named up front.',
+      'CVA hooks: wire writeValue, registerOnChange, registerOnTouched, and setDisabledState without custom two-way binding drift.',
+      'Validators: keep sync and async validators testable and trigger updateValueAndValidity() intentionally.',
+      'Interview check: cover blur, submit, disabled submit, async failure, and field-level error messaging.',
+    ],
+    route: ['/angular', 'trivia', 'angular-controlvalueaccessor-vs-custom-two-way-binding'],
+    linkLabel: 'Practice CVA reasoning',
+  },
+  {
+    title: 'DI boundary',
+    scenario: 'A service instance behaves differently after lazy loading because provider scope was not stated clearly.',
+    contract: [
+      'Provider scope: root vs feature vs component provider placement defines who shares the instance.',
+      'Lazy-route lifetime: lazy boundaries can create separate injector contexts and different service lifetimes.',
+      'Token policy: use InjectionToken for configuration and contracts instead of hard-coded global state.',
+      'Test override: name how the provider would be replaced in a focused unit or integration test.',
+    ],
+    route: ['/angular', 'trivia', 'angular-dependency-injection'],
+    linkLabel: 'Practice DI hierarchy',
+  },
+];
+
+const ANGULAR_INTERVIEW_EXPECTATIONS: AngularInterviewExpectation[] = [
+  {
+    level: 'Junior Angular interviews',
+    focus: 'Components, templates, lifecycle hooks, inputs/outputs, forms basics, and readable template state.',
+    scoreSignals: [
+      'Build small components without mixing every side effect into the template.',
+      'Explain binding, lifecycle, services, and form basics with concrete examples.',
+      'Handle empty, loading, error, and reset states when prompted.',
+    ],
+  },
+  {
+    level: 'Mid-level Angular interviews',
+    focus: 'RxJS, change detection, routing, DI scope, reactive forms, testing, and UI coding reliability.',
+    scoreSignals: [
+      'Choose RxJS operators by behavior contract instead of habit.',
+      'Debug OnPush and async UI issues with trigger-path reasoning.',
+      'Connect routing, DI, forms, and tests to implementation choices.',
+    ],
+  },
+  {
+    level: 'Senior Angular interviews',
+    focus: 'Architecture boundaries, performance, signals/zoneless trade-offs, debugging, migration reasoning, and risk communication.',
+    scoreSignals: [
+      'Defend state, provider, and module boundaries with clear trade-offs.',
+      'Discuss signals, zoneless mode, SSR/hydration, and migration risk without overclaiming.',
+      'Name validation, testing, rollout, and observability checks before handoff.',
+    ],
+  },
+];
+
+const VUE_PREP_PATTERNS: VuePrepPatternCard[] = [
+  {
+    title: 'Reactivity system',
+    meta: ['Reactivity', 'Runtime'],
+    prepGoal: 'Explain Vue reactivity interview questions with proxy tracking, dependency collection, render scheduling, and mutation boundaries.',
+    testFocus: 'Proxy vs raw objects, deep vs shallow tracking, missing update symptoms, and why Vue updates are batched.',
+    route: ['/vue', 'trivia', 'vue-reactivity-system'],
+    linkLabel: 'Practice reactivity trivia',
+    testId: 'vue-prep-pattern-reactivity',
+  },
+  {
+    title: 'ref vs reactive',
+    meta: ['State', 'Tracking'],
+    prepGoal: 'Practice Vue ref vs reactive interview reasoning and ref vs reactive Vue interview question variants by choosing state shape, unwrapping rules, and proxy boundaries before coding.',
+    testFocus: 'Vue reactivity destructuring trap cases, .value usage, nested mutations, toRefs/storeToRefs, Vue shallowRef interview question follow-ups, and raw-object equality.',
+    route: ['/vue', 'trivia', 'vue-ref-vs-reactive-difference-traps'],
+    linkLabel: 'Practice ref vs reactive',
+    testId: 'vue-prep-pattern-ref-reactive',
+  },
+  {
+    title: 'computed vs watch/watchEffect',
+    meta: ['Derived state', 'Effects'],
+    prepGoal: 'Separate derived state from side effects so computed, watch, and watchEffect choices stay easy to defend.',
+    testFocus: 'Cleanup, flush timing, explicit vs automatic dependencies, infinite-loop risk, and async side-effect ownership.',
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    linkLabel: 'Practice computed vs watch',
+    testId: 'vue-prep-pattern-computed-watch',
+  },
+  {
+    title: 'nextTick / DOM update queue',
+    meta: ['Timing', 'DOM'],
+    prepGoal: 'Explain each Vue nextTick interview question with batched updates, DOM update queue timing, DOM commit timing, and safe focus/read policies.',
+    testFocus: 'Reading stale DOM, focus after conditional render, watcher flush mode, lifecycle timing, and nextTick overuse.',
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    linkLabel: 'Practice nextTick timing',
+    testId: 'vue-prep-pattern-nexttick',
+  },
+  {
+    title: 'Slots and scoped slots',
+    meta: ['Components', 'API'],
+    prepGoal: 'Design Vue component API interview contracts with props, emits, default slots, named slots, and scoped slot data.',
+    testFocus: 'Vue props emits interview boundaries, Vue scoped slots interview payload shape, component communication ownership drift, accessibility labels, and render flexibility without prop explosion.',
+    route: ['/vue', 'trivia', 'vue-slots-default-named-scoped-slot-props'],
+    linkLabel: 'Practice slots trivia',
+    testId: 'vue-prep-pattern-slots',
+  },
+  {
+    title: 'Router guards / navigation',
+    meta: ['Router', 'UX'],
+    prepGoal: 'Answer Vue router guard interview and Vue router navigation guard interview prompts by stating allowed path, denied path, redirect, and async decision timing.',
+    testFocus: 'Auth guards, redirect loops, Vue lazy routes interview follow-ups, nested views, route meta, pending navigation, and fallback UX.',
+    route: ['/vue', 'trivia', 'vue-router-navigation'],
+    linkLabel: 'Practice router navigation',
+    testId: 'vue-prep-pattern-router',
+  },
+  {
+    title: 'Pinia / Vuex / shared state',
+    meta: ['State', 'Architecture'],
+    prepGoal: 'Answer Pinia vs Vuex interview and Vue state management interview prompts by choosing local state, Pinia store state, or legacy Vuex framing by ownership, lifetime, and cross-screen sharing.',
+    testFocus: 'Vue storeToRefs interview traps, actions/getters, async/error state, over-globalized UI state, and Vue migration Vuex to Pinia interview language.',
+    route: ['/vue', 'trivia', 'vuex-state-management'],
+    linkLabel: 'Practice state management',
+    testId: 'vue-prep-pattern-state-management',
+  },
+  {
+    title: 'v-for keys / virtual DOM identity',
+    meta: ['Rendering', 'Lists'],
+    prepGoal: 'Explain list identity, stable keys, and virtual DOM diffing before debugging reordered Vue state.',
+    testFocus: 'Index-key bugs, insert/delete/reorder behavior, preserved child state, form rows, and transfer-list moves.',
+    route: ['/vue', 'trivia', 'vue-v-for-keys-why-not-index'],
+    linkLabel: 'Practice v-for keys',
+    testId: 'vue-prep-pattern-keys',
+  },
+  {
+    title: 'Debounced Search',
+    meta: ['Coding', 'Async UI'],
+    prepGoal: 'Use this Vue coding interview preparation drill to build query state, debounce, status state, and latest-wins results.',
+    testFocus: 'Rapid typing, empty query, stale response guard, timer cleanup, loading/error/empty states, and retry behavior.',
+    route: ['/vue', 'coding', 'vue-debounced-search'],
+    linkLabel: 'Practice debounced search',
+    testId: 'vue-prep-pattern-debounced-search',
+  },
+  {
+    title: 'Tabs',
+    meta: ['Coding', 'State'],
+    prepGoal: 'Use this Vue coding interview preparation tab drill to build controlled active tab state, panel mapping, default value policy, and accessible tab semantics.',
+    testFocus: 'Disabled tabs, keyboard expectations, stable tab ids, DOM timing, and state reset vs persistence policy.',
+    route: ['/vue', 'coding', 'vue-tabs-switcher'],
+    linkLabel: 'Practice Vue tabs',
+    testId: 'vue-prep-pattern-tabs',
+  },
+  {
+    title: 'Data Table / Pagination',
+    meta: ['Coding', 'Data UI'],
+    prepGoal: 'Use this Vue coding interview preparation and Vue data table interview question to model row identity, page state, sorting/filtering hooks, and empty states.',
+    testFocus: 'Stable row keys, page reset on filter, pagination boundaries, derived rows, async data, and large-list rendering cost.',
+    route: ['/vue', 'coding', 'vue-pagination-table'],
+    linkLabel: 'Practice data table',
+    testId: 'vue-prep-pattern-data-table',
+  },
+  {
+    title: 'Shopping Cart / store state',
+    meta: ['Coding', 'Store'],
+    prepGoal: 'Use this Vue coding interview preparation and Vue shopping cart interview question to practice shared cart state, derived totals, quantity changes, and store boundaries without over-globalizing local UI state.',
+    testFocus: 'Add/remove/update quantity, duplicate products, optimistic update recovery, derived totals, and Pinia/Vuex migration language.',
+    route: ['/vue', 'coding', 'vue-shopping-cart'],
+    linkLabel: 'Practice shopping cart',
+    testId: 'vue-prep-pattern-shopping-cart',
+  },
+];
+
+const VUE_WORKED_EXAMPLES: VueWorkedExample[] = [
+  {
+    title: 'ref vs reactive state trap',
+    scenario: 'A candidate destructures reactive state, then the template stops updating even though the object value changes.',
+    contract: [
+      'State shape: choose ref for primitives or replaceable values, reactive for object-shaped state with deep tracking needs.',
+      'Proxy tracking: Vue tracks proxy access, so destructuring can disconnect reads unless you preserve refs with toRefs or storeToRefs.',
+      'Update policy: initialize expected shape, avoid raw-object equality assumptions, and use shallowRef for large immutable external data.',
+      'Interview check: explain .value in JavaScript, template unwrapping, nested mutation behavior, and proxy vs raw object boundaries.',
+    ],
+    route: ['/vue', 'trivia', 'vue-ref-vs-reactive-difference-traps'],
+    linkLabel: 'Practice ref vs reactive',
+  },
+  {
+    title: 'computed vs watch/watchEffect cleanup',
+    scenario: 'A filter component uses watchers for derived totals, then starts duplicate async work after every input change.',
+    contract: [
+      'Derived state: use computed when output is purely derived from reactive inputs and should stay cached.',
+      'Side effects: use watch for explicit sources and watchEffect when automatic dependency collection is worth the trade-off.',
+      'Cleanup: cancel timers, subscriptions, or in-flight async work when a watcher reruns.',
+      'Timing policy: choose flush mode deliberately when DOM timing matters and name infinite-loop risk before coding.',
+    ],
+    route: ['/vue', 'trivia', 'vue-computed-vs-watchers'],
+    linkLabel: 'Practice computed vs watch',
+  },
+  {
+    title: 'nextTick DOM timing',
+    scenario: 'A component enters edit mode and immediately tries to focus an input that has not been rendered yet.',
+    contract: [
+      'Batched updates: setting reactive state schedules a DOM patch; it does not make the element available immediately.',
+      'DOM-dependent action: await nextTick before focus, measurement, scroll, or selection logic that depends on the new DOM.',
+      'Overuse policy: do not use nextTick as a generic patch for unclear state flow when computed state or watcher timing is the actual issue.',
+      'Interview check: test conditional render, rapid toggle, unmount during async work, and watcher/lifecycle timing assumptions.',
+    ],
+    route: ['/vue', 'trivia', 'vue-nexttick-dom-update-queue'],
+    linkLabel: 'Practice nextTick timing',
+  },
+  {
+    title: 'Pinia boundary',
+    scenario: 'A shopping cart works locally, then breaks when totals, product quantities, and optimistic updates move across screens.',
+    contract: [
+      'Ownership boundary: keep short-lived UI state local and move state to Pinia only when ownership is shared across screens or distant components.',
+      'Store model: separate state, getters, actions, async/error status, and derived totals so view code stays simple.',
+      'Reactivity safety: preserve store references with storeToRefs when destructuring and avoid mutating props to patch store drift.',
+      'Legacy framing: mention Vuex as a legacy pattern, but anchor the answer on ownership, lifetime, and migration risk.',
+    ],
+    route: ['/vue', 'coding', 'vue-shopping-cart'],
+    linkLabel: 'Practice shopping cart state',
+  },
+];
+
+const VUE_INTERVIEW_EXPECTATIONS: VueInterviewExpectation[] = [
+  {
+    level: 'Junior Vue interviews',
+    focus: 'SFC structure, props/emits, ref/reactive basics, forms, simple lists, and readable template state.',
+    scoreSignals: [
+      'Build small Vue components without mutating props or hiding state ownership.',
+      'Explain refs, reactive objects, computed values, emits, and basic lifecycle hooks with concrete examples.',
+      'Handle empty, loading, error, reset, and validation states when prompted.',
+    ],
+  },
+  {
+    level: 'Mid-level Vue interviews',
+    focus: 'Computed/watch choices, nextTick timing, router guards, Pinia boundaries, and UI coding prompt reliability.',
+    scoreSignals: [
+      'Choose computed, watch, watchEffect, or nextTick by behavior contract instead of habit.',
+      'Debug reactivity and DOM-timing issues with proxy tracking and update-queue reasoning.',
+      'Connect router, store, slots, and component contracts to implementation choices.',
+    ],
+  },
+  {
+    level: 'Senior Vue interviews',
+    focus: 'Architecture boundaries, reactivity/performance, SSR/Nuxt trade-offs, testing strategy, migration reasoning, and risk communication.',
+    scoreSignals: [
+      'Defend local vs shared state, component API, and composable boundaries with clear trade-offs.',
+      'Discuss list identity, render cost, SSR/Nuxt fit, and Vuex-to-Pinia migration risk without overclaiming.',
+      'Name validation, testing, accessibility, and failure-mode checks before handoff.',
+    ],
+  },
+];
 
 type SequenceStep = {
   title: string;
@@ -335,10 +942,10 @@ const BLUEPRINT_BASE: SequenceStep[] = [
 const PREP_CONFIG: Record<string, FrameworkPrepConfig> = {
   'javascript-prep-path': {
     pathLabel: 'JavaScript prep path',
-    title: 'JavaScript Interview Prep Path: Async, Closures, State',
+    title: 'JavaScript Interview Preparation Path: 7/14/30-Day Study Plan',
     subtitle:
-      'A 7/14/30-day JavaScript interview prep path for frontend engineers who need tighter async reasoning, stale-state control, and safer utility implementations.',
-    minutes: 9,
+      'A JavaScript interview preparation path for frontend engineers who need tighter async reasoning, stale-state control, runtime explanations, and safer utility implementations.',
+    minutes: 12,
     tags: ['javascript', 'interview-prep', 'async', 'state', 'patterns'],
     firstFoldSignals: [
       'Best fit: frontend interview loops that mix JavaScript screening questions, browser reasoning, and small implementation prompts.',
@@ -2110,13 +2717,13 @@ function onInput(value) {
         items: [
           {
             id: 'react-faq-useeffect-stale',
-            q: 'Why does my useEffect run too often or with stale values?',
-            a: 'Usually this comes from dependency mismatch, effects doing render work, or async callbacks reading old values. Treat effects as synchronization with external systems and make cleanup explicit. If responses can return out of order, add a stale-response guard. <strong>Practical rule:</strong> before coding, say what triggers setup, what triggers cleanup, and what happens to old in-flight work. <strong>Where to practice in FrontendAtlas:</strong> <code>/react/trivia/react-useeffect-purpose</code>, <code>/react/trivia/react-stale-state-closures</code>, <code>/react/coding/react-debounced-search</code>.',
+            q: 'Which React hooks and effects questions should I practice?',
+            a: 'Prioritize useEffect cleanup, dependency arrays, stale closure callbacks, refs, functional updates, and custom-hook boundaries. Treat effects as synchronization with external systems and make cleanup explicit. If responses can return out of order, add a stale-response guard. <strong>Practical rule:</strong> before coding, say what triggers setup, what triggers cleanup, and what happens to old in-flight work. <strong>Where to practice in FrontendAtlas:</strong> <code>/react/trivia/react-useeffect-purpose</code>, <code>/react/trivia/react-stale-state-closures</code>, <code>/react/coding/react-debounced-search</code>.',
           },
           {
             id: 'react-faq-rerender-keys',
-            q: 'Why do components re-render, and how do keys affect identity?',
-            a: 'Components rerender when props, state, or consumed context change, but DOM work still depends on reconciliation. Keys define identity across renders; unstable keys can move state to the wrong row and create confusing bugs. That is why list prompts are high-signal in senior loops. <strong>Practical rule:</strong> if order can change, use stable IDs and test reorder/insert/delete explicitly. <strong>Where to practice in FrontendAtlas:</strong> <code>/react/trivia/react-keys-in-lists</code>, <code>/react/trivia/react-component-rerendering</code>, <code>/react/coding/react-transfer-list</code>.',
+            q: 'What React rendering and performance topics matter most?',
+            a: 'Focus on rerender triggers, reconciliation, keys, Context fan-out, memoization trade-offs, and profiling language. Components rerender when props, state, or consumed context change, but DOM work still depends on reconciliation. Keys define identity across renders; unstable keys can move state to the wrong row. <strong>Practical rule:</strong> if order can change, use stable IDs and test reorder/insert/delete explicitly. <strong>Where to practice in FrontendAtlas:</strong> <code>/react/trivia/react-keys-in-lists</code>, <code>/react/trivia/react-component-rerendering</code>, <code>/react/coding/react-transfer-list</code>.',
           },
           {
             id: 'react-faq-memoization',
@@ -2199,15 +2806,15 @@ function onInput(value) {
   },
   'angular-prep-path': {
     pathLabel: 'Angular prep path',
-    title: 'Angular Interview Prep Path: RxJS, Architecture, Tests',
+    title: 'Angular Interview Preparation Path: 7/14/30-Day Study Plan',
     subtitle:
-      'A 7/14/30-day Angular interview prep path for RxJS decisions, change-detection debugging, DI boundaries, and testable component design.',
+      'A 7/14/30-day Angular interview preparation path for RxJS, change detection, signals, DI, forms, testing, and direct coding drills.',
     minutes: 9,
     tags: ['angular', 'interview-prep', 'rxjs', 'testing', 'architecture'],
     firstFoldSignals: [
-      'Best fit: Angular interviews that combine RxJS, change detection, DI, routing, forms, and testing in one evaluation arc.',
-      'Cadence: 7 days to stop the most frequent RxJS and change-detection misses, 14 days to make architecture answers repeatable, 30 days to make coding and testing choices resilient.',
-      'Editorial stance: this path is tuned for interview compression, not for relearning Angular from scratch.',
+      'Best fit: Angular interviews that combine RxJS, change detection, signals, DI, routing, forms, and testing in one evaluation arc.',
+      'Cadence: 7 days to stop frequent RxJS and change-detection misses, 14 days to make architecture answers repeatable, 30 days to make coding and testing choices resilient.',
+      'Editorial stance: this Angular interview study plan is tuned for interview compression, not for relearning Angular from scratch.',
     ],
     intro: {
       paragraphs: [
@@ -3905,26 +4512,31 @@ function onInput(value) {
       closing:
         'Next, Section 8 answers common edge-case questions so you can prioritize the right drills with limited time.',
     },
-    faqInitialOpenId: 'angular-faq-leetcode',
+    faqInitialOpenId: 'angular-faq-prepare',
     faqGroups: [
       {
         id: 'angular-faq-strategy',
         title: 'Prep strategy',
         items: [
           {
+            id: 'angular-faq-prepare',
+            q: 'How do I prepare for an Angular interview?',
+            a: 'Use a repeatable loop: review one Angular concept, answer a short trivia prompt, build one Angular coding drill, then write one symptom → root cause → prevention note. Prioritize RxJS, change detection, DI, forms, routing, testing, and performance before broad topic browsing. <strong>Where to practice in FrontendAtlas:</strong> start with <code>/guides/framework-prep/angular-prep-path</code>, then pair <code>/coding?tech=angular&kind=trivia</code> with <code>/coding?tech=angular&kind=coding</code>.',
+          },
+          {
+            id: 'angular-faq-study-plan',
+            q: 'What is the best Angular interview study plan for frontend engineers?',
+            a: 'A strong Angular interview study plan runs concepts, trivia, and coding prompts together. Seven days can close obvious RxJS and change detection gaps, fourteen days can make the loop repeatable, and thirty days can build pressure-tested depth. <strong>Practical rule:</strong> do not add new topics until the same miss stops repeating across explanation and implementation.',
+          },
+          {
+            id: 'angular-faq-coding',
+            q: 'How should I practice Angular coding interview questions?',
+            a: 'Build small Angular UI prompts under time pressure, then harden them with loading, error, empty, cancellation, validation, disabled state, and testing checks. Pair each coding drill with one related trivia explanation so implementation and reasoning improve together. <strong>Where to practice in FrontendAtlas:</strong> use <code>/coding?tech=angular&kind=coding</code> and review linked Angular trivia immediately after.',
+          },
+          {
             id: 'angular-faq-leetcode',
-            q: 'Do I need LeetCode to pass Angular interviews?',
-            a: 'Not always. In Angular-heavy loops, teams usually score UI state correctness, async flow, and architecture trade-offs before deep algorithms. If your target process has a DS&A stage, treat it as a separate block instead of replacing framework reps. <strong>Practical rule:</strong> keep most weekly time on framework + browser execution, then add algorithms only where the process requires it.',
-          },
-          {
-            id: 'angular-faq-layers',
-            q: 'What is the practical difference between topics, trivia, and coding prompts?',
-            a: 'Topics measure model depth, trivia measures explanation speed, and coding measures implementation reliability. If one layer is weak, interview output feels inconsistent even when you know the concept. The fastest gains come from running the same concept through all three layers in one session. <strong>Where to practice in FrontendAtlas:</strong> <code>/guides/framework-prep/angular-prep-path</code>, <code>/coding?tech=angular&kind=trivia</code>, <code>/coding?tech=angular&kind=coding</code>.',
-          },
-          {
-            id: 'angular-faq-timeline',
-            q: 'How long does it realistically take to become interview-ready?',
-            a: 'Use readiness milestones, not calendar promises. Seven days can close obvious gaps, fourteen days usually stabilizes flow, and thirty days can improve pressure handling if review quality stays high. If the same bug category keeps repeating, extend that block before adding new topics. <strong>Practical rule:</strong> do not increase volume until your mistake log stops repeating the same root cause.',
+            q: 'Do I need LeetCode for Angular interviews?',
+            a: 'Not always. Angular-heavy loops usually score UI state correctness, async flow, RxJS behavior, and architecture trade-offs before deep algorithms. If your target process has a DS&A stage, treat it as a separate block instead of replacing framework reps. <strong>Practical rule:</strong> keep most weekly time on framework + browser execution, then add algorithms only where the process requires it.',
           },
         ],
       },
@@ -3933,45 +4545,24 @@ function onInput(value) {
         title: 'Core Angular mechanics',
         items: [
           {
-            id: 'angular-faq-onpush',
-            q: 'Why does an OnPush component sometimes not update?',
-            a: 'Usually because state changed by mutation while the reference stayed stable, or because the update trigger was assumed incorrectly. In Angular interview questions, this often appears as a “works in dev, breaks in real flow” probe. Explain trigger paths first, then choose immutable updates, <code>markForCheck()</code>, or explicit stream emissions. <strong>Practical rule:</strong> before patching, state exactly which trigger should cause the next check. <strong>Where to practice in FrontendAtlas:</strong> <code>/angular/trivia/angular-change-detection-strategies</code>, <code>/angular/trivia/angular-onpush-change-detection-debugging-real-bug</code>, <code>/angular/coding/angular-filterable-user-list</code>.',
-          },
-          {
             id: 'angular-faq-rxjs',
-            q: 'How should I choose between switchMap, mergeMap, concatMap, and exhaustMap?',
-            a: 'Choose by behavior contract, not habit: cancellation, parallelism, queueing, or ignore-while-busy semantics. Interviewers mostly check whether your operator choice matches UX behavior under fast interaction. Good answers also include teardown and stale-response handling. <strong>Where to practice in FrontendAtlas:</strong> <code>/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use</code>, <code>/angular/trivia/angular-http-what-actually-cancels-request</code>, <code>/angular/coding/angular-debounced-search</code>.',
+            q: 'Which Angular RxJS interview questions should I practice?',
+            a: 'Prioritize cold vs hot Observables, AsyncPipe teardown, shareReplay lifetime, nested subscription risks, and flattening operator choice. Interviewers usually probe switchMap vs mergeMap, HTTP cancellation, stale response behavior, and where errors or retries belong in the stream. <strong>Where to practice in FrontendAtlas:</strong> <code>/angular/trivia/angular-observables-rxjs</code>, <code>/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use</code>, <code>/angular/trivia/angular-http-what-actually-cancels-request</code>.',
           },
           {
-            id: 'angular-faq-di',
-            q: 'What DI scope/provider mistakes down-level candidates most often?',
-            a: 'A common miss is describing DI at a high level without stating lifetime and boundary impact. Another is provider config that accidentally widens scope or breaks override behavior. Strong answers tie provider choices directly to runtime behavior across lazy and feature boundaries. <strong>Practical rule:</strong> always answer “where is this provided, who shares it, and when is it created?” in one pass. <strong>Where to practice in FrontendAtlas:</strong> <code>/angular/trivia/angular-dependency-injection</code>, <code>/angular/trivia/angular-hierarchical-dependency-injection-real-bug</code>, <code>/angular/trivia/angular-component-vs-service-responsibilities</code>.',
+            id: 'angular-faq-change-detection',
+            q: 'How do I prepare for Angular change detection and OnPush questions?',
+            a: 'Start with trigger paths: input reference changes, events, AsyncPipe emissions, zones, and manual marks. Then practice why mutation breaks OnPush expectations and when <code>markForCheck()</code> is safer than <code>detectChanges()</code>. <strong>Where to practice in FrontendAtlas:</strong> <code>/angular/trivia/angular-change-detection-strategies</code>, <code>/angular/trivia/angular-onpush-change-detection-debugging-real-bug</code>, <code>/angular/coding/angular-filterable-user-list</code>.',
           },
           {
-            id: 'angular-faq-routing',
-            q: 'How deep should routing knowledge be for Angular roles?',
-            a: 'You should clearly separate access control, data prefetch, and bundle-loading concerns. In a frontend interview, routing answers are scored on flow predictability and user experience, not API recall. Guard vs resolver responsibility, lazy boundaries, and fallback behavior should be explicit. <strong>Where to practice in FrontendAtlas:</strong> <code>/angular/trivia/angular-routing</code>, <code>/angular/trivia/angular-lazy-loading</code>, <code>/angular/trivia/angular-forroot-forchild</code>.',
-          },
-          {
-            id: 'angular-faq-forms',
-            q: 'Reactive forms vs template-driven forms: what answer is strongest?',
-            a: 'A strong answer is context-based: maintainability, validation complexity, and testability. Reactive forms usually scale better for dynamic controls and richer validation flow, but template-driven can still be fine for simple state. Interview quality improves when you also cover CVA integration and async validator lifecycle. <strong>Practical rule:</strong> if validation rules and state transitions are non-trivial, start reactive. <strong>Where to practice in FrontendAtlas:</strong> <code>/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales</code>, <code>/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding</code>, <code>/angular/coding/angular-contact-form-starter</code>, <code>/angular/coding/angular-multi-step-form-starter</code>.',
-          },
-        ],
-      },
-      {
-        id: 'angular-faq-scope',
-        title: 'Scope and expectations',
-        items: [
-          {
-            id: 'angular-faq-testing',
-            q: 'How much testing depth is expected?',
-            a: 'Enough to show you can design verifiable behavior, not just produce passing screenshots. Explain what to test for async flow, state transitions, and integration boundaries, then tie that to likely failure modes. Strong candidates connect testing strategy directly to architecture decisions. <strong>Practical rule:</strong> for each implementation answer, name one behavior test and one edge-case test before closing.',
+            id: 'angular-faq-modern',
+            q: 'Which Angular signals and modern Angular topics matter in interviews?',
+            a: 'Expect signals vs RxJS, standalone components, zoneless change detection, SSR/hydration, route-level rendering, and migration trade-offs to appear in modern Angular interviews. Strong answers explain where the new primitive changes behavior and where existing RxJS or DI architecture still matters.',
           },
           {
             id: 'angular-faq-senior',
-            q: 'What changes in expectations for a senior-level round?',
-            a: 'In a senior Angular interview, decision clarity matters as much as final output. You are expected to reduce ambiguity, choose scope intentionally, and defend trade-offs across performance, readability, and risk. The difference is not bigger code; it is cleaner boundaries and more reliable reasoning under changing constraints. Keep answers concise, but make architecture assumptions explicit.',
+            q: 'How do I prepare for a senior Angular interview?',
+            a: 'Senior Angular preparation should emphasize architecture boundaries, provider scope, RxJS lifecycle discipline, change detection trade-offs, forms reliability, testing strategy, and migration reasoning. Strong answers name the runtime risk, the user impact, and how you would validate the choice.',
           },
         ],
       },
@@ -4039,15 +4630,15 @@ function onInput(value) {
   },
   'vue-prep-path': {
     pathLabel: 'Vue prep path',
-    title: 'Vue Interview Prep Path: Reactivity, Rendering, State',
+    title: 'Vue Interview Preparation Path: 7/14/30-Day Study Plan',
     subtitle:
-      'A 7/14/30-day Vue interview prep path for reactivity debugging, nextTick timing, component contracts, and state trade-off decisions.',
+      'A Vue interview preparation path for frontend engineers covering reactivity debugging, nextTick timing, component contracts, state trade-offs, and direct coding/trivia drills.',
     minutes: 9,
     tags: ['vue', 'interview-prep', 'reactivity', 'rendering', 'patterns'],
     firstFoldSignals: [
-      'Best fit: Vue interviews that mix reactivity questions with component-communication and runtime-debugging prompts.',
+      'Best fit: Vue interviews that mix reactivity questions with component-communication, state-boundary, and runtime-debugging prompts.',
       'Cadence: 7 days to stabilize reactivity and timing answers, 14 days to make component data-flow choices repeatable, 30 days to make coding and debugging stories mock-ready.',
-      'Editorial stance: this page optimizes for defendable Vue reasoning under follow-ups, not generic framework exploration.',
+      'Editorial stance: this page optimizes for defendable Vue reasoning under follow-ups, not generic Q&A browsing.',
     ],
     intro: {
       paragraphs: [
@@ -5674,31 +6265,31 @@ function onInput(value) {
       closing:
         'Section 8 answers the practical questions that usually decide what to keep and what to skip in the final stretch.',
     },
-    faqInitialOpenId: 'vue-faq-composition-options',
+    faqInitialOpenId: 'vue-faq-prepare',
     faqGroups: [
       {
-        id: 'vue-faq-core',
-        title: 'Core Vue mechanics',
+        id: 'vue-faq-prep',
+        title: 'Vue interview preparation',
         items: [
           {
-            id: 'vue-faq-composition-options',
-            q: 'Composition API vs Options API: what should I say in interviews?',
-            a: 'A strong answer is not “one is good, one is bad”; it is about boundaries and maintainability. Composition API usually gives cleaner reuse and dependency grouping as features grow, while Options API is still valid for smaller stable components. In Vue interview preparation, a high-signal answer is knowing when repeated logic or tangled lifecycle/state concerns justify refactoring to Composition API. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-composition-api-vs-mixins</code>, <code>/vue/trivia/vue-composition-api</code>, <code>/vue/trivia/vue-sfc-vs-global-components</code>.',
+            id: 'vue-faq-prepare',
+            q: 'How do I prepare for a Vue interview?',
+            a: 'Use a repeatable Vue interview preparation loop: review one concept, answer one trivia prompt, build one Vue coding drill, then write one symptom, root cause, and prevention note. Prioritize reactivity, Composition API, computed/watch, nextTick, props/emits, router, Pinia, and UI coding before broad Q&A browsing. <strong>Where to practice in FrontendAtlas:</strong> <code>/coding?tech=vue&amp;kind=trivia</code> and <code>/coding?tech=vue&amp;kind=coding</code>.',
+          },
+          {
+            id: 'vue-faq-study-plan',
+            q: 'What is the best Vue interview study plan for frontend engineers?',
+            a: 'The best Vue interview study plan runs topics, trivia, and coding prompts together. Seven days can stabilize reactivity and timing misses, fourteen days can make the loop repeatable, and thirty days can build mock-ready implementation depth. Use this page as a Vue interview roadmap, not as a generic Vue interview questions and answers hub.',
+          },
+          {
+            id: 'vue-faq-reactivity-questions',
+            q: 'Which Vue reactivity interview questions should I practice?',
+            a: 'Practice Vue reactivity interview questions around proxy tracking, ref vs reactive, computed vs watch, watch vs watchEffect, nextTick, shallowRef, destructuring traps, and stale async updates. Strong answers explain what Vue tracks, when DOM updates flush, and why a specific state shape avoids the bug. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-reactivity-system</code>, <code>/vue/trivia/vue-ref-vs-reactive-difference-traps</code>, <code>/vue/trivia/vue-computed-vs-watchers</code>.',
           },
           {
             id: 'vue-faq-ref-reactive',
-            q: 'How do I decide between ref and reactive without guessing?',
-            a: 'Many Vue.js interview questions here are update-prediction checks, not API recall checks. Use <code>ref</code> for explicit value wrappers or primitives, and <code>reactive</code> when object-shaped state should be tracked deeply. <strong>Practical rule:</strong> if you cannot explain what triggers the next update, stop and restate the state shape first. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-ref-vs-reactive-difference-traps</code>, <code>/vue/trivia/vue-reactivity-system</code>, <code>/vue/coding/vue-todo-list</code>.',
-          },
-          {
-            id: 'vue-faq-computed-watch',
-            q: 'Computed vs watch vs watchEffect: what is the interview-safe framing?',
-            a: 'Treat computed as derived state and watch/watchEffect as side-effect tools, then explain timing and cleanup explicitly. Weak answers usually mix those responsibilities and patch symptoms with extra watchers. <strong>Practical rule:</strong> if output is purely derived from reactive inputs, start with computed and move to watch only when a side effect is required. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-computed-vs-watchers</code>, <code>/vue/trivia/vue-watch-vs-watcheffect-differences-infinite-loops</code>, <code>/vue/coding/vue-debounced-search</code>.',
-          },
-          {
-            id: 'vue-faq-nexttick',
-            q: 'When should I use nextTick, and when is it overkill?',
-            a: 'Use <code>nextTick</code> when you must read or act on DOM after Vue flushes pending updates; avoid using it as a default patch for unclear state flow. Strong answers explain render scheduling first, then justify nextTick as a narrow tool. <strong>Practical rule:</strong> if the task is DOM-dependent (measure/focus/scroll after state change), nextTick is valid; otherwise fix the reactive flow itself. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-nexttick-dom-update-queue</code>, <code>/vue/trivia/vue-lifecycle-hooks</code>, <code>/vue/coding/vue-tabs-switcher</code>.',
+            q: 'How should I explain ref vs reactive in Vue interviews?',
+            a: 'Explain ref vs reactive by state shape and tracking boundary. Use <code>ref</code> for primitives or replaceable values, use <code>reactive</code> for object-shaped state that should be tracked deeply, and mention that destructuring can break reactivity unless refs are preserved with <code>toRefs</code> or <code>storeToRefs</code>. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-ref-vs-reactive-difference-traps</code>.',
           },
         ],
       },
@@ -5707,29 +6298,24 @@ function onInput(value) {
         title: 'Architecture and execution',
         items: [
           {
-            id: 'vue-faq-state-management',
-            q: 'Pinia vs local component state (and Vuex as legacy): how should I answer?',
-            a: 'Anchor your answer on ownership and lifetime, not tool popularity. Keep local UI concerns local, and move state into a store only when ownership is shared across screens or distant components. Vuex still matters conceptually in legacy systems, but your reasoning should stay boundary-first. <strong>Practical rule:</strong> if state has one owner and short lifetime, do not globalize it early. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vuex-state-management</code>, <code>/vue/trivia/vue-architecture-decisions-scalability</code>, <code>/vue/coding/vue-shopping-cart</code>.',
-          },
-          {
-            id: 'vue-faq-router-guards',
-            q: 'How deep does router guard knowledge need to be?',
-            a: 'For a frontend interview, explain guard intent, redirect safety, and async decision timing clearly. You do not need exotic router internals, but you do need to avoid loop-prone logic and ambiguous outcomes. <strong>Practical rule:</strong> every guard answer should state allowed path, denied path, and fallback destination in one pass. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/trivia/vue-router-navigation</code> and filtered drills at <code>/coding?tech=vue&amp;kind=trivia&amp;q=router</code>.',
+            id: 'vue-faq-coding-practice',
+            q: 'How do I practice Vue coding interview questions?',
+            a: 'Practice Vue coding interview questions by building small UI prompts under time pressure, then hardening state, events, loading, error, empty, validation, and async race behavior. Pair every implementation with one related trivia explanation so the same model works in follow-ups. <strong>Where to practice in FrontendAtlas:</strong> <code>/vue/coding/vue-debounced-search</code>, <code>/vue/coding/vue-tabs-switcher</code>, <code>/vue/coding/vue-pagination-table</code>, <code>/vue/coding/vue-shopping-cart</code>.',
           },
           {
             id: 'vue-faq-nuxt',
-            q: 'Do I need Nuxt knowledge for Vue interviews?',
-            a: 'Nuxt can matter for SSR-focused roles, but many loops still evaluate core Vue rendering, reactivity, and component architecture first. In this codebase, Nuxt-specific guides or question sets are not found in codebase, so prep here should stay focused on core Vue signals. If your target role is explicitly SSR-heavy, add a separate Nuxt block after your core flow is stable.',
+            q: 'Do I need Nuxt for Vue interviews?',
+            a: 'Nuxt matters for SSR-heavy Vue roles, but many frontend Vue interviews still score core Vue reactivity, component communication, Router, Pinia, and UI coding first. Add Nuxt, SSR, and hydration review after the core Vue loop is stable, especially when the job description names Nuxt directly.',
           },
           {
             id: 'vue-faq-senior',
-            q: 'What differentiates a strong answer in a senior Vue interview?',
-            a: 'The key difference is decision quality under constraints, not just final output. Strong candidates clarify assumptions, define state transitions early, and explain trade-offs around timing, store boundaries, and component APIs without rambling. <strong>Practical rule:</strong> state one reason for your chosen approach and one rejected alternative before moving on.',
+            q: 'How do I prepare for a senior Vue interview?',
+            a: 'Senior Vue interview preparation should emphasize architecture boundaries, reactivity/performance reasoning, component API design, Pinia vs Vuex migration language, Router guard safety, testing strategy, and SSR/Nuxt trade-offs. Strong senior answers name the chosen boundary, the rejected alternative, and the failure mode the decision prevents.',
           },
           {
-            id: 'vue-faq-next-steps',
-            q: 'What should I do next after reading this FAQ?',
-            a: 'Use Section 6 as your weekly execution plan and Section 7 as your final-week compression loop. Keep sessions short and repeatable: one concept drill, one implementation drill, one written prevention rule. Follow that sequence consistently and your explanations/implementation flow gets much more predictable.',
+            id: 'vue-faq-leetcode',
+            q: 'Do I need LeetCode for Vue interviews?',
+            a: 'Not always. Vue-heavy frontend loops usually score reactivity, component state, async UI, Router/Pinia decisions, and coding prompt execution before deep algorithms. Add DS&A only when the process explicitly includes algorithm rounds or the company uses generic coding screens before Vue-specific interviews.',
           },
         ],
       },
@@ -5812,22 +6398,54 @@ function onInput(value) {
       [readerPromise]="readerPromise || undefined"
     >
       <p *ngIf="isJavascriptPath" class="fp-first-fold-lead">
-        Use this page if your loop is JavaScript-heavy, mixes browser-debugging follow-ups with one or two utility prompts, or keeps exposing the same misses: async ordering mistakes, stale-response races, closure-in-loop bugs, <code>this</code> call-site confusion, debounce/throttle misuse, and deep-clone contract traps.
+        Use this JavaScript interview preparation path as frontend JavaScript interview prep when you need a JavaScript interview study plan for browser-debugging follow-ups, utility prompts, async ordering mistakes, stale-response races, closure-in-loop bugs, <code>this</code> call-site confusion, debounce/throttle misuse, and deep-clone contract traps.
       </p>
       <p *ngIf="isReactPath" class="fp-first-fold-lead">
-        Use this page if your React loop mixes concept screens with UI-building rounds and the same follow-ups keep hurting you: stale closures in effects, derived-state drift, context fan-out, memoization cargo cults, or performance guesses without a clear render model.
+        Use this React interview preparation path as a React interview study plan for frontend engineers when React coding interview preparation keeps exposing the same misses: stale closures in effects, derived-state drift, context fan-out, memoization cargo cults, or performance guesses without a clear render model.
       </p>
       <p *ngIf="isAngularPath" class="fp-first-fold-lead">
-        Use this page if your Angular loop mixes operator-choice questions, architecture and debugging follow-ups, and component or forms tasks, but the same misses keep repeating: wrong RxJS operator semantics, OnPush patching without trigger reasoning, provider-scope confusion, CVA boundaries, and tests that ignore async or DOM timing.
+        Use this Angular interview preparation path as an Angular interview study plan and Angular interview roadmap for frontend engineers when Angular coding interview preparation keeps exposing the same misses: wrong RxJS operator semantics, OnPush patching without trigger reasoning, provider-scope confusion, CVA boundaries, signals/zoneless trade-offs, and tests that ignore async or DOM timing.
       </p>
       <p *ngIf="isVuePath" class="fp-first-fold-lead">
-        Use this page if your Vue loop tests reactivity mental models, component communication, and small feature-building prompts, but your current misses keep clustering around ref vs reactive confusion, watcher vs computed misuse, nextTick timing mistakes, emits contract drift, and provide/inject versus store overreach.
+        Use this Vue interview preparation path as a Vue interview study plan for frontend engineers when Vue coding interview preparation keeps exposing the same misses: ref vs reactive confusion, watcher vs computed misuse, nextTick timing mistakes, emits contract drift, and Pinia/store boundaries that are hard to defend.
       </p>
       <ul *ngIf="config.firstFoldSignals?.length" class="fp-list fp-list--boxed fp-first-fold-signals">
         <li *ngFor="let signal of config.firstFoldSignals">{{ signal }}</li>
       </ul>
 
       <ng-container *ngIf="isJavascriptPath; else defaultFrameworkContent">
+        <section class="jp-proof" data-testid="js-prep-proof">
+          <div class="jp-proof-stats" aria-label="JavaScript interview preparation proof">
+            <div class="jp-proof-stat">
+              <strong>500+</strong>
+              <span>practice questions</span>
+            </div>
+            <div class="jp-proof-stat">
+              <strong>JavaScript</strong>
+              <span>mastery track</span>
+            </div>
+            <div class="jp-proof-stat">
+              <strong>Live</strong>
+              <span>editor + checks</span>
+            </div>
+            <div class="jp-proof-stat">
+              <strong>Trivia + coding</strong>
+              <span>drills</span>
+            </div>
+          </div>
+          <div class="jp-proof-actions" aria-label="JavaScript interview preparation actions">
+            <a class="jp-proof-cta jp-proof-cta--primary" [routerLink]="['/guides/framework-prep/javascript-prep-path/mastery']">
+              Open JavaScript mastery track
+            </a>
+            <a class="jp-proof-cta" [routerLink]="['/coding']" [queryParams]="{ tech: 'javascript', kind: 'coding' }">
+              Start JavaScript coding drills
+            </a>
+            <a class="jp-proof-cta" [routerLink]="['/coding']" [queryParams]="{ tech: 'javascript', kind: 'trivia' }">
+              Run JavaScript trivia drills
+            </a>
+          </div>
+        </section>
+
         <section class="jp-mastery-callout">
           <h2>JavaScript 0 to 100 mastery track</h2>
           <p>
@@ -5837,6 +6455,112 @@ function onInput(value) {
           <a [routerLink]="['/guides/framework-prep/javascript-prep-path/mastery']">
             Open JavaScript mastery crash track
           </a>
+        </section>
+
+        <section class="jp-section jp-pattern-map" data-testid="js-prep-pattern-map">
+          <h2>Most asked JavaScript interview prep patterns</h2>
+          <p>
+            Use these as the fastest practice map before choosing a 7, 14, or 30-day plan. Each card ties one
+            runtime model to the follow-up or edge case interviewers usually use to verify depth. Use this as a
+            JavaScript interview study plan checkpoint before coding/trivia drills.
+          </p>
+          <div class="jp-pattern-grid" data-testid="js-prep-pattern-cards">
+            <a class="jp-pattern-card" [routerLink]="['/javascript','trivia','js-event-loop']" data-testid="js-prep-pattern-event-loop">
+              <div class="jp-pattern-meta"><span>Output</span><span>Async</span></div>
+              <h3>Event loop output</h3>
+              <p><strong>Prep goal:</strong> trace sync code, microtasks, macrotasks, and async/await continuations.</p>
+              <p><strong>Follow-up/test focus:</strong> Promise vs setTimeout order, await continuation timing, and mixed output snippets.</p>
+              <span class="jp-pattern-link">Practice event loop trivia</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','trivia','js-closures']" data-testid="js-prep-pattern-closures">
+              <div class="jp-pattern-meta"><span>Scope</span><span>TDZ</span></div>
+              <h3>Closures + TDZ</h3>
+              <p><strong>Prep goal:</strong> explain lexical bindings, closure capture, hoisting, and temporal dead zone failures.</p>
+              <p><strong>Follow-up/test focus:</strong> closure-in-loop output, delayed callbacks, and why bindings are not frozen copies.</p>
+              <span class="jp-pattern-link">Practice closures trivia</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-implement-bind']" data-testid="js-prep-pattern-this-bind">
+              <div class="jp-pattern-meta"><span>this</span><span>Call site</span></div>
+              <h3>this / bind / call-site</h3>
+              <p><strong>Prep goal:</strong> resolve implicit, explicit, constructor, default, and arrow-function binding.</p>
+              <p><strong>Follow-up/test focus:</strong> detached methods, preserved arguments, constructor behavior, and bound function reuse.</p>
+              <span class="jp-pattern-link">Practice bind implementation</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-promise-all']" data-testid="js-prep-pattern-promise-all">
+              <div class="jp-pattern-meta"><span>Promise</span><span>Ordering</span></div>
+              <h3>Promise.all + combinators</h3>
+              <p><strong>Prep goal:</strong> implement result ordering, fail-fast rejection, empty input, and non-promise normalization.</p>
+              <p><strong>Follow-up/test focus:</strong> all vs allSettled vs race vs any, rejection flow, and concurrency boundaries.</p>
+              <span class="jp-pattern-link">Practice Promise.all</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-debounce']" data-testid="js-prep-pattern-debounce">
+              <div class="jp-pattern-meta"><span>Timers</span><span>UX</span></div>
+              <h3>Debounce</h3>
+              <p><strong>Prep goal:</strong> delay work until input quiets while preserving <code>this</code>, args, and timer cleanup.</p>
+              <p><strong>Follow-up/test focus:</strong> leading/trailing policy, cancel/flush hooks, stale search requests, and rapid calls.</p>
+              <span class="jp-pattern-link">Practice debounce</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-throttle']" data-testid="js-prep-pattern-throttle">
+              <div class="jp-pattern-meta"><span>Timers</span><span>Rate limit</span></div>
+              <h3>Throttle</h3>
+              <p><strong>Prep goal:</strong> limit high-frequency handlers while keeping periodic progress predictable.</p>
+              <p><strong>Follow-up/test focus:</strong> first/last call policy, trailing execution, scroll/resize use cases, and leaked timers.</p>
+              <span class="jp-pattern-link">Practice throttle</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-array-prototype-reduce']" data-testid="js-prep-pattern-array-reduce">
+              <div class="jp-pattern-meta"><span>Arrays</span><span>Polyfill</span></div>
+              <h3>Array map/filter/reduce</h3>
+              <p><strong>Prep goal:</strong> clarify callback contract, accumulator behavior, holes, indices, and initial value rules.</p>
+              <p><strong>Follow-up/test focus:</strong> sparse arrays, thisArg, mutation during iteration, and native-like edge cases.</p>
+              <span class="jp-pattern-link">Practice reduce polyfill</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-flatten-depth']" data-testid="js-prep-pattern-flatten">
+              <div class="jp-pattern-meta"><span>Recursion</span><span>Data</span></div>
+              <h3>Flatten / groupBy</h3>
+              <p><strong>Prep goal:</strong> define input shape, recursion depth, grouping key policy, and output contract before coding.</p>
+              <p><strong>Follow-up/test focus:</strong> depth boundary, mixed primitives, empty input, stack overflow risk, and Map vs object trade-offs.</p>
+              <span class="jp-pattern-link">Practice flatten depth</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-deep-clone']" data-testid="js-prep-pattern-deep-clone">
+              <div class="jp-pattern-meta"><span>Objects</span><span>References</span></div>
+              <h3>Deep clone / deep equal</h3>
+              <p><strong>Prep goal:</strong> state supported types, reference identity, recursion strategy, and unsupported values clearly.</p>
+              <p><strong>Follow-up/test focus:</strong> cycles, Date, Map, Set, functions, key order, and JSON clone limitations.</p>
+              <span class="jp-pattern-link">Practice deep clone</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-event-emitter-mini']" data-testid="js-prep-pattern-event-emitter">
+              <div class="jp-pattern-meta"><span>API</span><span>Lifecycle</span></div>
+              <h3>EventEmitter</h3>
+              <p><strong>Prep goal:</strong> design <code>on</code>, <code>off</code>, <code>emit</code>, and optional <code>once</code> contracts.</p>
+              <p><strong>Follow-up/test focus:</strong> unsubscribe behavior, listener order, mutation during emit, and memory leaks.</p>
+              <span class="jp-pattern-link">Practice EventEmitter</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-delegated-events-2']" data-testid="js-prep-pattern-dom-delegation">
+              <div class="jp-pattern-meta"><span>DOM</span><span>Events</span></div>
+              <h3>DOM event delegation</h3>
+              <p><strong>Prep goal:</strong> use bubbling, target checks, closest lookup, and parent listeners for dynamic children.</p>
+              <p><strong>Follow-up/test focus:</strong> target vs currentTarget, containment checks, nested matches, cleanup, and disabled states.</p>
+              <span class="jp-pattern-link">Practice delegated events</span>
+            </a>
+            <a class="jp-pattern-card" [routerLink]="['/javascript','coding','js-take-latest']" data-testid="js-prep-pattern-take-latest">
+              <div class="jp-pattern-meta"><span>Async UI</span><span>Race</span></div>
+              <h3>takeLatest / concurrency</h3>
+              <p><strong>Prep goal:</strong> protect latest user intent with request identity, cancellation, and bounded async work.</p>
+              <p><strong>Follow-up/test focus:</strong> stale responses, abort semantics, duplicate submits, error states, and result ordering.</p>
+              <span class="jp-pattern-link">Practice takeLatest</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="jp-section jp-round-flow" data-testid="js-prep-round-flow">
+          <h2>Actual JavaScript interview round flow</h2>
+          <ol class="jp-flow-list">
+            <li><strong>Output tracing:</strong> predict the log order before running code, then narrate stack, microtask, and macrotask transitions.</li>
+            <li><strong>Utility implementation:</strong> restate the contract for debounce, Promise.all, bind, reduce, flatten, or deep clone before writing code.</li>
+            <li><strong>Async/edge-case follow-up:</strong> add stale-response policy, empty input, rejection behavior, timer cleanup, or preserved <code>this</code>/args.</li>
+            <li><strong>Testing/validation:</strong> run two happy cases and two edge cases, then name any scope you intentionally did not support.</li>
+            <li><strong>Trade-off explanation:</strong> close with complexity, API surface, maintainability, and the production bug your guard prevents.</li>
+          </ol>
         </section>
 
         <div class="jp-layout">
@@ -6769,6 +7493,14 @@ function onInput(value) {
         </ul>
         <p><strong>Checkpoint:</strong> you can explain async ordering clearly, solve at least two utility patterns, and
         discuss trade-offs without prompting.</p>
+        <p>
+          <strong>Direct drill sequence:</strong>
+          <a [routerLink]="['/javascript','trivia','js-event-loop']">event loop output</a>,
+          <a [routerLink]="['/javascript','coding','js-debounce']">debounce</a>,
+          <a [routerLink]="['/javascript','coding','js-promise-all']">Promise.all</a>,
+          then one timed review through the
+          <a [routerLink]="['/guides/framework-prep/javascript-prep-path/mastery']">JavaScript mastery track</a>.
+        </p>
 
         <h3>14-day plan (consistency + blind-spot closure)</h3>
         <p><strong>Week 1:</strong> async model, closures/scope, this binding, array/object helpers, debounce/throttle, Promise utilities.</p>
@@ -6782,6 +7514,14 @@ function onInput(value) {
           <li>15 min trivia (two clusters), 60 min coding, 15 min edge-case and complexity review.</li>
         </ul>
         <p><strong>Checkpoint:</strong> your default answer flow is clarify → minimal implementation → edge cases → trade-offs → validation.</p>
+        <p>
+          <strong>Direct drill sequence:</strong>
+          <a [routerLink]="['/javascript','coding','js-event-emitter-mini']">EventEmitter</a>,
+          <a [routerLink]="['/javascript','coding','js-deep-clone']">deep clone</a>,
+          <a [routerLink]="['/javascript','coding','js-delegated-events-2']">DOM delegation</a>,
+          plus daily
+          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'javascript', kind: 'trivia' }">JavaScript trivia drills</a>.
+        </p>
 
         <h3>30-day plan (senior readiness)</h3>
         <p><strong>Weeks 1–2:</strong> rotate core topics and repeat high-frequency prompt families until execution is automatic.</p>
@@ -6789,6 +7529,13 @@ function onInput(value) {
         <p>
           Target outcome: readable code under pressure, stable edge-case handling, and calm trade-off explanation in a
           real <strong>frontend interview</strong>.
+        </p>
+        <p>
+          <strong>Direct drill sequence:</strong> alternate the
+          <a [routerLink]="['/guides/framework-prep/javascript-prep-path/mastery']">JavaScript mastery track</a>
+          with
+          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'javascript', kind: 'coding' }">JavaScript coding drills</a>
+          and one weekly mixed mock from the pattern map above.
         </p>
 
         <h3>Decision tree: if you’re weak at X, do Y</h3>
@@ -6894,7 +7641,7 @@ function onInput(value) {
         <app-faq-section
           eyebrow="FAQ"
           [groups]="javascriptFaqGroups"
-          initialOpenId="faq-leetcode-js"
+          initialOpenId="faq-prepare-js-interview"
         ></app-faq-section>
         <p>
           This playbook is built to remove randomness from prep: diagnose weak spots, drill intentionally, and review
@@ -6908,6 +7655,289 @@ function onInput(value) {
 
       <ng-template #defaultFrameworkContent>
         <div class="fp-content">
+        <ng-container *ngIf="isReactPath">
+          <section class="rp-proof" data-testid="react-prep-proof">
+            <div class="rp-proof-stats" aria-label="React interview preparation proof">
+              <div class="rp-proof-stat">
+                <strong>500+</strong>
+                <span>practice questions</span>
+              </div>
+              <div class="rp-proof-stat">
+                <strong>React</strong>
+                <span>coding drills</span>
+              </div>
+              <div class="rp-proof-stat">
+                <strong>Live</strong>
+                <span>editor + checks</span>
+              </div>
+              <div class="rp-proof-stat">
+                <strong>Hooks + UI</strong>
+                <span>patterns</span>
+              </div>
+            </div>
+            <div class="rp-proof-actions" aria-label="React interview preparation actions">
+              <a class="rp-proof-cta rp-proof-cta--primary" [routerLink]="['/coding']" [queryParams]="{ tech: 'react', kind: 'coding' }">
+                Start React coding drills
+              </a>
+              <a class="rp-proof-cta" [routerLink]="['/coding']" [queryParams]="{ tech: 'react', kind: 'trivia' }">
+                Run React trivia drills
+              </a>
+              <a class="rp-proof-cta" [routerLink]="['/react','interview-questions']">
+                Review React interview questions
+              </a>
+            </div>
+          </section>
+
+          <section class="rp-section rp-pattern-map" data-testid="react-prep-pattern-map">
+            <h2>Most asked React interview prep patterns</h2>
+            <p>
+              Use this as a React interview preparation checkpoint before choosing a 7, 14, or 30-day plan. Use this as
+              a React interview study plan checkpoint before coding/trivia drills. Each card connects the concept, the
+              pitfall interviewers probe, and the direct drill to practice next.
+            </p>
+            <div class="rp-pattern-grid" data-testid="react-prep-pattern-cards">
+              <a
+                class="rp-pattern-card"
+                *ngFor="let card of reactPrepPatterns"
+                [routerLink]="card.route"
+                [attr.data-testid]="card.testId"
+              >
+                <div class="rp-pattern-meta">
+                  <span *ngFor="let tag of card.meta">{{ tag }}</span>
+                </div>
+                <h3>{{ card.title }}</h3>
+                <p><strong>Prep goal:</strong> {{ card.prepGoal }}</p>
+                <p><strong>Pitfall/test focus:</strong> {{ card.testFocus }}</p>
+                <span class="rp-pattern-link">{{ card.linkLabel }}</span>
+              </a>
+            </div>
+          </section>
+
+          <section class="rp-section rp-worked-examples" data-testid="react-worked-examples">
+            <h2>React worked examples to rehearse before mocks</h2>
+            <p>
+              These examples turn high-frequency React interview topics into contract-first answer outlines before
+              moving into live coding.
+            </p>
+            <div class="rp-example-grid">
+              <article class="rp-example-card" *ngFor="let example of reactWorkedExamples">
+                <h3>{{ example.title }}</h3>
+                <p><strong>Scenario:</strong> {{ example.scenario }}</p>
+                <ul>
+                  <li *ngFor="let item of example.contract">{{ item }}</li>
+                </ul>
+                <a class="rp-pattern-link" [routerLink]="example.route">{{ example.linkLabel }}</a>
+              </article>
+            </div>
+          </section>
+
+          <section class="rp-section rp-expectations" data-testid="react-level-expectations">
+            <h2>Junior / Mid / Senior React interview expectations</h2>
+            <p>
+              Use these expectations to decide whether to stay with fundamentals, move into UI coding reps, or add
+              senior-level trade-off narration.
+            </p>
+            <div class="rp-expectation-grid">
+              <article class="rp-expectation-card" *ngFor="let expectation of reactInterviewExpectations">
+                <h3>{{ expectation.level }}</h3>
+                <p><strong>Focus:</strong> {{ expectation.focus }}</p>
+                <ul>
+                  <li *ngFor="let signal of expectation.scoreSignals">{{ signal }}</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+        </ng-container>
+
+        <ng-container *ngIf="isAngularPath">
+          <section class="ap-proof" data-testid="angular-prep-proof">
+            <div class="ap-proof-stats" aria-label="Angular interview preparation proof">
+              <div class="ap-proof-stat">
+                <strong>500+</strong>
+                <span>practice questions</span>
+              </div>
+              <div class="ap-proof-stat">
+                <strong>Angular</strong>
+                <span>coding drills</span>
+              </div>
+              <div class="ap-proof-stat">
+                <strong>Live</strong>
+                <span>editor + checks</span>
+              </div>
+              <div class="ap-proof-stat">
+                <strong>RxJS + change detection</strong>
+                <span>patterns</span>
+              </div>
+            </div>
+            <div class="ap-proof-actions" aria-label="Angular interview preparation actions">
+              <a class="ap-proof-cta ap-proof-cta--primary" [routerLink]="['/coding']" [queryParams]="{ tech: 'angular', kind: 'coding' }">
+                Start Angular coding drills
+              </a>
+              <a class="ap-proof-cta" [routerLink]="['/coding']" [queryParams]="{ tech: 'angular', kind: 'trivia' }">
+                Run Angular trivia drills
+              </a>
+              <a class="ap-proof-cta" [routerLink]="['/angular','interview-questions']">
+                Review Angular interview questions
+              </a>
+            </div>
+          </section>
+
+          <section class="ap-section ap-pattern-map" data-testid="angular-prep-pattern-map">
+            <h2>Most asked Angular interview prep patterns</h2>
+            <p>
+              Use this as an Angular interview preparation checkpoint before choosing a 7, 14, or 30-day plan. Use this as
+              an Angular interview study plan checkpoint before coding/trivia drills. Use this as an Angular interview
+              roadmap checkpoint before coding/trivia drills. Each card connects the concept, the pitfall interviewers
+              probe, and the direct Angular drill to practice next.
+            </p>
+            <div class="ap-pattern-grid" data-testid="angular-prep-pattern-cards">
+              <a
+                class="ap-pattern-card"
+                *ngFor="let card of angularPrepPatterns"
+                [routerLink]="card.route"
+                [attr.data-testid]="card.testId"
+              >
+                <div class="ap-pattern-meta">
+                  <span *ngFor="let tag of card.meta">{{ tag }}</span>
+                </div>
+                <h3>{{ card.title }}</h3>
+                <p><strong>Prep goal:</strong> {{ card.prepGoal }}</p>
+                <p><strong>Pitfall/test focus:</strong> {{ card.testFocus }}</p>
+                <span class="ap-pattern-link">{{ card.linkLabel }}</span>
+              </a>
+            </div>
+          </section>
+
+          <section class="ap-section ap-worked-examples" data-testid="angular-worked-examples">
+            <h2>Angular worked examples to rehearse before mocks</h2>
+            <p>
+              These examples turn high-frequency Angular interview topics into contract-first answer outlines before
+              moving into live coding or debugging follow-ups.
+            </p>
+            <div class="ap-example-grid">
+              <article class="ap-example-card" *ngFor="let example of angularWorkedExamples">
+                <h3>{{ example.title }}</h3>
+                <p><strong>Scenario:</strong> {{ example.scenario }}</p>
+                <ul>
+                  <li *ngFor="let item of example.contract">{{ item }}</li>
+                </ul>
+                <a class="ap-pattern-link" [routerLink]="example.route">{{ example.linkLabel }}</a>
+              </article>
+            </div>
+          </section>
+
+          <section class="ap-section ap-expectations" data-testid="angular-level-expectations">
+            <h2>Junior / Mid / Senior Angular interview expectations</h2>
+            <p>
+              Use these expectations to decide whether to stabilize fundamentals, move into RxJS and UI coding reps, or
+              add senior-level architecture and migration narration.
+            </p>
+            <div class="ap-expectation-grid">
+              <article class="ap-expectation-card" *ngFor="let expectation of angularInterviewExpectations">
+                <h3>{{ expectation.level }}</h3>
+                <p><strong>Focus:</strong> {{ expectation.focus }}</p>
+                <ul>
+                  <li *ngFor="let signal of expectation.scoreSignals">{{ signal }}</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+        </ng-container>
+
+        <ng-container *ngIf="isVuePath">
+          <section class="vp-proof" data-testid="vue-prep-proof">
+            <div class="vp-proof-stats" aria-label="Vue interview preparation proof">
+              <div class="vp-proof-stat">
+                <strong>500+</strong>
+                <span>practice questions</span>
+              </div>
+              <div class="vp-proof-stat">
+                <strong>Vue</strong>
+                <span>coding drills</span>
+              </div>
+              <div class="vp-proof-stat">
+                <strong>Live</strong>
+                <span>editor + checks</span>
+              </div>
+              <div class="vp-proof-stat">
+                <strong>Reactivity + component</strong>
+                <span>patterns</span>
+              </div>
+            </div>
+            <div class="vp-proof-actions" aria-label="Vue interview preparation actions">
+              <a class="vp-proof-cta vp-proof-cta--primary" [routerLink]="['/coding']" [queryParams]="{ tech: 'vue', kind: 'coding' }">
+                Start Vue coding drills
+              </a>
+              <a class="vp-proof-cta" [routerLink]="['/coding']" [queryParams]="{ tech: 'vue', kind: 'trivia' }">
+                Run Vue trivia drills
+              </a>
+              <a class="vp-proof-cta" [routerLink]="['/vue','interview-questions']">
+                Review Vue interview questions
+              </a>
+            </div>
+          </section>
+
+          <section class="vp-section vp-pattern-map" data-testid="vue-prep-pattern-map">
+            <h2>Most asked Vue interview prep patterns</h2>
+            <p>
+              Use this as a Vue interview preparation checkpoint before choosing a 7, 14, or 30-day plan. Use this as a
+              Vue interview study plan checkpoint before coding/trivia drills. Each card connects the reactivity or
+              component model, the pitfall interviewers probe, and the direct Vue drill to practice next.
+            </p>
+            <div class="vp-pattern-grid" data-testid="vue-prep-pattern-cards">
+              <a
+                class="vp-pattern-card"
+                *ngFor="let card of vuePrepPatterns"
+                [routerLink]="card.route"
+                [attr.data-testid]="card.testId"
+              >
+                <div class="vp-pattern-meta">
+                  <span *ngFor="let tag of card.meta">{{ tag }}</span>
+                </div>
+                <h3>{{ card.title }}</h3>
+                <p><strong>Prep goal:</strong> {{ card.prepGoal }}</p>
+                <p><strong>Pitfall/test focus:</strong> {{ card.testFocus }}</p>
+                <span class="vp-pattern-link">{{ card.linkLabel }}</span>
+              </a>
+            </div>
+          </section>
+
+          <section class="vp-section vp-worked-examples" data-testid="vue-worked-examples">
+            <h2>Vue worked examples to rehearse before mocks</h2>
+            <p>
+              These examples turn high-frequency Vue interview topics into contract-first answer outlines before
+              moving into live coding or reactivity debugging follow-ups.
+            </p>
+            <div class="vp-example-grid">
+              <article class="vp-example-card" *ngFor="let example of vueWorkedExamples">
+                <h3>{{ example.title }}</h3>
+                <p><strong>Scenario:</strong> {{ example.scenario }}</p>
+                <ul>
+                  <li *ngFor="let item of example.contract">{{ item }}</li>
+                </ul>
+                <a class="vp-pattern-link" [routerLink]="example.route">{{ example.linkLabel }}</a>
+              </article>
+            </div>
+          </section>
+
+          <section class="vp-section vp-expectations" data-testid="vue-level-expectations">
+            <h2>Junior / Mid / Senior Vue interview expectations</h2>
+            <p>
+              Use these expectations to decide whether to stabilize fundamentals, move into reactivity and UI coding
+              reps, or add senior-level architecture, SSR/Nuxt, and migration narration.
+            </p>
+            <div class="vp-expectation-grid">
+              <article class="vp-expectation-card" *ngFor="let expectation of vueInterviewExpectations">
+                <h3>{{ expectation.level }}</h3>
+                <p><strong>Focus:</strong> {{ expectation.focus }}</p>
+                <ul>
+                  <li *ngFor="let signal of expectation.scoreSignals">{{ signal }}</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+        </ng-container>
+
         <ng-container *ngIf="config.prepChecklistSection as prepChecklistSection">
           <h2>{{ prepChecklistSection.title }}</h2>
           <p>{{ prepChecklistSection.intro }}</p>
@@ -7627,9 +8657,150 @@ function onInput(value) {
       border-bottom: none;
     }
 
+    :host ::ng-deep fa-guide-shell .content .jp-proof {
+      display: grid;
+      gap: 12px;
+      margin: 10px 0 14px;
+      padding: 12px;
+      border: 1px solid color-mix(in srgb, var(--uf-accent) 36%, var(--uf-border-subtle));
+      border-left: 3px solid color-mix(in srgb, var(--uf-accent) 58%, var(--uf-border-subtle));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-accent) 12%, #10141b);
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    :host ::ng-deep fa-guide-shell .content :is(.jp-proof-stats, .jp-pattern-grid) {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    :host ::ng-deep fa-guide-shell .content :is(.jp-proof-stat, .jp-pattern-card) {
+      min-width: 0;
+      border: 1px solid rgba(255, 255, 255, .10);
+      border-radius: 8px;
+      background: #10141b;
+      padding: 10px 12px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-proof-stat strong {
+      display: block;
+      color: var(--uf-text-primary);
+      font-size: 1rem;
+      line-height: 1.25;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-proof-stat span {
+      display: block;
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-proof-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    :host ::ng-deep fa-guide-shell .content :is(.jp-proof-cta, .jp-pattern-link) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: color-mix(in srgb, var(--uf-surface-alt) 84%, #10141b);
+      color: var(--uf-text-primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.25;
+      padding: 7px 10px;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-proof-cta--primary {
+      color: var(--uf-bg);
+      background: var(--uf-accent);
+      border-color: color-mix(in srgb, var(--uf-accent) 84%, var(--uf-border-subtle));
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-map {
+      margin-top: 12px;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin: 10px 0 14px;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-card {
+      display: grid;
+      gap: 8px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-card:hover {
+      border-color: color-mix(in srgb, var(--uf-accent) 48%, rgba(255, 255, 255, .12));
+      text-decoration: none;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-card :is(h3, p) {
+      margin: 0;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent);
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-meta span {
+      border: 1px solid rgba(255, 255, 255, .10);
+      border-radius: 999px;
+      background: #141a22;
+      padding: 2px 7px;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-link {
+      width: fit-content;
+      min-height: 32px;
+      margin-top: 2px;
+      color: var(--uf-accent);
+      background: color-mix(in srgb, var(--uf-accent) 10%, #10141b);
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-flow-list {
+      display: grid;
+      gap: 8px;
+      list-style-position: inside;
+      margin: 10px 0 14px;
+      padding: 0;
+    }
+
+    :host ::ng-deep fa-guide-shell .content .jp-flow-list > li {
+      border: 1px solid rgba(255, 255, 255, .10);
+      border-radius: 8px;
+      background: #10141b;
+      padding: 10px 12px;
+      overflow-wrap: anywhere;
+    }
+
     :host ::ng-deep fa-guide-shell .content .jp-mastery-callout {
       margin: 8px 0 14px;
-      border-radius: 14px;
+      border-radius: 8px;
       border: 1px solid color-mix(in srgb, var(--uf-accent) 42%, var(--uf-border-subtle));
       background: color-mix(in srgb, var(--uf-accent) 16%, #121922);
       padding: 13px 14px;
@@ -7637,15 +8808,14 @@ function onInput(value) {
       gap: 8px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > h2,
-    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > p {
+    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > :is(h2, p) {
       margin: 0;
     }
 
     :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > a {
       width: fit-content;
       text-decoration: none;
-      border-radius: 999px;
+      border-radius: 8px;
       border: 1px solid color-mix(in srgb, var(--uf-accent) 54%, var(--uf-border-subtle));
       background: color-mix(in srgb, var(--uf-accent) 22%, #121922);
       color: var(--uf-text-primary);
@@ -7654,19 +8824,154 @@ function onInput(value) {
       padding: 7px 11px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > a:hover {
-      background: color-mix(in srgb, var(--uf-accent) 30%, #121922);
-    }
+	    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > a:hover {
+	      background: color-mix(in srgb, var(--uf-accent) 30%, #121922);
+	    }
 
-    :host ::ng-deep fa-guide-shell .content .jp-layout {
-      gap: 14px;
-    }
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof, .rp-section, .ap-proof, .ap-section, .vp-proof, .vp-section) {
+	      display: grid;
+	      gap: 12px;
+	      max-width: 100%;
+	      min-width: 0;
+	      overflow-wrap: anywhere;
+	      word-break: break-word;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof, .ap-proof, .vp-proof) {
+	      margin: 10px 0 14px;
+	      padding: 12px;
+	      border: 1px solid color-mix(in srgb, var(--uf-accent) 36%, var(--uf-border-subtle));
+	      border-left: 3px solid color-mix(in srgb, var(--uf-accent) 58%, var(--uf-border-subtle));
+	      border-radius: 8px;
+	      background: color-mix(in srgb, var(--uf-accent) 12%, #10141b);
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-section, .ap-section, .vp-section) {
+	      margin: 12px 0 16px;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stats, .rp-pattern-grid, .rp-example-grid, .rp-expectation-grid, .ap-proof-stats, .ap-pattern-grid, .ap-example-grid, .ap-expectation-grid, .vp-proof-stats, .vp-pattern-grid, .vp-example-grid, .vp-expectation-grid) {
+	      display: grid;
+	      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	      gap: 10px;
+	      max-width: 100%;
+	      min-width: 0;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stats, .ap-proof-stats, .vp-proof-stats) {
+	      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stat, .rp-pattern-card, .rp-example-card, .rp-expectation-card, .ap-proof-stat, .ap-pattern-card, .ap-example-card, .ap-expectation-card, .vp-proof-stat, .vp-pattern-card, .vp-example-card, .vp-expectation-card) {
+	      min-width: 0;
+	      border: 1px solid rgba(255, 255, 255, .10);
+	      border-radius: 8px;
+	      background: #10141b;
+	      padding: 10px 12px;
+	      overflow-wrap: anywhere;
+	      word-break: break-word;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-card, .rp-example-card, .rp-expectation-card, .ap-pattern-card, .ap-example-card, .ap-expectation-card, .vp-pattern-card, .vp-example-card, .vp-expectation-card) {
+	      display: grid;
+	      gap: 8px;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-card, .ap-pattern-card, .vp-pattern-card) {
+	      color: inherit;
+	      text-decoration: none;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-card, .ap-pattern-card, .vp-pattern-card):hover {
+	      border-color: color-mix(in srgb, var(--uf-accent) 48%, rgba(255, 255, 255, .12));
+	      text-decoration: none;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stat, .ap-proof-stat, .vp-proof-stat) strong {
+	      display: block;
+	      color: var(--uf-text-primary);
+	      font-size: 1rem;
+	      line-height: 1.25;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stat, .ap-proof-stat, .vp-proof-stat) span {
+	      display: block;
+	      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+	      font-size: 0.86rem;
+	      line-height: 1.35;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-actions, .ap-proof-actions, .vp-proof-actions) {
+	      display: flex;
+	      flex-wrap: wrap;
+	      gap: 8px;
+	      max-width: 100%;
+	      min-width: 0;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-cta, .rp-pattern-link, .ap-proof-cta, .ap-pattern-link, .vp-proof-cta, .vp-pattern-link) {
+	      display: inline-flex;
+	      align-items: center;
+	      justify-content: center;
+	      min-height: 36px;
+	      width: fit-content;
+	      border-radius: 8px;
+	      border: 1px solid rgba(255, 255, 255, .12);
+	      background: color-mix(in srgb, var(--uf-surface-alt) 84%, #10141b);
+	      color: var(--uf-text-primary);
+	      text-decoration: none;
+	      font-size: 0.9rem;
+	      font-weight: 700;
+	      line-height: 1.25;
+	      padding: 7px 10px;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-cta--primary, .ap-proof-cta--primary, .vp-proof-cta--primary) {
+	      color: var(--uf-bg);
+	      background: var(--uf-accent);
+	      border-color: color-mix(in srgb, var(--uf-accent) 84%, var(--uf-border-subtle));
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-link, .ap-pattern-link, .vp-pattern-link) {
+	      min-height: 32px;
+	      margin-top: 2px;
+	      color: var(--uf-accent);
+	      background: color-mix(in srgb, var(--uf-accent) 10%, #10141b);
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-meta, .ap-pattern-meta, .vp-pattern-meta) {
+	      display: flex;
+	      flex-wrap: wrap;
+	      gap: 6px;
+	      color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent);
+	      font-size: 0.78rem;
+	      line-height: 1.3;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-meta, .ap-pattern-meta, .vp-pattern-meta) span {
+	      border: 1px solid rgba(255, 255, 255, .10);
+	      border-radius: 999px;
+	      background: #141a22;
+	      padding: 2px 7px;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-section, .ap-section, .vp-section) :is(h2, h3, p, ul) {
+	      margin: 0;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-example-card, .rp-expectation-card, .ap-example-card, .ap-expectation-card, .vp-example-card, .vp-expectation-card) ul {
+	      padding-left: 18px;
+	    }
+
+	    :host ::ng-deep fa-guide-shell .content .jp-layout {
+	      gap: 14px;
+	    }
 
     :host ::ng-deep fa-guide-shell .content .jp-topic {
       margin: 12px 0;
       padding: 10px 12px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      border-radius: 8px;
       background: #10141b;
       overflow-wrap: anywhere;
     }
@@ -7677,18 +8982,17 @@ function onInput(value) {
       padding: 8px 10px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-left: 3px solid color-mix(in srgb, var(--uf-accent) 36%, var(--uf-border-subtle));
-      border-radius: 10px;
+      border-radius: 8px;
       background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-topic > p,
-    :host ::ng-deep fa-guide-shell .content .jp-topic > ul {
+    :host ::ng-deep fa-guide-shell .content .jp-topic > :is(p, ul) {
       margin: 8px 0;
     }
 
     :host ::ng-deep fa-guide-shell .content .jp-topic > ul {
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
+      border-radius: 8px;
       background: #141a22;
       padding: 8px 12px 8px 24px;
       list-style-position: outside;
@@ -7698,24 +9002,20 @@ function onInput(value) {
       white-space: nowrap;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3 {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3 {
       padding-left: 30px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3::before,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3::before {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3::before {
       left: 12px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > ul,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > ul {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > ul {
       list-style-position: outside;
       padding-left: 28px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > p,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > p {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > p {
       overflow-wrap: anywhere;
     }
 
@@ -7728,14 +9028,21 @@ function onInput(value) {
         padding: 11px 12px 11px 14px;
       }
 
-      :host ::ng-deep fa-guide-shell .content .fp-list--boxed,
-      :host ::ng-deep fa-guide-shell .content .fp-list--compact {
+      :host ::ng-deep fa-guide-shell .content :is(.fp-list--boxed, .fp-list--compact) {
         padding-right: 10px;
       }
 
       :host ::ng-deep fa-guide-shell .content .fp-card-grid {
         grid-template-columns: 1fr;
       }
+
+	      :host ::ng-deep fa-guide-shell .content :is(.jp-proof-stats, .jp-pattern-grid, .rp-proof-stats, .rp-pattern-grid, .rp-example-grid, .rp-expectation-grid, .ap-proof-stats, .ap-pattern-grid, .ap-example-grid, .ap-expectation-grid, .vp-proof-stats, .vp-pattern-grid, .vp-example-grid, .vp-expectation-grid) {
+	        grid-template-columns: 1fr;
+	      }
+
+	      :host ::ng-deep fa-guide-shell .content :is(.jp-proof-cta, .rp-proof-cta, .ap-proof-cta, .vp-proof-cta) {
+	        width: 100%;
+	      }
 
       :host ::ng-deep fa-guide-shell .content .fp-list--boxed > li {
         padding-left: 14px;
@@ -7749,13 +9056,11 @@ function onInput(value) {
         padding: 7px 9px;
       }
 
-      :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3,
-      :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3 {
+      :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3 {
         padding-left: 26px;
       }
 
-      :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3::before,
-      :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3::before {
+      :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3::before {
         left: 10px;
       }
     }
@@ -7776,6 +9081,15 @@ export class FrameworkPrepPathArticle {
   readonly isReactPath = this.slug === 'react-prep-path';
   readonly isAngularPath = this.slug === 'angular-prep-path';
   readonly isVuePath = this.slug === 'vue-prep-path';
+  readonly reactPrepPatterns = REACT_PREP_PATTERNS;
+  readonly reactWorkedExamples = REACT_WORKED_EXAMPLES;
+  readonly reactInterviewExpectations = REACT_INTERVIEW_EXPECTATIONS;
+  readonly angularPrepPatterns = ANGULAR_PREP_PATTERNS;
+  readonly angularWorkedExamples = ANGULAR_WORKED_EXAMPLES;
+  readonly angularInterviewExpectations = ANGULAR_INTERVIEW_EXPECTATIONS;
+  readonly vuePrepPatterns = VUE_PREP_PATTERNS;
+  readonly vueWorkedExamples = VUE_WORKED_EXAMPLES;
+  readonly vueInterviewExpectations = VUE_INTERVIEW_EXPECTATIONS;
 
   readonly config: FrameworkPrepConfig = (() => {
     return PREP_CONFIG[this.slug] ?? PREP_CONFIG['javascript-prep-path'];
@@ -7961,24 +9275,24 @@ export class FrameworkPrepPathArticle {
       title: 'Prep strategy',
       items: [
         {
-          id: 'faq-leetcode-js',
-          q: 'Do I need LeetCode to pass JavaScript-heavy frontend loops?',
-          a: 'Not always. In frontend-heavy loops, interviewers usually care more about async behavior, state transitions, and bug reasoning than pure algorithm depth. LeetCode is still useful when your target process includes a DS&A round, but it should not replace JavaScript fundamentals. <strong>Practical rule:</strong> start with JS model + implementation drills, then add DS&A only where the process explicitly requires it.',
+          id: 'faq-prepare-js-interview',
+          q: 'How do I prepare for a JavaScript interview?',
+          a: 'Start with the runtime model, then move into short implementation drills. A strong loop is event loop output, closures, this binding, Promise behavior, one utility implementation, and a review note after every miss. <strong>Practical rule:</strong> do not start with random volume; start with one weak cluster and run trivia plus coding reps until the miss stops repeating.',
         },
         {
-          id: 'faq-topics-trivia-coding',
-          q: 'What is the practical difference between topics, trivia, and coding prompts?',
-          a: 'They test the same concept in three different ways. Topics verify the model, trivia verifies explanation speed, and coding verifies execution under constraints. If interviews feel inconsistent, you are usually strong in one layer and weak in another. The fix is simple: run the same concept through all three layers in one session.',
+          id: 'faq-js-study-plan-frontend',
+          q: 'What is the best JavaScript interview study plan for frontend engineers?',
+          a: 'Use a 7, 14, or 30-day plan based on interview date and baseline. Seven days should patch async, closures, this, debounce, and Promise misses. Fourteen days adds repeatable coding and trivia cadence. Thirty days adds mocks, mistake logs, and trade-off narration. <strong>Practical rule:</strong> pair every concept review with one direct drill.',
         },
         {
-          id: 'faq-practice-efficient',
-          q: 'How do I practice efficiently without wasting time?',
-          a: 'Use a fixed loop: explain one concept out loud, implement one small pattern, add two edge cases, then write a short review note. Time-box each step so your session stays tight. You improve faster from steady repetition than from constantly changing formats. <strong>Practical rule:</strong> end every session with one “tomorrow focus” sentence and start there the next day.',
+          id: 'faq-event-loop-output-practice',
+          q: 'How should I practice JavaScript event loop and output questions?',
+          a: 'Predict before running code, then explain sync execution, microtask queue, macrotask queue, and async/await continuation order out loud. Mix Promise, setTimeout, queueMicrotask, await, and closure snippets so the pattern is not memorized from one example. <strong>Practical rule:</strong> write the queue order first, then compare it to actual output.',
         },
         {
-          id: 'faq-js-problem-solving',
-          q: 'How do I get better at JavaScript interview problem-solving?',
-          a: 'Treat it as a repeatable interview loop, not raw puzzle talent. First predict the behavior or restate the contract, then write the state transitions or input/output rules before coding. Build the smallest correct version, add two or three edge cases, and finish by logging the mistake that slowed you down plus one prevention rule for next time. <strong>Practical rule:</strong> if you cannot explain the runtime model first, do not start typing yet.',
+          id: 'faq-utility-function-practice',
+          q: 'How do I practice JavaScript utility function interview questions?',
+          a: 'Clarify the contract first: input shape, return type, mutation policy, async behavior, and edge cases. Then implement the smallest correct version and add tests for empty input, invalid values, repeated calls, this/args handling, and cleanup. <strong>Practical rule:</strong> every utility drill should end with one edge case you initially missed.',
         },
       ],
     },
@@ -7987,35 +9301,14 @@ export class FrameworkPrepPathArticle {
       title: 'Interview signals',
       items: [
         {
-          id: 'faq-know-js-struggle',
-          q: 'I know JavaScript but still struggle in interviews. Why?',
-          a: 'Interview performance is mostly about execution under pressure, not just knowledge. You have to predict behavior, explain clearly, implement, and validate in one pass. That compressed workflow is a skill on its own, and it needs reps. <strong>Practical rule:</strong> after each drill, write one mistake and one prevention rule before moving on.',
-        },
-        {
-          id: 'faq-senior-priorities',
-          q: 'What should I prioritize for a senior frontend interview?',
-          a: 'In a <strong>senior frontend interview</strong>, process and judgment carry as much weight as output. Focus on clarification, minimal-correct-first implementation, cleanup/failure handling, and clear trade-off calls. Readable code plus quick validation signals production readiness. <strong>Practical rule:</strong> narrate one design decision every few minutes and tie it to correctness, complexity, or maintainability.',
-        },
-        {
-          id: 'faq-dom-vs-frameworks',
-          q: 'Are DOM questions still asked, or is it all frameworks now?',
-          a: 'DOM and browser behavior are still core in most <strong>frontend interview</strong> loops. Event propagation, delegation, render timing, and async UI interactions keep showing up because frameworks sit on top of these rules. Framework fluency helps, but browser fundamentals keep your answers stable when edge cases appear. Treat DOM reasoning as core prep, not optional review.',
-        },
-      ],
-    },
-    {
-      id: 'faq-group-using-platform',
-      title: 'Using FrontendAtlas',
-      items: [
-        {
-          id: 'faq-frontendatlas-fit',
-          q: 'How should I use FrontendAtlas in this process?',
-          a: 'Use it as a structured drill loop: identify weak clusters, run focused trivia and coding reps, and revisit the same cluster until mistakes stop repeating. The goal is not maximum volume; it is stable execution quality. Keep the sequence simple: diagnose, drill, review, repeat. That is the fastest path to consistent <strong>JavaScript interview preparation</strong> progress.',
+          id: 'faq-leetcode-js',
+          q: 'Do I need LeetCode for JavaScript-heavy frontend interviews?',
+          a: 'Not always. In frontend-heavy loops, interviewers usually care more about async behavior, browser reasoning, state transitions, and utility implementation than pure algorithm depth. LeetCode helps when the target process includes a DS&A round, but it should not replace JavaScript fundamentals. <strong>Practical rule:</strong> start with JS model + implementation drills, then add DS&A only where the process explicitly requires it.',
         },
         {
           id: 'faq-how-long-ready',
-          q: 'How long does it usually take to feel interview-ready?',
-          a: 'It depends on your baseline and target bar, but consistency beats marathon sessions. Seven days can patch obvious gaps, fourteen days usually stabilizes common patterns, and thirty days often builds stronger interview fluency. <strong>Practical rule:</strong> prefer a steady daily cadence, even if sessions are short.',
+          q: 'How long does JavaScript interview preparation usually take?',
+          a: 'It depends on baseline and target bar. Seven days can patch obvious gaps, fourteen days usually stabilizes common patterns, and thirty days often builds stronger interview fluency through mocks and review. <strong>Practical rule:</strong> prefer a steady daily cadence, even if sessions are short.',
         },
       ],
     },
