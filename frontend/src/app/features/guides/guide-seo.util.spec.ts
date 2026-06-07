@@ -126,7 +126,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
-    expect(article?.dateModified).toBe('2026-06-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-04T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -174,7 +174,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
-    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -293,7 +293,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('DSA for Frontend Interviews: Questions & JS Drills');
-    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -357,7 +357,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend UI Interview Questions: Component Coding Practice');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -423,7 +423,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Component API Design for Frontend Interviews');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -1144,7 +1144,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('JavaScript Interview Preparation Path: 7/14/30-Day Study Plan');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -1236,7 +1236,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('How to Prepare for a React Interview: 7/14/30-Day Plan');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',

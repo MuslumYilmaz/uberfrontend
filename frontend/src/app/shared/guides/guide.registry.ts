@@ -133,12 +133,12 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             readerPromise: 'Use this frontend interview preparation guide to understand the 2026 interview loop, pick the right practice roadmap, and move into coding, UI, system design, and behavioral drills with clear next steps.',
             publishedAt: '2025-08-30',
-            updatedAt: '2026-06-03',
+            updatedAt: '2026-06-04',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
-            factCheckedAt: '2026-06-03',
+            factCheckedAt: '2026-06-04',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -226,12 +226,12 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             readerPromise: 'Use this frontend coding interview questions and prep guide to map likely coding prompts, understand the scoring rubric, practice a 45/60-minute strategy, and move into hands-on FrontendAtlas drills.',
             publishedAt: '2025-08-30',
-            updatedAt: '2026-06-05',
+            updatedAt: '2026-06-06',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
-            factCheckedAt: '2026-06-05',
+            factCheckedAt: '2026-06-06',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -450,13 +450,13 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2025-09-27',
-            updatedAt: '2026-06-05',
+            updatedAt: '2026-06-06',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
             readerPromise: 'Use this DSA for frontend interviews practice map to prioritize arrays, hash maps, stacks, queues, recursion, cache, Big-O, and frontend algorithm interview questions, then move into direct JavaScript practice.',
-            factCheckedAt: '2026-06-05',
+            factCheckedAt: '2026-06-06',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -557,13 +557,13 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2025-09-27',
-            updatedAt: '2026-06-06',
+            updatedAt: '2026-06-07',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
             readerPromise: 'Use this frontend UI interview questions practice map to prioritize common component prompts, accessibility, keyboard support, and direct React/HTML/CSS drills under time pressure.',
-            factCheckedAt: '2026-06-06',
+            factCheckedAt: '2026-06-07',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -660,13 +660,13 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-06',
+            updatedAt: '2026-06-07',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
             readerPromise: 'Use this component API design interview practice map to define React props, events, slots, state ownership, accessibility contracts, styling surfaces, and direct UI drill follow-ups.',
-            factCheckedAt: '2026-06-06',
+            factCheckedAt: '2026-06-07',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -770,7 +770,7 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-06-06',
+            updatedAt: '2026-06-07',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
@@ -778,7 +778,7 @@ export const PLAYBOOK: GuideEntry[] = [
             searchIntent: 'Find a JavaScript interview preparation path that turns async, closures, event loop output, this binding, promises, stale state, and utility prompts into a repeatable 7/14/30-day study plan.',
             readerPromise: 'Use this JavaScript interview preparation path to move from runtime topics to trivia, coding drills, mastery checkpoints, and a 7/14/30-day study plan for frontend interviews.',
             uniqueAngle: 'Framework-specific bug families and direct drill mapping, not a generic topic list.',
-            factCheckedAt: '2026-06-06',
+            factCheckedAt: '2026-06-07',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -921,7 +921,7 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-06-06',
+            updatedAt: '2026-06-07',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
@@ -929,7 +929,7 @@ export const PLAYBOOK: GuideEntry[] = [
             searchIntent: 'Find how to prepare for a React interview with a practical study plan for hooks, state, rendering, coding drills, testing, and performance.',
             readerPromise: 'Use this React interview preparation path to turn hooks, rendering, coding, testing, and performance practice into a 7/14/30-day study plan.',
             uniqueAngle: 'React-specific render and state-design failure patterns tied directly to trivia and coding drills.',
-            factCheckedAt: '2026-06-06',
+            factCheckedAt: '2026-06-07',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -1236,7 +1236,7 @@ export const PLAYBOOK: GuideEntry[] = [
             primaryKeyword: 'frontend resume for interviews',
             keywords: ['frontend resume for interviews', 'frontend resume guide', 'frontend resume tips'],
             publishedAt: '2025-09-28',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-04',
         },
         load: () =>
             import('../../features/guides/playbook/resume-article.component')

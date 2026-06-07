@@ -8671,8 +8671,7 @@ function onInput(value) {
       overflow-wrap: anywhere;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-proof-stats,
-    :host ::ng-deep fa-guide-shell .content .jp-pattern-grid {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-proof-stats, .jp-pattern-grid) {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 10px;
@@ -8680,8 +8679,7 @@ function onInput(value) {
       min-width: 0;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-proof-stat,
-    :host ::ng-deep fa-guide-shell .content .jp-pattern-card {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-proof-stat, .jp-pattern-card) {
       min-width: 0;
       border: 1px solid rgba(255, 255, 255, .10);
       border-radius: 8px;
@@ -8713,8 +8711,7 @@ function onInput(value) {
       min-width: 0;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-proof-cta,
-    :host ::ng-deep fa-guide-shell .content .jp-pattern-link {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-proof-cta, .jp-pattern-link) {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -8757,8 +8754,7 @@ function onInput(value) {
       text-decoration: none;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-pattern-card h3,
-    :host ::ng-deep fa-guide-shell .content .jp-pattern-card p {
+    :host ::ng-deep fa-guide-shell .content .jp-pattern-card :is(h3, p) {
       margin: 0;
     }
 
@@ -8812,8 +8808,7 @@ function onInput(value) {
       gap: 8px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > h2,
-    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > p {
+    :host ::ng-deep fa-guide-shell .content .jp-mastery-callout > :is(h2, p) {
       margin: 0;
     }
 
@@ -8833,12 +8828,7 @@ function onInput(value) {
 	      background: color-mix(in srgb, var(--uf-accent) 30%, #121922);
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof,
-	    :host ::ng-deep fa-guide-shell .content .rp-section,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof,
-	    :host ::ng-deep fa-guide-shell .content .ap-section,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof,
-	    :host ::ng-deep fa-guide-shell .content .vp-section {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof, .rp-section, .ap-proof, .ap-section, .vp-proof, .vp-section) {
 	      display: grid;
 	      gap: 12px;
 	      max-width: 100%;
@@ -8847,9 +8837,7 @@ function onInput(value) {
 	      word-break: break-word;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof, .ap-proof, .vp-proof) {
 	      margin: 10px 0 14px;
 	      padding: 12px;
 	      border: 1px solid color-mix(in srgb, var(--uf-accent) 36%, var(--uf-border-subtle));
@@ -8858,24 +8846,11 @@ function onInput(value) {
 	      background: color-mix(in srgb, var(--uf-accent) 12%, #10141b);
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-section,
-	    :host ::ng-deep fa-guide-shell .content .ap-section,
-	    :host ::ng-deep fa-guide-shell .content .vp-section {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-section, .ap-section, .vp-section) {
 	      margin: 12px 0 16px;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-stats,
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-grid,
-	    :host ::ng-deep fa-guide-shell .content .rp-example-grid,
-	    :host ::ng-deep fa-guide-shell .content .rp-expectation-grid,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-stats,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-grid,
-	    :host ::ng-deep fa-guide-shell .content .ap-example-grid,
-	    :host ::ng-deep fa-guide-shell .content .ap-expectation-grid,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-stats,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-grid,
-	    :host ::ng-deep fa-guide-shell .content .vp-example-grid,
-	    :host ::ng-deep fa-guide-shell .content .vp-expectation-grid {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stats, .rp-pattern-grid, .rp-example-grid, .rp-expectation-grid, .ap-proof-stats, .ap-pattern-grid, .ap-example-grid, .ap-expectation-grid, .vp-proof-stats, .vp-pattern-grid, .vp-example-grid, .vp-expectation-grid) {
 	      display: grid;
 	      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 	      gap: 10px;
@@ -8883,24 +8858,11 @@ function onInput(value) {
 	      min-width: 0;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-stats,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-stats,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-stats {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stats, .ap-proof-stats, .vp-proof-stats) {
 	      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-stat,
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .rp-example-card,
-	    :host ::ng-deep fa-guide-shell .content .rp-expectation-card,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-stat,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .ap-example-card,
-	    :host ::ng-deep fa-guide-shell .content .ap-expectation-card,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-stat,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .vp-example-card,
-	    :host ::ng-deep fa-guide-shell .content .vp-expectation-card {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stat, .rp-pattern-card, .rp-example-card, .rp-expectation-card, .ap-proof-stat, .ap-pattern-card, .ap-example-card, .ap-expectation-card, .vp-proof-stat, .vp-pattern-card, .vp-example-card, .vp-expectation-card) {
 	      min-width: 0;
 	      border: 1px solid rgba(255, 255, 255, .10);
 	      border-radius: 8px;
@@ -8910,54 +8872,36 @@ function onInput(value) {
 	      word-break: break-word;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .rp-example-card,
-	    :host ::ng-deep fa-guide-shell .content .rp-expectation-card,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .ap-example-card,
-	    :host ::ng-deep fa-guide-shell .content .ap-expectation-card,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .vp-example-card,
-	    :host ::ng-deep fa-guide-shell .content .vp-expectation-card {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-card, .rp-example-card, .rp-expectation-card, .ap-pattern-card, .ap-example-card, .ap-expectation-card, .vp-pattern-card, .vp-example-card, .vp-expectation-card) {
 	      display: grid;
 	      gap: 8px;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-card,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-card {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-card, .ap-pattern-card, .vp-pattern-card) {
 	      color: inherit;
 	      text-decoration: none;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-card:hover,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-card:hover,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-card:hover {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-card, .ap-pattern-card, .vp-pattern-card):hover {
 	      border-color: color-mix(in srgb, var(--uf-accent) 48%, rgba(255, 255, 255, .12));
 	      text-decoration: none;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-stat strong,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-stat strong,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-stat strong {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stat, .ap-proof-stat, .vp-proof-stat) strong {
 	      display: block;
 	      color: var(--uf-text-primary);
 	      font-size: 1rem;
 	      line-height: 1.25;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-stat span,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-stat span,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-stat span {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-stat, .ap-proof-stat, .vp-proof-stat) span {
 	      display: block;
 	      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
 	      font-size: 0.86rem;
 	      line-height: 1.35;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-actions,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-actions,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-actions {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-actions, .ap-proof-actions, .vp-proof-actions) {
 	      display: flex;
 	      flex-wrap: wrap;
 	      gap: 8px;
@@ -8965,12 +8909,7 @@ function onInput(value) {
 	      min-width: 0;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-cta,
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-link,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-cta,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-link,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-cta,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-link {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-cta, .rp-pattern-link, .ap-proof-cta, .ap-pattern-link, .vp-proof-cta, .vp-pattern-link) {
 	      display: inline-flex;
 	      align-items: center;
 	      justify-content: center;
@@ -8987,26 +8926,20 @@ function onInput(value) {
 	      padding: 7px 10px;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-proof-cta--primary,
-	    :host ::ng-deep fa-guide-shell .content .ap-proof-cta--primary,
-	    :host ::ng-deep fa-guide-shell .content .vp-proof-cta--primary {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-proof-cta--primary, .ap-proof-cta--primary, .vp-proof-cta--primary) {
 	      color: var(--uf-bg);
 	      background: var(--uf-accent);
 	      border-color: color-mix(in srgb, var(--uf-accent) 84%, var(--uf-border-subtle));
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-link,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-link,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-link {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-link, .ap-pattern-link, .vp-pattern-link) {
 	      min-height: 32px;
 	      margin-top: 2px;
 	      color: var(--uf-accent);
 	      background: color-mix(in srgb, var(--uf-accent) 10%, #10141b);
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-meta,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-meta,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-meta {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-meta, .ap-pattern-meta, .vp-pattern-meta) {
 	      display: flex;
 	      flex-wrap: wrap;
 	      gap: 6px;
@@ -9015,36 +8948,18 @@ function onInput(value) {
 	      line-height: 1.3;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-pattern-meta span,
-	    :host ::ng-deep fa-guide-shell .content .ap-pattern-meta span,
-	    :host ::ng-deep fa-guide-shell .content .vp-pattern-meta span {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-pattern-meta, .ap-pattern-meta, .vp-pattern-meta) span {
 	      border: 1px solid rgba(255, 255, 255, .10);
 	      border-radius: 999px;
 	      background: #141a22;
 	      padding: 2px 7px;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-section h2,
-	    :host ::ng-deep fa-guide-shell .content .rp-section h3,
-	    :host ::ng-deep fa-guide-shell .content .rp-section p,
-	    :host ::ng-deep fa-guide-shell .content .rp-section ul,
-	    :host ::ng-deep fa-guide-shell .content .ap-section h2,
-	    :host ::ng-deep fa-guide-shell .content .ap-section h3,
-	    :host ::ng-deep fa-guide-shell .content .ap-section p,
-	    :host ::ng-deep fa-guide-shell .content .ap-section ul,
-	    :host ::ng-deep fa-guide-shell .content .vp-section h2,
-	    :host ::ng-deep fa-guide-shell .content .vp-section h3,
-	    :host ::ng-deep fa-guide-shell .content .vp-section p,
-	    :host ::ng-deep fa-guide-shell .content .vp-section ul {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-section, .ap-section, .vp-section) :is(h2, h3, p, ul) {
 	      margin: 0;
 	    }
 
-	    :host ::ng-deep fa-guide-shell .content .rp-example-card ul,
-	    :host ::ng-deep fa-guide-shell .content .rp-expectation-card ul,
-	    :host ::ng-deep fa-guide-shell .content .ap-example-card ul,
-	    :host ::ng-deep fa-guide-shell .content .ap-expectation-card ul,
-	    :host ::ng-deep fa-guide-shell .content .vp-example-card ul,
-	    :host ::ng-deep fa-guide-shell .content .vp-expectation-card ul {
+	    :host ::ng-deep fa-guide-shell .content :is(.rp-example-card, .rp-expectation-card, .ap-example-card, .ap-expectation-card, .vp-example-card, .vp-expectation-card) ul {
 	      padding-left: 18px;
 	    }
 
@@ -9071,8 +8986,7 @@ function onInput(value) {
       background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-topic > p,
-    :host ::ng-deep fa-guide-shell .content .jp-topic > ul {
+    :host ::ng-deep fa-guide-shell .content .jp-topic > :is(p, ul) {
       margin: 8px 0;
     }
 
@@ -9088,24 +9002,20 @@ function onInput(value) {
       white-space: nowrap;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3 {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3 {
       padding-left: 30px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3::before,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3::before {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3::before {
       left: 12px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > ul,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > ul {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > ul {
       list-style-position: outside;
       padding-left: 28px;
     }
 
-    :host ::ng-deep fa-guide-shell .content .jp-section--6 > p,
-    :host ::ng-deep fa-guide-shell .content .jp-section--7 > p {
+    :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > p {
       overflow-wrap: anywhere;
     }
 
@@ -9118,8 +9028,7 @@ function onInput(value) {
         padding: 11px 12px 11px 14px;
       }
 
-      :host ::ng-deep fa-guide-shell .content .fp-list--boxed,
-      :host ::ng-deep fa-guide-shell .content .fp-list--compact {
+      :host ::ng-deep fa-guide-shell .content :is(.fp-list--boxed, .fp-list--compact) {
         padding-right: 10px;
       }
 
@@ -9127,27 +9036,11 @@ function onInput(value) {
         grid-template-columns: 1fr;
       }
 
-	      :host ::ng-deep fa-guide-shell .content .jp-proof-stats,
-	      :host ::ng-deep fa-guide-shell .content .jp-pattern-grid,
-	      :host ::ng-deep fa-guide-shell .content .rp-proof-stats,
-	      :host ::ng-deep fa-guide-shell .content .rp-pattern-grid,
-	      :host ::ng-deep fa-guide-shell .content .rp-example-grid,
-	      :host ::ng-deep fa-guide-shell .content .rp-expectation-grid,
-	      :host ::ng-deep fa-guide-shell .content .ap-proof-stats,
-	      :host ::ng-deep fa-guide-shell .content .ap-pattern-grid,
-	      :host ::ng-deep fa-guide-shell .content .ap-example-grid,
-	      :host ::ng-deep fa-guide-shell .content .ap-expectation-grid,
-	      :host ::ng-deep fa-guide-shell .content .vp-proof-stats,
-	      :host ::ng-deep fa-guide-shell .content .vp-pattern-grid,
-	      :host ::ng-deep fa-guide-shell .content .vp-example-grid,
-	      :host ::ng-deep fa-guide-shell .content .vp-expectation-grid {
+	      :host ::ng-deep fa-guide-shell .content :is(.jp-proof-stats, .jp-pattern-grid, .rp-proof-stats, .rp-pattern-grid, .rp-example-grid, .rp-expectation-grid, .ap-proof-stats, .ap-pattern-grid, .ap-example-grid, .ap-expectation-grid, .vp-proof-stats, .vp-pattern-grid, .vp-example-grid, .vp-expectation-grid) {
 	        grid-template-columns: 1fr;
 	      }
 
-	      :host ::ng-deep fa-guide-shell .content .jp-proof-cta,
-	      :host ::ng-deep fa-guide-shell .content .rp-proof-cta,
-	      :host ::ng-deep fa-guide-shell .content .ap-proof-cta,
-	      :host ::ng-deep fa-guide-shell .content .vp-proof-cta {
+	      :host ::ng-deep fa-guide-shell .content :is(.jp-proof-cta, .rp-proof-cta, .ap-proof-cta, .vp-proof-cta) {
 	        width: 100%;
 	      }
 
@@ -9163,13 +9056,11 @@ function onInput(value) {
         padding: 7px 9px;
       }
 
-      :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3,
-      :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3 {
+      :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3 {
         padding-left: 26px;
       }
 
-      :host ::ng-deep fa-guide-shell .content .jp-section--6 > h3::before,
-      :host ::ng-deep fa-guide-shell .content .jp-section--7 > h3::before {
+      :host ::ng-deep fa-guide-shell .content :is(.jp-section--6, .jp-section--7) > h3::before {
         left: 10px;
       }
     }
