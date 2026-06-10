@@ -196,6 +196,69 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend system design framework intent with FAQ and practice ItemList schema', () => {
+    const systemDesign = PLAYBOOK.find((entry) => entry.slug === 'system-design');
+    expect(systemDesign).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      systemDesign!
+    );
+
+    expect(meta.title).toBe('Frontend System Design Interview Framework | 45-Minute Template');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/system-design');
+    expect(meta.description).toBe(
+      'Answer frontend system design interviews with a 45-minute framework, autocomplete worked example, API/state contracts, rubric, and practice prompts.',
+    );
+    expect(meta.keywords?.[0]).toBe('frontend system design interview framework');
+    expect(meta.keywords).toEqual([
+      'frontend system design interview framework',
+      'frontend system design interviews',
+      'frontend system design interview questions',
+      'frontend system design answer template',
+      '45 minute frontend system design interview',
+      'frontend architecture interview',
+      'autocomplete frontend system design',
+      'design autocomplete frontend system design',
+      'frontend system design interview rubric',
+      'frontend vs backend system design interview',
+      'client side system design interview',
+      'senior frontend system design interview',
+    ]);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend System Design Interview Framework | 45-Minute Template');
+    expect(article?.dateModified).toBe('2026-06-10T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('Frontend system design practice map');
+    expect(itemList?.itemListElement?.length).toBe(10);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Realtime search autocomplete');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/system-design/realtime-search-debounce-cache');
+    expect(itemList?.itemListElement?.[9]?.name).toBe('RADIO framework guide');
+    expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
+    expect(faqPage?.name).toBe('Frontend system design interview framework FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is a frontend system design interview framework?',
+      'How do I answer a frontend system design interview in 45 minutes?',
+      'What is the difference between frontend system design and backend system design?',
+      'How do I design autocomplete in a frontend system design interview?',
+      'What frontend system design trade-offs should senior engineers mention?',
+      'What should I practice for a frontend architecture interview?',
+    ]);
+  });
+
   it('targets JavaScript coding interview questions intent with practice-map FAQ and ItemList schema', () => {
     const jsGuide = PLAYBOOK.find((entry) => entry.slug === 'javascript-interviews');
     expect(jsGuide).toBeDefined();

@@ -34,9 +34,16 @@ function normalizeIsoDate(input: string | undefined): string {
 
 function normalizeKeywords(input: string[] | undefined): string[] | undefined {
   if (!Array.isArray(input)) return undefined;
+  const seen = new Set<string>();
   const out = input
     .map((item) => normalizeText(item))
-    .filter(Boolean);
+    .filter((item) => {
+      if (!item) return false;
+      const key = item.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   return out.length ? out : undefined;
 }
 
