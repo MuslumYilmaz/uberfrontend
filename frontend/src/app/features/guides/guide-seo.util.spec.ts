@@ -143,6 +143,148 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend interview fundamentals quiz intent with FAQ and diagnostic ItemList schema', () => {
+    const quiz = PLAYBOOK.find((entry) => entry.slug === 'quiz');
+    expect(quiz).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      quiz!
+    );
+
+    expect(meta.title).toBe('Frontend Interview Fundamentals Quiz: 15-Minute Diagnostic');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/quiz');
+    expect(meta.description).toBe(
+      'Take a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, and practice links.',
+    );
+    expect(meta.keywords).toEqual([
+      'frontend interview fundamentals quiz',
+      'frontend interview quiz',
+      'frontend fundamentals check',
+      'frontend technical interview fundamentals',
+      'browser css javascript http quiz',
+      'frontend interview practice quiz',
+      '15 minute frontend interview quiz',
+      'frontend fundamentals diagnostic',
+      'frontend interview readiness quiz',
+      'frontend technical interview self assessment',
+      'frontend interview score bands',
+      'browser rendering interview questions',
+      'browser rendering pipeline interview questions',
+      'css layout interview questions quiz',
+      'javascript async interview quiz',
+      'http caching frontend interview questions',
+    ]);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Interview Fundamentals Quiz: 15-Minute Diagnostic');
+    expect(article?.description).toBe(
+      'Take a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, and practice links.',
+    );
+    expect(article?.dateModified).toBe('2026-06-11T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('Frontend interview fundamentals diagnostic practice map');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Event loop output');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/javascript/trivia/js-event-loop');
+    expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/javascript/trivia/http-caching-basics');
+    expect(itemList?.itemListElement?.[6]?.url).toBe('https://frontendatlas.com/css/trivia/css-box-model');
+    expect(itemList?.itemListElement?.[10]?.url).toBe('https://frontendatlas.com/html/trivia/html-parsing-rendering');
+    expect(itemList?.itemListElement?.[11]?.url).toBe('https://frontendatlas.com/coding');
+    expect(faqPage?.name).toBe('Frontend interview fundamentals quiz FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What is a frontend interview fundamentals quiz?',
+      'How do I use this as a 15-minute frontend fundamentals diagnostic?',
+      'Which browser rendering interview questions should I know?',
+      'Which CSS layout interview questions matter most?',
+      'What JavaScript async topics appear in frontend interview quizzes?',
+      'What HTTP caching topics should frontend engineers know?',
+    ]);
+  });
+
+  it('targets frontend resume for interviews intent with FAQ and bullet rewrite ItemList schema', () => {
+    const resume = PLAYBOOK.find((entry) => entry.slug === 'resume');
+    expect(resume).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Interview Blueprint',
+      'interview-blueprint',
+      resume!
+    );
+
+    expect(meta.title).toBe('Frontend Developer Resume: ATS Keywords & Bullet Examples (2026)');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/resume');
+    expect(meta.description).toBe(
+      'Build a frontend developer resume that gets interviews with ATS keywords, bullet examples, a 30-second skim test, role examples, and rejection triggers.',
+    );
+    expect(meta.keywords).toEqual([
+      'frontend resume for interviews',
+      'frontend developer resume',
+      'front end developer resume examples',
+      'front-end developer resume',
+      'frontend resume examples',
+      'frontend engineer resume',
+      'frontend resume that gets interviews',
+      'frontend interview resume',
+      'frontend developer resume ATS keywords',
+      'front end developer resume keywords',
+      'frontend resume skills',
+      'frontend resume bullet points',
+      'front end developer resume bullet examples',
+      'senior frontend developer resume',
+      'junior frontend developer resume',
+      'react developer resume',
+    ]);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Developer Resume: ATS Keywords & Bullet Examples (2026)');
+    expect(article?.description).toBe(
+      'Build a frontend developer resume that gets interviews with ATS keywords, bullet examples, a 30-second skim test, role examples, and rejection triggers.',
+    );
+    expect(article?.dateModified).toBe('2026-06-12T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('Frontend resume bullet rewrite topics');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Performance bullet rewrite');
+    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/guides/interview-blueprint/resume#rewrite-performance');
+    expect(itemList?.itemListElement?.[2]?.name).toBe('Design system bullet rewrite');
+    expect(itemList?.itemListElement?.[5]?.name).toBe('API integration bullet rewrite');
+    expect(itemList?.itemListElement?.[8]?.name).toBe('Search autocomplete bullet rewrite');
+    expect(itemList?.itemListElement?.[11]?.url).toBe('https://frontendatlas.com/guides/interview-blueprint/resume#rewrite-team-enablement');
+    expect(faqPage?.name).toBe('Frontend resume for interviews FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How do I write a frontend developer resume that gets interviews?',
+      'What front end developer resume examples should I study?',
+      'Which frontend developer resume ATS keywords should I include?',
+      'What makes frontend resume bullet points stronger?',
+      'How should a junior frontend developer resume differ from a senior frontend developer resume?',
+      'Should I write a React developer resume or a general frontend engineer resume?',
+    ]);
+  });
+
   it('targets frontend coding interview questions intent with FAQ and ItemList schema', () => {
     const coding = PLAYBOOK.find((entry) => entry.slug === 'coding-interviews');
     expect(coding).toBeDefined();
