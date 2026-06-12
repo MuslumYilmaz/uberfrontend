@@ -1349,7 +1349,7 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Run this frontend interview fundamentals quiz to diagnose browser, CSS, JavaScript, and HTTP weak spots, score your answers, and move into direct FrontendAtlas practice links.',
             uniqueAngle: 'A 15-minute frontend fundamentals diagnostic with score bands, answer rubric, and direct practice links instead of a generic question list.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-11',
+            updatedAt: '2026-06-12',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',

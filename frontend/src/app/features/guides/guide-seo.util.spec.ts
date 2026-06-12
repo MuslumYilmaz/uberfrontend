@@ -189,7 +189,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'Take a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, and practice links.',
     );
-    expect(article?.dateModified).toBe('2026-06-11T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-12T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
