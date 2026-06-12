@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Fundamentals Check: Browser, CSS, JS, HTTP
+// Frontend Interview Fundamentals Diagnostic
 // -----------------------------------------------------------------------------
 
 import { Component, Input } from '@angular/core';
@@ -9,226 +9,383 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 @Component({
     standalone: true,
     imports: [GuideShellComponent, RouterModule],
-    styles: `
-          a {
-      color: #4ea1ff;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s, text-decoration 0.2s;
-    }
-    a:hover {
-      color: #82c7ff;
-      text-decoration: underline;
-    }
-
-    /* Title links (inside h3) */
-    h3 a {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 700;
-      font-size: 1.05rem;
-    }
-    h3 a::after {
-      content: "→";
-      font-size: 0.9rem;
-      opacity: 0.7;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-    h3 a:hover::after {
-      transform: translateX(3px);
-      opacity: 1;
-    }`,
+    styleUrls: ['./fundamentals-check-article.component.scss'],
     template: `
   <fa-guide-shell
     title="Frontend Interview Fundamentals Quiz: Browser, CSS, JavaScript, HTTP"
-    subtitle="Fast interview check for browser/CSS/JavaScript/HTTP topics with clear answer framing."
+    subtitle="Run a 15-minute frontend interview fundamentals quiz across browser rendering, CSS layout, JavaScript async, and HTTP basics."
     [minutes]="15"
     [tags]="['javascript','css','browser','http','fundamentals']"
     [prev]="prev"
     [next]="next"
     [leftNav]="leftNav"
-      [readerPromise]="readerPromise || undefined"
+    [readerPromise]="readerPromise || undefined"
   >
+    <div class="freshness" data-testid="fundamentals-guide-freshness">
+      Last updated: June 2026 | Author: FrontendAtlas Team | Reviewed by FrontendAtlas
+    </div>
+
     <p>
-    In most interviews, you’ll get a few <strong>fundamentals questions</strong>.
-    They aren’t trick puzzles — they’re checks to see if you truly understand
-    the everyday tools you use: the browser, CSS, JavaScript, and HTTP.
+      This frontend interview fundamentals quiz is a fast diagnostic for the concepts
+      interviewers expect you to explain without hesitation: browser rendering, CSS
+      layout, JavaScript async behavior, and HTTP caching. It is not a trivia dump.
+      The goal is to find weak spots, practice concise explanations, and move directly
+      into the right FrontendAtlas drills.
     </p>
     <p>
-    The questions are usually <em>short and simple</em>, but tripping on them
-    creates a bad impression. Example:
-    </p>
-    <ul>
-    <li>“What’s the difference between <code>relative</code> and <code>absolute</code> positioning in CSS?”</li>
-    <li>“What happens in the browser when you type a URL and hit Enter?”</li>
-    <li>“How does <code>this</code> behave in a normal function vs an arrow function?”</li>
-    </ul>
-    <p>
-    The good news: the set of topics is <strong>small and predictable</strong>.
-    If you can explain them in plain English — not just memorize definitions —
-    you’ll breeze through. Below we cover the must-know areas with quick examples.
+      Use it before a phone screen, before a frontend technical interview, or after a
+      missed fundamentals question. Give each answer out loud in 30-60 seconds, score
+      yourself honestly, then practice the lowest-scoring topic first.
     </p>
 
-    <h2>1. Browser</h2>
+    <div class="proof-band" data-testid="fundamentals-guide-proof">
+      <div class="proof-grid" aria-label="Frontend fundamentals diagnostic proof">
+        <div class="proof-stat">
+          <strong>15 min</strong>
+          <span>frontend fundamentals diagnostic</span>
+        </div>
+        <div class="proof-stat">
+          <strong>4</strong>
+          <span>topic areas</span>
+        </div>
+        <div class="proof-stat">
+          <strong>12</strong>
+          <span>practice prompts</span>
+        </div>
+        <div class="proof-stat">
+          <strong>3</strong>
+          <span>score bands</span>
+        </div>
+      </div>
+      <div class="proof-actions" aria-label="Frontend fundamentals diagnostic actions">
+        <a class="proof-cta proof-cta--primary" [routerLink]="['/javascript','trivia','js-event-loop']">
+          Start with event loop
+        </a>
+        <a class="proof-cta" [routerLink]="['/css','trivia','css-box-model']">
+          Practice CSS basics
+        </a>
+        <a class="proof-cta" [routerLink]="['/coding']">
+          Open quiz practice area
+        </a>
+      </div>
+    </div>
+
+    <h2 id="what-frontend-fundamentals-interviews-test">What frontend fundamentals interviews test</h2>
     <p>
-    Almost every frontend interview will touch on how the browser actually works.  
-    You don’t need to recite specs — you just need a clear mental model.
+      Fundamentals rounds check whether you can reason from browser behavior to user-visible
+      UI outcomes. A strong answer names the concept, explains the consequence, and gives
+      one practical example from real frontend work.
     </p>
-    <ul>
-    <li>
-        <strong>Rendering pipeline:</strong> The browser takes your HTML and CSS and
-        turns it into pixels. The flow is:  
-        <em>DOM → CSSOM → Render Tree → Layout → Paint → Composite</em>.  
-        If you know this, you can explain <em>why changing <code>transform</code> is cheap</em>
-        but changing <code>width</code> can trigger expensive reflows.
-    </li>
-    <li>
-        <strong>Event loop:</strong> JavaScript runs on a single thread, so timing matters.  
-        <em>Microtasks</em> (Promises, <code>queueMicrotask</code>) always run
-        <em>before</em> <em>Macrotasks</em> (setTimeout, setInterval).  
-        Example question: “Why does a <code>Promise.then</code> run before <code>setTimeout</code>?”
-    </li>
-    <li>
-        <strong>Storage:</strong> Know the trade-offs:  
-        <ul>
-        <li><code>localStorage</code> → simple key/value, survives refresh.</li>
-        <li><code>sessionStorage</code> → same but cleared on tab close.</li>
-        <li><code>cookies</code> → small, sent with every HTTP request (careful with size/security).</li>
-        <li><code>IndexedDB</code> → structured storage for larger offline data.</li>
-        </ul>
-        A quick “when to use which” is often enough to score points.
-    </li>
-    </ul>
+    <div class="topic-grid" data-testid="fundamentals-topic-map">
+      <div class="topic-card">
+        <h3>Browser model</h3>
+        <p>Rendering pipeline, event loop scheduling, storage trade-offs, and DOM parsing.</p>
+      </div>
+      <div class="topic-card">
+        <h3>CSS model</h3>
+        <p>Box model, cascade, specificity, positioning, Flexbox, Grid, and responsive layout.</p>
+      </div>
+      <div class="topic-card">
+        <h3>JavaScript model</h3>
+        <p>Closures, this binding, promises, async/await, microtasks, and data transforms.</p>
+      </div>
+      <div class="topic-card">
+        <h3>Network model</h3>
+        <p>HTTP methods, status codes, cache headers, API failure handling, and freshness.</p>
+      </div>
+    </div>
 
-    <h2>2. CSS</h2>
+    <h2 id="15-minute-frontend-fundamentals-diagnostic">15-minute frontend fundamentals diagnostic</h2>
     <p>
-    CSS questions are usually fast-fire. They’re testing if you can explain layout bugs,
-    why something overrides something else, or when to pick the right tool.
+      Answer the 12 self-check questions below. Give yourself one point only when you can
+      explain the answer clearly and connect it to a frontend bug, performance issue, or
+      product behavior. This 15-minute diagnostic is intentionally compact.
     </p>
-    <ul>
-    <li>
-        <strong>Box model:</strong> Every element is <em>content + padding + border + margin</em>.  
-        By default, <code>width</code> only includes content.  
-        <code>box-sizing: border-box</code> makes width include padding + border —
-        which is why modern resets always set it.  
-        👉 Interviewer trick: “Why is my div wider than expected?” → Box model.
-    </li>
-    <li>
-        <strong>Specificity:</strong> The rule order is:  
-        <em>Inline &gt; ID &gt; class/attr/pseudo-class &gt; element</em>.  
-        Conflicts? Inline wins unless you use <code>!important</code>.  
-        👉 Quick mnemonic: “IDs beat classes, classes beat tags.”
-    </li>
-    <li>
-        <strong>Flex vs Grid:</strong>  
-        <em>Flex = 1D (row OR column)</em>, best for navbars, buttons, toolbars.  
-        <em>Grid = 2D (rows AND columns)</em>, best for layouts, dashboards.  
-        👉 If the question says “align in one direction” → Flex.  
-        If it says “place items on both axes” → Grid.
-    </li>
-    </ul>
-
-    <h2>3. JavaScript</h2>
     <p>
-    JS fundamentals show up in almost every interview. They’re testing if you
-    actually <em>use</em> the language at work, not if you can quote the spec.
-    </p>
-    <ul>
-    <li>
-        <strong>Closures:</strong> Functions remember the scope they were created in.  
-        Lets you keep private state without classes.
-        <pre><code class="language-js">function counter() {{ '{' }}
-        let n = 0;
-        return () => ++n;
-        {{ '}' }}
-        const c = counter();
-        c(); // 1
-        c(); // 2</code></pre>
-
-        👉 Interviewers might ask: “How would you implement once(), debounce, or memoize?”
-    </li>
-
-    <li>
-        <strong><code>this</code> keyword:</strong> It’s not about where the function lives,
-        but <em>how it’s called</em>.  
-        <ul>
-        <li><code>obj.method()</code> → <code>this</code> is <code>obj</code>.</li>
-        <li><code>fn()</code> → <code>this</code> is <code>undefined</code> in strict mode (or global in sloppy mode).</li>
-        <li><code>fn.call(obj)</code> → forces <code>this = obj</code>.</li>
-        <li>Arrow functions don’t bind <code>this</code> — they inherit from the parent scope.</li>
-        </ul>
-        👉 Quick test: “Why does <code>setTimeout(this.fn, 0)</code> lose context?” → Because <code>this</code> depends on call site.
-    </li>
-
-    <li>
-        <strong>Promises vs async/await:</strong> Both handle async work.  
-        <ul>
-        <li><code>promise.then()</code> = chaining style.</li>
-        <li><code>async/await</code> = looks synchronous, easier to read.</li>
-        <li>Error handling → <code>.catch()</code> vs <code>try/catch</code>.</li>
-        </ul>
-        👉 Be ready for “what’s the difference between microtasks and macrotasks” since promises run as microtasks.
-    </li>
-    </ul>
-
-    <h2>4. HTTP</h2>
-    <p>
-    Almost every front-end interview will slip in HTTP basics — because if you don’t
-    understand the network, you can’t ship reliable UIs. These are the must-knows:
-    </p>
-    <ul>
-    <li>
-        <strong>GET vs POST:</strong>  
-        GET is for fetching data and should be <em>idempotent</em> (same call, same result).  
-        POST is for creating or updating — it can change server state and is not idempotent.  
-        👉 If you ever say “I’d use GET to update,” it’s an instant red flag.
-    </li>
-    <li>
-        <strong>Status codes:</strong>  
-        Memorize the common ones:  
-        <code>200</code> (OK), <code>301</code> (redirect), <code>400</code> (bad request),  
-        <code>401</code> (unauthenticated), <code>403</code> (forbidden),  
-        <code>404</code> (not found), <code>500</code> (server error).  
-        In interviews, you might be asked: “What do you do if an API returns 401?”
-    </li>
-    <li>
-        <strong>Caching:</strong>  
-        Browsers decide reuse vs refetch based on headers like  
-        <code>Cache-Control</code>, <code>ETag</code>, and <code>Last-Modified</code>.  
-        Example: <code>Cache-Control: max-age=3600</code> means “reuse for an hour.”  
-        Knowing this shows you can reason about performance and user experience.
-    </li>
-    </ul>
-    <p>
-    📌 Keep answers crisp: 1–2 sentences per concept, with a quick example.
-    That’s all interviewers expect — clarity over depth.
+      Use this as a frontend interview readiness quiz before moving into coding or
+      framework-specific prep.
     </p>
 
+    <h2 id="browser-rendering-interview-questions">Browser rendering interview questions</h2>
+    <div class="question-grid" data-testid="fundamentals-diagnostic-questions">
+      <div class="question-card">
+        <div class="question-meta"><span>Browser</span><span>Rendering</span></div>
+        <h3>1. What happens when the browser parses HTML and CSS?</h3>
+        <p>Strong answer: DOM, CSSOM, render tree, layout, paint, composite, and why layout changes cost more than transforms.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>Browser</span><span>Event loop</span></div>
+        <h3>2. Why do promise callbacks run before timers?</h3>
+        <p>Strong answer: sync code runs first, microtasks drain before the next macrotask, then rendering may happen.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>Browser</span><span>Storage</span></div>
+        <h3>3. When would you use cookies, localStorage, sessionStorage, or IndexedDB?</h3>
+        <p>Strong answer: cookies for HTTP-bound auth hints, Web Storage for small client state, IndexedDB for larger structured data.</p>
+      </div>
+    </div>
 
-    <h2>How to prep</h2>
+    <h2 id="css-layout-interview-questions">CSS layout interview questions</h2>
+    <div class="question-grid">
+      <div class="question-card">
+        <div class="question-meta"><span>CSS</span><span>Box model</span></div>
+        <h3>4. Why is an element wider than expected?</h3>
+        <p>Strong answer: content-box adds padding and border to width; border-box changes the sizing model.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>CSS</span><span>Cascade</span></div>
+        <h3>5. How do specificity and cascade order decide the winning rule?</h3>
+        <p>Strong answer: importance and origin first, then specificity, then source order for otherwise equal selectors.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>CSS</span><span>Layout</span></div>
+        <h3>6. When should you choose Flexbox versus Grid?</h3>
+        <p>Strong answer: Flexbox for one-dimensional alignment; Grid for two-dimensional tracks and page regions.</p>
+      </div>
+    </div>
+
+    <h2 id="javascript-async-interview-quiz">JavaScript async interview quiz</h2>
+    <div class="question-grid">
+      <div class="question-card">
+        <div class="question-meta"><span>JavaScript</span><span>Closures</span></div>
+        <h3>7. What is a closure and where does it show up in UI code?</h3>
+        <p>Strong answer: a function retains lexical scope; common examples include callbacks, memoization, debounce, and stale state bugs.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>JavaScript</span><span>this</span></div>
+        <h3>8. Why does this change when a method is passed as a callback?</h3>
+        <p>Strong answer: normal function this depends on call site; arrow functions inherit lexical this.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>JavaScript</span><span>Async</span></div>
+        <h3>9. What changes when you rewrite promises with async/await?</h3>
+        <p>Strong answer: async/await changes readability, not the underlying promise scheduling or failure semantics.</p>
+      </div>
+    </div>
+
+    <h2 id="http-caching-frontend-interview-questions">HTTP caching frontend interview questions</h2>
+    <div class="question-grid">
+      <div class="question-card">
+        <div class="question-meta"><span>HTTP</span><span>Methods</span></div>
+        <h3>10. Why should GET not update server state?</h3>
+        <p>Strong answer: GET should be safe and idempotent enough for caches, crawlers, retries, and browser behavior.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>HTTP</span><span>Status codes</span></div>
+        <h3>11. What should the UI do for 401, 403, 404, and 500 responses?</h3>
+        <p>Strong answer: separate auth, permission, missing resource, and server failure states instead of one generic error.</p>
+      </div>
+      <div class="question-card">
+        <div class="question-meta"><span>HTTP</span><span>Caching</span></div>
+        <h3>12. How do Cache-Control and ETag affect frontend freshness?</h3>
+        <p>Strong answer: max-age controls reuse, validators support revalidation, and stale data needs a visible UI policy.</p>
+      </div>
+    </div>
+
+    <h2 id="score-bands">Score bands</h2>
     <p>
-    👉 Don’t waste time trying to memorize every detail from MDN.  
-    Instead, create a <strong>1-page cheatsheet</strong> with the essentials —
-    things you can explain in <em>30 seconds or less</em>.
+      Treat these frontend interview score bands as a routing guide, not a final grade:
+      each band tells you where to practice next.
     </p>
-    <ul>
-    <li>Browser: event loop, rendering pipeline, storage options.</li>
-    <li>CSS: box model, specificity, flex vs grid.</li>
-    <li>JS: closures, <code>this</code>, promises vs async/await.</li>
-    <li>HTTP: GET vs POST, key status codes, caching headers.</li>
-    </ul>
+    <div class="score-grid" data-testid="fundamentals-score-bands">
+      <div class="score-card">
+        <h3>0-5: fundamentals gaps</h3>
+        <p>Slow down. Pick one topic area and run the linked drills before doing broader interview practice.</p>
+      </div>
+      <div class="score-card">
+        <h3>6-9: usable but interview-risky</h3>
+        <p>You know the terms, but misses may appear under pressure. Practice answer structure and edge cases.</p>
+      </div>
+      <div class="score-card">
+        <h3>10-12: interview-ready fundamentals</h3>
+        <p>Move into timed coding, UI prompts, and system design while keeping short fundamentals reps warm.</p>
+      </div>
+    </div>
+
+    <h2 id="answer-rubric">Answer rubric</h2>
+    <div class="table-scroll">
+      <table data-testid="fundamentals-answer-rubric">
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Weak</th>
+            <th>Solid</th>
+            <th>Interview-ready</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Definition</td>
+            <td>Repeats a memorized phrase.</td>
+            <td>Explains the concept in plain English.</td>
+            <td>Explains the concept and names when it matters in UI work.</td>
+          </tr>
+          <tr>
+            <td>Example</td>
+            <td>No concrete example.</td>
+            <td>Gives one browser, CSS, JS, or HTTP example.</td>
+            <td>Connects the example to performance, accessibility, state, or reliability.</td>
+          </tr>
+          <tr>
+            <td>Trade-off</td>
+            <td>Uses buzzwords without conditions.</td>
+            <td>Names a reasonable trade-off.</td>
+            <td>States the trade-off, failure mode, and what would change in production.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="practice-map">Practice map</h2>
     <p>
-    Then drill these in the 
-    <a [routerLink]="['/coding']">quiz practice area</a>.  
-    Short daily reps (5–10 minutes) beat cramming the night before.
+      Use the lowest-scoring topic from the diagnostic to choose the next practice prompt.
+      Do not practice everything at once; fix the weakest repeated miss first.
     </p>
+    <div class="practice-grid" data-testid="fundamentals-practice-map">
+      <a class="practice-card" [routerLink]="['/javascript','trivia','js-event-loop']">
+        <div class="question-meta"><span>JavaScript</span><span>Event loop</span></div>
+        <h3>Event loop output</h3>
+        <p>Trace sync work, microtasks, timers, async/await continuation, and visible output order.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/javascript','trivia','js-closures']">
+        <div class="question-meta"><span>JavaScript</span><span>Closure</span></div>
+        <h3>Closures</h3>
+        <p>Practice lexical scope, retained state, stale callbacks, and callback examples.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/javascript','trivia','js-this-keyword']">
+        <div class="question-meta"><span>JavaScript</span><span>this</span></div>
+        <h3>this keyword</h3>
+        <p>Explain call-site binding, arrow functions, bind/call/apply, and callback context loss.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/javascript','trivia','js-promises-async-await']">
+        <div class="question-meta"><span>JavaScript</span><span>Promise</span></div>
+        <h3>Promises and async/await</h3>
+        <p>Practice promise state, async/await readability, and error handling semantics.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/javascript','trivia','js-microtasks-vs-macrotasks']">
+        <div class="question-meta"><span>JavaScript</span><span>Queues</span></div>
+        <h3>Microtasks vs macrotasks</h3>
+        <p>Compare Promise callbacks, timers, rendering checkpoints, and output ordering.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/javascript','trivia','http-caching-basics']">
+        <div class="question-meta"><span>HTTP</span><span>Caching</span></div>
+        <h3>HTTP caching basics</h3>
+        <p>Practice Cache-Control, ETag, freshness, revalidation, and user-visible stale data.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/css','trivia','css-box-model']">
+        <div class="question-meta"><span>CSS</span><span>Box model</span></div>
+        <h3>CSS box model</h3>
+        <p>Explain content-box, border-box, padding, margin, and overflow surprises.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/css','trivia','css-specificity-hierarchy']">
+        <div class="question-meta"><span>CSS</span><span>Specificity</span></div>
+        <h3>CSS specificity hierarchy</h3>
+        <p>Practice cascade order, specificity scoring, source order, and conflict debugging.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/css','trivia','css-grid-vs-flexbox']">
+        <div class="question-meta"><span>CSS</span><span>Layout</span></div>
+        <h3>Grid vs Flexbox</h3>
+        <p>Choose between one-dimensional alignment and two-dimensional layout tracks.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/html','trivia','html-dom']">
+        <div class="question-meta"><span>HTML</span><span>DOM</span></div>
+        <h3>HTML DOM</h3>
+        <p>Explain HTML parsing, DOM nodes, and how browser APIs expose document structure.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/html','trivia','html-parsing-rendering']">
+        <div class="question-meta"><span>HTML</span><span>Rendering</span></div>
+        <h3>HTML parsing and rendering</h3>
+        <p>Practice progressive parsing, blocking resources, script loading, and render timing.</p>
+      </a>
+      <a class="practice-card" [routerLink]="['/coding']">
+        <div class="question-meta"><span>Mixed</span><span>Practice</span></div>
+        <h3>Full quiz practice area</h3>
+        <p>Move from fundamentals checks into broader frontend coding and trivia practice.</p>
+      </a>
+    </div>
+
+    <h2 id="common-mistakes">Common mistakes</h2>
+    <div class="mistake-grid" data-testid="fundamentals-common-mistakes">
+      <div class="mistake-card">
+        <h3>Memorized definitions only</h3>
+        <p>Fix it by adding one UI example and one failure mode to every answer.</p>
+      </div>
+      <div class="mistake-card">
+        <h3>Mixing browser queues</h3>
+        <p>Separate sync execution, microtasks, macrotasks, rendering, and request callbacks.</p>
+      </div>
+      <div class="mistake-card">
+        <h3>CSS without debugging language</h3>
+        <p>Say how you would inspect the rule, box, computed value, or layout boundary.</p>
+      </div>
+      <div class="mistake-card">
+        <h3>One generic API error state</h3>
+        <p>Separate auth, permissions, missing data, validation, retryable failures, and stale data.</p>
+      </div>
+    </div>
+
+    <h2 id="faq">FAQ</h2>
+    <h3>What is a frontend interview fundamentals quiz?</h3>
+    <p>
+      It is a short diagnostic that checks whether you can explain browser, CSS,
+      JavaScript, and HTTP concepts clearly enough for a frontend technical interview.
+    </p>
+
+    <h3>How do I use this as a 15-minute frontend fundamentals diagnostic?</h3>
+    <p>
+      Spend about 15 minutes total: roughly one minute per question, plus a few minutes
+      to score your misses and choose the next practice prompt.
+    </p>
+
+    <h3>Which browser rendering interview questions should I know?</h3>
+    <p>
+      Know how HTML and CSS become the DOM, CSSOM, render tree, layout, paint, and
+      composited output, then connect each step to performance and UI bugs.
+    </p>
+
+    <h3>Which CSS layout interview questions matter most?</h3>
+    <p>
+      Expect box model, specificity, cascade order, positioning, Flexbox, Grid, and
+      responsive layout questions that ask you to debug a real UI outcome.
+    </p>
+
+    <h3>What JavaScript async topics appear in frontend interview quizzes?</h3>
+    <p>
+      Practice promises, async/await, microtasks, macrotasks, event loop output, error
+      handling, and how async timing can create stale UI state.
+    </p>
+
+    <h3>What HTTP caching topics should frontend engineers know?</h3>
+    <p>
+      Explain Cache-Control, ETag, max-age, revalidation, stale data policy, and how
+      status codes change the UI state the user should see.
+    </p>
+
+    <h2 id="what-to-practice-next">What to practice next</h2>
+    <div class="next-grid" data-testid="fundamentals-next-links">
+      <a class="next-link" [routerLink]="['/javascript','trivia','js-event-loop']">
+        <strong>Fix async output misses</strong>
+        <span>Trace event loop, microtask, timer, and async/await behavior.</span>
+      </a>
+      <a class="next-link" [routerLink]="['/css','trivia','css-specificity-hierarchy']">
+        <strong>Fix CSS cascade misses</strong>
+        <span>Practice specificity, source order, cascade, and computed style reasoning.</span>
+      </a>
+      <a class="next-link" [routerLink]="['/html','trivia','html-parsing-rendering']">
+        <strong>Fix browser rendering misses</strong>
+        <span>Review parsing, blocking resources, DOM construction, and rendering timing.</span>
+      </a>
+      <a class="next-link" [routerLink]="['/coding']">
+        <strong>Open broader practice</strong>
+        <span>Move into coding and trivia once the fundamentals diagnostic is stable.</span>
+      </a>
+    </div>
   </fa-guide-shell>
   `
 })
 export class FundamentalsCheckArticle {
-    @Input() prev: any[] | null = null;
-    @Input() next: any[] | null = null;
-    @Input() leftNav: any;
+  @Input() prev: any[] | null = null;
+  @Input() next: any[] | null = null;
+  @Input() leftNav: any;
   @Input() readerPromise: string | null = null;
 }
