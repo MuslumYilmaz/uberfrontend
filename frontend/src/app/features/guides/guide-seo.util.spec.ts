@@ -695,7 +695,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.keywords).toContain('RADIO framework frontend system design');
     expect(article?.keywords).toContain('frontend system design interview answer template');
     expect(article?.keywords).toContain('frontend system design interface API taxonomy');
@@ -1349,7 +1349,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('JavaScript Interview Preparation Path: 7/14/30-Day Study Plan');
-    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -1441,7 +1441,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('How to Prepare for a React Interview: 7/14/30-Day Plan');
-    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -1542,7 +1542,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('Angular Interview Preparation Path: 7/14/30-Day Plan');
-    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -1648,7 +1648,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('Vue Interview Preparation Path: 7/14/30-Day Study Plan');
-    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',

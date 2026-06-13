@@ -770,7 +770,7 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-06-07',
+            updatedAt: '2026-06-13',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
@@ -921,7 +921,7 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-06-07',
+            updatedAt: '2026-06-13',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
@@ -1046,7 +1046,7 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-06-07',
+            updatedAt: '2026-06-13',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
@@ -1176,7 +1176,7 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-12',
-            updatedAt: '2026-06-07',
+            updatedAt: '2026-06-13',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
@@ -1684,7 +1684,7 @@ export const SYSTEM: GuideEntry[] = [
                 ],
             },
             publishedAt: '2026-02-18',
-            updatedAt: '2026-06-02',
+            updatedAt: '2026-06-13',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
