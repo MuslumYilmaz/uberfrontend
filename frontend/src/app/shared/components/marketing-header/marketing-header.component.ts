@@ -34,6 +34,12 @@ export class MarketingHeaderComponent {
 
   readonly primaryLinks: MarketingLink[] = [
     {
+      label: 'Prep Guide',
+      route: ['/guides', 'interview-blueprint', 'intro'],
+      destination: '/guides/interview-blueprint/intro',
+      activeMatch: 'path',
+    },
+    {
       label: 'Essential 60',
       route: ['/interview-questions', 'essential'],
       destination: '/interview-questions/essential',
@@ -54,11 +60,6 @@ export class MarketingHeaderComponent {
   ];
 
   readonly guestUtilityLinks: MarketingLink[] = [
-    {
-      label: 'Pricing',
-      route: ['/pricing'],
-      destination: '/pricing',
-    },
     {
       label: 'Log in',
       route: ['/auth', 'login'],

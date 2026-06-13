@@ -96,9 +96,9 @@ describe('trivia-seo.util', () => {
       title: 'What Actually Cancels an HTTP Request in Angular?',
       technology: 'angular',
       seo: {
-        title: 'Angular HttpClient: Does Unsubscribe Cancel Requests?',
+        title: 'Angular HttpClient: Unsubscribe Cancels Requests',
         description:
-          'Yes: unsubscribing from Angular HttpClient aborts in-flight requests. switchMap, takeUntilDestroyed, and AsyncPipe cancel; ignoring stale results does not.',
+          'Docs-backed answer: HttpClient unsubscribe aborts in-flight requests; switchMap, AsyncPipe, and takeUntilDestroyed cancel, while mergeMap and stale guards do not.',
       },
     } as any;
 
@@ -106,10 +106,10 @@ describe('trivia-seo.util', () => {
     const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
 
     expect(title).toBe(
-      'Angular HttpClient: Does Unsubscribe Cancel Requests?'
+      'Angular HttpClient: Unsubscribe Cancels Requests'
     );
     expect(description).toBe(
-      'Yes: unsubscribing from Angular HttpClient aborts in-flight requests. switchMap, takeUntilDestroyed, and AsyncPipe cancel; ignoring stale results does not.'
+      'Docs-backed answer: HttpClient unsubscribe aborts in-flight requests; switchMap, AsyncPipe, and takeUntilDestroyed cancel, while mergeMap and stale guards do not.'
     );
   });
 

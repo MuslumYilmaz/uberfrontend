@@ -335,7 +335,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
       <fa-guide-shell
-      title="Frontend System Design Interview Prep: The RADIO Framework"
+      title="RADIO Framework for Frontend System Design Interviews"
       [minutes]="20"
       [tags]="['system design', 'interview prep', 'radio framework']"
       [prev]="prev"

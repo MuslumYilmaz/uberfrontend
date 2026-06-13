@@ -1634,12 +1634,12 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'Frontend System Design Interview Prep: The RADIO Framework',
+        title: 'RADIO Framework for Frontend System Design Interviews',
         minutes: 20,
         summary: 'Use the RADIO framework to structure frontend system design interview prep across requirements, architecture, data, interfaces, performance, and closing scripts.',
         seo: {
-            title: 'Frontend System Design Interview Prep: The RADIO Framework',
-            description: 'Use RADIO to structure frontend system design interview prep: requirements, architecture, data model, interfaces, performance trade-offs, and closing scripts.',
+            title: 'RADIO Framework for Frontend System Design Interviews',
+            description: 'Use Requirements, Architecture, Data, Interface, and Optimizations to structure frontend system design answers with examples, checklist, and a 45-minute script.',
             primaryKeyword: 'RADIO framework frontend system design',
             keywords: [
                 'frontend system design interview answer template',

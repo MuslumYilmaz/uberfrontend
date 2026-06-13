@@ -82,10 +82,9 @@
         </div>
 
         <a
-          *ngIf="!isPro()"
           class="fah-cta fah-cta-solid"
           [routerLink]="ctaLink()"
-          (click)="trackUtilityClick(isPro() ? '/profile' : '/pricing')"
+          (click)="trackUtilityClick(ctaDestination())"
         >
           {{ ctaLabel() }}
         </a>

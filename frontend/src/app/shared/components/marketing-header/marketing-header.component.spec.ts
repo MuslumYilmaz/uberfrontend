@@ -44,7 +44,7 @@ describe('MarketingHeaderComponent', () => {
     return fixture;
   }
 
-  it('shows the three primary discovery routes in the agreed order for guests', async () => {
+  it('shows prep-first primary discovery routes in the agreed order for guests', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const primaryLinks = Array.from(
       fixture.nativeElement.querySelectorAll('[data-testid="marketing-header-primary-link"]'),
@@ -56,6 +56,7 @@ describe('MarketingHeaderComponent', () => {
     const utilityLabels = utilityLinks.map((link) => (link.textContent || '').trim());
 
     expect(labels).toEqual([
+      'Prep Guide',
       'Essential 60',
       'Question Library',
       'Study Plans',
@@ -67,11 +68,13 @@ describe('MarketingHeaderComponent', () => {
     expect(labels).not.toContain('Behavioral');
     expect(labels).not.toContain('System Design');
     expect(primaryLinks.map((link) => link.getAttribute('href'))).toEqual([
+      '/guides/interview-blueprint/intro',
       '/interview-questions/essential',
       '/coding',
       '/tracks',
     ]);
-    expect(utilityLabels).toEqual(['Pricing', 'Log in']);
+    expect(utilityLabels).toEqual(['Log in']);
+    expect(utilityLabels).not.toContain('Pricing');
     expect((fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement).textContent || '')
       .toContain('Start practicing');
     expect((fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement).getAttribute('href'))
@@ -109,12 +112,14 @@ describe('MarketingHeaderComponent', () => {
 
     expect(fixture.nativeElement.querySelector('[data-testid="marketing-header-mobile-menu"]')).toBeTruthy();
     expect(mobilePrimaryLabels).toEqual([
+      'Prep Guide',
       'Essential 60',
       'Question Library',
       'Study Plans',
     ]);
     expect(mobilePrimaryLabels).not.toContain('System Design');
-    expect(mobileUtilityLabels).toEqual(['Pricing', 'Log in']);
+    expect(mobileUtilityLabels).toEqual(['Log in']);
+    expect(mobileUtilityLabels).not.toContain('Pricing');
     expect(analytics.track).toHaveBeenCalledWith(
       'header_top_nav_clicked',
       jasmine.objectContaining({ surface: 'marketing', area: 'mobile_menu', destination: 'menu' }),
@@ -124,7 +129,7 @@ describe('MarketingHeaderComponent', () => {
   it('treats all coding views as Question Library while keeping Essential 60 isolated', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const component = fixture.componentInstance;
-    const [essential60, questionLibrary] = component.primaryLinks;
+    const [, essential60, questionLibrary] = component.primaryLinks;
 
     component.currentUrl.set('/interview-questions/essential');
     expect(component.isPrimaryLinkActive(essential60)).toBeTrue();

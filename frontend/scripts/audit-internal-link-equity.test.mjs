@@ -25,6 +25,10 @@ const requiredTargets = [
   '/html/interview-questions',
   '/css/interview-questions',
   '/html-css/interview-questions',
+  '/guides/framework-prep/javascript-prep-path',
+  '/guides/framework-prep/react-prep-path',
+  '/guides/framework-prep/angular-prep-path',
+  '/guides/framework-prep/vue-prep-path',
 ];
 
 function makeTempBuild() {
@@ -48,6 +52,7 @@ function runAudit(buildDir, extraEnv = {}) {
       SEO_BUILD_DIR: buildDir,
       SEO_STRATEGIC_MIN_LINKS: '1',
       SEO_TECH_HUB_MIN_LINKS: '1',
+      SEO_TECH_PREP_MIN_LINKS: '1',
       SEO_TRIVIA_INBOUND_CAP: '2',
       SEO_LINK_EQUITY_TOP_SAMPLE_SIZE: '8',
       SEO_TOP_TRIVIA_MAX: '2',
@@ -79,6 +84,7 @@ function runAudit(buildDir, extraEnv = {}) {
   const result = runAudit(buildDir, {
     SEO_STRATEGIC_MIN_LINKS: '0',
     SEO_TECH_HUB_MIN_LINKS: '0',
+    SEO_TECH_PREP_MIN_LINKS: '0',
   });
   assert.notEqual(result.status, 0, 'Expected trivia cap failure');
   assert.match(`${result.stdout}${result.stderr}`, /cap is 2/);
@@ -96,12 +102,54 @@ function runAudit(buildDir, extraEnv = {}) {
   const result = runAudit(buildDir, {
     SEO_STRATEGIC_MIN_LINKS: '0',
     SEO_TECH_HUB_MIN_LINKS: '0',
+    SEO_TECH_PREP_MIN_LINKS: '0',
     SEO_TRIVIA_INBOUND_CAP: '5',
     SEO_LINK_EQUITY_TOP_SAMPLE_SIZE: '4',
     SEO_TOP_TRIVIA_MAX: '1',
   });
   assert.notEqual(result.status, 0, 'Expected top-list trivia dominance failure');
   assert.match(`${result.stdout}${result.stderr}`, /trivia detail targets appear in the top 4/);
+}
+
+{
+  const buildDir = makeTempBuild();
+  writePage(buildDir, '/', [
+    '/pricing',
+    '/pricing',
+    '/pricing',
+    '/guides/interview-blueprint/intro',
+    '/interview-questions',
+    '/interview-questions/essential',
+    '/guides/framework-prep',
+  ]);
+
+  const result = runAudit(buildDir, {
+    SEO_STRATEGIC_MIN_LINKS: '0',
+    SEO_TECH_HUB_MIN_LINKS: '0',
+    SEO_TECH_PREP_MIN_LINKS: '0',
+    SEO_PRICING_MAX_LINKS: '0',
+  });
+  assert.notEqual(result.status, 0, 'Expected pricing dominance failure');
+  assert.match(`${result.stdout}${result.stderr}`, /exceeds primary prep targets/);
+}
+
+{
+  const buildDir = makeTempBuild();
+  writePage(buildDir, '/', [
+    '/pricing',
+    '/pricing',
+    '/guides/interview-blueprint/intro',
+    '/guides/interview-blueprint/intro',
+  ]);
+
+  const result = runAudit(buildDir, {
+    SEO_STRATEGIC_MIN_LINKS: '0',
+    SEO_TECH_HUB_MIN_LINKS: '0',
+    SEO_TECH_PREP_MIN_LINKS: '0',
+    SEO_PRICING_MAX_LINKS: '1',
+  });
+  assert.notEqual(result.status, 0, 'Expected pricing max failure');
+  assert.match(`${result.stdout}${result.stderr}`, /max allowed is 1/);
 }
 
 console.log('[audit-internal-link-equity.test] passed');

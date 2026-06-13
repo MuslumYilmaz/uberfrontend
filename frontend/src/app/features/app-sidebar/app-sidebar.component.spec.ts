@@ -68,6 +68,8 @@ describe('AppSidebarComponent', () => {
           { path: 'companies/:slug', component: DummyPageComponent },
           { path: 'guides/interview-blueprint', component: DummyPageComponent },
           { path: 'guides/interview-blueprint/:slug', component: DummyPageComponent },
+          { path: 'guides/framework-prep', component: DummyPageComponent },
+          { path: 'guides/framework-prep/:slug', component: DummyPageComponent },
           { path: 'guides/behavioral', component: DummyPageComponent },
           { path: 'guides/behavioral/:slug', component: DummyPageComponent },
           { path: 'guides/system-design-blueprint', component: DummyPageComponent },
@@ -213,14 +215,54 @@ describe('AppSidebarComponent', () => {
     expect(sidebar.classList.contains('is-open')).toBeTrue();
   });
 
-  it('renders guest auth actions in the mobile drawer footer', async () => {
+  it('renders guest auth actions and prep shortcut in the mobile drawer footer', async () => {
     await configureTestingModule();
     const fixture = TestBed.createComponent(AppSidebarComponent);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-signup"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-login"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-pricing"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-pricing"]')).toBeFalsy();
+
+    const prepLink = fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-start-prep"]') as HTMLAnchorElement;
+    expect(prepLink).toBeTruthy();
+    expect(prepLink.textContent || '').toContain('Start prep');
+    expect(prepLink.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+  });
+
+  it('renders framework prep links in the Guides group', async () => {
+    await configureTestingModule();
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    const guideLabels = Array
+      .from(fixture.nativeElement.querySelectorAll('#group-3 a') as NodeListOf<HTMLAnchorElement>)
+      .map((link) => ({
+        label: (link.textContent || '').replace(/\s+/g, ' ').trim(),
+        href: link.getAttribute('href') || '',
+      }));
+
+    expect(guideLabels).toEqual(jasmine.arrayContaining([
+      jasmine.objectContaining({ label: 'Interview Playbook Hub', href: '/guides/interview-blueprint' }),
+      jasmine.objectContaining({ label: 'Framework Prep Guide', href: '/guides/framework-prep' }),
+      jasmine.objectContaining({ label: 'JavaScript prep path', href: '/guides/framework-prep/javascript-prep-path' }),
+      jasmine.objectContaining({ label: 'React prep path', href: '/guides/framework-prep/react-prep-path' }),
+      jasmine.objectContaining({ label: 'Angular prep path', href: '/guides/framework-prep/angular-prep-path' }),
+      jasmine.objectContaining({ label: 'Vue prep path', href: '/guides/framework-prep/vue-prep-path' }),
+      jasmine.objectContaining({ label: 'System Design Blueprint', href: '/guides/system-design-blueprint' }),
+      jasmine.objectContaining({ label: 'Behavioral Prep', href: '/guides/behavioral' }),
+    ]));
+  });
+
+  it('keeps the mobile pricing shortcut for signed-in free users', async () => {
+    await configureTestingModule({ isLoggedIn: true });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    const pricingLink = fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-pricing"]') as HTMLAnchorElement;
+    expect(pricingLink).toBeTruthy();
+    expect(pricingLink.textContent || '').toContain('Upgrade');
+    expect(pricingLink.getAttribute('href') || '').toContain('/pricing');
   });
 
   it('renders a profile shortcut for signed-in users in the mobile drawer footer', async () => {
