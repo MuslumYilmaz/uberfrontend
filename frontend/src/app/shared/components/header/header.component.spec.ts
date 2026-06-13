@@ -98,11 +98,28 @@ describe('HeaderComponent', () => {
     expect(profileLink.getAttribute('href') || '').toContain('/profile');
   });
 
-  it('hides upgrade actions for premium users', async () => {
-    const fixture = await createComponent({ isLoggedIn: true, isPro: true });
-    const premiumUpsellCta = fixture.nativeElement.querySelector('.fah-cta') as HTMLAnchorElement | null;
+  it('routes guest header CTA to the prep guide instead of pricing', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const guestCta = fixture.nativeElement.querySelector('.fah-cta') as HTMLAnchorElement;
 
-    expect(premiumUpsellCta).toBeNull();
+    expect(guestCta.textContent || '').toContain('Start prep');
+    expect(guestCta.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+  });
+
+  it('keeps the logged-in free header CTA on pricing', async () => {
+    const fixture = await createComponent({ isLoggedIn: true, isPro: false });
+    const freeCta = fixture.nativeElement.querySelector('.fah-cta') as HTMLAnchorElement;
+
+    expect(freeCta.textContent || '').toContain('Upgrade');
+    expect(freeCta.getAttribute('href') || '').toContain('/pricing');
+  });
+
+  it('shows subscription management for premium users', async () => {
+    const fixture = await createComponent({ isLoggedIn: true, isPro: true });
+    const premiumCta = fixture.nativeElement.querySelector('.fah-cta') as HTMLAnchorElement;
+
+    expect(premiumCta.textContent || '').toContain('Manage subscription');
+    expect(premiumCta.getAttribute('href') || '').toContain('/profile');
   });
 
   it('opens a compact study launcher with guide-first primary actions', async () => {
@@ -115,22 +132,26 @@ describe('HeaderComponent', () => {
 
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-continue"]')).toBeTruthy();
     const guide = fixture.nativeElement.querySelector('[data-testid="header-study-interview_blueprint"]') as HTMLAnchorElement;
+    const frameworkPrep = fixture.nativeElement.querySelector('[data-testid="header-study-framework_prep"]') as HTMLAnchorElement;
     const essential = fixture.nativeElement.querySelector('[data-testid="header-study-essential_60"]') as HTMLAnchorElement;
     const questionLibrary = fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement;
     const studyPlans = fixture.nativeElement.querySelector('[data-testid="header-study-study_plans"]') as HTMLAnchorElement;
     const rows = Array.from(fixture.nativeElement.querySelectorAll('.study-row--primary')) as HTMLElement[];
     const titles = rows.map((row) => row.querySelector('.row-title')?.textContent?.replace(/\s+/g, ' ').trim());
 
-    expect(rows.length).toBe(5);
+    expect(rows.length).toBe(6);
     expect(titles[0]).toContain('Continue where I left off');
     expect(titles[1]).toContain('Frontend interview preparation guide');
-    expect(titles[2]).toContain('FrontendAtlas Essential 60');
-    expect(titles[3]).toContain('Question Library');
+    expect(titles[2]).toContain('Framework prep paths');
+    expect(titles[3]).toContain('FrontendAtlas Essential 60');
+    expect(titles[4]).toContain('Question Library');
     expect(rows.filter((row) => (row.textContent || '').includes('Question Library')).length).toBe(1);
     expect(guide).toBeTruthy();
     expect(guide.classList.contains('study-row--featured')).toBeTrue();
     expect(guide.textContent || '').toContain('Frontend interview preparation guide');
     expect(guide.textContent || '').not.toContain('Start here');
+    expect(frameworkPrep).toBeTruthy();
+    expect(frameworkPrep.textContent || '').toContain('Framework prep paths');
     expect(essential).toBeTruthy();
     expect(essential.classList.contains('study-row--featured')).toBeFalse();
     expect(essential.textContent || '').toContain('FrontendAtlas Essential 60');
@@ -139,6 +160,7 @@ describe('HeaderComponent', () => {
     expect(studyPlans.textContent || '').toContain('Study Plans');
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-practice_types"]')).toBeFalsy();
     expect(guide.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+    expect(frameworkPrep.getAttribute('href') || '').toContain('/guides/framework-prep');
     expect(essential.getAttribute('href') || '').toContain('/interview-questions/essential');
     expect(questionLibrary.getAttribute('href') || '').toContain('/coding');
     expect(studyPlans.getAttribute('href') || '').toContain('/tracks');

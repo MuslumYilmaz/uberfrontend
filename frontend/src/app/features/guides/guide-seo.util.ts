@@ -2,6 +2,7 @@ import { SeoMeta, SeoService } from '../../core/services/seo.service';
 import { GuideAuthor, GuideEntry, GuideSeo } from '../../shared/guides/guide.registry';
 
 const DESCRIPTION_MAX_LEN = 158;
+const EXPLICIT_DESCRIPTION_MAX_LEN = 160;
 const TITLE_MAX_LEN = 74;
 const INTERVIEW_INTENT_RX = /\b(interviews?|prep|preparation|roadmap|hiring|onsite|screen)\b/i;
 const DEFAULT_GUIDE_PUBLISHED_AT = '2025-01-01T00:00:00.000Z';
@@ -173,12 +174,14 @@ export function buildGuideDetailSeo(
   const canonical = seo.buildCanonicalUrl(`/guides/${sectionPath}/${entry.slug}`);
   const title = clamp(entry.seo?.title || entry.title, TITLE_MAX_LEN) || 'Frontend guide';
   const rawDescription = entry.seo?.description || entry.summary || '';
-  const description = ensureInterviewIntent(
-    clamp(rawDescription, DESCRIPTION_MAX_LEN)
-      || fallbackGuideDescription(sectionTitle, title),
-    sectionTitle,
-    title
-  );
+  const description = entry.seo?.description
+    ? clamp(entry.seo.description, EXPLICIT_DESCRIPTION_MAX_LEN)
+    : ensureInterviewIntent(
+      clamp(rawDescription, DESCRIPTION_MAX_LEN)
+        || fallbackGuideDescription(sectionTitle, title),
+      sectionTitle,
+      title
+    );
   const keywords = buildKeywordList(entry.seo?.primaryKeyword, entry.seo?.keywords);
   const imageUrl = seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
   const datePublished = normalizeIsoDate(entry.seo?.publishedAt) || DEFAULT_GUIDE_PUBLISHED_AT;

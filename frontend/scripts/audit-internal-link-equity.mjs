@@ -10,6 +10,8 @@ const TOP_SAMPLE_SIZE = readNumberEnv('SEO_LINK_EQUITY_TOP_SAMPLE_SIZE', 20);
 const TOP_TRIVIA_MAX = readNumberEnv('SEO_TOP_TRIVIA_MAX', 3);
 const STRATEGIC_MIN_LINKS = readNumberEnv('SEO_STRATEGIC_MIN_LINKS', 120);
 const TECH_HUB_MIN_LINKS = readNumberEnv('SEO_TECH_HUB_MIN_LINKS', 35);
+const TECH_PREP_MIN_LINKS = readNumberEnv('SEO_TECH_PREP_MIN_LINKS', 35);
+const PRICING_MAX_LINKS = readNumberEnv('SEO_PRICING_MAX_LINKS', 90);
 
 const REQUIRED_TARGETS = new Map([
   ['/interview-questions', STRATEGIC_MIN_LINKS],
@@ -29,7 +31,18 @@ const REQUIRED_TARGETS = new Map([
   ['/html/interview-questions', TECH_HUB_MIN_LINKS],
   ['/css/interview-questions', TECH_HUB_MIN_LINKS],
   ['/html-css/interview-questions', TECH_HUB_MIN_LINKS],
+  ['/guides/framework-prep/javascript-prep-path', TECH_PREP_MIN_LINKS],
+  ['/guides/framework-prep/react-prep-path', TECH_PREP_MIN_LINKS],
+  ['/guides/framework-prep/angular-prep-path', TECH_PREP_MIN_LINKS],
+  ['/guides/framework-prep/vue-prep-path', TECH_PREP_MIN_LINKS],
 ]);
+
+const PRIMARY_PREP_TARGETS = [
+  '/guides/interview-blueprint/intro',
+  '/interview-questions',
+  '/interview-questions/essential',
+  '/guides/framework-prep',
+];
 
 function readNumberEnv(name, fallback) {
   const raw = process.env[name];
@@ -142,6 +155,20 @@ function run() {
     }
   }
 
+  const pricingCount = targetCounts.get('/pricing') || 0;
+  if (PRICING_MAX_LINKS > 0 && pricingCount > PRICING_MAX_LINKS) {
+    failures.push(`/pricing has ${pricingCount} inbound internal anchors; max allowed is ${PRICING_MAX_LINKS}`);
+  }
+
+  const weakerPrepTargets = PRIMARY_PREP_TARGETS
+    .map((target) => [target, targetCounts.get(target) || 0])
+    .filter(([, count]) => pricingCount > count);
+  if (pricingCount > 0 && weakerPrepTargets.length > 0) {
+    failures.push(
+      `/pricing has ${pricingCount} inbound internal anchors and exceeds primary prep targets: ${weakerPrepTargets.map(([target, count]) => `${target} (${count})`).join(', ')}`,
+    );
+  }
+
   const topTargets = targets.slice(0, TOP_SAMPLE_SIZE);
   const topTriviaTargets = topTargets.filter(([target]) => isTriviaDetailPath(target));
   if (topTriviaTargets.length > TOP_TRIVIA_MAX) {
@@ -151,7 +178,7 @@ function run() {
   }
 
   console.log(`[seo:link-equity] pages=${htmlFiles.length} targets=${targets.length}`);
-  console.log(`[seo:link-equity] trivia-cap=${TRIVIA_INBOUND_CAP} strategic-min=${STRATEGIC_MIN_LINKS} tech-hub-min=${TECH_HUB_MIN_LINKS}`);
+  console.log(`[seo:link-equity] trivia-cap=${TRIVIA_INBOUND_CAP} strategic-min=${STRATEGIC_MIN_LINKS} tech-hub-min=${TECH_HUB_MIN_LINKS} tech-prep-min=${TECH_PREP_MIN_LINKS} pricing-max=${PRICING_MAX_LINKS}`);
 
   console.log('[seo:link-equity] required targets:');
   for (const [target, minCount] of REQUIRED_TARGETS) {

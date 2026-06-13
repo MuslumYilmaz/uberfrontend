@@ -166,6 +166,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         return path === '/companies' || path.startsWith('/companies/');
       case 'guide-interview-blueprint':
         return path === '/guides/interview-blueprint' || path.startsWith('/guides/interview-blueprint/');
+      case 'guide-framework-prep':
+        return path === '/guides/framework-prep' || path.startsWith('/guides/framework-prep/');
       case 'guide-behavioral':
         return path === '/guides/behavioral' || path.startsWith('/guides/behavioral/');
       case 'guide-system-design-blueprint':
@@ -249,8 +251,13 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         open: false,
         children: [
           { key: 'guide-interview-blueprint', type: 'link', label: 'Interview Playbook Hub', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
-          { key: 'guide-behavioral', type: 'link', label: 'Behavioral Prep', to: '/guides/behavioral', icon: 'pi pi-users' },
+          { key: 'guide-framework-prep', type: 'link', label: 'Framework Prep Guide', to: '/guides/framework-prep', icon: 'pi pi-compass' },
+          { key: 'guide-framework-prep-js', type: 'link', label: 'JavaScript prep path', to: '/guides/framework-prep/javascript-prep-path', icon: 'pi pi-code' },
+          { key: 'guide-framework-prep-react', type: 'link', label: 'React prep path', to: '/guides/framework-prep/react-prep-path', icon: 'pi pi-code' },
+          { key: 'guide-framework-prep-angular', type: 'link', label: 'Angular prep path', to: '/guides/framework-prep/angular-prep-path', icon: 'pi pi-code' },
+          { key: 'guide-framework-prep-vue', type: 'link', label: 'Vue prep path', to: '/guides/framework-prep/vue-prep-path', icon: 'pi pi-code' },
           { key: 'guide-system-design-blueprint', type: 'link', label: 'System Design Blueprint', to: '/guides/system-design-blueprint', icon: 'pi pi-sitemap' },
+          { key: 'guide-behavioral', type: 'link', label: 'Behavioral Prep', to: '/guides/behavioral', icon: 'pi pi-users' },
         ],
       },
       {

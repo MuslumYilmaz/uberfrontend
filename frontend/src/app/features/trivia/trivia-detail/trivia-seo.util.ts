@@ -179,13 +179,15 @@ function interviewAnswerTitle(
 export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>): string {
   const rawExplicit = rawQuestionSeoTitle(q);
   const rawExplicitHasInterviewIntent = hasInterviewIntent(rawExplicit);
-  const rawDescriptionHasAnswerFirstIntent = hasAnswerFirstIntent(rawQuestionSeoDescription(q));
+  const rawExplicitDescription = rawQuestionSeoDescription(q);
+  const rawDescriptionHasAnswerFirstIntent = hasAnswerFirstIntent(rawExplicitDescription);
+  const rawDescriptionHasInterviewIntent = hasInterviewIntent(rawExplicitDescription);
   const explicit = rawExplicitHasInterviewIntent
     ? sanitizeSerpText(rawExplicit, Math.max(TITLE_MAX_LEN, rawExplicit.length))
     : sanitizeSerpText(rawExplicit, TITLE_MAX_LEN);
   const framework = frameworkLabel(q.technology);
   if (explicit) {
-    return rawExplicitHasInterviewIntent || rawDescriptionHasAnswerFirstIntent
+    return rawExplicitHasInterviewIntent || rawDescriptionHasAnswerFirstIntent || rawDescriptionHasInterviewIntent
       ? explicit
       : interviewAnswerTitle(q, framework);
   }

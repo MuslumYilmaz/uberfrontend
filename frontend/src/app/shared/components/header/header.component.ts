@@ -30,6 +30,7 @@ type VisibleEntry = {
 type StudyPrimaryActionKey =
   | 'continue'
   | 'interview_blueprint'
+  | 'framework_prep'
   | 'essential_60'
   | 'question_library'
   | 'study_plans';
@@ -104,9 +105,16 @@ export class HeaderComponent implements OnInit {
   isPro = computed(() => isProActive(this.auth.user()));
   ctaLabel = computed(() => {
     if (this.isPro()) return 'Manage subscription';
-    return this.auth.isLoggedIn() ? 'Upgrade' : 'Get full access';
+    return this.auth.isLoggedIn() ? 'Upgrade' : 'Start prep';
   });
-  ctaLink = computed(() => (this.isPro() ? ['/profile'] : ['/pricing']));
+  ctaLink = computed(() => {
+    if (this.isPro()) return ['/profile'];
+    return this.auth.isLoggedIn() ? ['/pricing'] : ['/guides', 'interview-blueprint', 'intro'];
+  });
+  ctaDestination = computed(() => {
+    if (this.isPro()) return '/profile';
+    return this.auth.isLoggedIn() ? '/pricing' : '/guides/interview-blueprint/intro';
+  });
   isStudyActive = computed(() => {
     const path = this.currentPath();
     if (
@@ -168,6 +176,13 @@ export class HeaderComponent implements OnInit {
         icon: 'pi-map',
         route: ['/guides', 'interview-blueprint', 'intro'],
         emphasis: 'promoted',
+      },
+      {
+        key: 'framework_prep',
+        title: 'Framework prep paths',
+        subtitle: 'Choose the JavaScript, React, Angular, or Vue preparation path for stack-specific interviews.',
+        icon: 'pi-compass',
+        route: ['/guides', 'framework-prep'],
       },
       {
         key: 'essential_60',

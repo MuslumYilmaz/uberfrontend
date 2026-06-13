@@ -663,16 +663,16 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('Frontend System Design Interview Prep: The RADIO Framework');
+    expect(meta.title).toBe('RADIO Framework for Frontend System Design Interviews');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(meta.description).toBe(
-      'Use RADIO to structure frontend system design interview prep: requirements, architecture, data model, interfaces, performance trade-offs, and closing scripts.',
+      'Use Requirements, Architecture, Data, Interface, and Optimizations to structure frontend system design answers with examples, checklist, and a 45-minute script.',
     );
-    expect(meta.description).toMatch(/frontend system design interview prep/i);
+    expect(meta.description).toMatch(/frontend system design answers/i);
     expect(meta.description).toMatch(/requirements/i);
-    expect(meta.description).toMatch(/data model/i);
-    expect(meta.description).toMatch(/trade-offs/i);
+    expect(meta.description).toMatch(/interface/i);
+    expect(meta.description).toMatch(/45-minute script/i);
     expect(meta.keywords).toContain('RADIO framework frontend system design');
     expect(meta.keywords).toContain('frontend system design interview answer template');
     expect(meta.keywords).toContain('RADIO answer template');

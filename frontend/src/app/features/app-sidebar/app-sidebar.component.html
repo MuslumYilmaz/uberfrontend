@@ -156,8 +156,11 @@
                 Log in
             </a>
         </div>
-        <a *ngIf="!isPro()" class="mobile-auth-btn mobile-auth-btn--pricing" [routerLink]="['/pricing']" (click)="closeDrawer()" data-testid="sidebar-mobile-pricing">
-            Pricing
+        <a *ngIf="!auth.isLoggedIn()" class="mobile-auth-btn mobile-auth-btn--prep" [routerLink]="['/guides','interview-blueprint','intro']" (click)="closeDrawer()" data-testid="sidebar-mobile-start-prep">
+            Start prep
+        </a>
+        <a *ngIf="auth.isLoggedIn() && !isPro()" class="mobile-auth-btn mobile-auth-btn--pricing" [routerLink]="['/pricing']" (click)="closeDrawer()" data-testid="sidebar-mobile-pricing">
+            Upgrade
         </a>
     </div>
 </aside>
