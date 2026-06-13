@@ -196,6 +196,18 @@ const REACT_WORKED_EXAMPLES: ReactWorkedExample[] = [
     linkLabel: 'Practice effect reasoning',
   },
   {
+    title: 'StrictMode useEffect running twice',
+    scenario: 'A dev build shows duplicate fetches, listeners, or analytics calls because StrictMode replays effect setup and cleanup.',
+    contract: [
+      'Development-only: explain why production does not run the extra StrictMode diagnostic cycle.',
+      'Event boundary: StrictMode event handlers are not double-invoked by the render check.',
+      'Cleanup rule: useEffect cleanup in StrictMode must remove listeners, abort stale requests, or dedupe permanent side effects.',
+      'Interview check: say whether the issue is missing cleanup, wrong ownership, or user-triggered work that belongs in an event handler.',
+    ],
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
+    linkLabel: 'Why useEffect runs twice in React StrictMode',
+  },
+  {
     title: 'Debounced Search',
     scenario: 'A search input should wait for typing to pause, show loading, and never render old results after a faster later query.',
     contract: [
@@ -1398,15 +1410,15 @@ function onInput(value) {
             'You treat effects as synchronization with external systems, explain dependency-driven reruns, and treat cleanup as part of correctness—not optional polish.',
         },
         {
-          title: 'Strict Mode behavior (double-invocation / re-running effects in dev)',
+          title: 'React StrictMode: why useEffect runs twice in dev',
           why: 'People get surprised by “why did my effect run twice?” and then ship hacks instead of fixing the underlying side-effect issue.',
           prompts: [
-            'Why React may double-render / re-run effects in development',
-            'How Strict Mode helps find side effects',
-            'What kinds of bugs this pattern surfaces',
+            'Why useEffect runs twice in React StrictMode development builds',
+            'Why event handlers are not double-invoked by the render check',
+            'How cleanup prevents duplicate listeners, fetches, and subscriptions',
           ],
           good:
-            'You understand it’s a dev-time safety check meant to reveal unsafe side effects, and you don’t “fix” it with random flags unless there’s a clear, scoped reason.',
+            'You understand it is a dev-time safety check meant to reveal unsafe effects, and you fix the cleanup or ownership bug instead of hiding the signal with random flags.',
         },
         {
           title: 'Stale closures & state in callbacks',

@@ -121,7 +121,7 @@ const REACT_SHORT_ANSWER_QUESTIONS = [
   'What problem do error boundaries solve?',
   'What are React portals?',
   'What is the difference between render props and HOCs?',
-  'Why does StrictMode run some effects twice in development?',
+  'Why does useEffect run twice in React StrictMode?',
 ];
 
 const REACT_RENDERING_INTERNALS_QUESTIONS = [
@@ -153,7 +153,7 @@ const REACT_TESTING_QUESTIONS = [
   'How do you test async loading and error UI?',
   'How do mocked API tests with MSW-style boundaries work?',
   'How do you test hooks through components?',
-  'How does StrictMode affect effect tests?',
+  'How does StrictMode affect useEffect tests?',
   'What makes React tests brittle?',
 ];
 
@@ -871,6 +871,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-vs-uselayouteffect"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-strictmode-purpose"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-strictmode-double-invoke-effects"]')).toBeTruthy();
+    expect(text).toContain('Why does useEffect run twice in React StrictMode?');
+    expect(text).toContain('Fix useEffect running twice');
+    expect(text).toContain('Event handlers are not double-invoked');
     expect(fixture.nativeElement.querySelector('a[href="/react/coding/react-chat-streaming-ui"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-functional-vs-class-components"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-prevent-unnecessary-rerenders"]')).toBeTruthy();

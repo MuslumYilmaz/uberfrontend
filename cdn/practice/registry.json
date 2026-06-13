@@ -8440,19 +8440,21 @@
   {
     "id": "react-strictmode-double-invoke-effects",
     "family": "question",
-    "title": "Why does StrictMode double-invoke effects in dev? What bugs does it expose?",
+    "title": "Why does useEffect run twice in React StrictMode?",
     "route": "/react/trivia/react-strictmode-double-invoke-effects",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain StrictMode double effect invocation as a dev-only diagnostic for missing cleanup, duplicate side effects, and code that is not safe under remounts or concurrent-style replay.",
+    "summary": "React useEffect can run twice in StrictMode during development, not production, when the extra setup and cleanup cycle exposes missing cleanup.",
     "tags": [
       "react",
       "effects",
+      "strictmode",
+      "hooks",
       "best-practices"
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-06-13",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-strictmode-double-invoke-effects"
   },

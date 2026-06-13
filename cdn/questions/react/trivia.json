@@ -2455,7 +2455,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>StrictMode note (dev)</strong><br><br>In development with <code>&lt;React.StrictMode&gt;</code>, React may run an effect’s setup + cleanup twice on mount to surface unsafe side effects. This is why effects must be idempotent and clean up correctly."
+          "text": "<strong>StrictMode note (dev)</strong><br><br>In development with <code>&lt;React.StrictMode&gt;</code>, React may run an effect’s setup + cleanup twice on mount to surface unsafe side effects. This is why effects must be idempotent and clean up correctly. For the dedicated debug case, review <a href=\"/react/trivia/react-strictmode-double-invoke-effects\">useEffect cleanup in StrictMode</a>."
         },
         {
           "type": "text",
@@ -4550,7 +4550,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why this logs stale state</strong><br><br>This effect runs only once. The closure inside <code>setInterval</code> captures <code>count</code> from the <em>first render</em> (which is 0).<br><br>Even if state updates later, this callback still sees <code>count = 0</code> forever. Not a React bug. Just JavaScript closures + React render model."
+          "text": "<strong>Why this logs stale state</strong><br><br>This effect runs only once. The closure inside <code>setInterval</code> captures <code>count</code> from the <em>first render</em> (which is 0).<br><br>Even if state updates later, this callback still sees <code>count = 0</code> forever. Not a React bug. Just JavaScript closures + React render model. If the symptom is duplicate setup in development rather than stale values, jump to <a href=\"/react/trivia/react-strictmode-double-invoke-effects\">Fix useEffect running twice</a>."
         },
         {
           "type": "list",
@@ -5488,132 +5488,133 @@
   },
   {
     "id": "react-strictmode-double-invoke-effects",
-    "title": "Why does StrictMode double-invoke effects in dev? What bugs does it expose?",
+    "title": "Why does useEffect run twice in React StrictMode?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain StrictMode double effect invocation as a dev-only diagnostic for missing cleanup, duplicate side effects, and code that is not safe under remounts or concurrent-style replay.",
+    "description": "React useEffect can run twice in StrictMode during development, not production, when the extra setup and cleanup cycle exposes missing cleanup.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Debug diagnostic</strong><br><br>StrictMode double-invokes effects in development to flush out bugs that stay hidden when code assumes “this only runs once.” The practical value is finding missing cleanup, duplicate subscriptions, repeated network calls, and non-idempotent side effects before those same assumptions break under remounts, navigation churn, or concurrent-style replay."
+          "text": "<strong>Short answer</strong><br><br>React <code>useEffect</code> running twice in <code>StrictMode</code> during development, not production, is intentional. React runs an extra setup and cleanup cycle to expose missing cleanup and unsafe side effects. Event handlers are not double-invoked by this render check. If the second run creates duplicate fetches, listeners, subscriptions, timers, or analytics events, the effect likely owns that work incorrectly."
         },
         {
           "type": "text",
-          "text": "<strong>Important: this only happens in development</strong><br><br>StrictMode checks run <strong>only in dev</strong>. Production builds do not double-invoke effects. This is a <em>diagnostic tool</em>, not a performance feature."
+          "text": "<strong>Does this happen in production?</strong><br><br>No. StrictMode checks are development-only. They do not change the production build, but they reveal bugs that can still happen in production through route changes, remounts, aborted work, stale requests, or missing unsubscribe logic."
         },
         {
           "type": "text",
-          "text": "<strong>The mental model</strong><br><br>React is preparing for a future where it can <em>pause, discard, and restart renders</em> (concurrent rendering). To make sure your code is safe for that world, StrictMode asks a brutal question:<br><br><em>\"If I mount this component, tear it down, and mount it again immediately… does anything break?\"</em>"
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "function Example() {\n  useEffect(() => {\n    console.log('effect run');\n    return () => {\n      console.log('cleanup');\n    };\n  }, []);\n\n  return <div>Hello</div>;\n}\n\n// In StrictMode (dev), you'll see:\n// effect run\n// cleanup\n// effect run"
-        },
-        {
-          "type": "text",
-          "text": "<strong>What exactly gets double-invoked?</strong><br><br>In React 18 StrictMode (dev):<br>• Component render functions<br>• useEffect / useLayoutEffect setup + cleanup<br>• Certain initializers<br><br>React mounts, cleans up, and mounts again immediately."
+          "text": "<strong>The mental model</strong><br><br>React is asking: <em>\"If I set up this effect, clean it up, and set it up again, does anything leak or duplicate?\"</em> A correct effect treats cleanup as part of the contract, not as optional polish."
         },
         {
           "type": "list",
           "columns": [
-            "What React is testing",
-            "Bad pattern",
-            "Bug it exposes"
+            "Surface",
+            "StrictMode behavior",
+            "What it catches"
           ],
           "rows": [
             [
-              "Missing cleanup",
-              "Subscribing but never unsubscribing",
-              "Memory leaks, duplicate listeners"
+              "Component function body",
+              "Can run an extra time in development",
+              "Impure render logic, prop mutation, global mutation"
             ],
             [
-              "Non-idempotent side effects",
-              "Sending analytics / POST request on mount",
-              "Duplicate network calls or double charges"
+              "Effect setup and cleanup",
+              "Runs setup, cleanup, then setup again in development",
+              "Missing cleanup, duplicate listeners, duplicate requests"
             ],
             [
-              "Mutating external state",
-              "Pushing into global arrays, singletons",
-              "Duplicated or corrupted global state"
+              "Ref callbacks",
+              "Can re-run in development",
+              "Missing ref cleanup"
             ],
             [
-              "Assuming effects run only once",
-              "“This runs once on mount” logic",
-              "Breaks under remounts / transitions"
+              "Event handlers",
+              "Not double-invoked by the render check",
+              "Click or submit work should stay in the event path"
+            ],
+            [
+              "Production build",
+              "No extra StrictMode diagnostic cycle",
+              "Production behavior is not duplicated by StrictMode"
             ]
           ],
-          "caption": "The kinds of bugs StrictMode is hunting"
+          "caption": "What runs twice and what does not"
         },
         {
           "type": "text",
-          "text": "<strong>Classic bug example: missing cleanup</strong>"
+          "text": "<strong>Root StrictMode vs subtree StrictMode</strong><br><br>When <code>StrictMode</code> wraps the root, React can run the initial extra effect setup and cleanup cycle. When <code>StrictMode</code> only wraps a subtree, React only enables checks that can happen in production; it does not create an impossible parent/child effect ordering just to double-fire child effects."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Does StrictMode double invoke event handlers?</strong><br><br>No. StrictMode event handlers are not double-invoked by the render check. StrictMode can double-call render-phase logic that should be pure, but it does not call your click, submit, or keyboard handlers twice as part of that check. If a side effect belongs to a user action, keep it in the event handler instead of moving it into an effect just to run after render."
+        },
+        {
+          "type": "text",
+          "text": "<strong>How to fix useEffect running twice: missing cleanup</strong>"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  // ❌ No cleanup\n}, []);\n\n// In StrictMode dev, this registers the listener twice 😬"
+          "code": "// Bad: the listener survives the first dev setup cycle\nuseEffect(() => {\n  window.addEventListener('resize', onResize);\n}, []);\n\n// Good: cleanup makes setup -> cleanup -> setup safe\nuseEffect(() => {\n  window.addEventListener('resize', onResize);\n  return () => window.removeEventListener('resize', onResize);\n}, []);"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Symptom",
+            "Likely root cause",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Duplicate resize, socket, or store callbacks",
+              "Effect subscribes but never unsubscribes",
+              "Return cleanup that removes the listener or subscription"
+            ],
+            [
+              "Duplicate fetches in development",
+              "Request starts in an effect without abort or stale-result handling",
+              "Use <code>AbortController</code>, ignore stale results, or move fetching to the route/data layer"
+            ],
+            [
+              "Duplicate analytics pageviews",
+              "Permanent tracking work is owned by component mount",
+              "Move tracking to a router boundary, make it idempotent, or dedupe in analytics"
+            ],
+            [
+              "Render changes data twice",
+              "Component body mutates props or external state",
+              "Keep render pure; clone before changing data"
+            ]
+          ],
+          "caption": "How to fix useEffect running twice"
         },
         {
           "type": "text",
-          "text": "Correct version:"
+          "text": "<strong>Why fetch or API calls run twice in StrictMode</strong><br><br>If a fetch or API call starts inside an effect, React StrictMode may start it during the first development setup cycle, clean up, and then start it again. That is why searches like <em>useEffect fetch called twice StrictMode</em> and <em>React StrictMode duplicate API calls</em> usually point back to request ownership. Abort the old request, ignore stale results, or move fetching to a route/data layer when component mount is not the right owner."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  return () => {\n    window.removeEventListener('resize', onResize);\n  };\n}, []);\n\n// ✅ Safe under mount → unmount → mount"
+          "code": "// Cleanup-safe request ownership\nuseEffect(() => {\n  const controller = new AbortController();\n\n  fetch(`/api/profile/${userId}`, { signal: controller.signal })\n    .then((response) => response.json())\n    .then((profile) => {\n      if (!controller.signal.aborted) setProfile(profile);\n    })\n    .catch((error) => {\n      if (controller.signal.aborted) return;\n      setError(error);\n    });\n\n  return () => controller.abort();\n}, [userId]);"
         },
         {
           "type": "text",
-          "text": "<strong>Another classic: non-idempotent side effects</strong>"
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "useEffect(() => {\n  analytics.track('page_view'); // ❌ will fire twice in dev StrictMode\n}, []);"
+          "text": "<strong>Should you disable StrictMode?</strong><br><br>Usually no. Disabling StrictMode hides the signal instead of fixing the ownership bug. It can be acceptable as a temporary migration step around legacy code, but the durable fix is to make effects cleanup-safe, idempotent, and owned by the right component or route boundary."
         },
         {
           "type": "text",
-          "text": "Better patterns:<br><br>• Move it to a router-level boundary<br>• Or make it idempotent<br>• Or dedupe on the analytics side"
+          "text": "<strong>What about Next.js useEffect runs twice?</strong><br><br>Next.js apps commonly enable React StrictMode during development, so <em>Next.js useEffect runs twice</em> usually has the same root cause: the effect is being stress-tested, not duplicated in production. Do not make this a Next.js-only diagnosis unless the bug depends on routing, server/client boundaries, or framework data fetching."
         },
         {
           "type": "text",
-          "text": "<strong>Worked fetch example: duplicate request vs cleanup-safe request</strong><br><br>The common complaint is “StrictMode fetched twice.” The real question is whether the effect is safe when React remounts the component or the user changes routes quickly."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "// ❌ Duplicate fetch and late stale response can win after remount/navigation\nuseEffect(() => {\n  fetch(`/api/profile/${userId}`)\n    .then((r) => r.json())\n    .then(setUser);\n}, [userId]);\n\n// ✅ Abort the old request when StrictMode remounts or the route changes\nuseEffect(() => {\n  const controller = new AbortController();\n\n  fetch(`/api/profile/${userId}`, { signal: controller.signal })\n    .then((r) => r.json())\n    .then((data) => {\n      if (!controller.signal.aborted) setUser(data);\n    })\n    .catch((error) => {\n      if (controller.signal.aborted) return;\n      setError(error);\n    });\n\n  return () => controller.abort();\n}, [userId]);"
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"In development, React StrictMode can run an extra effect setup and cleanup cycle. That is why useEffect may appear to run twice. It is not a production duplicate; it is a diagnostic that exposes missing cleanup, unsafe subscriptions, stale requests, and side effects that should be idempotent or owned somewhere else.\"</em>"
         },
         {
           "type": "text",
-          "text": "<strong>Why the route-switch scenario matters</strong><br><br>Dev-only replay maps to real user behavior. A user can open a profile, navigate away immediately, and come back. If your effect leaks subscriptions or lets an old request commit after unmount, that is a production bug even though StrictMode is what exposed it first."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Extra render checks vs extra effect re-runs</strong><br><br>StrictMode stresses more than one surface. Extra render calls catch impure render logic. Extra effect setup/cleanup cycles catch missing cleanup and non-idempotent side effects. Keep those two diagnostics separate when debugging double logs."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why React does this (the real reason)</strong><br><br>Concurrent React may mount, pause, throw away, and restart trees. If your effects are not resilient to being started and stopped multiple times, you’ll get production-only bugs. StrictMode forces you to see them early."
-        },
-        {
-          "type": "text",
-          "text": "<strong>What this is NOT</strong><br><br>• Not a bug<br>• Not React being slow<br>• Not something to “work around”<br><br>It’s a correctness check."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Rule of thumb</strong><br><br>Write effects as if React can run them, clean them up, and run them again at any time. If that is safe, your code is future-proof."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"StrictMode double-invokes effects in dev to simulate mount–unmount–remount and catch unsafe side effects. It exposes missing cleanups, non-idempotent logic, and code that assumes effects run only once. This is to prepare apps for concurrent rendering and only runs in development.\"</em>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><br>StrictMode intentionally double-invokes effects in development to detect unsafe side effects and missing cleanup. It helps catch memory leaks, duplicated subscriptions, non-idempotent logic, and code that assumes a single mount. This behavior is dev-only and exists to make apps safe for concurrent rendering."
+          "text": "<strong>Summary</strong><br><br><code>useEffect</code> can run twice in React StrictMode because development StrictMode intentionally re-runs effect setup and cleanup to reveal bugs. Event handlers are not double-invoked by this check, and production does not run the extra cycle. Fix the underlying effect by adding cleanup, aborting stale requests, deduping permanent side effects, or moving user-triggered work into event handlers."
         }
       ]
     },
@@ -5622,16 +5623,18 @@
     "tags": [
       "react",
       "effects",
+      "strictmode",
+      "hooks",
       "best-practices"
     ],
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-06-13",
     "seo": {
-      "title": "React StrictMode double effects: cleanup bugs, duplicate side effects, and dev-only diagnostics",
-      "description": "StrictMode replays effects in development to expose missing cleanup, non-idempotent side effects, and production bugs hiding behind “runs once” assumptions."
+      "title": "React useEffect Running Twice in StrictMode?",
+      "description": "React useEffect runs twice in StrictMode during development, not production. Learn why, whether event handlers run twice, and how to fix duplicate fetches."
     },
     "incidentCard": {
-      "title": "StrictMode Cleanup Root Cause Check",
-      "scenario": "In development with StrictMode, a resize listener seems to fire twice after navigating back and forth. The component adds the listener in useEffect but forgets cleanup. What is the most likely root cause?",
+      "title": "useEffect Runs Twice Root Cause Check",
+      "scenario": "In development with React StrictMode, a resize listener appears to fire twice after mount. The component adds the listener in useEffect but forgets cleanup. What is the most likely root cause?",
       "options": [
         {
           "id": "strictmode-prod-duplicate-bug",
@@ -5647,7 +5650,7 @@
         }
       ],
       "correctOptionId": "missing-effect-cleanup",
-      "rereadPrompt": "Close. Re-read StrictMode behavior: dev-only remount checks expose non-idempotent effects and missing cleanup logic."
+      "rereadPrompt": "Close. Re-read StrictMode behavior: the dev-only extra setup and cleanup cycle exposes missing cleanup and non-idempotent effects."
     }
   },
   {
