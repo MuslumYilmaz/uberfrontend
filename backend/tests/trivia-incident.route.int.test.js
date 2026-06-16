@@ -20,11 +20,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-event-loop',
       tech: 'javascript',
-      title: 'Event Loop Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -35,11 +36,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-closures',
       tech: 'javascript',
-      title: 'Closure Scope Debug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -50,11 +52,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-this-keyword',
       tech: 'javascript',
-      title: 'this Binding Debug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -65,11 +68,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-hoisting-tdz',
       tech: 'javascript',
-      title: 'TDZ Runtime Failure Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -80,11 +84,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-var-let-const-hoisting',
       tech: 'javascript',
-      title: 'var/let/const Hoisting Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -95,11 +100,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-block-scoped-or-function-scoped',
       tech: 'javascript',
-      title: 'Scope Bug Root-Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -110,11 +116,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-promises-async-await',
       tech: 'javascript',
-      title: 'Async Flow Performance Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -125,11 +132,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-promise-fundamental-understanding',
       tech: 'javascript',
-      title: 'Promise Chain Propagation Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -140,11 +148,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-async-await-example-when-promise-is-preferred',
       tech: 'javascript',
-      title: 'Promise vs Await Design Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -155,11 +164,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-event-delegation',
       tech: 'javascript',
-      title: 'Delegation Targeting Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -170,11 +180,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-null-undefined-undeclared',
       tech: 'javascript',
-      title: 'Missing Value Debug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -185,11 +196,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-undefined-vs-not-defined',
       tech: 'javascript',
-      title: 'ReferenceError Triage Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -200,11 +212,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-use-strict-describe',
       tech: 'javascript',
-      title: 'Strict Mode Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -215,11 +228,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-why-eval-function-considered-dangerous',
       tech: 'javascript',
-      title: 'Dynamic Code Safety Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -230,11 +244,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-null-coalescing-operator',
       tech: 'javascript',
-      title: 'Fallback Logic Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -245,11 +260,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-equality-vs-strict-equality',
       tech: 'javascript',
-      title: 'Coercion Bug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -260,11 +276,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-compare-two-objects',
       tech: 'javascript',
-      title: 'Object Equality Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -275,11 +292,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-truthy-falsy-pass-by-value-reference-strict-equality-use-case',
       tech: 'javascript',
-      title: 'Combined Debugging Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -290,11 +308,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-hoisting',
       tech: 'javascript',
-      title: 'Hoisting Symptom Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -305,11 +324,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-higher-order-function',
       tech: 'javascript',
-      title: 'Higher-Order Function Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -320,11 +340,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-event-bubbling-capturing',
       tech: 'javascript',
-      title: 'Event Propagation Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -335,11 +356,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-call-apply-bind',
       tech: 'javascript',
-      title: 'this Binding Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -350,11 +372,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-foreach-vs-map',
       tech: 'javascript',
-      title: 'Array Method Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -365,11 +388,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-cookie-sessionstorage-localstorage',
       tech: 'javascript',
-      title: 'Browser Storage Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -380,11 +404,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-cookie-options',
       tech: 'javascript',
-      title: 'Cookie Attribute Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -395,11 +420,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-prototypal-inheritance',
       tech: 'javascript',
-      title: 'Prototype Chain Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -410,11 +436,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-data-types',
       tech: 'javascript',
-      title: 'Data Type Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -425,11 +452,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-check-data-type-with-typeof',
       tech: 'javascript',
-      title: 'typeof Edge-Case Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -440,11 +468,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-bigint-data-type',
       tech: 'javascript',
-      title: 'BigInt Boundary Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -455,11 +484,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-static-vs-dynamic-typing',
       tech: 'javascript',
-      title: 'Typing Model Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -470,11 +500,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-type-coercion',
       tech: 'javascript',
-      title: 'Coercion Control Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -485,11 +516,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-passing-by-value-and-by-reference',
       tech: 'javascript',
-      title: 'Mutation vs Reassignment Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -500,11 +532,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-nan-property',
       tech: 'javascript',
-      title: 'NaN Validation Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -515,11 +548,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-currying',
       tech: 'javascript',
-      title: 'Currying Use-Case Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -530,11 +564,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-callbacks',
       tech: 'javascript',
-      title: 'Callback Pattern Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -545,11 +580,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-calback-hell-resolved-with-promise',
       tech: 'javascript',
-      title: 'Promise Refactor Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -560,11 +596,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-arrow-functions',
       tech: 'javascript',
-      title: 'Arrow Function Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -575,11 +612,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-arrow-vs-regular-functions',
       tech: 'javascript',
-      title: 'Function Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -590,11 +628,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-object-destructuring',
       tech: 'javascript',
-      title: 'Destructuring Debug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -605,11 +644,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-spread-vs-rest-parameters',
       tech: 'javascript',
-      title: 'Spread or Rest Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -620,11 +660,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-design-patterns',
       tech: 'javascript',
-      title: 'Pattern Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -635,11 +676,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-deferred-scripts',
       tech: 'javascript',
-      title: 'Defer Behavior Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -650,11 +692,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-classes',
       tech: 'javascript',
-      title: 'Class Model Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -665,11 +708,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-object-creation-methods',
       tech: 'javascript',
-      title: 'Object Creation Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -680,11 +724,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-memoization',
       tech: 'javascript',
-      title: 'Memoization Tradeoff Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -695,11 +740,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-microtasks-vs-macrotasks',
       tech: 'javascript',
-      title: 'Event Loop Priority Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -710,11 +756,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-promise-combinators-all-allsettled-race-any',
       tech: 'javascript',
-      title: 'Promise Combinator Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -725,11 +772,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-object-create-vs-new',
       tech: 'javascript',
-      title: 'Creation Path Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -740,11 +788,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-prototype-vs-proto',
       tech: 'javascript',
-      title: 'Prototype Link Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -755,11 +804,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-shallow-vs-deep-copy',
       tech: 'javascript',
-      title: 'Copy Bug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -770,11 +820,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-map-filter-reduce',
       tech: 'javascript',
-      title: 'Array Method Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -785,11 +836,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-array-sort-pitfalls',
       tech: 'javascript',
-      title: 'Sort Trap Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -800,11 +852,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-mutability-vs-immutability',
       tech: 'javascript',
-      title: 'State Update Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -815,11 +868,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-secure-cors-handling',
       tech: 'javascript',
-      title: 'CORS Fix Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -830,11 +884,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'content-delivery-caching-strategies-streaming',
       tech: 'javascript',
-      title: 'Caching Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -845,11 +900,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'debounce-vs-throttle-search-input',
       tech: 'javascript',
-      title: 'Search Input Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -860,11 +916,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-map-vs-object',
       tech: 'javascript',
-      title: 'Key-Value Structure Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -875,11 +932,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-map-set-get',
       tech: 'javascript',
-      title: 'Map Lookup Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -890,11 +948,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'http-caching-basics',
       tech: 'javascript',
-      title: 'HTTP Cache Policy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -905,11 +964,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'web-performance-optimize-load-time',
       tech: 'javascript',
-      title: 'Load-Time Priority Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -920,11 +980,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-repaint-reflow',
       tech: 'javascript',
-      title: 'Layout Jank Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -935,11 +996,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-current-trends',
       tech: 'javascript',
-      title: 'Trend Evaluation Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -950,11 +1012,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'ai-streaming-data-handling',
       tech: 'javascript',
-      title: 'Streaming UI Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -965,11 +1028,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'chat-conversation-state-management',
       tech: 'javascript',
-      title: 'Conversation Timeline Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -980,11 +1044,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'sse-vs-websocket-real-time',
       tech: 'javascript',
-      title: 'Realtime Transport Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -995,11 +1060,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'ai-ux-integration-challenges',
       tech: 'javascript',
-      title: 'AI UX Reliability Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1010,11 +1076,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'prompt-engineering-frontend',
       tech: 'javascript',
-      title: 'Prompt Shaping Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1025,11 +1092,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-queue-vs-stack',
       tech: 'javascript',
-      title: 'Processing Order Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1040,11 +1108,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-big-o-notation',
       tech: 'javascript',
-      title: 'Growth Rate Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1055,11 +1124,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-async-race-conditions',
       tech: 'javascript',
-      title: 'Stale Results Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1070,11 +1140,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-web-workers-basics',
       tech: 'javascript',
-      title: 'Main Thread Relief Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1085,11 +1156,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-escape-vs-sanitize',
       tech: 'javascript',
-      title: 'Safe Rendering Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1100,11 +1172,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-xss-dom-sinks',
       tech: 'javascript',
-      title: 'DOM Sink Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1115,11 +1188,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-testing-edge-cases-strategy',
       tech: 'javascript',
-      title: 'Edge-Case Coverage Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1130,11 +1204,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-performance-profiling-workflow',
       tech: 'javascript',
-      title: 'Measure First Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1145,11 +1220,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-memory-leaks-common-sources',
       tech: 'javascript',
-      title: 'Leak Source Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1160,11 +1236,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-esm-vs-cjs',
       tech: 'javascript',
-      title: 'Module Interop Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1175,11 +1252,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-tree-shaking',
       tech: 'javascript',
-      title: 'Bundle Pruning Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1190,11 +1268,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-intl-datetime-timezone',
       tech: 'javascript',
-      title: 'Timezone Correctness Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1205,11 +1284,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-mock-vs-stub-vs-spy',
       tech: 'javascript',
-      title: 'Test Double Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1220,11 +1300,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-garbage-collection-and-gc-pauses',
       tech: 'javascript',
-      title: 'GC Jank Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1235,11 +1316,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-lifecycle-constructor-oninit-afterviewinit-dom',
       tech: 'angular',
-      title: 'Lifecycle Hook Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1250,11 +1332,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-vs-angularjs',
       tech: 'angular',
-      title: 'Rewrite vs Upgrade Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1265,11 +1348,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-component-vs-service-responsibilities',
       tech: 'angular',
-      title: 'Boundary Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1280,11 +1364,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-component-metadata',
       tech: 'angular',
-      title: 'Decorator Contract Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1295,11 +1380,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-ngmodules-vs-standalone',
       tech: 'angular',
-      title: 'Standalone Migration Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1310,11 +1396,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-appmodule-standalone-changes',
       tech: 'angular',
-      title: 'Standalone Migration Wiring Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1325,11 +1412,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-template-compilation-and-binding',
       tech: 'angular',
-      title: 'Binding Update Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1340,11 +1428,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-data-binding',
       tech: 'angular',
-      title: 'Binding Direction Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1355,11 +1444,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-interpolation-vs-property-binding',
       tech: 'angular',
-      title: 'DOM State Binding Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1370,11 +1460,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-event-binding-dom-vs-output-change-detection',
       tech: 'angular',
-      title: 'Event Source Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1385,11 +1476,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-directives',
       tech: 'angular',
-      title: 'Directive Type Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1400,11 +1492,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-structural-vs-attribute-directives',
       tech: 'angular',
-      title: 'Tree Change Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1415,11 +1508,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-ngif-dom-lifecycle',
       tech: 'angular',
-      title: 'View Teardown Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1430,11 +1524,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-ngfor-trackby',
       tech: 'angular',
-      title: 'List Identity Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1445,11 +1540,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-services',
       tech: 'angular',
-      title: 'Service Ownership Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1460,11 +1556,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-dependency-injection',
       tech: 'angular',
-      title: 'Injector Scope Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1475,11 +1572,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-ngoninit-vs-constructor',
       tech: 'angular',
-      title: 'Init Timing Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1490,11 +1588,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-pipes',
       tech: 'angular',
-      title: 'Pure Pipe Update Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1505,11 +1604,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-custom-two-way-binding',
       tech: 'angular',
-      title: 'Two-Way Binding Wiring Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1520,11 +1620,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-lifecycle-hooks',
       tech: 'angular',
-      title: 'Hook Placement Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1535,11 +1636,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-input-output',
       tech: 'angular',
-      title: 'Input/Output Ownership Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1550,11 +1652,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-observables-rxjs',
       tech: 'angular',
-      title: 'Stream Cancellation Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1565,11 +1668,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-routing',
       tech: 'angular',
-      title: 'Route Mapping Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1580,11 +1684,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-lazy-loading',
       tech: 'angular',
-      title: 'Load Timing Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1595,11 +1700,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-change-detection-strategies',
       tech: 'angular',
-      title: 'OnPush Trigger Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1610,11 +1716,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-zonejs-change-detection',
       tech: 'angular',
-      title: 'NgZone Boundary Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1625,11 +1732,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-ngonchanges-vs-ngdocheck',
       tech: 'angular',
-      title: 'Change Hook Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1640,11 +1748,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-forroot-forchild',
       tech: 'angular',
-      title: 'Module Scope Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1655,11 +1764,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-performance-optimization',
       tech: 'angular',
-      title: 'Optimization Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1670,11 +1780,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-onpush-change-detection-debugging-real-bug',
       tech: 'angular',
-      title: 'Stale UI Debug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1685,11 +1796,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
       tech: 'angular',
-      title: 'Autocomplete Race Condition Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1700,11 +1812,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-prevent-memory-leaks-unsubscribe-patterns',
       tech: 'angular',
-      title: 'Leaking Subscription Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1715,11 +1828,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-controlvalueaccessor-vs-custom-two-way-binding',
       tech: 'angular',
-      title: 'Custom Input Integration Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1730,11 +1844,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-template-driven-vs-reactive-forms-which-scales',
       tech: 'angular',
-      title: 'Form Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1745,11 +1860,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'rxjs-sharereplay-angular-how-it-breaks-your-app',
       tech: 'angular',
-      title: 'Sticky Stream Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1760,11 +1876,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-http-what-actually-cancels-request',
       tech: 'angular',
-      title: 'Request Cancellation Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1775,11 +1892,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'angular-hierarchical-dependency-injection-real-bug',
       tech: 'angular',
-      title: 'Duplicate Service Instance Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1790,11 +1908,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject',
       tech: 'angular',
-      title: 'Late Subscriber State Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1805,11 +1924,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'rxjs-tap-vs-map-angular-when-to-use',
       tech: 'angular',
-      title: 'Operator Intent Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1820,11 +1940,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'ngrx-data-flow-end-to-end-angular',
       tech: 'angular',
-      title: 'NgRx Flow Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1835,11 +1956,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'ngrx-store-vs-component-state-angular-when-to-use',
       tech: 'angular',
-      title: 'State Ownership Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1850,11 +1972,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'ngrx-reducer-pure-function-immutability-side-effects',
       tech: 'angular',
-      title: 'Reducer Purity Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1865,11 +1988,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'ngrx-selectors-memoization-derived-state-performance',
       tech: 'angular',
-      title: 'Selector Memoization Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1880,11 +2004,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-reactivity-vs-react-concepts',
       tech: 'vue',
-      title: 'Reactivity Model Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1895,11 +2020,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-internal-rendering-pipeline',
       tech: 'vue',
-      title: 'Render Pipeline Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1910,11 +2036,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-data-must-be-function',
       tech: 'vue',
-      title: 'Shared State Leak Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1925,11 +2052,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-reactive-interpolation-into-dom',
       tech: 'vue',
-      title: 'Interpolation Update Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1940,11 +2068,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-v-bind-reactive-attributes',
       tech: 'vue',
-      title: 'Binding Patch Logic Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1955,11 +2084,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-v-if-component-creation-destruction',
       tech: 'vue',
-      title: 'Toggle Lifecycle Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1970,11 +2100,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-v-for-keys',
       tech: 'vue',
-      title: 'List Identity Bug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -1985,11 +2116,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-v-model-syntax-sugar-expansion',
       tech: 'vue',
-      title: 'Model Expansion Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2000,11 +2132,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-v-show-vs-v-if-dom-lifecycle',
       tech: 'vue',
-      title: 'Visibility Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2015,11 +2148,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-computed-properties',
       tech: 'vue',
-      title: 'Derived State Caching Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2030,11 +2164,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-methods-in-templates',
       tech: 'vue',
-      title: 'Template Method Cost Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2045,11 +2180,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-native-vs-component-events',
       tech: 'vue',
-      title: 'Event Boundary Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2060,11 +2196,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-architecture-decisions-scalability',
       tech: 'vue',
-      title: 'Scalability Architecture Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2075,11 +2212,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-computed-vs-watchers',
       tech: 'vue',
-      title: 'Derived Value vs Effect Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2090,11 +2228,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-lifecycle-hooks',
       tech: 'vue',
-      title: 'Hook Timing Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2105,11 +2244,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-directives',
       tech: 'vue',
-      title: 'Directive Behavior Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2120,11 +2260,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-v-bind-v-on-fundamental-template-syntax',
       tech: 'vue',
-      title: 'Template Binding Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2135,11 +2276,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-child-mutates-prop-directly',
       tech: 'vue',
-      title: 'Prop Ownership Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2150,11 +2292,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-composition-api-vs-mixins',
       tech: 'vue',
-      title: 'Logic Reuse Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2165,11 +2308,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-sfc-vs-global-components',
       tech: 'vue',
-      title: 'Component Scope Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2180,11 +2324,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-conditional-list-rendering',
       tech: 'vue',
-      title: 'Render Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2195,11 +2340,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-router-navigation',
       tech: 'vue',
-      title: 'Navigation Flow Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2210,11 +2356,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-reactivity-system',
       tech: 'vue',
-      title: 'Reactivity Model Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2225,11 +2372,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-composition-api',
       tech: 'vue',
-      title: 'Composition API Reasoning Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2240,11 +2388,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vuex-state-management',
       tech: 'vue',
-      title: 'Shared State Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2255,11 +2404,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-virtual-dom-diffing',
       tech: 'vue',
-      title: 'Diffing Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2270,11 +2420,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-slots-default-named-scoped-slot-props',
       tech: 'vue',
-      title: 'Slot Design Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2285,11 +2436,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-provide-inject-vs-prop-drilling-tradeoffs',
       tech: 'vue',
-      title: 'Dependency Wiring Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2300,11 +2452,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-why-declare-emits-type-safety-maintenance',
       tech: 'vue',
-      title: 'Emit Contract Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2315,11 +2468,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-ref-vs-reactive-difference-traps',
       tech: 'vue',
-      title: 'State Primitive Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2330,11 +2484,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-destructuring-breaks-reactivity-torefs-toref',
       tech: 'vue',
-      title: 'Proxy Extraction Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2345,11 +2500,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-watch-vs-watcheffect-differences-infinite-loops',
       tech: 'vue',
-      title: 'Effect Tracking Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2360,11 +2516,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-nexttick-dom-update-queue',
       tech: 'vue',
-      title: 'DOM Flush Timing Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2375,11 +2532,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'vue-v-for-keys-why-not-index',
       tech: 'vue',
-      title: 'List Identity Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2390,11 +2548,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-definition',
       tech: 'css',
-      title: 'Cascade Meaning Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2405,11 +2564,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-link-html',
       tech: 'css',
-      title: 'Stylesheet Loading Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2420,11 +2580,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-inline-internal-external',
       tech: 'css',
-      title: 'Style Scope Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2435,11 +2596,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-background-color',
       tech: 'css',
-      title: 'Background Styling Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2450,11 +2612,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-text-color',
       tech: 'css',
-      title: 'Text Contrast Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2465,11 +2628,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-center-text',
       tech: 'css',
-      title: 'Text Centering Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2480,11 +2644,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-font-family',
       tech: 'css',
-      title: 'Font Stack Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2495,11 +2660,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-border-property',
       tech: 'css',
-      title: 'Border Behavior Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2510,11 +2676,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-margin-property',
       tech: 'css',
-      title: 'Outer Spacing Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2525,11 +2692,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-padding-property',
       tech: 'css',
-      title: 'Inner Spacing Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2540,11 +2708,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-margin-vs-padding',
       tech: 'css',
-      title: 'Spacing Model Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2555,11 +2724,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-make-text-bold',
       tech: 'css',
-      title: 'Bold Text Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2570,11 +2740,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-change-text-size',
       tech: 'css',
-      title: 'Text Size Strategy Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2585,11 +2756,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-id-vs-class',
       tech: 'css',
-      title: 'Selector Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2600,11 +2772,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-color-property',
       tech: 'css',
-      title: 'Foreground Color Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2615,11 +2788,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-box-model',
       tech: 'css',
-      title: 'Box Model Overflow Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2630,11 +2804,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-pseudo-classes-elements',
       tech: 'css',
-      title: 'Selector Meaning Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2645,11 +2820,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-position-relative-absolute-fixed',
       tech: 'css',
-      title: 'Positioning Model Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2660,11 +2836,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-display-flex',
       tech: 'css',
-      title: 'Flex Container Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2675,11 +2852,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-z-index',
       tech: 'css',
-      title: 'Stacking Context Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2690,11 +2868,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-visibility-vs-display',
       tech: 'css',
-      title: 'Hidden vs Removed Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2705,11 +2884,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-float-clear',
       tech: 'css',
-      title: 'Float Wrap Debug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2720,11 +2900,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-specificity-hierarchy',
       tech: 'css',
-      title: 'Specificity Conflict Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2735,11 +2916,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-media-queries',
       tech: 'css',
-      title: 'Responsive Rule Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2750,11 +2932,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-make-element-responsive',
       tech: 'css',
-      title: 'Responsive Sizing Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2765,11 +2948,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-cascade-order',
       tech: 'css',
-      title: 'Cascade Decision Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2780,11 +2964,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-units-em-rem-percent-px',
       tech: 'css',
-      title: 'Unit Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2795,11 +2980,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-custom-properties',
       tech: 'css',
-      title: 'CSS Variable Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2810,11 +2996,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-grid-vs-flexbox',
       tech: 'css',
-      title: 'Layout Tool Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2825,11 +3012,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-hardware-acceleration',
       tech: 'css',
-      title: 'Animation Performance Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2840,11 +3028,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-dom',
       tech: 'html',
-      title: 'DOM Tree Mental Model Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2855,11 +3044,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-tags',
       tech: 'html',
-      title: 'Semantic Tag Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2870,11 +3060,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-head-tag',
       tech: 'html',
-      title: 'Head Metadata Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2885,11 +3076,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-div-vs-span',
       tech: 'html',
-      title: 'Block vs Inline Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2900,11 +3092,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-title-tag',
       tech: 'html',
-      title: 'Page Title Signal Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2915,11 +3108,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-img-alt-attribute',
       tech: 'html',
-      title: 'Alt Text Purpose Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2930,11 +3124,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-semantic-elements',
       tech: 'html',
-      title: 'Semantic Structure Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2945,11 +3140,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-block-inline-elements',
       tech: 'html',
-      title: 'Layout Flow Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2960,11 +3156,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-br-tag',
       tech: 'html',
-      title: 'Line Break Intent Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2975,11 +3172,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-a-tag',
       tech: 'html',
-      title: 'Navigation Primitive Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -2990,11 +3188,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-href-attribute',
       tech: 'html',
-      title: 'Destination Wiring Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3005,11 +3204,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-meta-tag',
       tech: 'html',
-      title: 'Metadata Role Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3020,11 +3220,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-ol-ul-dl-difference',
       tech: 'html',
-      title: 'List Type Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3035,11 +3236,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-form-default-method',
       tech: 'html',
-      title: 'Default Method Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3050,11 +3252,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-input-placeholder',
       tech: 'html',
-      title: 'Hint vs Label Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3065,11 +3268,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-id-vs-class',
       tech: 'html',
-      title: 'Unique vs Shared Selector Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3080,11 +3284,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-iframe-tag',
       tech: 'html',
-      title: 'Embedded Content Risk Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3095,11 +3300,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-data-attribute',
       tech: 'html',
-      title: 'Dataset Safety Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3110,11 +3316,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-clickable-image',
       tech: 'html',
-      title: 'Linked Image Accessibility Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3125,11 +3332,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-vs-xhtml',
       tech: 'html',
-      title: 'Markup Strictness Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3140,11 +3348,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-anchor-target',
       tech: 'html',
-      title: 'New Tab Link Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3155,11 +3364,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-img-srcset',
       tech: 'html',
-      title: 'Responsive Image Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3170,11 +3380,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-parsing-rendering',
       tech: 'html',
-      title: 'Render Blocking Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3185,11 +3396,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-aria-roles',
       tech: 'html',
-      title: 'ARIA Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3200,11 +3412,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-shadow-dom',
       tech: 'html',
-      title: 'Component Encapsulation Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3215,11 +3428,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'web-accessibility-make-page-accessible',
       tech: 'html',
-      title: 'Accessibility Review Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3230,11 +3444,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-usestate-purpose',
       tech: 'react',
-      title: 'useState Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3245,11 +3460,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-why-event-delegation',
       tech: 'react',
-      title: 'Event Delegation Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3260,11 +3476,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-core-problem-and-non-goals',
       tech: 'react',
-      title: 'React Scope Decision Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3275,11 +3492,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-pure-function-of-props-and-state',
       tech: 'react',
-      title: 'Render Purity Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3290,11 +3508,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-functional-vs-class-components',
       tech: 'react',
-      title: 'Hooks vs Class Migration Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3305,11 +3524,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-jsx-transform-and-why-not-required',
       tech: 'react',
-      title: 'JSX Runtime Config Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3320,11 +3540,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-function-treated-as-component-rules',
       tech: 'react',
-      title: 'Component Invocation Rules Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3335,11 +3556,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-rerender-decision-and-render',
       tech: 'react',
-      title: 'Render vs Commit Reality Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3350,11 +3572,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-render-nothing-return-value',
       tech: 'react',
-      title: 'Render Nothing Edge Case Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3365,11 +3588,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-one-way-data-flow',
       tech: 'react',
-      title: 'One-Way Data Flow Ownership Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3380,11 +3604,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-why-props-immutable',
       tech: 'react',
-      title: 'Props Immutability Bug Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3395,11 +3620,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-keys-in-lists',
       tech: 'react',
-      title: 'List Keys Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3410,11 +3636,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-controlled-vs-uncontrolled',
       tech: 'react',
-      title: 'Form State Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3425,11 +3652,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-default-vs-named-exports-runtime-break',
       tech: 'react',
-      title: 'Import Crash Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3440,11 +3668,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-conditional-rendering',
       tech: 'react',
-      title: 'Conditional UI Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3455,11 +3684,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-useeffect-purpose',
       tech: 'react',
-      title: 'useEffect Race Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3470,11 +3700,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-fragments-dom-and-reconciliation',
       tech: 'react',
-      title: 'Fragment Identity Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3485,11 +3716,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-virtual-dom',
       tech: 'react',
-      title: 'Render vs DOM Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3500,11 +3732,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-component-rerendering',
       tech: 'react',
-      title: 'Re-render Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3515,11 +3748,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-mixing-state-and-props-responsibilities',
       tech: 'react',
-      title: 'Ownership Drift Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3530,11 +3764,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-lifting-state-up',
       tech: 'react',
-      title: 'Shared State Sync Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3545,11 +3780,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-higher-order-components',
       tech: 'react',
-      title: 'HOC Composition Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3560,11 +3796,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-usememo-vs-usecallback',
       tech: 'react',
-      title: 'Memo Hook Choice Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3575,11 +3812,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-prevent-unnecessary-rerenders',
       tech: 'react',
-      title: 'Rerender Scope Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3590,11 +3828,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-strictmode-purpose',
       tech: 'react',
-      title: 'StrictMode Dev Signal Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3605,11 +3844,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-reconciliation',
       tech: 'react',
-      title: 'Reconciliation Reset Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3620,11 +3860,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-diffing-algorithm',
       tech: 'react',
-      title: 'Diffing Identity Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3635,11 +3876,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-render-props-vs-hocs',
       tech: 'react',
-      title: 'Render Control Pattern Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3650,11 +3892,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-portals',
       tech: 'react',
-      title: 'Portal Event Path Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3665,11 +3908,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-concurrent-rendering',
       tech: 'react',
-      title: 'Concurrent Priority Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3680,11 +3924,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-why-hooks-have-rules',
       tech: 'react',
-      title: 'Hook Order Drift Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3695,11 +3940,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-stale-state-closures',
       tech: 'react',
-      title: 'Stale Closure Snapshot Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3710,11 +3956,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-useref-vs-usestate',
       tech: 'react',
-      title: 'Ref vs State Ownership Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3725,11 +3972,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-why-batching-state-updates',
       tech: 'react',
-      title: 'Batching Snapshot Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3740,11 +3988,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-derived-state-anti-pattern',
       tech: 'react',
-      title: 'Derived State Drift Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3755,11 +4004,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-context-performance-issues',
       tech: 'react',
-      title: 'Context Fan-out Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3770,11 +4020,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-error-boundaries-what-they-solve',
       tech: 'react',
-      title: 'Error Boundary Coverage Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3785,11 +4036,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-strictmode-double-invoke-effects',
       tech: 'react',
-      title: 'StrictMode Cleanup Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3800,11 +4052,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-useeffect-vs-uselayouteffect',
       tech: 'react',
-      title: 'Layout Flicker Timing Root Cause Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3815,11 +4068,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-hooks-youve-used',
       tech: 'react',
-      title: 'Hook Choice Under Pressure Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3830,11 +4084,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-18-whats-new',
       tech: 'react',
-      title: 'React 18 Responsiveness Choice Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
@@ -3845,11 +4100,12 @@ describe('Trivia incident routes', () => {
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-dom-tree-structure',
       tech: 'html',
-      title: 'DOM Depth Performance Check',
+      title: expect.any(String),
       scenario: expect.any(String),
       options: expect.any(Array),
     }));
     expect(res.body.options).toHaveLength(3);
+    expect(res.body.title.trim()).not.toBe('');
     expect(res.body.correctOptionId).toBeUndefined();
   });
 

@@ -2526,10 +2526,10 @@ const REACT_SHORT_ANSWERS: ReactShortAnswerItem[] = [
   {
     category: 'modern',
     level: 'advanced',
-    q: 'Why does StrictMode run some effects twice in development?',
-    a: 'StrictMode can intentionally mount, clean up, and remount components in development to reveal unsafe effects. This does not happen the same way in production, but the issue it exposes is real: effects must tolerate setup and cleanup correctly. Duplicate logs or requests usually mean the effect is not idempotent or the cleanup is incomplete.',
+    q: 'Why does useEffect run twice in React StrictMode?',
+    a: 'React StrictMode can run an extra effect setup and cleanup cycle in development. Production does not run that diagnostic check, but the issue it exposes is real: effects must clean up subscriptions, listeners, timers, and stale requests. Event handlers are not double-invoked by this render check, so user-triggered work should stay in the event path.',
     route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
-    cta: 'Review StrictMode effects',
+    cta: 'Fix useEffect running twice',
   },
 ];
 
@@ -2707,10 +2707,10 @@ const REACT_TESTING_QUESTIONS: ReactFocusedQuestionItem[] = [
   },
   {
     level: 'advanced',
-    q: 'How does StrictMode affect effect tests?',
-    a: 'StrictMode can run setup and cleanup more than once in development, which exposes effects that are not idempotent. Tests should not depend on an effect running exactly once when StrictMode is enabled. Assert the final user-visible behavior and make subscriptions, timers, and analytics calls cleanup-safe.',
+    q: 'How does StrictMode affect useEffect tests?',
+    a: 'StrictMode can make useEffect setup and cleanup run more than once in development, which exposes effects that are not idempotent. Tests should not depend on an effect running exactly once when StrictMode is enabled. Assert final user-visible behavior and make subscriptions, timers, listeners, and analytics calls cleanup-safe.',
     route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
-    cta: 'Review StrictMode effects',
+    cta: 'Fix useEffect running twice',
   },
   {
     level: 'intermediate',
@@ -2808,9 +2808,9 @@ return <MemoChart options={{ theme, stacked: true }} />;`,
   analytics.startSession();
   return () => analytics.stopSession();
 }, []);`,
-    explanation: 'StrictMode can remount components in development to check that effects clean up correctly. The effect should tolerate setup, cleanup, and setup again without leaking subscriptions or duplicating permanent work. Move one-time application boot logic outside component effects when component lifetime is not the right owner.',
+    explanation: 'React StrictMode can run an extra useEffect setup and cleanup cycle in development. The effect should tolerate setup, cleanup, and setup again without leaking subscriptions or duplicating permanent work. Move one-time application boot logic outside component effects when component lifetime is not the right owner.',
     route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
-    cta: 'Review StrictMode behavior',
+    cta: 'Fix useEffect running twice',
   },
 ];
 

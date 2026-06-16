@@ -113,6 +113,27 @@ describe('trivia-seo.util', () => {
     );
   });
 
+  it('preserves problem-first React StrictMode useEffect SEO override', () => {
+    const question = {
+      id: 'react-strictmode-double-invoke-effects',
+      title: 'Why does useEffect run twice in React StrictMode?',
+      technology: 'react',
+      seo: {
+        title: 'React useEffect Running Twice in StrictMode?',
+        description:
+          'React useEffect runs twice in StrictMode during development, not production. Learn why, whether event handlers run twice, and how to fix duplicate fetches.',
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
+
+    expect(title).toBe('React useEffect Running Twice in StrictMode?');
+    expect(description).toBe(
+      'React useEffect runs twice in StrictMode during development, not production. Learn why, whether event handlers run twice, and how to fix duplicate fetches.'
+    );
+  });
+
   it('normalizes docs-style explicit seo metadata into interview answer intent', () => {
     const title = seoTitleForQuestion({
       id: 'react-usememo-vs-usecallback',

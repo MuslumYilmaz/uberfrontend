@@ -84,6 +84,9 @@ describe('FrameworkPrepPathArticle', () => {
     expect(text).toContain('Keys + list identity');
     expect(text).toContain('React rendering interview questions');
     expect(text).toContain('Keys interview question variants');
+    expect(text).toContain('React StrictMode: why useEffect runs twice in dev');
+    expect(text).toContain('Why event handlers are not double-invoked by the render check');
+    expect(text).toContain('cleanup prevents duplicate listeners, fetches, and subscriptions');
     expect(text).toContain('Memoization trade-offs');
     expect(text).toContain('Context performance');
     expect(text).toContain('Debounced Search');
@@ -101,6 +104,7 @@ describe('FrameworkPrepPathArticle', () => {
     expect(linkTargets).toContain('/react/trivia/react-keys-in-lists');
     expect(linkTargets).toContain('/react/trivia/react-usememo-vs-usecallback');
     expect(linkTargets).toContain('/react/trivia/react-context-performance-issues');
+    expect(linkTargets).toContain('/react/trivia/react-strictmode-double-invoke-effects');
     expect(linkTargets).toContain('/react/coding/react-debounced-search');
     expect(linkTargets).toContain('/react/coding/react-autocomplete-search-starter');
     expect(linkTargets).toContain('/react/coding/react-contact-form-starter');
@@ -111,6 +115,10 @@ describe('FrameworkPrepPathArticle', () => {
 
     expect(text).toContain('React worked examples to rehearse before mocks');
     expect(text).toContain('useEffect + stale response');
+    expect(text).toContain('StrictMode useEffect running twice');
+    expect(text).toContain('Why useEffect runs twice in React StrictMode');
+    expect(text).toContain('StrictMode event handlers are not double-invoked by the render check');
+    expect(text).toContain('useEffect cleanup in StrictMode');
     expect(text).toContain('Dependency contract');
     expect(text).toContain('Cleanup');
     expect(text).toContain('Ignore/cancel policy');
