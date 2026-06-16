@@ -138,6 +138,7 @@ describe('TrackListComponent', () => {
     expect(text).toContain('What to practice each week');
     expect(text).toContain('Common study-plan mistakes');
     expect(text).toContain('What is a frontend interview study plan?');
+    expect(text).toContain('CSS animation performance');
     expect(native.querySelector('a[href="/javascript/interview-questions"]')).toBeTruthy();
     expect(native.querySelector('a[href="/react/interview-questions"]')).toBeTruthy();
     expect(native.querySelector('a[href="/angular/interview-questions"]')).toBeTruthy();

@@ -310,7 +310,7 @@ export class TrackListComponent implements OnInit {
     },
     {
       label: 'CSS',
-      description: 'Cascade, layout, selectors, responsive UI, and styling tradeoffs.',
+      description: 'Cascade, layout, CSS animation performance, responsive UI, and styling tradeoffs.',
       route: ['/css/interview-questions'],
       toneClass: 'hero-link--iq-css',
     },
