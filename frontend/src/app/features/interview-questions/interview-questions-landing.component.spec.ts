@@ -484,7 +484,7 @@ const CSS_DEBUGGING_PERFORMANCE_QUESTIONS = [
   'How do you debug a z-index problem?',
   'How do you debug horizontal scroll?',
   'What causes layout thrashing?',
-  'When does hardware acceleration help CSS?',
+  'How do hardware acceleration and compositing affect CSS animation performance?',
   'What makes CSS maintainable?',
   'What are common CSS debugging mistakes?',
 ];
@@ -2566,6 +2566,11 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-pseudo-classes-elements"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-custom-properties"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-hardware-acceleration"]')).toBeTruthy();
+    const hardwareAccelerationLinks = Array.from(
+      fixture.nativeElement.querySelectorAll('a[href="/css/trivia/css-hardware-acceleration"]') as NodeListOf<HTMLAnchorElement>
+    );
+    expect(hardwareAccelerationLinks.some((link) => (link.textContent || '').includes('CSS animation performance'))).toBeTrue();
+    expect(hardwareAccelerationLinks.some((link) => (link.textContent || '').includes('CSS hardware acceleration and compositing'))).toBeTrue();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-flexbox-navbar"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-grid-card-gallery"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-fluid-clamp"]')).toBeTruthy();
@@ -2641,6 +2646,12 @@ describe('InterviewQuestionsLandingComponent', () => {
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('CSS performance and hardware acceleration')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('will-change CSS interview question')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('transform vs top/left performance')
     )).toBeTrue();
     expect(faqPage?.['@id']).toContain('#css-short-answers');
     expect(faqPage?.mainEntity.length).toBe(25);

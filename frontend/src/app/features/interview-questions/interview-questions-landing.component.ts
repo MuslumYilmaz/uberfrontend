@@ -4443,9 +4443,9 @@ const CSS_SHORT_ANSWERS: CssShortAnswerItem[] = [
   },
   {
     q: 'How do you improve CSS performance?',
-    a: 'Start by measuring whether the problem is style recalculation, layout, paint, compositing, or JavaScript. Prefer stable layout dimensions, avoid repeated layout reads after writes, and animate transform or opacity when possible. Hardware acceleration can help specific compositing cases, but it is not a universal fix.',
+    a: 'Start by measuring whether the problem is style recalculation, layout, paint, composite, or JavaScript. Prefer stable layout dimensions, avoid repeated layout reads after writes, and use transform or opacity for motion when possible. The transform vs top/left tradeoff matters because layout properties can re-enter layout and paint, while compositor-friendly properties can often reuse painted layers.',
     route: ['/css', 'trivia', 'css-hardware-acceleration'],
-    cta: 'Review CSS performance',
+    cta: 'CSS animation performance',
     category: 'debugging-performance',
     level: 'advanced',
   },
@@ -4727,10 +4727,10 @@ const CSS_DEBUGGING_PERFORMANCE_QUESTIONS: CssScenarioQuestionItem[] = [
     level: 'advanced',
   },
   {
-    q: 'When does hardware acceleration help CSS?',
-    a: 'Hardware acceleration can help when animations are moved to composited layers, often with transform or opacity. It does not fix expensive layout, paint, or JavaScript work by itself. Too many promoted layers can increase memory use and make performance worse.',
+    q: 'How do hardware acceleration and compositing affect CSS animation performance?',
+    a: 'Hardware acceleration can help when animations are moved to composited layers, often with transform or opacity. It does not fix expensive layout, paint, JavaScript work, or will-change pitfalls by itself. Use DevTools to inspect layout, paint, layer promotion, paint flashing, FPS, and dropped frames before claiming the GPU solved the problem.',
     route: ['/css', 'trivia', 'css-hardware-acceleration'],
-    cta: 'Review acceleration',
+    cta: 'CSS hardware acceleration and compositing',
     level: 'advanced',
   },
   {
@@ -6933,6 +6933,11 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'CSS custom properties and design tokens' },
         { '@type': 'Thing', name: 'CSS responsive layout debugging' },
         { '@type': 'Thing', name: 'CSS performance and hardware acceleration' },
+        { '@type': 'Thing', name: 'CSS hardware acceleration and compositing' },
+        { '@type': 'Thing', name: 'CSS animation performance interview questions' },
+        { '@type': 'Thing', name: 'transform vs top/left performance' },
+        { '@type': 'Thing', name: 'will-change CSS interview question' },
+        { '@type': 'Thing', name: 'layout, paint, and composite' },
       ];
     }
 

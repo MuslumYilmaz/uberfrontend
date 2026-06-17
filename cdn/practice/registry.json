@@ -1891,7 +1891,7 @@
     "route": "/css/trivia/css-hardware-acceleration",
     "tech": "css",
     "difficulty": "hard",
-    "summary": "Understand how compositing affects CSS animation performance, how to debug layout vs paint vs composite bottlenecks, and when will-change becomes a performance pitfall.",
+    "summary": "Practice a CSS hardware acceleration interview answer: explain compositor layers, transform vs top/left, DevTools animation debugging, and will-change pitfalls.",
     "tags": [
       "css",
       "performance",
@@ -1901,7 +1901,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-06-16",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-hardware-acceleration"
   },
