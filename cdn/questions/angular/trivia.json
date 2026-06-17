@@ -6385,20 +6385,20 @@
   },
   {
     "id": "angular-http-what-actually-cancels-request",
-    "title": "What Actually Cancels an HTTP Request in Angular?",
+    "title": "Does Angular HttpClient unsubscribe cancel requests?",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Yes: unsubscribing from an Angular HttpClient Observable aborts the in-progress browser request. In interviews, explain that switchMap, takeUntil, and AsyncPipe cancel because they unsubscribe; ignoring a stale response is not cancellation.",
+    "description": "Yes. Official Angular docs say unsubscribing from an HttpClient Observable aborts the in-progress browser request. switchMap, AsyncPipe, and takeUntil cancel because they unsubscribe; ignoring stale responses does not.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>An Angular <code>HttpClient</code> request is just an Observable wrapper around a browser request. <strong>The only thing that can actually cancel it is unsubscribing from that Observable</strong>. When you unsubscribe, Angular tells the browser to abort the underlying request (via <code>AbortController</code> or XHR abort)."
+          "text": "<strong>Core idea</strong><br><br>Yes. Official Angular docs say unsubscribing from an <code>HttpClient</code> Observable aborts the in-progress request. An Angular <code>HttpClient</code> request is an Observable wrapper around a browser request, and <strong>the only thing that can actually cancel it is unsubscribing from that Observable</strong>. When you unsubscribe, Angular tells the browser to abort the underlying request (via <code>AbortController</code> or XHR abort)."
         },
         {
           "type": "text",
-          "text": "<strong>Official docs anchor</strong><br><br>Angular's <a href=\"https://angular.dev/guide/http/making-requests\" target=\"_blank\" rel=\"noopener\">Making requests</a> guide describes <code>HttpClient</code> Observables as cold request blueprints: subscribing starts the browser request, and unsubscribing aborts an in-progress request. That is why <code>AsyncPipe</code>, <code>switchMap</code>, and lifecycle teardown can cancel stale HTTP work."
+          "text": "<strong>Official Angular docs: unsubscribe aborts the request</strong><br><br>Angular's <a href=\"https://angular.dev/guide/http/making-requests\" target=\"_blank\" rel=\"noopener\">Making requests</a> guide describes <code>HttpClient</code> Observables as cold request blueprints: subscribing starts the browser request, and unsubscribing aborts an in-progress request. That is why <code>AsyncPipe</code>, <code>switchMap</code>, and lifecycle teardown can cancel stale HTTP work."
         },
         {
           "type": "text",
@@ -6591,7 +6591,7 @@
       "cancellation",
       "basics"
     ],
-    "updatedAt": "2026-05-31",
+    "updatedAt": "2026-06-17",
     "interviewFocus": {
       "summary": "This Angular interview question tests whether you can distinguish true HttpClient cancellation from ignoring stale responses, explain unsubscribe ownership, and defend the RxJS operator choice.",
       "tests": [
@@ -6601,8 +6601,9 @@
       ]
     },
     "seo": {
-      "title": "Angular HttpClient: Unsubscribe Cancels Requests",
-      "description": "Docs-backed answer: HttpClient unsubscribe aborts in-flight requests; switchMap, AsyncPipe, and takeUntilDestroyed cancel, while mergeMap and stale guards do not."
+      "title": "Angular HttpClient Unsubscribe Cancels Requests: Docs",
+      "description": "Official Angular docs say unsubscribing from HttpClient aborts an in-progress request. See switchMap, AsyncPipe, takeUntil, and TestRequest proof.",
+      "h1IntentLabel": "Official docs answer"
     },
     "incidentCard": {
       "title": "Request Cancellation Check",

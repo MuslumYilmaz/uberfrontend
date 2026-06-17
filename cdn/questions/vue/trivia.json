@@ -3221,6 +3221,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Related stale-value trap</strong><br><br>If the issue is not how Vue tracks dependencies generally, but why an extracted local value stops updating, review <a href=\"/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref\">Vue props destructuring reactivity</a> for the <code>toRefs()</code>, <code>toRef()</code>, and composable argument fixes."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Vue reactivity system as an intelligent observer — it watches over your data, remembers what depends on it, and instantly updates only what’s necessary when something changes."
         },
         {
@@ -3238,7 +3242,7 @@
       "core",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-06-17",
     "seo": {
       "title": "How Does Vue Reactivity Work Internally?",
       "description": "Vue's reactivity uses proxies to track property reads and writes, then schedules effects so only components with changed dependencies re-render."
@@ -4181,6 +4185,10 @@
           "text": "<strong>Fix:</strong> use <code>toRefs()</code> (or <code>toRef()</code>) so destructured fields stay reactive."
         },
         {
+          "type": "text",
+          "text": "For the deeper version of this specific stale-value bug, use <a href=\"/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref\">Vue toRefs and toRef</a>, including props destructuring, optional fields, and composable argument examples."
+        },
+        {
           "type": "code",
           "language": "javascript",
           "code": "import { reactive, toRefs } from 'vue';\n\nconst state = reactive({ count: 0 });\nconst { count } = toRefs(state);\n\ncount.value++;     // updates state.count\nstate.count++;     // updates count.value\n"
@@ -4245,7 +4253,7 @@
       "primitives",
       "objects"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-06-17",
     "seo": {
       "title": "What Is the Difference Between ref and reactive in Vue?",
       "description": "ref wraps single values while reactive wraps object-like state, and Vue tracks their access patterns differently for updates and destructuring behavior."
@@ -4277,90 +4285,131 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why destructuring breaks Vue reactivity under the hood, how Proxy tracking works, and how to debug stale values safely with toRefs() and toRef() in composables or components.",
+    "description": "Explain why destructuring or passing properties out of reactive state can break Vue reactivity, how Proxy tracking works, and when to use toRefs(), toRef(), prop getters, or ref() to avoid stale values.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Vue 3, <code>reactive()</code> returns a <strong>Proxy</strong> that tracks property access and mutation. When you destructure properties from that object, you pull plain values out of the Proxy, so Vue can no longer track them. This is a classic production and interview <strong>debug</strong> problem: the state looks correct at the source, but the destructured value goes stale. The fix is to use <code>toRefs()</code> or <code>toRef()</code>, which keep the extracted property linked to the original reactive source."
+          "text": "<strong>Quick answer</strong><br><br>In Vue 3, <code>reactive()</code> returns a <strong>Proxy</strong>, and Vue tracks reads/writes through that proxy's property access. <code>const { count } = state</code> reads <code>state.count</code> once and stores the current value in a local binding, so later reads of <code>count</code> no longer go through the proxy. Use <code>toRefs(state)</code> when you need to destructure or return many fields, <code>toRef(state, 'count')</code> for one field or an optional field, and <code>toRef(() => props.foo)</code> when a composable needs a live readonly prop value. Passing the <strong>ref object</strong> keeps the connection; destructuring <code>.value</code> just copies the current value."
         },
         {
           "type": "text",
-          "text": "<strong>1. The core problem: how Vue tracks reactivity</strong><br><br>Vue tracks reactivity by intercepting <em>property access</em> and <em>property mutation</em> on a Proxy. If you stop reading or writing through the Proxy, Vue can’t see what you’re doing anymore."
+          "text": "<strong>1. Why destructuring breaks Vue reactivity</strong><br><br>Vue cannot track ordinary local variables. It can track a <code>reactive()</code> object because reads call the proxy's <code>get</code> trap and writes call the proxy's <code>set</code> trap. If you stop reading or writing through the proxy, Vue has no dependency to track."
         },
         {
           "type": "text",
-          "text": "<strong>2. The classic bug: destructuring a reactive object</strong><br><br>This looks innocent, but it breaks the reactive connection:"
+          "text": "<strong>2. The classic stale-value bug</strong><br><br>This looks harmless, but <code>count</code> becomes a plain number copy:"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// ❌ Trap: destructuring pulls out a plain number\nconst { count } = state;\n\nstate.count++;      // state updates\nconsole.log(count); // still 0 (stale)\n"
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// ❌ Trap: destructuring pulls out the current value\nconst { count } = state;\n\nstate.count++;      // source updates\nconsole.log(count); // still 0 (stale local copy)\n"
         },
         {
           "type": "text",
-          "text": "Why? Because <code>count</code> is now just a <strong>number</strong>, not a reactive reference. Vue is no longer involved."
+          "text": "<strong>Important nuance:</strong> the disconnect is about the local binding. Primitive properties become plain stale values. If the extracted value is an object that is already reactive, nested mutations may still be reactive, but assigning or reading the local binding itself is no longer the same as reading through <code>state.someKey</code>. In interviews, say the problem precisely: <strong>destructuring disconnects that property binding from the source proxy</strong>."
         },
         {
           "type": "text",
-          "text": "<strong>3. The mental model</strong><br><br>- <code>reactive()</code> = a <strong>smart object (Proxy)</strong> that Vue watches.<br>- Destructuring = <strong>copying values out</strong> of that object.<br>- Copies are not reactive, so Vue loses the connection."
-        },
-        {
-          "type": "text",
-          "text": "<strong>4. The solution: toRefs()</strong><br><br><code>toRefs()</code> converts each property of a reactive object into a <strong>ref</strong> that stays connected to the original object."
+          "text": "<strong>3. Vue toRefs vs toRef</strong><br><br><code>toRefs()</code> converts each enumerable property on a reactive object into a ref linked to the original source. Use it when returning or destructuring many fields from the same state object."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive, toRefs } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// ✅ Safe: each field is now a ref linked to state\nconst { count, name } = toRefs(state);\n\ncount.value++;       // updates state.count\nstate.count++;       // updates count.value\n"
+          "code": "import { reactive, toRefs } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// ✅ Each field is a ref linked to state\nconst { count, name } = toRefs(state);\n\ncount.value++;       // updates state.count\nstate.count++;       // updates count.value\nname.value = 'Lin';  // updates state.name\n"
         },
         {
           "type": "text",
-          "text": "<strong>5. toRef(): when you only need one property</strong><br><br>If you only want to extract a single property, use <code>toRef()</code> instead of converting everything."
+          "text": "<strong>4. Use toRef() for one field, especially optional fields</strong><br><br><code>toRef()</code> creates one linked ref. It is cleaner when you only need one property, and it can create a usable ref even when the property does not exist yet. <code>toRefs()</code> only creates refs for properties that are enumerable at the time you call it."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive, toRef } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// ✅ Create a single reactive ref linked to state.count\nconst count = toRef(state, 'count');\n\ncount.value++;    // updates state.count\nstate.count++;    // updates count.value\n"
+          "code": "import { reactive, toRef } from 'vue';\n\nconst state = reactive({ count: 0 });\n\nconst count = toRef(state, 'count');\nconst status = toRef(state, 'status'); // works even before state.status exists\n\ncount.value++;          // updates state.count\nstatus.value = 'open';  // creates/updates state.status\n"
         },
         {
           "type": "text",
-          "text": "<strong>6. Common place this bites people: composables</strong><br><br>If a composable returns a <code>reactive</code> object and you destructure it in the consumer, you silently lose reactivity."
+          "text": "<strong>5. Common stale value bug: passing a property value</strong><br><br>The same bug happens without destructuring. If you pass <code>state.count</code> into a composable, you pass the current number, not a live reactive source."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// useCounter.js\nimport { reactive } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return state;\n}\n\n// ❌ In component\nconst { count } = useCounter(); // loses reactivity\n"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Fix:</strong> either return <code>toRefs(state)</code> from the composable, or wrap the result with <code>toRefs()</code> at the call site."
+          "code": "import { computed, reactive } from 'vue';\n\nfunction useDouble(countRef) {\n  return computed(() => countRef.value * 2);\n}\n\nconst state = reactive({ count: 1 });\n\n// ❌ state.count is just the number 1 here\nconst brokenDouble = useDouble(state.count);\n\nstate.count = 2;\nconsole.log(brokenDouble.value); // NaN or stale, depending on the composable\n"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// useCounter.js (better)\nimport { reactive, toRefs } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return toRefs(state);\n}\n\n// In component\nconst { count } = useCounter(); // ✅ stays reactive"
+          "code": "import { computed, reactive, toRef } from 'vue';\n\nfunction useDouble(countRef) {\n  return computed(() => countRef.value * 2);\n}\n\nconst state = reactive({ count: 1 });\n\n// ✅ Pass a ref linked to state.count\nconst double = useDouble(toRef(state, 'count'));\n\nstate.count = 2;\nconsole.log(double.value); // 4\n"
         },
         {
           "type": "text",
-          "text": "<strong>7. How this relates to ref()</strong><br><br><code>ref</code>s are <em>already safe to destructure</em> because the reactivity lives in <code>.value</code>, not in a Proxy identity."
+          "text": "<strong>6. Props and composables: use a live prop source</strong><br><br>Props are reactive, but <code>props.foo</code> is still the current property value when you pass it as an argument. For a composable input, prefer the Vue 3.3+ getter form <code>toRef(() => props.foo)</code> for a single readonly prop, or <code>toRefs(props)</code> when you need several prop refs. Version nuance: Vue 3.5+ makes variables destructured directly from <code>defineProps()</code> reactive inside the same <code>&lt;script setup&gt;</code> block, but that compiler feature does not make arbitrary plain values passed to composables reactive."
+        },
+        {
+          "type": "code",
+          "language": "vue",
+          "code": "<script setup>\nimport { toRef, toRefs } from 'vue';\n\nconst props = defineProps({\n  userId: String,\n  sort: String,\n});\n\n// ❌ Plain current value, not a live composable input\nuseUser(props.userId);\n\n// ✅ Single readonly prop source (Vue 3.3+)\nuseUser(toRef(() => props.userId));\n\n// ✅ Several prop refs\nconst { userId, sort } = toRefs(props);\nuseSearch(userId, sort);\n</script>\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. How this relates to ref()</strong><br><br>A <code>ref</code> is safe to pass around as an object because reactivity lives behind its <code>.value</code> getter/setter. But destructuring <code>.value</code> is <strong>not</strong> safe; it copies the current value exactly like destructuring a reactive primitive property."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { ref } from 'vue';\n\nconst count = ref(0);\nconst { value } = count; // just a number copy\n\n// But normally you pass around the ref itself, not destructure .value"
+          "code": "import { ref } from 'vue';\n\nconst count = ref(0);\n\nconst liveCount = count;     // ✅ pass the ref object\nconst { value } = count;     // ❌ value is just 0 now\n\ncount.value++;\nconsole.log(liveCount.value); // 1\nconsole.log(value);           // still 0\n"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Need",
+            "Use",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Return or destructure many fields from one reactive object",
+              "<code>toRefs(state)</code>",
+              "Keeps each extracted field linked to the source proxy"
+            ],
+            [
+              "Extract one field from reactive state",
+              "<code>toRef(state, 'field')</code>",
+              "Avoids converting every property"
+            ],
+            [
+              "Track an optional property that may appear later",
+              "<code>toRef(state, 'field')</code>",
+              "<code>toRefs()</code> only sees enumerable properties present at call time"
+            ],
+            [
+              "Pass one prop into a composable",
+              "<code>toRef(() =&gt; props.foo)</code>",
+              "Keeps a readonly live source without mutating props"
+            ],
+            [
+              "Replace the whole state value later",
+              "<code>ref(initialValue)</code>",
+              "Reactive objects should be mutated in place; refs handle replacement through <code>.value</code>"
+            ]
+          ],
+          "caption": "Vue reactivity extraction decision guide"
         },
         {
           "type": "text",
-          "text": "<strong>8. Practical rules of thumb</strong><br><br><ul><li>Never destructure a <code>reactive()</code> object directly.</li><li>If you want to extract fields: use <code>toRefs()</code> or <code>toRef()</code>.</li><li>If you want to freely destructure and pass values around, consider using <code>ref</code>s instead of a single reactive object.</li><li>Composables should usually return <code>toRefs(state)</code>, not the raw reactive object.</li></ul>"
+          "text": "<strong>8. Practical rules of thumb</strong><br><br><ul><li>Do not directly destructure primitive fields from a <code>reactive()</code> object when they must stay live.</li><li>Do not pass <code>state.foo</code> or <code>props.foo</code> to a composable that expects a reactive source.</li><li>Use <code>toRefs()</code> at composable return boundaries when consumers naturally destructure the result.</li><li>Use <code>toRef()</code> for single fields, optional fields, and prop getter inputs.</li><li>Pass refs themselves; do not destructure or cache <code>.value</code> when you need updates.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Intuition: <strong>reactivity lives in the Proxy, not in the values</strong>. Destructuring takes the values and leaves the magic behind."
+          "text": "<strong>Related Vue interview practice</strong><br><br>Use <a href=\"/vue/trivia/vue-reactivity-system\">Vue reactivity interview question</a> for the broader proxy/dependency model, and <a href=\"/vue/trivia/vue-ref-vs-reactive-difference-traps\">Vue ref vs reactive</a> when the interviewer asks how to choose the right state shape."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Destructuring breaks reactivity because it extracts plain values from Vue’s Proxy.</li><li><code>toRefs()</code> converts each property into a ref that stays linked to the source object.</li><li><code>toRef()</code> creates a single linked ref for one property.</li><li>Use these helpers whenever you need to extract or return pieces of reactive state safely.</li></ul>"
+          "text": "<i class='fa-solid fa-lightbulb'></i> Interview intuition: <strong>Vue tracks access through a reactive container</strong> - a proxy property, a ref's <code>.value</code>, or a getter-backed source. If you copy the value out, you copy the current snapshot, not the subscription."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><ul><li>Destructuring breaks reactivity when it extracts a plain value from Vue's proxy-tracked state.</li><li><code>toRefs()</code> is best for many linked fields and composable return objects.</li><li><code>toRef()</code> is best for one field, optional fields, and live readonly prop sources.</li><li><code>ref()</code> is the better shape when the whole value needs to be replaced.</li><li>The safest interview answer names the boundary: keep reads/writes going through the proxy, ref, or getter source.</li></ul>"
         }
       ]
     },
@@ -4374,30 +4423,30 @@
       "state",
       "best-practices"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-06-17",
     "seo": {
-      "title": "Vue destructuring and reactivity: Proxy internals, toRefs, and stale-value debugging",
-      "description": "Learn why destructuring breaks Vue reactivity, how Proxy tracking works under the hood, and how to debug stale values with toRefs() or toRef()."
+      "title": "Why Vue Destructuring Breaks Reactivity",
+      "description": "Vue interview answer: fix stale reactive state with toRefs(), toRef(), prop getters, and composable-safe patterns."
     },
     "incidentCard": {
       "title": "Proxy Extraction Check",
-      "scenario": "A composable returns a `reactive()` state object, and a teammate immediately writes `const { count } = useCounter()`. Later the UI stops updating and they say, \"Vue reactivity is flaky here. Destructuring should not matter because `count` came from reactive state.\" Another teammate says, \"Destructuring is the bug. Reactivity lives on the Proxy, and destructuring pulls out plain values. If you need extracted fields, use `toRefs()` or `toRef()` so the connection stays live.\" Which explanation is better?",
+      "scenario": "A composable returns a `reactive()` state object, and a teammate writes `const { count } = useCounter()`. In another component, they call `useDouble(state.count)` and expect the composable to keep updating. Later the UI goes stale and they say, \"Vue reactivity is flaky here. These values came from reactive state, so extraction should not matter.\" Another teammate says, \"The extraction is the bug. Vue tracks proxy property access, refs, and getter-backed sources. A destructured primitive or `state.count` argument is just the current value; use `toRefs()`, `toRef(state, 'count')`, or a prop getter ref when the consumer needs a live source.\" Which explanation is better?",
       "options": [
         {
           "id": "torefs-is-only-for-typescript-and-not-for-reactivity",
-          "label": "The better explanation is that `toRefs()` mainly exists for TypeScript ergonomics. It is optional for reactivity because Vue already keeps destructured fields connected under the hood."
+          "label": "The better explanation is that `toRefs()` mainly exists for TypeScript ergonomics. Vue already keeps destructured fields and `state.count` function arguments connected under the hood."
         },
         {
           "id": "destructuring-pulls-values-out-of-the-proxy-so-use-torefs-or-toref",
-          "label": "The second explanation is better. Vue tracks access through the reactive proxy. Once you destructure plain values out of it, Vue can no longer track them. `toRefs()` and `toRef()` preserve the link back to the original reactive source."
+          "label": "The second explanation is better. Vue tracks proxy property access, refs, or getter sources. Destructured primitives and plain property arguments are snapshots, while `toRefs()` and `toRef()` preserve a live link."
         },
         {
           "id": "destructuring-is-safe-and-the-real-issue-is-async-render-timing",
-          "label": "The first explanation is better. Destructuring does not affect Vue tracking, so stale values usually come from async rendering or watcher timing rather than from how the state was extracted."
+          "label": "The first explanation is better. Extraction does not affect Vue tracking, so stale values usually come from async rendering, watcher flush timing, or `nextTick()` misuse."
         }
       ],
       "correctOptionId": "destructuring-pulls-values-out-of-the-proxy-so-use-torefs-or-toref",
-      "rereadPrompt": "Not quite. The main lesson is that reactivity lives on the proxy, not in copied values. Direct destructuring breaks that connection, while `toRefs()` and `toRef()` keep extracted properties reactive."
+      "rereadPrompt": "Not quite. The main lesson is that Vue tracks through a reactive container: a proxy property, a ref, or a getter-backed source. Direct primitive destructuring and plain property arguments copy the current value; `toRefs()` and `toRef()` keep the consumer connected."
     }
   },
   {
