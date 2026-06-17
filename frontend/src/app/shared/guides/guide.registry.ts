@@ -1634,12 +1634,12 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'RADIO Framework for Frontend System Design Interviews',
+        title: 'RADIO Framework: Frontend System Design Interview Guide',
         minutes: 20,
         summary: 'Use the RADIO framework to structure frontend system design interview prep across requirements, architecture, data, interfaces, performance, and closing scripts.',
         seo: {
-            title: 'RADIO Framework for Frontend System Design Interviews',
-            description: 'Use Requirements, Architecture, Data, Interface, and Optimizations to structure frontend system design answers with examples, checklist, and a 45-minute script.',
+            title: 'RADIO Framework: Frontend System Design Interview Guide',
+            description: 'Use the RADIO approach for frontend system design interviews: Requirements, Architecture, Data, Interface, Optimizations, plus a 45-minute script and examples.',
             primaryKeyword: 'RADIO framework frontend system design',
             keywords: [
                 'frontend system design interview answer template',
@@ -1663,7 +1663,7 @@ export const SYSTEM: GuideEntry[] = [
                 items: [
                     {
                         question: 'What is the RADIO framework in frontend system design?',
-                        answer: 'RADIO is a frontend system design answer template that moves through Requirements, Architecture, Data, Interface, and Optimizations so the answer has scope, system shape, contracts, user behavior, and production trade-offs.',
+                        answer: 'RADIO is the frontend system design interview approach: Requirements, Architecture, Data, Interface, and Optimizations. Use it as a 45-minute answer template with diagrams, checklist, and autocomplete, news feed, and chat examples.',
                     },
                     {
                         question: 'How do I use RADIO to answer a frontend system design interview question?',
@@ -1683,6 +1683,7 @@ export const SYSTEM: GuideEntry[] = [
                     },
                 ],
             },
+            readerPromise: 'Use the RADIO approach for frontend system design interviews: Requirements, Architecture, Data, Interface, Optimizations, plus a 45-minute script and examples.',
             publishedAt: '2026-02-18',
             updatedAt: '2026-06-13',
         },

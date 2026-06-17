@@ -23,14 +23,16 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     const host = fixture.nativeElement as HTMLElement;
     const text = host.textContent || '';
 
-    expect(text).toContain('RADIO Framework for Frontend System Design Interviews');
+    expect(text).toContain('RADIO Framework: Frontend System Design Interview Guide');
     expect(text).toContain('frontend system design interview prep framework');
     expect(text).toContain('Use this if your interviewer asks: "How would you design X?"');
+    expect(text).toContain('RADIO is the frontend system design interview approach: Requirements, Architecture, Data, Interface, and Optimizations.');
+    expect(text).toContain('Use it as a 45-minute answer template with diagrams, checklist, and autocomplete, news feed, and chat examples.');
     expect(text).toContain('Copyable 45-minute answer structure');
     expect(text).toContain('Works for autocomplete, news feed, chat, dashboards, and design systems');
     expect(text).toContain('Turn a broad prompt into a 45-minute frontend system design interview answer.');
     expect(text).toContain('Use RADIO to clarify scope, sketch architecture, define data and interface contracts, and close with measurable trade-offs.');
-    expect(text).toContain('RADIO framework snapshot');
+    expect(text).toContain('RADIO approach: Requirements, Architecture, Data, Interface, Optimizations');
     expect(text).toContain('RADIO framework frontend system design snapshot');
     expect(text).toContain('What each RADIO step proves to the interviewer');
     expect(text).toContain('You prevent the answer from solving the wrong problem.');

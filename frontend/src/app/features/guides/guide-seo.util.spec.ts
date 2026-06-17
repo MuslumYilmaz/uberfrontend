@@ -663,13 +663,14 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('RADIO Framework for Frontend System Design Interviews');
+    expect(meta.title).toBe('RADIO Framework: Frontend System Design Interview Guide');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(meta.description).toBe(
-      'Use Requirements, Architecture, Data, Interface, and Optimizations to structure frontend system design answers with examples, checklist, and a 45-minute script.',
+      'Use the RADIO approach for frontend system design interviews: Requirements, Architecture, Data, Interface, Optimizations, plus a 45-minute script and examples.',
     );
-    expect(meta.description).toMatch(/frontend system design answers/i);
+    expect(meta.description).toMatch(/RADIO approach/i);
+    expect(meta.description).toMatch(/frontend system design interviews/i);
     expect(meta.description).toMatch(/requirements/i);
     expect(meta.description).toMatch(/interface/i);
     expect(meta.description).toMatch(/45-minute script/i);
@@ -708,6 +709,9 @@ describe('guide-seo.util', () => {
       'How do I use RADIO for autocomplete, news feed, or chat?',
       'Is RADIO the best framework for frontend system design interviews?',
     ]);
+    expect(faqPage?.mainEntity?.[0]?.acceptedAnswer?.text).toBe(
+      'RADIO is the frontend system design interview approach: Requirements, Architecture, Data, Interface, and Optimizations. Use it as a 45-minute answer template with diagrams, checklist, and autocomplete, news feed, and chat examples.',
+    );
   });
 
   it('targets Requirements checklist intent on the RADIO requirements page', () => {
