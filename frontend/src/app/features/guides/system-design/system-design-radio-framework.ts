@@ -335,7 +335,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
       <fa-guide-shell
-      title="RADIO Framework for Frontend System Design Interviews"
+      title="RADIO Framework: Frontend System Design Interview Guide"
       [minutes]="20"
       [tags]="['system design', 'interview prep', 'radio framework']"
       [prev]="prev"
@@ -346,9 +346,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <section class="answer-asset" aria-label="Frontend system design interview answer asset">
         <h2>Use this if your interviewer asks: "How would you design X?"</h2>
         <p>
-          This page is a frontend system design interview answer asset, not just a RADIO definition.
-          Use it when you need a repeatable way to answer open-ended prompts about autocomplete,
-          news feed, chat, dashboards, design systems, or any UI architecture question.
+          RADIO is the frontend system design interview approach: Requirements, Architecture, Data,
+          Interface, and Optimizations. Use it as a 45-minute answer template with diagrams,
+          checklist, and autocomplete, news feed, and chat examples.
         </p>
         <div class="asset-signals">
           <div class="asset-signal">
@@ -375,7 +375,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         and Optimizations closes with performance, reliability, observability, security, and trade-offs.
       </p>
 
-      <h2>RADIO framework snapshot</h2>
+      <h2>RADIO approach: Requirements, Architecture, Data, Interface, Optimizations</h2>
       <p>
         Use this RADIO framework frontend system design snapshot when you need the short version:
         each step has a purpose, a visible output, and a signal the interviewer can score.
@@ -1062,9 +1062,9 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
       <h2>RADIO Framework FAQ</h2>
       <h3>What is the RADIO framework in frontend system design?</h3>
       <p>
-        RADIO is a frontend system design answer template that moves through Requirements,
-        Architecture, Data, Interface, and Optimizations so the answer has scope, system shape,
-        contracts, user behavior, and production trade-offs.
+        RADIO is the frontend system design interview approach: Requirements, Architecture, Data,
+        Interface, and Optimizations. Use it as a 45-minute answer template with diagrams,
+        checklist, and autocomplete, news feed, and chat examples.
       </p>
 
       <h3>How do I use RADIO to answer a frontend system design interview question?</h3>
