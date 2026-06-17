@@ -4,8 +4,9 @@ const TITLE_MAX_LEN = 54;
 const DESCRIPTION_MAX_LEN = 155;
 const INTERVIEW_TITLE_SUFFIX = ': Interview Answer';
 const INTERVIEW_INTENT_RE = /\b(interview(?:s)?|prep(?:aration)?|practice|candidate(?:s)?|round(?:s)?|follow[\s-]?ups?|drill(?:s)?|question(?:s)?|answer(?:s)?)\b/i;
-const ANSWER_FIRST_RE = /^(yes|no|it depends)\s*:/i;
+const ANSWER_FIRST_RE = /^(yes|no|it depends)\s*[:.]/i;
 const PROBLEM_FIRST_RE = /\b(?:running|runs|called|firing)\s+twice\b|\bduplicate\s+(?:fetches|listeners|requests|api\s+calls)\b/i;
+const SOURCE_PROOF_RE = /\b(?:docs-backed|source-backed|spec-backed|mdn-backed|official\s+(?:[a-z]+\s+){0,4}(?:docs?|documentation))\b/i;
 
 const TECH_LABELS: Record<string, string> = {
   javascript: 'JavaScript',
@@ -162,6 +163,10 @@ function hasProblemFirstIntent(value: string): boolean {
   return PROBLEM_FIRST_RE.test(String(value || '').trim());
 }
 
+function hasSourceProofIntent(value: string): boolean {
+  return SOURCE_PROOF_RE.test(String(value || '').trim());
+}
+
 function ensureFrameworkInConcept(concept: string, framework: string): string {
   const normalizedConcept = sanitizeSerpText(concept, 70);
   if (!normalizedConcept) return framework;
@@ -188,6 +193,7 @@ export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technolo
   const rawDescriptionHasAnswerFirstIntent = hasAnswerFirstIntent(rawExplicitDescription);
   const rawDescriptionHasInterviewIntent = hasInterviewIntent(rawExplicitDescription);
   const rawMetadataHasProblemFirstIntent = hasProblemFirstIntent(`${rawExplicit} ${rawExplicitDescription}`);
+  const rawMetadataHasSourceProofIntent = hasSourceProofIntent(`${rawExplicit} ${rawExplicitDescription}`);
   const explicit = rawExplicitHasInterviewIntent
     ? sanitizeSerpText(rawExplicit, Math.max(TITLE_MAX_LEN, rawExplicit.length))
     : sanitizeSerpText(rawExplicit, TITLE_MAX_LEN);
@@ -197,6 +203,7 @@ export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technolo
       || rawDescriptionHasAnswerFirstIntent
       || rawDescriptionHasInterviewIntent
       || rawMetadataHasProblemFirstIntent
+      || rawMetadataHasSourceProofIntent
       ? explicit
       : interviewAnswerTitle(q, framework);
   }
@@ -239,12 +246,16 @@ export function seoDescriptionForQuestion(
   const rawExplicitHasInterviewIntent = hasInterviewIntent(rawExplicit);
   const rawExplicitHasAnswerFirstIntent = hasAnswerFirstIntent(rawExplicit);
   const rawExplicitHasProblemFirstIntent = hasProblemFirstIntent(rawExplicit);
+  const rawExplicitHasSourceProofIntent = hasSourceProofIntent(rawExplicit);
   const explicit = rawExplicitHasInterviewIntent
     ? sanitizeSerpText(rawExplicit, Math.max(DESCRIPTION_MAX_LEN, rawExplicit.length))
     : sanitizeSerpText(rawExplicit, DESCRIPTION_MAX_LEN);
   const framework = frameworkLabel(q.technology || tech);
   if (explicit) {
-    return rawExplicitHasInterviewIntent || rawExplicitHasAnswerFirstIntent || rawExplicitHasProblemFirstIntent
+    return rawExplicitHasInterviewIntent
+      || rawExplicitHasAnswerFirstIntent
+      || rawExplicitHasProblemFirstIntent
+      || rawExplicitHasSourceProofIntent
       ? explicit
       : interviewAnswerDescription(q, framework);
   }

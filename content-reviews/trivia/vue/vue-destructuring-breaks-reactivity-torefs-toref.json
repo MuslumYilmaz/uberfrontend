@@ -2,144 +2,232 @@
   "contentId": "vue-destructuring-breaks-reactivity-torefs-toref",
   "tech": "vue",
   "query": "Why does destructuring break reactivity in Vue?",
-  "reviewedAt": "2026-04-10",
-  "reviewedBy": "Codex AI draft",
+  "reviewedAt": "2026-06-17",
+  "reviewedBy": "Codex AI implementation",
   "selection": {
     "querySource": "manual",
     "greatFrontendRelevant": true
   },
   "competitors": [
     {
-      "label": "Reactivity API: Utilities",
+      "label": "Vue Reactivity API: Utilities",
       "url": "https://vuejs.org/api/reactivity-utilities.html",
       "category": "canonical_docs",
-      "selectionReason": "This is the canonical Vue API page for toRef and toRefs, including the official explanation of synced refs and destructuring-safe patterns.",
+      "selectionReason": "This is the canonical API page for toRef and toRefs, including synced refs, prop getter usage, and the enumerable-property limitation.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "actionableExamples": "theirs",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
-        "The official docs are authoritative on how toRef and toRefs stay synced with the original reactive source."
+        "The official docs are authoritative on toRef/toRefs signatures, synced source properties, prop restrictions, getter normalization, and optional-property behavior."
       ],
       "theirGaps": [
-        "They are lighter on the production-debug framing of a value going stale after destructuring a reactive object."
+        "The page is API-reference shaped, so the stale UI debugging story and interview-ready extraction decision path are less concentrated."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "This is a classic production and interview <strong>debug</strong> problem: the state looks correct at the source, but the destructured value goes stale."
+          "If you pass <code>state.count</code> into a composable, you pass the current number, not a live reactive source."
         ],
         "followUpConfusion": [
-          "If a composable returns a <code>reactive</code> object and you destructure it in the consumer, you silently lose reactivity."
+          "Version nuance: Vue 3.5+ makes variables destructured directly from <code>defineProps()</code> reactive inside the same <code>&lt;script setup&gt;</code> block, but that compiler feature does not make arbitrary plain values passed to composables reactive."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The docs show prop-to-composable and optional-property cases for toRef, but they are not centered on one concise stale-value debugging scenario."
+          "The docs include prop-to-composable and composable-return examples, but they are not framed as a stale-value debugging incident."
         ],
         "actionableExamples": [
-          "They provide direct examples for a two-way synced toRef and a toRefs conversion, so the example bar remains close."
+          "The official page has direct toRef, prop getter, optional-property, and toRefs examples; our page adds an interview decision table, so this remains close."
         ],
         "followUpConfusion": [
-          "The page distinguishes toRef from ref(state.foo), explains prop restrictions, and notes that toRefs only captures enumerable properties, but it is less interview-shaped about composable destructuring traps."
+          "The docs explain ref(state.foo) not being synced and toRefs only seeing enumerable properties; our page additionally ties this to destructuring, prop getters, and Vue 3.5 props nuance."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Add one shorter props example showing when toRef is preferred over toRefs for a single field."
+          "Keep the decision table and examples aligned with future Vue API changes so the page does not drift behind the official reference."
         ],
         "followUpConfusion": []
       },
-      "winReason": "The official docs are authoritative on the APIs, but our page is more focused on the exact stale-value debugging story interviewers usually probe next and on the composable destructuring trap teams actually hit."
+      "winReason": "The official docs remain the API authority, but our page is stronger as an interview answer because it turns those API details into a stale-value debugging path with props and composable edge cases."
     },
     {
       "label": "Vue Interview Questions",
       "url": "https://www.greatfrontend.com/questions/vue",
       "category": "interview_prep",
-      "selectionReason": "GreatFrontEnd's Vue interview bank is directly relevant because reactivity and composition fundamentals are core Vue interview territory.",
+      "selectionReason": "GreatFrontEnd is a strong Vue interview-prep competitor with a question bank, test scenarios, and in-browser practice even though this exact topic is broader there.",
       "verdicts": {
         "realWorldUseCases": "ours",
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
-        "It is a strong Vue interview-prep hub with a large bank of practice questions and worked solutions."
+        "It provides a polished interview-prep environment with question filters, coding prompts, test scenarios, and browser practice."
       ],
       "theirGaps": [
-        "The landing page is broad and does not directly unpack the destructuring-reactivity failure mode."
+        "The public Vue landing page is broad and does not directly explain this destructuring/reactivity failure mode."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "This is a classic production and interview <strong>debug</strong> problem: the state looks correct at the source, but the destructured value goes stale."
+          "A composable returns a `reactive()` state object, and a teammate writes `const { count } = useCounter()`."
         ],
         "followUpConfusion": [
-          "<strong>Fix:</strong> either return <code>toRefs(state)</code> from the composable, or wrap the result with <code>toRefs()</code> at the call site."
+          "Use <code>toRefs(state)</code> when you need to destructure or return many fields, <code>toRef(state, 'count')</code> for one field or an optional field, and <code>toRef(() => props.foo)</code> when a composable needs a live readonly prop value."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The hub clearly covers Vue fundamentals and interactive component problems, but it is not as specific about one stale-destructuring production failure."
+          "GreatFrontEnd's public Vue page emphasizes interview practice coverage, not the exact stale reactive extraction bug."
         ],
         "actionableExamples": [
-          "Because GreatFrontEnd emphasizes worked solutions, the example criterion stays competitive even though this page is not topic-dedicated."
+          "GreatFrontEnd's platform strength is interactive browser practice and test scenarios, which is stronger than our single-page explanation for this criterion."
         ],
         "followUpConfusion": [
-          "The category page is less explicit about when to use toRef versus toRefs and how composable return shapes affect destructuring safety."
+          "The public page does not expose a dedicated toRef/toRefs destructuring explanation with props, optional fields, and composable argument pitfalls."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Keep one even shorter broken-versus-fixed example that fits in a single interview-sized glance."
+          "Make the incident practice entry more visible from the answer so the page better competes with GreatFrontEnd's interactive test-scenario workflow."
         ],
         "followUpConfusion": []
       },
-      "winReason": "GreatFrontEnd is useful as a broad Vue interview resource, but our page is more focused on the exact reactivity bug, its mental model, and the follow-up questions around toRef versus toRefs."
+      "winReason": "GreatFrontEnd wins on platform breadth, but our individual page is more useful for this specific Vue interview question because it directly teaches the bug, fix, and follow-up traps."
     },
     {
-      "label": "Ref vs. Reactive — Which is Best?",
+      "label": "Ref vs. Reactive - Which is Best?",
       "url": "https://michaelnthiessen.com/ref-vs-reactive/",
       "category": "tutorial_reference",
-      "selectionReason": "Michael Thiessen has a direct discussion of destructuring a reactive object, why it breaks reactivity, and why toRefs fixes it.",
+      "selectionReason": "Michael Thiessen directly covers reactive destructuring, toRefs, ref versus reactive state shape, and script setup props.",
       "verdicts": {
-        "realWorldUseCases": "ours",
-        "actionableExamples": "tie",
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
-        "The article directly explains that destructuring a reactive object breaks reactivity and shows the toRefs fix."
+        "The article explains destructuring reactive values, reassignment pitfalls, template refs, props, and state organization in a readable tutorial style."
       ],
       "theirGaps": [
-        "It is broader than this question, so the stale-debug story and composable-return follow-ups are less concentrated."
+        "It is broader than this single question, so the toRef-vs-toRefs choice, optional property edge, and composable argument failure are less concentrated."
       ],
       "ourEvidence": {
-        "realWorldUseCases": [
-          "When you destructure properties from that object, you pull plain values out of the Proxy, so Vue can no longer track them."
+        "actionableExamples": [
+          "The same bug happens without destructuring. If you pass <code>state.count</code> into a composable, you pass the current number, not a live reactive source."
         ],
         "followUpConfusion": [
-          "<strong>5. toRef(): when you only need one property</strong><br><br>If you only want to extract a single property, use <code>toRef()</code> instead of converting everything."
+          "<code>toRefs()</code> only creates refs for properties that are enumerable at the time you call it."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The article explicitly says destructuring a value from a reactive object breaks reactivity and shows a toRefs-based repair."
+          "The article has realistic examples around reassignment, template refs, props, and state organization, so the real-world framing is competitive."
         ],
         "actionableExamples": [
-          "It includes concrete code for destructuring, toRefs, and script-setup props, so the example criterion stays close."
+          "It shows direct destructuring and toRefs repairs, but our page now includes a compact decision table plus optional field, prop getter, and composable argument examples."
         ],
         "followUpConfusion": [
-          "It is strong on ref versus reactive trade-offs, but lighter on the dedicated toRef-versus-toRefs interview follow-up and the composable-consumer pitfall."
+          "It is strong on ref versus reactive trade-offs, but less direct on toRef for optional fields and Vue 3.5 reactive props destructure nuance."
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one shorter prop-focused example showing when a single toRef is cleaner than converting the whole object."
+        "realWorldUseCases": [
+          "Add a shorter narrative example around a real component bug if this page needs to beat broader tutorial articles on production context."
         ],
+        "actionableExamples": [],
         "followUpConfusion": []
       },
-      "winReason": "Michael Thiessen's article is already a strong topic fit, but our page is tighter as a single interview answer because it pairs the core bug with a clearer toRef-versus-toRefs follow-up and a composable-consumer example."
+      "winReason": "Michael Thiessen's article is a strong broader tutorial, but our page is now better for a one-question interview answer because it compresses the exact bug, decision rules, and modern prop/composable edge cases."
+    },
+    {
+      "label": "Should I Use Ref or Reactive in Vue 3?",
+      "url": "https://www.telerik.com/blogs/should-use-ref-reactive-vue-3",
+      "category": "tutorial_reference",
+      "selectionReason": "Telerik has a strong composable-argument example showing how passing a reactive property gives a plain value.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article clearly demonstrates ref versus reactive replacement bugs and the common composable argument trap."
+      ],
+      "theirGaps": [
+        "It is less focused on toRef versus toRefs, props getter refs, optional properties, and interview-ready debugging language."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "const status = toRef(state, 'status'); // works even before state.status exists"
+        ],
+        "followUpConfusion": [
+          "A <code>ref</code> is safe to pass around as an object because reactivity lives behind its <code>.value</code> getter/setter. But destructuring <code>.value</code> is <strong>not</strong> safe"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Telerik's useNumber-style composable example is a very realistic source of stale computed behavior, so real-world context is close."
+        ],
+        "actionableExamples": [
+          "It provides broken and fixed composable examples, but our page now adds toRef optional-field and props getter examples in the same answer."
+        ],
+        "followUpConfusion": [
+          "The article recommends toRefs for passing reactive values, but it does not go as deep on toRef, prop getter refs, or .value destructuring."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Keep the incident card tied to a realistic stale computed/composable failure so the page does not become only an API comparison."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "Telerik is strong on the composable bug, but our page now covers that same trap plus the narrower toRef/toRefs/props decisions interviewers usually ask next."
+    },
+    {
+      "label": "Top 3 Composition API Pitfalls",
+      "url": "https://escuelavue.es/en/devtips/top-3-composition-api-pitfalls",
+      "category": "tutorial_reference",
+      "selectionReason": "Escuela Vue covers incorrect reactive destructuring and prop-to-composable reactivity pitfalls in a concise Composition API article.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The article is concise and shows direct reactive destructuring, toRefs repair, and a props-to-composable watch warning."
+      ],
+      "theirGaps": [
+        "It stops short of a full extraction decision guide and does not cover optional fields, prop getter refs, ref .value destructuring, or Vue 3.5 props nuance."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "Pass refs themselves; do not destructure or cache <code>.value</code> when you need updates."
+        ],
+        "followUpConfusion": [
+          "Vue 3.5+ makes variables destructured directly from <code>defineProps()</code> reactive inside the same <code>&lt;script setup&gt;</code> block, but that compiler feature does not make arbitrary plain values passed to composables reactive."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Escuela Vue's examples are framed as Composition API pitfalls developers actually hit, including props passed to a composable."
+        ],
+        "actionableExamples": [
+          "It shows the broken state.name destructure and a toRefs fix, while our page adds a fuller set of broken/fixed cases and a decision table."
+        ],
+        "followUpConfusion": [
+          "It explains the props-to-composable issue, but does not distinguish toRef getter form, optional property handling, or modern defineProps destructure behavior."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Preserve the concise bug-first flow so the answer remains as scannable as this pitfalls article."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "Escuela Vue is strong and concise, but our page now gives a more complete interview answer with the same pitfall coverage plus a clearer decision guide and modern Vue caveats."
     }
   ]
 }

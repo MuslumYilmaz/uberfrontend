@@ -90,15 +90,38 @@ describe('trivia-seo.util', () => {
     expect(description.toLowerCase()).not.toContain('frontend interview prep routine');
   });
 
+  it('preserves Vue destructuring long-tail interview SEO override', () => {
+    const question = {
+      id: 'vue-destructuring-breaks-reactivity-torefs-toref',
+      title: 'Why does destructuring break reactivity in Vue? Explain toRefs, toRef, and how to safely extract reactive state',
+      technology: 'vue',
+      seo: {
+        title: 'Why Vue Destructuring Breaks Reactivity',
+        description:
+          'Vue interview answer: fix stale reactive state with toRefs(), toRef(), prop getters, and composable-safe patterns.',
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'vue');
+
+    expect(title).toBe('Why Vue Destructuring Breaks Reactivity');
+    expect(title.length).toBeLessThanOrEqual(54);
+    expect(description).toBe(
+      'Vue interview answer: fix stale reactive state with toRefs(), toRef(), prop getters, and composable-safe patterns.'
+    );
+    expect(description.length).toBeLessThanOrEqual(155);
+  });
+
   it('preserves answer-first Angular HttpClient cancellation SEO override', () => {
     const question = {
       id: 'angular-http-what-actually-cancels-request',
       title: 'What Actually Cancels an HTTP Request in Angular?',
       technology: 'angular',
       seo: {
-        title: 'Angular HttpClient: Unsubscribe Cancels Requests',
+        title: 'Angular HttpClient Unsubscribe Cancels Requests: Docs',
         description:
-          'Docs-backed answer: HttpClient unsubscribe aborts in-flight requests; switchMap, AsyncPipe, and takeUntilDestroyed cancel, while mergeMap and stale guards do not.',
+          'Official Angular docs say unsubscribing from HttpClient aborts an in-progress request. See switchMap, AsyncPipe, takeUntil, and TestRequest proof.',
       },
     } as any;
 
@@ -106,11 +129,13 @@ describe('trivia-seo.util', () => {
     const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
 
     expect(title).toBe(
-      'Angular HttpClient: Unsubscribe Cancels Requests'
+      'Angular HttpClient Unsubscribe Cancels Requests: Docs'
     );
+    expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'Docs-backed answer: HttpClient unsubscribe aborts in-flight requests; switchMap, AsyncPipe, and takeUntilDestroyed cancel, while mergeMap and stale guards do not.'
+      'Official Angular docs say unsubscribing from HttpClient aborts an in-progress request. See switchMap, AsyncPipe, takeUntil, and TestRequest proof.'
     );
+    expect(description.length).toBeLessThanOrEqual(155);
   });
 
   it('preserves problem-first React StrictMode useEffect SEO override', () => {

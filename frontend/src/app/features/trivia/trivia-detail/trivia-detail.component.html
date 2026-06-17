@@ -115,7 +115,7 @@
                 <div class="title-row">
                     <h1 class="title">
                         <span class="title__question">{{ q.title }}</span>
-                        <span class="title__intent">{{ h1IntentLabel }}</span>
+                        <span class="title__intent">{{ visibleH1IntentLabel(q) }}</span>
                     </h1>
                     <span class="solved-pill" *ngIf="solved()" aria-label="Solved">
                         <app-fa-glyph class="solved-pill__icon" icon="fa-solid fa-check"></app-fa-glyph>
@@ -333,7 +333,7 @@
                     <div class="locked-pill">Premium</div>
                     <h1 class="locked-title">
                         <span class="locked-title__question">{{ lockedTitle() }}</span>
-                        <span class="locked-title__intent">{{ h1IntentLabel }}</span>
+                        <span class="locked-title__intent">{{ visibleH1IntentLabel(question()) }}</span>
                     </h1>
                     <div class="locked-meta">
                         By {{ authorLabel(question()) }}

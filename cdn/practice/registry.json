@@ -680,6 +680,27 @@
     "assetRef": "questions/angular/debug.json#ng-debug-counter-change-detection"
   },
   {
+    "id": "angular-http-what-actually-cancels-request",
+    "family": "question",
+    "title": "Does Angular HttpClient unsubscribe cancel requests?",
+    "route": "/angular/trivia/angular-http-what-actually-cancels-request",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "Yes. Official Angular docs say unsubscribing from an HttpClient Observable aborts the in-progress browser request. switchMap, AsyncPipe, and takeUntil cancel because they unsubscribe; ignoring stale responses does not.",
+    "tags": [
+      "angular",
+      "http",
+      "rxjs",
+      "cancellation",
+      "basics"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-06-17",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/angular/trivia.json#angular-http-what-actually-cancels-request"
+  },
+  {
     "id": "angular-hierarchical-dependency-injection-real-bug",
     "family": "question",
     "title": "Explain Hierarchical Dependency Injection in Angular With a Real Bug Example",
@@ -1336,27 +1357,6 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-todo-list-starter"
-  },
-  {
-    "id": "angular-http-what-actually-cancels-request",
-    "family": "question",
-    "title": "What Actually Cancels an HTTP Request in Angular?",
-    "route": "/angular/trivia/angular-http-what-actually-cancels-request",
-    "tech": "angular",
-    "difficulty": "intermediate",
-    "summary": "Yes: unsubscribing from an Angular HttpClient Observable aborts the in-progress browser request. In interviews, explain that switchMap, takeUntil, and AsyncPipe cancel because they unsubscribe; ignoring a stale response…",
-    "tags": [
-      "angular",
-      "http",
-      "rxjs",
-      "cancellation",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-05-31",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/angular/trivia.json#angular-http-what-actually-cancels-request"
   },
   {
     "id": "angular-forroot-forchild",
@@ -9268,7 +9268,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-06-17",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-ref-vs-reactive-difference-traps"
   },
@@ -9980,7 +9980,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-06-17",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-reactivity-system"
   },
@@ -10099,7 +10099,7 @@
     "route": "/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Explain why destructuring breaks Vue reactivity under the hood, how Proxy tracking works, and how to debug stale values safely with toRefs() and toRef() in composables or components.",
+    "summary": "Explain why destructuring or passing properties out of reactive state can break Vue reactivity, how Proxy tracking works, and when to use toRefs(), toRef(), prop getters, or ref() to avoid stale values.",
     "tags": [
       "vue",
       "composition-api",
@@ -10110,7 +10110,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-06-17",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-destructuring-breaks-reactivity-torefs-toref"
   },

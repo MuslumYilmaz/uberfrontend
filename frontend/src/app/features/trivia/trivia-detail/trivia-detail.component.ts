@@ -140,7 +140,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('sideScroll') sideScroll?: ElementRef<HTMLElement>;
   @ViewChild('mainScroll') mainScroll?: ElementRef<HTMLElement>;
   tech!: Tech;
-  readonly h1IntentLabel = TRIVIA_H1_INTENT_LABEL;
 
   questionsList: QuestionListEntry[] = [];
   sidebarQuestions: QuestionListEntry[] = [];
@@ -662,7 +661,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   visibleQuestionHeadline(q?: Question | null): string {
     const title = String(q?.title || '').trim();
-    return title ? `${title} - ${TRIVIA_H1_INTENT_LABEL}` : TRIVIA_H1_INTENT_LABEL;
+    const intentLabel = this.visibleH1IntentLabel(q);
+    return title ? `${title} - ${intentLabel}` : intentLabel;
+  }
+
+  visibleH1IntentLabel(q?: Question | null): string {
+    return String(q?.seo?.h1IntentLabel || TRIVIA_H1_INTENT_LABEL).trim() || TRIVIA_H1_INTENT_LABEL;
   }
 
   private structuredDataImageUrl(): string {
