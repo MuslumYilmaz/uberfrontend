@@ -17,6 +17,10 @@ describe('QuestionService', () => {
   const overrideKey = 'qoverride:javascript:coding';
   const systemKey = 'qcache:system-design';
   const dvKey = 'qcache:dv';
+  const cdnFlagKey = 'fa:cdn:enabled';
+  const codingTransferStateKey = makeStateKey<Question[]>('questions:javascript:coding');
+  const systemDesignTransferStateKey = makeStateKey<any[]>('system-design:index');
+  const dataVersionTransferStateKey = makeStateKey<string>('practice:data-version');
 
   const makeCodingQuestion = (id: string): Partial<Question> => ({
     id,
@@ -54,7 +58,28 @@ describe('QuestionService', () => {
     throw new Error(`Expected request not observed: ${label}`);
   };
 
+  const clearQuestionStorage = async () => {
+    await persistence.clearByPrefix('qcache:');
+    await persistence.clearByPrefix('qoverride:');
+
+    Object.keys(localStorage)
+      .filter((key) =>
+        key.startsWith('qcache:')
+        || key.startsWith('qoverride:')
+        || key === cdnFlagKey
+      )
+      .forEach((key) => localStorage.removeItem(key));
+  };
+
+  const clearTransferState = () => {
+    transferState.remove(codingTransferStateKey);
+    transferState.remove(systemDesignTransferStateKey);
+    transferState.remove(dataVersionTransferStateKey);
+  };
+
   beforeEach(async () => {
+    localStorage.setItem(cdnFlagKey, '0');
+
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [QuestionService, QuestionPersistenceService],
@@ -65,18 +90,18 @@ describe('QuestionService', () => {
     httpMock = TestBed.inject(HttpTestingController);
     transferState = TestBed.inject(TransferState);
 
-    service.setCdnEnabled(false);
-
-    await persistence.clearByPrefix('qcache:');
-    await persistence.clearByPrefix('qoverride:');
-    localStorage.removeItem('fa:cdn:enabled');
+    clearTransferState();
+    await clearQuestionStorage();
+    localStorage.setItem(cdnFlagKey, '0');
   });
 
   afterEach(async () => {
-    httpMock.verify();
-    await persistence.clearByPrefix('qcache:');
-    await persistence.clearByPrefix('qoverride:');
-    localStorage.removeItem('fa:cdn:enabled');
+    try {
+      httpMock.verify();
+    } finally {
+      clearTransferState();
+      await clearQuestionStorage();
+    }
   });
 
   it('uses override before cache and network', async () => {
@@ -117,8 +142,7 @@ describe('QuestionService', () => {
   });
 
   it('can bypass TransferState payload when transferState option is disabled', async () => {
-    const tsKey = makeStateKey<Question[]>('questions:javascript:coding');
-    transferState.set(tsKey, [makeCodingQuestion('transfer-hit') as Question]);
+    transferState.set(codingTransferStateKey, [makeCodingQuestion('transfer-hit') as Question]);
 
     const resultPromise = firstValueFrom(
       service.loadQuestions('javascript', 'coding', { transferState: false }),
@@ -171,8 +195,7 @@ describe('QuestionService', () => {
   });
 
   it('can bypass TransferState payload for system-design index when transferState is disabled', async () => {
-    const tsKey = makeStateKey<any[]>('system-design:index');
-    transferState.set(tsKey, [{ id: 'sys-transfer' }]);
+    transferState.set(systemDesignTransferStateKey, [{ id: 'sys-transfer' }]);
 
     const resultPromise = firstValueFrom(
       service.loadSystemDesign({ transferState: false }),

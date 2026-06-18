@@ -653,7 +653,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <div class="loop-card">
         <h3>Behavioral</h3>
         <p>Ownership, trade-offs, conflict, incident handling, mentoring, and cross-team leverage.</p>
-        <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">Structure technical stories</a>
+        <a [routerLink]="['/guides','behavioral','intro']">STAR stories for frontend engineers</a>
       </div>
       <div class="loop-card">
         <h3>Framework rounds</h3>

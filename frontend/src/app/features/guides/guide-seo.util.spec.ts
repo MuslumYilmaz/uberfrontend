@@ -1,5 +1,5 @@
 import { buildGuideDetailSeo } from './guide-seo.util';
-import { PLAYBOOK, SYSTEM } from '../../shared/guides/guide.registry';
+import { BEHAVIORAL, PLAYBOOK, SYSTEM } from '../../shared/guides/guide.registry';
 
 describe('guide-seo.util', () => {
   const seoMock = {
@@ -140,6 +140,240 @@ describe('guide-seo.util', () => {
       'How long does frontend interview preparation take?',
       'What should senior frontend engineers practice?',
       'What is the best way to practice frontend interview questions?',
+    ]);
+  });
+
+  it('targets frontend behavioral interview questions intent with FAQ and question ItemList schema', () => {
+    const intro = BEHAVIORAL.find((entry) => entry.slug === 'intro');
+    expect(intro).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Behavioral Blueprint',
+      'behavioral',
+      intro!
+    );
+
+    expect(meta.title).toBe('Frontend Behavioral Interview Questions: 12 STAR Answers');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/behavioral/intro');
+    expect(meta.description).toBe(
+      'Practice 12 frontend behavioral interview questions with STAR(R) answer outlines, weak-vs-strong examples, scoring signals, and frontend scenarios.'
+    );
+    expect(meta.keywords).toEqual([
+      'frontend behavioral interview questions',
+      'frontend behavioral interview guide',
+      'behavioral interview answers for software engineers',
+      'STAR stories for frontend engineers',
+      'frontend interview behavioral questions',
+      'frontend behavioral interview examples',
+      'frontend developer behavioral interview questions and answers',
+      'software engineer behavioral interview stories',
+      'frontend STAR interview answers',
+      'frontend performance behavioral interview answer',
+      'frontend accessibility behavioral interview answer',
+      'frontend production incident behavioral interview answer',
+      'frontend conflict with design interview answer',
+      'frontend API conflict behavioral interview answer',
+      'ambiguous requirements frontend interview answer',
+    ]);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Behavioral Interview Questions: 12 STAR Answers');
+    expect(article?.description).toBe(
+      'Practice 12 frontend behavioral interview questions with STAR(R) answer outlines, weak-vs-strong examples, scoring signals, and frontend scenarios.'
+    );
+    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('Frontend behavioral interview questions to practice');
+    expect(itemList?.itemListElement?.length).toBe(12);
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.name)).toEqual([
+      'Tell me about a time you improved frontend performance.',
+      'Tell me about a time you disagreed with design or product on a frontend decision.',
+      'Tell me about a production incident or rollback you handled.',
+      'Tell me about a conflict with a back-end team or API contract.',
+      'Tell me about a project with ambiguous requirements.',
+      'Tell me about an accessibility trade-off you influenced.',
+      'Tell me about a time you balanced quality and a tight deadline.',
+      'Tell me about mentoring or leveling up another frontend engineer.',
+      'Tell me about receiving difficult technical feedback and what changed.',
+      'Tell me about a technical decision you changed your mind on.',
+      'Tell me about improving a review, testing, or release process.',
+      'Tell me about coordinating a frontend launch across design, product, QA, and back-end.',
+    ]);
+    expect(itemList?.itemListElement?.[0]?.url).toBe(
+      'https://frontendatlas.com/guides/behavioral/intro#frontend-behavioral-interview-questions-to-practice'
+    );
+    expect(faqPage?.name).toBe('Frontend behavioral interview questions FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(7);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What frontend behavioral interview questions should I practice?',
+      'How do frontend engineers prepare for behavioral interviews?',
+      'What STAR stories should frontend engineers prepare?',
+      'How long should a behavioral answer be?',
+      'What do frontend behavioral interviews evaluate?',
+      'How do I make a frontend behavioral answer stronger?',
+      'Which frontend examples work best for behavioral interviews?',
+    ]);
+  });
+
+  it('targets frontend behavioral interview process intent with FAQ and stage ItemList schema', () => {
+    const bigPicture = BEHAVIORAL.find((entry) => entry.slug === 'big-picture');
+    expect(bigPicture).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Behavioral Blueprint',
+      'behavioral',
+      bigPicture!
+    );
+
+    expect(meta.title).toBe('Frontend Behavioral Interview Process: What Interviewers Score');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/behavioral/big-picture');
+    expect(meta.description).toBe(
+      'See where behavioral rounds fit in frontend interviews, what hiring managers score onsite, and which stories reduce debrief risk.'
+    );
+    expect(meta.keywords).toEqual([
+      'frontend behavioral interview process',
+      'frontend behavioral interview round',
+      'frontend behavioral onsite interview',
+      'frontend hiring manager interview',
+      'behavioral interview screening and onsite',
+      'frontend interview hiring signals',
+      'software engineer behavioral interview process',
+      'frontend behavioral interview scorecard',
+      'what do frontend behavioral interviewers look for',
+      'behavioral interview debrief signals',
+      'senior frontend engineer behavioral interview',
+      'frontend interview ownership examples',
+      'frontend production incident behavioral interview',
+    ]);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Behavioral Interview Process: What Interviewers Score');
+    expect(article?.description).toBe(
+      'See where behavioral rounds fit in frontend interviews, what hiring managers score onsite, and which stories reduce debrief risk.'
+    );
+    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('Frontend behavioral interview process stages');
+    expect(itemList?.itemListElement?.length).toBe(5);
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.name)).toEqual([
+      'Recruiter screen',
+      'Hiring manager screen',
+      'Onsite behavioral round',
+      'Cross-functional round',
+      'Debrief and hiring committee',
+    ]);
+    expect(itemList?.itemListElement?.[0]?.url).toBe(
+      'https://frontendatlas.com/guides/behavioral/big-picture#frontend-behavioral-interview-stage-map'
+    );
+    expect(faqPage?.name).toBe('Frontend behavioral interview process FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(8);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'Where do behavioral interviews fit in a frontend hiring process?',
+      'What do frontend behavioral interviewers look for?',
+      'What happens in a frontend behavioral onsite interview?',
+      'Can you fail a software engineer interview because of behavioral?',
+      'How do behavioral signals affect onsite debrief decisions?',
+      'What behavioral signals matter for senior frontend engineers?',
+      'What frontend stories should I prepare for each round?',
+      'How is this different from frontend behavioral interview questions practice?',
+    ]);
+  });
+
+  it('targets frontend behavioral interview scorecard intent with FAQ and signal ItemList schema', () => {
+    const scorecard = BEHAVIORAL.find((entry) => entry.slug === 'evaluation-areas');
+    expect(scorecard).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Behavioral Blueprint',
+      'behavioral',
+      scorecard!
+    );
+
+    expect(meta.title).toBe('Frontend Behavioral Interview Scorecard: 6 Signals');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/behavioral/evaluation-areas');
+    expect(meta.description).toBe(
+      'See the 6 signals frontend interviewers score, weak-vs-strong evidence, seniority expectations, and stories that reduce debrief risk.'
+    );
+    expect(meta.keywords).toEqual([
+      'frontend behavioral interview scorecard',
+      'behavioral interview scorecard',
+      'behavioral interview scorecard for software engineers',
+      'behavioral evaluation areas',
+      'behavioral interview competencies',
+      'what do behavioral interviewers evaluate',
+      'behavioral interview scoring rubric',
+      'frontend behavioral interview rubric',
+      'behavioral interview evaluation criteria',
+      'software engineer behavioral interview rubric',
+      'ownership behavioral interview signal',
+      'senior frontend behavioral interview signals',
+      'weak vs strong behavioral interview signals',
+      'frontend performance behavioral interview story',
+      'accessibility behavioral interview example',
+      'production incident behavioral interview example',
+      'API contract conflict behavioral interview',
+      'design disagreement behavioral interview frontend',
+    ]);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Behavioral Interview Scorecard: 6 Signals');
+    expect(article?.description).toBe(
+      'See the 6 signals frontend interviewers score, weak-vs-strong evidence, seniority expectations, and stories that reduce debrief risk.'
+    );
+    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('Frontend behavioral interview scorecard signals');
+    expect(itemList?.itemListElement?.length).toBe(6);
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.name)).toEqual([
+      'Communication',
+      'Collaboration',
+      'Ownership',
+      'Judgment',
+      'Growth',
+      'Leadership and seniority',
+    ]);
+    expect(itemList?.itemListElement?.[0]?.url).toBe(
+      'https://frontendatlas.com/guides/behavioral/evaluation-areas#frontend-behavioral-interview-scorecard-signals'
+    );
+    expect(faqPage?.name).toBe('Frontend behavioral interview scorecard FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'What do behavioral interviewers evaluate?',
+      'How are behavioral interviews scored?',
+      'What is a strong ownership signal in a behavioral interview?',
+      'How do senior frontend engineers show behavioral signals?',
+      'Which frontend stories map well to behavioral interview scorecards?',
+      'How do I use a frontend behavioral interview scorecard to prepare?',
     ]);
   });
 
