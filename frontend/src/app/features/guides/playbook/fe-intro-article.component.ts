@@ -675,8 +675,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <a [routerLink]="['/coding']">
         Question library: practice frontend interview questions in the coding workspace.
       </a>
-      <a [routerLink]="['/guides','behavioral']">
-        Behavioral interview blueprint: prepare STAR stories around frontend impact.
+      <a [routerLink]="['/guides','behavioral','intro']">
+        Frontend behavioral interview questions: prepare STAR stories around frontend impact.
       </a>
     </div>
     <p>

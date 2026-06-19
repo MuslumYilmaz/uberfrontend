@@ -137,7 +137,7 @@ describe('ResumeArticle', () => {
     expect(linkTargets).toContain('/guides/interview-blueprint/coding-interviews');
     expect(linkTargets).toContain('/guides/interview-blueprint/system-design');
     expect(linkTargets).toContain('/guides/interview-blueprint/quiz');
-    expect(linkTargets).toContain('/guides/system-design-blueprint/radio-framework');
+    expect(linkTargets).toContain('/guides/behavioral/intro');
     expect(linkTargets).toContain('/react/coding/react-autocomplete-search-starter');
     expect(linkTargets).toContain('/system-design/component-design-system-architecture');
     expect(linkTargets).toContain('/system-design/realtime-search-debounce-cache');

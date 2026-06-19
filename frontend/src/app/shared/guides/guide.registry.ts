@@ -2216,16 +2216,131 @@ export const SYSTEM_GROUPS = [
 export const BEHAVIORAL: GuideEntry[] = [
     {
         slug: 'intro',
-        title: 'Behavioral Interviews: What Great Answers Look Like',
-        minutes: 12,
-        summary: 'A behavioral interview rubric for scoring signals, judgment, and high-signal stories that hiring teams remember.',
+        title: 'Frontend Behavioral Interview Questions: 12 STAR Answers',
+        minutes: 18,
+        summary: 'Practice 12 frontend behavioral interview questions with STAR(R) answer outlines, weak-vs-strong examples, scoring signals, and frontend scenarios.',
         seo: {
-            title: 'Behavioral Interview Guide: Scoring Signals and High-Signal Answers',
-            description: 'A behavioral interview rubric for scoring signals, judgment, and high-signal stories that hiring teams remember.',
-            primaryKeyword: 'behavioral interviews',
-            keywords: ['behavioral interviews', 'behavioral interview overview', 'what great behavioral answers look like'],
+            title: 'Frontend Behavioral Interview Questions: 12 STAR Answers',
+            description: 'Practice 12 frontend behavioral interview questions with STAR(R) answer outlines, weak-vs-strong examples, scoring signals, and frontend scenarios.',
+            primaryKeyword: 'frontend behavioral interview questions',
+            keywords: [
+                'frontend behavioral interview questions',
+                'frontend behavioral interview guide',
+                'behavioral interview answers for software engineers',
+                'STAR stories for frontend engineers',
+                'frontend interview behavioral questions',
+                'frontend behavioral interview examples',
+                'frontend developer behavioral interview questions and answers',
+                'software engineer behavioral interview stories',
+                'frontend STAR interview answers',
+                'frontend performance behavioral interview answer',
+                'frontend accessibility behavioral interview answer',
+                'frontend production incident behavioral interview answer',
+                'frontend conflict with design interview answer',
+                'frontend API conflict behavioral interview answer',
+                'ambiguous requirements frontend interview answer',
+            ],
+            faqPage: {
+                name: 'Frontend behavioral interview questions FAQ',
+                items: [
+                    {
+                        question: 'What frontend behavioral interview questions should I practice?',
+                        answer: 'Practice questions about performance, accessibility, incidents, API contracts, ambiguous requirements, design disagreements, mentoring, feedback, deadlines, and cross-functional launches.',
+                    },
+                    {
+                        question: 'How do frontend engineers prepare for behavioral interviews?',
+                        answer: 'Frontend engineers should prepare four to six stories that cover collaboration, ownership, ambiguity, incidents, accessibility, performance, and delivery trade-offs. Each story should use STAR(R), include a measurable result, and have a 60-90 second spoken version.',
+                    },
+                    {
+                        question: 'What STAR stories should frontend engineers prepare?',
+                        answer: 'Prepare stories about a performance win, accessibility push, incident or rollback, API contract conflict, ambiguous product scope, mentoring moment, and cross-functional disagreement.',
+                    },
+                    {
+                        question: 'How long should a behavioral answer be?',
+                        answer: 'Most behavioral answers should be about 60-90 seconds. Spend the early part on context and actions, then close with result, trade-off, and reflection.',
+                    },
+                    {
+                        question: 'What do frontend behavioral interviews evaluate?',
+                        answer: 'They evaluate communication, collaboration, ownership, judgment, growth, and whether your frontend decisions connect to user experience, accessibility, performance, reliability, and delivery quality.',
+                    },
+                    {
+                        question: 'How do I make a frontend behavioral answer stronger?',
+                        answer: 'Make the story specific, name the trade-offs, quantify the result, show how you worked with design, product, QA, or back-end partners, and explain what changed after the story.',
+                    },
+                    {
+                        question: 'Which frontend examples work best for behavioral interviews?',
+                        answer: 'Strong examples involve user-visible impact: performance regression recovery, accessible component decisions, incident response, API contract alignment, ambiguous feature scope, and mentoring or review systems.',
+                    },
+                ],
+            },
+            itemList: {
+                name: 'Frontend behavioral interview questions to practice',
+                items: [
+                    {
+                        name: 'Tell me about a time you improved frontend performance.',
+                        description: 'Practice a STAR(R) answer about profiling a slow route, reducing bundle or render cost, coordinating rollout, and proving Core Web Vitals recovery.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about a time you disagreed with design or product on a frontend decision.',
+                        description: 'Show how you influenced a UI decision with accessibility, usability, delivery risk, or measurable user impact.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about a production incident or rollback you handled.',
+                        description: 'Explain how you reduced blast radius, rolled back or flagged off a bad release, communicated status, and improved tests or monitoring.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about a conflict with a back-end team or API contract.',
+                        description: 'Describe how you aligned on schema, loading, pagination, errors, or cache behavior so the frontend could ship predictably.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about a project with ambiguous requirements.',
+                        description: 'Show how you mapped flows, named unknowns, created a thin-slice milestone, and made success measurable.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about an accessibility trade-off you influenced.',
+                        description: 'Connect user impact, standards, design constraints, and a pragmatic implementation path.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about a time you balanced quality and a tight deadline.',
+                        description: 'Show the trade-off, risk controls, release strategy, and what quality bar stayed non-negotiable.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about mentoring or leveling up another frontend engineer.',
+                        description: 'Explain the coaching loop, review habit, pairing approach, and team-level result.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about receiving difficult technical feedback and what changed.',
+                        description: 'Show self-awareness, behavior change, and how the feedback improved your work or team process.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about a technical decision you changed your mind on.',
+                        description: 'Show judgment, evidence gathering, humility, and how you communicated the updated direction.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about improving a review, testing, or release process.',
+                        description: 'Connect process improvement to fewer regressions, faster reviews, safer deploys, or clearer ownership.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                    {
+                        name: 'Tell me about coordinating a frontend launch across design, product, QA, and back-end.',
+                        description: 'Show cross-functional planning, dependency management, risk tracking, and launch communication.',
+                        url: '#frontend-behavioral-interview-questions-to-practice',
+                    },
+                ],
+            },
             publishedAt: '2025-10-01',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-18',
+            readerPromise: 'Use these 12 frontend behavioral interview questions to build STAR(R) answer outlines, compare weak and strong answers, and prepare frontend-specific examples before the call.',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-intro')
@@ -2233,16 +2348,97 @@ export const BEHAVIORAL: GuideEntry[] = [
     },
     {
         slug: 'big-picture',
-        title: 'Behavioral Interview Big Picture: How It Impacts Screening and Onsite',
-        minutes: 8,
-        summary: 'Understand where behavioral rounds affect screening and onsite decisions, and how to frame answers around the exact signals hiring teams score.',
+        title: 'Frontend Behavioral Interview Process: What Interviewers Score',
+        minutes: 14,
+        summary: 'Understand where frontend behavioral interviews fit in the hiring loop, what interviewers score, and how onsite signals affect decisions.',
         seo: {
-            title: 'Behavioral Interview Big Picture: How It Impacts Screening and Onsite',
-            description: 'Understand where behavioral rounds affect screening and onsite decisions, and how to frame answers around the exact signals hiring teams score.',
-            primaryKeyword: 'behavioral interview big picture',
-            keywords: ['behavioral interview big picture', 'behavioral screening and onsite', 'behavioral interview process'],
+            title: 'Frontend Behavioral Interview Process: What Interviewers Score',
+            description: 'See where behavioral rounds fit in frontend interviews, what hiring managers score onsite, and which stories reduce debrief risk.',
+            primaryKeyword: 'frontend behavioral interview process',
+            keywords: [
+                'frontend behavioral interview round',
+                'frontend behavioral onsite interview',
+                'frontend hiring manager interview',
+                'behavioral interview screening and onsite',
+                'frontend interview hiring signals',
+                'software engineer behavioral interview process',
+                'frontend behavioral interview scorecard',
+                'what do frontend behavioral interviewers look for',
+                'behavioral interview debrief signals',
+                'senior frontend engineer behavioral interview',
+                'frontend interview ownership examples',
+                'frontend production incident behavioral interview',
+            ],
+            faqPage: {
+                name: 'Frontend behavioral interview process FAQ',
+                items: [
+                    {
+                        question: 'Where do behavioral interviews fit in a frontend hiring process?',
+                        answer: 'Behavioral signals start in the recruiter screen, sharpen during the hiring manager conversation, and often decide close onsite loops during debrief or hiring committee review.',
+                    },
+                    {
+                        question: 'What do frontend behavioral interviewers look for?',
+                        answer: 'They look for ownership, communication, judgment, collaboration, growth, and whether your examples show reliable frontend delivery across product, design, backend, QA, accessibility, performance, and incidents.',
+                    },
+                    {
+                        question: 'What happens in a frontend behavioral onsite interview?',
+                        answer: 'The onsite round usually pressure-tests one or two real projects from several angles: what you owned, how you handled risk, how you aligned stakeholders, and what changed after the work shipped.',
+                    },
+                    {
+                        question: 'Can you fail a software engineer interview because of behavioral?',
+                        answer: 'Yes. Strong coding can still fail if the loop hears unclear ownership, poor conflict handling, blame, weak communication, or no learning from production mistakes.',
+                    },
+                    {
+                        question: 'How do behavioral signals affect onsite debrief decisions?',
+                        answer: 'Interviewers compare notes for repeatable evidence. Specific stories with actions, trade-offs, measurable results, and reflection reduce hiring risk; vague answers create leveling or trust concerns.',
+                    },
+                    {
+                        question: 'What behavioral signals matter for senior frontend engineers?',
+                        answer: 'Senior frontend candidates need examples of leverage: ambiguous scope ownership, technical direction, mentoring, cross-team influence, better release systems, and risk judgment around performance, accessibility, or reliability.',
+                    },
+                    {
+                        question: 'What frontend stories should I prepare for each round?',
+                        answer: 'Prepare stories about a performance regression, accessibility disagreement, incident rollback, API contract conflict, ambiguous PM or design scope, release risk, mentoring, and process improvement.',
+                    },
+                    {
+                        question: 'How is this different from frontend behavioral interview questions practice?',
+                        answer: 'This page explains the hiring process and scoring signals. The question practice page helps you turn those signals into STAR(R) answer outlines for specific prompts.',
+                    },
+                ],
+            },
+            itemList: {
+                name: 'Frontend behavioral interview process stages',
+                items: [
+                    {
+                        name: 'Recruiter screen',
+                        description: 'Checks motivation, communication, role fit, logistics, and a concise frontend impact headline.',
+                        url: '#frontend-behavioral-interview-stage-map',
+                    },
+                    {
+                        name: 'Hiring manager screen',
+                        description: 'Checks ownership level, collaboration habits, scope, and whether your frontend stories match the role.',
+                        url: '#frontend-behavioral-interview-stage-map',
+                    },
+                    {
+                        name: 'Onsite behavioral round',
+                        description: 'Checks past behavior under pressure through conflict, ambiguity, failure, judgment, and growth stories.',
+                        url: '#frontend-behavioral-interview-stage-map',
+                    },
+                    {
+                        name: 'Cross-functional round',
+                        description: 'Checks how you work with product, design, QA, backend, data, and support partners.',
+                        url: '#frontend-behavioral-interview-stage-map',
+                    },
+                    {
+                        name: 'Debrief and hiring committee',
+                        description: 'Turns interviewer notes into pass, mixed, or risk signals for the final hiring decision.',
+                        url: '#frontend-behavioral-interview-stage-map',
+                    },
+                ],
+            },
             publishedAt: '2025-10-01',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-18',
+            readerPromise: 'Use this frontend behavioral interview process guide to understand each hiring stage, the onsite signals interviewers score, and which stories to prepare before debrief.',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-big-picture')
@@ -2250,16 +2446,100 @@ export const BEHAVIORAL: GuideEntry[] = [
     },
     {
         slug: 'evaluation-areas',
-        title: 'Behavioral Interview Evaluation Areas',
-        minutes: 10,
-        summary: 'Use this behavioral interview scorecard for communication, collaboration, ownership, growth, and leadership so each story maps to clear hiring signals.',
+        title: 'Frontend Behavioral Interview Scorecard: 6 Signals',
+        minutes: 14,
+        summary: 'Use this frontend behavioral interview scorecard for communication, collaboration, ownership, growth, and leadership so each story maps to clear hiring signals.',
         seo: {
-            title: 'Behavioral Interview Scorecard: The Areas Hiring Teams Evaluate',
-            description: 'Use this interview scorecard to map stories to communication, collaboration, ownership, leadership, and growth signals that drive hiring decisions.',
-            primaryKeyword: 'behavioral interview scorecard',
-            keywords: ['behavioral interview scorecard', 'behavioral evaluation areas', 'behavioral interview competencies'],
+            title: 'Frontend Behavioral Interview Scorecard: 6 Signals',
+            description: 'See the 6 signals frontend interviewers score, weak-vs-strong evidence, seniority expectations, and stories that reduce debrief risk.',
+            primaryKeyword: 'frontend behavioral interview scorecard',
+            keywords: [
+                'frontend behavioral interview scorecard',
+                'behavioral interview scorecard',
+                'behavioral interview scorecard for software engineers',
+                'behavioral evaluation areas',
+                'behavioral interview competencies',
+                'what do behavioral interviewers evaluate',
+                'behavioral interview scoring rubric',
+                'frontend behavioral interview rubric',
+                'behavioral interview evaluation criteria',
+                'software engineer behavioral interview rubric',
+                'ownership behavioral interview signal',
+                'senior frontend behavioral interview signals',
+                'weak vs strong behavioral interview signals',
+                'frontend performance behavioral interview story',
+                'accessibility behavioral interview example',
+                'production incident behavioral interview example',
+                'API contract conflict behavioral interview',
+                'design disagreement behavioral interview frontend',
+            ],
+            faqPage: {
+                name: 'Frontend behavioral interview scorecard FAQ',
+                items: [
+                    {
+                        question: 'What do behavioral interviewers evaluate?',
+                        answer: 'Behavioral interviewers evaluate communication, collaboration, ownership, judgment, growth, and leadership signals. For frontend roles, they also look for evidence around accessibility, performance, release risk, API alignment, and cross-functional delivery.',
+                    },
+                    {
+                        question: 'How are behavioral interviews scored?',
+                        answer: 'Interviewers compare specific evidence from your stories against a scorecard. Clear actions, trade-offs, measurable results, and reflection reduce debrief risk; vague claims or blame create concern.',
+                    },
+                    {
+                        question: 'What is a strong ownership signal in a behavioral interview?',
+                        answer: 'A strong ownership signal shows that you found a risk, clarified the decision, coordinated the right people, followed through, measured the outcome, and improved the next release or process.',
+                    },
+                    {
+                        question: 'How do senior frontend engineers show behavioral signals?',
+                        answer: 'Senior frontend engineers show leverage: cross-functional risk management, mentoring, technical direction, better review or release systems, and decisions that help multiple teammates ship better work.',
+                    },
+                    {
+                        question: 'Which frontend stories map well to behavioral interview scorecards?',
+                        answer: 'Strong frontend stories include performance regressions, accessibility blockers, design disagreements, backend API contract conflicts, production rollbacks, ambiguous product scope, and mentoring or review process improvements.',
+                    },
+                    {
+                        question: 'How do I use a frontend behavioral interview scorecard to prepare?',
+                        answer: 'Pick six stories, tag each with two scorecard signals, add missing evidence such as trade-offs or metrics, then practice closing with the signal and result an interviewer can repeat in debrief.',
+                    },
+                ],
+            },
+            itemList: {
+                name: 'Frontend behavioral interview scorecard signals',
+                items: [
+                    {
+                        name: 'Communication',
+                        description: 'Explains context, decisions, and trade-offs clearly for the audience.',
+                        url: '#frontend-behavioral-interview-scorecard-signals',
+                    },
+                    {
+                        name: 'Collaboration',
+                        description: 'Shows how the candidate disagrees, aligns stakeholders, and preserves trust.',
+                        url: '#frontend-behavioral-interview-scorecard-signals',
+                    },
+                    {
+                        name: 'Ownership',
+                        description: 'Shows risk discovery, follow-through, coordination, and measurable outcomes.',
+                        url: '#frontend-behavioral-interview-scorecard-signals',
+                    },
+                    {
+                        name: 'Judgment',
+                        description: 'Shows practical trade-offs across user impact, quality, reliability, and deadlines.',
+                        url: '#frontend-behavioral-interview-scorecard-signals',
+                    },
+                    {
+                        name: 'Growth',
+                        description: 'Shows how feedback or mistakes changed behavior, systems, or guardrails.',
+                        url: '#frontend-behavioral-interview-scorecard-signals',
+                    },
+                    {
+                        name: 'Leadership and seniority',
+                        description: 'Shows mentoring, team leverage, repeatable systems, and broader alignment.',
+                        url: '#frontend-behavioral-interview-scorecard-signals',
+                    },
+                ],
+            },
             publishedAt: '2025-10-01',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-18',
+            readerPromise: 'Use this frontend behavioral interview scorecard to map frontend stories to communication, collaboration, ownership, judgment, growth, and seniority signals before the interview.',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-evaluation-areas')
