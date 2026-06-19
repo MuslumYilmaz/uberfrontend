@@ -25,7 +25,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Use this 5-step frontend system design answer flow as a quick-start structure.
         It helps you clarify the problem, map the UI, define state and API contracts,
         choose architecture, and close with trade-offs before you go deeper with the
-        <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">RADIO framework</a>.
+        <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">frontend system design answer template</a>.
         If you are wondering how to answer frontend system design interview prompts
         without losing the thread, this is the lightweight structure to keep open.
       </p>
@@ -252,7 +252,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <p>
         This page gives you a compact frontend system design interview structure.
         Use it when you need a quick answer flow. The
-        <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">RADIO framework</a>
+        <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">45-minute answer script</a>
         is the deeper answer template for expanding Requirements, Architecture, Data, Interface,
         and Optimizations in a 45-minute interview.
       </p>

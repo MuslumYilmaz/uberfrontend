@@ -161,10 +161,10 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   readonly startSteps = [
     {
       step: 'Step 1',
-      title: 'Learn RADIO',
-      detail: 'Use the frontend system design interview framework before you open a prompt.',
+      title: 'Learn the 45-minute answer script',
+      detail: 'Use the 45-minute answer script before you open a prompt.',
       route: ['/', 'guides', 'system-design-blueprint', 'radio-framework'],
-      cta: 'Frontend system design interview framework',
+      cta: 'Frontend system design interview answer template',
     },
     {
       step: 'Step 2',

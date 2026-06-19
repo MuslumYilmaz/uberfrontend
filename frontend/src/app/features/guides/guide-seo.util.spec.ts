@@ -377,6 +377,83 @@ describe('guide-seo.util', () => {
     ]);
   });
 
+  it('targets frontend behavioral interview prep plan intent with FAQ and 7-day ItemList schema', () => {
+    const prep = BEHAVIORAL.find((entry) => entry.slug === 'prep');
+    expect(prep).toBeDefined();
+
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'Behavioral Blueprint',
+      'behavioral',
+      prep!
+    );
+
+    expect(meta.title).toBe('Frontend Behavioral Interview Prep Plan: 7 Days');
+    expect(meta.canonical).toBe('https://frontendatlas.com/guides/behavioral/prep');
+    expect(meta.description).toBe(
+      'Build a frontend behavioral interview prep plan with STAR(R) stories, a 7-day routine, weak-vs-strong notes, seniority signals, and final questions.'
+    );
+    expect(meta.keywords).toEqual([
+      'frontend behavioral interview prep plan',
+      'frontend behavioral interview preparation',
+      'STAR stories for frontend engineers',
+      'frontend behavioral story bank',
+      'software engineer behavioral interview prep',
+      'software engineer behavioral interview prep plan',
+      'behavioral interview practice plan',
+      'frontend performance behavioral interview story',
+      'accessibility behavioral interview example',
+      'API contract conflict behavioral interview',
+      'production incident behavioral interview example',
+      'design disagreement behavioral interview frontend',
+      'frontend behavioral interview final questions',
+      'frontend behavioral interview mock practice',
+      'senior frontend behavioral interview preparation',
+    ]);
+
+    const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
+    const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+
+    expect(breadcrumb).toBeTruthy();
+    expect(article?.headline).toBe('Frontend Behavioral Interview Prep Plan: 7 Days');
+    expect(article?.description).toBe(
+      'Build a frontend behavioral interview prep plan with STAR(R) stories, a 7-day routine, weak-vs-strong notes, seniority signals, and final questions.'
+    );
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Team',
+    });
+    expect(itemList?.name).toBe('7-day frontend behavioral interview prep plan');
+    expect(itemList?.itemListElement?.length).toBe(7);
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.name)).toEqual([
+      'Day 1: Collect frontend stories',
+      'Day 2: Map stories to signals',
+      'Day 3: Write STAR(R) notes',
+      'Day 4: Quantify impact and trade-offs',
+      'Day 5: Practice follow-up questions',
+      'Day 6: Prepare final questions',
+      'Day 7: Run a night-before tune-up',
+    ]);
+    expect(itemList?.itemListElement?.[0]?.url).toBe(
+      'https://frontendatlas.com/guides/behavioral/prep#7-day-frontend-behavioral-interview-prep-plan'
+    );
+    expect(faqPage?.name).toBe('Frontend behavioral interview prep plan FAQ');
+    expect(faqPage?.mainEntity?.length).toBe(7);
+    expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
+      'How should frontend engineers prepare for behavioral interviews?',
+      'How many behavioral stories should I prepare?',
+      'What frontend stories work best for behavioral interviews?',
+      'What does STAR(R) mean in behavioral interview prep?',
+      'How do I avoid sounding rehearsed in a behavioral interview?',
+      'How should senior frontend engineers prepare differently?',
+      'What should I review the night before a behavioral interview?',
+    ]);
+  });
+
   it('targets frontend interview fundamentals quiz intent with FAQ and diagnostic ItemList schema', () => {
     const quiz = PLAYBOOK.find((entry) => entry.slug === 'quiz');
     expect(quiz).toBeDefined();
@@ -621,7 +698,7 @@ describe('guide-seo.util', () => {
     expect(itemList?.itemListElement?.length).toBe(10);
     expect(itemList?.itemListElement?.[0]?.name).toBe('Realtime search autocomplete');
     expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/system-design/realtime-search-debounce-cache');
-    expect(itemList?.itemListElement?.[9]?.name).toBe('RADIO framework guide');
+    expect(itemList?.itemListElement?.[9]?.name).toBe('45-minute answer script');
     expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(faqPage?.name).toBe('Frontend system design interview framework FAQ');
     expect(faqPage?.mainEntity?.length).toBe(6);
@@ -897,19 +974,21 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('RADIO Framework: Frontend System Design Interview Guide');
+    expect(meta.title).toBe('Frontend System Design Interview Answer Template: 45-Minute RADIO');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(meta.description).toBe(
-      'Use the RADIO approach for frontend system design interviews: Requirements, Architecture, Data, Interface, Optimizations, plus a 45-minute script and examples.',
+      'Copy a 45-minute frontend system design RADIO answer script: requirements, architecture, data, interface, optimizations, timeline, examples.',
     );
-    expect(meta.description).toMatch(/RADIO approach/i);
-    expect(meta.description).toMatch(/frontend system design interviews/i);
+    expect(meta.description).toMatch(/answer script/i);
+    expect(meta.description).toMatch(/frontend system design RADIO/i);
     expect(meta.description).toMatch(/requirements/i);
     expect(meta.description).toMatch(/interface/i);
-    expect(meta.description).toMatch(/45-minute script/i);
+    expect(meta.description).toMatch(/45-minute/i);
+    expect(meta.keywords?.[0]).toBe('frontend system design interview answer template');
     expect(meta.keywords).toContain('RADIO framework frontend system design');
     expect(meta.keywords).toContain('frontend system design interview answer template');
+    expect(meta.keywords).toContain('45 minute frontend system design interview framework');
     expect(meta.keywords).toContain('RADIO answer template');
     expect(meta.keywords).toContain('RADIO framework for frontend system design interviews');
     expect(meta.keywords).toContain('frontend system design interview checklist');
@@ -928,23 +1007,48 @@ describe('guide-seo.util', () => {
 
     const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
-    expect(article?.keywords).toContain('RADIO framework frontend system design');
+    expect(article?.headline).toBe('Frontend System Design Interview Answer Template: 45-Minute RADIO');
+    expect(article?.description).toBe(
+      'Copy a 45-minute frontend system design RADIO answer script: requirements, architecture, data, interface, optimizations, timeline, examples.'
+    );
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview answer template');
+    expect(article?.keywords).toContain('RADIO framework frontend system design');
     expect(article?.keywords).toContain('frontend system design interface API taxonomy');
-    expect(faqPage?.name).toBe('RADIO framework frontend system design interview FAQ');
+    expect(itemList?.name).toBe('Frontend system design answer template sections');
+    expect(itemList?.itemListElement?.length).toBe(5);
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.name)).toEqual([
+      'Opening script',
+      '45-minute timeline',
+      'Requirements checklist',
+      'Interface and API checklist',
+      'Autocomplete, news feed, and chat examples',
+    ]);
+    expect(itemList?.itemListElement?.[0]?.description).toContain('Copy the first minute');
+    expect(itemList?.itemListElement?.[0]?.url).toBe(
+      'https://frontendatlas.com/guides/system-design-blueprint/radio-framework#frontend-system-design-interview-answer-template'
+    );
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.url)).toEqual([
+      'https://frontendatlas.com/guides/system-design-blueprint/radio-framework#frontend-system-design-interview-answer-template',
+      'https://frontendatlas.com/guides/system-design-blueprint/radio-framework#45-minute-interview-timeline',
+      'https://frontendatlas.com/guides/system-design-blueprint/radio-framework#radio-requirements',
+      'https://frontendatlas.com/guides/system-design-blueprint/radio-framework#radio-interface',
+      'https://frontendatlas.com/guides/system-design-blueprint/radio-framework#run-radio-on-autocomplete-news-feed-and-chat',
+    ]);
+    expect(faqPage?.name).toBe('Frontend system design answer template FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);
     expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
-      'What is the RADIO framework in frontend system design?',
       'How do I use RADIO to answer a frontend system design interview question?',
       'What should I draw during a RADIO answer?',
       'How do I use RADIO for autocomplete, news feed, or chat?',
+      'What is the RADIO framework in frontend system design?',
       'Is RADIO the best framework for frontend system design interviews?',
     ]);
-    expect(faqPage?.mainEntity?.[0]?.acceptedAnswer?.text).toBe(
-      'RADIO is the frontend system design interview approach: Requirements, Architecture, Data, Interface, and Optimizations. Use it as a 45-minute answer template with diagrams, checklist, and autocomplete, news feed, and chat examples.',
+    expect(faqPage?.mainEntity?.[3]?.acceptedAnswer?.text).toBe(
+      'RADIO stands for Requirements, Architecture, Data, Interface, and Optimizations. It is a frontend system design interview framework for turning broad UI architecture prompts into a structured 45-minute answer with diagrams, contracts, and trade-offs.',
     );
   });
 

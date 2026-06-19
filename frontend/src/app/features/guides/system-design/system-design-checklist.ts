@@ -190,7 +190,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'evaluation']">Frontend system design interview rubric</a>: score the strength of your answer.</li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'pitfalls']">Frontend system design mistakes to avoid</a>: repair weak signals during the answer.</li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Frontend system design performance guide</a>: deepen metrics, budgets, and validation.</li>
-        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">RADIO framework answer structure</a>: rebuild the full answer flow.</li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">frontend system design answer template</a>: rebuild the full answer flow.</li>
       </ul>
     </fa-guide-shell>
   `,

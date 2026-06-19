@@ -482,12 +482,12 @@ type FaqItem = {
     <div class="wrap" data-testid="system-blueprint-hub">
       <h1 class="hero-title">Frontend System Design Interview Blueprint</h1>
       <p class="hero-sub">
-        Use this frontend system design interview blueprint with the RADIO framework,
+        Use this frontend system design interview blueprint with the RADIO answer template,
         a 45-minute interview flow, a frontend system design interview checklist,
         examples, and real prompts.
       </p>
       <div class="pill-row" aria-label="Frontend system design blueprint coverage">
-        <span class="pill fa-chip fa-chip--label">RADIO framework</span>
+        <span class="pill fa-chip fa-chip--label">RADIO answer template</span>
         <span class="pill fa-chip fa-chip--label">45-minute answer flow</span>
         <span class="pill fa-chip fa-chip--label">Frontend architecture</span>
         <span class="pill fa-chip fa-chip--label">Final review checklist</span>
@@ -544,18 +544,18 @@ type FaqItem = {
 
       <section class="blueprint-section" aria-labelledby="blueprint-radio-title" data-testid="system-blueprint-radio-flow">
         <div class="section-head">
-          <p class="section-kicker">Answer framework</p>
-          <h2 id="blueprint-radio-title">Use RADIO in a 45-minute frontend system design interview</h2>
+          <p class="section-kicker">Answer template</p>
+          <h2 id="blueprint-radio-title">Use the 45-minute frontend system design answer template</h2>
           <p>
-            RADIO is the frontend system design interview answer template: move from scope
+            The RADIO answer script helps you move from scope
             to architecture, data, interface, and the highest-risk optimizations without
             turning the interview into a checklist dump.
           </p>
         </div>
-        <section class="radio-start" aria-label="Start with RADIO framework">
+        <section class="radio-start" aria-label="Start with the answer template">
           <h3 class="radio-start__title">
             <a class="radio-start__link" [routerLink]="['/','guides','system-design-blueprint','radio-framework']">
-              Start with the RADIO answer template
+              Start with the frontend system design interview answer template
             </a>
           </h3>
           <p class="radio-start__summary">
@@ -838,9 +838,9 @@ export class SystemDesignIndexComponent implements OnInit {
     },
     {
       step: 'Step 2',
-      title: 'Learn the RADIO answer template',
+      title: 'Learn the frontend system design answer template',
       detail: 'Use one structure to move from requirements to optimizations in a timed interview.',
-      cta: 'Open RADIO',
+      cta: 'Open the 45-minute answer script',
       route: ['/', 'guides', 'system-design-blueprint', 'radio-framework'],
       path: '/guides/system-design-blueprint/radio-framework',
     },
@@ -980,7 +980,7 @@ export class SystemDesignIndexComponent implements OnInit {
     this.seo.updateTags({
       title: 'Frontend System Design Interview Blueprint',
       description:
-        'Use a frontend system design interview blueprint with the RADIO framework, checklist, examples, and real prompts for 45-minute architecture prep.',
+        'Use a frontend system design interview blueprint with a 45-minute answer template, checklist, examples, and real prompts for architecture prep.',
       canonical: canonicalPath,
       keywords: [
         'frontend system design interview blueprint',

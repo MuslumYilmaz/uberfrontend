@@ -48,13 +48,13 @@ describe('SystemDesignIndexComponent', () => {
     expect(pageText).toContain('Frontend System Design Interview Blueprint');
     expect(pageText).toContain('What frontend system design interviews actually test');
     expect(pageText).toContain('Frontend vs backend system design');
-    expect(pageText).toContain('Use RADIO in a 45-minute frontend system design interview');
+    expect(pageText).toContain('Use the 45-minute frontend system design answer template');
     expect(pageText).toContain('Most asked frontend system design prompts');
     expect(pageText).toContain('Recommended study order');
     expect(pageText).toContain('Frontend system design blueprint FAQ');
     expect(pageText).toContain('What should a frontend system design interview checklist include?');
     expect(pageText).toContain('Browser experience, rendering strategy, client state');
-    expect(pageText).toContain('RADIO framework');
+    expect(pageText).toContain('RADIO answer template');
     expect(pageText).toContain('Performance optimization');
     expect(pageText).toContain('Core Web Vitals');
     expect(hasLink('/machine-coding')).toBeTrue();
@@ -100,7 +100,7 @@ describe('SystemDesignIndexComponent', () => {
 
     expect(chapterCards.length).toBe(SYSTEM.length);
     expect(text()).toContain('Front-End System Design: What It Really Tests');
-    expect(text()).toContain('RADIO Framework: Frontend System Design Interview Guide');
+    expect(text()).toContain('Frontend System Design Interview Answer Template: 45-Minute RADIO');
     expect(text()).toContain('Frontend System Design Interview Rubric and Scorecard');
     expect(text()).toContain('Use a frontend system design interview rubric to score requirements');
     expect(text()).toContain('Frontend System Design Interview Pitfalls and Red Flags');
@@ -125,7 +125,7 @@ describe('SystemDesignIndexComponent', () => {
 
     expect(payload.title).toBe('Frontend System Design Interview Blueprint');
     expect(payload.description).toBe(
-      'Use a frontend system design interview blueprint with the RADIO framework, checklist, examples, and real prompts for 45-minute architecture prep.',
+      'Use a frontend system design interview blueprint with a 45-minute answer template, checklist, examples, and real prompts for architecture prep.',
     );
     expect(payload.canonical).toBe('/guides/system-design-blueprint');
     expect(payload.keywords).toContain('frontend system design interview blueprint');

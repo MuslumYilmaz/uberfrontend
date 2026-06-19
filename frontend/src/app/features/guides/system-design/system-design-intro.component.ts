@@ -209,7 +209,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </p>
       <ol>
         <li>Start with <a [routerLink]="['/guides/system-design-blueprint/foundations']">scope, constraints, and trade-offs</a>.</li>
-        <li>Learn the <a [routerLink]="['/guides/system-design-blueprint/radio-framework']">RADIO framework answer template</a>.</li>
+        <li>Learn the <a [routerLink]="['/guides/system-design-blueprint/radio-framework']">frontend system design answer template</a>.</li>
         <li>
           Deep dive the weakest RADIO step:
           <a [routerLink]="['/guides/system-design-blueprint/radio-requirements']">Requirements</a>,
@@ -266,7 +266,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h3>Where should I practice after this frontend system design intro?</h3>
       <p>
-        Move into the <a [routerLink]="['/guides/system-design-blueprint/radio-framework']">RADIO framework</a>,
+        Move into the <a [routerLink]="['/guides/system-design-blueprint/radio-framework']">45-minute answer script</a>,
         then practice real prompts under <a [routerLink]="['/system-design']">frontend system design questions</a>.
       </p>
     </fa-guide-shell>

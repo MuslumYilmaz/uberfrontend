@@ -484,7 +484,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>Next</h2>
       <ul>
-        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">RADIO framework cheat sheet</a></li>
+        <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">45-minute RADIO interview framework</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">A - Architecture deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">D - Data model deep dive</a></li>
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">I - Interface deep dive</a></li>

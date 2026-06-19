@@ -63,6 +63,53 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       margin-bottom: 10px;
     }
 
+    .answer-asset table {
+      margin: 12px 0;
+    }
+
+    .template-includes {
+      margin: 12px 0;
+      padding: 12px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+    }
+
+    .template-includes__title {
+      margin: 0 0 8px;
+      color: var(--uf-text-primary);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .template-includes__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .template-includes__links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 76%, var(--uf-accent) 24%);
+      border-radius: 999px;
+      color: var(--uf-text-primary);
+      background: color-mix(in srgb, var(--uf-surface) 88%, var(--uf-surface-alt));
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .template-includes__links a:hover {
+      border-color: color-mix(in srgb, var(--uf-accent) 56%, var(--uf-border-subtle));
+      color: var(--uf-accent-strong);
+    }
+
     .asset-signals {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -331,36 +378,74 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       .radio-flow {
         grid-template-columns: 1fr;
       }
+
+      .template-includes__links {
+        display: grid;
+      }
     }
   `],
   template: `
       <fa-guide-shell
-      title="RADIO Framework: Frontend System Design Interview Guide"
+      title="Frontend System Design Interview Answer Template: 45-Minute RADIO"
       [minutes]="20"
-      [tags]="['system design', 'interview prep', 'radio framework']"
+      [tags]="['system design', 'answer template', 'radio framework']"
       [prev]="prev"
       [next]="next"
       [leftNav]="leftNav"
       [readerPromise]="readerPromise || undefined">
 
       <section class="answer-asset" aria-label="Frontend system design interview answer asset">
-        <h2>Use this if your interviewer asks: "How would you design X?"</h2>
+        <h2 id="frontend-system-design-interview-answer-template">Copy the frontend system design interview answer template</h2>
         <p>
-          RADIO is the frontend system design interview approach: Requirements, Architecture, Data,
-          Interface, and Optimizations. Use it as a 45-minute answer template with diagrams,
-          checklist, and autocomplete, news feed, and chat examples.
+          Copy this 45-minute frontend system design RADIO answer script when the prompt is broad and
+          the interviewer expects a structured answer, not a definition. Start with the script, then use
+          the timeline, diagram checklist, and examples to adapt it out loud.
         </p>
+        <p>
+          RADIO means <strong>Requirements, Architecture, Data, Interface, and Optimizations</strong>.
+          Keep one user flow as the thread from requirements to optimizations.
+        </p>
+        <div class="template-includes" aria-label="Template includes">
+          <p class="template-includes__title">Template includes</p>
+          <ul class="template-includes__links">
+            <li><a href="#frontend-system-design-interview-answer-template">Copy script</a></li>
+            <li><a href="#45-minute-interview-timeline">45-minute timeline</a></li>
+            <li><a href="#radio-requirements">Diagram checklist</a></li>
+            <li><a href="#run-radio-on-autocomplete-news-feed-and-chat">Examples</a></li>
+          </ul>
+        </div>
+        <pre class="answer-template"><code>Opening:
+I will answer this with RADIO: Requirements, Architecture, Data, Interface, and Optimizations.
+I will keep one core user flow as the thread and call out trade-offs as constraints change.
+
+0:00-0:06 Requirements:
+I will clarify the primary user, core flow, must-haves, non-goals, scale, latency, accessibility, and success metrics.
+
+0:06-0:15 Architecture:
+I will draw the browser/app shell, rendering strategy, state layer, API or BFF boundary, and failure paths.
+
+0:15-0:20 Data:
+I will define entities, server truth, client-only state, cache keys, invalidation, and stale-state behavior.
+
+0:20-0:27 Interface:
+I will define component ownership, APIs or events, loading/empty/error states, keyboard behavior, and announcements.
+
+0:27-0:42 Optimizations:
+I will pick the riskiest constraint and discuss performance budget, reliability, observability, security, and trade-offs.
+
+0:42-0:45 Recap:
+I would ship the simple path first, instrument the risky flow, and use metrics to choose the next iteration.</code></pre>
         <div class="asset-signals">
           <div class="asset-signal">
-            <strong>Copyable 45-minute answer structure</strong>
-            <span>Start with the template below, then adapt the timebox to the prompt and interviewer.</span>
+            <strong>Copyable 45-minute answer script</strong>
+            <span>Start from the script above, then adapt the timebox to the prompt and interviewer.</span>
           </div>
           <div class="asset-signal">
             <strong>Works for autocomplete, news feed, chat, dashboards, and design systems</strong>
             <span>Keep one core flow as the thread while the product surface changes.</span>
           </div>
           <div class="asset-signal">
-            <strong>Turn a broad prompt into a 45-minute frontend system design interview answer.</strong>
+            <strong>Turn a broad prompt into a complete frontend system design interview answer.</strong>
             <span>Use RADIO to clarify scope, sketch architecture, define data and interface contracts, and close with measurable trade-offs.</span>
           </div>
         </div>
@@ -368,17 +453,17 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
       <h2>If You Remember Only One Thing (60 seconds)</h2>
       <p>
-        RADIO is a practical <strong>frontend system design interview prep framework</strong>, not just an acronym to
+        RADIO is a practical <strong>frontend system design interview answer template</strong>, not just an acronym to
         memorize. Use the RADIO method when you need to move from requirements to architecture, data model, interface,
         and optimizations without rambling. In a 45-minute or 60-minute interview, Requirements defines scope,
         Architecture explains the system shape, Data model covers contracts and state, Interface maps user behavior,
         and Optimizations closes with performance, reliability, observability, security, and trade-offs.
       </p>
 
-      <h2>RADIO approach: Requirements, Architecture, Data, Interface, Optimizations</h2>
+      <h2 id="radio-approach-requirements-architecture-data-interface-opti">RADIO approach: Requirements, Architecture, Data, Interface, Optimizations</h2>
       <p>
-        Use this RADIO framework frontend system design snapshot when you need the short version:
-        each step has a purpose, a visible output, and a signal the interviewer can score.
+        Use this requirements architecture data interface optimizations template when you need the short version:
+        each RADIO step has a purpose, a visible output, and a signal the interviewer can score.
       </p>
       <table>
         <thead>
@@ -432,7 +517,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><strong>Optimizations:</strong> you can prioritize performance, reliability, observability, security, and trade-offs.</li>
       </ul>
 
-      <h2>45-minute interview flow</h2>
+      <h2 id="45-minute-interview-flow">45-minute interview flow</h2>
       <div class="radio-flow" aria-label="45-minute RADIO interview flow">
         <div class="radio-flow-step">
           <strong>Requirements</strong>
@@ -456,32 +541,55 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </div>
       </div>
 
-      <h2>Frontend system design interview answer template</h2>
+      <h2>RADIO definition table: what to say and draw</h2>
       <p>
-        Use this copyable 45-minute answer structure when the prompt is broad and the interviewer expects
-        a practical path from requirements to implementation trade-offs.
+        Use this table after you have the script: it translates each RADIO step into the words and
+        diagram artifacts an interviewer can follow.
       </p>
-      <pre class="answer-template"><code>Opening:
-I will answer this with RADIO: Requirements, Architecture, Data, Interface, and Optimizations.
-I will keep one core user flow as the thread and call out trade-offs as constraints change.
-
-0:00-0:06 Requirements:
-I will clarify the primary user, core flow, must-haves, non-goals, scale, latency, accessibility, and success metrics.
-
-0:06-0:15 Architecture:
-I will draw the browser/app shell, rendering strategy, state layer, API or BFF boundary, and failure paths.
-
-0:15-0:20 Data:
-I will define entities, server truth, client-only state, cache keys, invalidation, and stale-state behavior.
-
-0:20-0:27 Interface:
-I will define component ownership, APIs or events, loading/empty/error states, keyboard behavior, and announcements.
-
-0:27-0:42 Optimizations:
-I will pick the riskiest constraint and discuss performance budget, reliability, observability, security, and trade-offs.
-
-0:42-0:45 Recap:
-I would ship the simple path first, instrument the risky flow, and use metrics to choose the next iteration.</code></pre>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="RADIO definition table">
+        <table>
+          <thead>
+            <tr>
+              <th>Letter</th>
+              <th>Meaning</th>
+              <th>What to say</th>
+              <th>What to draw</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>R</strong></td>
+              <td>Requirements</td>
+              <td>Clarify the user flow, constraints, non-goals, and success metrics.</td>
+              <td>Scope box and must-have/non-goal list.</td>
+            </tr>
+            <tr>
+              <td><strong>A</strong></td>
+              <td>Architecture</td>
+              <td>Pick rendering, state ownership, API boundaries, and failure paths.</td>
+              <td>Client architecture and request flow.</td>
+            </tr>
+            <tr>
+              <td><strong>D</strong></td>
+              <td>Data</td>
+              <td>Define entities, server truth, client state, cache keys, and invalidation.</td>
+              <td>Data contract and UI state map.</td>
+            </tr>
+            <tr>
+              <td><strong>I</strong></td>
+              <td>Interface</td>
+              <td>Specify component APIs, interactions, loading/error states, and accessibility.</td>
+              <td>Component ownership and interaction states.</td>
+            </tr>
+            <tr>
+              <td><strong>O</strong></td>
+              <td>Optimizations</td>
+              <td>Close with performance, reliability, observability, security, and rollout trade-offs.</td>
+              <td>Optimization backlog and risk list.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>How to answer a frontend system design interview in 45 minutes</h2>
       <ul class="mini-checklist">
@@ -543,7 +651,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
 
       <h2>RADIO Cheat Sheet</h2>
       <div class="radio-steps">
-        <article class="radio-step">
+        <article id="radio-requirements" class="radio-step">
           <div class="radio-step-head">
             <span class="radio-letter">R</span>
             <div>
@@ -583,7 +691,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
           </div>
         </article>
 
-        <article class="radio-step">
+        <article id="radio-architecture" class="radio-step">
           <div class="radio-step-head">
             <span class="radio-letter">A</span>
             <div>
@@ -623,7 +731,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
           </div>
         </article>
 
-        <article class="radio-step">
+        <article id="radio-data" class="radio-step">
           <div class="radio-step-head">
             <span class="radio-letter">D</span>
             <div>
@@ -663,7 +771,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
           </div>
         </article>
 
-        <article class="radio-step">
+        <article id="radio-interface" class="radio-step">
           <div class="radio-step-head">
             <span class="radio-letter">I</span>
             <div>
@@ -703,7 +811,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
           </div>
         </article>
 
-        <article class="radio-step">
+        <article id="radio-optimizations" class="radio-step">
           <div class="radio-step-head">
             <span class="radio-letter">O</span>
             <div>
@@ -744,7 +852,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         </article>
       </div>
 
-      <h2>45-minute interview timeline</h2>
+      <h2 id="45-minute-interview-timeline">45-minute interview timeline</h2>
       <table>
         <thead>
           <tr>
@@ -844,7 +952,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         </tbody>
       </table>
 
-      <h2>Candidate script</h2>
+      <h2 id="candidate-script">Candidate script</h2>
       <ol class="script-cues">
         <li><strong>Opening:</strong> I will use RADIO to move from requirements to architecture, data, interface, and the highest-risk deep dive.</li>
         <li><strong>Requirements lock:</strong> Before drawing, I want to confirm the primary user, top flow, must-haves, non-goals, and success metrics.</li>
@@ -905,7 +1013,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         </tbody>
       </table>
 
-      <h2>Example: Answer autocomplete with RADIO</h2>
+      <h2 id="example-answer-autocomplete-with-radio">Example: Answer autocomplete with RADIO</h2>
       <p>
         This frontend system design interview example shows how to answer autocomplete with RADIO in a short,
         complete pass before the interviewer asks for deeper trade-offs.
@@ -941,7 +1049,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         </section>
       </div>
 
-      <h2>Run RADIO on autocomplete, news feed, and chat</h2>
+      <h2 id="run-radio-on-autocomplete-news-feed-and-chat">Run RADIO on autocomplete, news feed, and chat</h2>
       <table>
         <thead>
           <tr>
@@ -1060,13 +1168,6 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
       </table>
 
       <h2>RADIO Framework FAQ</h2>
-      <h3>What is the RADIO framework in frontend system design?</h3>
-      <p>
-        RADIO is the frontend system design interview approach: Requirements, Architecture, Data,
-        Interface, and Optimizations. Use it as a 45-minute answer template with diagrams,
-        checklist, and autocomplete, news feed, and chat examples.
-      </p>
-
       <h3>How do I use RADIO to answer a frontend system design interview question?</h3>
       <p>
         Start by clarifying the user flow and constraints, then sketch the frontend architecture, model server and
@@ -1085,6 +1186,13 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         Keep the RADIO steps stable while the prompt changes. For autocomplete, go deep on stale requests and
         combobox behavior; for news feed, pagination and cache consistency; for chat, realtime events, drafts,
         and recovery.
+      </p>
+
+      <h3>What is the RADIO framework in frontend system design?</h3>
+      <p>
+        RADIO stands for Requirements, Architecture, Data, Interface, and Optimizations.
+        It is a frontend system design interview framework for turning broad UI architecture
+        prompts into a structured 45-minute answer with diagrams, contracts, and trade-offs.
       </p>
 
       <h3>Is RADIO the best framework for frontend system design interviews?</h3>
