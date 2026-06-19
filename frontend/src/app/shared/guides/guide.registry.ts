@@ -1239,7 +1239,7 @@ export const PLAYBOOK: GuideEntry[] = [
                     },
                     {
                         question: 'What should I practice for a frontend architecture interview?',
-                        answer: 'Practice realtime search first, then move through infinite scroll, news feed, notification systems, AI chat UI, design systems, live comments, dashboard widgets, and the deeper RADIO framework.',
+                        answer: 'Practice realtime search first, then move through infinite scroll, news feed, notification systems, AI chat UI, design systems, live comments, dashboard widgets, and the deeper 45-minute answer script.',
                     },
                 ],
             },
@@ -1255,7 +1255,7 @@ export const PLAYBOOK: GuideEntry[] = [
                     { name: 'Live comments global stream', description: 'Practice realtime updates, backpressure, batching, moderation states, and scroll behavior.', url: '/system-design/live-comments-global-stream' },
                     { name: 'Dashboard widgets', description: 'Practice layout persistence, drag and resize state, chart loading, permissions, and performance budgets.', url: '/system-design/dashboard-widgets-draggable-resizable' },
                     { name: 'React autocomplete coding drill', description: 'Turn the autocomplete system design into working UI behavior and async correctness.', url: '/react/coding/react-autocomplete-search-starter' },
-                    { name: 'RADIO framework guide', description: 'Go deeper on requirements, architecture, data, interfaces, and optimizations.', url: '/guides/system-design-blueprint/radio-framework' },
+                    { name: '45-minute answer script', description: 'Go deeper on requirements, architecture, data, interfaces, and optimizations.', url: '/guides/system-design-blueprint/radio-framework' },
                 ],
             },
             readerPromise: 'Use this frontend system design interview framework to structure a 45-minute answer, walk through autocomplete, compare against a rubric, and move into direct FrontendAtlas practice prompts.',
@@ -1519,7 +1519,7 @@ export const SYSTEM: GuideEntry[] = [
                     },
                     {
                         question: 'Where should I practice after this frontend system design intro?',
-                        answer: 'After the intro, learn the RADIO framework, review the weakest deep dive, then practice real prompts such as infinite scroll, realtime search, news feeds, notifications, AI chat UI, and design system architecture.',
+                        answer: 'After the intro, learn the frontend system design interview answer template, review the weakest RADIO deep dive, then practice real prompts such as infinite scroll, realtime search, news feeds, notifications, AI chat UI, and design system architecture.',
                     },
                 ],
             },
@@ -1634,20 +1634,22 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'RADIO Framework: Frontend System Design Interview Guide',
+        title: 'Frontend System Design Interview Answer Template: 45-Minute RADIO',
         minutes: 20,
-        summary: 'Use the RADIO framework to structure frontend system design interview prep across requirements, architecture, data, interfaces, performance, and closing scripts.',
+        summary: 'Copy a 45-minute frontend system design RADIO answer script with requirements, architecture, data, interface, optimizations, timeline, and examples.',
         seo: {
-            title: 'RADIO Framework: Frontend System Design Interview Guide',
-            description: 'Use the RADIO approach for frontend system design interviews: Requirements, Architecture, Data, Interface, Optimizations, plus a 45-minute script and examples.',
-            primaryKeyword: 'RADIO framework frontend system design',
+            title: 'Frontend System Design Interview Answer Template: 45-Minute RADIO',
+            description: 'Copy a 45-minute frontend system design RADIO answer script: requirements, architecture, data, interface, optimizations, timeline, examples.',
+            primaryKeyword: 'frontend system design interview answer template',
             keywords: [
                 'frontend system design interview answer template',
+                '45 minute frontend system design interview framework',
+                'how to answer frontend system design interview',
+                'RADIO framework frontend system design',
                 'RADIO answer template',
                 'RADIO framework for frontend system design interviews',
                 'frontend system design interview checklist',
                 'frontend system design 45 minute framework',
-                'how to answer frontend system design interview',
                 'requirements architecture data interface optimizations',
                 'what is the RADIO framework in frontend system design',
                 'how to use RADIO framework for frontend system design interview',
@@ -1659,12 +1661,8 @@ export const SYSTEM: GuideEntry[] = [
                 'frontend system design interface API taxonomy',
             ],
             faqPage: {
-                name: 'RADIO framework frontend system design interview FAQ',
+                name: 'Frontend system design answer template FAQ',
                 items: [
-                    {
-                        question: 'What is the RADIO framework in frontend system design?',
-                        answer: 'RADIO is the frontend system design interview approach: Requirements, Architecture, Data, Interface, and Optimizations. Use it as a 45-minute answer template with diagrams, checklist, and autocomplete, news feed, and chat examples.',
-                    },
                     {
                         question: 'How do I use RADIO to answer a frontend system design interview question?',
                         answer: 'Start by clarifying the user flow and constraints, then sketch the frontend architecture, model server and client state, define component and API interfaces, and close with the highest-risk optimizations. Keep one core flow as the thread so every RADIO step supports the same answer.',
@@ -1678,14 +1676,48 @@ export const SYSTEM: GuideEntry[] = [
                         answer: 'Keep the RADIO steps stable while the prompt changes. For autocomplete, go deep on stale requests and combobox behavior; for news feed, pagination and cache consistency; for chat, realtime events, drafts, and recovery.',
                     },
                     {
+                        question: 'What is the RADIO framework in frontend system design?',
+                        answer: 'RADIO stands for Requirements, Architecture, Data, Interface, and Optimizations. It is a frontend system design interview framework for turning broad UI architecture prompts into a structured 45-minute answer with diagrams, contracts, and trade-offs.',
+                    },
+                    {
                         question: 'Is RADIO the best framework for frontend system design interviews?',
                         answer: 'RADIO is a strong default because it keeps frontend answers ordered from scope to architecture, data contracts, interface behavior, and optimization trade-offs. Adapt it when the interviewer asks to go deeper in one area.',
                     },
                 ],
             },
-            readerPromise: 'Use the RADIO approach for frontend system design interviews: Requirements, Architecture, Data, Interface, Optimizations, plus a 45-minute script and examples.',
+            itemList: {
+                name: 'Frontend system design answer template sections',
+                items: [
+                    {
+                        name: 'Opening script',
+                        description: 'Copy the first minute of the answer and set up the RADIO structure before drawing.',
+                        url: '#frontend-system-design-interview-answer-template',
+                    },
+                    {
+                        name: '45-minute timeline',
+                        description: 'Use the timed RADIO flow to allocate requirements, architecture, data, interface, optimizations, and recap.',
+                        url: '#45-minute-interview-timeline',
+                    },
+                    {
+                        name: 'Requirements checklist',
+                        description: 'Clarify the primary user flow, constraints, non-goals, success metrics, and edge cases before drawing architecture.',
+                        url: '#radio-requirements',
+                    },
+                    {
+                        name: 'Interface and API checklist',
+                        description: 'Map component APIs, user interactions, loading and error states, keyboard behavior, focus, and accessibility announcements.',
+                        url: '#radio-interface',
+                    },
+                    {
+                        name: 'Autocomplete, news feed, and chat examples',
+                        description: 'Apply the same answer template to autocomplete, news feed, and chat frontend system design prompts.',
+                        url: '#run-radio-on-autocomplete-news-feed-and-chat',
+                    },
+                ],
+            },
+            readerPromise: 'Copy a 45-minute frontend system design RADIO answer script with requirements, architecture, data, interface, optimizations, timeline, and examples.',
             publishedAt: '2026-02-18',
-            updatedAt: '2026-06-13',
+            updatedAt: '2026-06-19',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
@@ -2547,16 +2579,106 @@ export const BEHAVIORAL: GuideEntry[] = [
     },
     {
         slug: 'prep',
-        title: 'How to Prepare (Fast and Effectively)',
-        minutes: 9,
-        summary: 'Build a story bank, map stories to competencies, and practice without sounding scripted.',
+        title: 'Frontend Behavioral Interview Prep Plan: 7 Days, Stories, and STAR(R)',
+        minutes: 18,
+        summary: 'Build a frontend behavioral interview prep plan with a 7-day routine, story bank, STAR(R) notes, mock loops, and final questions.',
         seo: {
-            title: 'Behavioral Interview Prep Plan: Fast, Structured, and Effective',
-            description: 'Build an interview prep routine with a reusable story bank, competency mapping, and practice loops so answers stay concise and high-signal.',
-            primaryKeyword: 'behavioral interview prep plan',
-            keywords: ['behavioral interview prep plan', 'behavioral interview preparation', 'behavioral story bank'],
+            title: 'Frontend Behavioral Interview Prep Plan: 7 Days',
+            description: 'Build a frontend behavioral interview prep plan with STAR(R) stories, a 7-day routine, weak-vs-strong notes, seniority signals, and final questions.',
+            primaryKeyword: 'frontend behavioral interview prep plan',
+            keywords: [
+                'frontend behavioral interview prep plan',
+                'frontend behavioral interview preparation',
+                'STAR stories for frontend engineers',
+                'frontend behavioral story bank',
+                'software engineer behavioral interview prep',
+                'software engineer behavioral interview prep plan',
+                'behavioral interview practice plan',
+                'frontend performance behavioral interview story',
+                'accessibility behavioral interview example',
+                'API contract conflict behavioral interview',
+                'production incident behavioral interview example',
+                'design disagreement behavioral interview frontend',
+                'frontend behavioral interview final questions',
+                'frontend behavioral interview mock practice',
+                'senior frontend behavioral interview preparation',
+            ],
+            faqPage: {
+                name: 'Frontend behavioral interview prep plan FAQ',
+                items: [
+                    {
+                        question: 'How should frontend engineers prepare for behavioral interviews?',
+                        answer: 'Frontend engineers should collect role-specific stories, map each story to interview signals, write STAR(R) bullets, quantify impact, practice follow-up questions, and prepare final questions for the team.',
+                    },
+                    {
+                        question: 'How many behavioral stories should I prepare?',
+                        answer: 'Prepare 7 to 10 raw stories, then select 4 or 5 strong examples for the role. Cover conflict, failure, ambiguity, ownership, leadership, feedback, and delivery under pressure.',
+                    },
+                    {
+                        question: 'What frontend stories work best for behavioral interviews?',
+                        answer: 'Strong frontend stories include performance regressions, accessibility blockers, API contract conflicts, design disagreements, production incidents, ambiguous scope, and mentoring or review process improvements.',
+                    },
+                    {
+                        question: 'What does STAR(R) mean in behavioral interview prep?',
+                        answer: 'STAR(R) means Situation, Task, Action, Result, and Reflection. The reflection step shows what changed in your process, checklist, monitoring, review habits, or judgment after the story.',
+                    },
+                    {
+                        question: 'How do I avoid sounding rehearsed in a behavioral interview?',
+                        answer: 'Use bullets instead of scripts, practice the same story against different prompts, and rehearse follow-up questions that test ownership, judgment, collaboration, and growth.',
+                    },
+                    {
+                        question: 'How should senior frontend engineers prepare differently?',
+                        answer: 'Senior and staff frontend engineers should prepare stories with broader scope: ambiguous projects, cross-functional risk, mentoring, incident prevention, technical direction, and repeatable team systems.',
+                    },
+                    {
+                        question: 'What should I review the night before a behavioral interview?',
+                        answer: 'Review the job description, pick four mapped stories, say each answer once, check each story for a metric and reflection, prepare two final questions, and stop editing.',
+                    },
+                ],
+            },
+            itemList: {
+                name: '7-day frontend behavioral interview prep plan',
+                items: [
+                    {
+                        name: 'Day 1: Collect frontend stories',
+                        description: 'List raw stories from launches, regressions, incidents, accessibility, API alignment, ambiguous scope, and mentoring.',
+                        url: '#7-day-frontend-behavioral-interview-prep-plan',
+                    },
+                    {
+                        name: 'Day 2: Map stories to signals',
+                        description: 'Tag each story with communication, collaboration, ownership, judgment, growth, or leadership/seniority.',
+                        url: '#7-day-frontend-behavioral-interview-prep-plan',
+                    },
+                    {
+                        name: 'Day 3: Write STAR(R) notes',
+                        description: 'Turn the strongest examples into short Situation, Task, Action, Result, and Reflection bullets.',
+                        url: '#7-day-frontend-behavioral-interview-prep-plan',
+                    },
+                    {
+                        name: 'Day 4: Quantify impact and trade-offs',
+                        description: 'Add user impact, metrics, risk reduction, scope, trade-offs, and follow-up guardrails.',
+                        url: '#7-day-frontend-behavioral-interview-prep-plan',
+                    },
+                    {
+                        name: 'Day 5: Practice follow-up questions',
+                        description: 'Rehearse second-order questions about ownership, decisions, disagreement, growth, and seniority.',
+                        url: '#7-day-frontend-behavioral-interview-prep-plan',
+                    },
+                    {
+                        name: 'Day 6: Prepare final questions',
+                        description: 'Write role-specific questions about quality bars, release risk, product/design trade-offs, and success metrics.',
+                        url: '#7-day-frontend-behavioral-interview-prep-plan',
+                    },
+                    {
+                        name: 'Day 7: Run a night-before tune-up',
+                        description: 'Pick four stories, say each once, check metrics and reflections, then stop editing.',
+                        url: '#7-day-frontend-behavioral-interview-prep-plan',
+                    },
+                ],
+            },
             publishedAt: '2025-10-01',
-            updatedAt: '2026-04-04',
+            updatedAt: '2026-06-19',
+            readerPromise: 'Use this frontend behavioral interview prep plan to build a 7-day routine, choose frontend-specific STAR(R) stories, practice follow-ups, and prepare final questions before the interview.',
         },
         load: () =>
             import('../../features/guides/behavioral/behavioral-prep')

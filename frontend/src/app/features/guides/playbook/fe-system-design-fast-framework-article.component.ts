@@ -237,7 +237,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       Use this 45-minute framework to answer frontend system design interviews with an
       autocomplete worked example, API/state contracts, rubric, and practice prompts.
       For the deeper RADIO method, open the
-      <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">RADIO framework guide</a>.
+      <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">frontend system design interview answer template</a>.
       For practice, move into the <a [routerLink]="['/system-design']">frontend system design questions</a>
       bank after you can deliver the template out loud.
     </p>
@@ -266,7 +266,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           Practice autocomplete system design
         </a>
         <a class="proof-cta" [routerLink]="['/guides','system-design-blueprint','radio-framework']">
-          Open RADIO blueprint
+          Open the 45-minute answer script
         </a>
         <a class="proof-cta" [routerLink]="['/react','coding','react-autocomplete-search-starter']">
           Code autocomplete drill
@@ -655,7 +655,7 @@ Client policy:
       Practice <a [routerLink]="['/system-design','realtime-search-debounce-cache']">realtime search</a>,
       then move through <a [routerLink]="['/system-design','infinite-scroll-list']">infinite scroll</a>,
       <a [routerLink]="['/system-design','news-feed-timeline']">news feed</a>, and the
-      <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">RADIO framework</a>.
+      <a [routerLink]="['/guides','system-design-blueprint','radio-framework']">frontend system design answer template</a>.
     </p>
 
     <h2 id="what-to-practice-next">What to practice next</h2>
@@ -665,7 +665,7 @@ Client policy:
         <span>Choose a prompt and run the 45-minute template from scratch.</span>
       </a>
       <a class="next-link" [routerLink]="['/guides','system-design-blueprint','radio-framework']">
-        <strong>Study the RADIO blueprint</strong>
+        <strong>Study the frontend system design answer template</strong>
         <span>Go deeper on requirements, architecture, data, interfaces, and optimizations.</span>
       </a>
       <a class="next-link" [routerLink]="['/react','coding','react-autocomplete-search-starter']">
