@@ -281,22 +281,22 @@ describe('TriviaDetailComponent', () => {
   it('uses question-level SEO H1 intent label for visible H1 and article headline', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
-        title: 'Angular HttpClient Unsubscribe Cancels Requests: Docs',
+        title: 'Does Angular HttpClient Unsubscribe Cancel Requests?',
         description:
-          'Official Angular docs say unsubscribing from HttpClient aborts an in-progress request.',
-        h1IntentLabel: 'Official docs answer',
+          'Angular interview answer: yes, HttpClient unsubscribe aborts in-progress requests.',
+        h1IntentLabel: 'Docs-backed interview answer',
       },
     });
 
     const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe('What is closure?');
-    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Official docs answer');
+    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Docs-backed interview answer');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
 
-    expect(article?.headline).toBe('What is closure? - Official docs answer');
+    expect(article?.headline).toBe('What is closure? - Docs-backed interview answer');
   });
 
   it('renders non-crawlable sidebar buttons and crawlable practice entry links', async () => {

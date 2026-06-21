@@ -113,15 +113,15 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
-  it('preserves answer-first Angular HttpClient cancellation SEO override', () => {
+  it('preserves docs-backed Angular HttpClient cancellation interview SEO override', () => {
     const question = {
       id: 'angular-http-what-actually-cancels-request',
       title: 'What Actually Cancels an HTTP Request in Angular?',
       technology: 'angular',
       seo: {
-        title: 'Angular HttpClient Unsubscribe Cancels Requests: Docs',
+        title: 'Does Angular HttpClient Unsubscribe Cancel Requests?',
         description:
-          'Official Angular docs say unsubscribing from HttpClient aborts an in-progress request. See switchMap, AsyncPipe, takeUntil, and TestRequest proof.',
+          'Angular interview answer: yes, HttpClient unsubscribe aborts in-progress requests. Covers official docs proof, switchMap, AsyncPipe, and stale responses.',
       },
     } as any;
 
@@ -129,11 +129,11 @@ describe('trivia-seo.util', () => {
     const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
 
     expect(title).toBe(
-      'Angular HttpClient Unsubscribe Cancels Requests: Docs'
+      'Does Angular HttpClient Unsubscribe Cancel Requests?'
     );
     expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'Official Angular docs say unsubscribing from HttpClient aborts an in-progress request. See switchMap, AsyncPipe, takeUntil, and TestRequest proof.'
+      'Angular interview answer: yes, HttpClient unsubscribe aborts in-progress requests. Covers official docs proof, switchMap, AsyncPipe, and stale responses.'
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });
