@@ -6591,7 +6591,7 @@
       "cancellation",
       "basics"
     ],
-    "updatedAt": "2026-06-17",
+    "updatedAt": "2026-06-21",
     "interviewFocus": {
       "summary": "This Angular interview question tests whether you can distinguish true HttpClient cancellation from ignoring stale responses, explain unsubscribe ownership, and defend the RxJS operator choice.",
       "tests": [
@@ -6601,9 +6601,9 @@
       ]
     },
     "seo": {
-      "title": "Angular HttpClient Unsubscribe Cancels Requests: Docs",
-      "description": "Official Angular docs say unsubscribing from HttpClient aborts an in-progress request. See switchMap, AsyncPipe, takeUntil, and TestRequest proof.",
-      "h1IntentLabel": "Official docs answer"
+      "title": "Does Angular HttpClient Unsubscribe Cancel Requests?",
+      "description": "Angular interview answer: yes, HttpClient unsubscribe aborts in-progress requests. Covers official docs proof, switchMap, AsyncPipe, and stale responses.",
+      "h1IntentLabel": "Docs-backed interview answer"
     },
     "incidentCard": {
       "title": "Request Cancellation Check",
