@@ -846,24 +846,21 @@ describe('guide-seo.util', () => {
     expect(meta.title).toBe('Frontend UI Interview Questions: Component Coding Practice');
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/ui-interviews');
     expect(meta.description).toBe(
-      'Practice frontend UI coding interview questions with modal, autocomplete, tabs, data tables, React components, accessibility, and keyboard support.',
+      'Practice frontend UI interview questions with modal, autocomplete, tabs, data tables, model answers, senior rubrics, accessibility, and keyboard support.',
     );
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
     expect(meta.keywords?.[0]).toBe('frontend ui interview questions');
-    expect(meta.keywords).toContain('frontend ui interview prep');
-    expect(meta.keywords).toContain('frontend component interview');
+    expect(meta.keywords?.length || 0).toBeLessThanOrEqual(15);
     expect(meta.keywords).toContain('frontend ui interview questions');
     expect(meta.keywords).toContain('frontend ui coding interview');
     expect(meta.keywords).toContain('frontend component interview questions');
-    expect(meta.keywords).toContain('frontend machine coding ui questions');
     expect(meta.keywords).toContain('accessible component interview');
     expect(meta.keywords).toContain('react ui coding interview');
-    expect(meta.keywords).toContain('react autocomplete interview question');
     expect(meta.keywords).toContain('keyboard accessibility interview questions frontend');
     expect(meta.keywords).toContain('focus trap modal interview question');
-    expect(meta.keywords).toContain('html css javascript ui interview questions');
-    expect(meta.keywords).toContain('most asked frontend ui interview prompts');
+    expect(meta.keywords).toContain('aria tabs interview question');
+    expect(meta.keywords).toContain('ui interview scoring rubric');
 
     const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
     const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
@@ -873,7 +870,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend UI Interview Questions: Component Coding Practice');
-    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-21T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -886,13 +883,14 @@ describe('guide-seo.util', () => {
     expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/react/coding/react-pagination-table');
     expect(itemList?.itemListElement?.[11]?.name).toBe('Progress Bar');
     expect(faqPage?.name).toBe('Frontend UI interview questions FAQ');
-    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.length).toBe(6);
     expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
       'What are the most common frontend UI interview questions?',
       'How do I practice frontend UI coding interview questions?',
       'Which React UI component questions should I practice?',
       'How do interviewers score accessibility and keyboard support?',
       'Is this different from frontend machine coding interviews?',
+      'What should a senior answer include in a UI interview?',
     ]);
   });
 
