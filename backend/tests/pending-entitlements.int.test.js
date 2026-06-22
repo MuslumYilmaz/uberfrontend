@@ -126,6 +126,45 @@ test('does not apply pending entitlement when email differs', async () => {
   expect(pending.appliedAt).toBeFalsy();
 });
 
+test('does not apply ignored pending entitlement for matching email', async () => {
+  const user = await User.create({
+    email: 'ignored@example.com',
+    username: 'ignored_user',
+    passwordHash: 'hash',
+    accessTier: 'free',
+    entitlements: {
+      pro: { status: 'none', validUntil: null },
+      projects: { status: 'none', validUntil: null },
+    },
+  });
+
+  await PendingEntitlement.create({
+    provider: 'gumroad',
+    scope: 'pro',
+    eventId: 'evt_ignored',
+    eventType: 'sale',
+    email: 'ignored@example.com',
+    entitlement: { status: 'active', validUntil: new Date('2099-01-01T00:00:00Z') },
+    saleId: 'sale_ignored',
+    ignoredAt: new Date('2026-01-01T00:00:00Z'),
+    ignoredReason: 'manual_ignore',
+    ignoredBy: 'test',
+  });
+
+  const token = signToken(user);
+  const res = await request(app)
+    .get('/api/auth/me')
+    .set('Authorization', `Bearer ${token}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body.entitlements.pro.status).toBe('none');
+  expect(res.body.accessTierEffective).toBe('free');
+
+  const pending = await PendingEntitlement.findOne({ eventId: 'evt_ignored' }).lean();
+  expect(pending.appliedAt).toBeFalsy();
+  expect(pending.ignoredAt).toBeTruthy();
+});
+
 test('lemonsqueezy pending entitlement requires matching userId', async () => {
   const user = await User.create({
     email: 'apply@example.com',

@@ -58,6 +58,10 @@ function applyNormalizedGumroadEventToUser(user, normalized, options = {}) {
 }
 
 function applyNormalizedLemonSqueezyEventToUser(user, normalized, options = {}) {
+  if (normalized?.shouldApplyEntitlement === false) {
+    return user;
+  }
+
   ensureEntitlements(user);
   ensureBillingProviders(user);
 

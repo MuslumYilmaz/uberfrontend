@@ -364,6 +364,14 @@ async function handleLemonSqueezyWebhook(req, res) {
       providerSubscriptionId: normalized.subscriptionId || undefined,
     });
 
+    if (normalized.shouldApplyEntitlement === false) {
+      await BillingEvent.updateOne(
+        { provider: 'lemonsqueezy', eventId },
+        { $set: { processingStatus: 'processed_no_entitlement', processedAt: new Date() } }
+      );
+      return res.status(200).json({ ok: true, ignored: true });
+    }
+
     let user = null;
     if (normalizedUserId) {
       user = await User.findById(normalizedUserId);
@@ -599,10 +607,14 @@ async function fetchLemonSqueezyManageUrl({ apiKey, subscriptionId, customerId }
   const tryFetch = async (resource, id) => {
     if (!id) return '';
     const url = `https://api.lemonsqueezy.com/v1/${resource}/${id}`;
-    const res = await fetch(url, { headers });
-    if (!res.ok) return '';
-    const payload = await res.json();
-    return pickManageUrlFromApiPayload(payload);
+    try {
+      const res = await fetch(url, { headers });
+      if (!res.ok) return '';
+      const payload = await res.json();
+      return pickManageUrlFromApiPayload(payload);
+    } catch {
+      return '';
+    }
   };
 
   const fromSubscription = await tryFetch('subscriptions', subscriptionId);
@@ -632,14 +644,12 @@ router.get('/manage-url', requireAuth, async (req, res) => {
       });
     }
 
-    if (lsMeta.manageUrl) {
-      return res.status(200).json({ url: lsMeta.manageUrl });
-    }
-
     if (!lsMeta.subscriptionId && !lsMeta.customerId) {
       return res.status(409).json({
-        error: 'Manage URL not ready for this account',
-        code: 'MANAGE_URL_NOT_READY',
+        error: lsMeta.manageUrl
+          ? 'Manage URL unavailable'
+          : 'Manage URL not ready for this account',
+        code: lsMeta.manageUrl ? 'MANAGE_URL_UNAVAILABLE' : 'MANAGE_URL_NOT_READY',
       });
     }
 

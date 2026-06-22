@@ -278,7 +278,7 @@ router.get('/billing/reconciliation', async (req, res) => {
                     .sort({ updatedAt: -1 })
                     .limit(limit)
                     .lean(),
-                PendingEntitlement.find({ appliedAt: null })
+                PendingEntitlement.find({ appliedAt: null, ignoredAt: null })
                     .sort({ receivedAt: -1 })
                     .limit(limit)
                     .lean(),
@@ -291,7 +291,7 @@ router.get('/billing/reconciliation', async (req, res) => {
                 CheckoutAttempt.countDocuments({
                     status: { $in: ['created', 'webhook_received', 'pending_user_match', 'failed', 'expired'] },
                 }),
-                PendingEntitlement.countDocuments({ appliedAt: null }),
+                PendingEntitlement.countDocuments({ appliedAt: null, ignoredAt: null }),
                 BillingEvent.countDocuments({
                     processingStatus: { $in: ['received', 'received_unknown_type', 'pending_user'] },
                 }),

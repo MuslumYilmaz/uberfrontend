@@ -157,7 +157,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_lifecycle_monthly_cancelled',
+        id: 'sub_lifecycle_monthly',
         attributes: {
           user_email: user.email,
           status: 'cancelled',
@@ -247,6 +247,51 @@ describe('LemonSqueezy billing lifecycle', () => {
     expect(afterRefund.body.effectiveProActive).toBe(false);
   });
 
+  test('exact duplicate webhook delivery is recorded once and skipped on retry', async () => {
+    const validUntil = '2026-05-01T00:00:00.000Z';
+    const user = await createUser({
+      email: 'duplicate-retry@example.com',
+      username: 'duplicate_retry_user',
+    });
+    const payload = {
+      meta: {
+        event_name: 'subscription_created',
+        test_mode: true,
+      },
+      data: {
+        id: 'sub_duplicate_retry',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: validUntil,
+          custom_data: {
+            fa_user_id: user._id.toString(),
+            fa_user_email: user.email,
+          },
+        },
+      },
+    };
+
+    const firstRes = await postWebhook(payload);
+    const retryRes = await postWebhook(payload);
+
+    expect(firstRes.status).toBe(200);
+    expect(retryRes.status).toBe(200);
+    expect(retryRes.body).toEqual({ ok: true, duplicate: true });
+
+    const events = await BillingEvent.find({
+      provider: 'lemonsqueezy',
+      eventType: 'subscription_created',
+      email: user.email,
+    }).lean();
+    expect(events).toHaveLength(1);
+
+    const updated = await getMe(user);
+    expect(updated.status).toBe(200);
+    expect(updated.body.entitlements.pro.status).toBe('active');
+    expect(new Date(updated.body.entitlements.pro.validUntil).toISOString()).toBe(validUntil);
+  });
+
   test('lifetime purchase remains premium years later without relying on renewal dates', async () => {
     const user = await createUser({
       email: 'lifetime@example.com',
@@ -324,7 +369,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_payment_failed_flow_retry_1',
+        id: 'sub_payment_failed_flow',
         attributes: {
           user_email: user.email,
           status: 'failed',
@@ -389,7 +434,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_cancel_then_renew_cancelled',
+        id: 'sub_cancel_then_renew',
         attributes: {
           user_email: user.email,
           status: 'cancelled',
@@ -408,7 +453,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_cancel_then_renew_success',
+        id: 'sub_cancel_then_renew',
         attributes: {
           user_email: user.email,
           status: 'active',
@@ -450,7 +495,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_out_of_order_created',
+        id: 'sub_out_of_order',
         attributes: {
           user_email: user.email,
           status: 'active',
@@ -469,7 +514,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_out_of_order_renewed',
+        id: 'sub_out_of_order',
         attributes: {
           user_email: user.email,
           status: 'active',
@@ -488,7 +533,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_out_of_order_cancelled_old',
+        id: 'sub_out_of_order',
         attributes: {
           user_email: user.email,
           status: 'cancelled',
@@ -560,7 +605,7 @@ describe('LemonSqueezy billing lifecycle', () => {
         test_mode: true,
       },
       data: {
-        id: 'sub_late_renewal_success',
+        id: 'sub_late_renewal_created',
         attributes: {
           user_email: user.email,
           status: 'active',

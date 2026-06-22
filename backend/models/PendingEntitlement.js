@@ -25,6 +25,9 @@ const PendingEntitlementSchema = new mongoose.Schema(
     receivedAt: { type: Date, default: Date.now },
     appliedAt: { type: Date },
     appliedUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    ignoredAt: { type: Date },
+    ignoredReason: { type: String },
+    ignoredBy: { type: String },
   },
   { timestamps: true }
 );

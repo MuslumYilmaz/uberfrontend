@@ -162,7 +162,7 @@ async function applyPendingEntitlementsForUser(model, user) {
   const email = normalizeEmail(user?.email);
   if (!email) return { applied: false };
 
-  const pending = await model.find({ email, appliedAt: null }).sort({ receivedAt: 1, _id: 1 });
+  const pending = await model.find({ email, appliedAt: null, ignoredAt: null }).sort({ receivedAt: 1, _id: 1 });
   if (!pending.length) return { applied: false };
 
   const applicable = [];
