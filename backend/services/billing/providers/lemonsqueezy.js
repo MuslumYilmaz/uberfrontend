@@ -81,23 +81,39 @@ function isEventTypeKnown(eventType) {
   return ['order', 'subscription', 'refund', 'payment'].some((needle) => eventType.includes(needle));
 }
 
-function extractEventId(body, rawBody) {
-  const candidates = [
-    body?.meta?.event_id,
-    body?.meta?.eventId,
-    body?.data?.id,
-    body?.data?.attributes?.order_id,
-    body?.data?.attributes?.subscription_id,
-    body?.data?.attributes?.id,
-    body?.id,
-  ];
+function payloadHash(body, rawBody) {
+  const payload = Buffer.isBuffer(rawBody)
+    ? rawBody
+    : Buffer.from(String(rawBody || JSON.stringify(body || {})));
+  return crypto.createHash('sha256').update(payload).digest('hex');
+}
+
+function firstNonEmpty(candidates) {
   for (const c of candidates) {
     if (c !== undefined && c !== null && String(c).trim()) {
       return String(c).trim();
     }
   }
-  const payload = Buffer.isBuffer(rawBody) ? rawBody : Buffer.from(String(rawBody || JSON.stringify(body || {})));
-  return crypto.createHash('sha256').update(payload).digest('hex');
+  return '';
+}
+
+function extractEventId(body, rawBody, eventType) {
+  const explicitEventId = firstNonEmpty([
+    body?.meta?.event_id,
+    body?.meta?.eventId,
+  ]);
+  if (explicitEventId) return explicitEventId;
+
+  const objectId = firstNonEmpty([
+    body?.data?.id,
+    body?.data?.attributes?.order_id,
+    body?.data?.attributes?.subscription_id,
+    body?.data?.attributes?.id,
+    body?.id,
+  ]);
+  const eventName = String(eventType || 'unknown').trim().toLowerCase() || 'unknown';
+  const hash = payloadHash(body, rawBody);
+  return objectId ? `${eventName}:${objectId}:${hash}` : `${eventName}:${hash}`;
 }
 
 function extractEmail(body) {
@@ -250,6 +266,10 @@ function isLifetimePurchase(attrs) {
   return rawName.includes('lifetime');
 }
 
+function isOrderCreatedEvent(eventType) {
+  return String(eventType || '').toLowerCase() === 'order_created';
+}
+
 function resolveStatus(eventType, attrs, lifetime) {
   const normalized = String(eventType || '').toLowerCase();
   const statusRaw = String(attrs?.status || '').toLowerCase();
@@ -319,7 +339,8 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
   const eventType = extractEventType(body);
   const attrs = body?.data?.attributes || {};
   const lifetime = isLifetimePurchase(attrs);
-  const status = resolveStatus(eventType, attrs, lifetime);
+  const shouldApplyEntitlement = !(isOrderCreatedEvent(eventType) && !lifetime);
+  const status = shouldApplyEntitlement ? resolveStatus(eventType, attrs, lifetime) : 'none';
   const validUntilResult = resolveValidUntil(status, attrs);
   const startedAt = extractStartedAt(attrs);
   const purchaseEmail = extractEmail(body);
@@ -327,7 +348,7 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
   const email = customEmail || purchaseEmail;
 
   return {
-    eventId: extractEventId(body, rawBody),
+    eventId: extractEventId(body, rawBody, eventType),
     eventType,
     email,
     purchaseEmail,
@@ -342,6 +363,7 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
     variantId: extractVariantId(body),
     productId: extractProductId(body),
     entitlement: { status, validUntil: validUntilResult.value },
+    shouldApplyEntitlement,
     eventTypeKnown: isEventTypeKnown(eventType),
     validUntilInferred: validUntilResult.inferred,
   };

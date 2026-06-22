@@ -144,8 +144,13 @@ describe('LemonSqueezy webhook integration', () => {
       .send(rawBody);
 
     expect(res.status).toBe(200);
-    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'test:sub_test' }).lean();
+    const event = await BillingEvent.findOne({
+      provider: 'lemonsqueezy',
+      eventType: 'subscription_created',
+      email: 'test@example.com',
+    }).lean();
     expect(event).toBeTruthy();
+    expect(event.eventId).toMatch(/^test:subscription_created:sub_test:[a-f0-9]{64}$/);
   });
 
   test('lifetime subscription maps to lifetime entitlement', async () => {
@@ -212,8 +217,13 @@ describe('LemonSqueezy webhook integration', () => {
       .send(rawBody);
 
     expect(res.status).toBe(200);
-    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'live:sub_live' }).lean();
+    const event = await BillingEvent.findOne({
+      provider: 'lemonsqueezy',
+      eventType: 'subscription_created',
+      email: 'test@example.com',
+    }).lean();
     expect(event).toBeTruthy();
+    expect(event.eventId).toMatch(/^live:subscription_created:sub_live:[a-f0-9]{64}$/);
   });
 
   test('legacy single secret still verifies', async () => {
@@ -242,8 +252,13 @@ describe('LemonSqueezy webhook integration', () => {
       .send(rawBody);
 
     expect(res.status).toBe(200);
-    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'test:sub_legacy' }).lean();
+    const event = await BillingEvent.findOne({
+      provider: 'lemonsqueezy',
+      eventType: 'subscription_created',
+      email: 'test@example.com',
+    }).lean();
     expect(event).toBeTruthy();
+    expect(event.eventId).toMatch(/^test:subscription_created:sub_legacy:[a-f0-9]{64}$/);
   });
 
   test('JSON subscription created upgrades user', async () => {
@@ -281,7 +296,12 @@ describe('LemonSqueezy webhook integration', () => {
     expect(updated.entitlements.pro.status).toBe('active');
     expect(updated.accessTier).toBe('premium');
 
-    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'test:sub_123' }).lean();
+    const event = await BillingEvent.findOne({
+      provider: 'lemonsqueezy',
+      eventType: 'subscription_created',
+      email: 'test@example.com',
+    }).lean();
+    expect(event.eventId).toMatch(/^test:subscription_created:sub_123:[a-f0-9]{64}$/);
     expect(event.processingStatus).toBe('processed');
   });
 
@@ -378,11 +398,13 @@ describe('LemonSqueezy webhook integration', () => {
 
   test('User not found returns ok without crash', async () => {
     const payload = {
-      meta: { event_name: 'order_created' },
+      meta: { event_name: 'subscription_created' },
       data: {
-        id: 'order_1',
+        id: 'sub_missing_user',
         attributes: {
           user_email: 'nouser@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
         },
       },
     };
@@ -400,6 +422,229 @@ describe('LemonSqueezy webhook integration', () => {
 
     const pendingCount = await PendingEntitlement.countDocuments({ email: 'nouser@example.com' });
     expect(pendingCount).toBe(1);
+  });
+
+  test('non-lifetime order created is recorded but does not grant access or create pending entitlement', async () => {
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    const payload = {
+      meta: { event_name: 'order_created', test_mode: true },
+      data: {
+        id: 'order_monthly_ignore',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'paid',
+          product_name: 'FrontendAtlas Premium',
+          variant_name: 'Monthly',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_user_email: 'test@example.com',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, ignored: true });
+
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('none');
+    expect(updated.entitlements.pro.validUntil).toBeNull();
+    expect(updated.accessTier).toBe('free');
+
+    const pendingCount = await PendingEntitlement.countDocuments({ email: 'test@example.com' });
+    expect(pendingCount).toBe(0);
+
+    const event = await BillingEvent.findOne({
+      provider: 'lemonsqueezy',
+      eventType: 'order_created',
+      email: 'test@example.com',
+    }).lean();
+    expect(event).toBeTruthy();
+    expect(event.processingStatus).toBe('processed_no_entitlement');
+  });
+
+  test('non-lifetime order created does not change an existing premium entitlement', async () => {
+    const validUntil = new Date('2099-02-01T00:00:00.000Z');
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          accessTier: 'premium',
+          entitlements: {
+            pro: { status: 'active', validUntil },
+            projects: { status: 'none', validUntil: null },
+          },
+        },
+      }
+    );
+    const payload = {
+      meta: { event_name: 'order_created', test_mode: true },
+      data: {
+        id: 'order_existing_premium_ignore',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'paid',
+          product_name: 'FrontendAtlas Premium',
+          variant_name: 'Annual',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_user_email: 'test@example.com',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, ignored: true });
+
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('active');
+    expect(new Date(updated.entitlements.pro.validUntil).toISOString()).toBe(validUntil.toISOString());
+    expect(updated.accessTier).toBe('premium');
+  });
+
+  test('monthly checkout ignores order created and applies the later subscription created event', async () => {
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    await CheckoutAttempt.create({
+      attemptId: 'chk_order_then_sub',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_order_then_sub',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_order_then_sub',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    });
+
+    const orderPayload = {
+      meta: { event_name: 'order_created', test_mode: true },
+      data: {
+        id: 'order_then_sub_monthly',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'paid',
+          order_id: 'order_then_sub_monthly',
+          product_name: 'FrontendAtlas Premium',
+          variant_name: 'Monthly',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_order_then_sub',
+          },
+        },
+      },
+    };
+    const orderRawBody = JSON.stringify(orderPayload);
+    const orderRes = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signPayload(orderRawBody))
+      .send(orderRawBody);
+
+    expect(orderRes.status).toBe(200);
+    expect(orderRes.body).toEqual({ ok: true, ignored: true });
+
+    const afterOrderAttempt = await CheckoutAttempt.findOne({ attemptId: 'chk_order_then_sub' }).lean();
+    expect(afterOrderAttempt.status).toBe('webhook_received');
+    expect(afterOrderAttempt.completedAt).toBeFalsy();
+    expect(afterOrderAttempt.providerOrderId).toBe('order_then_sub_monthly');
+
+    const afterOrderUser = await User.findById(user._id).lean();
+    expect(afterOrderUser.entitlements.pro.status).toBe('none');
+    expect(afterOrderUser.accessTier).toBe('free');
+
+    const subscriptionPayload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_order_then_sub_monthly',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_order_then_sub',
+          },
+        },
+        relationships: {
+          subscription: { data: { id: 'sub_order_then_sub_monthly' } },
+        },
+      },
+    };
+    const subscriptionRawBody = JSON.stringify(subscriptionPayload);
+    const subscriptionRes = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signPayload(subscriptionRawBody))
+      .send(subscriptionRawBody);
+
+    expect(subscriptionRes.status).toBe(200);
+
+    const afterSubscriptionAttempt = await CheckoutAttempt.findOne({ attemptId: 'chk_order_then_sub' }).lean();
+    expect(afterSubscriptionAttempt.status).toBe('applied');
+    expect(afterSubscriptionAttempt.providerSubscriptionId).toBe('sub_order_then_sub_monthly');
+    expect(afterSubscriptionAttempt.completedAt).toBeTruthy();
+
+    const afterSubscriptionUser = await User.findById(user._id).lean();
+    expect(afterSubscriptionUser.entitlements.pro.status).toBe('active');
+    expect(new Date(afterSubscriptionUser.entitlements.pro.validUntil).toISOString())
+      .toBe('2099-01-01T00:00:00.000Z');
+    expect(afterSubscriptionUser.accessTier).toBe('premium');
+  });
+
+  test('lifetime order created grants lifetime premium', async () => {
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    const payload = {
+      meta: { event_name: 'order_created', test_mode: true },
+      data: {
+        id: 'order_lifetime_purchase',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'paid',
+          product_name: 'FrontendAtlas Premium - Lifetime',
+          variant_name: 'Lifetime',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_user_email: 'test@example.com',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true });
+
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('lifetime');
+    expect(updated.entitlements.pro.validUntil).toBeNull();
+    expect(updated.accessTier).toBe('premium');
   });
 
   test('correlates webhook payloads to an existing checkout attempt', async () => {
@@ -450,7 +695,7 @@ describe('LemonSqueezy webhook integration', () => {
     const updatedAttempt = await CheckoutAttempt.findOne({ attemptId: 'chk_test_attempt' }).lean();
     expect(updatedAttempt).toBeTruthy();
     expect(updatedAttempt.status).toBe('applied');
-    expect(updatedAttempt.billingEventId).toBe('test:sub_attempt_123');
+    expect(updatedAttempt.billingEventId).toMatch(/^test:subscription_created:sub_attempt_123:[a-f0-9]{64}$/);
     expect(updatedAttempt.providerSubscriptionId).toBe('sub_attempt_123');
     expect(updatedAttempt.completedAt).toBeTruthy();
     expect(updatedAttempt.lastErrorCode).toBeFalsy();

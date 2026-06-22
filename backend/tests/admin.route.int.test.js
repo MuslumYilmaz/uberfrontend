@@ -316,6 +316,19 @@ describe('Admin billing reconciliation', () => {
       },
     });
 
+    await PendingEntitlement.create({
+      provider: 'lemonsqueezy',
+      scope: 'pro',
+      eventId: 'test:event_ignored_789',
+      eventType: 'subscription_created',
+      email: user.email,
+      userId: 'stale-invalid-user-id',
+      entitlement: { status: 'active', validUntil: null },
+      ignoredAt: new Date(),
+      ignoredReason: 'lemonsqueezy_user_binding_missing_user',
+      ignoredBy: 'prod-integrity-repair',
+    });
+
     await BillingEvent.create({
       provider: 'lemonsqueezy',
       eventId: 'test:event_unresolved_456',
@@ -353,6 +366,13 @@ describe('Admin billing reconciliation', () => {
           attemptId: 'chk_reconcile_123',
           supportReference: 'chk_reconcile_123',
           bindingStatus: 'exact_user_required',
+        }),
+      ])
+    );
+    expect(res.body.pendingEntitlements).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eventId: 'test:event_ignored_789',
         }),
       ])
     );
