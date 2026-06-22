@@ -39,6 +39,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     .proof-stats,
     .prompt-grid,
     .worked-grid,
+    .answer-grid,
+    .rubric-grid,
+    .concept-grid,
     .format-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -51,6 +54,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
     .proof-stat,
     .prompt-card,
+    .answer-card,
+    .rubric-item,
+    .concept-card,
     .worked-panel,
     .format-link {
       min-width: 0;
@@ -58,6 +64,26 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       border-radius: 8px;
       padding: 12px;
       background: color-mix(in srgb, var(--uf-surface-alt) 74%, transparent);
+    }
+    .answer-first {
+      margin: 16px 0 20px;
+      padding: 14px;
+      border: 1px solid var(--uf-border-subtle);
+      border-left: 3px solid var(--uf-accent);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--uf-surface-alt) 78%, transparent);
+    }
+    .answer-first p {
+      margin: 0 0 10px;
+      color: var(--uf-text-primary);
+      font-weight: 700;
+    }
+    .answer-first ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .answer-first li {
+      margin: 6px 0;
     }
     .proof-stat strong {
       display: block;
@@ -92,6 +118,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       border-color: color-mix(in srgb, var(--uf-accent) 84%, var(--uf-border-subtle));
     }
     .prompt-card,
+    .answer-card,
+    .rubric-item,
+    .concept-card,
     .format-link {
       display: grid;
       gap: 8px;
@@ -107,16 +136,38 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
     }
     .prompt-card h3,
+    .answer-card h3,
+    .rubric-item strong,
+    .concept-card h3,
     .worked-panel h3,
     .format-link strong {
       margin: 0;
       color: var(--uf-text-primary);
     }
     .prompt-card p,
+    .answer-card p,
+    .rubric-item span,
+    .concept-card p,
     .worked-panel p,
     .format-link span {
       margin: 0;
       color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+    }
+    .answer-card dl {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+    }
+    .answer-card dt {
+      color: var(--uf-text-primary);
+      font-weight: 700;
+    }
+    .answer-card dd {
+      margin: 0;
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+    }
+    .rubric-item strong {
+      font-size: 1.35rem;
     }
     .prompt-meta {
       display: flex;
@@ -132,6 +183,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       background: color-mix(in srgb, var(--uf-surface) 82%, transparent);
     }
     .prompt-card__focus,
+    .answer-card dd,
+    .concept-card p,
     .worked-panel li,
     .score-list li {
       font-size: 0.92rem;
@@ -199,6 +252,14 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       component that works, then harden it with keyboard support, accessible semantics,
       responsive styling, and edge-case tests.
     </p>
+    <div class="answer-first" data-testid="ui-guide-answer-first">
+      <p>Short answer for this page</p>
+      <ul>
+        <li><strong>Most common UI prompts:</strong> modal, autocomplete, tabs, form validation, accordion, and data table.</li>
+        <li><strong>Winning approach:</strong> ship the MVP first, then harden keyboard behavior, accessibility, responsive layout, and edge cases.</li>
+        <li><strong>Senior signal:</strong> explain trade-offs and test failure states out loud while you code.</li>
+      </ul>
+    </div>
     <p>
       Use this page as a frontend UI interview practice map for a frontend UI coding
       interview. It keeps broad machine coding strategy out of scope and focuses on
@@ -252,7 +313,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <a class="prompt-card" [routerLink]="['/react','coding','react-autocomplete-search-starter']" data-testid="ui-prompt-autocomplete">
         <div class="prompt-meta"><span>React</span><span>Async UI</span></div>
         <h3>Autocomplete</h3>
-        <p>Requirement: solve the React autocomplete interview question with filtering and mouse or keyboard selection.</p>
+        <p>Requirement: build autocomplete with filtering, debounce, and mouse or keyboard selection.</p>
         <p class="prompt-card__focus">Test focus: debounce, loading, empty results, stale response policy.</p>
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-contact-form-starter']" data-testid="ui-prompt-contact-form">
@@ -264,19 +325,19 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <a class="prompt-card" [routerLink]="['/react','coding','react-tabs-switcher']" data-testid="ui-prompt-tabs">
         <div class="prompt-meta"><span>React</span><span>Navigation</span></div>
         <h3>Tabs</h3>
-        <p>Requirement: solve the React tabs interview question by switching panels and preserving active state.</p>
+        <p>Requirement: build tabs that switch panels and preserve active state.</p>
         <p class="prompt-card__focus">Test focus: roving tabindex, ARIA tabs linkage, Home/End keys.</p>
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-accordion-faq']" data-testid="ui-prompt-accordion">
         <div class="prompt-meta"><span>React</span><span>Disclosure</span></div>
         <h3>Accordion</h3>
-        <p>Requirement: solve the React accordion interview question with predictable expand/collapse state.</p>
+        <p>Requirement: build an accordion with predictable expand and collapse state.</p>
         <p class="prompt-card__focus">Test focus: single vs multi-open policy, button semantics, keyboard toggles.</p>
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-pagination-table']" data-testid="ui-prompt-pagination-table">
         <div class="prompt-meta"><span>React</span><span>Tables</span></div>
         <h3>Data Table / Pagination</h3>
-        <p>Requirement: solve the React data table pagination interview question with rows and page controls.</p>
+        <p>Requirement: build table rows, page controls, and derived visible data.</p>
         <p class="prompt-card__focus">Test focus: page bounds, derived rows, disabled controls, table semantics.</p>
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-dynamic-table']" data-testid="ui-prompt-dynamic-table">
@@ -288,19 +349,19 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <a class="prompt-card" [routerLink]="['/react','coding','react-nested-checkboxes']" data-testid="ui-prompt-nested-checkboxes">
         <div class="prompt-meta"><span>React</span><span>Tree state</span></div>
         <h3>Nested Checkbox Tree</h3>
-        <p>Requirement: solve the React nested checkbox interview question by syncing parent and child states.</p>
+        <p>Requirement: sync parent and child checkbox states in a tree.</p>
         <p class="prompt-card__focus">Test focus: indeterminate state, DFS updates, partial selection, reset.</p>
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-nested-comments']" data-testid="ui-prompt-nested-comments">
         <div class="prompt-meta"><span>React</span><span>Nested UI</span></div>
         <h3>Nested Comments</h3>
-        <p>Requirement: solve the React nested comments interview question with reply trees and one active input.</p>
+        <p>Requirement: render reply trees with one active input at a time.</p>
         <p class="prompt-card__focus">Test focus: recursion depth, active state, empty replies, stable IDs.</p>
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-star-rating']" data-testid="ui-prompt-star-rating">
         <div class="prompt-meta"><span>React</span><span>Input widget</span></div>
         <h3>Star Rating</h3>
-        <p>Requirement: solve the React star rating interview question with preview, select, reset, and announcements.</p>
+        <p>Requirement: build rating preview, select, reset, and announcements.</p>
         <p class="prompt-card__focus">Test focus: hover vs committed state, keyboard input, accessible labels.</p>
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-chips-input-autocomplete']" data-testid="ui-prompt-chips-autocomplete">
@@ -315,6 +376,69 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <p>Requirement: show bounded progress and threshold states clearly.</p>
         <p class="prompt-card__focus">Test focus: 0/100 bounds, ARIA progressbar, colors, reduced motion.</p>
       </a>
+    </div>
+
+    <h2 id="interview-answers-for-common-ui-prompts">Interview answers for common UI prompts</h2>
+    <p>
+      A strong answer names the behavior contract before code, ships the baseline,
+      and then hardens accessibility and edge cases.
+    </p>
+    <div class="answer-grid" data-testid="ui-answer-cards">
+      <article class="answer-card">
+        <h3>Modal / Confirm Dialog</h3>
+        <dl>
+          <dt>What to say</dt>
+          <dd>I will confirm close policy, use a semantic dialog, restore focus, and test Escape and Tab before visual polish.</dd>
+          <dt>MVP</dt>
+          <dd>Open, confirm, cancel, close, and show a visible title.</dd>
+          <dt>Hardening</dt>
+          <dd>Focus restore, accessible name, outside-click policy, and focus trap behavior.</dd>
+        </dl>
+      </article>
+      <article class="answer-card">
+        <h3>Autocomplete</h3>
+        <dl>
+          <dt>What to say</dt>
+          <dd>I will separate input text, highlighted option, selected value, and request state so stale results cannot win.</dd>
+          <dt>MVP</dt>
+          <dd>Filter suggestions and select an option with mouse or Enter.</dd>
+          <dt>Hardening</dt>
+          <dd>Debounce, loading and empty states, Arrow keys, and stale response guards.</dd>
+        </dl>
+      </article>
+      <article class="answer-card">
+        <h3>Tabs</h3>
+        <dl>
+          <dt>What to say</dt>
+          <dd>Tabs are navigation state: connect tab buttons to panels and keep keyboard movement predictable.</dd>
+          <dt>MVP</dt>
+          <dd>Track active tab state and render the matching panel.</dd>
+          <dt>Hardening</dt>
+          <dd>Roving tabindex, aria-controls, Home/End keys, and visible focus.</dd>
+        </dl>
+      </article>
+      <article class="answer-card">
+        <h3>Form Validation</h3>
+        <dl>
+          <dt>What to say</dt>
+          <dd>I will choose validation timing, keep errors tied to fields, and make recovery obvious.</dd>
+          <dt>MVP</dt>
+          <dd>Fields, submit, required validation, and feedback after invalid input.</dd>
+          <dt>Hardening</dt>
+          <dd>Labels, aria-describedby, disabled-submit policy, recovery, and server errors.</dd>
+        </dl>
+      </article>
+      <article class="answer-card">
+        <h3>Data Table</h3>
+        <dl>
+          <dt>What to say</dt>
+          <dd>I will derive visible rows from source data, page state, and filters instead of mutating the original list.</dd>
+          <dt>MVP</dt>
+          <dd>Rows, headers, pagination controls, and current page state.</dd>
+          <dt>Hardening</dt>
+          <dd>Bounds, empty state, disabled controls, table semantics, and stable keys.</dd>
+        </dl>
+      </article>
     </div>
 
     <h2 id="confirm-dialog-worked-example">Worked example: Confirm Dialog</h2>
@@ -380,6 +504,22 @@ document.addEventListener('keydown', (event) =&gt; &#123;
 &#125;);</code></pre>
     </div>
 
+    <h2 id="junior-vs-senior-ui-interview-expectations">Junior vs senior UI interview expectations</h2>
+    <div class="table-wrap" data-testid="ui-seniority-expectations">
+      <table>
+        <thead>
+          <tr><th>Prompt</th><th>Junior answer</th><th>Senior answer</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Modal</td><td>Toggle open state and close on button click.</td><td>Define close policy, accessible naming, focus restore, Escape behavior, and test keyboard paths.</td></tr>
+          <tr><td>Autocomplete</td><td>Filter options as the user types.</td><td>Separate input, highlight, selected value, async state, stale response handling, and keyboard selection.</td></tr>
+          <tr><td>Data Table</td><td>Render rows and pagination buttons.</td><td>Derive rows from source data, guard page bounds, handle empty states, and preserve stable keys.</td></tr>
+          <tr><td>Form</td><td>Show required-field errors.</td><td>Choose validation timing, tie errors to fields, support recovery, and account for server-side failures.</td></tr>
+          <tr><td>Tabs</td><td>Switch visible content when a tab is clicked.</td><td>Use button semantics, connect tabs to panels, support roving tabindex, Home/End keys, and visible focus.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <h2 id="ui-round-flow">45/60-minute UI round flow</h2>
     <div class="table-wrap">
       <table>
@@ -397,6 +537,14 @@ document.addEventListener('keydown', (event) =&gt; &#123;
     </div>
 
     <h2 id="what-interviewers-score">What interviewers score</h2>
+    <div class="rubric-grid" data-testid="ui-score-rubric">
+      <div class="rubric-item"><strong>30</strong><span>MVP behavior: the core interaction works before polish.</span></div>
+      <div class="rubric-item"><strong>20</strong><span>State correctness: no stale active item, invalid page, or duplicate chip.</span></div>
+      <div class="rubric-item"><strong>20</strong><span>Accessibility and keyboard: labels, roles, focus, and key paths are covered.</span></div>
+      <div class="rubric-item"><strong>10</strong><span>Edge cases: empty, loading, error, reset, and bounds are handled.</span></div>
+      <div class="rubric-item"><strong>10</strong><span>Responsive polish: spacing, overflow, and visible focus hold on small screens.</span></div>
+      <div class="rubric-item"><strong>10</strong><span>Communication and testing: trade-offs and failure states are explained out loud.</span></div>
+    </div>
     <ul class="score-list">
       <li><strong>Component boundaries:</strong> clear props, local state, derived data, and callbacks.</li>
       <li><strong>State correctness:</strong> no stale active item, invalid page, duplicate chip, or stuck loading state.</li>
@@ -406,6 +554,34 @@ document.addEventListener('keydown', (event) =&gt; &#123;
       <li><strong>Debugging:</strong> logs state changes, checks selectors, tests odd paths, and explains fixes out loud.</li>
       <li><strong>Communication:</strong> names trade-offs and keeps the interviewer aware of scope decisions.</li>
     </ul>
+
+    <h2 id="core-ui-concepts-interviewers-expect">Core UI concepts interviewers expect</h2>
+    <div class="concept-grid" data-testid="ui-core-concepts">
+      <article class="concept-card">
+        <h3>Semantic HTML</h3>
+        <p>Use real buttons, labels, forms, headings, lists, tables, and landmarks before custom roles.</p>
+      </article>
+      <article class="concept-card">
+        <h3>Forms</h3>
+        <p>Know label association, validation timing, disabled-submit policy, and server-error recovery.</p>
+      </article>
+      <article class="concept-card">
+        <h3>Focus management</h3>
+        <p>Track the active element, restore focus after overlays, and keep visible focus states intact.</p>
+      </article>
+      <article class="concept-card">
+        <h3>Events</h3>
+        <p>Understand click and keyboard handlers, propagation, delegation, and when default behavior matters.</p>
+      </article>
+      <article class="concept-card">
+        <h3>Layout</h3>
+        <p>Use Flexbox, Grid, intrinsic sizing, overflow handling, and responsive constraints deliberately.</p>
+      </article>
+      <article class="concept-card">
+        <h3>Async UI state</h3>
+        <p>Model loading, empty, error, retry, stale responses, and disabled states as explicit UI states.</p>
+      </article>
+    </div>
 
     <h2 id="skip-vs-prioritize">What to skip vs prioritize</h2>
     <div class="table-wrap">
@@ -460,6 +636,12 @@ document.addEventListener('keydown', (event) =&gt; &#123;
       <p>
         Accessibility is core correctness. Interviewers expect labels, semantic controls,
         focus management, keyboard paths, visible focus, and clear disabled or error states.
+      </p>
+      <h3>What should a senior answer include in a UI interview?</h3>
+      <p>
+        A senior answer should state the behavior contract, ship an MVP, explain state
+        ownership, harden keyboard and accessibility, cover failure states, and describe
+        tests or trade-offs out loud.
       </p>
       <h3>Is this different from frontend machine coding interviews?</h3>
       <p>
