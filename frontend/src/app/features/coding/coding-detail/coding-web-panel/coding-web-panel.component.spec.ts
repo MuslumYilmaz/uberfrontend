@@ -1,6 +1,6 @@
 import { NgZone } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { CodingWebPanelComponent } from './coding-web-panel.component';
@@ -88,6 +88,35 @@ describe('CodingWebPanelComponent attempt feedback', () => {
     expect(payload.rawCode).toBeUndefined();
     expect(payload.sourceCode).toBeUndefined();
   });
+
+  it('updates and persists fallback textarea buffers after Monaco fails to load', fakeAsync(() => {
+    const codeStorage = TestBed.inject(CodeStorageService) as jasmine.SpyObj<CodeStorageService>;
+    component.disablePersistence = false;
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+
+    component.onEditorLoadFailed();
+    component.onHtmlChange('<main class="fallback">Fallback</main>');
+    tick(200);
+
+    expect(component.monacoLoadFailed()).toBeTrue();
+    expect(component.useMonaco()).toBeFalse();
+    expect(component.webHtml()).toContain('Fallback');
+    expect(codeStorage.saveWebAsync).toHaveBeenCalledWith(
+      jasmine.any(String),
+      'html',
+      '<main class="fallback">Fallback</main>',
+    );
+
+    component.onCssChange('.fallback { color: lime; }');
+    tick(200);
+
+    expect(component.webCss()).toContain('lime');
+    expect(codeStorage.saveWebAsync).toHaveBeenCalledWith(
+      jasmine.any(String),
+      'css',
+      '.fallback { color: lime; }',
+    );
+  }));
 
   it('records failure metadata for failing DOM tests', async () => {
     (component as any).htmlCode.set('<button class="cta">Cancel</button>');

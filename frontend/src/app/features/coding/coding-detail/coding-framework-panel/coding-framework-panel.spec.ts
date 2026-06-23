@@ -188,6 +188,26 @@ describe('CodingFrameworkPanelComponent', () => {
     );
   }));
 
+  it('uses an editable fallback path after Monaco fails to load', fakeAsync(() => {
+    const component = createComponent();
+    spyOn(component as any, 'scheduleRebuild').and.stub();
+
+    component.onEditorLoadFailed();
+    component.onFrameworkCodeChange('export default function App() { return <div>Fallback</div>; }');
+    tick(250);
+
+    expect(component.monacoLoadFailed()).toBeTrue();
+    expect(component.useMonaco()).toBeFalse();
+    expect(component.editorContent()).toContain('Fallback');
+    expect(codeStore.saveFrameworkFileAsync).toHaveBeenCalledWith(
+      'react-case',
+      'react',
+      'src/App.tsx',
+      'export default function App() { return <div>Fallback</div>; }',
+      { allowEmpty: true },
+    );
+  }));
+
   it('does not expose manual checks when question has no framework tests', () => {
     const component = createComponent();
 

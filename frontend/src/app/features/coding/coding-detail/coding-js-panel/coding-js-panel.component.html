@@ -96,7 +96,8 @@
                     <app-monaco-editor #codeEditor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
                         [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                         [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()"
-                        (lineClick)="onCodeEditorLineClick($event)">
+                        (lineClick)="onCodeEditorLineClick($event)"
+                        (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
                     <app-code-snapshot
                         *ngIf="!codeEditorReady()"
@@ -108,6 +109,16 @@
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
                 <ng-template #liteCodeEditor>
+                    <textarea
+                        *ngIf="monacoLoadFailed(); else liteCodeSnapshot"
+                        class="lite-editor editor-fill"
+                        data-testid="js-code-editor"
+                        aria-label="Code editor fallback"
+                        spellcheck="false"
+                        [value]="editorContent()"
+                        (input)="onCodeChange($any($event.target).value)"></textarea>
+                </ng-template>
+                <ng-template #liteCodeSnapshot>
                     <app-code-snapshot
                         class="editor-fill"
                         [testId]="'js-code-editor'"
@@ -123,7 +134,8 @@
                 <ng-container *ngIf="useMonaco(); else liteTestsEditor">
                     <app-monaco-editor #testsEditor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
                         [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
-                        [options]="editorOptions" (codeChange)="onTestsChange($event)" (ready)="onTestsEditorReady()">
+                        [options]="editorOptions" (codeChange)="onTestsChange($event)" (ready)="onTestsEditorReady()"
+                        (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
                     <app-code-snapshot
                         *ngIf="!testsEditorReady()"
@@ -135,6 +147,16 @@
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
                 <ng-template #liteTestsEditor>
+                    <textarea
+                        *ngIf="monacoLoadFailed(); else liteTestsSnapshot"
+                        class="lite-editor editor-fill"
+                        data-testid="js-tests-editor"
+                        aria-label="Tests editor fallback"
+                        spellcheck="false"
+                        [value]="testCode()"
+                        (input)="onTestsChange($any($event.target).value)"></textarea>
+                </ng-template>
+                <ng-template #liteTestsSnapshot>
                     <app-code-snapshot
                         class="editor-fill"
                         [testId]="'js-tests-editor'"

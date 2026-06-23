@@ -15,6 +15,13 @@ export type MonacoLineClickEvent = {
   clientY: number;
 };
 
+export type MonacoLoadError = {
+  message: string;
+  phase?: string;
+  moduleId?: string;
+  url?: string;
+};
+
 @Component({
   selector: 'app-monaco-editor',
   standalone: true,
@@ -50,6 +57,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Output() codeChange = new EventEmitter<string>();
   @Output() ready = new EventEmitter<void>();
   @Output() lineClick = new EventEmitter<MonacoLineClickEvent>();
+  @Output() loadFailed = new EventEmitter<MonacoLoadError>();
   @Input() modelKey?: string; // stable key from parent, e.g., "q-42-code"
 
   // ADD
@@ -95,97 +103,107 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   async ngAfterViewInit() {
     if (!this.isBrowser) return;
-    await this.ensureMonaco();
-    if (this.disposed) return;
-
-    window.monaco?.editor?.setTheme?.(this.theme);
-
-    const langNorm = this.normalizeLanguage(this.language);
-    const langDefaults = this.getLanguageDefaultOptions(langNorm);
-
-    // Base options (do NOT pass "value" here; model will carry the text)
-    const baseOpts = {
-      language: langNorm,
-      theme: this.theme,
-      readOnly: this.readOnly,
-      automaticLayout: !this.autoHeight,
-      scrollBeyondLastLine: false,
-      minimap: { enabled: false },
-      ...langDefaults,
-      ...this.options,
-    };
-
-    if (!this.autoHeight) {
-      (this.container.nativeElement.parentElement as HTMLElement)?.classList.add('fixed-height');
-    }
-
-    // ✅ Create the model first with a deterministic URI/extension
-    this.createOrSwapModel(langNorm, this.code ?? '');
-
-    // Then create the editor bound to that model
-    this.editor = window.monaco.editor.create(this.container.nativeElement, {
-      ...baseOpts,
-      model: this.model,
-    });
-
-    // Some embedding contexts can break Monaco's default Enter/Tab acceptance for suggestions.
-    // Re-bind them explicitly when the suggest widget is visible.
     try {
-      const monaco = (window as any).monaco;
-      const whenSuggest = monaco?.editor?.ContextKeyExpr?.has?.('suggestWidgetVisible');
-      if (whenSuggest) {
-        this.editor.addCommand(monaco.KeyCode.Enter, () => {
-          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
-        }, whenSuggest);
-        this.editor.addCommand(monaco.KeyCode.Tab, () => {
-          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
-        }, whenSuggest);
+      await this.ensureMonaco();
+      if (this.disposed) return;
+
+      if (!window.monaco?.editor?.create) {
+        throw this.toMonacoLoadError(null, 'Monaco editor API was not available after loading assets.');
       }
-    } catch { }
 
-    // Mirror -> @Output
-    this.editor.onDidChangeModelContent?.(() => {
-      if (this.suppressNextModelUpdate) { this.suppressNextModelUpdate = false; return; }
-      this.codeChange.emit(this.editor.getValue());
-      if (this.autoHeight) this.fit();
-    });
+      window.monaco?.editor?.setTheme?.(this.theme);
 
-    this.editor.onMouseDown?.((event: any) => {
-      const lineNumber = Number(event?.target?.position?.lineNumber || 0);
-      const browserEvent = event?.event?.browserEvent as MouseEvent | undefined;
-      if (!lineNumber || !browserEvent) return;
-      this.lineClick.emit({
-        lineNumber,
-        clientX: browserEvent.clientX,
-        clientY: browserEvent.clientY,
-      });
-    });
+      const langNorm = this.normalizeLanguage(this.language);
+      const langDefaults = this.getLanguageDefaultOptions(langNorm);
 
-    // Auto-height handling
-    if (this.autoHeight) {
-      this.editor.updateOptions({
-        scrollbar: {
-          vertical: 'hidden',
-          horizontal: 'hidden',
-          useShadows: false,
-          verticalScrollbarSize: 0,
-          horizontalScrollbarSize: 0,
-          alwaysConsumeMouseWheel: false,
-        },
-        wordWrap: 'on',
+      // Base options (do NOT pass "value" here; model will carry the text)
+      const baseOpts = {
+        language: langNorm,
+        theme: this.theme,
+        readOnly: this.readOnly,
+        automaticLayout: !this.autoHeight,
+        scrollBeyondLastLine: false,
+        minimap: { enabled: false },
+        ...langDefaults,
+        ...this.options,
+      };
+
+      if (!this.autoHeight) {
+        (this.container.nativeElement.parentElement as HTMLElement)?.classList.add('fixed-height');
+      }
+
+      // Create the model first with a deterministic URI/extension.
+      this.createOrSwapModel(langNorm, this.code ?? '');
+
+      // Then create the editor bound to that model.
+      this.editor = window.monaco.editor.create(this.container.nativeElement, {
+        ...baseOpts,
+        model: this.model,
       });
 
-      this.editor.onDidContentSizeChange?.(() => this.fit());
+      // Some embedding contexts can break Monaco's default Enter/Tab acceptance for suggestions.
+      // Re-bind them explicitly when the suggest widget is visible.
+      try {
+        const monaco = (window as any).monaco;
+        const whenSuggest = monaco?.editor?.ContextKeyExpr?.has?.('suggestWidgetVisible');
+        if (whenSuggest) {
+          this.editor.addCommand(monaco.KeyCode.Enter, () => {
+            this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
+          }, whenSuggest);
+          this.editor.addCommand(monaco.KeyCode.Tab, () => {
+            this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
+          }, whenSuggest);
+        }
+      } catch { }
 
-      this.resizeObs = new ResizeObserver(() => this.layoutToCurrentSize());
-      this.resizeObs.observe(this.container.nativeElement);
+      // Mirror -> @Output
+      this.editor.onDidChangeModelContent?.(() => {
+        if (this.suppressNextModelUpdate) { this.suppressNextModelUpdate = false; return; }
+        this.codeChange.emit(this.editor.getValue());
+        if (this.autoHeight) this.fit();
+      });
 
-      setTimeout(() => this.fit());
+      this.editor.onMouseDown?.((event: any) => {
+        const lineNumber = Number(event?.target?.position?.lineNumber || 0);
+        const browserEvent = event?.event?.browserEvent as MouseEvent | undefined;
+        if (!lineNumber || !browserEvent) return;
+        this.lineClick.emit({
+          lineNumber,
+          clientX: browserEvent.clientX,
+          clientY: browserEvent.clientY,
+        });
+      });
+
+      // Auto-height handling
+      if (this.autoHeight) {
+        this.editor.updateOptions({
+          scrollbar: {
+            vertical: 'hidden',
+            horizontal: 'hidden',
+            useShadows: false,
+            verticalScrollbarSize: 0,
+            horizontalScrollbarSize: 0,
+            alwaysConsumeMouseWheel: false,
+          },
+          wordWrap: 'on',
+        });
+
+        this.editor.onDidContentSizeChange?.(() => this.fit());
+
+        this.resizeObs = new ResizeObserver(() => this.layoutToCurrentSize());
+        this.resizeObs.observe(this.container.nativeElement);
+
+        setTimeout(() => this.fit());
+      }
+
+      this.applyInteractivity();
+      setTimeout(() => this.layoutToCurrentSize(), 0);
+      this.scheduleReadyEmit();
+    } catch (error) {
+      if (!this.disposed) {
+        this.loadFailed.emit(this.toMonacoLoadError(error, 'Monaco editor failed to initialize.'));
+      }
     }
-
-    this.applyInteractivity();
-    setTimeout(() => this.layoutToCurrentSize(), 0);
-    this.scheduleReadyEmit();
   }
 
 
@@ -378,6 +396,54 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     this.editor.layout?.({ width, height });
   }
 
+  private toMonacoLoadError(error: unknown, fallbackMessage: string): MonacoLoadError {
+    const candidate = error as any;
+    if (candidate && typeof candidate.message === 'string' && !this.isOpaqueEventMessage(candidate.message)) {
+      const normalized: MonacoLoadError = {
+        message: candidate.message,
+        phase: typeof candidate.phase === 'string' ? candidate.phase : undefined,
+        moduleId: typeof candidate.moduleId === 'string' ? candidate.moduleId : undefined,
+      };
+      const url = this.extractLoadUrl(candidate, normalized.moduleId);
+      return url ? { ...normalized, url } : normalized;
+    }
+
+    const messageFromError = error instanceof Error ? error.message : '';
+    const messageFromNestedError = typeof candidate?.error?.message === 'string' ? candidate.error.message : '';
+    const messageFromString = typeof error === 'string' ? error : '';
+    const rawMessage = messageFromError || messageFromNestedError || messageFromString;
+    const message = rawMessage && !this.isOpaqueEventMessage(rawMessage) ? rawMessage : fallbackMessage;
+    const moduleId = typeof candidate?.moduleId === 'string' ? candidate.moduleId : undefined;
+    const url = this.extractLoadUrl(candidate, moduleId);
+
+    return {
+      message,
+      phase: typeof candidate?.phase === 'string' ? candidate.phase : undefined,
+      moduleId,
+      ...(url ? { url } : {}),
+    };
+  }
+
+  private isOpaqueEventMessage(message: string): boolean {
+    return message === '[object Event]' || message === '[object ProgressEvent]' || message === 'Event';
+  }
+
+  private extractLoadUrl(error: any, moduleId?: string): string | undefined {
+    const target = error?.target || error?.currentTarget || error?.srcElement;
+    const targetSrc = typeof target?.src === 'string' ? target.src : '';
+    if (targetSrc) return targetSrc;
+
+    if (!moduleId) return undefined;
+
+    const modulePath = moduleId.replace(/^vs\//, '');
+    const jsPath = modulePath.endsWith('.js') ? modulePath : `${modulePath}.js`;
+    try {
+      return new URL(`${this.vsBasePath}/${jsPath}`, document.baseURI).toString();
+    } catch {
+      return `${this.vsBasePath}/${jsPath}`;
+    }
+  }
+
   // ---------- AMD bootstrap ----------
   private ensureMonaco(): Promise<void> {
     if (!this.isBrowser) return Promise.resolve();
@@ -386,28 +452,93 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     if (win.__faMonacoLoaderPromise) return win.__faMonacoLoaderPromise as Promise<void>;
     if (MonacoEditorComponent.loaderPromise) return MonacoEditorComponent.loaderPromise;
 
-    const loaderPromise = new Promise<void>((resolve) => {
+    const loaderPromise = new Promise<void>((resolve, reject) => {
+      let settled = false;
+      const timeout = window.setTimeout(() => {
+        fail({
+          message: 'Monaco editor assets timed out while loading.',
+          phase: 'timeout',
+          moduleId: 'vs/editor/editor.main',
+          url: this.extractLoadUrl(null, 'vs/editor/editor.main'),
+        });
+      }, 15000);
+
+      const succeed = () => {
+        if (settled) return;
+        if (!win.monaco?.editor?.create) {
+          fail({
+            message: 'Monaco editor API was not available after loading assets.',
+            phase: 'loading',
+            moduleId: 'vs/editor/editor.main',
+            url: this.extractLoadUrl(null, 'vs/editor/editor.main'),
+          });
+          return;
+        }
+        settled = true;
+        window.clearTimeout(timeout);
+        MonacoEditorComponent.monacoReady = true;
+        win.__faMonacoReady = true;
+        resolve();
+      };
+
+      const fail = (error: unknown, fallbackMessage = 'Monaco editor assets failed to load.') => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        MonacoEditorComponent.monacoReady = false;
+        win.__faMonacoReady = false;
+        MonacoEditorComponent.loaderPromise = null;
+        delete win.__faMonacoLoaderPromise;
+        if (typeof win.require !== 'function') {
+          document.querySelectorAll<HTMLScriptElement>('script[data-fa-monaco-loader]').forEach((script) => {
+            script.remove();
+          });
+        }
+        reject(this.toMonacoLoadError(error, fallbackMessage));
+      };
+
       const start = () => {
-        if (!(window as any).MonacoEnvironment) {
-          (window as any).MonacoEnvironment = {
-            getWorkerUrl: () =>
-              new URL(`${this.vsBasePath}/base/worker/workerMain.js`, document.baseURI).toString(),
-          };
-        }
+        try {
+          if (!(window as any).MonacoEnvironment) {
+            (window as any).MonacoEnvironment = {
+              getWorkerUrl: () =>
+                new URL(`${this.vsBasePath}/base/worker/workerMain.js`, document.baseURI).toString(),
+            };
+          }
 
-        // Configure AMD path to Monaco once
-        if (!(window as any).require || !(window as any).require.configuredForVs) {
-          const req: any = (window as any).require || {};
-          if (req.config) req.config({ paths: { vs: this.vsBasePath } });
-          else (window as any).require = Object.assign(function () { }, req, { paths: { vs: this.vsBasePath } });
-          (window as any).require.configuredForVs = true;
-        }
+          const req: any = (window as any).require;
+          if (typeof req !== 'function') {
+            fail({
+              message: 'Monaco AMD loader did not expose require().',
+              phase: 'loading',
+              url: new URL(this.amdLoaderPath, document.baseURI).toString(),
+            });
+            return;
+          }
 
-        (window as any).require(['vs/editor/editor.main'], () => {
-          const monaco = (window as any).monaco;
-          const ts = monaco.languages.typescript;
+          if (typeof req.config === 'function') {
+            req.config({
+              paths: { vs: this.vsBasePath },
+              onError: (error: unknown) => fail(error),
+            });
+            req.configuredForVs = true;
+          }
 
-          MonacoEditorComponent.installWebCompletions(monaco);
+          req(['vs/editor/editor.main'], () => {
+            try {
+              const monaco = (window as any).monaco;
+              const ts = monaco?.languages?.typescript;
+              if (!monaco?.editor?.create || !ts?.typescriptDefaults) {
+                fail({
+                  message: 'Monaco editor main module loaded without the expected editor API.',
+                  phase: 'loading',
+                  moduleId: 'vs/editor/editor.main',
+                  url: this.extractLoadUrl(null, 'vs/editor/editor.main'),
+                });
+                return;
+              }
+
+              MonacoEditorComponent.installWebCompletions(monaco);
 
           // NEW: ensure models sync early and soften diagnostics for “module not found” cases
           ts.typescriptDefaults.setEagerModelSync?.(true);   // push models to the worker ASAP
@@ -603,10 +734,14 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
             mAny.__faNodeShimLib = true;
           }
 
-          MonacoEditorComponent.monacoReady = true;
-          win.__faMonacoReady = true;
-          resolve();
-        });
+              succeed();
+            } catch (error) {
+              fail(error, 'Monaco editor setup failed.');
+            }
+          }, (error: unknown) => fail(error));
+        } catch (error) {
+          fail(error, 'Monaco editor bootstrap failed.');
+        }
       };
 
       // If AMD loader already present, start immediately; otherwise load it
@@ -619,19 +754,41 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         'script[data-fa-monaco-loader], script[src*="monaco/min/vs/loader.js"]'
       );
       if (existing) {
-        existing.addEventListener('load', () => {
-          (window as any).require = (window as any).require || {};
-          start();
-        }, { once: true });
-        existing.addEventListener('error', () => resolve(), { once: true });
-        return;
+        if (existing.dataset['faMonacoFailed'] === 'true') {
+          existing.remove();
+        } else {
+          existing.addEventListener('load', () => {
+            start();
+          }, { once: true });
+          existing.addEventListener('error', (event) => {
+            existing.dataset['faMonacoFailed'] = 'true';
+            existing.remove();
+            fail({
+              message: 'Monaco AMD loader script failed to load.',
+              phase: 'loading',
+              url: existing.src,
+              target: event.target,
+            });
+          }, { once: true });
+          return;
+        }
       }
 
       const s = document.createElement('script');
       s.src = this.amdLoaderPath;
       s.dataset['faMonacoLoader'] = 'true';
-      s.onload = () => { (window as any).require = (window as any).require || {}; start(); };
-      s.onerror = () => { resolve(); };
+      s.onload = () => { start(); };
+      s.onerror = (event) => {
+        s.dataset['faMonacoFailed'] = 'true';
+        s.remove();
+        const loadEvent = event instanceof Event ? event : null;
+        fail({
+          message: 'Monaco AMD loader script failed to load.',
+          phase: 'loading',
+          url: s.src,
+          target: loadEvent?.target,
+        });
+      };
       document.head.appendChild(s);
     });
 

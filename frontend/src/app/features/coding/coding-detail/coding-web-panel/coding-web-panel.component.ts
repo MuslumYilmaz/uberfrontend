@@ -232,7 +232,8 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
                                  [code]="webHtml()" [language]="'html'"
                                  [options]="editorOptions"
                                  (codeChange)="onHtmlChange($event)"
-                                 (ready)="onHtmlEditorReady()">
+                                 (ready)="onHtmlEditorReady()"
+                                 (loadFailed)="onEditorLoadFailed()">
               </app-monaco-editor>
               <app-code-snapshot
                 *ngIf="!htmlEditorReady()"
@@ -244,6 +245,16 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
                 (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
             </ng-container>
             <ng-template #liteHtmlEditor>
+              <textarea
+                *ngIf="monacoLoadFailed(); else liteHtmlSnapshot"
+                class="lite-editor editor-fill"
+                data-testid="web-html-editor"
+                aria-label="HTML editor fallback"
+                spellcheck="false"
+                [value]="webHtml()"
+                (input)="onHtmlChange($any($event.target).value)"></textarea>
+            </ng-template>
+            <ng-template #liteHtmlSnapshot>
               <app-code-snapshot
                 class="editor-fill"
                 [testId]="'web-html-editor'"
@@ -265,7 +276,8 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
                                  [code]="webCss()" [language]="'css'"
                                  [options]="editorOptions"
                                  (codeChange)="onCssChange($event)"
-                                 (ready)="onCssEditorReady()">
+                                 (ready)="onCssEditorReady()"
+                                 (loadFailed)="onEditorLoadFailed()">
               </app-monaco-editor>
               <app-code-snapshot
                 *ngIf="!cssEditorReady()"
@@ -277,6 +289,16 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
                 (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
             </ng-container>
             <ng-template #liteCssEditor>
+              <textarea
+                *ngIf="monacoLoadFailed(); else liteCssSnapshot"
+                class="lite-editor editor-fill"
+                data-testid="web-css-editor"
+                aria-label="CSS editor fallback"
+                spellcheck="false"
+                [value]="webCss()"
+                (input)="onCssChange($any($event.target).value)"></textarea>
+            </ng-template>
+            <ng-template #liteCssSnapshot>
               <app-code-snapshot
                 class="editor-fill"
                 [testId]="'web-css-editor'"
@@ -412,6 +434,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   previewReady = signal(false);
 
   useMonaco = signal(true);
+  monacoLoadFailed = signal(false);
   htmlEditorReady = signal(false);
   cssEditorReady = signal(false);
 
@@ -478,7 +501,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       this.cssEditorReady.set(false);
       return;
     }
-    this.useMonaco.set(!this.liteMode);
+    if (!this.monacoLoadFailed()) {
+      this.useMonaco.set(!this.liteMode);
+    }
     this.htmlEditorReady.set(false);
     this.cssEditorReady.set(false);
   }
@@ -489,6 +514,13 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
   onCssEditorReady() {
     this.cssEditorReady.set(true);
+  }
+
+  onEditorLoadFailed(): void {
+    this.monacoLoadFailed.set(true);
+    this.useMonaco.set(false);
+    this.htmlEditorReady.set(false);
+    this.cssEditorReady.set(false);
   }
 
   // -------- init from question (unchanged logic) --------
