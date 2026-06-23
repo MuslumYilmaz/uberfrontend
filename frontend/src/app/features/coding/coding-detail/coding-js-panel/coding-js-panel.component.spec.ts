@@ -125,6 +125,35 @@ describe('CodingJsPanelComponent', () => {
     );
   }));
 
+  it('runs tests with fallback textarea buffers after Monaco fails to load', async () => {
+    const runner = new RunnerStub();
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent({} as any),
+    );
+    (component as any).loadRunner = async () => runner;
+    component.disablePersistence = true;
+    component.question = {
+      id: 'fallback-js',
+      starterCode: 'export default function fallback() {}',
+      tests: "test('old', () => expect(false).toBe(true));",
+    } as any;
+    (component as any)._hydrating = false;
+    component.editorContent.set('old code');
+    component.testCode.set('old tests');
+
+    component.onEditorLoadFailed();
+    component.onCodeChange("export default function fallback() { return 'textarea'; }");
+    component.onTestsChange("test('fallback', () => expect(true).toBe(true));");
+
+    await component.runTests();
+
+    expect(component.monacoLoadFailed()).toBeTrue();
+    expect(component.useMonaco()).toBeFalse();
+    expect(runner.runWithTests).toHaveBeenCalled();
+    expect(runner.lastArgs?.userCode).toContain('textarea');
+    expect(runner.lastArgs?.testCode).toContain('fallback');
+  });
+
   it('clears stale test results when loading a different question', async () => {
     const codeStoreStub = {
       getJsAsync: jasmine.createSpy('getJsAsync').and.resolveTo(null),

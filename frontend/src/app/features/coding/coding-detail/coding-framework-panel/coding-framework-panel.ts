@@ -123,6 +123,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
   useMonaco = signal(true);
+  monacoLoadFailed = signal(false);
   editorReady = signal(false);
   previewReady = signal(false);
 
@@ -288,12 +289,20 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       this.useMonaco.set(false);
       return;
     }
-    this.useMonaco.set(!this.liteMode);
+    if (!this.monacoLoadFailed()) {
+      this.useMonaco.set(!this.liteMode);
+    }
     this.editorReady.set(false);
   }
 
   onEditorReady() {
     this.editorReady.set(true);
+  }
+
+  onEditorLoadFailed(): void {
+    this.monacoLoadFailed.set(true);
+    this.useMonaco.set(false);
+    this.editorReady.set(false);
   }
 
   frameworkCheckPassedCount(): number {

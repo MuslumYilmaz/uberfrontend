@@ -171,6 +171,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private readonly interventionTimingVariant = this.resolveInterventionTimingVariant();
   private readonly hintDensityVariant = this.resolveHintDensityVariant();
   useMonaco = signal(true);
+  monacoLoadFailed = signal(false);
   codeEditorReady = signal(false);
   testsEditorReady = signal(false);
   private runnerInstance?: Runner;
@@ -929,7 +930,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.useMonaco.set(false);
       return;
     }
-    this.useMonaco.set(!this.liteMode);
+    if (!this.monacoLoadFailed()) {
+      this.useMonaco.set(!this.liteMode);
+    }
     this.codeEditorReady.set(false);
     this.testsEditorReady.set(false);
   }
@@ -941,6 +944,13 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   onTestsEditorReady() {
     this.testsEditorReady.set(true);
+  }
+
+  onEditorLoadFailed(): void {
+    this.monacoLoadFailed.set(true);
+    this.useMonaco.set(false);
+    this.codeEditorReady.set(false);
+    this.testsEditorReady.set(false);
   }
 
   /* ---------- Lifecycle-ish setup API (call once from parent) ---------- */

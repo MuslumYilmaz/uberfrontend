@@ -103,7 +103,8 @@
                 <ng-container *ngIf="useMonaco(); else liteFrameworkEditor">
                     <app-monaco-editor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
                         [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions"
-                        (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()">
+                        (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()"
+                        (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
                     <app-code-snapshot
                         *ngIf="!editorReady()"
@@ -115,6 +116,16 @@
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
                 <ng-template #liteFrameworkEditor>
+                    <textarea
+                        *ngIf="monacoLoadFailed(); else frameworkEditorSnapshot"
+                        class="lite-editor editor-fill"
+                        data-testid="framework-code-editor"
+                        aria-label="Framework code editor fallback"
+                        spellcheck="false"
+                        [value]="editorContent()"
+                        (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
+                </ng-template>
+                <ng-template #frameworkEditorSnapshot>
                     <app-code-snapshot
                         class="editor-fill"
                         [testId]="'framework-code-editor'"
