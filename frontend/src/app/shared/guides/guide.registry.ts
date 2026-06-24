@@ -1254,7 +1254,7 @@ export const PLAYBOOK: GuideEntry[] = [
         slug: 'quiz',
         title: 'Frontend Interview Fundamentals Quiz: Browser, CSS, JavaScript, HTTP',
         minutes: 15,
-        summary: 'Run a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, and practice links.',
+        summary: 'Run a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, practice links, an optional accessibility/performance add-on, and review notes tied to drills, rubric scoring, and official references.',
         seo: {
             title: 'Frontend Interview Fundamentals Quiz: 15-Minute Diagnostic',
             description: 'Take a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, and practice links.',
@@ -1276,6 +1276,10 @@ export const PLAYBOOK: GuideEntry[] = [
                 'css layout interview questions quiz',
                 'javascript async interview quiz',
                 'http caching frontend interview questions',
+                'frontend accessibility interview fundamentals',
+                'responsive layout interview quiz',
+                'frontend performance fundamentals interview',
+                'framework fundamentals interview questions',
             ],
             faqPage: {
                 name: 'Frontend interview fundamentals quiz FAQ',
@@ -1304,6 +1308,14 @@ export const PLAYBOOK: GuideEntry[] = [
                         question: 'What HTTP caching topics should frontend engineers know?',
                         answer: 'Explain Cache-Control, ETag, max-age, revalidation, stale data policy, and how status codes change the UI state the user should see.',
                     },
+                    {
+                        question: 'Should I include framework, accessibility, responsive, and performance questions in a fundamentals quiz?',
+                        answer: 'Yes, but keep them as an add-on after the core diagnostic. Browser, CSS, JavaScript, and HTTP basics should drive the 15-minute score; framework, accessibility, responsive, and performance prompts help you prepare for broader frontend technical interviews.',
+                    },
+                    {
+                        question: 'How is this frontend fundamentals quiz reviewed?',
+                        answer: 'FrontendAtlas reviews this quiz against its trivia drills, coding practice paths, interview blueprint scoring rubric, and official web platform references for browser rendering, JavaScript scheduling, CSS cascade, HTTP caching, accessibility, and performance.',
+                    },
                 ],
             },
             itemList: {
@@ -1323,15 +1335,15 @@ export const PLAYBOOK: GuideEntry[] = [
                     { name: 'Full quiz practice area', description: 'Move from fundamentals checks into broader frontend coding and trivia practice.', url: '/coding' },
                 ],
             },
-            readerPromise: 'Run this frontend interview fundamentals quiz to diagnose browser, CSS, JavaScript, and HTTP weak spots, score your answers, and move into direct FrontendAtlas practice links.',
-            uniqueAngle: 'A 15-minute frontend fundamentals diagnostic with score bands, answer rubric, and direct practice links instead of a generic question list.',
+            readerPromise: 'Run this frontend interview fundamentals quiz to diagnose browser, CSS, JavaScript, and HTTP weak spots, then use optional accessibility, responsive, performance, and framework add-ons reviewed against FrontendAtlas drills, rubric scoring, and official references.',
+            uniqueAngle: 'A 15-minute frontend fundamentals diagnostic with score bands, spoken answer examples, an optional advanced add-on, review methodology, official references, and direct practice links instead of a generic question list.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-12',
+            updatedAt: '2026-06-24',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
-            factCheckedAt: '2026-06-11',
+            factCheckedAt: '2026-06-24',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>

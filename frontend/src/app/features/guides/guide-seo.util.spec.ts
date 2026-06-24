@@ -487,6 +487,10 @@ describe('guide-seo.util', () => {
       'css layout interview questions quiz',
       'javascript async interview quiz',
       'http caching frontend interview questions',
+      'frontend accessibility interview fundamentals',
+      'responsive layout interview quiz',
+      'frontend performance fundamentals interview',
+      'framework fundamentals interview questions',
     ]);
 
     const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
@@ -500,7 +504,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'Take a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, and practice links.',
     );
-    expect(article?.dateModified).toBe('2026-06-12T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-24T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -514,7 +518,7 @@ describe('guide-seo.util', () => {
     expect(itemList?.itemListElement?.[10]?.url).toBe('https://frontendatlas.com/html/trivia/html-parsing-rendering');
     expect(itemList?.itemListElement?.[11]?.url).toBe('https://frontendatlas.com/coding');
     expect(faqPage?.name).toBe('Frontend interview fundamentals quiz FAQ');
-    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.length).toBe(8);
     expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
       'What is a frontend interview fundamentals quiz?',
       'How do I use this as a 15-minute frontend fundamentals diagnostic?',
@@ -522,6 +526,8 @@ describe('guide-seo.util', () => {
       'Which CSS layout interview questions matter most?',
       'What JavaScript async topics appear in frontend interview quizzes?',
       'What HTTP caching topics should frontend engineers know?',
+      'Should I include framework, accessibility, responsive, and performance questions in a fundamentals quiz?',
+      'How is this frontend fundamentals quiz reviewed?',
     ]);
   });
 

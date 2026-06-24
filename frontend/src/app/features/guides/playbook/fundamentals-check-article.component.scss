@@ -33,12 +33,35 @@ a:hover {
 .score-grid,
 .practice-grid,
 .mistake-grid,
-.next-grid {
+.next-grid,
+.addon-grid,
+.spoken-grid,
+.reference-grid,
+.quick-flow,
+.table-summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
   padding-left: 0;
   list-style: none;
+}
+
+.proof-grid,
+.topic-grid,
+.question-grid,
+.score-grid,
+.practice-grid,
+.mistake-grid,
+.next-grid,
+.addon-grid,
+.spoken-grid,
+.reference-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.quick-flow,
+.table-summary {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 12px 0 18px;
 }
 
 .proof-grid {
@@ -51,7 +74,12 @@ a:hover {
 .score-card,
 .practice-card,
 .mistake-card,
-.next-link {
+.next-link,
+.addon-card,
+.spoken-card,
+.reference-grid a,
+.quick-flow li,
+.table-summary li {
   min-width: 0;
   border: 1px solid var(--uf-border-subtle);
   border-radius: 8px;
@@ -65,7 +93,10 @@ a:hover {
 .score-card h3,
 .practice-card h3,
 .mistake-card h3,
-.next-link strong {
+.addon-card h3,
+.spoken-card h3,
+.next-link strong,
+.quick-flow strong {
   display: block;
   margin: 0;
   color: var(--uf-text-primary);
@@ -77,9 +108,22 @@ a:hover {
 .score-card p,
 .practice-card p,
 .mistake-card p,
-.next-link span {
+.addon-card p,
+.spoken-card p,
+.next-link span,
+.quick-flow li,
+.table-summary li {
   margin: 0;
   color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+}
+
+.spoken-card {
+  display: grid;
+  gap: 8px;
+}
+
+.spoken-card strong {
+  color: var(--uf-text-primary);
 }
 
 .proof-actions {
@@ -90,7 +134,8 @@ a:hover {
 
 .proof-cta,
 .practice-card,
-.next-link {
+.next-link,
+.reference-grid a {
   display: grid;
   gap: 8px;
   text-decoration: none;

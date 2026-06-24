@@ -51,23 +51,32 @@ describe('FundamentalsCheckArticle', () => {
     expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
     expect(freshness?.textContent || '').toContain('Reviewed by FrontendAtlas');
     expect(hostText).toContain('Custom fundamentals diagnostic promise.');
+    expect(hostText).toContain('answer 12 questions');
+    expect(hostText).toContain('give yourself one point');
+    expect(hostText).toContain('0-5, 6-9, or 10-12 score band');
   });
 
   it('renders the major diagnostic landing sections', () => {
     const hostText = text();
 
     expect(hostText).toContain('What frontend fundamentals interviews test');
+    expect(hostText).toContain('Quick answer: 15-minute quiz flow');
+    expect(hostText).toContain('Practice note from FrontendAtlas drills');
+    expect(hostText).toContain('How this quiz was reviewed');
+    expect(hostText).toContain('References used for this diagnostic');
     expect(hostText).toContain('15-minute frontend fundamentals diagnostic');
     expect(hostText).toContain('Browser rendering interview questions');
     expect(hostText).toContain('CSS layout interview questions');
     expect(hostText).toContain('JavaScript async interview quiz');
     expect(hostText).toContain('HTTP caching frontend interview questions');
+    expect(hostText).toContain('Advanced frontend fundamentals add-on');
     expect(hostText).toContain('Score bands');
     expect(hostText).toContain('Answer rubric');
+    expect(hostText).toContain('Spoken answer examples');
     expect(hostText).toContain('Practice map');
     expect(hostText).toContain('Common mistakes');
-    expect(hostText).toContain('FAQ');
     expect(hostText).toContain('What to practice next');
+    expect(hostText).toContain('Frontend fundamentals quiz FAQ');
   });
 
   it('renders the 12 self-check questions and score bands', () => {
@@ -85,18 +94,56 @@ describe('FundamentalsCheckArticle', () => {
     expect(hostText).toContain('How do Cache-Control and ETag affect frontend freshness?');
   });
 
+  it('renders EEAT review notes and official reference links', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const hostText = text();
+    const referenceLinks = host.querySelectorAll('[data-testid="fundamentals-official-references"] a');
+    const linkTargets = hrefs();
+
+    expect(referenceLinks.length).toBe(6);
+    expect(hostText).toContain('weak answers usually stop at a definition');
+    expect(hostText).toContain('visible UI consequence, the debugging step');
+    expect(hostText).toContain('reviewed against FrontendAtlas trivia and coding drills');
+    expect(hostText).toContain('official web platform references');
+    expect(hostText).toContain('MDN Critical rendering path');
+    expect(hostText).toContain('WAI-ARIA Authoring Practices Guide');
+    expect(linkTargets).toContain('https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Critical_rendering_path');
+    expect(linkTargets).toContain('https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model');
+    expect(linkTargets).toContain('https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Introduction');
+    expect(linkTargets).toContain('https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching');
+    expect(linkTargets).toContain('https://www.w3.org/WAI/ARIA/apg/');
+    expect(linkTargets).toContain('https://web.dev/learn/performance');
+  });
+
+  it('renders the optional advanced fundamentals add-on without changing the core score', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const hostText = text();
+    const coreQuestions = host.querySelectorAll('.question-card');
+    const addOnCards = host.querySelectorAll('[data-testid="fundamentals-advanced-add-on"] .addon-card');
+
+    expect(coreQuestions.length).toBe(12);
+    expect(addOnCards.length).toBe(4);
+    expect(hostText).toContain('optional 5-minute stretch');
+    expect(hostText).toContain('Do not add these four prompts to the core score');
+    expect(hostText).toContain('How do semantic HTML and accessibility change a component interview answer?');
+    expect(hostText).toContain('How would you debug a responsive layout that breaks on mobile?');
+    expect(hostText).toContain('What frontend performance issue would you check first in a slow UI?');
+    expect(hostText).toContain('What framework fundamentals should you explain without guessing?');
+  });
+
   it('renders long-tail intent phrases and answer quality guidance', () => {
     const hostText = text();
 
     expect(hostText).toContain('frontend interview fundamentals quiz');
     expect(hostText).toContain('15-minute frontend fundamentals diagnostic');
-    expect(hostText).toContain('frontend interview readiness quiz');
+    expect(hostText).toContain('Use this readiness check before moving into coding');
     expect(hostText).toContain('Browser rendering interview questions');
     expect(hostText).toContain('CSS layout interview questions');
     expect(hostText).toContain('JavaScript async interview quiz');
     expect(hostText).toContain('HTTP caching frontend interview questions');
     expect(hostText).toContain('frontend interview score bands');
     expect(hostText).toContain('frontend technical interview');
+    expect(hostText).toContain('accessibility, responsive layout, performance triage, and framework reasoning');
     expect(hostText).toContain('Interview-ready');
   });
 
@@ -125,6 +172,17 @@ describe('FundamentalsCheckArticle', () => {
     const hostText = text();
 
     expect(host.querySelector('[data-testid="fundamentals-answer-rubric"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="fundamentals-spoken-answer-examples"]')).not.toBeNull();
+    expect(hostText).toContain('Define the concept in plain English before using jargon.');
+    expect(hostText).toContain('Attach one browser, CSS, JavaScript, or HTTP example to the answer.');
+    expect(hostText).toContain('Name the failure mode or production trade-off that makes the concept matter.');
+    expect(hostText).toContain('Weak spoken answer:');
+    expect(hostText).toContain('Interview-ready spoken answer:');
+    expect(hostText).toContain('Why it scores:');
+    expect(hostText).toContain('The browser builds the DOM from HTML and the CSSOM from CSS');
+    expect(hostText).toContain('I would inspect the computed box first');
+    expect(hostText).toContain('Synchronous code runs first, then the browser drains the microtask queue');
+    expect(hostText).toContain('I would start with semantic HTML, preserve keyboard and focus behavior');
     expect(hostText).toContain('Memorized definitions only');
     expect(hostText).toContain('Mixing browser queues');
     expect(hostText).toContain('What is a frontend interview fundamentals quiz?');
@@ -133,5 +191,7 @@ describe('FundamentalsCheckArticle', () => {
     expect(hostText).toContain('Which CSS layout interview questions matter most?');
     expect(hostText).toContain('What JavaScript async topics appear in frontend interview quizzes?');
     expect(hostText).toContain('What HTTP caching topics should frontend engineers know?');
+    expect(hostText).toContain('Should I include framework, accessibility, responsive, and performance questions in a fundamentals quiz?');
+    expect(hostText).toContain('How is this frontend fundamentals quiz reviewed?');
   });
 });
