@@ -912,22 +912,28 @@ describe('guide-seo.util', () => {
     );
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
-    expect(meta.keywords?.[0]).toBe('component api design');
-    expect(meta.keywords).toContain('component api design for frontend interviews');
-    expect(meta.keywords).toContain('frontend component api design');
-    expect(meta.keywords).toContain('react component api design');
-    expect(meta.keywords).toContain('component api design interview');
-    expect(meta.keywords).toContain('controlled uncontrolled component interview');
-    expect(meta.keywords).toContain('compound components interview');
-    expect(meta.keywords).toContain('react compound components interview');
-    expect(meta.keywords).toContain('props vs slots component api');
-    expect(meta.keywords).toContain('controlled vs uncontrolled component api');
-    expect(meta.keywords).toContain('accessibility as component api');
-    expect(meta.keywords).toContain('props events tradeoffs');
-    expect(meta.keywords).toContain('frontend component design interview');
-    expect(meta.keywords).toContain('reusable component api design');
-    expect(meta.keywords).toContain('react props events slots');
-    expect(meta.keywords).toContain('accessible component api');
+    expect(meta.keywords).toEqual([
+      'component api design',
+      'frontend component api design',
+      'react component api design',
+      'reusable component api design',
+      'component api design for frontend interviews',
+      'component api design interview',
+      'frontend component api interview practice',
+      'controlled vs uncontrolled component api',
+      'state ownership component api',
+      'compound components interview',
+      'props vs slots component api',
+      'component event payload design',
+      'accessibility as component api',
+      'react component props typescript',
+      'typescript component api design',
+      'radix aschild component api',
+      'modal component api design',
+      'tabs component api design',
+      'autocomplete component api design',
+      'data table component api design',
+    ]);
 
     const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
     const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
@@ -937,7 +943,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Component API Design for Frontend Interviews');
-    expect(article?.dateModified).toBe('2026-06-07T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-23T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -951,13 +957,17 @@ describe('guide-seo.util', () => {
     expect(itemList?.itemListElement?.[5]?.url).toBe('https://frontendatlas.com/react/coding/react-pagination-table');
     expect(itemList?.itemListElement?.[9]?.name).toBe('Progress Bar API');
     expect(faqPage?.name).toBe('Component API design for frontend interviews FAQ');
-    expect(faqPage?.mainEntity?.length).toBe(5);
+    expect(faqPage?.mainEntity?.length).toBe(9);
     expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
       'What is component API design?',
       'How do I practice component API design for frontend interviews?',
       'What is the controlled vs uncontrolled component API pattern?',
       'When should I use compound components or slots?',
       'How should component APIs expose events and accessibility?',
+      'How should TypeScript shape a component API?',
+      'Which real library patterns help in component API interviews?',
+      'How is this component API design guide reviewed?',
+      'How do I choose between prop-heavy, composed, and controlled component APIs?',
     ]);
   });
 
