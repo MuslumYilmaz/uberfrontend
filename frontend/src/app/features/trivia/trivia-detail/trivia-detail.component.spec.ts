@@ -226,10 +226,12 @@ describe('TriviaDetailComponent', () => {
 
   async function createLoadedFixture(access: 'free' | 'premium' = 'free', extras: Record<string, any> = {}) {
     const resolved = makeResolved(access, extras);
+    const currentQuestion = resolved.list[0];
     routeData$.next({
       questionDetail: {
         ...resolved,
-        question: resolved.list[0],
+        id: currentQuestion.id,
+        question: currentQuestion,
       },
     });
     const fixture = TestBed.createComponent(TriviaDetailComponent);
@@ -273,9 +275,11 @@ describe('TriviaDetailComponent', () => {
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faq = graph.find((node: any) => node?.['@type'] === 'FAQPage');
+    const qaPage = graph.find((node: any) => node?.['@type'] === 'QAPage');
 
     expect(article?.headline).toBe('What is closure? - Frontend interview answer');
     expect(faq).toBeUndefined();
+    expect(qaPage).toBeUndefined();
   });
 
   it('uses question-level SEO H1 intent label for visible H1 and article headline', async () => {
@@ -297,6 +301,241 @@ describe('TriviaDetailComponent', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
 
     expect(article?.headline).toBe('What is closure? - Docs-backed interview answer');
+  });
+
+  it('uses question-level SEO H1 override without appending the default intent label', async () => {
+    const fixture = await createLoadedFixture('free', {
+      seo: {
+        title: 'React render nothing: null, false, undefined',
+        description:
+          'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+        h1: 'React render nothing: return null, false, fragments, and undefined',
+      },
+    });
+
+    const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
+    expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe(
+      'React render nothing: return null, false, fragments, and undefined',
+    );
+    expect(h1?.querySelector('.title__intent')).toBeNull();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+
+    expect(article?.headline).toBe('React render nothing: return null, false, fragments, and undefined');
+  });
+
+  it('renders article body card headings as H2 and markdown answer headings as H3', async () => {
+    const fixture = await createLoadedFixture('free', {
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: '## Quick answer\n\nReturn null for intentional empty UI.',
+          },
+          {
+            type: 'text',
+            text: '## Return value map\n\nReact accepts several ReactNode shapes.',
+          },
+          {
+            type: 'text',
+            text: '## Return null or skip rendering the child?\n\nParent conditionals unmount; child null returns keep the decision inside the child.',
+          },
+          {
+            type: 'text',
+            text: '## Does return null unmount the component?\n\nNo, not when the parent still renders that component.',
+          },
+          {
+            type: 'text',
+            text: '## Component return vs JSX child\n\nComponent returns and JSX child holes have different intent.',
+          },
+          {
+            type: 'text',
+            text: '## Source check\n\nOfficial React docs back the return-value behavior.',
+          },
+          {
+            type: 'text',
+            text: '## Testable proof\n\nAssert absent DOM for intentional no-UI states.',
+          },
+          {
+            type: 'text',
+            text: '## FrontendAtlas review note\n\nThis answer is written for interview debugging.',
+          },
+          {
+            type: 'text',
+            text: '<strong>Still so complicated?</strong><br><br>Focus on whether the empty output is intentional or accidental.',
+          },
+          {
+            type: 'text',
+            text: '<strong>Summary</strong><br><br>Use null for no UI and fix undefined returns.',
+          },
+        ],
+      },
+    });
+
+    const h2Text = Array.from(fixture.nativeElement.querySelectorAll('h2.card-head'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h2Text).toContain('Interview focus');
+    expect(h2Text).toContain('Interview quick answer');
+    expect(h2Text).toContain('Full interview answer');
+    expect(h2Text).toContain('Still so complicated?');
+    expect(h2Text).toContain('Summary');
+
+    const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h3Text).toContain('Quick answer');
+    expect(h3Text).toContain('Return value map');
+    expect(h3Text).toContain('Return null or skip rendering the child?');
+    expect(h3Text).toContain('Does return null unmount the component?');
+    expect(h3Text).toContain('Component return vs JSX child');
+    expect(h3Text).toContain('Source check');
+    expect(h3Text).toContain('Testable proof');
+    expect(h3Text).toContain('FrontendAtlas review note');
+  });
+
+  it('renders the return value simulator only for the render-nothing question', async () => {
+    const targetFixture = await createLoadedFixture('free', {
+      id: 'react-render-nothing-return-value',
+      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      technology: 'react',
+      tags: ['react', 'rendering', 'null', 'conditional', 'components'],
+    });
+
+    const simulator = targetFixture.nativeElement.querySelector('[data-testid="return-value-simulator"]') as HTMLElement | null;
+    expect(simulator).toBeTruthy();
+    expect(simulator?.querySelector('h2')?.textContent?.trim()).toBe('Return value simulator');
+
+    targetFixture.destroy();
+
+    const nonTargetFixture = await createLoadedFixture('free', {
+      id: 'react-one-way-data-flow',
+      technology: 'react',
+      tags: ['react', 'state'],
+    });
+
+    expect(nonTargetFixture.nativeElement.querySelector('[data-testid="return-value-simulator"]')).toBeNull();
+  });
+
+  it('updates return value simulator output when a segment is selected', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'react-render-nothing-return-value',
+      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      technology: 'react',
+      tags: ['react', 'rendering', 'null', 'conditional', 'components'],
+    });
+
+    const simulator = fixture.nativeElement.querySelector('[data-testid="return-value-simulator"]') as HTMLElement;
+    expect(simulator.textContent || '').toContain('No DOM output for this component render.');
+    expect(simulator.textContent || '').toContain('queryByRole');
+
+    const zeroButton = Array.from(simulator.querySelectorAll('.return-simulator__tab'))
+      .find((button: any) => String(button.textContent || '').trim() === '0') as HTMLButtonElement | undefined;
+    expect(zeroButton).toBeTruthy();
+
+    zeroButton?.click();
+    fixture.detectChanges();
+
+    expect(simulator.textContent || '').toContain('Renders a text node: 0.');
+    expect(simulator.textContent || '').toContain("screen.queryByText('0')");
+    expect(simulator.textContent || '').toContain('Mounted and visible as text unless your condition prevents it.');
+  });
+
+  it('adds render-nothing TechArticle schema fields without FAQPage or QAPage markup', async () => {
+    const question = {
+      id: 'react-render-nothing-return-value',
+      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      description:
+        'React renders nothing when a component returns null or false; a fragment renders children without adding a wrapper. Returning undefined usually means a missing return, so fix it instead of using it as intentional empty UI.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: '## Quick answer\n\nReturn null for intentional empty UI.',
+          },
+        ],
+      },
+      importance: 2,
+      difficulty: 'intermediate',
+      technology: 'react',
+      access: 'free',
+      tags: ['react', 'rendering', 'null', 'conditional', 'components'],
+      updatedAt: '2026-01-30',
+      seo: {
+        title: 'React render nothing: null, false, undefined',
+        description:
+          'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+        h1: 'React render nothing: return null, false, fragments, and undefined',
+      },
+    };
+
+    routeData$.next({
+      questionDetail: {
+        tech: 'react',
+        kind: 'trivia',
+        id: question.id,
+        list: [question],
+        question,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const typeNames = graph.map((node: any) => node?.['@type']);
+
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(article?.articleSection).toBe('React rendering');
+    expect((article?.about || []).map((item: any) => item.name)).toEqual([
+      'React component return values',
+      'Conditional rendering',
+      'Rendering nothing',
+    ]);
+    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
+      'null',
+      'false',
+      'undefined',
+      'Fragment',
+      'ReactNode',
+      'missing return',
+      'short-circuit rendering',
+      'parent conditional rendering',
+      'JSX holes',
+      'mounted component',
+      'effects',
+      'React official docs',
+      'React Testing Library',
+      'DOM absence assertion',
+      'editorial review',
+      'interactive demo',
+      'DOM output',
+      'mounted state',
+    ]);
+    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
+      'Quick answer',
+      'Return value map',
+      'Common render-nothing bugs',
+      'Code examples',
+      'Return value simulator',
+      'Return null vs parent conditional rendering',
+      'Return null lifecycle notes',
+      'Component return vs JSX child semantics',
+      'Source check',
+      'Testable proof',
+      'FrontendAtlas review note',
+      'Testing and accessibility notes',
+    ]);
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://react.dev/learn/conditional-rendering',
+      'https://react.dev/reference/react/Fragment',
+      'https://react.dev/reference/react/Children',
+    ]);
   });
 
   it('renders non-crawlable sidebar buttons and crawlable practice entry links', async () => {

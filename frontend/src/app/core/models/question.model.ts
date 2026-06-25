@@ -35,6 +35,7 @@ export type StructuredSolution = {
 export type QuestionSeo = {
   title?: string;
   description?: string;
+  h1?: string;
   h1IntentLabel?: string;
 };
 

@@ -90,6 +90,29 @@ describe('trivia-seo.util', () => {
     expect(description.toLowerCase()).not.toContain('frontend interview prep routine');
   });
 
+  it('preserves React render-nothing SEO title when description carries interview intent', () => {
+    const question = {
+      id: 'react-render-nothing-return-value',
+      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      technology: 'react',
+      seo: {
+        title: 'React render nothing: null, false, undefined',
+        description:
+          'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
+
+    expect(title).toBe('React render nothing: null, false, undefined');
+    expect(title.length).toBe(44);
+    expect(description).toBe(
+      'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+    );
+    expect(description.length).toBe(155);
+  });
+
   it('preserves Vue destructuring long-tail interview SEO override', () => {
     const question = {
       id: 'vue-destructuring-breaks-reactivity-torefs-toref',
