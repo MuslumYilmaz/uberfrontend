@@ -52,7 +52,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     .metric-grid,
     .trigger-grid,
     .loop-grid,
-    .next-grid {
+    .next-grid,
+    .quick-answer-list,
+    .table-summary-list {
       display: grid;
       gap: .85rem;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -70,7 +72,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     .metric-card,
     .trigger-card,
     .loop-card,
-    .next-link {
+    .next-link,
+    .quick-answer-list li,
+    .table-summary-list li {
       min-width: 0;
       padding: .9rem;
       border: 1px solid rgba(255, 255, 255, .1);
@@ -83,6 +87,20 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       color: var(--uf-text-primary, #f5f7fb);
       font-size: 1.15rem;
       line-height: 1.2;
+    }
+
+    .quick-answer-list,
+    .table-summary-list {
+      margin: .9rem 0 1.2rem;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .quick-answer-list strong,
+    .table-summary-list strong {
+      display: block;
+      margin-bottom: .2rem;
+      color: var(--uf-text-primary, #f5f7fb);
     }
 
     .proof-stat span,
@@ -222,18 +240,24 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
     <p>
       This frontend resume for interviews is not a generic resume builder. It is a
-      callback-focused playbook for building a frontend resume that gets interviews
-      and showing the work frontend teams actually screen for:
-      shipped UI, measurable product impact, performance, accessibility, testing,
-      architecture, and collaboration.
+      callback-focused playbook for showing the work frontend teams actually screen
+      for: shipped UI, measurable product impact, performance, accessibility,
+      testing, architecture, and collaboration.
     </p>
     <p>
-      The goal is to make your frontend interview resume pass the first skim,
-      match the role without keyword stuffing, and create interview follow-ups
-      you can defend in coding, UI, system design, framework, and behavioral
-      rounds. It also gives you front-end developer resume language without
-      turning the page into a template download.
+      The goal is to make your profile pass the first skim, match the role without
+      keyword stuffing, and create interview follow-ups you can defend in coding,
+      UI, system design, framework, and behavioral rounds.
     </p>
+
+    <h2 id="quick-answer-how-to-write-a-frontend-resume-that-gets-interviews">Quick answer: how to write a frontend resume that gets interviews</h2>
+    <ul class="quick-answer-list" data-testid="resume-quick-answer">
+      <li><strong>Clarify the top third:</strong> show level, stack, product area, portfolio, and the strongest outcome before the first role.</li>
+      <li><strong>Rewrite the first role bullet:</strong> lead with product surface, technical ownership, and one measurable result.</li>
+      <li><strong>Prove ATS keywords:</strong> keep React, TypeScript, accessibility, testing, and performance terms only when the work history backs them up.</li>
+      <li><strong>Create three interview hooks:</strong> choose bullets you can explain in coding, UI, system design, or behavioral rounds.</li>
+      <li><strong>Cut rejection triggers:</strong> remove vague tasks, broken links, tool dumps, and bullets you cannot defend.</li>
+    </ul>
 
     <div class="proof-band" data-testid="resume-guide-proof">
       <div class="proof-grid" aria-label="Frontend resume proof points">
@@ -266,6 +290,22 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         </a>
       </div>
     </div>
+
+    <h2 id="practice-note-from-frontendatlas-resume-reviews">Practice note from FrontendAtlas resume reviews</h2>
+    <p data-testid="resume-practice-note">
+      Weak frontend resumes usually list tools first: React, TypeScript, Jest,
+      Figma, and APIs with no proof. Stronger resumes tie each keyword to a
+      shipped UI surface, measurable result, and interview story the candidate
+      can explain under pressure.
+    </p>
+
+    <h2 id="how-this-guide-was-reviewed">How this guide was reviewed</h2>
+    <p data-testid="resume-review-methodology">
+      This guide was reviewed against the FrontendAtlas interview blueprint,
+      frontend coding prep, UI component practice, system design prep paths, and
+      resume-to-interview story quality. The review checks whether a bullet can
+      survive the next interview round, not only whether it sounds polished.
+    </p>
 
     <h2 id="what-frontend-resume-screens-test">What frontend resume screens test</h2>
     <p>
@@ -318,6 +358,17 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     </div>
 
     <h2 id="frontend-resume-sections-that-get-interviews">Frontend resume sections that get interviews</h2>
+    <p>
+      On mobile, scan these fixes before the wider section table. If any one is
+      missing, fix it before applying.
+    </p>
+    <ul class="table-summary-list" data-testid="resume-mobile-section-summary">
+      <li><strong>Header:</strong> make contact links, GitHub, portfolio, and target role obvious.</li>
+      <li><strong>Summary:</strong> keep it to 2-3 lines with level, stack, domain, and outcome.</li>
+      <li><strong>Experience:</strong> write the first bullet as scope, ownership, technical lever, and result.</li>
+      <li><strong>Skills:</strong> group keywords by proof instead of listing every tool.</li>
+      <li><strong>Projects:</strong> show live UI, code quality, constraints, and tests.</li>
+    </ul>
     <div class="table-scroll" data-testid="resume-section-table">
       <table>
         <thead>
@@ -357,12 +408,105 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </table>
     </div>
 
+    <h2 id="complete-frontend-resume-example">Complete frontend resume example</h2>
+    <p>
+      Use this complete frontend resume example as a structure, not a template to
+      copy word for word. It keeps the top third scannable, backs keywords with
+      proof, and leaves several interview hooks.
+    </p>
+    <div class="section-grid" data-testid="resume-complete-example">
+      <div class="section-card">
+        <h3>Header and links</h3>
+        <p><strong>Maya Chen</strong> - Frontend Engineer - Remote US</p>
+        <p>maya&#64;example.com | linkedin.com/in/mayachen | github.com/mayachen | mayachen.dev</p>
+      </div>
+      <div class="section-card">
+        <h3>Summary</h3>
+        <p>Frontend engineer with 5 years shipping React and TypeScript product surfaces for B2B SaaS teams. Strongest work spans Core Web Vitals, accessible checkout flows, design systems, and API-driven dashboards.</p>
+      </div>
+      <div class="section-card">
+        <h3>Skills</h3>
+        <p>React, TypeScript, Next.js, HTML, CSS, Jest, Playwright, Storybook, WCAG, Core Web Vitals, REST, GraphQL, Figma collaboration.</p>
+      </div>
+      <div class="section-card">
+        <h3>Experience</h3>
+        <p><strong>Frontend Engineer, AtlasPay</strong> - rebuilt checkout validation and payment error states, increasing mobile completion by 9% and reducing support tickets tied to failed payments.</p>
+        <p><strong>Frontend Developer, Northstar CRM</strong> - migrated reporting screens from jQuery to React and TypeScript while preserving feature parity for 18k weekly active users.</p>
+      </div>
+      <div class="section-card">
+        <h3>Projects</h3>
+        <p>Built a keyboard-accessible autocomplete prototype with debounced search, stale response guards, empty states, and Playwright coverage.</p>
+      </div>
+      <div class="section-card">
+        <h3>Education</h3>
+        <p>B.S. Computer Science, State University. Include bootcamp, certificate, or coursework only when it supports the role story.</p>
+      </div>
+    </div>
+    <div class="topic-grid" data-testid="resume-complete-example-notes">
+      <div class="topic-card">
+        <h3>Top third clarity</h3>
+        <p>The header, role title, links, stack, and product domain are visible before the first job.</p>
+      </div>
+      <div class="topic-card">
+        <h3>Proof-backed keywords</h3>
+        <p>React, TypeScript, WCAG, Playwright, and Core Web Vitals appear again in experience or projects.</p>
+      </div>
+      <div class="topic-card">
+        <h3>Measurable impact</h3>
+        <p>The strongest bullets name product surface, technical lever, and result instead of only listing tools.</p>
+      </div>
+      <div class="topic-card">
+        <h3>Interview hooks</h3>
+        <p>Checkout, migration, accessibility, and autocomplete bullets can become coding, UI, system design, or behavioral answers.</p>
+      </div>
+    </div>
+
+    <h2 id="frontend-resume-summary-examples">Frontend resume summary examples</h2>
+    <p>
+      A frontend developer resume summary should be short enough for a phone
+      screen skim and specific enough to preview your strongest interview stories.
+    </p>
+    <div class="role-grid" data-testid="resume-summary-examples">
+      <div class="role-card">
+        <h3>Junior</h3>
+        <p>Junior frontend developer with React, TypeScript, accessibility, and testing projects. Built deployed UI work with keyboard support, API states, and Playwright coverage.</p>
+      </div>
+      <div class="role-card">
+        <h3>Mid-level</h3>
+        <p>Frontend engineer with 4 years shipping React dashboards and checkout flows. Strong in TypeScript, API integration, product analytics, and measurable UI quality improvements.</p>
+      </div>
+      <div class="role-card">
+        <h3>Senior</h3>
+        <p>Senior frontend engineer focused on design systems, performance, release reliability, and cross-team architecture. Mentors engineers and turns product constraints into maintainable UI platforms.</p>
+      </div>
+      <div class="role-card">
+        <h3>React-focused</h3>
+        <p>React developer with production Next.js, TypeScript, component library, and testing experience. Ships accessible interfaces with clear state boundaries and performance budgets.</p>
+      </div>
+      <div class="role-card">
+        <h3>Career-switcher</h3>
+        <p>Frontend developer transitioning from product support, with strong user empathy, React projects, API debugging, accessibility fixes, and shipped portfolio work tied to real constraints.</p>
+      </div>
+    </div>
+    <div class="rewrite-card" data-testid="resume-summary-rewrite">
+      <h3><span class="label">Summary</span> Weak vs strong</h3>
+      <dl>
+        <div>
+          <dt>Weak</dt>
+          <dd>Passionate front-end developer looking for a challenging role where I can grow and use modern technologies.</dd>
+        </div>
+        <div>
+          <dt>Strong</dt>
+          <dd>Frontend engineer with 3 years building React and TypeScript SaaS workflows, improving checkout completion by 9%, reducing UI regressions with Playwright, and collaborating with design and backend teams.</dd>
+        </div>
+      </dl>
+    </div>
+
     <h2 id="frontend-developer-resume-ats-keywords">Frontend developer resume ATS keywords</h2>
     <p>
-      Use this frontend developer resume ATS keywords map to mirror the job
-      description without stuffing. Treat front end developer resume keywords
-      and frontend resume skills as evidence labels: every keyword you include
-      should have proof in a project, bullet, or interview story.
+      Use this ATS keyword map to mirror the job description without stuffing.
+      Treat skills as evidence labels: every keyword you include should have
+      proof in a project, bullet, or interview story.
     </p>
     <div class="ats-grid" data-testid="resume-ats-keyword-map">
       <div class="ats-card">
@@ -387,12 +531,46 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </div>
     </div>
 
+    <h2 id="jd-to-ats-keyword-matching-examples">JD-to-ATS keyword matching examples</h2>
+    <p>
+      Do not paste every term from a posting. Match the job description to the
+      frontend evidence you can defend, then write one proof bullet for each
+      important keyword cluster.
+    </p>
+    <div class="table-scroll" data-testid="resume-jd-ats-mapping">
+      <table>
+        <thead>
+          <tr>
+            <th>Job description signal</th>
+            <th>Keywords to include</th>
+            <th>Proof bullet to support it</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Own React and TypeScript features across a SaaS dashboard.</td>
+            <td>React, TypeScript, dashboard, state management, API integration.</td>
+            <td>Owned a role-based React and TypeScript dashboard with typed API clients, saved filters, and virtualized tables, reducing analyst lookup time by 35%.</td>
+          </tr>
+          <tr>
+            <td>Improve accessibility and frontend performance for customer-facing flows.</td>
+            <td>WCAG, accessibility, keyboard navigation, Core Web Vitals, LCP.</td>
+            <td>Upgraded checkout keyboard navigation and route-level code splitting, moving LCP from 4.8s to 2.1s while reducing blocked accessibility support tickets.</td>
+          </tr>
+          <tr>
+            <td>Partner with design and backend teams on reusable UI and API contracts.</td>
+            <td>Design system, Storybook, component library, REST, GraphQL, collaboration.</td>
+            <td>Shipped Storybook-backed components and typed REST/GraphQL boundaries used by 5 product teams, cutting duplicate UI implementations by 45%.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <h2 id="before-after-frontend-resume-bullet-rewrites">Before/after frontend resume bullet rewrites</h2>
     <p>
-      Use these frontend resume bullet rewrites as patterns. The stronger version
-      names the frontend surface, action, technical lever, and outcome, so the
-      page reads like front end developer resume bullet examples instead of a
-      list of responsibilities.
+      Use these bullet rewrites as patterns. The stronger version names the UI
+      surface, action, technical lever, and outcome, so the page reads like
+      evidence instead of a list of responsibilities.
     </p>
     <div class="rewrite-list" data-testid="resume-bullet-rewrites">
       <div class="rewrite-card" id="rewrite-performance">
@@ -555,11 +733,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
     <h2 id="junior-mid-level-and-senior-frontend-resume-examples">Junior, mid-level, and senior frontend resume examples</h2>
     <p>
-      Use these front end developer resume examples to decide whether your
-      entry level front end developer resume, junior frontend developer resume,
-      mid-level frontend resume, frontend engineer resume, or senior frontend
-      developer resume should lead with projects, shipped ownership, or
-      cross-team technical leverage.
+      Use these role examples to decide whether your profile should lead with
+      projects, shipped ownership, or cross-team technical leverage.
     </p>
     <div class="role-grid" data-testid="resume-role-examples">
       <div class="role-card">
@@ -579,10 +754,16 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </div>
     </div>
     <p>
-      Stack-specific searches matter too. Treat a react developer resume, Angular
-      developer resume, or Vue developer resume as a frontend resume variant:
-      lead with the stack only when the job description and your strongest proof
-      both support it.
+      Stack-specific searches matter too. Lead with React, Angular, or Vue only
+      when the job description and your strongest proof both support it.
+    </p>
+
+    <h2 id="use-sample-metrics-responsibly">Use sample metrics responsibly</h2>
+    <p data-testid="resume-sample-metrics-note">
+      Treat the sample metrics on this page as structures, not claims to copy.
+      Replace every percentage, user count, and incident reduction with numbers
+      from your own work that you can defend in a recruiter screen, hiring
+      manager call, or onsite interview.
     </p>
 
     <h2 id="frontend-impact-metrics-library">Frontend impact metrics library</h2>
@@ -667,48 +848,6 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </div>
     </div>
 
-    <h2 id="faq">FAQ</h2>
-    <h3>How do I write a frontend developer resume that gets interviews?</h3>
-    <p>
-      Write a frontend developer resume that gets interviews by emphasizing
-      shipped UI, measurable impact, frontend-specific quality, and stories you
-      can explain in coding, UI, system design, and behavioral rounds.
-    </p>
-
-    <h3>What front end developer resume examples should I study?</h3>
-    <p>
-      Study front end developer resume examples that show the level, stack,
-      product surface, technical lever, and measurable result in the first few
-      bullets instead of listing generic tasks.
-    </p>
-
-    <h3>Which frontend developer resume ATS keywords should I include?</h3>
-    <p>
-      Include role-matched keywords such as React, Angular, Vue, Next.js,
-      TypeScript, accessibility, WCAG, Core Web Vitals, testing, state management,
-      and API integration when you can prove them.
-    </p>
-
-    <h3>What makes frontend resume bullet points stronger?</h3>
-    <p>
-      Strong frontend resume bullet points name the surface, technical lever,
-      scope, and outcome instead of listing generic responsibilities.
-    </p>
-
-    <h3>How should a junior frontend developer resume differ from a senior frontend developer resume?</h3>
-    <p>
-      Junior resumes rely more on projects, GitHub, internships, and coursework.
-      Senior resumes need architecture, cross-team leverage, mentoring, reliability,
-      and technical decision-making.
-    </p>
-
-    <h3>Should I write a React developer resume or a general frontend engineer resume?</h3>
-    <p>
-      Use a React developer resume angle when the role is explicitly React-heavy.
-      Use a broader frontend engineer resume when the job asks for architecture,
-      cross-framework judgment, design systems, or platform ownership.
-    </p>
-
     <h2 id="what-to-practice-after-your-resume-gets-callbacks">What to practice after your resume gets callbacks</h2>
     <div class="next-grid" data-testid="resume-next-links">
       <a class="next-link" [routerLink]="['/guides','interview-blueprint','coding-interviews']">
@@ -728,6 +867,76 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <span>Practice the async UI patterns behind autocomplete and search bullets.</span>
       </a>
     </div>
+
+    <h2 id="frontend-resume-faq">Frontend resume FAQ</h2>
+    <h3>How do I write a frontend developer resume that gets interviews?</h3>
+    <p>
+      Write a frontend developer resume that gets interviews by emphasizing
+      shipped UI, measurable impact, frontend-specific quality, and stories you
+      can explain in coding, UI, system design, and behavioral rounds.
+    </p>
+
+    <h3>What front end developer resume examples should I study?</h3>
+    <p>
+      Study examples that show the level, stack, product surface, technical
+      lever, and measurable result in the first few bullets instead of listing
+      generic tasks.
+    </p>
+
+    <h3>What should a complete frontend resume example include?</h3>
+    <p>
+      A complete frontend resume example should include a clear header, short
+      summary, proof-backed skills, measurable experience bullets, relevant
+      projects, education, and links to GitHub, portfolio, or shipped work.
+    </p>
+
+    <h3>How do I write a frontend developer resume summary?</h3>
+    <p>
+      Write a frontend developer resume summary in 2-3 lines: level, stack,
+      product domain, strongest measurable outcome, and the technical strengths
+      you can explain in interviews.
+    </p>
+
+    <h3>Which frontend developer resume ATS keywords should I include?</h3>
+    <p>
+      Include role-matched keywords such as React, Angular, Vue, Next.js,
+      TypeScript, accessibility, WCAG, Core Web Vitals, testing, state management,
+      and API integration when you can prove them.
+    </p>
+
+    <h3>How do I match frontend resume keywords to a job description?</h3>
+    <p>
+      Match the posting to evidence you can defend. For each important keyword
+      cluster, add one bullet that names the product surface, technical lever,
+      collaboration point, and result.
+    </p>
+
+    <h3>What makes frontend resume bullet points stronger?</h3>
+    <p>
+      Strong frontend resume bullet points name the surface, technical lever,
+      scope, and outcome instead of listing generic responsibilities.
+    </p>
+
+    <h3>How is this frontend resume guide reviewed?</h3>
+    <p>
+      This guide is reviewed against FrontendAtlas resume review patterns, the
+      interview blueprint rubric, and coding, UI, system design, and behavioral
+      story checks.
+    </p>
+
+    <h3>How should a junior frontend developer resume differ from a senior frontend developer resume?</h3>
+    <p>
+      Junior resumes rely more on projects, GitHub, internships, and coursework.
+      Senior resumes need architecture, cross-team leverage, mentoring, reliability,
+      and technical decision-making.
+    </p>
+
+    <h3>Should I write a React developer resume or a general frontend engineer resume?</h3>
+    <p>
+      Use a React-focused angle when the role is explicitly React-heavy.
+      Use a broader frontend engineer resume when the job asks for architecture,
+      cross-framework judgment, design systems, or platform ownership.
+    </p>
   </fa-guide-shell>
   `
 })

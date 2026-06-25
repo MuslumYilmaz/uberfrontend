@@ -545,11 +545,12 @@ describe('guide-seo.util', () => {
     expect(meta.title).toBe('Frontend Developer Resume: ATS Keywords & Bullet Examples (2026)');
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/resume');
     expect(meta.description).toBe(
-      'Build a frontend developer resume that gets interviews with ATS keywords, bullet examples, a 30-second skim test, role examples, and rejection triggers.',
+      'Build a frontend resume for interviews with a complete example, ATS keyword matching, bullet rewrites, summary examples, and rejection triggers.',
     );
     expect(meta.keywords).toEqual([
       'frontend resume for interviews',
       'frontend developer resume',
+      'frontend developer resume example',
       'front end developer resume examples',
       'front-end developer resume',
       'frontend resume examples',
@@ -557,6 +558,7 @@ describe('guide-seo.util', () => {
       'frontend resume that gets interviews',
       'frontend interview resume',
       'frontend developer resume ATS keywords',
+      'frontend developer resume summary',
       'front end developer resume keywords',
       'frontend resume skills',
       'frontend resume bullet points',
@@ -575,9 +577,9 @@ describe('guide-seo.util', () => {
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Developer Resume: ATS Keywords & Bullet Examples (2026)');
     expect(article?.description).toBe(
-      'Build a frontend developer resume that gets interviews with ATS keywords, bullet examples, a 30-second skim test, role examples, and rejection triggers.',
+      'Build a frontend resume for interviews with a complete example, ATS keyword matching, bullet rewrites, summary examples, and rejection triggers.',
     );
-    expect(article?.dateModified).toBe('2026-06-12T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-25T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -591,12 +593,16 @@ describe('guide-seo.util', () => {
     expect(itemList?.itemListElement?.[8]?.name).toBe('Search autocomplete bullet rewrite');
     expect(itemList?.itemListElement?.[11]?.url).toBe('https://frontendatlas.com/guides/interview-blueprint/resume#rewrite-team-enablement');
     expect(faqPage?.name).toBe('Frontend resume for interviews FAQ');
-    expect(faqPage?.mainEntity?.length).toBe(6);
+    expect(faqPage?.mainEntity?.length).toBe(10);
     expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
       'How do I write a frontend developer resume that gets interviews?',
       'What front end developer resume examples should I study?',
+      'What should a complete frontend resume example include?',
+      'How do I write a frontend developer resume summary?',
       'Which frontend developer resume ATS keywords should I include?',
+      'How do I match frontend resume keywords to a job description?',
       'What makes frontend resume bullet points stronger?',
+      'How is this frontend resume guide reviewed?',
       'How should a junior frontend developer resume differ from a senior frontend developer resume?',
       'Should I write a React developer resume or a general frontend engineer resume?',
     ]);

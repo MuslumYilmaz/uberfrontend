@@ -1354,14 +1354,15 @@ export const PLAYBOOK: GuideEntry[] = [
         slug: 'resume',
         title: 'Frontend Resume for Interviews: What Gets Calls and What Gets Rejected',
         minutes: 18,
-        summary: 'Build a frontend developer resume that gets interviews with a 30-second skim test, ATS keywords, bullet examples, role examples, and rejection triggers.',
+        summary: 'Build a frontend developer resume that gets interviews with a complete resume example, JD-to-ATS keyword matching, bullet rewrites, summary examples, and rejection triggers.',
         seo: {
             title: 'Frontend Developer Resume: ATS Keywords & Bullet Examples (2026)',
-            description: 'Build a frontend developer resume that gets interviews with ATS keywords, bullet examples, a 30-second skim test, role examples, and rejection triggers.',
+            description: 'Build a frontend resume for interviews with a complete example, ATS keyword matching, bullet rewrites, summary examples, and rejection triggers.',
             primaryKeyword: 'frontend resume for interviews',
             keywords: [
                 'frontend resume for interviews',
                 'frontend developer resume',
+                'frontend developer resume example',
                 'front end developer resume examples',
                 'front-end developer resume',
                 'frontend resume examples',
@@ -1369,6 +1370,7 @@ export const PLAYBOOK: GuideEntry[] = [
                 'frontend resume that gets interviews',
                 'frontend interview resume',
                 'frontend developer resume ATS keywords',
+                'frontend developer resume summary',
                 'front end developer resume keywords',
                 'frontend resume skills',
                 'frontend resume bullet points',
@@ -1389,12 +1391,28 @@ export const PLAYBOOK: GuideEntry[] = [
                         answer: 'Study front end developer resume examples that show the level, stack, product surface, technical lever, and measurable result in the first few bullets instead of listing generic tasks.',
                     },
                     {
+                        question: 'What should a complete frontend resume example include?',
+                        answer: 'A complete frontend resume example should include a clear header, short summary, proof-backed skills, measurable experience bullets, relevant projects, education, and links to GitHub, portfolio, or shipped work.',
+                    },
+                    {
+                        question: 'How do I write a frontend developer resume summary?',
+                        answer: 'Write a frontend developer resume summary in 2-3 lines: level, stack, product domain, strongest measurable outcome, and the technical strengths you can explain in interviews.',
+                    },
+                    {
                         question: 'Which frontend developer resume ATS keywords should I include?',
                         answer: 'Include role-matched keywords such as React, Angular, Vue, Next.js, TypeScript, accessibility, WCAG, Core Web Vitals, testing, state management, and API integration when you can prove them.',
                     },
                     {
+                        question: 'How do I match frontend resume keywords to a job description?',
+                        answer: 'Match the posting to evidence you can defend. For each important keyword cluster, add one bullet that names the product surface, technical lever, collaboration point, and result.',
+                    },
+                    {
                         question: 'What makes frontend resume bullet points stronger?',
                         answer: 'Strong frontend resume bullet points name the surface, technical lever, scope, and outcome instead of listing generic responsibilities.',
+                    },
+                    {
+                        question: 'How is this frontend resume guide reviewed?',
+                        answer: 'This frontend resume guide is reviewed against FrontendAtlas resume review patterns, the interview blueprint rubric, and coding, UI, system design, and behavioral story checks.',
                     },
                     {
                         question: 'How should a junior frontend developer resume differ from a senior frontend developer resume?',
@@ -1423,15 +1441,15 @@ export const PLAYBOOK: GuideEntry[] = [
                     { name: 'Team enablement bullet rewrite', description: 'Rewrite mentoring and documentation work with review churn and developer velocity impact.', url: '#rewrite-team-enablement' },
                 ],
             },
-            readerPromise: 'Use this frontend resume for interviews to pass the 30-second skim, map your skills to ATS keywords, rewrite weak bullets, and choose interview prep from your strongest stories.',
-            uniqueAngle: 'A frontend-specific resume playbook that connects resume bullets to coding, UI, system design, framework, and behavioral interview rounds.',
+            readerPromise: 'Use this frontend resume for interviews to pass the 30-second skim, study a complete resume example, match JD-to-ATS keywords, rewrite weak bullets, and choose interview prep from reviewed resume patterns.',
+            uniqueAngle: 'A frontend-specific resume playbook reviewed against FrontendAtlas interview-round alignment across coding, UI, system design, framework, and behavioral prep.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-12',
+            updatedAt: '2026-06-25',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
-            factCheckedAt: '2026-06-12',
+            factCheckedAt: '2026-06-25',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
