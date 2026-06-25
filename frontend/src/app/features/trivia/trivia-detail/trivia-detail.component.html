@@ -114,8 +114,8 @@
             <header class="title-block">
                 <div class="title-row">
                     <h1 class="title">
-                        <span class="title__question">{{ q.title }}</span>
-                        <span class="title__intent">{{ visibleH1IntentLabel(q) }}</span>
+                        <span class="title__question">{{ visibleH1QuestionText(q) }}</span>
+                        <span class="title__intent" *ngIf="visibleH1IntentLabel(q) as intentLabel">{{ intentLabel }}</span>
                     </h1>
                     <span class="solved-pill" *ngIf="solved()" aria-label="Solved">
                         <app-fa-glyph class="solved-pill__icon" icon="fa-solid fa-check"></app-fa-glyph>
@@ -140,7 +140,7 @@
             </header>
 
             <section class="card interview-focus" aria-labelledby="trivia-interview-focus-title">
-                <div class="card-head" id="trivia-interview-focus-title">Interview focus</div>
+                <h2 class="card-head" id="trivia-interview-focus-title">Interview focus</h2>
                 <div class="card-body interview-focus__body">
                     <p class="interview-focus__summary">{{ interviewFocusSummary(q) }}</p>
                     <ul class="interview-focus__list">
@@ -157,7 +157,7 @@
 
             <!-- Interview quick answer -->
             <section class="card">
-                <div class="card-head">Interview quick answer</div>
+                <h2 class="card-head">Interview quick answer</h2>
                 <div class="card-body">
                     <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
                 </div>
@@ -165,7 +165,7 @@
 
             <!-- Full interview answer -->
             <section class="card">
-                <div class="card-head">Full interview answer</div>
+                <h2 class="card-head">Full interview answer</h2>
                 <div class="card-body">
                     <ng-container *ngIf="answerIsRich(); else simpleAnswer">
                         <div class="blocks">
@@ -238,9 +238,50 @@
                 </div>
             </section>
 
+            <!-- Return value simulator -->
+            <section
+                class="card return-simulator"
+                *ngIf="showReturnValueSimulator(q)"
+                aria-labelledby="return-value-simulator-title"
+                data-testid="return-value-simulator">
+                <h2 class="card-head" id="return-value-simulator-title">Return value simulator</h2>
+                <div class="card-body return-simulator__body">
+                    <div class="return-simulator__tabs" role="group" aria-label="Choose a React return value">
+                        <button
+                            type="button"
+                            class="return-simulator__tab"
+                            *ngFor="let option of returnValueSimulatorOptions; trackBy: trackByReturnValueSimulatorOption"
+                            [class.is-active]="selectedReturnValueSimulatorKey() === option.key"
+                            [attr.aria-pressed]="selectedReturnValueSimulatorKey() === option.key"
+                            (click)="selectReturnValueSimulator(option.key)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div class="return-simulator__output" aria-live="polite">
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Component return</span>
+                            <code>{{ selectedReturnValueSimulatorOption().componentReturn }}</code>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">DOM output</span>
+                            <p>{{ selectedReturnValueSimulatorOption().domOutput }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Mounted state</span>
+                            <p>{{ selectedReturnValueSimulatorOption().mountedState }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Testing assertion</span>
+                            <p>{{ selectedReturnValueSimulatorOption().testingAssertion }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Still so complicated? -->
             <section class="card" *ngIf="extraHelp()">
-                <div class="card-head">Still so complicated?</div>
+                <h2 class="card-head">Still so complicated?</h2>
                 <div class="card-body tip-body">
                     <div class="content" [innerHTML]="extraHelp() | safeHtml"></div>
                 </div>
@@ -248,7 +289,7 @@
 
             <!-- Summary -->
             <section class="card" *ngIf="summaryHelp()">
-                <div class="card-head">Summary</div>
+                <h2 class="card-head">Summary</h2>
                 <div class="card-body">
                     <div class="content" [innerHTML]="summaryHelp() | safeHtml"></div>
                 </div>

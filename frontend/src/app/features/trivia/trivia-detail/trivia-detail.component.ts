@@ -79,6 +79,15 @@ type IncidentCardModel = {
   scenario: string;
   options: TriviaIncidentOption[];
 };
+type ReturnValueSimulatorKey = 'null' | 'false' | 'undefined' | 'zero' | 'fragment' | 'parent-conditional';
+type ReturnValueSimulatorOption = {
+  key: ReturnValueSimulatorKey;
+  label: string;
+  componentReturn: string;
+  domOutput: string;
+  mountedState: string;
+  testingAssertion: string;
+};
 type LockedPath = {
   id: string;
   label: string;
@@ -88,6 +97,57 @@ type LockedPath = {
 type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' | 'prep_bridge' | 'body';
 
 const TRIVIA_H1_INTENT_LABEL = 'Frontend interview answer';
+const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
+const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
+  {
+    key: 'null',
+    label: 'null',
+    componentReturn: 'return null;',
+    domOutput: 'No DOM output for this component render.',
+    mountedState: 'Mounted if the parent still renders the component.',
+    testingAssertion: 'Assert the region is absent with queryByRole(...).not.toBeInTheDocument().',
+  },
+  {
+    key: 'false',
+    label: 'false',
+    componentReturn: 'return false;',
+    domOutput: 'No DOM output when it is treated as a JSX child hole.',
+    mountedState: 'Mounted if this is produced inside a still-rendered component.',
+    testingAssertion: 'Assert the expected element is absent; booleans should not create DOM nodes.',
+  },
+  {
+    key: 'undefined',
+    label: 'undefined',
+    componentReturn: 'return undefined;',
+    domOutput: 'Unclear intent, usually a missing return bug.',
+    mountedState: 'Do not rely on this as an empty UI state; fix the return path.',
+    testingAssertion: 'Use an explicit return null, then assert the intended DOM is absent.',
+  },
+  {
+    key: 'zero',
+    label: '0',
+    componentReturn: 'return 0;',
+    domOutput: 'Renders a text node: 0.',
+    mountedState: 'Mounted and visible as text unless your condition prevents it.',
+    testingAssertion: "After fixing numeric &&, assert screen.queryByText('0') is not present.",
+  },
+  {
+    key: 'fragment',
+    label: 'Fragment',
+    componentReturn: 'return <>{children}</>;',
+    domOutput: 'Children render without an extra wrapper node.',
+    mountedState: 'Mounted normally; the fragment only changes wrapper DOM.',
+    testingAssertion: 'Assert child content exists and no wrapper-only test id is required.',
+  },
+  {
+    key: 'parent-conditional',
+    label: 'parent conditional',
+    componentReturn: '{show ? <Child /> : null}',
+    domOutput: 'No child DOM when the condition is false.',
+    mountedState: 'The child is not rendered, so state and effects are torn down.',
+    testingAssertion: 'Assert child UI is absent and cleanup-sensitive effects stop.',
+  },
+];
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
@@ -146,6 +206,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   sidebarTitle = 'All Questions';
   question = signal<Question | null>(null);
   copiedIndex = signal<number | null>(null);
+  selectedReturnValueSimulatorKey = signal<ReturnValueSimulatorKey>('null');
+  returnValueSimulatorOptions = RETURN_VALUE_SIMULATOR_OPTIONS;
   solved = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
@@ -253,6 +315,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackBySimilarQuestion = (_: number, item: SimilarItem): string => item.question.id;
   trackByLockedPath = (_: number, path: LockedPath): string => path.id;
   trackByIncidentOption = (_: number, option: TriviaIncidentOption): string => option.id;
+  trackByReturnValueSimulatorOption = (_: number, option: ReturnValueSimulatorOption): string => option.key;
 
   /** ============== Derived UI helpers ============== */
 
@@ -314,6 +377,19 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!a?.blocks) return [];
     return a.blocks.filter(b => !this.isExtraHelpBlock(b) && !this.isSummaryBlock(b));
   });
+
+  selectedReturnValueSimulatorOption = computed<ReturnValueSimulatorOption>(() => {
+    const key = this.selectedReturnValueSimulatorKey();
+    return RETURN_VALUE_SIMULATOR_OPTIONS.find((option) => option.key === key) ?? RETURN_VALUE_SIMULATOR_OPTIONS[0];
+  });
+
+  showReturnValueSimulator(q?: Question | null): boolean {
+    return q?.id === RETURN_VALUE_SIMULATOR_QUESTION_ID;
+  }
+
+  selectReturnValueSimulator(key: ReturnValueSimulatorKey): void {
+    this.selectedReturnValueSimulatorKey.set(key);
+  }
 
   /** Similar questions based on shared tags (top 3). */
   similarItems = computed<SimilarItem[]>(() => {
@@ -660,12 +736,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   visibleQuestionHeadline(q?: Question | null): string {
-    const title = String(q?.title || '').trim();
+    const title = this.visibleH1QuestionText(q);
     const intentLabel = this.visibleH1IntentLabel(q);
-    return title ? `${title} - ${intentLabel}` : intentLabel;
+    if (title && intentLabel) return `${title} - ${intentLabel}`;
+    return title || intentLabel;
+  }
+
+  visibleH1QuestionText(q?: Question | null): string {
+    return String(q?.seo?.h1 || q?.title || '').trim();
   }
 
   visibleH1IntentLabel(q?: Question | null): string {
+    if (String(q?.seo?.h1 || '').trim()) return '';
     return String(q?.seo?.h1IntentLabel || TRIVIA_H1_INTENT_LABEL).trim() || TRIVIA_H1_INTENT_LABEL;
   }
 
@@ -707,6 +789,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const interviewHubLabel = this.interviewQuestionsHubLabel();
     const studyPlanUrl = this.seo.buildCanonicalUrl(this.studyPlanPath());
     const companiesUrl = this.seo.buildCanonicalUrl('/companies');
+    const articleExtensions = this.articleStructuredDataExtensions(q);
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -766,6 +849,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'WebPage', name: this.studyPlanLabel(), url: studyPlanUrl },
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ],
+      ...articleExtensions,
       isAccessibleForFree: q.access !== 'premium',
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
@@ -779,6 +863,70 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       ogType: 'article',
       jsonLd: [breadcrumb, article],
     });
+  }
+
+  private articleStructuredDataExtensions(q: Question): Record<string, any> {
+    if (q.id !== 'react-render-nothing-return-value') return {};
+
+    return {
+      articleSection: 'React rendering',
+      about: [
+        { '@type': 'Thing', name: 'React component return values' },
+        { '@type': 'Thing', name: 'Conditional rendering' },
+        { '@type': 'Thing', name: 'Rendering nothing' },
+      ],
+      mentions: [
+        { '@type': 'Thing', name: 'null' },
+        { '@type': 'Thing', name: 'false' },
+        { '@type': 'Thing', name: 'undefined' },
+        { '@type': 'Thing', name: 'Fragment' },
+        { '@type': 'Thing', name: 'ReactNode' },
+        { '@type': 'Thing', name: 'missing return' },
+        { '@type': 'Thing', name: 'short-circuit rendering' },
+        { '@type': 'Thing', name: 'parent conditional rendering' },
+        { '@type': 'Thing', name: 'JSX holes' },
+        { '@type': 'Thing', name: 'mounted component' },
+        { '@type': 'Thing', name: 'effects' },
+        { '@type': 'Thing', name: 'React official docs' },
+        { '@type': 'Thing', name: 'React Testing Library' },
+        { '@type': 'Thing', name: 'DOM absence assertion' },
+        { '@type': 'Thing', name: 'editorial review' },
+        { '@type': 'Thing', name: 'interactive demo' },
+        { '@type': 'Thing', name: 'DOM output' },
+        { '@type': 'Thing', name: 'mounted state' },
+      ],
+      hasPart: [
+        { '@type': 'WebPageElement', name: 'Quick answer' },
+        { '@type': 'WebPageElement', name: 'Return value map' },
+        { '@type': 'WebPageElement', name: 'Common render-nothing bugs' },
+        { '@type': 'WebPageElement', name: 'Code examples' },
+        { '@type': 'WebPageElement', name: 'Return value simulator' },
+        { '@type': 'WebPageElement', name: 'Return null vs parent conditional rendering' },
+        { '@type': 'WebPageElement', name: 'Return null lifecycle notes' },
+        { '@type': 'WebPageElement', name: 'Component return vs JSX child semantics' },
+        { '@type': 'WebPageElement', name: 'Source check' },
+        { '@type': 'WebPageElement', name: 'Testable proof' },
+        { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
+        { '@type': 'WebPageElement', name: 'Testing and accessibility notes' },
+      ],
+      citation: [
+        {
+          '@type': 'WebPage',
+          name: 'React Conditional Rendering',
+          url: 'https://react.dev/learn/conditional-rendering',
+        },
+        {
+          '@type': 'WebPage',
+          name: 'React Fragment Reference',
+          url: 'https://react.dev/reference/react/Fragment',
+        },
+        {
+          '@type': 'WebPage',
+          name: 'React Children Reference',
+          url: 'https://react.dev/reference/react/Children',
+        },
+      ],
+    };
   }
 
   navigateSidebarQuestion(q: QuestionListEntry) {

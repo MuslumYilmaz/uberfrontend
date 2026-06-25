@@ -8318,7 +8318,7 @@
     "route": "/react/trivia/react-render-nothing-return-value",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "React renders nothing when a component returns null, false, or an empty fragment. This is useful for conditional UI without extra wrapper nodes. Covers: react, rendering, null, conditional, components. Return null/false…",
+    "summary": "React renders nothing when a component returns null or false; a fragment renders children without adding a wrapper. Returning undefined usually means a missing return, so fix it instead of using it as intentional empty…",
     "tags": [
       "react",
       "rendering",
