@@ -495,6 +495,10 @@ html, body { height: 100%; background: var(--uf-bg); }
   min-height: 174px;
 }
 
+.async-race-simulator .return-simulator__output {
+  min-height: 196px;
+}
+
 .return-simulator__metric {
   min-width: 0;
   padding: 12px;

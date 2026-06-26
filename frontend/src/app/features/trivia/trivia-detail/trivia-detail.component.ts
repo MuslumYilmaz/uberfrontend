@@ -88,6 +88,15 @@ type ReturnValueSimulatorOption = {
   mountedState: string;
   testingAssertion: string;
 };
+type AsyncRaceSimulatorKey = 'no-guard' | 'abort-controller' | 'request-id' | 'take-latest';
+type AsyncRaceSimulatorOption = {
+  key: AsyncRaceSimulatorKey;
+  label: string;
+  timeline: string;
+  finalUi: string;
+  whyItHappens: string;
+  testAssertion: string;
+};
 type LockedPath = {
   id: string;
   label: string;
@@ -98,6 +107,7 @@ type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' |
 
 const TRIVIA_H1_INTENT_LABEL = 'Frontend interview answer';
 const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
+const ASYNC_RACE_SIMULATOR_QUESTION_ID = 'js-async-race-conditions';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
     key: 'null',
@@ -146,6 +156,40 @@ const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
     domOutput: 'No child DOM when the condition is false.',
     mountedState: 'The child is not rendered, so state and effects are torn down.',
     testingAssertion: 'Assert child UI is absent and cleanup-sensitive effects stop.',
+  },
+];
+const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
+  {
+    key: 'no-guard',
+    label: 'No guard',
+    timeline: "A: 'rea' starts -> B: 'react' starts -> B resolves -> A resolves last.",
+    finalUi: "Stale UI: results for 'rea' overwrite the newer 'react' results.",
+    whyItHappens: 'Nothing checks whether request A is still current, so the older completion can write state after request B.',
+    testAssertion: 'A failing test would show final results equal to stale data after the older promise resolves.',
+  },
+  {
+    key: 'abort-controller',
+    label: 'AbortController',
+    timeline: "A: 'rea' starts -> B: 'react' starts and aborts A -> only B can resolve.",
+    finalUi: "Fresh UI: results for 'react' remain visible.",
+    whyItHappens: 'The old fetch receives an AbortSignal before it can complete, so its result is ignored as cancelled work.',
+    testAssertion: "expect(view.results()).toEqual(['React docs']); expect(oldSignal.aborted).toBeTrue();",
+  },
+  {
+    key: 'request-id',
+    label: 'request id guard',
+    timeline: "A gets id 1 -> B gets id 2 -> B resolves -> A resolves but id 1 is stale.",
+    finalUi: "Fresh UI: request B owns the screen, so A cannot overwrite it.",
+    whyItHappens: 'The completion handler compares its id with the latest id before writing state.',
+    testAssertion: "Resolve B, then A; expect(view.results()).toEqual(['React docs']).",
+  },
+  {
+    key: 'take-latest',
+    label: 'takeLatest / switchMap',
+    timeline: "Input 'rea' starts inner work -> input 'react' replaces it -> only the latest stream writes.",
+    finalUi: "Fresh UI: only the newest input is allowed to publish results.",
+    whyItHappens: 'takeLatest-style ownership cancels or ignores earlier inner work when newer input arrives.',
+    testAssertion: 'Emit rea then react; expect the subscriber to publish only the react result.',
   },
 ];
 
@@ -207,7 +251,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   question = signal<Question | null>(null);
   copiedIndex = signal<number | null>(null);
   selectedReturnValueSimulatorKey = signal<ReturnValueSimulatorKey>('null');
+  selectedAsyncRaceSimulatorKey = signal<AsyncRaceSimulatorKey>('no-guard');
   returnValueSimulatorOptions = RETURN_VALUE_SIMULATOR_OPTIONS;
+  asyncRaceSimulatorOptions = ASYNC_RACE_SIMULATOR_OPTIONS;
   solved = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
@@ -316,6 +362,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackByLockedPath = (_: number, path: LockedPath): string => path.id;
   trackByIncidentOption = (_: number, option: TriviaIncidentOption): string => option.id;
   trackByReturnValueSimulatorOption = (_: number, option: ReturnValueSimulatorOption): string => option.key;
+  trackByAsyncRaceSimulatorOption = (_: number, option: AsyncRaceSimulatorOption): string => option.key;
 
   /** ============== Derived UI helpers ============== */
 
@@ -382,6 +429,19 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const key = this.selectedReturnValueSimulatorKey();
     return RETURN_VALUE_SIMULATOR_OPTIONS.find((option) => option.key === key) ?? RETURN_VALUE_SIMULATOR_OPTIONS[0];
   });
+
+  selectedAsyncRaceSimulatorOption = computed<AsyncRaceSimulatorOption>(() => {
+    const key = this.selectedAsyncRaceSimulatorKey();
+    return ASYNC_RACE_SIMULATOR_OPTIONS.find((option) => option.key === key) ?? ASYNC_RACE_SIMULATOR_OPTIONS[0];
+  });
+
+  showAsyncRaceSimulator(q?: Question | null): boolean {
+    return q?.id === ASYNC_RACE_SIMULATOR_QUESTION_ID;
+  }
+
+  selectAsyncRaceSimulator(key: AsyncRaceSimulatorKey): void {
+    this.selectedAsyncRaceSimulatorKey.set(key);
+  }
 
   showReturnValueSimulator(q?: Question | null): boolean {
     return q?.id === RETURN_VALUE_SIMULATOR_QUESTION_ID;
@@ -866,6 +926,71 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private articleStructuredDataExtensions(q: Question): Record<string, any> {
+    if (q.id === 'js-async-race-conditions') {
+      return {
+        articleSection: 'JavaScript async concurrency',
+        about: [
+          { '@type': 'Thing', name: 'Async race conditions' },
+          { '@type': 'Thing', name: 'Stale UI updates' },
+          { '@type': 'Thing', name: 'Request cancellation' },
+        ],
+        mentions: [
+          { '@type': 'Thing', name: 'AbortController' },
+          { '@type': 'Thing', name: 'AbortSignal' },
+          { '@type': 'Thing', name: 'request id guard' },
+          { '@type': 'Thing', name: 'takeLatest' },
+          { '@type': 'Thing', name: 'switchMap' },
+          { '@type': 'Thing', name: 'Promise.race' },
+          { '@type': 'Thing', name: 'debounce' },
+          { '@type': 'Thing', name: 'IndexedDB' },
+          { '@type': 'Thing', name: 'autosave' },
+          { '@type': 'Thing', name: 'MDN Web Docs' },
+          { '@type': 'Thing', name: 'Fetch API' },
+          { '@type': 'Thing', name: 'source reference' },
+          { '@type': 'Thing', name: 'Jest' },
+          { '@type': 'Thing', name: 'stale-result test' },
+          { '@type': 'Thing', name: 'production debugging standard' },
+          { '@type': 'Thing', name: 'interactive demo' },
+          { '@type': 'Thing', name: 'async race simulator' },
+          { '@type': 'Thing', name: 'stale UI demo' },
+          { '@type': 'Thing', name: 'final UI state' },
+        ],
+        hasPart: [
+          { '@type': 'WebPageElement', name: 'The core issue' },
+          { '@type': 'WebPageElement', name: 'How to prevent it' },
+          { '@type': 'WebPageElement', name: 'When async work cannot be aborted' },
+          { '@type': 'WebPageElement', name: 'Shared-controller follow-up' },
+          { '@type': 'WebPageElement', name: 'Pitfalls' },
+          { '@type': 'WebPageElement', name: 'Source check' },
+          { '@type': 'WebPageElement', name: 'Testable proof' },
+          { '@type': 'WebPageElement', name: 'Production debugging standard' },
+          { '@type': 'WebPageElement', name: 'Async race simulator' },
+        ],
+        citation: [
+          {
+            '@type': 'WebPage',
+            name: 'MDN AbortController',
+            url: 'https://developer.mozilla.org/en-US/docs/Web/API/AbortController',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'MDN AbortSignal',
+            url: 'https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'MDN Using the Fetch API',
+            url: 'https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'RxJS switchMap',
+            url: 'https://rxjs.dev/api/operators/switchMap',
+          },
+        ],
+      };
+    }
+
     if (q.id !== 'react-render-nothing-return-value') return {};
 
     return {
@@ -1030,6 +1155,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   interviewTopicUiLabel(): string {
     return this.interviewTopicLabel();
+  }
+
+  practiceFrameText(q?: Question | null): string {
+    if (q?.id === 'js-async-race-conditions') {
+      return 'Use this drill to explain why debounce alone fails, when AbortController is enough, and when a request-id guard is still required.';
+    }
+    return `Use this ${this.interviewTopicUiLabel()} interview question to rehearse a quick answer, common mistake, follow-up, and production pitfall.`;
   }
 
   frameworkPrepCtaLabel(): string {

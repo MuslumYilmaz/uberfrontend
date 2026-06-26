@@ -394,6 +394,121 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('FrontendAtlas review note');
   });
 
+  it('renders async race answer section headings as H3', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-async-race-conditions',
+      title: 'Async Race Conditions and Stale UI Updates',
+      description:
+        'Debug the production bug where async requests resolve out of order and overwrite newer UI state.',
+      technology: 'javascript',
+      tags: ['async', 'concurrency', 'cancellation', 'abort-controller', 'ui'],
+      answer: {
+        blocks: [
+          { type: 'text', text: '## The core issue\n\nOlder async work can overwrite newer UI.' },
+          { type: 'text', text: '## How to prevent it\n\nCancel old work or guard stale results.' },
+          { type: 'text', text: '## When the async work cannot be aborted\n\nUse a latest-version guard.' },
+          { type: 'text', text: '## Shared-controller follow-up\n\nRoute cleanup can share one controller.' },
+          { type: 'text', text: '## Pitfalls\n\nDebounce is not cancellation.' },
+          { type: 'text', text: '## Source check\n\nOfficial references back the cancellation behavior.' },
+          { type: 'text', text: '## Testable proof\n\nAssert stale results cannot overwrite newer UI.' },
+          { type: 'text', text: '## Production debugging standard\n\nOlder completions cannot update state.' },
+        ],
+      },
+    });
+
+    const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h3Text).toContain('The core issue');
+    expect(h3Text).toContain('How to prevent it');
+    expect(h3Text).toContain('When the async work cannot be aborted');
+    expect(h3Text).toContain('Shared-controller follow-up');
+    expect(h3Text).toContain('Pitfalls');
+    expect(h3Text).toContain('Source check');
+    expect(h3Text).toContain('Testable proof');
+    expect(h3Text).toContain('Production debugging standard');
+  });
+
+  it('uses async race practice-frame copy only for the target question', async () => {
+    const targetFixture = await createLoadedFixture('free', {
+      id: 'js-async-race-conditions',
+      title: 'Async Race Conditions and Stale UI Updates',
+      technology: 'javascript',
+      tags: ['async', 'concurrency'],
+    });
+
+    expect(targetFixture.nativeElement.textContent || '').toContain(
+      'Use this drill to explain why debounce alone fails, when AbortController is enough, and when a request-id guard is still required.',
+    );
+    expect(targetFixture.nativeElement.textContent || '').not.toContain(
+      'Use this JavaScript interview question to rehearse a quick answer, common mistake, follow-up, and production pitfall.',
+    );
+
+    targetFixture.destroy();
+
+    const nonTargetFixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'Explain the JavaScript Event Loop',
+      technology: 'javascript',
+      tags: ['event-loop'],
+    });
+
+    expect(nonTargetFixture.nativeElement.textContent || '').toContain(
+      'Use this JavaScript interview question to rehearse a quick answer, common mistake, follow-up, and production pitfall.',
+    );
+    expect(nonTargetFixture.nativeElement.textContent || '').not.toContain(
+      'Use this drill to explain why debounce alone fails, when AbortController is enough, and when a request-id guard is still required.',
+    );
+  });
+
+  it('renders the async race simulator only for the async race question', async () => {
+    const targetFixture = await createLoadedFixture('free', {
+      id: 'js-async-race-conditions',
+      title: 'Async Race Conditions and Stale UI Updates',
+      technology: 'javascript',
+      tags: ['async', 'concurrency'],
+    });
+
+    const simulator = targetFixture.nativeElement.querySelector('[data-testid="async-race-simulator"]') as HTMLElement | null;
+    expect(simulator).toBeTruthy();
+    expect(simulator?.querySelector('h2')?.textContent?.trim()).toBe('Async race simulator');
+    expect(simulator?.textContent || '').toContain("Stale UI: results for 'rea' overwrite the newer 'react' results.");
+
+    targetFixture.destroy();
+
+    const nonTargetFixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'Explain the JavaScript Event Loop',
+      technology: 'javascript',
+      tags: ['event-loop'],
+    });
+
+    expect(nonTargetFixture.nativeElement.querySelector('[data-testid="async-race-simulator"]')).toBeNull();
+  });
+
+  it('updates async race simulator output when a strategy is selected', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-async-race-conditions',
+      title: 'Async Race Conditions and Stale UI Updates',
+      technology: 'javascript',
+      tags: ['async', 'concurrency'],
+    });
+
+    const simulator = fixture.nativeElement.querySelector('[data-testid="async-race-simulator"]') as HTMLElement;
+    expect(simulator.textContent || '').toContain("Stale UI: results for 'rea' overwrite the newer 'react' results.");
+    expect(simulator.textContent || '').toContain('A failing test would show final results equal to stale data');
+
+    const requestIdButton = Array.from(simulator.querySelectorAll('.return-simulator__tab'))
+      .find((button: any) => String(button.textContent || '').trim() === 'request id guard') as HTMLButtonElement | undefined;
+    expect(requestIdButton).toBeTruthy();
+
+    requestIdButton?.click();
+    fixture.detectChanges();
+
+    expect(simulator.textContent || '').toContain('Fresh UI: request B owns the screen, so A cannot overwrite it.');
+    expect(simulator.textContent || '').toContain('The completion handler compares its id with the latest id before writing state.');
+    expect(simulator.textContent || '').toContain("Resolve B, then A; expect(view.results()).toEqual(['React docs']).");
+  });
+
   it('renders the return value simulator only for the render-nothing question', async () => {
     const targetFixture = await createLoadedFixture('free', {
       id: 'react-render-nothing-return-value',
@@ -439,6 +554,87 @@ describe('TriviaDetailComponent', () => {
     expect(simulator.textContent || '').toContain('Renders a text node: 0.');
     expect(simulator.textContent || '').toContain("screen.queryByText('0')");
     expect(simulator.textContent || '').toContain('Mounted and visible as text unless your condition prevents it.');
+  });
+
+  it('adds async race TechArticle schema fields only for the target question', async () => {
+    const targetFixture = await createLoadedFixture('free', {
+      id: 'js-async-race-conditions',
+      title: 'Async Race Conditions and Stale UI Updates',
+      description:
+        'Debug the production bug where async requests resolve out of order and overwrite newer UI state.',
+      technology: 'javascript',
+      tags: ['async', 'concurrency', 'cancellation', 'abort-controller', 'ui'],
+      updatedAt: '2026-04-10',
+    });
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const typeNames = graph.map((node: any) => node?.['@type']);
+
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(article?.articleSection).toBe('JavaScript async concurrency');
+    expect((article?.about || []).map((item: any) => item.name)).toEqual([
+      'Async race conditions',
+      'Stale UI updates',
+      'Request cancellation',
+    ]);
+    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
+      'AbortController',
+      'AbortSignal',
+      'request id guard',
+      'takeLatest',
+      'switchMap',
+      'Promise.race',
+      'debounce',
+      'IndexedDB',
+      'autosave',
+      'MDN Web Docs',
+      'Fetch API',
+      'source reference',
+      'Jest',
+      'stale-result test',
+      'production debugging standard',
+      'interactive demo',
+      'async race simulator',
+      'stale UI demo',
+      'final UI state',
+    ]);
+    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
+      'The core issue',
+      'How to prevent it',
+      'When async work cannot be aborted',
+      'Shared-controller follow-up',
+      'Pitfalls',
+      'Source check',
+      'Testable proof',
+      'Production debugging standard',
+      'Async race simulator',
+    ]);
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://developer.mozilla.org/en-US/docs/Web/API/AbortController',
+      'https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal',
+      'https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch',
+      'https://rxjs.dev/api/operators/switchMap',
+    ]);
+
+    targetFixture.destroy();
+
+    const nonTargetFixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'Explain the JavaScript Event Loop',
+      technology: 'javascript',
+      tags: ['event-loop'],
+    });
+
+    const nonTargetPayload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const nonTargetGraph = Array.isArray(nonTargetPayload?.jsonLd) ? nonTargetPayload.jsonLd : [];
+    const nonTargetArticle = nonTargetGraph.find((node: any) => node?.['@type'] === 'TechArticle');
+    expect(nonTargetArticle?.articleSection).not.toBe('JavaScript async concurrency');
+    expect((nonTargetArticle?.mentions || []).map((item: any) => item.name)).not.toContain('AbortController');
+
+    nonTargetFixture.destroy();
   });
 
   it('adds render-nothing TechArticle schema fields without FAQPage or QAPage markup', async () => {
