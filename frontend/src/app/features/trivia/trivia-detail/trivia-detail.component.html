@@ -83,7 +83,7 @@
             <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
                 <div class="practice-frame__copy">
                     <div class="practice-frame__kicker">Interview answer drill</div>
-                    <p class="practice-frame__text">Use this {{ interviewTopicUiLabel() }} interview question to rehearse a quick answer, common mistake, follow-up, and production pitfall.</p>
+                    <p class="practice-frame__text">{{ practiceFrameText(q) }}</p>
                 </div>
                 <div class="practice-frame__actions">
                     <a
@@ -235,6 +235,47 @@
                             <p class="content muted">Answer coming soon.</p>
                         </ng-template>
                     </ng-template>
+                </div>
+            </section>
+
+            <!-- Async race simulator -->
+            <section
+                class="card return-simulator async-race-simulator"
+                *ngIf="showAsyncRaceSimulator(q)"
+                aria-labelledby="async-race-simulator-title"
+                data-testid="async-race-simulator">
+                <h2 class="card-head" id="async-race-simulator-title">Async race simulator</h2>
+                <div class="card-body return-simulator__body">
+                    <div class="return-simulator__tabs" role="group" aria-label="Choose an async race handling strategy">
+                        <button
+                            type="button"
+                            class="return-simulator__tab"
+                            *ngFor="let option of asyncRaceSimulatorOptions; trackBy: trackByAsyncRaceSimulatorOption"
+                            [class.is-active]="selectedAsyncRaceSimulatorKey() === option.key"
+                            [attr.aria-pressed]="selectedAsyncRaceSimulatorKey() === option.key"
+                            (click)="selectAsyncRaceSimulator(option.key)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div class="return-simulator__output" aria-live="polite">
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Timeline</span>
+                            <p>{{ selectedAsyncRaceSimulatorOption().timeline }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Final UI</span>
+                            <p>{{ selectedAsyncRaceSimulatorOption().finalUi }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Why it happens</span>
+                            <p>{{ selectedAsyncRaceSimulatorOption().whyItHappens }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Test assertion</span>
+                            <p>{{ selectedAsyncRaceSimulatorOption().testAssertion }}</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 

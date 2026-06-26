@@ -9790,7 +9790,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core issue</strong>\n\nThis is a classic production debug problem in search, filters, autosave flows, and route-driven detail pages. Request A starts, then request B starts, B finishes first, and the UI briefly looks correct. When A finishes later, it overwrites newer state with stale data unless your code cancels or guards the older request."
+          "text": "## The core issue\n\nAsync race conditions happen when older async work resolves after newer work and overwrites fresh UI. Fix stale UI by cancelling old work, checking request identity, or using takeLatest-style ownership so only the latest request wins.\n\nThis shows up in search, filters, autosave flows, and route-driven detail pages."
         },
         {
           "type": "list",
@@ -9820,7 +9820,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-shield'></i> <strong>How to prevent it</strong>\n\nYou need either <strong>real cancellation</strong> or a <strong>stale-result guard</strong>. Both prevent old responses from winning the race."
+          "text": "## How to prevent it\n\nUse either real cancellation or a stale-result guard. Both prevent old responses from winning the race; choose based on whether the underlying async task can actually listen to cancellation."
         },
         {
           "type": "list",
@@ -9860,7 +9860,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-floppy-disk'></i> <strong>When the async work cannot be aborted</strong>\n\nAbortController only helps when the underlying task listens to <code>AbortSignal</code>. Autosave pipelines, IndexedDB work, and some library promises still need a latest-version guard so stale completions cannot win."
+          "text": "## When the async work cannot be aborted\n\nAbortController only helps when the underlying task listens to <code>AbortSignal</code>. Autosave pipelines, IndexedDB work, and some library promises still need a latest-version guard so stale completions cannot win."
         },
         {
           "type": "code",
@@ -9869,12 +9869,37 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-diagram-project'></i> <strong>Shared-controller follow-up</strong>\n\nIf one route transition starts several fetches, a single <code>AbortController</code> can own the whole screen load. Aborting on route leave cancels profile, permissions, and related requests together instead of leaking old work into the next screen."
+          "text": "## Shared-controller follow-up\n\nIf one route transition starts several fetches, a single <code>AbortController</code> can own the whole screen load. Aborting on route leave cancels profile, permissions, and related requests together instead of leaking old work into the next screen."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Pitfalls</strong>\n\n- Promise.race does not cancel the losing promises.\n- Debounce reduces request count but does not prevent out-of-order responses.\n- Always clean up abort listeners or timers to avoid leaks."
+          "text": "## Pitfalls\n\n- Promise.race does not cancel the losing promises.\n- Debounce reduces request count but does not prevent out-of-order responses.\n- Always clean up abort listeners or timers to avoid leaks."
+        },
+        {
+          "type": "text",
+          "text": "## Source check\n\nThis answer follows MDN references for <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortController\" target=\"_blank\" rel=\"noopener noreferrer\">AbortController</a>, <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal\" target=\"_blank\" rel=\"noopener noreferrer\">AbortSignal</a>, and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch\" target=\"_blank\" rel=\"noopener noreferrer\">Fetch API request handling</a>. For stream-style ownership, compare the RxJS <a href=\"https://rxjs.dev/api/operators/switchMap\" target=\"_blank\" rel=\"noopener noreferrer\">switchMap</a> operator, which replaces earlier inner work when newer input arrives."
+        },
+        {
+          "type": "text",
+          "text": "## Testable proof\n\nA stale-result fix should be testable: resolve the newer request first, then resolve the older request, and assert that the UI still shows the newer result."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "test('ignores an older search response after a newer one wins', async () => {\n  const view = createSearchView();\n\n  const older = view.search('rea');\n  const newer = view.search('react');\n\n  await newer.resolveWith(['React docs']);\n  expect(view.results()).toEqual(['React docs']);\n\n  await older.resolveWith(['Real estate']);\n  expect(view.results()).toEqual(['React docs']);\n});"
+        },
+        {
+          "type": "text",
+          "text": "## Production debugging standard\n\nDebounce is a traffic optimization, not a correctness guarantee. Treat the bug as fixed only when older completions cannot update state after a newer request, route load, or autosave version has taken ownership."
         }
+      ]
+    },
+    "interviewFocus": {
+      "summary": "Async race conditions happen when older async work resolves after newer work and overwrites UI. Fix them with cancellation, latest-request guards, or takeLatest-style ownership.",
+      "tests": [
+        "Why debounce alone does not prevent stale UI",
+        "When to use AbortController versus a request id guard",
+        "How to explain shared controller cleanup on route changes"
       ]
     },
     "incidentCard": {
