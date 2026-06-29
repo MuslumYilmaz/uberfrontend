@@ -161,24 +161,24 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
-  it('preserves problem-first React StrictMode useEffect SEO override', () => {
+  it('preserves interview-first React StrictMode useEffect SEO override', () => {
     const question = {
       id: 'react-strictmode-double-invoke-effects',
       title: 'Why does useEffect run twice in React StrictMode?',
       technology: 'react',
       seo: {
-        title: 'React useEffect Running Twice in StrictMode?',
+        title: 'Why StrictMode Re-runs useEffect: What Interviewers Expect',
         description:
-          'React useEffect runs twice in StrictMode during development, not production. Learn why, whether event handlers run twice, and how to fix duplicate fetches.',
+          'Practice a natural React StrictMode answer: why effects re-run in dev, why event handlers stay single, and how cleanup prevents duplicate fetches.',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
 
-    expect(title).toBe('React useEffect Running Twice in StrictMode?');
+    expect(title).toBe('Why StrictMode Re-runs useEffect: What Interviewers Expect');
     expect(description).toBe(
-      'React useEffect runs twice in StrictMode during development, not production. Learn why, whether event handlers run twice, and how to fix duplicate fetches.'
+      'Practice a natural React StrictMode answer: why effects re-run in dev, why event handlers stay single, and how cleanup prevents duplicate fetches.'
     );
   });
 
