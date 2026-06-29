@@ -12,6 +12,8 @@ const STALE_AFTER_DAYS = 365;
 const EXPLICIT_EXAMPLE_RX = /\b(example|for example|scenario|worked example|e\.g\.)\b/i;
 const JUDGMENT_RX = /\b(trade(?:\s|[-‑–—])?offs?|mistakes?|pitfalls?|decision(?:s)?|constraints?)\b/i;
 const SUMMARY_RX = /\b(summary|takeaway|in short|the short version|remember)\b/i;
+const DOCS_INTENT_SEO_RX = /\b(?:official\s+docs\s+proof|official\s+(?:[a-z]+\s+){0,4}(?:docs?|documentation)|documentation|docs[\s-]?backed)\b/i;
+const SEO_INTENT_FIELDS = ['title', 'description', 'h1', 'h1IntentLabel'];
 
 const errors = [];
 const warnings = [];
@@ -133,6 +135,14 @@ function teachingSignals(entry, normalizedText) {
   };
 }
 
+function validateSeoIntentMetadata(id, seo) {
+  SEO_INTENT_FIELDS.forEach((field) => {
+    const value = seo?.[field];
+    if (typeof value !== 'string' || !DOCS_INTENT_SEO_RX.test(value)) return;
+    addError(`${id} seo.${field} uses docs-intent wording; keep trivia SEO metadata focused on interview/practice intent`);
+  });
+}
+
 function parseDate(value) {
   const raw = String(value || '').trim();
   if (!raw) return null;
@@ -208,8 +218,11 @@ function validateEntry(filePath, tech, entry) {
 
   if (!entry?.seo || typeof entry.seo !== 'object') {
     addWarning(`${id} has no explicit seo object; rely on generated defaults only if intentional`);
-  } else if (wordCount(entry.seo.description) < 10) {
-    addWarning(`${id} has a short seo.description; consider making the search snippet more specific`);
+  } else {
+    validateSeoIntentMetadata(id, entry.seo);
+    if (wordCount(entry.seo.description) < 10) {
+      addWarning(`${id} has a short seo.description; consider making the search snippet more specific`);
+    }
   }
 }
 

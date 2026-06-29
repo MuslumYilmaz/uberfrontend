@@ -96,21 +96,21 @@ describe('trivia-seo.util', () => {
       title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
       technology: 'react',
       seo: {
-        title: 'React render nothing: null, false, undefined',
+        title: 'React render nothing: fix null, false, undefined bugs',
         description:
-          'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+          'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
 
-    expect(title).toBe('React render nothing: null, false, undefined');
-    expect(title.length).toBe(44);
+    expect(title).toBe('React render nothing: fix null, false, undefined bugs');
+    expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+      'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
     );
-    expect(description.length).toBe(155);
+    expect(description.length).toBeLessThanOrEqual(155);
   });
 
   it('preserves Vue destructuring long-tail interview SEO override', () => {
@@ -136,15 +136,15 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
-  it('preserves docs-backed Angular HttpClient cancellation interview SEO override', () => {
+  it('preserves Angular HttpClient cancellation interview SEO override', () => {
     const question = {
       id: 'angular-http-what-actually-cancels-request',
       title: 'What Actually Cancels an HTTP Request in Angular?',
       technology: 'angular',
       seo: {
-        title: 'Does Angular HttpClient Unsubscribe Cancel Requests?',
+        title: 'Angular HttpClient unsubscribe: 5 cancellation gotchas',
         description:
-          'Angular interview answer: yes, HttpClient unsubscribe aborts in-progress requests. Covers official docs proof, switchMap, AsyncPipe, and stale responses.',
+          'See the 5 HttpClient cancellation gotchas: unsubscribe aborts, switchMap helps, mergeMap does not, ignored responses still run, and servers may continue.',
       },
     } as any;
 
@@ -152,11 +152,11 @@ describe('trivia-seo.util', () => {
     const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
 
     expect(title).toBe(
-      'Does Angular HttpClient Unsubscribe Cancel Requests?'
+      'Angular HttpClient unsubscribe: 5 cancellation gotchas'
     );
     expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'Angular interview answer: yes, HttpClient unsubscribe aborts in-progress requests. Covers official docs proof, switchMap, AsyncPipe, and stale responses.'
+      'See the 5 HttpClient cancellation gotchas: unsubscribe aborts, switchMap helps, mergeMap does not, ignored responses still run, and servers may continue.'
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });
