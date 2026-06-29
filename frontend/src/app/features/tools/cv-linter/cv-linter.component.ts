@@ -130,6 +130,7 @@ export class CvLinterComponent implements OnDestroy {
 
   private progressTimers: number[] = [];
   private uiTimers: number[] = [];
+  private successToastTimer: number | null = null;
 
   @ViewChild('resultsSection') private resultsSectionRef?: ElementRef<HTMLElement>;
   @ViewChild('bulletBuilderSection') private bulletBuilderSectionRef?: ElementRef<HTMLElement>;
@@ -141,6 +142,7 @@ export class CvLinterComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.clearProgressTimers();
     this.clearUiTimers();
+    this.clearSuccessToastTimer();
   }
 
   get progressLabel(): string {
@@ -815,6 +817,12 @@ BSc Computer Science, 2017
     this.uiTimers = [];
   }
 
+  private clearSuccessToastTimer(): void {
+    if (this.successToastTimer == null) return;
+    window.clearTimeout(this.successToastTimer);
+    this.successToastTimer = null;
+  }
+
   private groupIssuesBySeverity(issues: CvIssue[]): IssueGroups {
     const groups: IssueGroups = { critical: [], warn: [], info: [] };
     const ordered = sortIssuesByConfidence(issues, this.hasLowExtractionQuality);
@@ -910,11 +918,15 @@ BSc Computer Science, 2017
   }
 
   private showToast(message: string, durationMs: number): void {
+    this.clearSuccessToastTimer();
     this.successToastMessage = message;
     this.successToastVisible = true;
-    this.queueUiTimer(() => {
+    const timer = window.setTimeout(() => {
+      if (this.successToastTimer !== timer) return;
       this.successToastVisible = false;
+      this.successToastTimer = null;
     }, durationMs);
+    this.successToastTimer = timer;
   }
 
   private copyWithFallback(content: string): void {

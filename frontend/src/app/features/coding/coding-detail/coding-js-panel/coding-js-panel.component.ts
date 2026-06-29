@@ -1040,27 +1040,42 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.codeStore.setJsBaselineAsync(storageKey, 'ts', sTs),
     ]);
 
-    // Decide preferred language: default to JS unless TS is dirty (user-edited)
-    const tsState = await this.codeStore.getJsLangStateAsync(storageKey, 'ts').catch(() => null as any);
-    const preferred: JsLang = tsState?.dirty ? 'ts' : 'js';
+    const [jsStateRaw, tsStateRaw, lastLangRaw] = await Promise.all([
+      this.codeStore.getJsLangStateAsync(storageKey, 'js').catch(() => null as any),
+      this.codeStore.getJsLangStateAsync(storageKey, 'ts').catch(() => null as any),
+      typeof (this.codeStore as any).getLastLang === 'function'
+        ? this.codeStore.getLastLang(storageKey).catch(() => null)
+        : Promise.resolve(null),
+    ]);
+    const jsState = jsStateRaw || { code: '', baseline: sJs, dirty: false, hasUserCode: false };
+    const tsState = tsStateRaw || { code: '', baseline: sTs, dirty: false, hasUserCode: false };
+    const lastLang: JsLang | null = lastLangRaw === 'ts' || lastLangRaw === 'js' ? lastLangRaw : null;
+    const preferred: JsLang =
+      tsState.dirty && !jsState.dirty
+        ? 'ts'
+        : jsState.dirty && !tsState.dirty
+          ? 'js'
+          : tsState.dirty && jsState.dirty
+            ? (lastLang || 'ts')
+            : (lastLang || 'js');
+    const preferredState = preferred === 'ts' ? tsState : jsState;
 
     this.jsLang.set(preferred);
     this.langChange.emit(preferred);
-    await this.codeStore.setLastLangAsync(storageKey, preferred);        // keep sticky
 
     // 2) Ensure per-lang slots exist (post-migration safety)
-    const jsSlot = await this.codeStore.getJsForLangAsync(storageKey, 'js');
-    if (!(typeof jsSlot === 'string' && jsSlot.trim())) {
+    if (!jsState.hasUserCode) {
       await this.codeStore.saveJsAsync(storageKey, sJs, 'js', { force: true });
     }
-    const tsSlot = await this.codeStore.getJsForLangAsync(storageKey, 'ts');
-    if (!(typeof tsSlot === 'string' && tsSlot.trim())) {
+    if (!tsState.hasUserCode) {
       await this.codeStore.saveJsAsync(storageKey, sTs, 'ts', { force: true });
     }
+    await this.codeStore.setLastLangAsync(storageKey, preferred);        // keep sticky after slot seeding
 
     // 3) Hydrate editor/tests for chosen lang
     const starter = preferred === 'ts' ? sTs : sJs;
-    const { initial, restored } = await this.codeStore.initJsAsync(storageKey, preferred, starter);
+    const initial = preferredState.hasUserCode ? preferredState.code : starter;
+    const restored = preferredState.dirty;
 
     this.editorContent.set(initial);
     this.testCode.set(this.pickTests(q as any, preferred));

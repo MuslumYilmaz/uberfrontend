@@ -505,6 +505,52 @@ describe('CvLinterComponent', () => {
     flush();
   }));
 
+  it('keeps copied suggestion toast visible when it replaces report generated toast', fakeAsync(() => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    runTextAnalysis(
+      fixture,
+      makeResponse({
+        issues: [
+          makeIssue({
+            id: 'keyword_missing',
+            severity: 'warn',
+            category: 'keywords',
+            fix: 'Add role keywords naturally in experience bullets.',
+          }),
+        ],
+        debug: {
+          missingKeywords: {
+            critical: ['accessibility', 'performance', 'change detection'],
+            strong: ['ci/cd'],
+          },
+        },
+      }),
+    );
+
+    tick(1000);
+    fixture.detectChanges();
+
+    const clipboardSpy = jasmine.createSpy('writeText').and.returnValue(Promise.resolve());
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: clipboardSpy },
+    });
+
+    const chip = fixture.nativeElement.querySelector('[data-testid="cv-keyword-chip-keyword_missing"]') as HTMLButtonElement;
+    chip.click();
+    tick();
+    fixture.detectChanges();
+
+    tick(801);
+    fixture.detectChanges();
+
+    const toast = fixture.nativeElement.querySelector('[data-testid="cv-success-toast"]');
+    expect((toast?.textContent || '')).toContain('Copied suggestion');
+    flush();
+  }));
+
   it('shows low-confidence label for extraction-sensitive issues under low extraction quality', () => {
     const fixture = TestBed.createComponent(CvLinterComponent);
     fixture.detectChanges();
