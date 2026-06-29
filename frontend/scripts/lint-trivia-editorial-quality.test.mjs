@@ -192,6 +192,19 @@ function setupTrivia(entriesByTech) {
 }
 
 {
+  const entry = baseTrivia({
+    seo: {
+      title: 'Closure interview answer',
+      description: 'Practice explaining JavaScript closures in interviews with examples and tradeoffs.',
+      h1IntentLabel: 'Docs-backed interview answer',
+    },
+  });
+  const tempRoot = setupTrivia({ javascript: [entry] });
+  const output = expectFailure(tempRoot);
+  assert.match(output, /seo\.h1IntentLabel uses docs-intent wording/);
+}
+
+{
   const tempRoot = setupTrivia({
     javascript: [
       baseTrivia({

@@ -1012,7 +1012,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'Thing', name: 'JSX holes' },
         { '@type': 'Thing', name: 'mounted component' },
         { '@type': 'Thing', name: 'effects' },
-        { '@type': 'Thing', name: 'React official docs' },
         { '@type': 'Thing', name: 'React Testing Library' },
         { '@type': 'Thing', name: 'DOM absence assertion' },
         { '@type': 'Thing', name: 'editorial review' },
@@ -1029,27 +1028,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'WebPageElement', name: 'Return null vs parent conditional rendering' },
         { '@type': 'WebPageElement', name: 'Return null lifecycle notes' },
         { '@type': 'WebPageElement', name: 'Component return vs JSX child semantics' },
-        { '@type': 'WebPageElement', name: 'Source check' },
         { '@type': 'WebPageElement', name: 'Testable proof' },
         { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
         { '@type': 'WebPageElement', name: 'Testing and accessibility notes' },
-      ],
-      citation: [
-        {
-          '@type': 'WebPage',
-          name: 'React Conditional Rendering',
-          url: 'https://react.dev/learn/conditional-rendering',
-        },
-        {
-          '@type': 'WebPage',
-          name: 'React Fragment Reference',
-          url: 'https://react.dev/reference/react/Fragment',
-        },
-        {
-          '@type': 'WebPage',
-          name: 'React Children Reference',
-          url: 'https://react.dev/reference/react/Children',
-        },
       ],
     };
   }

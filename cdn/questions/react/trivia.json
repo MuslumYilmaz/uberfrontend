@@ -981,7 +981,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "## Quick answer\n\nReact treats <code>null</code> and <code>false</code> as no UI. A fragment still renders its children, just without an extra DOM wrapper. <code>undefined</code> is different: for a component return, it usually means a missing <code>return</code> and should be fixed.\n\n- Use <code>return null</code> for intentional empty UI.\n- Use fragments when you need children but no wrapper.\n- Treat <code>undefined</code> and plain objects as bugs, not empty output."
+          "text": "## Quick answer\n\nUse this return-value map to debug empty UI: return <code>null</code> for intentional no UI, fix <code>undefined</code> as a missing return, avoid numeric <code>&&</code> leaks, use fragments when you need no wrapper, and test absent DOM explicitly.\n\n- Use <code>return null</code> for intentional empty UI.\n- Use fragments when you need children but no wrapper.\n- Treat <code>undefined</code> and plain objects as bugs, not empty output."
         },
         {
           "type": "text",
@@ -1137,10 +1137,6 @@
         },
         {
           "type": "text",
-          "text": "## Source check\n\nThis answer follows the official React docs for <a href=\"https://react.dev/learn/conditional-rendering\" target=\"_blank\" rel=\"noopener noreferrer\">conditional rendering</a>, <a href=\"https://react.dev/reference/react/Fragment\" target=\"_blank\" rel=\"noopener noreferrer\">fragments</a>, and <a href=\"https://react.dev/reference/react/Children\" target=\"_blank\" rel=\"noopener noreferrer\">children semantics</a>. Use those references when you need to separate component return values from JSX child holes."
-        },
-        {
-          "type": "text",
           "text": "## Testable proof\n\nIntentional no-UI states should be testable as absent DOM, not just visually hidden DOM. The numeric <code>&&</code> case should also be tested because <code>0</code> is a rendered text node, not an empty child."
         },
         {
@@ -1159,6 +1155,10 @@
         {
           "type": "text",
           "text": "## Summary\n\nReact renders whatever your component returns as a <code>ReactNode</code>. Returning <code>null</code> or <code>false</code> is a valid way to show no UI. Returning <code>undefined</code> usually means a missing <code>return</code>, especially with arrow functions and <code>map()</code> callbacks."
+        },
+        {
+          "type": "text",
+          "text": "## Further reading\n\nAfter practicing the interview answer, compare React's <a href=\"https://react.dev/learn/conditional-rendering\" target=\"_blank\" rel=\"noopener noreferrer\">conditional rendering</a>, <a href=\"https://react.dev/reference/react/Fragment\" target=\"_blank\" rel=\"noopener noreferrer\">Fragment</a>, and <a href=\"https://react.dev/reference/react/Children\" target=\"_blank\" rel=\"noopener noreferrer\">Children</a> pages for exact API wording."
         }
       ]
     },
@@ -1179,10 +1179,10 @@
       "conditional",
       "components"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-06-29",
     "seo": {
-      "title": "React render nothing: null, false, undefined",
-      "description": "React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.",
+      "title": "React render nothing: fix null, false, undefined bugs",
+      "description": "Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.",
       "h1": "React render nothing: return null, false, fragments, and undefined"
     },
     "incidentCard": {

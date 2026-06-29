@@ -285,30 +285,30 @@ describe('TriviaDetailComponent', () => {
   it('uses question-level SEO H1 intent label for visible H1 and article headline', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
-        title: 'Does Angular HttpClient Unsubscribe Cancel Requests?',
+        title: 'Angular HttpClient unsubscribe: 5 cancellation gotchas',
         description:
-          'Angular interview answer: yes, HttpClient unsubscribe aborts in-progress requests.',
-        h1IntentLabel: 'Docs-backed interview answer',
+          'See the 5 HttpClient cancellation gotchas: unsubscribe aborts, switchMap helps, mergeMap does not, ignored responses still run, and servers may continue.',
+        h1IntentLabel: 'Debugging interview answer',
       },
     });
 
     const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe('What is closure?');
-    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Docs-backed interview answer');
+    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Debugging interview answer');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
 
-    expect(article?.headline).toBe('What is closure? - Docs-backed interview answer');
+    expect(article?.headline).toBe('What is closure? - Debugging interview answer');
   });
 
   it('uses question-level SEO H1 override without appending the default intent label', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
-        title: 'React render nothing: null, false, undefined',
+        title: 'React render nothing: fix null, false, undefined bugs',
         description:
-          'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+          'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
         h1: 'React render nothing: return null, false, fragments, and undefined',
       },
     });
@@ -332,7 +332,7 @@ describe('TriviaDetailComponent', () => {
         blocks: [
           {
             type: 'text',
-            text: '## Quick answer\n\nReturn null for intentional empty UI.',
+            text: '## Quick answer\n\nUse this return-value map to debug empty UI: return null for intentional no UI, fix undefined as a missing return, avoid numeric && leaks, use fragments when you need no wrapper, and test absent DOM explicitly.',
           },
           {
             type: 'text',
@@ -352,7 +352,7 @@ describe('TriviaDetailComponent', () => {
           },
           {
             type: 'text',
-            text: '## Source check\n\nOfficial React docs back the return-value behavior.',
+            text: '## Further reading\n\nCompare the linked React pages after practicing the answer.',
           },
           {
             type: 'text',
@@ -389,9 +389,10 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('Return null or skip rendering the child?');
     expect(h3Text).toContain('Does return null unmount the component?');
     expect(h3Text).toContain('Component return vs JSX child');
-    expect(h3Text).toContain('Source check');
+    expect(h3Text).toContain('Further reading');
     expect(h3Text).toContain('Testable proof');
     expect(h3Text).toContain('FrontendAtlas review note');
+    expect(fixture.nativeElement.textContent || '').toContain('Use this return-value map to debug empty UI');
   });
 
   it('renders async race answer section headings as H3', async () => {
@@ -656,11 +657,11 @@ describe('TriviaDetailComponent', () => {
       technology: 'react',
       access: 'free',
       tags: ['react', 'rendering', 'null', 'conditional', 'components'],
-      updatedAt: '2026-01-30',
+      updatedAt: '2026-06-29',
       seo: {
-        title: 'React render nothing: null, false, undefined',
+        title: 'React render nothing: fix null, false, undefined bugs',
         description:
-          'React interview answer: learn when React renders nothing, how null and false differ from undefined, and how to avoid missing-return bugs in conditional UI.',
+          'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
         h1: 'React render nothing: return null, false, fragments, and undefined',
       },
     };
@@ -705,7 +706,6 @@ describe('TriviaDetailComponent', () => {
       'JSX holes',
       'mounted component',
       'effects',
-      'React official docs',
       'React Testing Library',
       'DOM absence assertion',
       'editorial review',
@@ -722,16 +722,11 @@ describe('TriviaDetailComponent', () => {
       'Return null vs parent conditional rendering',
       'Return null lifecycle notes',
       'Component return vs JSX child semantics',
-      'Source check',
       'Testable proof',
       'FrontendAtlas review note',
       'Testing and accessibility notes',
     ]);
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://react.dev/learn/conditional-rendering',
-      'https://react.dev/reference/react/Fragment',
-      'https://react.dev/reference/react/Children',
-    ]);
+    expect(article?.citation).toBeUndefined();
   });
 
   it('renders non-crawlable sidebar buttons and crawlable practice entry links', async () => {
