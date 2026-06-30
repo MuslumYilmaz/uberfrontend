@@ -994,14 +994,16 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('Frontend System Design Interview Answer Template: 45-Minute RADIO');
+    expect(meta.title).toBe('RADIO Framework: The 5-Step Frontend System Design Answer Template');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(meta.description).toBe(
-      'Copy a 45-minute frontend system design RADIO answer script: requirements, architecture, data, interface, optimizations, timeline, examples.',
+      'Use RADIO to turn broad frontend system design prompts into a 5-step, 45-minute answer script: requirements, architecture, data, interface, optimizations.',
     );
+    expect(meta.description).toMatch(/RADIO/i);
+    expect(meta.description).toMatch(/5-step/i);
+    expect(meta.description).toMatch(/broad frontend system design prompts/i);
     expect(meta.description).toMatch(/answer script/i);
-    expect(meta.description).toMatch(/frontend system design RADIO/i);
     expect(meta.description).toMatch(/requirements/i);
     expect(meta.description).toMatch(/interface/i);
     expect(meta.description).toMatch(/45-minute/i);
@@ -1030,11 +1032,11 @@ describe('guide-seo.util', () => {
     const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.headline).toBe('Frontend System Design Interview Answer Template: 45-Minute RADIO');
+    expect(article?.headline).toBe('RADIO Framework: The 5-Step Frontend System Design Answer Template');
     expect(article?.description).toBe(
-      'Copy a 45-minute frontend system design RADIO answer script: requirements, architecture, data, interface, optimizations, timeline, examples.'
+      'Use RADIO to turn broad frontend system design prompts into a 5-step, 45-minute answer script: requirements, architecture, data, interface, optimizations.'
     );
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-30T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview answer template');
     expect(article?.keywords).toContain('RADIO framework frontend system design');
     expect(article?.keywords).toContain('frontend system design interface API taxonomy');
