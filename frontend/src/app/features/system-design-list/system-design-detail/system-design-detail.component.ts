@@ -115,6 +115,10 @@ type SDQuestion = {
   guideSlug?: string;
   guide?: string;
   guidePath?: string;
+  seo?: {
+    title?: string;
+    description?: string;
+  };
 
   radio?: RadioSection[];
 
@@ -645,6 +649,15 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     return plain || `Front-end system design scenario: ${q.title}`;
   }
 
+  private seoTitle(q: SDQuestion): string {
+    return String(q.seo?.title || q.title || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  private seoDescription(q: SDQuestion): string {
+    const explicit = String(q.seo?.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return explicit || this.sdDescription(q);
+  }
+
   private normalizePreviewText(text: string): string {
     return String(text || '')
       .replace(/<[^>]+>/g, ' ')
@@ -793,7 +806,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private updateSeo(question: SDQuestion): void {
     if (this.suppressSeo) return;
     const canonical = this.seo.buildCanonicalUrl(`/system-design/${question.id}`);
-    const description = this.sdDescription(question);
+    const seoTitle = this.seoTitle(question);
+    const description = this.seoDescription(question);
     const keywords = this.sdKeywords(question);
     const authorName = this.resolveAuthor(question);
     const dateModified = this.resolveUpdatedIso(question);
@@ -854,7 +868,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const jsonLd = faq ? [breadcrumb, article, learningResource, faq] : [breadcrumb, article, learningResource];
 
     this.seo.updateTags({
-      title: question.title,
+      title: seoTitle,
       description,
       keywords,
       canonical,

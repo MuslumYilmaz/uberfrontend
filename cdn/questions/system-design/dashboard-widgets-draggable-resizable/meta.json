@@ -36,5 +36,9 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-01-30"
+  "updatedAt": "2026-01-30",
+  "seo": {
+    "title": "Drag & Resize Dashboard System Design: What Interviewers Look For",
+    "description": "Practice a frontend system design answer for draggable dashboard widgets, with the grid, resize, performance, persistence, and tradeoffs interviewers expect."
+  }
 }

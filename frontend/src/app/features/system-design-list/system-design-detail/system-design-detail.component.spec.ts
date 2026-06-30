@@ -10,9 +10,12 @@ import { SystemDesignDetailComponent } from './system-design-detail.component';
 
 describe('SystemDesignDetailComponent', () => {
   let bugReport: jasmine.SpyObj<BugReportService>;
+  let seo: jasmine.SpyObj<SeoService>;
 
   beforeEach(async () => {
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
+    seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
+    seo.buildCanonicalUrl.and.callFake((value: string) => value);
 
     await TestBed.configureTestingModule({
       imports: [SystemDesignDetailComponent, RouterTestingModule],
@@ -21,7 +24,7 @@ describe('SystemDesignDetailComponent', () => {
           provide: QuestionService,
           useValue: { loadSystemDesign: () => { }, loadSystemDesignQuestion: () => { }, clearCache: () => { } },
         },
-        { provide: SeoService, useValue: { updateTags: () => { }, buildCanonicalUrl: (v: string) => v } },
+        { provide: SeoService, useValue: seo },
         { provide: AuthService, useValue: { user: () => null, isLoggedIn: () => false } },
         { provide: OnboardingService, useValue: { getProfile: () => null } },
         { provide: AnalyticsService, useValue: { track: () => { } } },
@@ -71,6 +74,30 @@ describe('SystemDesignDetailComponent', () => {
       tech: 'system-design',
       questionId: 'sd-1',
       questionTitle: 'Design URL Shortener',
+    }));
+  });
+
+  it('uses SEO override metadata without changing the visible question title', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    (component as any).applyResolvedQuestion({
+      id: 'dashboard-widgets-draggable-resizable',
+      title: 'Drag & Resize Dashboard',
+      description: 'Long visible challenge description.',
+      tags: ['dashboard'],
+      access: 'premium',
+      seo: {
+        title: 'Drag & Resize Dashboard System Design: What Interviewers Look For',
+        description: 'Practice a frontend system design answer for draggable dashboard widgets, with the grid, resize, performance, persistence, and tradeoffs interviewers expect.',
+      },
+    });
+
+    expect(component.title()).toBe('Drag & Resize Dashboard');
+    expect(seo.updateTags).toHaveBeenCalledWith(jasmine.objectContaining({
+      title: 'Drag & Resize Dashboard System Design: What Interviewers Look For',
+      description: 'Practice a frontend system design answer for draggable dashboard widgets, with the grid, resize, performance, persistence, and tradeoffs interviewers expect.',
+      canonical: '/system-design/dashboard-widgets-draggable-resizable',
     }));
   });
 
