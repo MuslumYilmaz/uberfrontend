@@ -100,7 +100,7 @@ describe('SystemDesignIndexComponent', () => {
 
     expect(chapterCards.length).toBe(SYSTEM.length);
     expect(text()).toContain('Front-End System Design: What It Really Tests');
-    expect(text()).toContain('Frontend System Design Interview Answer Template: 45-Minute RADIO');
+    expect(text()).toContain('RADIO Framework: The 5-Step Frontend System Design Answer Template');
     expect(text()).toContain('Frontend System Design Interview Rubric and Scorecard');
     expect(text()).toContain('Use a frontend system design interview rubric to score requirements');
     expect(text()).toContain('Frontend System Design Interview Pitfalls and Red Flags');

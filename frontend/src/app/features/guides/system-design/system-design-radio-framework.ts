@@ -386,7 +386,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
       <fa-guide-shell
-      title="Frontend System Design Interview Answer Template: 45-Minute RADIO"
+      title="RADIO Framework: The 5-Step Frontend System Design Answer Template"
       [minutes]="20"
       [tags]="['system design', 'answer template', 'radio framework']"
       [prev]="prev"
@@ -395,7 +395,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       [readerPromise]="readerPromise || undefined">
 
       <section class="answer-asset" aria-label="Frontend system design interview answer asset">
-        <h2 id="frontend-system-design-interview-answer-template">Copy the frontend system design interview answer template</h2>
+        <h2 id="frontend-system-design-interview-answer-template">RADIO = Requirements, Architecture, Data, Interface, Optimizations</h2>
         <p>
           Copy this 45-minute frontend system design RADIO answer script when the prompt is broad and
           the interviewer expects a structured answer, not a definition. Start with the script, then use

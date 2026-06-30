@@ -1641,12 +1641,12 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'Frontend System Design Interview Answer Template: 45-Minute RADIO',
+        title: 'RADIO Framework: The 5-Step Frontend System Design Answer Template',
         minutes: 20,
         summary: 'Copy a 45-minute frontend system design RADIO answer script with requirements, architecture, data, interface, optimizations, timeline, and examples.',
         seo: {
-            title: 'Frontend System Design Interview Answer Template: 45-Minute RADIO',
-            description: 'Copy a 45-minute frontend system design RADIO answer script: requirements, architecture, data, interface, optimizations, timeline, examples.',
+            title: 'RADIO Framework: The 5-Step Frontend System Design Answer Template',
+            description: 'Use RADIO to turn broad frontend system design prompts into a 5-step, 45-minute answer script: requirements, architecture, data, interface, optimizations.',
             primaryKeyword: 'frontend system design interview answer template',
             keywords: [
                 'frontend system design interview answer template',
@@ -1724,7 +1724,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Copy a 45-minute frontend system design RADIO answer script with requirements, architecture, data, interface, optimizations, timeline, and examples.',
             publishedAt: '2026-02-18',
-            updatedAt: '2026-06-19',
+            updatedAt: '2026-06-30',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')

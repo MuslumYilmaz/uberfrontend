@@ -23,9 +23,9 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     const host = fixture.nativeElement as HTMLElement;
     const text = host.textContent || '';
 
-    expect(text).toContain('Frontend System Design Interview Answer Template: 45-Minute RADIO');
+    expect(text).toContain('RADIO Framework: The 5-Step Frontend System Design Answer Template');
     expect(text).toContain('frontend system design interview answer template');
-    expect(text).toContain('Copy the frontend system design interview answer template');
+    expect(text).toContain('RADIO = Requirements, Architecture, Data, Interface, Optimizations');
     expect(text).toContain('Copy this 45-minute frontend system design RADIO answer script');
     expect(text).toContain('Template includes');
     expect(text).toContain('Copy script');
@@ -45,7 +45,7 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     expect(text).toContain('What each RADIO step proves to the interviewer');
     expect(text).toContain('You prevent the answer from solving the wrong problem.');
     expect(text).toContain('You can make architecture implementable for real users.');
-    expect(text).toContain('Frontend System Design Interview Answer Template: 45-Minute RADIO');
+    expect(text).toContain('RADIO Framework: The 5-Step Frontend System Design Answer Template');
     expect(text).toContain('How to answer a frontend system design interview in 45 minutes');
     expect(text).toContain('Frontend system design checklist');
     expect(text).toContain('Interface taxonomy');
