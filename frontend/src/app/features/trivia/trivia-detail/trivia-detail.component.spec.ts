@@ -395,6 +395,110 @@ describe('TriviaDetailComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('Use this return-value map to debug empty UI');
   });
 
+  it('renders quick answer before interview focus and practice frame', async () => {
+    const fixture = await createLoadedFixture('free');
+    const root = fixture.nativeElement as HTMLElement;
+    const titleBlock = root.querySelector('.title-block') as HTMLElement | null;
+    const practiceFrame = root.querySelector('[data-testid="trivia-practice-frame"]') as HTMLElement | null;
+    const heads = Array.from(root.querySelectorAll('h2.card-head')) as HTMLElement[];
+    const quickHead = heads.find((head) => head.textContent?.trim() === 'Interview quick answer') ?? null;
+    const focusHead = heads.find((head) => head.textContent?.trim() === 'Interview focus') ?? null;
+    const fullHead = heads.find((head) => head.textContent?.trim() === 'Full interview answer') ?? null;
+    const isBefore = (left: Element | null, right: Element | null) =>
+      Boolean(left && right && (left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING));
+
+    expect(isBefore(titleBlock, quickHead)).toBeTrue();
+    expect(isBefore(quickHead, focusHead)).toBeTrue();
+    expect(isBefore(focusHead, practiceFrame)).toBeTrue();
+    expect(isBefore(practiceFrame, fullHead)).toBeTrue();
+  });
+
+  it('adds mobile stacked-table labels to wide answer tables', async () => {
+    const fixture = await createLoadedFixture('free', {
+      answer: {
+        blocks: [
+          {
+            type: 'list',
+            columns: ['Operator', 'What it checks', 'Coercion', 'Example'],
+            rows: [
+              ['<code>==</code>', 'Value after conversion', 'Yes', "<code>'5' == 5</code>"],
+            ],
+          },
+        ],
+      },
+    });
+
+    const table = fixture.nativeElement.querySelector('table.table') as HTMLTableElement | null;
+    const cells = Array.from(fixture.nativeElement.querySelectorAll('table.table tbody td')) as HTMLTableCellElement[];
+
+    expect(table?.classList.contains('table--stacked-mobile')).toBeTrue();
+    expect(cells.map((cell) => cell.getAttribute('data-label'))).toEqual([
+      'Operator',
+      'What it checks',
+      'Coercion',
+      'Example',
+    ]);
+  });
+
+  it('renders equality answer section headings as H3', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-equality-vs-strict-equality',
+      title: 'What is the difference between == and === in JavaScript?',
+      technology: 'javascript',
+      tags: ['operators', 'comparison', 'types', 'javascript'],
+      answer: {
+        blocks: [
+          { type: 'text', text: '## Core idea\n\nUse === by default.' },
+          { type: 'text', text: '## Loose equality\n\nLoose equality can coerce operands.' },
+          { type: 'text', text: '## How == decides\n\nLoose equality follows a decision order.' },
+          { type: 'text', text: '## Strict equality\n\nStrict equality does not coerce operands.' },
+          { type: 'text', text: '## Beyond ===: Object.is and SameValueZero\n\nOther equality models matter for NaN and collections.' },
+          { type: 'text', text: '## Pitfalls\n\nWatch nullish values, NaN, and references.' },
+          { type: 'text', text: '## Practical rule\n\nConvert boundary values explicitly.' },
+          { type: 'text', text: '## Source check\n\nOfficial references back the equality behavior.' },
+          { type: 'text', text: '## FrontendAtlas review note\n\nBoundary coercion is reviewed as a debugging rule.' },
+          { type: 'text', text: '## Equality predictor\n\nCompare edge cases across equality models.' },
+        ],
+      },
+    });
+
+    const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h3Text).toContain('Core idea');
+    expect(h3Text).toContain('Loose equality');
+    expect(h3Text).toContain('How == decides');
+    expect(h3Text).toContain('Strict equality');
+    expect(h3Text).toContain('Beyond ===: Object.is and SameValueZero');
+    expect(h3Text).toContain('Pitfalls');
+    expect(h3Text).toContain('Practical rule');
+    expect(h3Text).toContain('Source check');
+    expect(h3Text).toContain('FrontendAtlas review note');
+    expect(h3Text).toContain('Equality predictor');
+  });
+
+  it('renders external source links from markdown with safe blank-target attributes', async () => {
+    const fixture = await createLoadedFixture('free', {
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text:
+              '## Source check\n\nRead [MDN Equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality).',
+          },
+        ],
+      },
+    });
+
+    const link = fixture.nativeElement.querySelector(
+      '.blocks a[href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality"]'
+    ) as HTMLAnchorElement | null;
+
+    expect(link?.textContent?.trim()).toBe('MDN Equality');
+    expect(link?.getAttribute('target')).toBe('_blank');
+    expect(link?.getAttribute('rel') || '').toContain('noopener');
+    expect(link?.getAttribute('rel') || '').toContain('noreferrer');
+  });
+
   it('renders async race answer section headings as H3', async () => {
     const fixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',
@@ -508,6 +612,74 @@ describe('TriviaDetailComponent', () => {
     expect(simulator.textContent || '').toContain('Fresh UI: request B owns the screen, so A cannot overwrite it.');
     expect(simulator.textContent || '').toContain('The completion handler compares its id with the latest id before writing state.');
     expect(simulator.textContent || '').toContain("Resolve B, then A; expect(view.results()).toEqual(['React docs']).");
+  });
+
+  it('renders the equality predictor only for the equality question with default model results', async () => {
+    const targetFixture = await createLoadedFixture('free', {
+      id: 'js-equality-vs-strict-equality',
+      title: 'What is the difference between == and === in JavaScript?',
+      technology: 'javascript',
+      tags: ['operators', 'comparison', 'types', 'javascript'],
+    });
+
+    const predictor = targetFixture.nativeElement.querySelector('[data-testid="equality-predictor"]') as HTMLElement | null;
+    expect(predictor).toBeTruthy();
+    expect(predictor?.querySelector('h2')?.textContent?.trim()).toBe('Equality predictor');
+    expect(predictor?.textContent || '').toContain("'5' vs 5");
+    expect(predictor?.textContent || '').toContain('String is coerced to number.');
+    expect(Array.from(predictor?.querySelectorAll('.equality-predictor__result .return-simulator__label') || [])
+      .map((node: any) => String(node.textContent || '').trim())).toEqual([
+        '==',
+        '===',
+        'Object.is',
+        'SameValueZero',
+      ]);
+
+    targetFixture.destroy();
+
+    const nonTargetFixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'Explain the JavaScript Event Loop',
+      technology: 'javascript',
+      tags: ['event-loop'],
+    });
+
+    expect(nonTargetFixture.nativeElement.querySelector('[data-testid="equality-predictor"]')).toBeNull();
+  });
+
+  it('updates equality predictor results for NaN and signed zero edge cases', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-equality-vs-strict-equality',
+      title: 'What is the difference between == and === in JavaScript?',
+      technology: 'javascript',
+      tags: ['operators', 'comparison', 'types', 'javascript'],
+    });
+
+    const predictor = fixture.nativeElement.querySelector('[data-testid="equality-predictor"]') as HTMLElement;
+    const clickScenario = (label: string) => {
+      const button = Array.from(predictor.querySelectorAll('.return-simulator__tab'))
+        .find((node: any) => String(node.textContent || '').trim() === label) as HTMLButtonElement | undefined;
+      expect(button).toBeTruthy();
+      button?.click();
+      fixture.detectChanges();
+    };
+    const resultFor = (model: string) => {
+      const card = Array.from(predictor.querySelectorAll('.equality-predictor__result'))
+        .find((node: any) => String(node.querySelector('.return-simulator__label')?.textContent || '').trim() === model) as HTMLElement | undefined;
+      return String(card?.querySelector('.equality-predictor__boolean')?.textContent || '').trim();
+    };
+
+    clickScenario('NaN vs NaN');
+    expect(resultFor('==')).toBe('false');
+    expect(resultFor('===')).toBe('false');
+    expect(resultFor('Object.is')).toBe('true');
+    expect(resultFor('SameValueZero')).toBe('true');
+
+    clickScenario('+0 vs -0');
+    expect(resultFor('==')).toBe('true');
+    expect(resultFor('===')).toBe('true');
+    expect(resultFor('Object.is')).toBe('false');
+    expect(resultFor('SameValueZero')).toBe('true');
   });
 
   it('renders the return value simulator only for the render-nothing question', async () => {
@@ -636,6 +808,76 @@ describe('TriviaDetailComponent', () => {
     expect((nonTargetArticle?.mentions || []).map((item: any) => item.name)).not.toContain('AbortController');
 
     nonTargetFixture.destroy();
+  });
+
+  it('adds equality TechArticle and Question schema without FAQPage or QAPage markup', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-equality-vs-strict-equality',
+      title: 'What is the difference between == and === in JavaScript?',
+      description:
+        'Loose equality and strict equality differ because coercion can silently change operands.',
+      technology: 'javascript',
+      tags: ['operators', 'comparison', 'types', 'javascript'],
+      updatedAt: '2026-07-01',
+    });
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const question = graph.find((node: any) => node?.['@type'] === 'Question');
+    const typeNames = graph.map((node: any) => node?.['@type']);
+
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(article?.articleSection).toBe('JavaScript equality and coercion');
+    expect((article?.about || []).map((item: any) => item.name)).toEqual([
+      'JavaScript equality operators',
+      'Loose equality',
+      'Strict equality',
+      'Type coercion',
+    ]);
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('implicit coercion');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('Number.isNaN');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('Object.is');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('SameValueZero');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('IsLooselyEqual');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('!==');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('Array.prototype.includes');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('MDN Web Docs');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('ECMAScript specification');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('source reference');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('FrontendAtlas review note');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('edge-case test');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('interactive equality predictor');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('coercion matrix');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('SameValueZero comparison');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('edge-case comparison drill');
+    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
+      'Core idea',
+      'Loose equality',
+      'How == decides',
+      'Strict equality',
+      'Beyond ===: Object.is and SameValueZero',
+      'Pitfalls',
+      'Practical rule',
+      'Source check',
+      'FrontendAtlas review note',
+      'Equality predictor',
+    ]);
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality',
+      'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality',
+      'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness',
+      'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal',
+      'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-isstrictlyequal',
+      'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-samevaluezero',
+    ]);
+    expect(question?.name).toBe('What is the difference between == and === in JavaScript?');
+    expect(question?.acceptedAnswer?.['@type']).toBe('Answer');
+    expect(question?.acceptedAnswer?.text).toContain('== performs implicit coercion');
+    expect(question?.acceptedAnswer?.text).toContain('=== compares type and value without coercion');
+
+    fixture.destroy();
   });
 
   it('adds render-nothing TechArticle schema fields without FAQPage or QAPage markup', async () => {

@@ -2187,28 +2187,28 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, both <code>==</code> and <code>===</code> compare values, but the real difference is <strong>coercion</strong>. Loose equality converts operands first, which is why debugging form input, query params, or API payloads gets messy fast.\n\n- <code>==</code> converts types before comparing.\n- <code>===</code> compares value and type exactly as they are."
+          "text": "## Core idea\n\n`==` performs implicit coercion before comparing. `===` compares type and value without coercion. Use `===` by default; when data arrives from a boundary such as form input, query params, localStorage, or an API, convert it explicitly first and then compare.\n\n- `==` can make different types match after conversion.\n- `===` only matches when both operands already have the same type and value."
         },
         {
           "type": "list",
           "columns": [
             "Operator",
-            "Compares",
-            "Does Type Conversion?",
+            "What it checks",
+            "Coercion",
             "Example",
             "Result"
           ],
           "rows": [
             [
               "<code>==</code>",
-              "Value only",
+              "Value after conversion",
               "Yes",
               "<code>'5' == 5</code>",
               "<code>true</code>"
             ],
             [
               "<code>===</code>",
-              "Value and Type",
+              "Type and value as-is",
               "No",
               "<code>'5' === 5</code>",
               "<code>false</code>"
@@ -2218,7 +2218,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Loose Equality (==)</strong>\n\n- Automatically converts operands to the same type before comparing.\n- Can cause confusing results because of type coercion.\n- Useful only when you explicitly want type conversion."
+          "text": "## Loose equality\n\nLoose equality is only safe when you intentionally want JavaScript's comparison algorithm to convert one or both operands. That is rare in application logic because strings, booleans, empty arrays, `null`, and `undefined` can collapse in surprising ways."
         },
         {
           "type": "code",
@@ -2227,7 +2227,37 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Strict Equality (===)</strong>\n\n- Compares **both type and value** exactly as they are.\n- Does not perform type coercion.\n- This is the recommended operator for most cases."
+          "text": "## How == decides\n\nLoose equality is not random; it follows a decision order. If both operands already have the same type, JavaScript compares them directly. `null` and `undefined` only loosely equal each other. Strings and booleans are usually converted toward numbers. Objects are first converted to primitives, then compared again. If none of those rules applies, the comparison is false."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Comparison",
+            "Why it happens",
+            "Safer production rule"
+          ],
+          "rows": [
+            [
+              "<code>null == undefined</code>",
+              "Loose equality has a special nullish match.",
+              "Pick one missing-value rule and check it explicitly."
+            ],
+            [
+              "<code>'0' == false</code>",
+              "Both sides are converted toward <code>0</code>.",
+              "Normalize form and query values before comparing."
+            ],
+            [
+              "<code>[1] == '1'</code>",
+              "The array becomes a primitive string before comparison.",
+              "Do not rely on object-to-primitive conversion in app logic."
+            ]
+          ],
+          "caption": "A practical decision flow for the loose equality algorithm."
+        },
+        {
+          "type": "text",
+          "text": "## Strict equality\n\nStrict equality keeps the comparison predictable: no type conversion happens during the comparison. Parse or normalize boundary values first, then compare with `===`."
         },
         {
           "type": "code",
@@ -2236,32 +2266,74 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Using `==` can lead to hidden bugs when JavaScript tries to 'help' by converting types.\n- Example: `[] == false` → `true`, but `[] === false` → `false`.\n- Always use `===` unless you specifically need type coercion (which is rare)."
+          "text": "## Beyond ===: Object.is and SameValueZero\n\n`===` is the default for application comparisons, but it is not the only equality model in JavaScript. `Object.is` treats `NaN` as equal to itself and keeps `+0` different from `-0`. SameValueZero is used by `Map`, `Set`, and `Array.prototype.includes`; it treats `NaN` as equal to itself but considers `+0` and `-0` the same."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Model",
+            "Used by",
+            "NaN",
+            "+0 vs -0",
+            "Best use"
+          ],
+          "rows": [
+            [
+              "<code>===</code>",
+              "Most comparisons",
+              "Not equal",
+              "Equal",
+              "Default app logic after explicit conversion"
+            ],
+            [
+              "<code>Object.is</code>",
+              "Direct calls, some equality helpers",
+              "Equal",
+              "Different",
+              "Precise value sameness checks"
+            ],
+            [
+              "SameValueZero",
+              "<code>Map</code>, <code>Set</code>, <code>includes</code>",
+              "Equal",
+              "Equal",
+              "Collection membership and lookup semantics"
+            ]
+          ],
+          "caption": "Equality models that matter after you understand == vs ===."
+        },
+        {
+          "type": "text",
+          "text": "## Pitfalls\n\n- `'' == 0` and `false == 0` are true, so loose checks can accept empty form input as a number.\n- `null == undefined` is true, but `null === undefined` is false; choose one missing-value rule intentionally.\n- `NaN` is not equal to itself with `==` or `===`; use `Number.isNaN(value)` when validating numbers.\n- Objects and arrays compare by reference with `===`; it is not deep value equality."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log([] == false);  // true (empty array converts to false)\nconsole.log([] === false); // false"
+          "code": "console.log([] == false);  // true (empty array converts before comparison)\nconsole.log([] === false); // false\nconsole.log(NaN === NaN);  // false\nconsole.log(Number.isNaN(NaN)); // true"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>==</strong>: Compares values after converting their types. May return unexpected results.\n- <strong>===</strong>: Compares both value and type. Safer and preferred in almost all cases.\n\n👉 Rule of thumb: If you’re not sure — use <code>===</code>."
+          "text": "## Practical rule\n\nDefault to `===`. At boundaries, convert once with `Number(...)`, `Boolean(...)`, parsing helpers, or a schema validator, then compare the normalized value. Use `!==` with the same discipline for negative comparisons. Add tests for empty string, `0`, `false`, `null`, `undefined`, and `NaN` when equality affects validation or access control."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine two people named Alex:\n- Using <strong>==</strong> is like saying “they have the same name” — even if one is human and one is a robot.\n- Using <strong>===</strong> is like saying “same name <em>and</em> same species” — no confusion at all."
+          "text": "## Source check\n\nThis answer is checked against [MDN Equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality), [MDN Strict equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality), and [MDN Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness). For the underlying specification rules, compare the ECMAScript abstract operations for [IsLooselyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal), [IsStrictlyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-isstrictlyequal), and [SameValueZero](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-samevaluezero)."
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Compare query parameters or form values (strings) to numbers and booleans in validation logic.<br><br><strong>Common pitfalls</strong><br><ul><li><code>==</code> coercion producing surprising results like <code>'' == 0</code> or <code>null == undefined</code>.</li><li>Forgetting <code>NaN</code> is never equal to itself.</li><li>Relying on loose equality in code that should be type-safe.</li></ul><strong>Trade-off or test tip</strong><br>Use <code>===</code> by default; convert types explicitly when needed. Add tests for <code>null</code>, <code>undefined</code>, and <code>NaN</code>."
+          "text": "## FrontendAtlas review note\n\nThis answer is reviewed as an interview debugging rule, not as a personal anecdote. In FrontendAtlas JavaScript reviews, coercion bugs are flagged most often when form input, query params, localStorage, or API payloads cross a boundary as strings and then reach numeric guards. The expected fix is to normalize at the boundary, compare with `===` or `!==`, and test the edge cases listed above."
+        },
+        {
+          "type": "text",
+          "text": "## Equality predictor\n\nUse the interactive predictor below to compare selected edge cases across `==`, `===`, `Object.is`, and SameValueZero. The goal is to see which comparisons coerce, which preserve type, and which only differ for `NaN` or signed zero."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-07-01",
     "seo": {
-      "title": "JavaScript == vs ===: coercion bugs, nullish edge cases, and debug rules",
-      "description": "Learn when loose equality surprises you, why strict equality is safer, and which common mistakes appear in form and API validation."
+      "title": "JavaScript == vs ===: Why 6 Common Checks Fail",
+      "description": "See why everyday checks become coercion bugs, then use the equality predictor to test 6 JavaScript edge cases."
     },
     "incidentCard": {
       "title": "Coercion Bug Check",

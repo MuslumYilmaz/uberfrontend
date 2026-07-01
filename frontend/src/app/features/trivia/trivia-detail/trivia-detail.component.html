@@ -80,36 +80,6 @@
                 </div>
             </section>
 
-            <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
-                <div class="practice-frame__copy">
-                    <div class="practice-frame__kicker">Interview answer drill</div>
-                    <p class="practice-frame__text">{{ practiceFrameText(q) }}</p>
-                </div>
-                <div class="practice-frame__actions">
-                    <a
-                        class="practice-frame__cta practice-frame__cta--primary"
-                        data-testid="trivia-practice-frame-primary"
-                        data-trivia-link-zone="prep_bridge"
-                        [routerLink]="interviewQuestionsHubRoute()">
-                        {{ interviewQuestionsHubCtaLabel() }}
-                    </a>
-                    <a
-                        class="practice-frame__cta"
-                        data-testid="trivia-practice-frame-plan"
-                        data-trivia-link-zone="prep_bridge"
-                        [routerLink]="studyPlanRoute()">
-                        Follow {{ studyPlanLabel() }}
-                    </a>
-                    <a
-                        class="practice-frame__link"
-                        data-testid="trivia-practice-frame-hub"
-                        data-trivia-link-zone="prep_bridge"
-                        [routerLink]="['/interview-questions/essential']">
-                        Open Essential 60
-                    </a>
-                </div>
-            </section>
-
             <!-- Title + chips -->
             <header class="title-block">
                 <div class="title-row">
@@ -139,6 +109,14 @@
                 </div>
             </header>
 
+            <!-- Interview quick answer -->
+            <section class="card">
+                <h2 class="card-head">Interview quick answer</h2>
+                <div class="card-body">
+                    <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
+                </div>
+            </section>
+
             <section class="card interview-focus" aria-labelledby="trivia-interview-focus-title">
                 <h2 class="card-head" id="trivia-interview-focus-title">Interview focus</h2>
                 <div class="card-body interview-focus__body">
@@ -155,11 +133,33 @@
                 </div>
             </section>
 
-            <!-- Interview quick answer -->
-            <section class="card">
-                <h2 class="card-head">Interview quick answer</h2>
-                <div class="card-body">
-                    <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
+            <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
+                <div class="practice-frame__copy">
+                    <div class="practice-frame__kicker">Interview answer drill</div>
+                    <p class="practice-frame__text">{{ practiceFrameText(q) }}</p>
+                </div>
+                <div class="practice-frame__actions">
+                    <a
+                        class="practice-frame__cta practice-frame__cta--primary"
+                        data-testid="trivia-practice-frame-primary"
+                        data-trivia-link-zone="prep_bridge"
+                        [routerLink]="interviewQuestionsHubRoute()">
+                        {{ interviewQuestionsHubCtaLabel() }}
+                    </a>
+                    <a
+                        class="practice-frame__cta"
+                        data-testid="trivia-practice-frame-plan"
+                        data-trivia-link-zone="prep_bridge"
+                        [routerLink]="studyPlanRoute()">
+                        Follow {{ studyPlanLabel() }}
+                    </a>
+                    <a
+                        class="practice-frame__link"
+                        data-testid="trivia-practice-frame-hub"
+                        data-trivia-link-zone="prep_bridge"
+                        [routerLink]="['/interview-questions/essential']">
+                        Open Essential 60
+                    </a>
                 </div>
             </section>
 
@@ -208,7 +208,7 @@
                                 <!-- LIST (table) -->
                                 <figure *ngIf="b.type === 'list'" class="block b-list">
                                     <div class="table-scroll" role="region" aria-label="comparison table" tabindex="0">
-                                        <table class="table">
+                                        <table class="table" [class.table--stacked-mobile]="isStackedMobileTable($any(b))">
                                             <thead>
                                                 <tr>
                                                     <th *ngFor="let col of $any(b).columns; trackBy: trackByStringValue" [innerHTML]="md(col) | safeHtml"></th>
@@ -216,7 +216,10 @@
                                             </thead>
                                             <tbody>
                                                 <tr *ngFor="let row of $any(b).rows; trackBy: trackByRowCells">
-                                                    <td *ngFor="let cell of row; trackBy: trackByCellValue" [innerHTML]="md(cell) | safeHtml"></td>
+                                                    <td
+                                                        *ngFor="let cell of row; let cellIndex = index; trackBy: trackByCellValue"
+                                                        [attr.data-label]="tableColumnLabel($any(b), cellIndex)"
+                                                        [innerHTML]="md(cell) | safeHtml"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -235,6 +238,58 @@
                             <p class="content muted">Answer coming soon.</p>
                         </ng-template>
                     </ng-template>
+                </div>
+            </section>
+
+            <!-- Equality predictor -->
+            <section
+                class="card return-simulator equality-predictor"
+                *ngIf="showEqualityPredictor(q)"
+                aria-labelledby="equality-predictor-title"
+                data-testid="equality-predictor">
+                <h2 class="card-head" id="equality-predictor-title">Equality predictor</h2>
+                <div class="card-body return-simulator__body">
+                    <div class="return-simulator__tabs" role="group" aria-label="Choose an equality edge case">
+                        <button
+                            type="button"
+                            class="return-simulator__tab"
+                            *ngFor="let option of equalityPredictorScenarios; trackBy: trackByEqualityPredictorScenario"
+                            [class.is-active]="selectedEqualityPredictorKey() === option.key"
+                            [attr.aria-pressed]="selectedEqualityPredictorKey() === option.key"
+                            (click)="selectEqualityPredictor(option.key)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div class="equality-predictor__body" aria-live="polite">
+                        <div class="equality-predictor__operands" aria-label="Selected comparison operands">
+                            <code>{{ selectedEqualityPredictorScenario().left }}</code>
+                            <span>vs</span>
+                            <code>{{ selectedEqualityPredictorScenario().right }}</code>
+                        </div>
+
+                        <div class="equality-predictor__result-grid" role="list" aria-label="Equality model results">
+                            <div
+                                class="return-simulator__metric equality-predictor__result"
+                                *ngFor="let result of selectedEqualityPredictorScenario().results; trackBy: trackByEqualityPredictorResult"
+                                role="listitem">
+                                <span class="return-simulator__label">{{ result.model }}</span>
+                                <code class="equality-predictor__boolean" [class.is-true]="result.value === 'true'">{{ result.value }}</code>
+                                <p>{{ result.note }}</p>
+                            </div>
+                        </div>
+
+                        <div class="return-simulator__output equality-predictor__notes">
+                            <div class="return-simulator__metric">
+                                <span class="return-simulator__label">Why it happens</span>
+                                <p>{{ selectedEqualityPredictorScenario().whyItHappens }}</p>
+                            </div>
+                            <div class="return-simulator__metric">
+                                <span class="return-simulator__label">Production rule</span>
+                                <p>{{ selectedEqualityPredictorScenario().productionRule }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
