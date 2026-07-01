@@ -6818,7 +6818,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-07-01",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-equality-vs-strict-equality"
   },

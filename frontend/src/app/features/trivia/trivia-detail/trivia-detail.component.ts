@@ -97,6 +97,21 @@ type AsyncRaceSimulatorOption = {
   whyItHappens: string;
   testAssertion: string;
 };
+type EqualityPredictorKey = 'string-number' | 'zero-false' | 'null-undefined' | 'nan-nan' | 'positive-negative-zero' | 'array-string';
+type EqualityPredictorResult = {
+  model: string;
+  value: 'true' | 'false';
+  note: string;
+};
+type EqualityPredictorScenario = {
+  key: EqualityPredictorKey;
+  label: string;
+  left: string;
+  right: string;
+  whyItHappens: string;
+  productionRule: string;
+  results: EqualityPredictorResult[];
+};
 type LockedPath = {
   id: string;
   label: string;
@@ -108,6 +123,7 @@ type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' |
 const TRIVIA_H1_INTENT_LABEL = 'Frontend interview answer';
 const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
 const ASYNC_RACE_SIMULATOR_QUESTION_ID = 'js-async-race-conditions';
+const EQUALITY_PREDICTOR_QUESTION_ID = 'js-equality-vs-strict-equality';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
     key: 'null',
@@ -192,6 +208,92 @@ const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
     testAssertion: 'Emit rea then react; expect the subscriber to publish only the react result.',
   },
 ];
+const EQUALITY_PREDICTOR_SCENARIOS: EqualityPredictorScenario[] = [
+  {
+    key: 'string-number',
+    label: "'5' vs 5",
+    left: "'5'",
+    right: '5',
+    whyItHappens: 'Loose equality converts the string toward a number before comparing. The other models compare without coercion.',
+    productionRule: 'Parse form or query strings once, then compare normalized numbers with ===.',
+    results: [
+      { model: '==', value: 'true', note: 'String is coerced to number.' },
+      { model: '===', value: 'false', note: 'Different types stay different.' },
+      { model: 'Object.is', value: 'false', note: 'No coercion is applied.' },
+      { model: 'SameValueZero', value: 'false', note: 'No coercion for collection lookup.' },
+    ],
+  },
+  {
+    key: 'zero-false',
+    label: '0 vs false',
+    left: '0',
+    right: 'false',
+    whyItHappens: 'Loose equality converts false to 0, so both operands become the same number.',
+    productionRule: 'Keep boolean checks and numeric checks separate; do not let empty or false-like input pass numeric guards.',
+    results: [
+      { model: '==', value: 'true', note: 'false converts to 0.' },
+      { model: '===', value: 'false', note: 'Number and boolean differ.' },
+      { model: 'Object.is', value: 'false', note: 'Different types are not the same value.' },
+      { model: 'SameValueZero', value: 'false', note: 'Different types do not match.' },
+    ],
+  },
+  {
+    key: 'null-undefined',
+    label: 'null vs undefined',
+    left: 'null',
+    right: 'undefined',
+    whyItHappens: 'Loose equality has a special nullish rule: null and undefined only loosely equal each other.',
+    productionRule: 'Choose one missing-value convention or write an explicit nullish check with value == null only when that is intentional.',
+    results: [
+      { model: '==', value: 'true', note: 'Special nullish match.' },
+      { model: '===', value: 'false', note: 'Different types.' },
+      { model: 'Object.is', value: 'false', note: 'Not the same value.' },
+      { model: 'SameValueZero', value: 'false', note: 'No nullish special case.' },
+    ],
+  },
+  {
+    key: 'nan-nan',
+    label: 'NaN vs NaN',
+    left: 'NaN',
+    right: 'NaN',
+    whyItHappens: 'NaN is not equal to itself under == or ===. Object.is and SameValueZero treat NaN as the same value.',
+    productionRule: 'Use Number.isNaN(value) for validation; remember Map, Set, and includes can find NaN.',
+    results: [
+      { model: '==', value: 'false', note: 'NaN never loosely equals itself.' },
+      { model: '===', value: 'false', note: 'NaN is not strictly equal to itself.' },
+      { model: 'Object.is', value: 'true', note: 'SameValue treats NaN as same.' },
+      { model: 'SameValueZero', value: 'true', note: 'Collections can match NaN.' },
+    ],
+  },
+  {
+    key: 'positive-negative-zero',
+    label: '+0 vs -0',
+    left: '+0',
+    right: '-0',
+    whyItHappens: '== and === consider signed zero values equal. Object.is preserves the sign difference; SameValueZero collapses it.',
+    productionRule: 'Use Object.is only when signed zero matters, such as low-level numeric or rendering edge cases.',
+    results: [
+      { model: '==', value: 'true', note: 'Signed zero is equal.' },
+      { model: '===', value: 'true', note: 'Signed zero is equal.' },
+      { model: 'Object.is', value: 'false', note: 'Sign is preserved.' },
+      { model: 'SameValueZero', value: 'true', note: 'Sign is ignored.' },
+    ],
+  },
+  {
+    key: 'array-string',
+    label: "[1] vs '1'",
+    left: '[1]',
+    right: "'1'",
+    whyItHappens: 'Loose equality converts the array to a primitive string before comparing it with the string operand.',
+    productionRule: 'Never rely on object-to-primitive conversion in app logic; extract the intended value first.',
+    results: [
+      { model: '==', value: 'true', note: 'Array becomes "1".' },
+      { model: '===', value: 'false', note: 'Array reference and string differ.' },
+      { model: 'Object.is', value: 'false', note: 'Different values and types.' },
+      { model: 'SameValueZero', value: 'false', note: 'No object-to-string coercion.' },
+    ],
+  },
+];
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
@@ -252,8 +354,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   copiedIndex = signal<number | null>(null);
   selectedReturnValueSimulatorKey = signal<ReturnValueSimulatorKey>('null');
   selectedAsyncRaceSimulatorKey = signal<AsyncRaceSimulatorKey>('no-guard');
+  selectedEqualityPredictorKey = signal<EqualityPredictorKey>('string-number');
   returnValueSimulatorOptions = RETURN_VALUE_SIMULATOR_OPTIONS;
   asyncRaceSimulatorOptions = ASYNC_RACE_SIMULATOR_OPTIONS;
+  equalityPredictorScenarios = EQUALITY_PREDICTOR_SCENARIOS;
   solved = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
@@ -363,6 +467,20 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackByIncidentOption = (_: number, option: TriviaIncidentOption): string => option.id;
   trackByReturnValueSimulatorOption = (_: number, option: ReturnValueSimulatorOption): string => option.key;
   trackByAsyncRaceSimulatorOption = (_: number, option: AsyncRaceSimulatorOption): string => option.key;
+  trackByEqualityPredictorScenario = (_: number, option: EqualityPredictorScenario): string => option.key;
+  trackByEqualityPredictorResult = (_: number, result: EqualityPredictorResult): string => result.model;
+
+  isStackedMobileTable(block: BlockList | null | undefined): boolean {
+    const columns = block?.columns;
+    return Array.isArray(columns) && columns.length >= 4;
+  }
+
+  tableColumnLabel(block: BlockList | null | undefined, index: number): string {
+    const columns = block?.columns;
+    const raw = Array.isArray(columns) ? columns[index] : '';
+    const label = this.normalizePreviewText(String(raw || ''));
+    return label || `Column ${index + 1}`;
+  }
 
   /** ============== Derived UI helpers ============== */
 
@@ -434,6 +552,19 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const key = this.selectedAsyncRaceSimulatorKey();
     return ASYNC_RACE_SIMULATOR_OPTIONS.find((option) => option.key === key) ?? ASYNC_RACE_SIMULATOR_OPTIONS[0];
   });
+
+  selectedEqualityPredictorScenario = computed<EqualityPredictorScenario>(() => {
+    const key = this.selectedEqualityPredictorKey();
+    return EQUALITY_PREDICTOR_SCENARIOS.find((option) => option.key === key) ?? EQUALITY_PREDICTOR_SCENARIOS[0];
+  });
+
+  showEqualityPredictor(q?: Question | null): boolean {
+    return q?.id === EQUALITY_PREDICTOR_QUESTION_ID;
+  }
+
+  selectEqualityPredictor(key: EqualityPredictorKey): void {
+    this.selectedEqualityPredictorKey.set(key);
+  }
 
   showAsyncRaceSimulator(q?: Question | null): boolean {
     return q?.id === ASYNC_RACE_SIMULATOR_QUESTION_ID;
@@ -915,17 +1046,110 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       dateModified: dateModified || datePublished,
     };
 
+    const questionStructuredData = this.questionStructuredData(q, canonical);
+    const jsonLd = questionStructuredData
+      ? [breadcrumb, article, questionStructuredData]
+      : [breadcrumb, article];
+
     this.seo.updateTags({
       title: seoTitle,
       description,
       keywords,
       canonical,
       ogType: 'article',
-      jsonLd: [breadcrumb, article],
+      jsonLd,
     });
   }
 
   private articleStructuredDataExtensions(q: Question): Record<string, any> {
+    if (q.id === 'js-equality-vs-strict-equality') {
+      return {
+        articleSection: 'JavaScript equality and coercion',
+        about: [
+          { '@type': 'Thing', name: 'JavaScript equality operators' },
+          { '@type': 'Thing', name: 'Loose equality' },
+          { '@type': 'Thing', name: 'Strict equality' },
+          { '@type': 'Thing', name: 'Type coercion' },
+        ],
+        mentions: [
+          { '@type': 'Thing', name: '==' },
+          { '@type': 'Thing', name: '===' },
+          { '@type': 'Thing', name: '!==' },
+          { '@type': 'Thing', name: 'implicit coercion' },
+          { '@type': 'Thing', name: 'explicit conversion' },
+          { '@type': 'Thing', name: 'IsLooselyEqual' },
+          { '@type': 'Thing', name: 'SameValue' },
+          { '@type': 'Thing', name: 'SameValueZero' },
+          { '@type': 'Thing', name: 'Object.is' },
+          { '@type': 'Thing', name: 'form input' },
+          { '@type': 'Thing', name: 'query params' },
+          { '@type': 'Thing', name: 'localStorage' },
+          { '@type': 'Thing', name: 'API payloads' },
+          { '@type': 'Thing', name: 'null' },
+          { '@type': 'Thing', name: 'undefined' },
+          { '@type': 'Thing', name: 'NaN' },
+          { '@type': 'Thing', name: 'Number.isNaN' },
+          { '@type': 'Thing', name: 'Map' },
+          { '@type': 'Thing', name: 'Set' },
+          { '@type': 'Thing', name: 'Array.prototype.includes' },
+          { '@type': 'Thing', name: 'reference equality' },
+          { '@type': 'Thing', name: 'MDN Web Docs' },
+          { '@type': 'Thing', name: 'ECMAScript specification' },
+          { '@type': 'Thing', name: 'source reference' },
+          { '@type': 'Thing', name: 'FrontendAtlas review note' },
+          { '@type': 'Thing', name: 'edge-case test' },
+          { '@type': 'Thing', name: 'interactive equality predictor' },
+          { '@type': 'Thing', name: 'coercion matrix' },
+          { '@type': 'Thing', name: 'SameValueZero comparison' },
+          { '@type': 'Thing', name: 'edge-case comparison drill' },
+        ],
+        hasPart: [
+          { '@type': 'WebPageElement', name: 'Core idea' },
+          { '@type': 'WebPageElement', name: 'Loose equality' },
+          { '@type': 'WebPageElement', name: 'How == decides' },
+          { '@type': 'WebPageElement', name: 'Strict equality' },
+          { '@type': 'WebPageElement', name: 'Beyond ===: Object.is and SameValueZero' },
+          { '@type': 'WebPageElement', name: 'Pitfalls' },
+          { '@type': 'WebPageElement', name: 'Practical rule' },
+          { '@type': 'WebPageElement', name: 'Source check' },
+          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
+          { '@type': 'WebPageElement', name: 'Equality predictor' },
+        ],
+        citation: [
+          {
+            '@type': 'WebPage',
+            name: 'MDN Equality',
+            url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'MDN Strict equality',
+            url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'MDN Equality comparisons and sameness',
+            url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'ECMAScript IsLooselyEqual',
+            url: 'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'ECMAScript IsStrictlyEqual',
+            url: 'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-isstrictlyequal',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'ECMAScript SameValueZero',
+            url: 'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-samevaluezero',
+          },
+        ],
+      };
+    }
+
     if (q.id === 'js-async-race-conditions') {
       return {
         articleSection: 'JavaScript async concurrency',
@@ -1032,6 +1256,23 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
         { '@type': 'WebPageElement', name: 'Testing and accessibility notes' },
       ],
+    };
+  }
+
+  private questionStructuredData(q: Question, canonical: string): Record<string, any> | null {
+    if (q.id !== 'js-equality-vs-strict-equality') return null;
+
+    return {
+      '@type': 'Question',
+      '@id': `${canonical}#question`,
+      name: q.title,
+      url: canonical,
+      inLanguage: 'en',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text:
+          'In JavaScript, == performs implicit coercion before comparing. === compares type and value without coercion. Use === by default, and explicitly convert boundary values before comparing.',
+      },
     };
   }
 
@@ -2219,6 +2460,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     // Inline backticks + **bold**
+    html = this.renderMarkdownLinks(html);
     html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
@@ -2262,6 +2504,27 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     return html;
+  }
+
+  private renderMarkdownLinks(source: string): string {
+    const safeHref = (href: string): string | null => {
+      const normalized = href.trim();
+      if (/^(?:https?:\/\/|\/(?!\/)|#)[^\s"'<>]+$/i.test(normalized)) return normalized;
+      return null;
+    };
+    const escapeAttr = (value: string): string =>
+      value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    return source.replace(
+      /\[([^\]\n]+)\]\(([^)\s]+)\)/g,
+      (match: string, label: string, rawHref: string) => {
+        const href = safeHref(rawHref);
+        if (!href) return match;
+        const isExternal = /^https?:\/\//i.test(href);
+        const externalAttrs = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+        return `<a href="${escapeAttr(href)}"${externalAttrs}>${label}</a>`;
+      }
+    );
   }
 
   private renderMarkdownLists(source: string): string {
