@@ -43,9 +43,10 @@ const CASES = [
   {
     path: '/guides/system-design-blueprint/radio-framework',
     titleIncludes: 'radio answer template',
-    h1: 'Frontend System Design Interview Framework: RADIO Answer Template',
+    h1: 'RADIO Framework: The 5-Step Frontend System Design Answer Template',
     detail: true,
     indexable: true,
+    singleHydratedH1: true,
   },
 ];
 
@@ -104,6 +105,7 @@ async function assertSsrBasics(
     premiumPreviewText?: string;
     listTestIdPrefix?: string;
     indexable?: boolean;
+    singleHydratedH1?: boolean;
   },
 ) {
   const title = await page.title();
@@ -162,6 +164,7 @@ async function assertHydratedBasics(
     premiumPreviewText?: string;
     listTestIdPrefix?: string;
     indexable?: boolean;
+    singleHydratedH1?: boolean;
   },
 ) {
   await expect(page).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
@@ -178,6 +181,13 @@ async function assertHydratedBasics(
 
   const h1 = (await page.locator('h1').first().textContent())?.trim() || '';
   expect(h1).toContain(entry.h1);
+
+  if (entry.singleHydratedH1) {
+    await expect
+      .poll(() => page.locator('h1:visible').count())
+      .toBe(1);
+    await expect(page.locator('.guide-ssr-shell')).toHaveCount(0);
+  }
 
   await expect(page.locator('[data-testid="offline-banner"]')).toHaveCount(0);
   await expect(page.getByText(/Question not found/i)).toHaveCount(0);

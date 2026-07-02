@@ -1111,7 +1111,7 @@
     "route": "/angular/trivia/ngrx-selectors-memoization-derived-state-performance",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Selectors are the memoized read layer of an NgRx app. Their value is not magical rerender prevention, but reusable derived state that stays cheap as long as reducers preserve immutable input references.",
+    "summary": "NgRx selectors are memoized projections for derived state; this answer traces four selector boundaries, shows a projector test, and flags the mistakes that cause component churn.",
     "tags": [
       "angular",
       "store",

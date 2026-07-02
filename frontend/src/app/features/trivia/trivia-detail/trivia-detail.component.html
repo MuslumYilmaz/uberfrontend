@@ -241,6 +241,75 @@
                 </div>
             </section>
 
+            <!-- Selector memoization trace simulator -->
+            <section
+                class="card return-simulator selector-trace-simulator"
+                *ngIf="showNgRxSelectorTrace(q)"
+                aria-labelledby="selector-trace-simulator-title"
+                data-testid="selector-trace-simulator">
+                <h2 class="card-head" id="selector-trace-simulator-title">Selector memoization trace</h2>
+                <div class="card-body return-simulator__body">
+                    <div class="return-simulator__tabs" role="group" aria-label="Choose a selector boundary">
+                        <button
+                            type="button"
+                            class="return-simulator__tab"
+                            *ngFor="let option of ngrxSelectorTraceOptions; trackBy: trackByNgRxSelectorTraceOption"
+                            [class.is-active]="selectedNgRxSelectorTraceKey() === option.key"
+                            [attr.aria-pressed]="selectedNgRxSelectorTraceKey() === option.key"
+                            (click)="selectNgRxSelectorTrace(option.key)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div class="selector-trace__visual" role="list" aria-live="polite" aria-label="Selector recomputation trace">
+                        <div class="selector-trace__node" role="listitem">
+                            <span class="selector-trace__label">Input boundary</span>
+                            <strong>Selected state</strong>
+                            <p>{{ selectedNgRxSelectorTraceOption().inputBoundary }}</p>
+                        </div>
+                        <div
+                            class="selector-trace__connector"
+                            [class.is-hot]="selectedNgRxSelectorTraceOption().projectorRuns"
+                            aria-hidden="true">
+                        </div>
+                        <div
+                            class="selector-trace__node"
+                            role="listitem"
+                            [class.is-hot]="selectedNgRxSelectorTraceOption().projectorRuns"
+                            [class.is-cached]="!selectedNgRxSelectorTraceOption().projectorRuns">
+                            <span class="selector-trace__label">Projector</span>
+                            <strong>{{ selectedNgRxSelectorTraceOption().projectorRuns ? 'Runs' : 'Skipped' }}</strong>
+                            <p>{{ selectedNgRxSelectorTraceOption().projectorTrace }}</p>
+                        </div>
+                        <div
+                            class="selector-trace__connector"
+                            [class.is-hot]="selectedNgRxSelectorTraceOption().componentRebuilds"
+                            aria-hidden="true">
+                        </div>
+                        <div
+                            class="selector-trace__node"
+                            role="listitem"
+                            [class.is-hot]="selectedNgRxSelectorTraceOption().componentRebuilds"
+                            [class.is-cached]="!selectedNgRxSelectorTraceOption().componentRebuilds">
+                            <span class="selector-trace__label">Component VM</span>
+                            <strong>{{ selectedNgRxSelectorTraceOption().componentRebuilds ? 'Rebuilt' : 'Stable' }}</strong>
+                            <p>{{ selectedNgRxSelectorTraceOption().componentVm }}</p>
+                        </div>
+                    </div>
+
+                    <div class="return-simulator__output selector-trace__details" aria-live="polite">
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Unrelated update</span>
+                            <p>{{ selectedNgRxSelectorTraceOption().unrelatedUpdate }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Review signal</span>
+                            <p>{{ selectedNgRxSelectorTraceOption().reviewSignal }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Equality predictor -->
             <section
                 class="card return-simulator equality-predictor"
