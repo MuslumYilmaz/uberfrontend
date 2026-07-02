@@ -499,6 +499,52 @@ describe('TriviaDetailComponent', () => {
     expect(link?.getAttribute('rel') || '').toContain('noreferrer');
   });
 
+  it('renders safe raw html anchors as links without exposing literal anchor text', async () => {
+    const fixture = await createLoadedFixture('free', {
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text:
+              '## Source check\n\nIn Angular tests, use <a href="https://angular.dev/api/common/http/testing/TestRequest" target="_blank" rel="noopener"><code>TestRequest.cancelled</code></a> as the proof point.',
+          },
+        ],
+      },
+    });
+
+    const root = fixture.nativeElement as HTMLElement;
+    const link = root.querySelector(
+      '.blocks a[href="https://angular.dev/api/common/http/testing/TestRequest"]'
+    ) as HTMLAnchorElement | null;
+
+    expect(link).toBeTruthy();
+    expect(link?.textContent?.trim()).toBe('TestRequest.cancelled');
+    expect(link?.querySelector('code')?.textContent?.trim()).toBe('TestRequest.cancelled');
+    expect(link?.getAttribute('target')).toBe('_blank');
+    expect(link?.getAttribute('rel') || '').toContain('noopener');
+    expect(link?.getAttribute('rel') || '').toContain('noreferrer');
+    expect(root.querySelector('.blocks')?.textContent || '').not.toContain('<a href=');
+  });
+
+  it('keeps unsafe raw html anchors escaped instead of making them clickable', async () => {
+    const fixture = await createLoadedFixture('free', {
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text:
+              '## Unsafe source\n\nDo not render <a href="javascript:alert(1)" target="_blank" rel="noopener">unsafe docs</a> as a link.',
+          },
+        ],
+      },
+    });
+
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('.blocks a[href^="javascript:"]')).toBeNull();
+    expect(root.querySelector('.blocks')?.textContent || '').toContain('<a href="javascript:alert(1)"');
+  });
+
   it('renders async race answer section headings as H3', async () => {
     const fixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',
@@ -808,6 +854,225 @@ describe('TriviaDetailComponent', () => {
     expect((nonTargetArticle?.mentions || []).map((item: any) => item.name)).not.toContain('AbortController');
 
     nonTargetFixture.destroy();
+  });
+
+  it('adds NgRx selector TechArticle and Question schema without FAQPage or QAPage markup', async () => {
+    const question = {
+      id: 'ngrx-selectors-memoization-derived-state-performance',
+      title: 'NgRx selectors beyond getting state: memoization, derived state, and Angular performance',
+      description:
+        'NgRx selectors are memoized projections for derived state; this answer traces four selector boundaries, shows a projector test, and flags the mistakes that cause component churn.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text:
+              '## Memoized read model\n\nSelectors compose feature state into reusable view models.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Worked example\n\nStart with a feature selector, then compose focused selectors into a view model.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Failure pattern\n\n- Mutating reducer state breaks selector expectations.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Selector purity and projector tests\n\nA selector projector should be a pure function.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Testable proof\n\nA focused projector test proves the selector contract.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Projector run trace\n\nTrace whether unrelated updates rerun projectors.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Selector factory boundary\n\nUse selector factories only for stable parameters.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Selector review checklist\n\n- Keep input selectors narrow.',
+          },
+          {
+            type: 'text',
+            text:
+              '## FrontendAtlas review note\n\nReview selectors by reducer references and component boundaries.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Source check\n\nCompare this with official NgRx docs.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Interview summary\n\nNgRx selectors are a memoized read-model layer.',
+          },
+        ],
+      },
+      importance: 4,
+      difficulty: 'intermediate',
+      technology: 'angular',
+      access: 'free',
+      tags: ['angular', 'store', 'selectors', 'memoization', 'performance'],
+      updatedAt: '2026-04-19',
+      seo: {
+        title: 'NgRx selector memoization: why projectors rerun',
+        description:
+          'Trace 4 NgRx selector memoization paths, test projector logic, and avoid common Angular component churn mistakes with a focused interview answer.',
+      },
+    };
+
+    routeData$.next({
+      questionDetail: {
+        tech: 'angular',
+        kind: 'trivia',
+        id: question.id,
+        list: [question],
+        listSummaries: [toSummary(question)],
+        question,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
+    const typeNames = graph.map((node: any) => node?.['@type']);
+
+    expect(payload.title).toBe('NgRx selector memoization: why projectors rerun');
+    expect(payload.description).toBe(
+      'Trace 4 NgRx selector memoization paths, test projector logic, and avoid common Angular component churn mistakes with a focused interview answer.',
+    );
+    expect(payload.canonical).toBe(
+      'https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance',
+    );
+
+    const quickAnswerText = String(
+      fixture.nativeElement.querySelector('.card .content')?.textContent || ''
+    );
+    expect(quickAnswerText).toContain('traces four selector boundaries');
+    expect(quickAnswerText).toContain('projector test');
+    expect(quickAnswerText).toContain('component churn');
+
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(article?.articleSection).toBe('Angular state management');
+    expect((article?.about || []).map((item: any) => item.name)).toEqual([
+      'NgRx selectors',
+      'selector memoization',
+      'derived state',
+      'immutable reducer outputs',
+    ]);
+    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
+      'createSelector',
+      'createFeatureSelector',
+      'feature selector',
+      'entity/base selectors',
+      'view model selector',
+      'projector function',
+      'stable references',
+      'root state selection',
+      'filter/sort/map derivation',
+      'selector factory',
+      'projector tests',
+      'selector purity',
+      'component contract',
+      'AsyncPipe',
+      'selector projector',
+      'memoization trace',
+      'NgRx official docs',
+      'source reference',
+      'projector unit test',
+      'FrontendAtlas review note',
+      'review evidence',
+      'editorial policy',
+      'interactive memoization trace',
+      'selector recomputation simulator',
+      'projector run visualization',
+    ]);
+    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
+      'Interview quick answer',
+      'Memoized read model',
+      'Worked example',
+      'Failure pattern',
+      'Composed selector flow',
+      'Memoization behavior',
+      'Selector purity and projector tests',
+      'Testable proof',
+      'Projector run trace',
+      'Selector performance pitfalls',
+      'Selector factory boundary',
+      'Selector review checklist',
+      'FrontendAtlas review note',
+      'Source check',
+      'Selector memoization trace simulator',
+      'Interview summary',
+    ]);
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://ngrx.io/guide/store/selectors',
+      'https://ngrx.io/api/store/createSelector',
+      'https://frontendatlas.com/legal/editorial-policy',
+    ]);
+    expect(questionSchema).toEqual(jasmine.objectContaining({
+      '@id': 'https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance#question',
+      name: question.title,
+      url: 'https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance',
+      acceptedAnswer: jasmine.objectContaining({
+        '@type': 'Answer',
+        text: jasmine.stringMatching(/^NgRx selectors are memoized, pure projection functions/),
+      }),
+    }));
+    expect(questionSchema?.acceptedAnswer?.text).toContain('projector unit tests prove the derived contract');
+
+    const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h3Text).toEqual([
+      'Memoized read model',
+      'Worked example',
+      'Failure pattern',
+      'Selector purity and projector tests',
+      'Testable proof',
+      'Projector run trace',
+      'Selector factory boundary',
+      'Selector review checklist',
+      'FrontendAtlas review note',
+      'Source check',
+      'Interview summary',
+    ]);
+
+    const simulator = fixture.nativeElement.querySelector(
+      '[data-testid="selector-trace-simulator"]'
+    ) as HTMLElement | null;
+    expect(simulator).toBeTruthy();
+    expect(simulator?.textContent || '').toContain('Component selects the whole root store.');
+    expect(simulator?.textContent || '').toContain('Rebuilt');
+
+    const atomicButton = Array.from(simulator!.querySelectorAll('button'))
+      .find((button: any) => String(button.textContent || '').trim() === 'Atomic selectors') as HTMLButtonElement | undefined;
+    expect(atomicButton).toBeTruthy();
+    atomicButton!.click();
+    fixture.detectChanges();
+
+    expect(simulator?.textContent || '').toContain('Projector is skipped and the cached result is reused.');
+    expect(simulator?.textContent || '').toContain('Stable');
+    expect(simulator?.textContent || '').toContain('Good memoization boundary for unrelated updates.');
   });
 
   it('adds equality TechArticle and Question schema without FAQPage or QAPage markup', async () => {

@@ -112,6 +112,18 @@ type EqualityPredictorScenario = {
   productionRule: string;
   results: EqualityPredictorResult[];
 };
+type NgRxSelectorTraceKey = 'root-state' | 'broad-feature' | 'atomic-selectors' | 'vm-selector';
+type NgRxSelectorTraceOption = {
+  key: NgRxSelectorTraceKey;
+  label: string;
+  inputBoundary: string;
+  unrelatedUpdate: string;
+  projectorTrace: string;
+  componentVm: string;
+  reviewSignal: string;
+  projectorRuns: boolean;
+  componentRebuilds: boolean;
+};
 type LockedPath = {
   id: string;
   label: string;
@@ -124,6 +136,7 @@ const TRIVIA_H1_INTENT_LABEL = 'Frontend interview answer';
 const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
 const ASYNC_RACE_SIMULATOR_QUESTION_ID = 'js-async-race-conditions';
 const EQUALITY_PREDICTOR_QUESTION_ID = 'js-equality-vs-strict-equality';
+const NGRX_SELECTOR_TRACE_QUESTION_ID = 'ngrx-selectors-memoization-derived-state-performance';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
     key: 'null',
@@ -294,6 +307,52 @@ const EQUALITY_PREDICTOR_SCENARIOS: EqualityPredictorScenario[] = [
     ],
   },
 ];
+const NGRX_SELECTOR_TRACE_OPTIONS: NgRxSelectorTraceOption[] = [
+  {
+    key: 'root-state',
+    label: 'Root state',
+    inputBoundary: 'Component selects the whole root store.',
+    unrelatedUpdate: 'A notification badge updates outside the products feature.',
+    projectorTrace: 'Mapping work runs again because every root emission reaches the component.',
+    componentVm: 'The component rebuilds a new array/object VM.',
+    reviewSignal: 'High churn: move derivation into composed selectors.',
+    projectorRuns: true,
+    componentRebuilds: true,
+  },
+  {
+    key: 'broad-feature',
+    label: 'Broad feature',
+    inputBoundary: 'Selector reads the entire products feature slice.',
+    unrelatedUpdate: 'A sibling field in products changes, such as pagination metadata.',
+    projectorTrace: 'Projector runs even when the filtered list inputs did not matter.',
+    componentVm: 'The component receives a fresh VM more often than needed.',
+    reviewSignal: 'Split the feature into narrow input selectors.',
+    projectorRuns: true,
+    componentRebuilds: true,
+  },
+  {
+    key: 'atomic-selectors',
+    label: 'Atomic selectors',
+    inputBoundary: 'Selector composes ids, entities, query, and sort separately.',
+    unrelatedUpdate: 'Another feature updates while product input references stay stable.',
+    projectorTrace: 'Projector is skipped and the cached result is reused.',
+    componentVm: 'The component keeps the same VM reference.',
+    reviewSignal: 'Good memoization boundary for unrelated updates.',
+    projectorRuns: false,
+    componentRebuilds: false,
+  },
+  {
+    key: 'vm-selector',
+    label: 'VM selector',
+    inputBoundary: 'Component selects one final UI-ready view-model selector.',
+    unrelatedUpdate: 'Only loading/error/items inputs determine recomputation.',
+    projectorTrace: 'Projector runs once when selected inputs change, then returns a stable contract.',
+    componentVm: 'The component only binds the final VM and avoids local map/filter/sort.',
+    reviewSignal: 'Best interview answer: narrow inputs plus component contract.',
+    projectorRuns: true,
+    componentRebuilds: false,
+  },
+];
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
@@ -355,9 +414,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedReturnValueSimulatorKey = signal<ReturnValueSimulatorKey>('null');
   selectedAsyncRaceSimulatorKey = signal<AsyncRaceSimulatorKey>('no-guard');
   selectedEqualityPredictorKey = signal<EqualityPredictorKey>('string-number');
+  selectedNgRxSelectorTraceKey = signal<NgRxSelectorTraceKey>('root-state');
   returnValueSimulatorOptions = RETURN_VALUE_SIMULATOR_OPTIONS;
   asyncRaceSimulatorOptions = ASYNC_RACE_SIMULATOR_OPTIONS;
   equalityPredictorScenarios = EQUALITY_PREDICTOR_SCENARIOS;
+  ngrxSelectorTraceOptions = NGRX_SELECTOR_TRACE_OPTIONS;
   solved = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
@@ -469,6 +530,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackByAsyncRaceSimulatorOption = (_: number, option: AsyncRaceSimulatorOption): string => option.key;
   trackByEqualityPredictorScenario = (_: number, option: EqualityPredictorScenario): string => option.key;
   trackByEqualityPredictorResult = (_: number, result: EqualityPredictorResult): string => result.model;
+  trackByNgRxSelectorTraceOption = (_: number, option: NgRxSelectorTraceOption): string => option.key;
 
   isStackedMobileTable(block: BlockList | null | undefined): boolean {
     const columns = block?.columns;
@@ -558,12 +620,25 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return EQUALITY_PREDICTOR_SCENARIOS.find((option) => option.key === key) ?? EQUALITY_PREDICTOR_SCENARIOS[0];
   });
 
+  selectedNgRxSelectorTraceOption = computed<NgRxSelectorTraceOption>(() => {
+    const key = this.selectedNgRxSelectorTraceKey();
+    return NGRX_SELECTOR_TRACE_OPTIONS.find((option) => option.key === key) ?? NGRX_SELECTOR_TRACE_OPTIONS[0];
+  });
+
   showEqualityPredictor(q?: Question | null): boolean {
     return q?.id === EQUALITY_PREDICTOR_QUESTION_ID;
   }
 
   selectEqualityPredictor(key: EqualityPredictorKey): void {
     this.selectedEqualityPredictorKey.set(key);
+  }
+
+  showNgRxSelectorTrace(q?: Question | null): boolean {
+    return q?.id === NGRX_SELECTOR_TRACE_QUESTION_ID;
+  }
+
+  selectNgRxSelectorTrace(key: NgRxSelectorTraceKey): void {
+    this.selectedNgRxSelectorTraceKey.set(key);
   }
 
   showAsyncRaceSimulator(q?: Question | null): boolean {
@@ -1062,6 +1137,80 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private articleStructuredDataExtensions(q: Question): Record<string, any> {
+    if (q.id === 'ngrx-selectors-memoization-derived-state-performance') {
+      return {
+        articleSection: 'Angular state management',
+        about: [
+          { '@type': 'Thing', name: 'NgRx selectors' },
+          { '@type': 'Thing', name: 'selector memoization' },
+          { '@type': 'Thing', name: 'derived state' },
+          { '@type': 'Thing', name: 'immutable reducer outputs' },
+        ],
+        mentions: [
+          { '@type': 'Thing', name: 'createSelector' },
+          { '@type': 'Thing', name: 'createFeatureSelector' },
+          { '@type': 'Thing', name: 'feature selector' },
+          { '@type': 'Thing', name: 'entity/base selectors' },
+          { '@type': 'Thing', name: 'view model selector' },
+          { '@type': 'Thing', name: 'projector function' },
+          { '@type': 'Thing', name: 'stable references' },
+          { '@type': 'Thing', name: 'root state selection' },
+          { '@type': 'Thing', name: 'filter/sort/map derivation' },
+          { '@type': 'Thing', name: 'selector factory' },
+          { '@type': 'Thing', name: 'projector tests' },
+          { '@type': 'Thing', name: 'selector purity' },
+          { '@type': 'Thing', name: 'component contract' },
+          { '@type': 'Thing', name: 'AsyncPipe' },
+          { '@type': 'Thing', name: 'selector projector' },
+          { '@type': 'Thing', name: 'memoization trace' },
+          { '@type': 'Thing', name: 'NgRx official docs' },
+          { '@type': 'Thing', name: 'source reference' },
+          { '@type': 'Thing', name: 'projector unit test' },
+          { '@type': 'Thing', name: 'FrontendAtlas review note' },
+          { '@type': 'Thing', name: 'review evidence' },
+          { '@type': 'Thing', name: 'editorial policy' },
+          { '@type': 'Thing', name: 'interactive memoization trace' },
+          { '@type': 'Thing', name: 'selector recomputation simulator' },
+          { '@type': 'Thing', name: 'projector run visualization' },
+        ],
+        hasPart: [
+          { '@type': 'WebPageElement', name: 'Interview quick answer' },
+          { '@type': 'WebPageElement', name: 'Memoized read model' },
+          { '@type': 'WebPageElement', name: 'Worked example' },
+          { '@type': 'WebPageElement', name: 'Failure pattern' },
+          { '@type': 'WebPageElement', name: 'Composed selector flow' },
+          { '@type': 'WebPageElement', name: 'Memoization behavior' },
+          { '@type': 'WebPageElement', name: 'Selector purity and projector tests' },
+          { '@type': 'WebPageElement', name: 'Testable proof' },
+          { '@type': 'WebPageElement', name: 'Projector run trace' },
+          { '@type': 'WebPageElement', name: 'Selector performance pitfalls' },
+          { '@type': 'WebPageElement', name: 'Selector factory boundary' },
+          { '@type': 'WebPageElement', name: 'Selector review checklist' },
+          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
+          { '@type': 'WebPageElement', name: 'Source check' },
+          { '@type': 'WebPageElement', name: 'Selector memoization trace simulator' },
+          { '@type': 'WebPageElement', name: 'Interview summary' },
+        ],
+        citation: [
+          {
+            '@type': 'WebPage',
+            name: 'NgRx Selectors',
+            url: 'https://ngrx.io/guide/store/selectors',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'NgRx createSelector API',
+            url: 'https://ngrx.io/api/store/createSelector',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'FrontendAtlas Editorial Policy',
+            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
+          },
+        ],
+      };
+    }
+
     if (q.id === 'js-equality-vs-strict-equality') {
       return {
         articleSection: 'JavaScript equality and coercion',
@@ -1260,6 +1409,21 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private questionStructuredData(q: Question, canonical: string): Record<string, any> | null {
+    if (q.id === 'ngrx-selectors-memoization-derived-state-performance') {
+      return {
+        '@type': 'Question',
+        '@id': `${canonical}#question`,
+        name: q.title,
+        url: canonical,
+        inLanguage: 'en',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            'NgRx selectors are memoized, pure projection functions that turn store state into reusable derived state. They stay fast when reducers preserve immutable references, components select focused view-model selectors instead of rebuilding data locally, and projector unit tests prove the derived contract without Store setup.',
+        },
+      };
+    }
+
     if (q.id !== 'js-equality-vs-strict-equality') return null;
 
     return {
@@ -2460,6 +2624,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     // Inline backticks + **bold**
+    html = this.renderRawAnchorLinks(html);
     html = this.renderMarkdownLinks(html);
     html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -2507,24 +2672,104 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private renderMarkdownLinks(source: string): string {
-    const safeHref = (href: string): string | null => {
-      const normalized = href.trim();
-      if (/^(?:https?:\/\/|\/(?!\/)|#)[^\s"'<>]+$/i.test(normalized)) return normalized;
-      return null;
-    };
-    const escapeAttr = (value: string): string =>
-      value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
     return source.replace(
       /\[([^\]\n]+)\]\(([^)\s]+)\)/g,
       (match: string, label: string, rawHref: string) => {
-        const href = safeHref(rawHref);
-        if (!href) return match;
-        const isExternal = /^https?:\/\//i.test(href);
-        const externalAttrs = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
-        return `<a href="${escapeAttr(href)}"${externalAttrs}>${label}</a>`;
+        return this.buildSafeLink(rawHref, label) || match;
       }
     );
+  }
+
+  private renderRawAnchorLinks(source: string): string {
+    return source.replace(
+      /&lt;a\b([^<>]*?)&gt;([\s\S]*?)&lt;\/a&gt;/gi,
+      (match: string, rawAttrs: string, labelHtml: string) => {
+        const attrs = this.parseRawAnchorAttributes(rawAttrs);
+        if (!attrs) return match;
+        const href = attrs.get('href');
+        if (!href) return match;
+
+        return this.buildSafeLink(href, labelHtml, {
+          target: attrs.get('target'),
+          rel: attrs.get('rel'),
+        }) || match;
+      }
+    );
+  }
+
+  private parseRawAnchorAttributes(rawAttrs: string): Map<string, string> | null {
+    const allowed = new Set(['href', 'target', 'rel']);
+    const attrs = new Map<string, string>();
+    let index = 0;
+
+    while (index < rawAttrs.length) {
+      const rest = rawAttrs.slice(index);
+      if (!rest.trim()) break;
+
+      const match = rest.match(/^\s+([a-zA-Z][\w:-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+)))?/);
+      if (!match) return null;
+
+      const name = match[1].toLowerCase();
+      if (!allowed.has(name)) return null;
+
+      attrs.set(name, match[2] ?? match[3] ?? match[4] ?? '');
+      index += match[0].length;
+    }
+
+    return rawAttrs.slice(index).trim() ? null : attrs;
+  }
+
+  private buildSafeLink(
+    rawHref: string,
+    labelHtml: string,
+    options: { target?: string; rel?: string } = {}
+  ): string | null {
+    const href = this.safeLinkHref(rawHref);
+    if (!href) return null;
+
+    const target = this.safeLinkTarget(options.target, /^https?:\/\//i.test(href));
+    const rel = this.safeLinkRel(options.rel, target);
+    const targetAttr = target ? ` target="${this.escapeHtmlAttr(target)}"` : '';
+    const relAttr = rel ? ` rel="${this.escapeHtmlAttr(rel)}"` : '';
+
+    return `<a href="${this.escapeHtmlAttr(href)}"${targetAttr}${relAttr}>${labelHtml}</a>`;
+  }
+
+  private safeLinkHref(rawHref: string): string | null {
+    const normalized = this.decodeHtmlEntities(rawHref).trim();
+    if (/^(?:https?:\/\/|\/(?!\/)|#)[^\s"'<>]+$/i.test(normalized)) return normalized;
+    return null;
+  }
+
+  private safeLinkTarget(rawTarget: string | undefined, isExternal: boolean): string {
+    const normalized = this.decodeHtmlEntities(rawTarget || '').trim();
+    if (!normalized) return isExternal ? '_blank' : '';
+    if (/^_(?:blank|self|parent|top)$/i.test(normalized)) return normalized.toLowerCase();
+    if (/^[a-z][\w-]*$/i.test(normalized)) return normalized;
+    return isExternal ? '_blank' : '';
+  }
+
+  private safeLinkRel(rawRel: string | undefined, target: string): string {
+    const values = this.decodeHtmlEntities(rawRel || '')
+      .split(/\s+/)
+      .map((value) => value.trim())
+      .filter((value) => /^[a-z0-9-]+$/i.test(value));
+    const rel = new Set(values);
+
+    if (target.toLowerCase() === '_blank') {
+      rel.add('noopener');
+      rel.add('noreferrer');
+    }
+
+    return Array.from(rel).join(' ');
+  }
+
+  private escapeHtmlAttr(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
   private renderMarkdownLists(source: string): string {

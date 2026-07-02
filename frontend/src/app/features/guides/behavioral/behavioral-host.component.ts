@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
@@ -41,12 +41,13 @@ type GuideArticleInputs = {
         <ng-container #vc></ng-container>
         <app-offline-banner></app-offline-banner>`
 })
-export class BehavioralHostComponent implements OnDestroy {
+export class BehavioralHostComponent implements AfterViewInit, OnDestroy {
     @ViewChild('vc', { read: ViewContainerRef, static: true }) vc!: ViewContainerRef;
 
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private seo = inject(SeoService);
+    private hostRef = inject(ElementRef<HTMLElement>);
     private sub?: Subscription;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     protected readonly showShellHeading = signal(!this.isBrowser);
@@ -65,6 +66,10 @@ export class BehavioralHostComponent implements OnDestroy {
             });
     }
     ngOnDestroy() { this.sub?.unsubscribe(); }
+
+    ngAfterViewInit() {
+        if (this.isBrowser) this.hideShellHeading();
+    }
 
     private toTitle(slug: string) {
         return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
@@ -118,12 +123,21 @@ export class BehavioralHostComponent implements OnDestroy {
             ref.instance.next = next;
             ref.instance.readerPromise = current.seo?.readerPromise || null;
             ref.instance.leftNav = leftNav;
-            this.showShellHeading.set(false);
+            this.hideShellHeading();
         } catch {
             return;
         }
 
         if (this.isBrowser) window.scrollTo({ top: 0 });
+    }
+
+    private hideShellHeading() {
+        this.showShellHeading.set(false);
+        if (!this.isBrowser) return;
+
+        queueMicrotask(() => {
+            this.hostRef.nativeElement.querySelector('.guide-ssr-shell')?.remove();
+        });
     }
 
     private go404() {

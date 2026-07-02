@@ -7618,20 +7618,20 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Selectors are the memoized read layer of an NgRx app. Their value is not magical rerender prevention, but reusable derived state that stays cheap as long as reducers preserve immutable input references.",
+    "description": "NgRx selectors are memoized projections for derived state; this answer traces four selector boundaries, shows a projector test, and flags the mistakes that cause component churn.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Memoized read model</strong><br><br>Selectors are not just getters. They are the memoized <strong>read layer</strong> of an NgRx app: compose feature state into a view model once, reuse the last result while inputs are unchanged, and keep transformation logic out of components. The performance value comes from derived-state reuse, not from magical rerender prevention."
+          "text": "## Memoized read model\n\nSelectors are not just getters. They are the memoized read layer of an NgRx app: compose feature state into a view model once, reuse the last result while inputs are unchanged, and keep transformation logic out of components. The performance value comes from derived-state reuse, not from magical rerender prevention."
         },
         {
           "type": "text",
-          "text": "<strong>Worked example</strong><br><br>Start with a feature selector, then compose small selectors into a final view model like filtered todos plus visible counts. If the input references stay stable, the memoized selector can reuse the last result instead of recalculating the whole projection every time."
+          "text": "## Worked example\n\nStart with a feature selector, then compose small selectors into a final view model like filtered todos plus visible counts. If the input references stay stable, the memoized selector can reuse the last result instead of recalculating the whole projection every time."
         },
         {
           "type": "text",
-          "text": "<strong>Failure pattern</strong><br><ul><li>If reducers mutate state in place, selector inputs keep the same reference and memoization expectations break.</li><li>Selectors work best when reducers stay immutable and composition stays small.</li><li>The goal is reusable derived state, not hiding bad state updates.</li></ul>"
+          "text": "## Failure pattern\n\n- If reducers mutate state in place, selector inputs keep the same reference and memoization expectations break.\n- Selectors work best when reducers stay immutable and composition stays small.\n- The goal is reusable derived state, not hiding bad state updates."
         },
         {
           "type": "list",
@@ -7701,6 +7701,59 @@
           "caption": "How NgRx selector memoization actually works"
         },
         {
+          "type": "text",
+          "text": "## Selector purity and projector tests\n\nA selector projector should be a pure function: no services, router calls, dates, random values, in-place mutation, or hidden component state. Test expensive derivation at the projector boundary with `selectProductsVm.projector(items, loading, error)` so failures stay about transformation logic, not Store setup. The testable proof below is the line between a selector that only sounds memoized and a selector contract a component can trust through `store.select(selectProductsVm)` or the `AsyncPipe`."
+        },
+        {
+          "type": "text",
+          "text": "## Testable proof\n\nA focused projector test proves the selector's UI contract without bootstrapping Angular TestBed or the NgRx Store."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "describe('selectProductsVm projector', () => {\n  it('builds the component view model from selected inputs', () => {\n    const items = [\n      { id: 'p1', name: 'Keyboard', price: 80 },\n      { id: 'p2', name: 'Monitor', price: 200 }\n    ];\n\n    const vm = selectProductsVm.projector(items, false, null);\n\n    expect(vm).toEqual({\n      items,\n      loading: false,\n      error: null,\n      total: 2\n    });\n  });\n});"
+        },
+        {
+          "type": "text",
+          "text": "## Projector run trace\n\nUse this trace when reviewing whether a selector is actually benefiting from memoization."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Approach",
+            "Unrelated update",
+            "Projector trace",
+            "Review signal"
+          ],
+          "rows": [
+            [
+              "Root-state mapping in component",
+              "Root store emits",
+              "Runs and rebuilds VM",
+              "High churn; logic belongs in selectors"
+            ],
+            [
+              "Broad feature selector",
+              "Same feature reference changes",
+              "Runs even if only a sibling field changed",
+              "Split input selectors"
+            ],
+            [
+              "Composed atomic selectors",
+              "Only unrelated feature changes",
+              "Does not run",
+              "Good memoization boundary"
+            ],
+            [
+              "VM selector over focused inputs",
+              "Only selected inputs change",
+              "Runs once and returns UI-ready shape",
+              "Best component contract"
+            ]
+          ],
+          "caption": "Projector run trace: how selector boundaries affect recomputation"
+        },
+        {
           "type": "code",
           "language": "typescript",
           "code": "// ❌ Pitfall: selecting whole state and rebuilding arrays/objects in component\n@Component({ selector: 'app-products', template: `...` })\nexport class ProductsComponent {\n  // broad selection + local mapping each emission\n  readonly vm$ = this.store.select(state => state).pipe(\n    map(state => {\n      const items = Object.values(state.products.entities)\n        .filter(p => p.name.includes(state.products.query))\n        .sort((a, b) => a.name.localeCompare(b.name));\n\n      return {\n        items: [...items], // new object/array every time\n        total: items.length,\n        loading: state.products.loading\n      };\n    })\n  );\n}\n\n// ✅ Better: keep composition in selectors, component only selects VM\n@Component({ selector: 'app-products', template: `...` })\nexport class ProductsComponent {\n  readonly vm$ = this.store.select(selectProductsVm);\n}"
@@ -7738,7 +7791,23 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br>NgRx selectors are a memoized read-model layer, not just property accessors. Compose selectors from feature state to entities to derived filtered/sorted data, then expose a final view model selector to components. This improves Angular selector performance, reduces component complexity, and keeps state logic reusable."
+          "text": "## Selector factory boundary\n\nUse a selector factory such as `selectProductById(id)` when a component needs one entity keyed by a route param or input id. Do not create a new factory selector on every change detection pass; create it once for a stable id, then select it. Prefer this boundary over older props-style selectors because each factory instance owns its memoized arguments."
+        },
+        {
+          "type": "text",
+          "text": "## Selector review checklist\n\n- Is each input selector as narrow as possible?\n- Is derived data kept out of Store state?\n- Is the projector pure and free of services, time, random values, and mutation?\n- Does the component avoid local filter/sort/map after `store.select`?\n- Is any selector factory created only for a stable parameter?\n- Does at least one projector test cover the expensive derivation?"
+        },
+        {
+          "type": "text",
+          "text": "## FrontendAtlas review note\n\nWhen we review an NgRx selector answer, we look for a concrete boundary: reducers preserve immutable references, input selectors stay narrow, derived state stays out of the Store, and the component receives a final VM selector instead of rebuilding arrays locally. A strong answer also names the failure mode: broad root-state selection and component-local filter/sort/map make memoization look present while projector work still churns."
+        },
+        {
+          "type": "text",
+          "text": "## Source check\n\nCompare this answer with the official NgRx <a href=\"https://ngrx.io/guide/store/selectors\" target=\"_blank\" rel=\"noopener\">selectors guide</a> and <a href=\"https://ngrx.io/api/store/createSelector\" target=\"_blank\" rel=\"noopener\"><code>createSelector</code> API</a>. FrontendAtlas content is maintained under the <a href=\"/legal/editorial-policy\">Editorial Policy</a>, with corrections handled through the page issue flow."
+        },
+        {
+          "type": "text",
+          "text": "## Interview summary\n\nNgRx selectors are a memoized read-model layer, not just property accessors. Compose selectors from feature state to entities to derived filtered/sorted data, then expose a final view model selector to components. This reduces component complexity and keeps state logic reusable."
         }
       ]
     },
@@ -7753,8 +7822,8 @@
     ],
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "NgRx selectors and memoization: derived state, composition, and immutable inputs",
-      "description": "Selectors compose feature state into memoized read models. Their performance value depends on immutable reducer outputs and reusable derived state, not on magic."
+      "title": "NgRx selector memoization: why projectors rerun",
+      "description": "Trace 4 NgRx selector memoization paths, test projector logic, and avoid common Angular component churn mistakes with a focused interview answer."
     },
     "incidentCard": {
       "title": "Selector Memoization Check",
