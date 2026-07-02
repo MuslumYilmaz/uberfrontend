@@ -2601,7 +2601,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-02",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-clickable-image"
   },
@@ -2897,7 +2897,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-12",
+    "updatedAt": "2026-07-02",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-semantic-elements"
   },
@@ -3110,7 +3110,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-07-02",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-href-attribute"
   },
@@ -3300,7 +3300,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-07-02",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-a-tag"
   },

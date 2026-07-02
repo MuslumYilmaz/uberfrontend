@@ -825,7 +825,7 @@
             [
               "<nav>",
               "Defines a section containing navigation links.",
-              "<nav><a href='/home'>Home</a></nav>"
+              "<nav><a href='/'>Home</a></nav>"
             ],
             [
               "<main>",
@@ -904,7 +904,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-12",
+    "updatedAt": "2026-07-02",
     "incidentCard": {
       "title": "Semantic Structure Check",
       "scenario": "A teammate builds the whole page with nested `div`s and says, \"Semantic tags are mostly style preferences. Search engines and assistive tools can figure the page out anyway, so using `header`, `main`, `nav`, or `article` does not really change much.\" Another teammate says, \"Those tags communicate structure on purpose. They make the document easier for screen readers, crawlers, and developers to understand, which improves accessibility, SEO, and maintainability.\" Which explanation is better?",
@@ -1154,7 +1154,7 @@
           "rows": [
             [
               "Internal page",
-              "<code>&lt;a href=\"/about\"&gt;About&lt;/a&gt;</code>"
+              "<code>&lt;a href=\"/coding\"&gt;Coding practice&lt;/a&gt;</code>"
             ],
             [
               "External site",
@@ -1215,7 +1215,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-07-02",
     "incidentCard": {
       "title": "Navigation Primitive Check",
       "scenario": "A teammate wires the sidebar with plain `div`s and click handlers, saying, \"An anchor tag is basically just a styling choice. If JavaScript can navigate, we do not need real links.\" Another teammate says, \"If the element performs navigation, `<a>` is the right primitive because it carries link semantics, supports browser behaviors like open-in-new-tab and history, and uses `href` as the destination.\" Which explanation is better?",
@@ -1295,7 +1295,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Absolute vs. Relative URLs</strong>\n\nThe `href` value can be **absolute** or **relative**:\n\n- **Absolute URL:** Points to an external website with the full address.\n``<code>html\n&lt;a href=\"https://developer.mozilla.org/\"&gt;MDN Docs&lt;/a&gt;\n</code>``\n\n- **Relative URL:** Points to a resource relative to the current page’s location.\n``<code>html\n&lt;a href=\"/about.html\"&gt;About Us&lt;/a&gt;\n</code>``"
+          "text": "<strong>Absolute vs. Relative URLs</strong>\n\nThe `href` value can be **absolute** or **relative**:\n\n- **Absolute URL:** Points to an external website with the full address.\n``<code>html\n&lt;a href=\"https://developer.mozilla.org/\"&gt;MDN Docs&lt;/a&gt;\n</code>``\n\n- **Relative URL:** Points to a resource relative to the current page’s location.\n``<code>html\n&lt;a href=\"/coding\"&gt;Coding Practice&lt;/a&gt;\n</code>``"
         },
         {
           "type": "text",
@@ -1328,7 +1328,7 @@
       "basics",
       "anchor"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-07-02",
     "incidentCard": {
       "title": "Destination Wiring Check",
       "scenario": "A teammate says, \"The anchor tag already tells the browser this is a link. The `href` value is optional detail, so we can add click handlers later and still consider it a proper hyperlink.\" Another teammate says, \"That misses the core role of `href`. It is the destination reference that tells the browser where the link or resource points. Without it, you lose the real navigation target and a lot of expected browser behavior.\" Which explanation is better?",
@@ -2408,7 +2408,7 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<a href=\"/home\" class=\"img-link\">\n  <img src=\"home-icon.png\" alt=\"Home\">\n</a>\n\n<style>\n  .img-link img {\n    width: 80px;\n    border-radius: 8px;\n    transition: transform 0.2s;\n  }\n  .img-link img:hover {\n    transform: scale(1.05);\n  }\n</style>"
+          "code": "<a href=\"/\" class=\"img-link\">\n  <img src=\"home-icon.png\" alt=\"Home\">\n</a>\n\n<style>\n  .img-link img {\n    width: 80px;\n    border-radius: 8px;\n    transition: transform 0.2s;\n  }\n  .img-link img:hover {\n    transform: scale(1.05);\n  }\n</style>"
         },
         {
           "type": "text",
@@ -2437,7 +2437,7 @@
       "anchor",
       "accessibility"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-02",
     "incidentCard": {
       "title": "Linked Image Accessibility Check",
       "scenario": "A teammate says, \"We can make the image clickable by adding `href` to the `<img>` tag itself. The anchor is optional, and the `alt` text can just say `image` because users will see where it goes.\" Another teammate says, \"A clickable image should be an `<img>` wrapped inside an `<a>`. It still behaves like a link, so the destination belongs on `href`, the image needs meaningful `alt` text, and if it opens a new tab we should think about `rel` as well.\" Which explanation is better?",
