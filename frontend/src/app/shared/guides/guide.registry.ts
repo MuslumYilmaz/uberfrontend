@@ -133,12 +133,12 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             readerPromise: 'Use this frontend interview preparation guide to understand the 2026 interview loop, pick the right practice roadmap, and move into coding, UI, system design, and behavioral drills with clear next steps.',
             publishedAt: '2025-08-30',
-            updatedAt: '2026-06-04',
+            updatedAt: '2026-06-18',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
-            factCheckedAt: '2026-06-04',
+            factCheckedAt: '2026-06-18',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -637,13 +637,13 @@ export const PLAYBOOK: GuideEntry[] = [
                 ],
             },
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-23',
+            updatedAt: '2026-06-24',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
             readerPromise: 'Use this component API design interview practice map to define React props, events, a decision matrix, interactive API surface trade-offs, TypeScript guardrails, library patterns, accessibility contracts, styling surfaces, and drill-reviewed follow-ups.',
-            factCheckedAt: '2026-06-23',
+            factCheckedAt: '2026-06-24',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -1238,12 +1238,12 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Use this frontend system design interview framework to structure a 45-minute answer, walk through autocomplete, compare against a rubric, and move into direct FrontendAtlas practice prompts.',
             uniqueAngle: 'Frontend-specific answer template with autocomplete API/state walkthrough, stale response handling, accessibility states, rubric, and direct practice map.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-10',
+            updatedAt: '2026-06-19',
             author: {
                 type: 'Organization',
                 name: 'FrontendAtlas Team',
             },
-            factCheckedAt: '2026-06-10',
+            factCheckedAt: '2026-06-19',
             reviewedBy: 'FrontendAtlas',
         },
         load: () =>
@@ -1532,7 +1532,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this intro to understand what frontend system design interviews test, how frontend scope differs from backend design, which signals interviewers score, and when to move into RADIO and practice prompts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-02',
+            updatedAt: '2026-06-19',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-intro.component')
@@ -1633,7 +1633,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this 5-step frontend system design answer method to structure a 45-minute interview before going deeper with the RADIO framework.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-05-28',
+            updatedAt: '2026-06-19',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-framework')
@@ -1783,7 +1783,7 @@ export const SYSTEM: GuideEntry[] = [
             },
             readerPromise: 'Use this frontend system design requirements checklist to turn clarifying questions into a scope box, functional and non-functional requirements, success metrics, and a clean architecture handoff.',
             publishedAt: '2026-02-18',
-            updatedAt: '2026-06-02',
+            updatedAt: '2026-06-19',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-requirements')
@@ -2044,7 +2044,7 @@ export const SYSTEM: GuideEntry[] = [
             searchIntent: 'Find an interview-focused frontend system design performance optimization guide that explains budgets, Core Web Vitals, bottleneck diagnosis, scenario trade-offs, rollout, and validation.',
             readerPromise: 'Use this performance optimization guide to explain Core Web Vitals, bottleneck diagnosis, top-two prioritization, trade-offs, observability, rollout, and interview-ready scripts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-02',
+            updatedAt: '2026-06-19',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-performance')
@@ -2235,7 +2235,7 @@ export const SYSTEM: GuideEntry[] = [
             readerPromise: 'Use this final review checklist to catch missing requirements, architecture, state, API, UI state, accessibility, performance, trade-off, and closing evidence.',
             uniqueAngle: 'Frontend-specific final pass with pass/warn/fail checks, timed review, scenario prompts, and links back to rubric, pitfalls, performance, and RADIO.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-02',
+            updatedAt: '2026-06-19',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-checklist')

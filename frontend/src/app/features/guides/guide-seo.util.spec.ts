@@ -126,7 +126,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
-    expect(article?.dateModified).toBe('2026-06-04T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -701,7 +701,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend System Design Interview Framework | 45-Minute Template');
-    expect(article?.dateModified).toBe('2026-06-10T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -955,7 +955,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Component API Design for Frontend Interviews');
-    expect(article?.dateModified).toBe('2026-06-23T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-24T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Team',
@@ -1115,7 +1115,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design requirements checklist');
     expect(article?.keywords).toContain('functional and non-functional requirements frontend system design');
     expect(article?.keywords).toContain('frontend system design architecture handoff');
@@ -1363,7 +1363,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design performance optimization');
     expect(article?.keywords).toContain('frontend performance budget interview');
     expect(article?.keywords).toContain('Core Web Vitals interview');
@@ -1519,7 +1519,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview checklist');
     expect(article?.keywords).toContain('frontend system design final review');
     expect(faqPage?.name).toBe('Frontend system design interview checklist FAQ');
@@ -1564,7 +1564,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design 5 step method');
     expect(faqPage?.name).toBe('Frontend system design 5-step answer method FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);
@@ -1606,7 +1606,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.keywords).toContain('what frontend system design interviews test');
     expect(faqPage?.name).toBe('Frontend system design interview overview FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);

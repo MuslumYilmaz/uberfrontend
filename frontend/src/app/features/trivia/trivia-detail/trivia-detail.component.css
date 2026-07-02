@@ -532,6 +532,9 @@ html, body { height: 100%; background: var(--uf-bg); }
 }
 
 .selector-trace__visual {
+  --selector-trace-hot: var(--uf-badge-amber-b);
+  --selector-trace-cached: var(--uf-learning-structured-accent);
+
   display: grid;
   grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) 34px minmax(0, 1fr);
   align-items: stretch;
@@ -551,13 +554,13 @@ html, body { height: 100%; background: var(--uf-bg); }
 }
 
 .selector-trace__node.is-hot {
-  border-color: color-mix(in srgb, #f59e0b 58%, var(--uf-border-subtle));
-  background: color-mix(in srgb, #f59e0b 10%, var(--uf-surface));
+  border-color: color-mix(in srgb, var(--selector-trace-hot) 58%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--selector-trace-hot) 10%, var(--uf-surface));
 }
 
 .selector-trace__node.is-cached {
-  border-color: color-mix(in srgb, #22c55e 52%, var(--uf-border-subtle));
-  background: color-mix(in srgb, #22c55e 9%, var(--uf-surface));
+  border-color: color-mix(in srgb, var(--selector-trace-cached) 52%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--selector-trace-cached) 9%, var(--uf-surface));
 }
 
 .selector-trace__label {
@@ -586,13 +589,13 @@ html, body { height: 100%; background: var(--uf-bg); }
   position: relative;
   height: 2px;
   border-radius: 999px;
-  background: color-mix(in srgb, #22c55e 58%, var(--uf-border-subtle));
-  color: color-mix(in srgb, #22c55e 72%, var(--uf-text-primary));
+  background: color-mix(in srgb, var(--selector-trace-cached) 58%, var(--uf-border-subtle));
+  color: color-mix(in srgb, var(--selector-trace-cached) 72%, var(--uf-text-primary));
 }
 
 .selector-trace__connector.is-hot {
-  background: color-mix(in srgb, #f59e0b 68%, var(--uf-border-subtle));
-  color: color-mix(in srgb, #f59e0b 78%, var(--uf-text-primary));
+  background: color-mix(in srgb, var(--selector-trace-hot) 68%, var(--uf-border-subtle));
+  color: color-mix(in srgb, var(--selector-trace-hot) 78%, var(--uf-text-primary));
 }
 
 .selector-trace__connector::after {
