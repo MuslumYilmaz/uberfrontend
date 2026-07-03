@@ -417,6 +417,36 @@ describe('POST /api/activity/complete', () => {
         );
     });
 
+    test('derives debug completion difficulty from the catalog when client omits difficulty', async () => {
+        const user = await User.create({
+            email: 'debug-catalog-difficulty@example.com',
+            username: 'debug_catalog_difficulty_user',
+            passwordHash: 'hash',
+        });
+
+        const res = await request(app)
+            .post('/api/activity/complete')
+            .set('Authorization', authHeader(user._id))
+            .send({
+                kind: 'debug',
+                tech: 'javascript',
+                itemId: 'js-debug-off-by-one',
+            });
+
+        expect(res.status).toBe(200);
+        expect(Number(res.body?.xpAwarded || 0)).toBe(10);
+        expect(res.body?.solvedQuestionIds || []).toContain('js-debug-off-by-one');
+
+        const completion = await ActivityCompletion.findOne({
+            userId: user._id,
+            kind: 'debug',
+            itemId: 'js-debug-off-by-one',
+        }).lean();
+
+        expect(completion?.difficultySnapshot).toBe('easy');
+        expect(Number(completion?.xpAwarded || 0)).toBe(10);
+    });
+
     test('incident completion awards xp and weekly credit without mutating solvedQuestionIds', async () => {
         const user = await User.create({
             email: 'incident-complete@example.com',

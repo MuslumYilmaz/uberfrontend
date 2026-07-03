@@ -30,6 +30,7 @@ export class SolvedQuestionsService {
 
           for (const q of coding || []) map.set(q.id, this.rowFrom(q, 'coding'));
           for (const q of trivia || []) map.set(q.id, this.rowFrom(q, 'trivia'));
+          for (const q of debug || []) map.set(q.id, this.rowFrom(q, 'debug'));
 
           for (const q of systemDesign || []) {
             if (!q) continue;
@@ -67,7 +68,7 @@ export class SolvedQuestionsService {
     );
   }
 
-  private rowFrom(q: MixedQuestionListItem, kind: 'coding' | 'trivia'): SolvedQuestion {
+  private rowFrom(q: MixedQuestionListItem | MixedQuestion, kind: 'coding' | 'trivia' | 'debug'): SolvedQuestion {
     return { id: q.id, title: q.title, tech: q.tech, kind };
   }
 }

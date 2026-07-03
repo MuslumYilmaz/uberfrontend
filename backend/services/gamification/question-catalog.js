@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const TECHS = ['javascript', 'react', 'angular', 'vue', 'html', 'css'];
-const KINDS = ['coding', 'trivia'];
+const KINDS = ['coding', 'trivia', 'debug'];
 const CATALOG_BASE_DIR = path.resolve(__dirname, '../../../cdn/questions');
 
 let cache = null;

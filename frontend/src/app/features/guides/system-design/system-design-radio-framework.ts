@@ -386,7 +386,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
       <fa-guide-shell
-      title="RADIO Framework for Frontend System Design: R/A/D/I/O"
+      title="RADIO Framework: Frontend System Design Interview Template"
+      subtitle="A practical RADIO template for frontend system design interviews"
       [minutes]="20"
       [tags]="['system design', 'answer template', 'radio framework']"
       [prev]="prev"
@@ -397,21 +398,23 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <section class="answer-asset" aria-label="Frontend system design interview answer asset">
         <h2 id="frontend-system-design-interview-answer-template">RADIO = Requirements, Architecture, Data, Interface, Optimizations</h2>
         <p>
-          RADIO stands for <strong>Requirements, Architecture, Data, Interface, and Optimizations</strong>.
-          In frontend system design interviews, it gives you a sequence for turning an open UI architecture
-          prompt into scope, system shape, data contracts, interface behavior, and optimization trade-offs.
+          RADIO is a frontend system design interview framework: <strong>Requirements, Architecture, Data,
+          Interface, and Optimizations</strong>. Use it to turn a broad prompt into a complete answer path before
+          drawing details.
         </p>
         <p>
-          Copy this 45-minute frontend system design RADIO answer script after the meaning is clear.
-          Keep one user flow as the thread, then use the timeline, diagram checklist, and examples to adapt it out loud.
+          Use it when the prompt is broad, like "design autocomplete", "design a news feed", or "design chat".
+          The goal is not to memorize an acronym. The goal is to give the interviewer a structured answer with
+          scope, architecture, data contracts, UI behavior, and measurable trade-offs.
         </p>
-        <div class="template-includes" aria-label="Template includes">
-          <p class="template-includes__title">Template includes</p>
+        <div class="template-includes" aria-label="You'll get">
+          <p class="template-includes__title">You'll get</p>
           <ul class="template-includes__links">
-            <li><a href="#frontend-system-design-interview-answer-template">RADIO meaning</a></li>
-            <li><a href="#45-minute-interview-timeline">45-minute timeline</a></li>
+            <li><a href="#frontend-system-design-interview-answer-template">The meaning of RADIO</a></li>
+            <li><a href="#45-minute-interview-timeline">A 45-minute answer script</a></li>
             <li><a href="#radio-requirements">Diagram checklist</a></li>
-            <li><a href="#run-radio-on-autocomplete-news-feed-and-chat">Examples</a></li>
+            <li><a href="#run-radio-on-autocomplete-news-feed-and-chat">Autocomplete, news feed, and chat examples</a></li>
+            <li><a href="#common-follow-up-patterns">Common follow-up patterns</a></li>
           </ul>
         </div>
         <pre class="answer-template"><code>Opening:
@@ -451,19 +454,27 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         </div>
       </section>
 
-      <h2>If You Remember Only One Thing (60 seconds)</h2>
+      <h2 id="quick-answer">Quick answer</h2>
       <p>
-        RADIO is a practical <strong>frontend system design interview answer template</strong>, not just an acronym to
-        memorize. Use the RADIO method when you need to move from requirements to architecture, data model, interface,
-        and optimizations without rambling. In a 45-minute or 60-minute interview, Requirements defines scope,
-        Architecture explains the system shape, Data model covers contracts and state, Interface maps user behavior,
-        and Optimizations closes with performance, reliability, observability, security, and trade-offs.
+        RADIO helps you structure a frontend system design interview answer in five passes:
+      </p>
+      <ul class="mini-checklist">
+        <li><strong>Requirements:</strong> clarify scope, users, constraints, and success metrics.</li>
+        <li><strong>Architecture:</strong> sketch the client-side structure and data flow.</li>
+        <li><strong>Data:</strong> define core entities, API contracts, cache shape, and state ownership.</li>
+        <li><strong>Interface:</strong> describe UI boundaries, component responsibilities, loading, error, and accessibility states.</li>
+        <li><strong>Optimizations:</strong> discuss performance, resilience, observability, and trade-offs.</li>
+      </ul>
+
+      <h2>When not to overuse RADIO</h2>
+      <p>
+        Do not treat RADIO as a script you recite word-for-word. Use it as a thinking order. If the interviewer
+        asks a narrow follow-up, answer directly instead of forcing every response back into the full framework.
       </p>
 
-      <h2 id="radio-approach-requirements-architecture-data-interface-opti">RADIO approach: Requirements, Architecture, Data, Interface, Optimizations</h2>
+      <h2 id="radio-approach-requirements-architecture-data-interface-opti">What RADIO means</h2>
       <p>
-        Use this requirements architecture data interface optimizations template when you need the short version:
-        each RADIO step has a purpose, a visible output, and a signal the interviewer can score.
+        Each RADIO step has a purpose, a visible output, and a signal the interviewer can score.
       </p>
       <table>
         <thead>
@@ -1049,47 +1060,44 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         </section>
       </div>
 
-      <h2 id="run-radio-on-autocomplete-news-feed-and-chat">Run RADIO on autocomplete, news feed, and chat</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Prompt</th>
-            <th>R/A/D/I/O one-liners</th>
-            <th>Practice route</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Autocomplete search</strong></td>
-            <td>
-              R: latest query wins under 150ms perceived latency. A: debounced input, cancellable requests, BFF/API boundary.
-              D: <code>Suggestion&#123;id,label,type&#125;</code>, query-keyed cache, idle/loading/results/empty/error/stale states.
-              I: combobox/listbox, keyboard navigation, focus recovery. O: stale response guards, zero-result telemetry, API latency alerts.
-            </td>
-            <td><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Real-time search design</a></td>
-          </tr>
-          <tr>
-            <td><strong>News feed</strong></td>
-            <td>
-              R: users need fresh posts, infinite loading, and reliable interaction feedback. A: feed shell, paginated API, optimistic action path.
-              D: posts, authors, cursors, reaction state, normalized cache. I: card ownership, composer, skeletons, retry states. O: virtualization,
-              image lazy loading, prefetch, RUM for scroll jank and failed mutations.
-            </td>
-            <td><a [routerLink]="['/', 'system-design', 'news-feed-timeline']">News feed timeline</a></td>
-          </tr>
-          <tr>
-            <td><strong>Chat input</strong></td>
-            <td>
-              R: users need low-latency composition, submission, and recovery from failed sends. A: input shell, streaming/message API, draft persistence.
-              D: draft, message, attachment, pending/error states. I: textarea resizing, shortcuts, screen-reader announcements. O: offline retry,
-              rate-limit handling, observability for send latency and dropped messages.
-            </td>
-            <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">AI chat text area</a></td>
-          </tr>
-        </tbody>
-      </table>
+      <h2 id="run-radio-on-autocomplete-news-feed-and-chat">Run RADIO on common frontend system design prompts</h2>
+      <div class="worked-example" aria-label="Common RADIO prompt examples">
+        <section class="worked-example-step">
+          <strong>Autocomplete</strong>
+          <ul class="mini-checklist">
+            <li><strong>R:</strong> latency target, keyboard support, empty/error states, ranking expectations.</li>
+            <li><strong>A:</strong> input shell, suggestion list, debounced query flow, cache boundary.</li>
+            <li><strong>D:</strong> <code>Query</code>, <code>Suggestion</code>, <code>HighlightMatch</code>, <code>RequestState</code>.</li>
+            <li><strong>I:</strong> input/listbox contract, focus handling, loading and no-result UI.</li>
+            <li><strong>O:</strong> debounce, cancellation, caching, prefetch, virtualization if needed.</li>
+          </ul>
+          <p><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Practice the realtime search design prompt</a>.</p>
+        </section>
+        <section class="worked-example-step">
+          <strong>News Feed</strong>
+          <ul class="mini-checklist">
+            <li><strong>R:</strong> feed freshness, infinite scroll, posting/reaction flows, latency and accessibility goals.</li>
+            <li><strong>A:</strong> feed shell, paginated API, optimistic action path, cache and virtualization boundary.</li>
+            <li><strong>D:</strong> <code>Post</code>, <code>Author</code>, <code>Cursor</code>, <code>ReactionState</code>, <code>PendingMutation</code>.</li>
+            <li><strong>I:</strong> feed card ownership, composer contract, loading/error/empty states, keyboard/focus behavior.</li>
+            <li><strong>O:</strong> virtualization, image lazy loading, prefetch, stale cache fallback, scroll performance monitoring.</li>
+          </ul>
+          <p><a [routerLink]="['/', 'system-design', 'news-feed-timeline']">Practice the news feed timeline prompt</a>.</p>
+        </section>
+        <section class="worked-example-step">
+          <strong>Chat</strong>
+          <ul class="mini-checklist">
+            <li><strong>R:</strong> message delivery expectations, read state, retries, offline behavior, notification constraints.</li>
+            <li><strong>A:</strong> conversation shell, message stream, optimistic sending, sync/retry layer.</li>
+            <li><strong>D:</strong> <code>Message</code>, <code>Conversation</code>, <code>Participant</code>, <code>DeliveryState</code>, <code>LocalDraft</code>.</li>
+            <li><strong>I:</strong> message list, composer, typing state, delivery indicators, error recovery UI.</li>
+            <li><strong>O:</strong> list virtualization, reconnect strategy, local persistence, batching, observability.</li>
+          </ul>
+          <p><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">Practice the AI chat text area prompt</a>.</p>
+        </section>
+      </div>
 
-      <h2>Common interviewer follow-ups</h2>
+      <h2 id="common-follow-up-patterns">Common follow-up patterns</h2>
       <table>
         <thead>
           <tr>

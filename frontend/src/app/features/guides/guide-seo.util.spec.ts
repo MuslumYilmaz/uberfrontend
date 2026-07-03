@@ -983,7 +983,7 @@ describe('guide-seo.util', () => {
     ]);
   });
 
-  it('targets RADIO definition intent on the RADIO framework page', () => {
+  it('targets RADIO interview-template intent on the RADIO framework page', () => {
     const radio = SYSTEM.find((entry) => entry.slug === 'radio-framework');
     expect(radio).toBeDefined();
 
@@ -994,18 +994,17 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('RADIO Framework for Frontend System Design: R/A/D/I/O');
+    expect(meta.title).toBe('RADIO Framework: Frontend System Design Interview Template');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(meta.description).toBe(
-      'RADIO means Requirements, Architecture, Data, Interface, and Optimizations. Use it for frontend system design interviews with a 45-minute script and examples.',
+      'A practical RADIO framework guide for frontend system design interviews with a 45-minute answer script, diagram checklist, and examples.',
     );
     expect(meta.description).toMatch(/RADIO/i);
-    expect(meta.description).toMatch(/means/i);
     expect(meta.description).toMatch(/frontend system design interviews/i);
-    expect(meta.description).toMatch(/45-minute script/i);
-    expect(meta.description).toMatch(/requirements/i);
-    expect(meta.description).toMatch(/interface/i);
+    expect(meta.description).toMatch(/45-minute answer script/i);
+    expect(meta.description).toMatch(/diagram checklist/i);
+    expect(meta.description).toMatch(/examples/i);
     expect(meta.keywords?.[0]).toBe('RADIO framework frontend system design');
     expect(meta.keywords).toContain('RADIO framework frontend system design');
     expect(meta.keywords).toContain('requirements architecture data interface optimizations');
@@ -1015,11 +1014,11 @@ describe('guide-seo.util', () => {
     expect(meta.keywords).toContain('how to use RADIO framework for frontend system design interview');
     expect(meta.keywords).toContain('RADIO answer template');
     expect(meta.keywords).toContain('frontend system design interview answer template');
-    expect(meta.keywords).toContain('45 minute frontend system design interview framework');
+    expect(meta.keywords).toContain('45-minute frontend system design interview framework');
     expect(meta.keywords).toContain('frontend system design interview checklist');
-    expect(meta.keywords).toContain('frontend system design 45 minute framework');
+    expect(meta.keywords).toContain('45-minute frontend system design framework');
     expect(meta.keywords).toContain('how to answer frontend system design interview');
-    expect(meta.keywords).toContain('frontend system design answer template 45 minutes');
+    expect(meta.keywords).toContain('45-minute frontend system design answer template');
     expect(meta.keywords).toContain('what should I draw during a frontend system design interview');
     expect(meta.keywords).toContain('RADIO framework autocomplete frontend system design');
     expect(meta.keywords).toContain('RADIO framework news feed frontend system design');
@@ -1032,9 +1031,9 @@ describe('guide-seo.util', () => {
     const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.headline).toBe('RADIO Framework for Frontend System Design: R/A/D/I/O');
+    expect(article?.headline).toBe('RADIO Framework: Frontend System Design Interview Template');
     expect(article?.description).toBe(
-      'RADIO means Requirements, Architecture, Data, Interface, and Optimizations. Use it for frontend system design interviews with a 45-minute script and examples.'
+      'A practical RADIO framework guide for frontend system design interviews with a 45-minute answer script, diagram checklist, and examples.'
     );
     expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview answer template');
