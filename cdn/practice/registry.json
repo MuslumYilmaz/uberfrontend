@@ -3462,7 +3462,7 @@
     "route": "/javascript/trivia/js-async-race-conditions",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Debug the production bug where async requests resolve out of order and overwrite newer UI state. The fix is cancellation, request identity, shared-controller ownership, or takeLatest-style guards that stop stale results…",
+    "summary": "Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI. Fix stale updates with AbortController cancellation, a latest request-id check, or takeLatest-style ow…",
     "tags": [
       "async",
       "concurrency",
@@ -3472,7 +3472,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-07-03",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-async-race-conditions"
   },

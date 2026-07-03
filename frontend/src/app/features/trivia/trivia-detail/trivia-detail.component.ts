@@ -89,9 +89,18 @@ type ReturnValueSimulatorOption = {
   testingAssertion: string;
 };
 type AsyncRaceSimulatorKey = 'no-guard' | 'abort-controller' | 'request-id' | 'take-latest';
+type AsyncRaceTimelineTone = 'neutral' | 'fresh' | 'stale' | 'blocked' | 'cancelled';
+type AsyncRaceTimelineNode = {
+  id: string;
+  label: string;
+  detail: string;
+  status: string;
+  tone: AsyncRaceTimelineTone;
+};
 type AsyncRaceSimulatorOption = {
   key: AsyncRaceSimulatorKey;
   label: string;
+  timelineNodes: AsyncRaceTimelineNode[];
   timeline: string;
   finalUi: string;
   whyItHappens: string;
@@ -191,6 +200,13 @@ const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
   {
     key: 'no-guard',
     label: 'No guard',
+    timelineNodes: [
+      { id: 'rea-starts', label: "rea request starts", status: 'A starts', tone: 'neutral', detail: "The user types 'rea' and request A begins." },
+      { id: 'react-starts', label: "react request starts", status: 'B starts', tone: 'neutral', detail: "The user types 'react' and request B becomes the newer intent." },
+      { id: 'react-resolves', label: "react resolves", status: 'fresh result', tone: 'fresh', detail: "Request B resolves first and renders the correct 'react' results." },
+      { id: 'rea-resolves', label: "rea resolves last", status: 'older completion', tone: 'stale', detail: 'Request A is older, but it still reaches the completion handler.' },
+      { id: 'ui-write', label: 'UI write allowed', status: 'stale write', tone: 'stale', detail: "No ownership check blocks A, so stale 'rea' results overwrite the screen." },
+    ],
     timeline: "A: 'rea' starts -> B: 'react' starts -> B resolves -> A resolves last.",
     finalUi: "Stale UI: results for 'rea' overwrite the newer 'react' results.",
     whyItHappens: 'Nothing checks whether request A is still current, so the older completion can write state after request B.',
@@ -199,6 +215,13 @@ const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
   {
     key: 'abort-controller',
     label: 'AbortController',
+    timelineNodes: [
+      { id: 'rea-starts', label: "rea request starts", status: 'A starts', tone: 'neutral', detail: "The user types 'rea' and request A begins with an AbortSignal." },
+      { id: 'react-starts', label: "react request starts", status: 'B owns UI', tone: 'fresh', detail: "The user types 'react'; the new controller aborts request A." },
+      { id: 'react-resolves', label: "react resolves", status: 'fresh result', tone: 'fresh', detail: "Request B resolves and renders the correct 'react' results." },
+      { id: 'rea-resolves', label: "rea resolves last", status: 'cancelled', tone: 'cancelled', detail: "Request A rejects as AbortError instead of publishing stale data." },
+      { id: 'ui-write', label: 'UI write blocked', status: 'cancelled write', tone: 'blocked', detail: 'The AbortError branch returns before old work can write UI state.' },
+    ],
     timeline: "A: 'rea' starts -> B: 'react' starts and aborts A -> only B can resolve.",
     finalUi: "Fresh UI: results for 'react' remain visible.",
     whyItHappens: 'The old fetch receives an AbortSignal before it can complete, so its result is ignored as cancelled work.',
@@ -207,6 +230,13 @@ const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
   {
     key: 'request-id',
     label: 'request id guard',
+    timelineNodes: [
+      { id: 'rea-starts', label: "rea request starts", status: 'id 1', tone: 'neutral', detail: "The user types 'rea' and request A receives id 1." },
+      { id: 'react-starts', label: "react request starts", status: 'id 2', tone: 'fresh', detail: "The user types 'react' and request B becomes the latest id." },
+      { id: 'react-resolves', label: "react resolves", status: 'fresh result', tone: 'fresh', detail: 'Request B resolves while id 2 still matches the latest request id.' },
+      { id: 'rea-resolves', label: "rea resolves last", status: 'stale id', tone: 'blocked', detail: 'Request A resolves later, but id 1 no longer matches the latest id.' },
+      { id: 'ui-write', label: 'UI write blocked', status: 'guarded', tone: 'blocked', detail: 'The guard returns before stale request A can overwrite the screen.' },
+    ],
     timeline: "A gets id 1 -> B gets id 2 -> B resolves -> A resolves but id 1 is stale.",
     finalUi: "Fresh UI: request B owns the screen, so A cannot overwrite it.",
     whyItHappens: 'The completion handler compares its id with the latest id before writing state.',
@@ -215,6 +245,13 @@ const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
   {
     key: 'take-latest',
     label: 'takeLatest / switchMap',
+    timelineNodes: [
+      { id: 'rea-starts', label: "rea request starts", status: 'inner A', tone: 'neutral', detail: "The input stream starts inner work for 'rea'." },
+      { id: 'react-starts', label: "react request starts", status: 'inner B', tone: 'fresh', detail: "The next input switches ownership to the 'react' inner work." },
+      { id: 'react-resolves', label: "react resolves", status: 'fresh result', tone: 'fresh', detail: "The latest inner work publishes the 'react' result." },
+      { id: 'rea-resolves', label: "rea resolves last", status: 'replaced', tone: 'cancelled', detail: "The earlier inner work has been cancelled or ignored by the latest-owner policy." },
+      { id: 'ui-write', label: 'UI write blocked', status: 'latest only', tone: 'blocked', detail: 'Only the latest stream owner can publish UI state.' },
+    ],
     timeline: "Input 'rea' starts inner work -> input 'react' replaces it -> only the latest stream writes.",
     finalUi: "Fresh UI: only the newest input is allowed to publish results.",
     whyItHappens: 'takeLatest-style ownership cancels or ignores earlier inner work when newer input arrives.',
@@ -528,6 +565,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackByIncidentOption = (_: number, option: TriviaIncidentOption): string => option.id;
   trackByReturnValueSimulatorOption = (_: number, option: ReturnValueSimulatorOption): string => option.key;
   trackByAsyncRaceSimulatorOption = (_: number, option: AsyncRaceSimulatorOption): string => option.key;
+  trackByAsyncRaceTimelineNode = (_: number, node: AsyncRaceTimelineNode): string => node.id;
   trackByEqualityPredictorScenario = (_: number, option: EqualityPredictorScenario): string => option.key;
   trackByEqualityPredictorResult = (_: number, result: EqualityPredictorResult): string => result.model;
   trackByNgRxSelectorTraceOption = (_: number, option: NgRxSelectorTraceOption): string => option.key;
@@ -1280,6 +1318,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (q.id === 'js-async-race-conditions') {
       return {
         articleSection: 'JavaScript async concurrency',
+        educationalLevel: 'Intermediate',
+        learningResourceType: 'Interview answer',
+        reviewedBy: { '@type': 'Organization', name: 'FrontendAtlas' },
         about: [
           { '@type': 'Thing', name: 'Async race conditions' },
           { '@type': 'Thing', name: 'Stale UI updates' },
@@ -1288,6 +1329,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         mentions: [
           { '@type': 'Thing', name: 'AbortController' },
           { '@type': 'Thing', name: 'AbortSignal' },
+          { '@type': 'Thing', name: 'React useEffect cleanup' },
+          { '@type': 'Thing', name: 'AbortError' },
+          { '@type': 'Thing', name: 'search-as-you-type' },
+          { '@type': 'Thing', name: 'visual race timeline' },
           { '@type': 'Thing', name: 'request id guard' },
           { '@type': 'Thing', name: 'takeLatest' },
           { '@type': 'Thing', name: 'switchMap' },
@@ -1295,26 +1340,22 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           { '@type': 'Thing', name: 'debounce' },
           { '@type': 'Thing', name: 'IndexedDB' },
           { '@type': 'Thing', name: 'autosave' },
-          { '@type': 'Thing', name: 'MDN Web Docs' },
           { '@type': 'Thing', name: 'Fetch API' },
-          { '@type': 'Thing', name: 'source reference' },
-          { '@type': 'Thing', name: 'Jest' },
-          { '@type': 'Thing', name: 'stale-result test' },
-          { '@type': 'Thing', name: 'production debugging standard' },
-          { '@type': 'Thing', name: 'interactive demo' },
-          { '@type': 'Thing', name: 'async race simulator' },
-          { '@type': 'Thing', name: 'stale UI demo' },
-          { '@type': 'Thing', name: 'final UI state' },
         ],
         hasPart: [
           { '@type': 'WebPageElement', name: 'The core issue' },
           { '@type': 'WebPageElement', name: 'How to prevent it' },
+          { '@type': 'WebPageElement', name: 'Before / after: stale search UI' },
+          { '@type': 'WebPageElement', name: 'React useEffect cleanup version' },
+          { '@type': 'WebPageElement', name: 'Choosing the right guard' },
           { '@type': 'WebPageElement', name: 'When async work cannot be aborted' },
           { '@type': 'WebPageElement', name: 'Shared-controller follow-up' },
           { '@type': 'WebPageElement', name: 'Pitfalls' },
           { '@type': 'WebPageElement', name: 'Source check' },
           { '@type': 'WebPageElement', name: 'Testable proof' },
+          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
           { '@type': 'WebPageElement', name: 'Production debugging standard' },
+          { '@type': 'WebPageElement', name: 'Async race visual timeline' },
           { '@type': 'WebPageElement', name: 'Async race simulator' },
         ],
         citation: [
@@ -1335,8 +1376,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           },
           {
             '@type': 'WebPage',
+            name: 'React useEffect',
+            url: 'https://react.dev/reference/react/useEffect',
+          },
+          {
+            '@type': 'WebPage',
             name: 'RxJS switchMap',
             url: 'https://rxjs.dev/api/operators/switchMap',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'FrontendAtlas Editorial Policy',
+            url: this.seo.buildCanonicalUrl('/legal/editorial'),
           },
         ],
       };
@@ -1398,6 +1449,21 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           '@type': 'Answer',
           text:
             'NgRx selectors are memoized, pure projection functions that turn store state into reusable derived state. They stay fast when reducers preserve immutable references, components select focused view-model selectors instead of rebuilding data locally, and projector unit tests prove the derived contract without Store setup.',
+        },
+      };
+    }
+
+    if (q.id === 'js-async-race-conditions') {
+      return {
+        '@type': 'Question',
+        '@id': `${canonical}#question`,
+        name: q.title,
+        url: canonical,
+        inLanguage: 'en',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            'Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI. Fix stale updates with AbortController cancellation, a latest request-id check, or takeLatest-style ownership so only the newest result can render.',
         },
       };
     }
