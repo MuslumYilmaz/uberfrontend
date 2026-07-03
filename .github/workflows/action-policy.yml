@@ -1,0 +1,23 @@
+name: Action Policy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  action-pinning:
+    name: Action Pinning
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+      - name: Require pinned GitHub Actions
+        run: node scripts/check-github-actions-pinned.mjs

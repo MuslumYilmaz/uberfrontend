@@ -13,6 +13,9 @@ on:
         required: false
         default: 'false'
 
+permissions:
+  contents: read
+
 jobs:
   e2e:
     name: Playwright Critical
@@ -25,10 +28,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 18
           cache: npm
@@ -59,7 +62,7 @@ jobs:
         run: npm run perf:contract
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
@@ -74,7 +77,7 @@ jobs:
 
       - name: Upload Playwright artifacts (on failure)
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: playwright-artifacts
           path: |
@@ -83,19 +86,23 @@ jobs:
           retention-days: 7
 
   e2e-perf:
+    name: Playwright Perf Smoke
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_perf == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
     defaults:
       run:
         working-directory: frontend
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 18
           cache: npm
@@ -111,7 +118,7 @@ jobs:
         run: npm run perf:contract
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
@@ -126,10 +133,48 @@ jobs:
 
       - name: Upload perf artifacts (on failure)
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: playwright-perf-artifacts
           path: |
             frontend/playwright-report
             frontend/test-results/perf
           retention-days: 7
+
+      - name: Open or update scheduled perf issue
+        if: failure() && github.event_name == 'schedule'
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Nightly perf smoke is failing"
+          body="Scheduled Playwright perf smoke failed.
+
+          Run: ${RUN_URL}
+
+          Keep this issue open until the scheduled perf smoke recovers."
+          gh label create ci --color 5319e7 --description "CI automation" --force || true
+          gh label create perf --color fbca04 --description "Performance guardrail" --force || true
+          existing="$(gh issue list --state open --label ci --label perf --search "$title in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body" --label ci --label perf
+          fi
+
+      - name: Close scheduled perf issue on recovery
+        if: success() && github.event_name == 'schedule'
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Nightly perf smoke is failing"
+          gh label create ci --color 5319e7 --description "CI automation" --force || true
+          gh label create perf --color fbca04 --description "Performance guardrail" --force || true
+          existing="$(gh issue list --state open --label ci --label perf --search "$title in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Scheduled Playwright perf smoke recovered. Run: ${RUN_URL}"
+            gh issue close "$existing" --reason completed
+          fi
