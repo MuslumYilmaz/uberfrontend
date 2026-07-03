@@ -9927,7 +9927,7 @@
   {
     "id": "js-async-race-conditions",
     "title": "Async Race Conditions and Stale UI Updates",
-    "description": "Debug the production bug where async requests resolve out of order and overwrite newer UI state. The fix is cancellation, request identity, shared-controller ownership, or takeLatest-style guards that stop stale results from winning.",
+    "description": "Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI. Fix stale updates with AbortController cancellation, a latest request-id check, or takeLatest-style ownership so only the newest result can render.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -9944,7 +9944,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "## The core issue\n\nAsync race conditions happen when older async work resolves after newer work and overwrites fresh UI. Fix stale UI by cancelling old work, checking request identity, or using takeLatest-style ownership so only the latest request wins.\n\nThis shows up in search, filters, autosave flows, and route-driven detail pages."
+          "text": "## The core issue\n\nAsync race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI. Fix stale updates with AbortController cancellation, a latest request-id check, or takeLatest-style ownership so only the newest result can render.\n\nThis shows up in search, filters, autosave flows, and route-driven detail pages."
         },
         {
           "type": "list",
@@ -9986,7 +9986,7 @@
           "rows": [
             [
               "AbortController",
-              "Cancel the previous request so it never resolves",
+              "Abort the previous request and ignore its AbortError",
               "Best when the API supports AbortSignal (e.g., fetch)"
             ],
             [
@@ -10003,18 +10003,76 @@
           "caption": "Three reliable ways to avoid stale updates."
         },
         {
-          "type": "code",
-          "language": "javascript",
-          "code": "let requestId = 0;\n\nasync function search(query) {\n  const id = ++requestId;\n  const res = await fetch(`/api?q=${query}`);\n  const data = await res.json();\n  if (id !== requestId) return; // stale result\n  render(data);\n}"
+          "type": "text",
+          "text": "## Before / after: stale search UI\n\nThe bug is easiest to see in search-as-you-type UI. If the user types <code>rea</code> and then <code>react</code>, the older <code>rea</code> request can still finish last and overwrite the newer screen."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "let controller;\n\nasync function search(query) {\n  if (controller) controller.abort();\n  controller = new AbortController();\n  const res = await fetch(`/api?q=${query}`, { signal: controller.signal });\n  const data = await res.json();\n  render(data);\n}"
+          "code": "async function search(query) {\n  setStatus('loading');\n\n  const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);\n  const data = await res.json();\n\n  renderResults(query, data);\n  setStatus('idle');\n}\n\nsearch('rea');\nsearch('react');\n// If 'rea' resolves last, stale results overwrite the 'react' UI."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let requestId = 0;\n\nasync function search(query) {\n  const id = ++requestId;\n  setStatus('loading');\n\n  const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);\n  const data = await res.json();\n\n  if (id !== requestId) return; // stale result\n  renderResults(query, data);\n  setStatus('idle');\n}"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let controller;\n\nasync function search(query) {\n  if (controller) controller.abort();\n  controller = new AbortController();\n\n  setStatus('loading');\n\n  try {\n    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {\n      signal: controller.signal,\n    });\n    const data = await res.json();\n    renderResults(query, data);\n    setStatus('idle');\n  } catch (error) {\n    if (error.name === 'AbortError') return;\n    setStatus('error');\n    reportSearchError(error);\n  }\n}"
         },
         {
           "type": "text",
-          "text": "## When the async work cannot be aborted\n\nAbortController only helps when the underlying task listens to <code>AbortSignal</code>. Autosave pipelines, IndexedDB work, and some library promises still need a latest-version guard so stale completions cannot win."
+          "text": "## React useEffect cleanup version\n\nIn React, the same race often appears inside <code>useEffect</code>. A cleanup flag prevents stale <code>setState</code> writes after props or state change. It does not cancel the network request by itself; use <code>AbortController</code> too when the fetch should actually be stopped."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "useEffect(() => {\n  let ignore = false;\n  setBio(null);\n\n  fetchBio(person).then((result) => {\n    if (!ignore) setBio(result);\n  });\n\n  return () => {\n    ignore = true;\n  };\n}, [person]);"
+        },
+        {
+          "type": "text",
+          "text": "## Choosing the right guard\n\nPick the guard by ownership and cancellation support, not by syntax preference."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Guard",
+            "Use it when",
+            "Trade-off"
+          ],
+          "rows": [
+            [
+              "AbortController",
+              "The async API accepts AbortSignal, especially fetch",
+              "Requires AbortError handling; only cancels work that listens to the signal"
+            ],
+            [
+              "Request id",
+              "You need a framework-agnostic latest-result guard",
+              "Old work still runs, but cannot update the UI"
+            ],
+            [
+              "useEffect cleanup",
+              "React state updates depend on changing props or state",
+              "Stops stale setState, but does not cancel the request by itself"
+            ],
+            [
+              "takeLatest / switchMap",
+              "Stream or action ownership should replace older work",
+              "Best with RxJS/state tools; hide the policy in a reusable operator"
+            ],
+            [
+              "Latest version guard",
+              "Autosave, IndexedDB, or library promises cannot be aborted",
+              "Requires a durable version token for every write"
+            ]
+          ],
+          "caption": "Different async ownership problems need different stale-result guards."
+        },
+        {
+          "type": "text",
+          "text": "## When the async work cannot be aborted\n\nAbortController only helps when the underlying task listens to <code>AbortSignal</code>. This is the important production case: autosave pipelines, IndexedDB work, and some library promises may keep running, so they still need a latest-version guard before showing saved state or writing UI metadata."
         },
         {
           "type": "code",
@@ -10031,16 +10089,20 @@
         },
         {
           "type": "text",
-          "text": "## Source check\n\nThis answer follows MDN references for <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortController\" target=\"_blank\" rel=\"noopener noreferrer\">AbortController</a>, <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal\" target=\"_blank\" rel=\"noopener noreferrer\">AbortSignal</a>, and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch\" target=\"_blank\" rel=\"noopener noreferrer\">Fetch API request handling</a>. For stream-style ownership, compare the RxJS <a href=\"https://rxjs.dev/api/operators/switchMap\" target=\"_blank\" rel=\"noopener noreferrer\">switchMap</a> operator, which replaces earlier inner work when newer input arrives."
+          "text": "## Source check\n\nMDN's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortController\" target=\"_blank\" rel=\"noopener noreferrer\">AbortController</a>, <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal\" target=\"_blank\" rel=\"noopener noreferrer\">AbortSignal</a>, and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch\" target=\"_blank\" rel=\"noopener noreferrer\">Fetch API</a> references establish the cancellation part: fetch can receive a signal and aborted requests reject as <code>AbortError</code>. React's official <a href=\"https://react.dev/reference/react/useEffect\" target=\"_blank\" rel=\"noopener noreferrer\">useEffect reference</a> documents the cleanup-flag pattern for ignoring stale state writes. RxJS <a href=\"https://rxjs.dev/api/operators/switchMap\" target=\"_blank\" rel=\"noopener noreferrer\">switchMap</a> documents stream ownership by replacing earlier inner work when newer input arrives. The local test below proves the UI rule this page relies on: even if older async work completes later, it cannot write stale state after newer work owns the screen."
         },
         {
           "type": "text",
-          "text": "## Testable proof\n\nA stale-result fix should be testable: resolve the newer request first, then resolve the older request, and assert that the UI still shows the newer result."
+          "text": "## Testable proof\n\nUse the same <code>rea</code>/<code>react</code> race from the before/after example: resolve the newer request first, then resolve the older request, and assert that the UI still shows the newer result. The simulator below turns the same race into a visual timeline so you can see exactly where the stale write is blocked."
         },
         {
           "type": "code",
           "language": "javascript",
           "code": "test('ignores an older search response after a newer one wins', async () => {\n  const view = createSearchView();\n\n  const older = view.search('rea');\n  const newer = view.search('react');\n\n  await newer.resolveWith(['React docs']);\n  expect(view.results()).toEqual(['React docs']);\n\n  await older.resolveWith(['Real estate']);\n  expect(view.results()).toEqual(['React docs']);\n});"
+        },
+        {
+          "type": "text",
+          "text": "## FrontendAtlas review note\n\nWe review this answer as a frontend debugging rule, not just an async API definition. In frontend reviews, debounce-only fixes often look correct in a quick manual demo but still fail when the older completion resolves last. For this page, the accepted fix is the one the test proves: stale completions cannot write state after a newer request, route load, or autosave version has ownership."
         },
         {
           "type": "text",
@@ -10077,10 +10139,12 @@
       "rereadPrompt": "Not quite. The bug is caused by async requests resolving out of order. Debounce can lower request volume, but you still need cancellation or a stale-result guard so an older response cannot overwrite newer UI state."
     },
     "access": "free",
-    "updatedAt": "2026-04-10",
+    "publishedAt": "2026-04-10",
+    "updatedAt": "2026-07-03",
     "seo": {
-      "title": "Debug async race conditions: stale UI, cancellation, and latest-result guards",
-      "description": "Prevent stale UI updates in production with AbortController, request identity guards, shared-controller ownership, and takeLatest-style patterns."
+      "title": "Fix stale UI from async race conditions",
+      "description": "Fix the stale UI bug where older async work overwrites newer results; compare AbortController, request-id guards, and takeLatest ownership.",
+      "h1": "Async Race Conditions and Stale UI Updates"
     }
   },
   {

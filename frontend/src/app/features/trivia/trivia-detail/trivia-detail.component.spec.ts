@@ -545,32 +545,55 @@ describe('TriviaDetailComponent', () => {
       id: 'js-async-race-conditions',
       title: 'Async Race Conditions and Stale UI Updates',
       description:
-        'Debug the production bug where async requests resolve out of order and overwrite newer UI state.',
+        'Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI.',
       technology: 'javascript',
       tags: ['async', 'concurrency', 'cancellation', 'abort-controller', 'ui'],
+      seo: {
+        h1: 'Async Race Conditions and Stale UI Updates',
+      },
       answer: {
         blocks: [
           { type: 'text', text: '## The core issue\n\nOlder async work can overwrite newer UI.' },
           { type: 'text', text: '## How to prevent it\n\nCancel old work or guard stale results.' },
+          { type: 'text', text: '## Before / after: stale search UI\n\nShow the stale search bug and the guarded fix.' },
+          { type: 'text', text: '## React useEffect cleanup version\n\nUse a cleanup flag for stale state writes.' },
+          { type: 'text', text: '## Choosing the right guard\n\nPick the guard by ownership and cancellation support.' },
           { type: 'text', text: '## When the async work cannot be aborted\n\nUse a latest-version guard.' },
           { type: 'text', text: '## Shared-controller follow-up\n\nRoute cleanup can share one controller.' },
           { type: 'text', text: '## Pitfalls\n\nDebounce is not cancellation.' },
           { type: 'text', text: '## Source check\n\nOfficial references back the cancellation behavior.' },
           { type: 'text', text: '## Testable proof\n\nAssert stale results cannot overwrite newer UI.' },
+          { type: 'text', text: '## FrontendAtlas review note\n\nReviewed as a frontend debugging rule.' },
           { type: 'text', text: '## Production debugging standard\n\nOlder completions cannot update state.' },
         ],
       },
     });
 
+    const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
+    expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe(
+      'Async Race Conditions and Stale UI Updates',
+    );
+    expect(h1?.querySelector('.title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.main-stack--async-race')).toBeTruthy();
+
+    const h2Text = Array.from(fixture.nativeElement.querySelectorAll('h2.card-head'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h2Text).toContain('How to prevent stale async UI');
+    expect(h2Text).not.toContain('Full interview answer');
+
     const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
       .map((node: any) => String(node.textContent || '').trim());
     expect(h3Text).toContain('The core issue');
     expect(h3Text).toContain('How to prevent it');
+    expect(h3Text).toContain('Before / after: stale search UI');
+    expect(h3Text).toContain('React useEffect cleanup version');
+    expect(h3Text).toContain('Choosing the right guard');
     expect(h3Text).toContain('When the async work cannot be aborted');
     expect(h3Text).toContain('Shared-controller follow-up');
     expect(h3Text).toContain('Pitfalls');
     expect(h3Text).toContain('Source check');
     expect(h3Text).toContain('Testable proof');
+    expect(h3Text).toContain('FrontendAtlas review note');
     expect(h3Text).toContain('Production debugging standard');
   });
 
@@ -617,7 +640,14 @@ describe('TriviaDetailComponent', () => {
     const simulator = targetFixture.nativeElement.querySelector('[data-testid="async-race-simulator"]') as HTMLElement | null;
     expect(simulator).toBeTruthy();
     expect(simulator?.querySelector('h2')?.textContent?.trim()).toBe('Async race simulator');
+    expect(simulator?.querySelector('.async-race-timeline')).toBeTruthy();
+    expect(simulator?.textContent || '').toContain('rea request starts');
+    expect(simulator?.textContent || '').toContain('UI write allowed');
+    expect(simulator?.textContent || '').toContain('stale write');
     expect(simulator?.textContent || '').toContain("Stale UI: results for 'rea' overwrite the newer 'react' results.");
+    expect(simulator?.textContent || '').toContain('Reviewed by FrontendAtlas');
+    expect(simulator?.textContent || '').toContain('Backed by MDN/React/RxJS references');
+    expect(simulator?.textContent || '').toContain('Race verified by deterministic test');
 
     targetFixture.destroy();
 
@@ -629,6 +659,7 @@ describe('TriviaDetailComponent', () => {
     });
 
     expect(nonTargetFixture.nativeElement.querySelector('[data-testid="async-race-simulator"]')).toBeNull();
+    expect(nonTargetFixture.nativeElement.querySelector('.async-race-proof-strip')).toBeNull();
   });
 
   it('updates async race simulator output when a strategy is selected', async () => {
@@ -651,8 +682,12 @@ describe('TriviaDetailComponent', () => {
     fixture.detectChanges();
 
     expect(simulator.textContent || '').toContain('Fresh UI: request B owns the screen, so A cannot overwrite it.');
+    expect(simulator.textContent || '').toContain('UI write blocked');
+    expect(simulator.textContent || '').toContain('guarded');
     expect(simulator.textContent || '').toContain('The completion handler compares its id with the latest id before writing state.');
     expect(simulator.textContent || '').toContain("Resolve B, then A; expect(view.results()).toEqual(['React docs']).");
+    const blockedSteps = simulator.querySelectorAll('.async-race-timeline__step--blocked');
+    expect(blockedSteps.length).toBeGreaterThan(0);
   });
 
   it('renders the equality predictor only for the equality question with default model results', async () => {
@@ -775,20 +810,28 @@ describe('TriviaDetailComponent', () => {
       id: 'js-async-race-conditions',
       title: 'Async Race Conditions and Stale UI Updates',
       description:
-        'Debug the production bug where async requests resolve out of order and overwrite newer UI state.',
+        'Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI.',
       technology: 'javascript',
       tags: ['async', 'concurrency', 'cancellation', 'abort-controller', 'ui'],
-      updatedAt: '2026-04-10',
+      publishedAt: '2026-04-10',
+      updatedAt: '2026-07-03',
     });
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
     const typeNames = graph.map((node: any) => node?.['@type']);
 
+    expect(typeNames).toContain('Question');
     expect(typeNames).not.toContain('FAQPage');
     expect(typeNames).not.toContain('QAPage');
     expect(article?.articleSection).toBe('JavaScript async concurrency');
+    expect(article?.educationalLevel).toBe('Intermediate');
+    expect(article?.learningResourceType).toBe('Interview answer');
+    expect(article?.reviewedBy).toEqual({ '@type': 'Organization', name: 'FrontendAtlas' });
+    expect(article?.datePublished).toBe('2026-04-10T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
     expect((article?.about || []).map((item: any) => item.name)).toEqual([
       'Async race conditions',
       'Stale UI updates',
@@ -797,6 +840,10 @@ describe('TriviaDetailComponent', () => {
     expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
       'AbortController',
       'AbortSignal',
+      'React useEffect cleanup',
+      'AbortError',
+      'search-as-you-type',
+      'visual race timeline',
       'request id guard',
       'takeLatest',
       'switchMap',
@@ -804,34 +851,37 @@ describe('TriviaDetailComponent', () => {
       'debounce',
       'IndexedDB',
       'autosave',
-      'MDN Web Docs',
       'Fetch API',
-      'source reference',
-      'Jest',
-      'stale-result test',
-      'production debugging standard',
-      'interactive demo',
-      'async race simulator',
-      'stale UI demo',
-      'final UI state',
     ]);
     expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
       'The core issue',
       'How to prevent it',
+      'Before / after: stale search UI',
+      'React useEffect cleanup version',
+      'Choosing the right guard',
       'When async work cannot be aborted',
       'Shared-controller follow-up',
       'Pitfalls',
       'Source check',
       'Testable proof',
+      'FrontendAtlas review note',
       'Production debugging standard',
+      'Async race visual timeline',
       'Async race simulator',
     ]);
     expect((article?.citation || []).map((item: any) => item.url)).toEqual([
       'https://developer.mozilla.org/en-US/docs/Web/API/AbortController',
       'https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal',
       'https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch',
+      'https://react.dev/reference/react/useEffect',
       'https://rxjs.dev/api/operators/switchMap',
+      'https://frontendatlas.com/legal/editorial',
     ]);
+    expect(questionSchema?.name).toBe('Async Race Conditions and Stale UI Updates');
+    expect(questionSchema?.acceptedAnswer?.['@type']).toBe('Answer');
+    expect(questionSchema?.acceptedAnswer?.text).toBe(
+      'Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI. Fix stale updates with AbortController cancellation, a latest request-id check, or takeLatest-style ownership so only the newest result can render.',
+    );
 
     targetFixture.destroy();
 

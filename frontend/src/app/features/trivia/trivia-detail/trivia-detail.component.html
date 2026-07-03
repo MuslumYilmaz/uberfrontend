@@ -23,7 +23,10 @@
 
     <!-- Detail -->
     <main class="main" #mainScroll data-testid="trivia-detail-main" (scroll)="onMainScroll()">
-        <div *ngIf="loadState() === 'loaded' && question() as q; else stateBlock" class="main-stack">
+        <div
+            *ngIf="loadState() === 'loaded' && question() as q; else stateBlock"
+            class="main-stack"
+            [class.main-stack--async-race]="showAsyncRaceSimulator(q)">
             <ng-container *ngIf="!locked(); else lockedView">
             <!-- Mobile/tablet: closable question nav -->
             <section class="mobile-qnav" *ngIf="sidebarQuestions?.length">
@@ -157,7 +160,7 @@
 
             <!-- Full interview answer -->
             <section class="card">
-                <h2 class="card-head">Full interview answer</h2>
+                <h2 class="card-head">{{ showAsyncRaceSimulator(q) ? 'How to prevent stale async UI' : 'Full interview answer' }}</h2>
                 <div class="card-body">
                     <ng-container *ngIf="answerIsRich(); else simpleAnswer">
                         <div class="blocks">
@@ -374,22 +377,49 @@
                         </button>
                     </div>
 
-                    <div class="return-simulator__output" aria-live="polite">
-                        <div class="return-simulator__metric">
-                            <span class="return-simulator__label">Timeline</span>
-                            <p>{{ selectedAsyncRaceSimulatorOption().timeline }}</p>
+                    <div class="async-race-visual" aria-live="polite">
+                        <ol class="async-race-timeline" aria-label="Async race visual timeline">
+                            <li
+                                class="async-race-timeline__step"
+                                *ngFor="let node of selectedAsyncRaceSimulatorOption().timelineNodes; let stepIndex = index; trackBy: trackByAsyncRaceTimelineNode"
+                                [class.async-race-timeline__step--fresh]="node.tone === 'fresh'"
+                                [class.async-race-timeline__step--stale]="node.tone === 'stale'"
+                                [class.async-race-timeline__step--blocked]="node.tone === 'blocked'"
+                                [class.async-race-timeline__step--cancelled]="node.tone === 'cancelled'">
+                                <span class="async-race-timeline__index">{{ stepIndex + 1 }}</span>
+                                <div class="async-race-timeline__copy">
+                                    <div class="async-race-timeline__head">
+                                        <strong>{{ node.label }}</strong>
+                                        <span class="async-race-timeline__status">{{ node.status }}</span>
+                                    </div>
+                                    <p>{{ node.detail }}</p>
+                                </div>
+                            </li>
+                        </ol>
+
+                        <div class="async-race-proof-grid">
+                            <div class="return-simulator__metric">
+                                <span class="return-simulator__label">Timeline</span>
+                                <p>{{ selectedAsyncRaceSimulatorOption().timeline }}</p>
+                            </div>
+                            <div class="return-simulator__metric">
+                                <span class="return-simulator__label">Final UI</span>
+                                <p>{{ selectedAsyncRaceSimulatorOption().finalUi }}</p>
+                            </div>
+                            <div class="return-simulator__metric">
+                                <span class="return-simulator__label">Why it happens</span>
+                                <p>{{ selectedAsyncRaceSimulatorOption().whyItHappens }}</p>
+                            </div>
+                            <div class="return-simulator__metric">
+                                <span class="return-simulator__label">Test assertion</span>
+                                <p>{{ selectedAsyncRaceSimulatorOption().testAssertion }}</p>
+                            </div>
                         </div>
-                        <div class="return-simulator__metric">
-                            <span class="return-simulator__label">Final UI</span>
-                            <p>{{ selectedAsyncRaceSimulatorOption().finalUi }}</p>
-                        </div>
-                        <div class="return-simulator__metric">
-                            <span class="return-simulator__label">Why it happens</span>
-                            <p>{{ selectedAsyncRaceSimulatorOption().whyItHappens }}</p>
-                        </div>
-                        <div class="return-simulator__metric">
-                            <span class="return-simulator__label">Test assertion</span>
-                            <p>{{ selectedAsyncRaceSimulatorOption().testAssertion }}</p>
+
+                        <div class="async-race-proof-strip" aria-label="Async race proof signals">
+                            <span>Reviewed by FrontendAtlas</span>
+                            <span>Backed by MDN/React/RxJS references</span>
+                            <span>Race verified by deterministic test</span>
                         </div>
                     </div>
                 </div>
