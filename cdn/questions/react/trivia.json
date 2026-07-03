@@ -1133,7 +1133,7 @@
         },
         {
           "type": "text",
-          "text": "## Component return vs JSX child\n\nFor a component return, <code>null</code> is the clearest intentional empty UI signal. Treat <code>undefined</code> as a missing <code>return</code> or unclear intent, even if a React version tolerates it in some paths.\n\nInside JSX, <code>false</code>, <code>null</code>, <code>undefined</code>, and <code>true</code> are holes and do not create DOM output. Numbers and strings are not holes, so <code>0</code> and <code>''</code> can still affect what users see or how layout is tested."
+          "text": "## Component return vs JSX child\n\nFor a component return, <code>null</code> is the clearest intentional empty UI signal. Treat <code>undefined</code> as a missing <code>return</code> or unclear intent; use <code>null</code> when empty UI is deliberate.\n\nInside JSX, <code>false</code>, <code>null</code>, <code>undefined</code>, and <code>true</code> are holes and do not create DOM output. Numbers and strings are not holes, so <code>0</code> and <code>''</code> can still affect what users see or how layout is tested."
         },
         {
           "type": "text",
@@ -1146,7 +1146,7 @@
         },
         {
           "type": "text",
-          "text": "## FrontendAtlas review note\n\nThis answer is written for interview debugging: identify whether empty UI is intentional, a missing return, a mounted component with no DOM output, or a JSX child hole. It avoids personal anecdotes and keeps the claims tied to React behavior you can verify in docs or tests."
+          "text": "## FrontendAtlas review note\n\nThis answer is written for interview debugging: identify whether empty UI is intentional, a missing return, a mounted component with no DOM output, or a JSX child hole. It avoids personal anecdotes and keeps the claims tied to behavior you can verify with focused component tests."
         },
         {
           "type": "text",
@@ -1155,10 +1155,6 @@
         {
           "type": "text",
           "text": "## Summary\n\nReact renders whatever your component returns as a <code>ReactNode</code>. Returning <code>null</code> or <code>false</code> is a valid way to show no UI. Returning <code>undefined</code> usually means a missing <code>return</code>, especially with arrow functions and <code>map()</code> callbacks."
-        },
-        {
-          "type": "text",
-          "text": "## Further reading\n\nAfter practicing the interview answer, compare React's <a href=\"https://react.dev/learn/conditional-rendering\" target=\"_blank\" rel=\"noopener noreferrer\">conditional rendering</a>, <a href=\"https://react.dev/reference/react/Fragment\" target=\"_blank\" rel=\"noopener noreferrer\">Fragment</a>, and <a href=\"https://react.dev/reference/react/Children\" target=\"_blank\" rel=\"noopener noreferrer\">Children</a> pages for exact API wording."
         }
       ]
     },
@@ -1179,7 +1175,7 @@
       "conditional",
       "components"
     ],
-    "updatedAt": "2026-06-29",
+    "updatedAt": "2026-07-03",
     "seo": {
       "title": "React render nothing: fix null, false, undefined bugs",
       "description": "Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.",
