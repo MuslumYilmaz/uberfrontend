@@ -3,7 +3,35 @@ import { TestBed } from '@angular/core/testing';
 import { HttpRequest } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { IncidentService } from './incident.service';
+import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 import { QuestionPersistenceService } from './question-persistence.service';
+
+class MemoryQuestionPersistenceService {
+  private readonly store = new Map<string, string>();
+
+  async get(keyRaw: string): Promise<string | null> {
+    const key = String(keyRaw ?? '').trim();
+    return key ? this.store.get(key) ?? null : null;
+  }
+
+  async set(keyRaw: string, valueRaw: string): Promise<void> {
+    const key = String(keyRaw ?? '').trim();
+    if (key) this.store.set(key, String(valueRaw ?? ''));
+  }
+
+  async remove(keyRaw: string): Promise<void> {
+    const key = String(keyRaw ?? '').trim();
+    if (key) this.store.delete(key);
+  }
+
+  async clearByPrefix(prefixRaw: string): Promise<void> {
+    const prefix = String(prefixRaw ?? '').trim();
+    if (!prefix) return;
+    Array.from(this.store.keys())
+      .filter((key) => key.startsWith(prefix))
+      .forEach((key) => this.store.delete(key));
+  }
+}
 
 describe('IncidentService', () => {
   let service: IncidentService;
@@ -31,7 +59,14 @@ describe('IncidentService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [IncidentService],
+      providers: [
+        IncidentService,
+        PracticeAssetResolverService,
+        {
+          provide: QuestionPersistenceService,
+          useClass: MemoryQuestionPersistenceService,
+        },
+      ],
     });
 
     service = TestBed.inject(IncidentService);
