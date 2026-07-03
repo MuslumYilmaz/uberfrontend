@@ -21,14 +21,6 @@
         </ul>
     </ng-template>
 
-    <!-- Sidebar -->
-    <aside class="side" #sideScroll (scroll)="onSideScroll()">
-        <div class="side-head">
-            <div class="side-title">{{ sidebarTitle }}</div>
-        </div>
-        <ng-container *ngTemplateOutlet="questionListTpl"></ng-container>
-    </aside>
-
     <!-- Detail -->
     <main class="main" #mainScroll data-testid="trivia-detail-main" (scroll)="onMainScroll()">
         <div *ngIf="loadState() === 'loaded' && question() as q; else stateBlock" class="main-stack">
@@ -581,6 +573,14 @@
             </div>
         </ng-template>
     </main>
+
+    <!-- Sidebar -->
+    <aside class="side" #sideScroll (scroll)="onSideScroll()">
+        <div class="side-head">
+            <div class="side-title">{{ sidebarTitle }}</div>
+        </div>
+        <ng-container *ngTemplateOutlet="questionListTpl"></ng-container>
+    </aside>
 </div>
 
 <!-- Global a11y announcer (fixed off-screen, no layout shift) -->

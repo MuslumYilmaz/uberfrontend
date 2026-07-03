@@ -2168,7 +2168,7 @@
   {
     "id": "js-equality-vs-strict-equality",
     "title": "What is the difference between == and === in JavaScript?",
-    "description": "Loose equality and strict equality differ because coercion can silently change operands. The common mistake is letting form strings, nullish values, or `NaN` produce bugs that explicit conversion and tests should catch.",
+    "description": "Strict equality is only half the fix. Frontend equality bugs usually start when DOM input, URL params, storage, API payloads, or `NaN` cross a boundary without explicit normalization.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -2187,7 +2187,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "## Core idea\n\n`==` performs implicit coercion before comparing. `===` compares type and value without coercion. Use `===` by default; when data arrives from a boundary such as form input, query params, localStorage, or an API, convert it explicitly first and then compare.\n\n- `==` can make different types match after conversion.\n- `===` only matches when both operands already have the same type and value."
+          "text": "## Core idea\n\n`==` performs implicit coercion before comparing. `===` compares type and value without coercion. In frontend code, the bigger interview signal is not just knowing the definition; it is knowing where equality bugs enter the UI.\n\nUse `===` by default, normalize values at system boundaries, and test the inputs that coercion tends to hide: empty strings, string numbers, booleans, `null`, `undefined`, `NaN`, signed zero, and object references."
         },
         {
           "type": "list",
@@ -2215,6 +2215,65 @@
             ]
           ],
           "caption": "Quick comparison between loose (==) and strict (===) equality."
+        },
+        {
+          "type": "text",
+          "text": "## Frontend coercion bug matrix\n\nMost production bugs are not caused by someone writing `'5' == 5` in isolation. They appear when values arrive as strings or nullish data and then reach validation, auth, feature flags, or analytics guards."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Boundary",
+            "Raw value",
+            "Bad check",
+            "Why it fails",
+            "Safer rule"
+          ],
+          "rows": [
+            [
+              "DOM input",
+              "<code>''</code>",
+              "<code>value == 0</code>",
+              "The empty string converts to <code>0</code>, so a blank field can pass as a real zero.",
+              "Validate empty input first, then parse with <code>Number(...)</code>."
+            ],
+            [
+              "URLSearchParams",
+              "<code>'false'</code>",
+              "<code>flag == false</code>",
+              "Query params are strings; boolean-looking strings are still text.",
+              "Compare an allowed string such as <code>flag === 'true'</code> or parse once."
+            ],
+            [
+              "localStorage",
+              "<code>'0'</code>",
+              "<code>stored == 0</code>",
+              "Storage returns strings, so numeric guards can pass because of coercion.",
+              "Decode storage values at the read boundary."
+            ],
+            [
+              "API payload",
+              "<code>null</code>",
+              "<code>value == undefined</code>",
+              "Loose equality collapses <code>null</code> and <code>undefined</code>.",
+              "Choose one missing-value convention or write an explicit nullish check."
+            ],
+            [
+              "Math result",
+              "<code>NaN</code>",
+              "<code>score === NaN</code>",
+              "<code>NaN</code> is not equal to itself under <code>==</code> or <code>===</code>.",
+              "Use <code>Number.isNaN(score)</code>."
+            ],
+            [
+              "Collections",
+              "<code>NaN</code>",
+              "<code>items.indexOf(NaN)</code>",
+              "<code>indexOf</code> uses strict equality style semantics and misses <code>NaN</code>.",
+              "Use <code>includes</code>, <code>Set</code>, or <code>Map</code> when SameValueZero membership is intended."
+            ]
+          ],
+          "caption": "Equality bugs that show up in frontend validation, routing, storage, and collection code."
         },
         {
           "type": "text",
@@ -2266,6 +2325,23 @@
         },
         {
           "type": "text",
+          "text": "## Boundary normalization recipes\n\nTreat equality as a boundary problem. Convert once where data enters the app, store the normalized value, and keep later comparisons boring."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function parseOptionalNumber(value) {\n  if (value === '' || value == null) return null; // intentional nullish check\n\n  const parsed = Number(value);\n  return Number.isFinite(parsed) ? parsed : null;\n}\n\nfunction parseQueryBoolean(value) {\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  return null;\n}\n\nconst age = parseOptionalNumber(form.elements.age.value);\nif (age === 0) {\n  showNewbornFlow(); // real zero, not an empty input\n}\n\nconst preview = parseQueryBoolean(new URLSearchParams(location.search).get('preview'));\nif (preview === true) {\n  enablePreviewMode();\n}"
+        },
+        {
+          "type": "text",
+          "text": "Use `value == null` only when the rule is exactly \"match `null` or `undefined`, and nothing else.\" In most other cases, normalize the boundary value and compare the normalized output with `===`."
+        },
+        {
+          "type": "text",
+          "text": "## Junior, mid, and senior interview answer\n\nA junior answer says: `==` converts types and `===` does not. A mid-level answer adds: use `===` by default and convert input explicitly. A senior answer connects the operator choice to system boundaries: DOM input, URL params, storage, and APIs should be decoded once, then downstream validation, auth, feature flags, and analytics should compare normalized values with `===` or `!==`."
+        },
+        {
+          "type": "text",
           "text": "## Beyond ===: Object.is and SameValueZero\n\n`===` is the default for application comparisons, but it is not the only equality model in JavaScript. `Object.is` treats `NaN` as equal to itself and keeps `+0` different from `-0`. SameValueZero is used by `Map`, `Set`, and `Array.prototype.includes`; it treats `NaN` as equal to itself but considers `+0` and `-0` the same."
         },
         {
@@ -2313,11 +2389,20 @@
         },
         {
           "type": "text",
-          "text": "## Practical rule\n\nDefault to `===`. At boundaries, convert once with `Number(...)`, `Boolean(...)`, parsing helpers, or a schema validator, then compare the normalized value. Use `!==` with the same discipline for negative comparisons. Add tests for empty string, `0`, `false`, `null`, `undefined`, and `NaN` when equality affects validation or access control."
+          "text": "## Equality test checklist\n\nWhen equality affects validation, access control, pricing, routing, or persistence, write tests that prove the boundary policy. The goal is not to memorize coercion trivia; it is to prevent a blank field, string boolean, missing payload field, or invalid number from passing a business rule accidentally."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "expect(parseOptionalNumber('')).toBeNull();\nexpect(parseOptionalNumber('0')).toBe(0);\nexpect(parseOptionalNumber(0)).toBe(0);\nexpect(parseQueryBoolean('false')).toBe(false);\nexpect(null == undefined).toBe(true); // intentional nullish-only shortcut\nexpect(null === undefined).toBe(false);\nexpect(Number.isNaN(NaN)).toBe(true);\nexpect(Object.is(+0, -0)).toBe(false);\nexpect([NaN].includes(NaN)).toBe(true);\nexpect([{ id: 1 }].includes({ id: 1 })).toBe(false); // reference equality, not deep equality"
         },
         {
           "type": "text",
-          "text": "## FrontendAtlas review note\n\nThis answer is reviewed as an interview debugging rule, not as a personal anecdote. In FrontendAtlas JavaScript reviews, coercion bugs are flagged most often when form input, query params, localStorage, or API payloads cross a boundary as strings and then reach numeric guards. The expected fix is to normalize at the boundary, compare with `===` or `!==`, and test the edge cases listed above."
+          "text": "## Practical rule\n\nDefault to `===`. At boundaries, convert once with `Number(...)`, parsing helpers, allow-listed string values, or a schema validator, then compare the normalized value. Use `!==` with the same discipline for negative comparisons. Reserve loose equality for the deliberate nullish shortcut `value == null`, and comment or encapsulate it if the team normally bans `==`."
+        },
+        {
+          "type": "text",
+          "text": "## FrontendAtlas review note\n\nThis answer is reviewed as a frontend debugging rule. The high-signal cases are boundary cases: DOM input sends `''`, URL params send strings like `'false'`, localStorage returns `'0'`, APIs may omit a field or send `null`, and math can produce `NaN`. The expected fix is to normalize at the boundary, compare with `===` or `!==`, and add tests for the exact edge cases the feature accepts or rejects."
         },
         {
           "type": "text",
@@ -2326,10 +2411,11 @@
       ]
     },
     "access": "free",
+    "publishedAt": "2025-11-08",
     "updatedAt": "2026-07-03",
     "seo": {
-      "title": "JavaScript == vs ===: Why 6 Common Checks Fail",
-      "description": "See why everyday checks become coercion bugs, then use the equality predictor to test 6 JavaScript edge cases."
+      "title": "JavaScript == vs ===: frontend coercion bug playbook",
+      "description": "Debug form, query param, storage, API, NaN, and collection equality bugs with strict comparison, explicit normalization, and edge-case tests."
     },
     "incidentCard": {
       "title": "Coercion Bug Check",

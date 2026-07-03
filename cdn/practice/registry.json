@@ -6809,7 +6809,7 @@
     "route": "/javascript/trivia/js-equality-vs-strict-equality",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Loose equality and strict equality differ because coercion can silently change operands. The common mistake is letting form strings, nullish values, or `NaN` produce bugs that explicit conversion and tests should catch.",
+    "summary": "Strict equality is only half the fix. Frontend equality bugs usually start when DOM input, URL params, storage, API payloads, or `NaN` cross a boundary without explicit normalization.",
     "tags": [
       "operators",
       "comparison",

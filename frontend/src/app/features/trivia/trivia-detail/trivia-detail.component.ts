@@ -997,7 +997,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return d.toISOString();
   }
 
-  private resolvePublishedIso(dateModified: string | null): string {
+  private resolvePublishedIso(q: Question, dateModified: string | null): string {
+    const raw = (q as any).publishedAt;
+    if (raw) {
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) return d.toISOString();
+    }
     return dateModified || '2025-01-01T00:00:00.000Z';
   }
 
@@ -1049,7 +1054,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const keywords = this.questionKeywords(q);
     const authorName = this.resolveAuthor(q);
     const dateModified = this.resolveUpdatedIso(q);
-    const datePublished = this.resolvePublishedIso(dateModified);
+    const datePublished = this.resolvePublishedIso(q, dateModified);
     const imageUrl = this.structuredDataImageUrl();
     const interviewHubUrl = this.interviewQuestionsHubUrl();
     const interviewHubLabel = this.interviewQuestionsHubLabel();
@@ -1230,10 +1235,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           { '@type': 'Thing', name: 'SameValue' },
           { '@type': 'Thing', name: 'SameValueZero' },
           { '@type': 'Thing', name: 'Object.is' },
+          { '@type': 'Thing', name: 'DOM input' },
+          { '@type': 'Thing', name: 'URLSearchParams' },
           { '@type': 'Thing', name: 'form input' },
           { '@type': 'Thing', name: 'query params' },
           { '@type': 'Thing', name: 'localStorage' },
           { '@type': 'Thing', name: 'API payloads' },
+          { '@type': 'Thing', name: 'boundary normalization' },
           { '@type': 'Thing', name: 'null' },
           { '@type': 'Thing', name: 'undefined' },
           { '@type': 'Thing', name: 'NaN' },
@@ -1244,6 +1252,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           { '@type': 'Thing', name: 'reference equality' },
           { '@type': 'Thing', name: 'FrontendAtlas review note' },
           { '@type': 'Thing', name: 'edge-case test' },
+          { '@type': 'Thing', name: 'equality test checklist' },
+          { '@type': 'Thing', name: 'senior interview answer' },
           { '@type': 'Thing', name: 'interactive equality predictor' },
           { '@type': 'Thing', name: 'coercion matrix' },
           { '@type': 'Thing', name: 'SameValueZero comparison' },
@@ -1251,11 +1261,15 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         ],
         hasPart: [
           { '@type': 'WebPageElement', name: 'Core idea' },
+          { '@type': 'WebPageElement', name: 'Frontend coercion bug matrix' },
           { '@type': 'WebPageElement', name: 'Loose equality' },
           { '@type': 'WebPageElement', name: 'How == decides' },
           { '@type': 'WebPageElement', name: 'Strict equality' },
+          { '@type': 'WebPageElement', name: 'Boundary normalization recipes' },
+          { '@type': 'WebPageElement', name: 'Junior, mid, and senior interview answer' },
           { '@type': 'WebPageElement', name: 'Beyond ===: Object.is and SameValueZero' },
           { '@type': 'WebPageElement', name: 'Pitfalls' },
+          { '@type': 'WebPageElement', name: 'Equality test checklist' },
           { '@type': 'WebPageElement', name: 'Practical rule' },
           { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
           { '@type': 'WebPageElement', name: 'Equality predictor' },
