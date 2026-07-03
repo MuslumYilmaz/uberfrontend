@@ -399,7 +399,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <h2 id="frontend-system-design-interview-answer-template">RADIO = Requirements, Architecture, Data, Interface, Optimizations</h2>
         <p>
           RADIO is a frontend system design interview framework: <strong>Requirements, Architecture, Data,
-          Interface, and Optimizations</strong>.
+          Interface, and Optimizations</strong>. Use it to turn a broad prompt into a complete answer path before
+          drawing details.
         </p>
         <p>
           Use it when the prompt is broad, like "design autocomplete", "design a news feed", or "design chat".
