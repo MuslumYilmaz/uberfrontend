@@ -2317,10 +2317,6 @@
         },
         {
           "type": "text",
-          "text": "## Source check\n\nThis answer is checked against [MDN Equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality), [MDN Strict equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality), and [MDN Equality comparisons and sameness](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness). For the underlying specification rules, compare the ECMAScript abstract operations for [IsLooselyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal), [IsStrictlyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-isstrictlyequal), and [SameValueZero](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-samevaluezero)."
-        },
-        {
-          "type": "text",
           "text": "## FrontendAtlas review note\n\nThis answer is reviewed as an interview debugging rule, not as a personal anecdote. In FrontendAtlas JavaScript reviews, coercion bugs are flagged most often when form input, query params, localStorage, or API payloads cross a boundary as strings and then reach numeric guards. The expected fix is to normalize at the boundary, compare with `===` or `!==`, and test the edge cases listed above."
         },
         {
@@ -2330,7 +2326,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-07-01",
+    "updatedAt": "2026-07-03",
     "seo": {
       "title": "JavaScript == vs ===: Why 6 Common Checks Fail",
       "description": "See why everyday checks become coercion bugs, then use the equality predictor to test 6 JavaScript edge cases."

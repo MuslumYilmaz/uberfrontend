@@ -696,7 +696,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-06-29",
+    "updatedAt": "2026-07-03",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-http-what-actually-cancels-request"
   },
@@ -6818,7 +6818,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-01",
+    "updatedAt": "2026-07-03",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-equality-vs-strict-equality"
   },
@@ -8328,7 +8328,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-06-29",
+    "updatedAt": "2026-07-03",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-render-nothing-return-value"
   },

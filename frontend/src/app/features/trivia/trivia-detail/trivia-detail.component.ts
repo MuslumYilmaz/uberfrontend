@@ -1242,9 +1242,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           { '@type': 'Thing', name: 'Set' },
           { '@type': 'Thing', name: 'Array.prototype.includes' },
           { '@type': 'Thing', name: 'reference equality' },
-          { '@type': 'Thing', name: 'MDN Web Docs' },
-          { '@type': 'Thing', name: 'ECMAScript specification' },
-          { '@type': 'Thing', name: 'source reference' },
           { '@type': 'Thing', name: 'FrontendAtlas review note' },
           { '@type': 'Thing', name: 'edge-case test' },
           { '@type': 'Thing', name: 'interactive equality predictor' },
@@ -1260,41 +1257,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           { '@type': 'WebPageElement', name: 'Beyond ===: Object.is and SameValueZero' },
           { '@type': 'WebPageElement', name: 'Pitfalls' },
           { '@type': 'WebPageElement', name: 'Practical rule' },
-          { '@type': 'WebPageElement', name: 'Source check' },
           { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
           { '@type': 'WebPageElement', name: 'Equality predictor' },
-        ],
-        citation: [
-          {
-            '@type': 'WebPage',
-            name: 'MDN Equality',
-            url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'MDN Strict equality',
-            url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'MDN Equality comparisons and sameness',
-            url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'ECMAScript IsLooselyEqual',
-            url: 'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'ECMAScript IsStrictlyEqual',
-            url: 'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-isstrictlyequal',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'ECMAScript SameValueZero',
-            url: 'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-samevaluezero',
-          },
         ],
       };
     }
@@ -1582,7 +1546,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const tagFocus = tags.length ? `${tags.join(' and ')} reasoning` : `${topic} fundamentals`;
 
     return [
-      `${concept} explanation without falling back to memorized docs wording`,
+      `${concept} explanation without falling back to memorized definitions`,
       `${tagFocus}, edge cases, and production failure modes`,
       `How you would answer the most likely ${topic} interview follow-up`,
     ];

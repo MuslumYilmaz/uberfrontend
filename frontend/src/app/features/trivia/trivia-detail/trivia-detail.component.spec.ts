@@ -352,10 +352,6 @@ describe('TriviaDetailComponent', () => {
           },
           {
             type: 'text',
-            text: '## Further reading\n\nCompare the linked React pages after practicing the answer.',
-          },
-          {
-            type: 'text',
             text: '## Testable proof\n\nAssert absent DOM for intentional no-UI states.',
           },
           {
@@ -389,7 +385,7 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('Return null or skip rendering the child?');
     expect(h3Text).toContain('Does return null unmount the component?');
     expect(h3Text).toContain('Component return vs JSX child');
-    expect(h3Text).toContain('Further reading');
+    expect(h3Text).not.toContain('Further reading');
     expect(h3Text).toContain('Testable proof');
     expect(h3Text).toContain('FrontendAtlas review note');
     expect(fixture.nativeElement.textContent || '').toContain('Use this return-value map to debug empty UI');
@@ -455,7 +451,6 @@ describe('TriviaDetailComponent', () => {
           { type: 'text', text: '## Beyond ===: Object.is and SameValueZero\n\nOther equality models matter for NaN and collections.' },
           { type: 'text', text: '## Pitfalls\n\nWatch nullish values, NaN, and references.' },
           { type: 'text', text: '## Practical rule\n\nConvert boundary values explicitly.' },
-          { type: 'text', text: '## Source check\n\nOfficial references back the equality behavior.' },
           { type: 'text', text: '## FrontendAtlas review note\n\nBoundary coercion is reviewed as a debugging rule.' },
           { type: 'text', text: '## Equality predictor\n\nCompare edge cases across equality models.' },
         ],
@@ -471,7 +466,7 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('Beyond ===: Object.is and SameValueZero');
     expect(h3Text).toContain('Pitfalls');
     expect(h3Text).toContain('Practical rule');
-    expect(h3Text).toContain('Source check');
+    expect(h3Text).not.toContain('Source check');
     expect(h3Text).toContain('FrontendAtlas review note');
     expect(h3Text).toContain('Equality predictor');
   });
@@ -1083,7 +1078,7 @@ describe('TriviaDetailComponent', () => {
         'Loose equality and strict equality differ because coercion can silently change operands.',
       technology: 'javascript',
       tags: ['operators', 'comparison', 'types', 'javascript'],
-      updatedAt: '2026-07-01',
+      updatedAt: '2026-07-03',
     });
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -1108,9 +1103,9 @@ describe('TriviaDetailComponent', () => {
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('IsLooselyEqual');
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('!==');
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('Array.prototype.includes');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('MDN Web Docs');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('ECMAScript specification');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('source reference');
+    expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('MDN Web Docs');
+    expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('ECMAScript specification');
+    expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('source reference');
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('FrontendAtlas review note');
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('edge-case test');
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('interactive equality predictor');
@@ -1125,18 +1120,10 @@ describe('TriviaDetailComponent', () => {
       'Beyond ===: Object.is and SameValueZero',
       'Pitfalls',
       'Practical rule',
-      'Source check',
       'FrontendAtlas review note',
       'Equality predictor',
     ]);
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality',
-      'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality',
-      'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness',
-      'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal',
-      'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-isstrictlyequal',
-      'https://tc39.es/ecma262/multipage/abstract-operations.html#sec-samevaluezero',
-    ]);
+    expect(article?.citation).toBeUndefined();
     expect(question?.name).toBe('What is the difference between == and === in JavaScript?');
     expect(question?.acceptedAnswer?.['@type']).toBe('Answer');
     expect(question?.acceptedAnswer?.text).toContain('== performs implicit coercion');

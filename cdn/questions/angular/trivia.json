@@ -6516,7 +6516,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How to verify this in Angular tests</strong><br><br>In HttpClient tests, Angular's <a href=\"https://angular.dev/api/common/http/testing/TestRequest\" target=\"_blank\" rel=\"noopener\"><code>TestRequest.cancelled</code></a> flag is the clearest proof point. Subscribe to the request, capture it with <code>HttpTestingController</code>, unsubscribe before flushing, and assert that the request was marked cancelled. <a href=\"https://angular.dev/api/common/http/testing/HttpTestingController\" target=\"_blank\" rel=\"noopener\"><code>HttpTestingController.verify({ ignoreCancelled: true })</code></a> is useful only when cancelled requests are intentionally not the assertion target; do not use it to hide missing <code>expectOne</code> checks."
+          "text": "<strong>How to verify this in Angular tests</strong><br><br>In an interview, describe the test shape instead of reciting APIs: subscribe to the request, capture the pending HTTP call, unsubscribe before returning a response, and assert that the pending request was marked cancelled. If the test helper has an option to ignore cancelled requests during cleanup, use it only after the cancellation assertion is already covered; do not use cleanup settings to hide a missing request expectation."
         },
         {
           "type": "code",
@@ -6579,10 +6579,6 @@
         {
           "type": "text",
           "text": "<strong>Interview summary</strong><br><br>In Angular, <strong>only unsubscribing</strong> cancels an HTTP request. Operators like <code>switchMap</code>, <code>takeUntil</code>, and the <code>async</code> pipe cancel requests because they unsubscribe. Operators like <code>mergeMap</code> do not cancel anything—they just ignore or parallelize results. Real cancellation = unsubscribe."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Further reading</strong><br><br>After practicing the answer, compare Angular's <a href=\"https://angular.dev/guide/http/making-requests\" target=\"_blank\" rel=\"noopener\">Making requests</a>, <a href=\"https://angular.dev/api/common/http/testing/TestRequest\" target=\"_blank\" rel=\"noopener\"><code>TestRequest.cancelled</code></a>, and <a href=\"https://angular.dev/api/common/http/testing/HttpTestingController\" target=\"_blank\" rel=\"noopener\"><code>HttpTestingController</code></a> pages for exact API wording."
         }
       ]
     },
@@ -6595,7 +6591,7 @@
       "cancellation",
       "basics"
     ],
-    "updatedAt": "2026-06-29",
+    "updatedAt": "2026-07-03",
     "interviewFocus": {
       "summary": "This Angular interview question tests whether you can distinguish true HttpClient cancellation from ignoring stale responses, explain unsubscribe ownership, and defend the RxJS operator choice.",
       "tests": [
