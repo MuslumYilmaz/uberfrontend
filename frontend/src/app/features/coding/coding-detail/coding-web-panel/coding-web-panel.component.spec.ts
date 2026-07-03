@@ -33,6 +33,13 @@ describe('CodingWebPanelComponent attempt feedback', () => {
         {
           provide: CodeStorageService,
           useValue: {
+            getWebDraftSnapshotAsync: jasmine.createSpy('getWebDraftSnapshotAsync').and.resolveTo(null),
+            cloneWebBundleAsync: jasmine.createSpy('cloneWebBundleAsync').and.resolveTo(false),
+            initWebAsync: jasmine.createSpy('initWebAsync').and.resolveTo({
+              html: '<main>Stored</main>',
+              css: '.stored { color: white; }',
+              restored: false,
+            }),
             saveWebAsync: jasmine.createSpy('saveWebAsync').and.resolveTo(undefined),
             resetWebBothAsync: jasmine.createSpy('resetWebBothAsync').and.resolveTo(undefined),
           },
@@ -105,6 +112,7 @@ describe('CodingWebPanelComponent attempt feedback', () => {
       jasmine.any(String),
       'html',
       '<main class="fallback">Fallback</main>',
+      { allowEmpty: true },
     );
 
     component.onCssChange('.fallback { color: lime; }');
@@ -115,8 +123,104 @@ describe('CodingWebPanelComponent attempt feedback', () => {
       jasmine.any(String),
       'css',
       '.fallback { color: lime; }',
+      { allowEmpty: true },
     );
   }));
+
+  it('persists rapid HTML and CSS edits from the same debounce window', fakeAsync(() => {
+    const codeStorage = TestBed.inject(CodeStorageService) as jasmine.SpyObj<CodeStorageService>;
+    component.disablePersistence = false;
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+
+    component.onHtmlChange('<section>Saved HTML</section>');
+    component.onCssChange('section { color: red; }');
+    tick(200);
+
+    expect(codeStorage.saveWebAsync).toHaveBeenCalledWith(
+      jasmine.any(String),
+      'html',
+      '<section>Saved HTML</section>',
+      { allowEmpty: true },
+    );
+    expect(codeStorage.saveWebAsync).toHaveBeenCalledWith(
+      jasmine.any(String),
+      'css',
+      'section { color: red; }',
+      { allowEmpty: true },
+    );
+  }));
+
+  it('flushes a pending web edit on destroy', fakeAsync(() => {
+    const codeStorage = TestBed.inject(CodeStorageService) as jasmine.SpyObj<CodeStorageService>;
+    component.disablePersistence = false;
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+
+    component.onHtmlChange('<main>Late draft</main>');
+    component.ngOnDestroy();
+
+    expect(codeStorage.saveWebAsync).toHaveBeenCalledWith(
+      jasmine.any(String),
+      'html',
+      '<main>Late draft</main>',
+      { allowEmpty: true },
+    );
+  }));
+
+  it('persists intentionally emptied web editor content', fakeAsync(() => {
+    const codeStorage = TestBed.inject(CodeStorageService) as jasmine.SpyObj<CodeStorageService>;
+    component.disablePersistence = false;
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+
+    component.onHtmlChange('');
+    tick(200);
+
+    expect(codeStorage.saveWebAsync).toHaveBeenCalledWith(
+      jasmine.any(String),
+      'html',
+      '',
+      { allowEmpty: true },
+    );
+  }));
+
+  it('ignores stale async init results from an older question', async () => {
+    const codeStorage = TestBed.inject(CodeStorageService) as jasmine.SpyObj<CodeStorageService>;
+    const oldInit = deferred<{ html: string; css: string; restored: boolean }>();
+    const newInit = deferred<{ html: string; css: string; restored: boolean }>();
+    codeStorage.initWebAsync.and.callFake(async (key: string) => {
+      if (key.includes('web-old')) return oldInit.promise;
+      return newInit.promise;
+    });
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+    component.disablePersistence = false;
+
+    component.question = {
+      ...question,
+      id: 'web-old',
+      title: 'Old web',
+      web: { starterHtml: '<main>Old starter</main>', starterCss: '.old {}' },
+    };
+    const firstInit = component.initFromQuestion();
+    await flushMicrotasks();
+
+    component.question = {
+      ...question,
+      id: 'web-new',
+      title: 'New web',
+      web: { starterHtml: '<main>New starter</main>', starterCss: '.new {}' },
+    };
+    const secondInit = component.initFromQuestion();
+    await flushMicrotasks();
+
+    newInit.resolve({ html: '<main>New draft</main>', css: '.new { color: green; }', restored: true });
+    await secondInit;
+
+    oldInit.resolve({ html: '<main>Old draft</main>', css: '.old { color: red; }', restored: true });
+    await firstInit;
+
+    expect(component.webHtml()).toBe('<main>New draft</main>');
+    expect(component.webCss()).toBe('.new { color: green; }');
+    expect(component.showRestoreBanner()).toBeTrue();
+  });
 
   it('records failure metadata for failing DOM tests', async () => {
     (component as any).htmlCode.set('<button class="cta">Cancel</button>');
@@ -155,3 +259,17 @@ describe('CodingWebPanelComponent attempt feedback', () => {
     expect(attemptInsights.recordRun).not.toHaveBeenCalled();
   });
 });
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+}
+
+async function flushMicrotasks(count = 8): Promise<void> {
+  for (let i = 0; i < count; i += 1) {
+    await Promise.resolve();
+  }
+}

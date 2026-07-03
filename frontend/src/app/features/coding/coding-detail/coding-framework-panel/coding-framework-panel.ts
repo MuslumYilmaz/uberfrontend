@@ -143,6 +143,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private latestStarters: Record<string, string> | null = null;
   private latestEntryHint = '';
   private destroy = false;
+  private initSeq = 0;
   private frameworkCheckReadyTimeoutMs = 8000;
 
   // File tree computed
@@ -257,6 +258,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   ngOnDestroy(): void {
     this.destroy = true;
+    this.initSeq += 1;
     this.flushPendingPersist();
     if (this.persistTimer) clearTimeout(this.persistTimer);
     if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
@@ -313,6 +315,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   /** Called by parent after question changes (also auto-called on input changes). */
   initFromQuestion(): void {
+    const initToken = ++this.initSeq;
     this.flushPendingPersist();
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
@@ -335,10 +338,12 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.showingFrameworkSolutionPreview.set(false);
     this.userFilesBackup = null;
 
-    this.bootstrapWorkspaceFromSdk(q)
+    this.bootstrapWorkspaceFromSdk(q, undefined, initToken)
       .catch(() => { })
       .finally(() => {
-        this.scheduleDeferredPreview();
+        if (this.isActiveInit(initToken, q)) {
+          this.scheduleDeferredPreview(initToken, q);
+        }
       });
   }
 
@@ -419,11 +424,14 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   /** Parent: CTA "Preview what you need to build" → show solution preview in iframe. */
   async openSolutionPreview(): Promise<void> {
     const sol = this.solutionFilesMap || {};
-    if (!this.isFrameworkTech() || !Object.keys(sol).length) return;
+    const q = this.question;
+    const initToken = this.initSeq;
+    if (!q || !this.isFrameworkTech() || !Object.keys(sol).length) return;
     this.ensurePreviewReady();
 
     try {
       const html = await this.previewBuilder.build(this.tech as 'react' | 'angular' | 'vue', sol);
+      if (!this.isActiveInit(initToken, q)) return;
 
       if (!html) return;
 
@@ -436,16 +444,20 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   /** Parent: close solution preview → go back to user code preview. */
   async closeSolutionPreview(): Promise<void> {
     if (!this.showingFrameworkSolutionPreview()) return;
+    const q = this.question;
+    const initToken = this.initSeq;
     this.ensurePreviewReady();
     this.showingFrameworkSolutionPreview.set(false);
     try {
       if (this.shouldBuildPreview()) {
-        await this.rebuildFrameworkPreview();
+        await this.rebuildFrameworkPreview(initToken, q);
       } else {
+        if (q && !this.isActiveInit(initToken, q)) return;
         this.setPreviewHtml(null);
         this.loadingPreview.set(true);
       }
     } catch (e) {
+      if (q && !this.isActiveInit(initToken, q)) return;
       this.setPreviewHtml(null);
     }
   }
@@ -454,6 +466,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   async resetToStarter(): Promise<void> {
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
+    const initToken = ++this.initSeq;
     this.ensurePreviewReady();
 
     this.cancelPendingPersist();
@@ -463,7 +476,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.userFilesBackup = null;
     this.clearFrameworkCheckResults();
 
-    await this.bootstrapWorkspaceFromSdk(q, { forceReset: true });
+    await this.bootstrapWorkspaceFromSdk(q, { forceReset: true }, initToken);
   }
 
   dismissRestoreBanner(): void {
@@ -491,6 +504,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const q = this.question;
     if (!q || !version || !this.isFrameworkTech()) return;
     if (this.disablePersistence) return;
+    const initToken = ++this.initSeq;
     this.ensurePreviewReady();
 
     const baseKey = this.baseDraftKey() || this.baseStorageKey(q);
@@ -512,6 +526,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.activeDraftVersion.set(version);
     const storageKey = makeDraftKey(baseKey, version);
     const snap = await this.codeStore.getFrameworkDraftSnapshotAsync(this.tech as any, storageKey);
+    if (!this.isActiveInit(initToken, q)) return;
     if (!snap || !Object.keys(snap.files || {}).length) {
       this.initFromQuestion();
       return;
@@ -535,7 +550,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.frameworkEntryFile = entry;
     this.editorContent.set(visibleFiles[entry] ?? '');
 
-    await this.rebuildFrameworkPreview().catch(() => this.setPreviewHtml(null));
+    await this.rebuildFrameworkPreview(initToken, q).catch(() => {
+      if (this.isActiveInit(initToken, q)) this.setPreviewHtml(null);
+    });
+    if (!this.isActiveInit(initToken, q)) return;
     this.showRestoreBanner.set(restored);
     this.loadingPreview.set(false);
   }
@@ -581,10 +599,13 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   private async bootstrapWorkspaceFromSdk(
     q: Question,
-    opts?: { forceReset?: boolean }
+    opts?: { forceReset?: boolean },
+    initToken = this.initSeq
   ): Promise<void> {
     if (!this.isBrowser) {
-      this.loadingPreview.set(false);
+      if (this.isActiveInit(initToken, q)) {
+        this.loadingPreview.set(false);
+      }
       return;
     }
     const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
@@ -598,6 +619,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       try {
         // Use shared util to fetch the asset
         const raw = await fetchSdkAsset(this.http, meta.asset);
+        if (!this.isActiveInit(initToken, q)) return;
         dependencies = raw?.dependencies;
 
         // Prefer explicit openFile from meta, otherwise asset.openFile
@@ -613,6 +635,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
         starters = files;
         entryHint = initialPath || this.defaultEntry();
       } catch (e) {
+        if (!this.isActiveInit(initToken, q)) return;
         starters = this.createFrameworkFallbackFiles();
         entryHint = this.defaultEntry();
       }
@@ -621,6 +644,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       starters = this.createFrameworkFallbackFiles();
       entryHint = this.defaultEntry();
     }
+    if (!this.isActiveInit(initToken, q)) return;
 
     // Compute the version for draft keying (id + contentVersion).
     const contentVersion = computeFrameworkContentVersion({
@@ -639,6 +663,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     // If caller requested a hard reset, overwrite stored workspace
     if (opts?.forceReset && !this.disablePersistence) {
       await this.codeStore.resetFrameworkAsync(key, this.tech as any, starters, entryHint);
+      if (!this.isActiveInit(initToken, q)) return;
     }
 
     if (this.disablePersistence) {
@@ -651,11 +676,13 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       this.editorContent.set(files[entryFile] ?? '');
 
       if (this.shouldBuildPreview()) {
-        await this.rebuildFrameworkPreview();
+        await this.rebuildFrameworkPreview(initToken, q);
       } else {
+        if (!this.isActiveInit(initToken, q)) return;
         this.loadingPreview.set(false);
         this.setPreviewHtml(null);
       }
+      if (!this.isActiveInit(initToken, q)) return;
 
       this.showRestoreBanner.set(false);
       this.viewingSolution.set(false);
@@ -666,13 +693,16 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     // Backward-compat: archive legacy (unversioned) draft if it exists.
     const now = new Date().toISOString();
     const legacySnap = await this.codeStore.getFrameworkDraftSnapshotAsync(this.tech as any, baseKey);
+    if (!this.isActiveInit(initToken, q)) return;
     if (legacySnap) {
       const legacyKey = makeDraftKey(baseKey, 'legacy');
       await this.codeStore.cloneFrameworkBundleAsync(this.tech as any, baseKey, legacyKey).catch(() => false);
+      if (!this.isActiveInit(initToken, q)) return;
       upsertDraftIndexVersion(baseKey, { version: 'legacy', updatedAt: legacySnap.updatedAt || now }, { latestVersion: contentVersion });
     }
 
     const currentSnap = await this.codeStore.getFrameworkDraftSnapshotAsync(this.tech as any, key);
+    if (!this.isActiveInit(initToken, q)) return;
     const idx = upsertDraftIndexVersion(
       baseKey,
       { version: contentVersion, updatedAt: currentSnap?.updatedAt || now },
@@ -685,6 +715,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     // Initialize from storage (may restore previous work)
     const { files, entryFile, restored } =
       await this.codeStore.initFrameworkAsync(key, this.tech as any, starters, entryHint);
+    if (!this.isActiveInit(initToken, q)) return;
 
     this.filesMap.set(files);
     this.frameworkEntryFile = entryFile;
@@ -693,11 +724,13 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.editorContent.set(files[entryFile] ?? '');
 
     if (this.shouldBuildPreview()) {
-      await this.rebuildFrameworkPreview();
+      await this.rebuildFrameworkPreview(initToken, q);
     } else {
+      if (!this.isActiveInit(initToken, q)) return;
       this.setPreviewHtml(null);
       this.loadingPreview.set(true);
     }
+    if (!this.isActiveInit(initToken, q)) return;
 
     this.showRestoreBanner.set(restored);
     this.viewingSolution.set(false);
@@ -777,15 +810,20 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.previewReady.set(true);
   }
 
-  private scheduleDeferredPreview() {
+  private scheduleDeferredPreview(initToken?: number, q?: Question) {
     if (!this.isBrowser || !this.deferPreview || this.previewReady()) return;
     if (this.deferredPreviewTimer) return;
     this.deferredPreviewTimer = window.setTimeout(() => {
       this.deferredPreviewTimer = undefined;
+      if (initToken !== undefined && q && !this.isActiveInit(initToken, q)) return;
       if (!this.deferPreview) return;
       this.previewReady.set(true);
       this.scheduleRebuild();
     }, 500);
+  }
+
+  private isActiveInit(initToken: number, q: Question): boolean {
+    return !this.destroy && initToken === this.initSeq && this.question?.id === q.id;
   }
 
   private shouldBuildPreview(): boolean {
@@ -802,15 +840,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }, 200);
   }
 
-  async rebuildFrameworkPreview(): Promise<void> {
+  async rebuildFrameworkPreview(initToken?: number, q?: Question): Promise<void> {
     this.ensurePreviewReady();
     this.loadingPreview.set(true);
     try {
       const files = this.filesMap();
 
       const html = await this.previewBuilder.build(this.tech as 'react' | 'angular' | 'vue', files);
+      if (initToken !== undefined && q && !this.isActiveInit(initToken, q)) return;
       this.setPreviewHtml(html || null);
     } catch (e) {
+      if (initToken !== undefined && q && !this.isActiveInit(initToken, q)) return;
       this.setPreviewHtml(null);
       this.loadingPreview.set(false);
     }

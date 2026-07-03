@@ -726,15 +726,19 @@
 </ng-container>
 
 <ng-template #loadingOrMissing>
-  <div class="coding-detail-skeleton" data-testid="coding-detail-skeleton">
-    <div class="coding-detail-skeleton__title"></div>
-    <div class="coding-detail-skeleton__line"></div>
-    <div class="coding-detail-skeleton__line"></div>
-    <div class="coding-detail-skeleton__line"></div>
-  </div>
-  <div class="coding-detail-empty" *ngIf="loadState() === 'notFound'">
-    <div class="coding-detail-empty__text">Question not found.</div>
-  </div>
+  <ng-container *ngIf="loadState() === 'loading'; else missingState">
+    <div class="coding-detail-skeleton" data-testid="coding-detail-skeleton">
+      <div class="coding-detail-skeleton__title"></div>
+      <div class="coding-detail-skeleton__line"></div>
+      <div class="coding-detail-skeleton__line"></div>
+      <div class="coding-detail-skeleton__line"></div>
+    </div>
+  </ng-container>
+  <ng-template #missingState>
+    <div class="coding-detail-empty" *ngIf="loadState() === 'notFound'">
+      <div class="coding-detail-empty__text">Question not found.</div>
+    </div>
+  </ng-template>
 </ng-template>
 
 <ng-template #lockedView>

@@ -487,6 +487,52 @@ describe('CodingDetailComponent', () => {
     expect(document.body.style.overflow).toBe('hidden');
   });
 
+  it('renders only the empty state for a notFound load state', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.loadState.set('notFound');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-detail-skeleton"]')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Question not found.');
+  });
+
+  it('ignores stale solution assets from an older question load', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const oldAsset = deferred<{ files: Record<string, string>; initialPath: string }>();
+    spyOn(component as any, 'resolveSolutionAsset').and.callFake((q: any) => {
+      if (q.id === 'react-old') return oldAsset.promise;
+      return Promise.resolve({
+        files: { 'src/App.tsx': 'export default function App() { return <div>New</div>; }' },
+        initialPath: 'src/App.tsx',
+      });
+    });
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    (component as any).dataLoaded = true;
+    component.allQuestions = [
+      { id: 'react-old', title: 'Old React', access: 'free', difficulty: 'easy' } as any,
+      { id: 'react-new', title: 'New React', access: 'free', difficulty: 'easy' } as any,
+    ];
+
+    const firstLoad = (component as any).loadQuestion('react-old') as Promise<void>;
+    const secondLoad = (component as any).loadQuestion('react-new') as Promise<void>;
+    await secondLoad;
+
+    oldAsset.resolve({
+      files: { 'src/App.tsx': 'export default function App() { return <div>Old</div>; }' },
+      initialPath: 'src/App.tsx',
+    });
+    await firstLoad;
+
+    expect(component.question()?.id).toBe('react-new');
+    expect(component.solutionFilesMap()['src/App.tsx']).toContain('New');
+    expect(component.solutionOpenPath()).toBe('src/App.tsx');
+  });
+
   it('maps coding detail tech to interview hub routes', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -567,3 +613,11 @@ describe('CodingDetailComponent', () => {
     expect(payload.description.length).toBeLessThanOrEqual(155);
   });
 });
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+}

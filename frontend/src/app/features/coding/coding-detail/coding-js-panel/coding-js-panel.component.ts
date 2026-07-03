@@ -156,6 +156,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private _hydrating = true;
   private volatileBuffers: Record<JsLang, string> = { js: '', ts: '' };
   private _runSeq = 0;
+  private initSeq = 0;
+  private destroyed = false;
   private persistTimer: any = null;
   private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
   private resizeRaf: number | null = null;
@@ -226,6 +228,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.destroyed = true;
+    this.initSeq += 1;
     this.flushPendingPersist();
     this.stopInterviewTicker();
     if (this.isBrowser) {
@@ -293,13 +297,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
-  private endHydrationSoon() {
-    if (!this.isBrowser) {
+  private endHydrationSoon(initToken?: number, q?: Question) {
+    const finish = () => {
+      if (initToken !== undefined && q && !this.isActiveInit(initToken, q)) return;
       this._hydrating = false;
+    };
+    if (!this.isBrowser) {
+      finish();
       return;
     }
     requestAnimationFrame(() =>
-      requestAnimationFrame(() => { this._hydrating = false; })
+      requestAnimationFrame(finish)
     );
   }
 
@@ -956,6 +964,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   /* ---------- Lifecycle-ish setup API (call once from parent) ---------- */
   /* ---------- Lifecycle-ish setup API (call once from parent) ---------- */
   async initFromQuestion() {
+    const initToken = ++this.initSeq;
     const q = this.question as Question; if (!q) return;
     this.resetRunnerStateForQuestionChange();
     this.clearSolutionDraftSnapshot();
@@ -1001,8 +1010,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.consoleEntries.set([]);
       this.loadAssistStateForQuestion(q);
       await this.loadDecisionGraphForCurrentCode(q, preferred, sJs);
+      if (!this.isActiveInit(initToken, q)) return;
       queueMicrotask(() => window.dispatchEvent(new Event('resize')));
-      requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
+      this.endHydrationSoon(initToken, q);
       return;
     }
 
@@ -1012,9 +1022,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     // Backward-compat: if legacy (unversioned) draft exists, keep it archived and start fresh for this version.
     const now = new Date().toISOString();
     const legacy = await this.codeStore.getJsAsync(baseKey);
+    if (!this.isActiveInit(initToken, q)) return;
     if (legacy) {
       const legacyKey = makeDraftKey(baseKey, 'legacy');
       await this.codeStore.cloneJsBundleAsync(baseKey, legacyKey).catch(() => false);
+      if (!this.isActiveInit(initToken, q)) return;
       upsertDraftIndexVersion(
         baseKey,
         { version: 'legacy', updatedAt: legacy.updatedAt || now, lang: legacy.language },
@@ -1024,6 +1036,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     // Track current version in the draft index (used for "updated question" banner)
     const existingCurrent = await this.codeStore.getJsAsync(storageKey);
+    if (!this.isActiveInit(initToken, q)) return;
     const idx = upsertDraftIndexVersion(
       baseKey,
       { version: contentVersion, updatedAt: existingCurrent?.updatedAt || now, lang: existingCurrent?.language },
@@ -1039,6 +1052,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.codeStore.setJsBaselineAsync(storageKey, 'js', sJs),
       this.codeStore.setJsBaselineAsync(storageKey, 'ts', sTs),
     ]);
+    if (!this.isActiveInit(initToken, q)) return;
 
     const [jsStateRaw, tsStateRaw, lastLangRaw] = await Promise.all([
       this.codeStore.getJsLangStateAsync(storageKey, 'js').catch(() => null as any),
@@ -1047,6 +1061,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
         ? this.codeStore.getLastLang(storageKey).catch(() => null)
         : Promise.resolve(null),
     ]);
+    if (!this.isActiveInit(initToken, q)) return;
     const jsState = jsStateRaw || { code: '', baseline: sJs, dirty: false, hasUserCode: false };
     const tsState = tsStateRaw || { code: '', baseline: sTs, dirty: false, hasUserCode: false };
     const lastLang: JsLang | null = lastLangRaw === 'ts' || lastLangRaw === 'js' ? lastLangRaw : null;
@@ -1063,16 +1078,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.jsLang.set(preferred);
     this.langChange.emit(preferred);
 
-    // 2) Ensure per-lang slots exist (post-migration safety)
-    if (!jsState.hasUserCode) {
-      await this.codeStore.saveJsAsync(storageKey, sJs, 'js', { force: true });
-    }
-    if (!tsState.hasUserCode) {
-      await this.codeStore.saveJsAsync(storageKey, sTs, 'ts', { force: true });
-    }
-    await this.codeStore.setLastLangAsync(storageKey, preferred);        // keep sticky after slot seeding
+    await this.codeStore.setLastLangAsync(storageKey, preferred);
+    if (!this.isActiveInit(initToken, q)) return;
 
-    // 3) Hydrate editor/tests for chosen lang
+    // Hydrate editor/tests for chosen lang.
     const starter = preferred === 'ts' ? sTs : sJs;
     const initial = preferredState.hasUserCode ? preferredState.code : starter;
     const restored = preferredState.dirty;
@@ -1084,12 +1093,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.restoreDismissed.set(false);
     this.loadAssistStateForQuestion(q);
     await this.loadDecisionGraphForCurrentCode(q, preferred, initial);
+    if (!this.isActiveInit(initToken, q)) return;
 
     // Nudge Monaco once the first frame is ready (prevents first-frame squiggles)
     queueMicrotask(() => window.dispatchEvent(new Event('resize')));   // NEW
 
     // End hydration on next tick
-    requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
+    this.endHydrationSoon(initToken, q);
+  }
+
+  private isActiveInit(initToken: number, q: Question): boolean {
+    return !this.destroyed && initToken === this.initSeq && this.question?.id === q.id;
   }
 
   private resetRunnerStateForQuestionChange(): void {
@@ -1606,19 +1620,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       ? rawPerLang
       : '';
 
-    // 3) If target slot is empty, seed it intelligently
+    // 3) If target slot is empty, keep language buffers isolated.
     if (!nextCode) {
-      if (next === 'js') {
-        // We’re switching TS -> JS: derive JS from current TS editor
-        const tsNow = this.editorContent();
-        const cameFromTs = currentLang === 'ts';
-        nextCode = cameFromTs ? await this.ensureJs(tsNow, `${q.id}.ts`) : tsNow;
-        if (!nextCode?.trim()) nextCode = starterJs;
-      } else {
-        // Switching JS -> TS: simplest & safest default is to copy JS verbatim
-        const jsNow = this.editorContent();
-        nextCode = jsNow?.trim() ? jsNow : starterTs;
-      }
+      nextCode = next === 'ts' ? starterTs : starterJs;
 
       // Persist the seed so subsequent switches are stable
       await this.codeStore.saveJsAsync(storageKey, nextCode, next, { force: true });
