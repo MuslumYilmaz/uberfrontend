@@ -1,5 +1,9 @@
 require('dotenv').config();
 
+const { initSentry, setupSentryErrorHandler } = require('./config/sentry');
+
+initSentry();
+
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -11,6 +15,7 @@ const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
 const { rateLimit, getClientIp } = require('./middleware/rateLimit');
 const { createRequestMetricsMiddleware } = require('./middleware/observability');
+const { createSecurityHeadersMiddleware } = require('./middleware/securityHeaders');
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
@@ -79,6 +84,7 @@ if (String(process.env.TRUST_PROXY || '').toLowerCase() === 'true') {
 console.log(`🔧 SERVER_BASE: ${SERVER_BASE}`);
 console.log(`🔧 Allowed frontend origins: ${ALLOWED_FRONTEND_ORIGINS.join(', ') || '(none)'}`);
 
+app.use(createSecurityHeadersMiddleware());
 app.use(createRequestMetricsMiddleware());
 app.use(
     cors({
@@ -523,6 +529,14 @@ app.get('/api/stats/me', requireAuth, async (req, res) => {
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
+});
+
+setupSentryErrorHandler(app);
+
+app.use((err, _req, res, next) => {
+    if (res.headersSent) return next(err);
+    console.error('Unhandled request error:', err);
+    return res.status(err.status || err.statusCode || 500).json({ error: 'Internal server error' });
 });
 
 // ---- Start (only when run directly, not when imported as a serverless handler) ----

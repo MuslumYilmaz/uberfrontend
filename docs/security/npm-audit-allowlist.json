@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-07-03",
+  "entries": [
+    {
+      "workspace": "frontend",
+      "package": "@angular/animations",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/common",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/compiler",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/core",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/forms",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/platform-browser",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/platform-browser-dynamic",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/platform-server",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "@angular/router",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires an Angular major upgrade that also requires moving CI/runtime from Node 18 to Node 20+. Track and remove during the Angular/PrimeNG migration."
+    },
+    {
+      "workspace": "frontend",
+      "package": "primeng",
+      "severity": "high",
+      "expires": "2026-09-30",
+      "reason": "Current remediation requires PrimeNG/Angular major upgrades. Track and remove during the Angular/PrimeNG migration."
+    }
+  ]
+}

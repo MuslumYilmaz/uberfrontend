@@ -1,0 +1,12 @@
+title = "FrontendAtlas gitleaks config"
+
+[[allowlists]]
+description = "Documented placeholders and non-secret test values"
+paths = [
+  '''backend/\.env\.example$'''
+]
+regexes = [
+  '''replace-with-a-strong-secret-at-least-32-chars''',
+  '''ci_fullstack_smoke_jwt_secret_32_chars_minimum''',
+  '''https://public@example\.ingest\.sentry\.io/1'''
+]
