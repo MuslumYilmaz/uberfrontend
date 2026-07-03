@@ -213,6 +213,163 @@ describe('CodingJsPanelComponent', () => {
     expect(emittedConsole ?? []).toEqual([]);
   });
 
+  it('does not seed JS/TS starters into saved user-code slots during init', async () => {
+    const codeStoreStub = {
+      getJsAsync: jasmine.createSpy('getJsAsync').and.resolveTo(null),
+      cloneJsBundleAsync: jasmine.createSpy('cloneJsBundleAsync').and.resolveTo(false),
+      setJsBaselineAsync: jasmine.createSpy('setJsBaselineAsync').and.resolveTo(undefined),
+      getJsLangStateAsync: jasmine.createSpy('getJsLangStateAsync').and.callFake(async (_key: string, lang: 'js' | 'ts') => ({
+        code: '',
+        baseline: lang === 'ts' ? 'export default function value(): number { return 1; }' : 'export default function value() { return 1; }',
+        dirty: false,
+        hasUserCode: false,
+      })),
+      getLastLang: jasmine.createSpy('getLastLang').and.resolveTo(null),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+    };
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+    component.disablePersistence = false;
+    component.question = {
+      id: 'js-no-starter-seed',
+      contentVersion: 'v1',
+      starterCode: 'export default function value() { return 1; }',
+      starterCodeTs: 'export default function value(): number { return 1; }',
+      tests: '',
+      testsTs: '',
+    } as any;
+
+    await component.initFromQuestion();
+
+    expect(component.editorContent()).toBe('export default function value() { return 1; }');
+    expect(codeStoreStub.saveJsAsync).not.toHaveBeenCalled();
+    expect(codeStoreStub.setLastLangAsync).toHaveBeenCalledWith('js-no-starter-seed@v1', 'js');
+  });
+
+  it('keeps JS and TS buffers isolated when switching into an empty target language', async () => {
+    const codeStoreStub = {
+      getJsForLangAsync: jasmine.createSpy('getJsForLangAsync').and.resolveTo(''),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+    };
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+    const starterTs = 'export default function greet(): string { return "starter-ts"; }';
+    const draftJs = '// JS_MARKER\nexport default function greet() { return "draft-js"; }';
+
+    component.disablePersistence = false;
+    component.question = {
+      id: 'js-buffer-isolation',
+      contentVersion: 'v1',
+      starterCode: 'export default function greet() { return "starter-js"; }',
+      starterCodeTs: starterTs,
+      tests: '',
+      testsTs: '',
+    } as any;
+    component.jsLang.set('js');
+    component.editorContent.set(draftJs);
+    (component as any)._hydrating = false;
+
+    await component.setLanguage('ts');
+
+    expect(component.jsLang()).toBe('ts');
+    expect(component.editorContent()).toBe(starterTs);
+    expect(component.editorContent()).not.toContain('JS_MARKER');
+    expect(codeStoreStub.saveJsAsync).toHaveBeenCalledWith(
+      'js-buffer-isolation@v1',
+      draftJs,
+      'js',
+      { allowEmpty: true },
+    );
+    expect(codeStoreStub.saveJsAsync).toHaveBeenCalledWith(
+      'js-buffer-isolation@v1',
+      starterTs,
+      'ts',
+      { force: true },
+    );
+    expect(codeStoreStub.setLastLangAsync).toHaveBeenCalledWith('js-buffer-isolation@v1', 'ts');
+  });
+
+  it('ignores stale async init results from an older JS question', async () => {
+    const oldJsState = deferred<{ code: string; baseline: string; dirty: boolean; hasUserCode: boolean }>();
+    const oldTsState = deferred<{ code: string; baseline: string; dirty: boolean; hasUserCode: boolean }>();
+    const newJsState = deferred<{ code: string; baseline: string; dirty: boolean; hasUserCode: boolean }>();
+    const newTsState = deferred<{ code: string; baseline: string; dirty: boolean; hasUserCode: boolean }>();
+    const codeStoreStub = {
+      getJsAsync: jasmine.createSpy('getJsAsync').and.resolveTo(null),
+      cloneJsBundleAsync: jasmine.createSpy('cloneJsBundleAsync').and.resolveTo(false),
+      setJsBaselineAsync: jasmine.createSpy('setJsBaselineAsync').and.resolveTo(undefined),
+      getJsLangStateAsync: jasmine.createSpy('getJsLangStateAsync').and.callFake((key: string, lang: 'js' | 'ts') => {
+        if (key.includes('js-old-init')) return lang === 'js' ? oldJsState.promise : oldTsState.promise;
+        return lang === 'js' ? newJsState.promise : newTsState.promise;
+      }),
+      getLastLang: jasmine.createSpy('getLastLang').and.resolveTo(null),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+    };
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+    component.disablePersistence = false;
+
+    component.question = {
+      id: 'js-old-init',
+      contentVersion: 'v1',
+      starterCode: 'export default function oldValue() { return 1; }',
+      starterCodeTs: 'export default function oldValue(): number { return 1; }',
+      tests: '',
+      testsTs: '',
+    } as any;
+    const firstInit = component.initFromQuestion();
+    await flushMicrotasks();
+
+    component.question = {
+      id: 'js-new-init',
+      contentVersion: 'v1',
+      starterCode: 'export default function newValue() { return 2; }',
+      starterCodeTs: 'export default function newValue(): number { return 2; }',
+      tests: '',
+      testsTs: '',
+    } as any;
+    const secondInit = component.initFromQuestion();
+    await flushMicrotasks();
+
+    newJsState.resolve({
+      code: 'export default function newValue() { return 42; }',
+      baseline: 'export default function newValue() { return 2; }',
+      dirty: true,
+      hasUserCode: true,
+    });
+    newTsState.resolve({
+      code: '',
+      baseline: 'export default function newValue(): number { return 2; }',
+      dirty: false,
+      hasUserCode: false,
+    });
+    await secondInit;
+
+    oldJsState.resolve({
+      code: 'export default function oldValue() { return 99; }',
+      baseline: 'export default function oldValue() { return 1; }',
+      dirty: true,
+      hasUserCode: true,
+    });
+    oldTsState.resolve({
+      code: '',
+      baseline: 'export default function oldValue(): number { return 1; }',
+      dirty: false,
+      hasUserCode: false,
+    });
+    await firstInit;
+
+    expect(component.question?.id).toBe('js-new-init');
+    expect(component.editorContent()).toBe('export default function newValue() { return 42; }');
+    expect(component.testCode()).toBe('');
+  });
+
   it('loads sidecar decision graph and decorates Monaco lines in solution mode', async () => {
     const graphCode = [
       'export default function debounce(fn, delay, { leading = false } = {}) {',
@@ -1337,3 +1494,17 @@ describe('CodingJsPanelComponent', () => {
     expect(component.testResults()[0].name).not.toBe('would run locally');
   });
 });
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+}
+
+async function flushMicrotasks(count = 10): Promise<void> {
+  for (let i = 0; i < count; i += 1) {
+    await Promise.resolve();
+  }
+}

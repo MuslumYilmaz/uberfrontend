@@ -485,13 +485,22 @@ export class CodeStorageService {
       const now = new Date().toISOString();
 
       const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+      const prev = cur[lang] || {};
+      const prevCode = typeof prev.code === 'string' ? prev.code : '';
+      const prevBaseline = typeof prev.baseline === 'string' ? prev.baseline : '';
+      const hasPrevCode = prevCode.trim().length > 0;
+      const codeWasPreviousBaseline =
+        hasPrevCode &&
+        prevBaseline.trim().length > 0 &&
+        prevCode.trim() === prevBaseline.trim();
+      const nextCode = (!hasPrevCode || codeWasPreviousBaseline) ? '' : prevCode;
 
       const next: JsBundleV2 = {
         ...cur,
         [lang]: {
-          code: cur[lang]?.code ?? baseline,
+          code: nextCode,
           baseline,
-          updatedAt: cur[lang]?.updatedAt ?? now,
+          updatedAt: prev.updatedAt ?? now,
         },
         version: 'v2',
         updatedAt: now,
@@ -851,7 +860,7 @@ export class CodeStorageService {
     qidRaw: string | number,
     which: WebLang,
     code: string,
-    opts?: { force?: boolean }
+    opts?: { force?: boolean; allowEmpty?: boolean }
   ): Promise<void> {
     const qid = String(qidRaw);
     const key = V2_WEB_BUNDLE(qid);
@@ -869,8 +878,8 @@ export class CodeStorageService {
       const existing = part.code ?? '';
       const baseline = part.baseline ?? null;
 
-      // Guard 1: don't clobber non-empty user code with empty string (unless forced)
-      if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
+      // Guard 1: don't clobber non-empty user code with empty string (unless forced/user-allowed)
+      if (!opts?.force && !opts?.allowEmpty && (code ?? '').length === 0 && existing.trim().length > 0) {
         return;
       }
 

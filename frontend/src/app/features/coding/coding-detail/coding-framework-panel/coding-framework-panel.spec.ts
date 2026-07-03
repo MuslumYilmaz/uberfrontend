@@ -15,9 +15,21 @@ describe('CodingFrameworkPanelComponent', () => {
     codeStore = jasmine.createSpyObj<CodeStorageService>('CodeStorageService', [
       'saveFrameworkFileAsync',
       'setFrameworkBundleAsync',
+      'getFrameworkDraftSnapshotAsync',
+      'cloneFrameworkBundleAsync',
+      'initFrameworkAsync',
+      'resetFrameworkAsync',
     ]);
     codeStore.saveFrameworkFileAsync.and.resolveTo(undefined);
     codeStore.setFrameworkBundleAsync.and.resolveTo(undefined);
+    codeStore.getFrameworkDraftSnapshotAsync.and.resolveTo(null);
+    codeStore.cloneFrameworkBundleAsync.and.resolveTo(false);
+    codeStore.initFrameworkAsync.and.callFake(async (_key: string, _tech: any, starters: Record<string, string>, entryHint?: string) => ({
+      files: { ...starters },
+      entryFile: entryHint || Object.keys(starters || {})[0] || '',
+      restored: false,
+    }));
+    codeStore.resetFrameworkAsync.and.resolveTo(undefined);
 
     previewBuilder = jasmine.createSpyObj<PreviewBuilderService>('PreviewBuilderService', ['build']);
     previewBuilder.build.and.resolveTo('<!doctype html><html><body>preview</body></html>');
@@ -216,6 +228,54 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(component.frameworkChecks()).toEqual([]);
   });
 
+  it('ignores stale async framework init results from an older question', async () => {
+    const component = createComponent();
+    const oldInit = deferred<{ files: Record<string, string>; entryFile: string; restored: boolean }>();
+    const newInit = deferred<{ files: Record<string, string>; entryFile: string; restored: boolean }>();
+    codeStore.initFrameworkAsync.and.callFake(async (key: string) => {
+      if (key.includes('react-old-init')) return oldInit.promise;
+      return newInit.promise;
+    });
+    component.deferPreview = true;
+
+    component.question = {
+      id: 'react-old-init',
+      tags: ['react'],
+    } as any;
+    component.initFromQuestion();
+    await flushMicrotasks();
+
+    component.question = {
+      id: 'react-new-init',
+      tags: ['react'],
+    } as any;
+    component.initFromQuestion();
+    await flushMicrotasks();
+
+    newInit.resolve({
+      files: {
+        'src/App.tsx': 'export default function App() { return <div>New</div>; }',
+      },
+      entryFile: 'src/App.tsx',
+      restored: true,
+    });
+    await flushMicrotasks();
+
+    oldInit.resolve({
+      files: {
+        'src/App.tsx': 'export default function App() { return <div>Old</div>; }',
+      },
+      entryFile: 'src/App.tsx',
+      restored: true,
+    });
+    await flushMicrotasks();
+
+    expect(component.question.id).toBe('react-new-init');
+    expect(component.editorContent()).toContain('New');
+    expect(component.filesMap()['src/App.tsx']).toContain('New');
+    expect(component.showRestoreBanner()).toBeTrue();
+  });
+
   it('runs pilot framework checks and records bounded framework telemetry', async () => {
     const component = createComponent();
     setCounterCheck(component);
@@ -332,3 +392,17 @@ describe('CodingFrameworkPanelComponent', () => {
     }));
   });
 });
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+}
+
+async function flushMicrotasks(count = 10): Promise<void> {
+  for (let i = 0; i < count; i += 1) {
+    await Promise.resolve();
+  }
+}

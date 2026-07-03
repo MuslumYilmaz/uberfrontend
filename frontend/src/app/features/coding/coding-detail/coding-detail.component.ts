@@ -154,6 +154,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   question = signal<Question | null>(null);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   private dataLoaded = false;
+  private loadQuestionSeq = 0;
   liteEditors = signal(false);
   litePreloadActive = signal(false);
   private liteUpgradeScheduled = false;
@@ -854,6 +855,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   ngOnDestroy() {
+    this.loadQuestionSeq += 1;
     this.routeParamSub?.unsubscribe();
     this.routeDataSub?.unsubscribe();
     if (this.isBrowser) {
@@ -1314,6 +1316,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---------- Load question ----------
   private async loadQuestion(id: string) {
+    const loadSeq = ++this.loadQuestionSeq;
     this.loadState.set('loading');
     const idx = this.allQuestions.findIndex(q => q.id === id);
     if (idx < 0) {
@@ -1323,7 +1326,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
           await this.loadQuestion(fallback);
           return;
         }
-      } else if (this.isBrowser && this.dataLoaded) {
+      } else if (this.isBrowser && this.dataLoaded && this.isActiveLoad(loadSeq)) {
         this.loadState.set('notFound');
         this.router.navigateByUrl('/404', { state: { from: this.router.url } });
       }
@@ -1365,7 +1368,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (!this.isBrowser) return;
 
-    await this.loadSolutionAssetIfAny(q);
+    const solutionAsset = await this.resolveSolutionAsset(q);
+    if (!this.isActiveQuestionLoad(loadSeq, q)) return;
+    this.solutionFilesMap.set(solutionAsset.files);
+    this.solutionOpenPath.set(solutionAsset.initialPath);
 
     // common flags
     this.solved.set(this.progress.isSolved(q.id));
@@ -1411,6 +1417,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     // Parent no longer touches starters/tests; the child panel + CodeStorageService own it.
     // Decide which language tab shell should show while the child initializes from input changes.
     const svcSaved = await this.codeStore.getJsAsync(q.id);
+    if (!this.isActiveQuestionLoad(loadSeq, q)) return;
     const hinted = (q as any)?.defaultLang;
     const resolvedLang: JsLang =
       (svcSaved?.language === 'ts' || svcSaved?.language === 'js')
@@ -1432,14 +1439,19 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     // The child initializes from input changes and pulls starters, tests, and baselines itself.
   }
 
+  private isActiveLoad(seq: number): boolean {
+    return seq === this.loadQuestionSeq;
+  }
 
-  private async loadSolutionAssetIfAny(q: Question): Promise<void> {
+  private isActiveQuestionLoad(seq: number, q: Question): boolean {
+    return this.isActiveLoad(seq) && this.question()?.id === q.id;
+  }
+
+  private async resolveSolutionAsset(q: Question): Promise<{ files: Record<string, string>; initialPath: string }> {
     const assetPath = (q as any).solutionAsset as string | undefined;
 
     if (!assetPath) {
-      this.solutionFilesMap.set({});
-      this.solutionOpenPath.set('');
-      return;
+      return { files: {}, initialPath: '' };
     }
 
     try {
@@ -1447,16 +1459,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       const { files, initialPath } = resolveSolutionFiles(raw);
 
       if (!Object.keys(files).length) {
-        this.solutionFilesMap.set({});
-        this.solutionOpenPath.set('');
-        return;
+        return { files: {}, initialPath: '' };
       }
 
-      this.solutionFilesMap.set(files);
-      this.solutionOpenPath.set(initialPath);
+      return { files, initialPath };
     } catch (err) {
-      this.solutionFilesMap.set({});
-      this.solutionOpenPath.set('');
+      return { files: {}, initialPath: '' };
     }
   }
 

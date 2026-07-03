@@ -39,6 +39,8 @@ import { RestoreBannerComponent } from '../../../../shared/components/restore-ba
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../../console-logger/console-logger.component';
 
+type WebEditorLang = 'html' | 'css';
+
 @Component({
   selector: 'app-coding-web-panel',
   standalone: true,
@@ -443,6 +445,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
   // timers & drag vars
   private webSaveTimer: any = null;
+  private pendingWebSaves: Partial<Record<WebEditorLang, { key: string; code: string }>> = {};
+  private initSeq = 0;
+  private destroyed = false;
   private webPreviewTimer: any = null;
   private deferredPreviewTimer?: number;
   private dragging = false; private startY = 0; private startRatio = 0;
@@ -482,6 +487,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
+    this.initSeq += 1;
+    void this.flushPendingWebSaves();
     if (this.isBrowser) {
       window.removeEventListener('pointermove', this.onPointerMove);
       window.removeEventListener('pointerup', this.onPointerUp);
@@ -489,7 +497,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       window.removeEventListener('message', this.onPreviewMessage);
       if (this.previewObjectUrl) try { URL.revokeObjectURL(this.previewObjectUrl); } catch { }
     }
-    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
     if (this.webPreviewTimer) { clearTimeout(this.webPreviewTimer); this.webPreviewTimer = null; }
     if (this.deferredPreviewTimer) { clearTimeout(this.deferredPreviewTimer); this.deferredPreviewTimer = undefined; }
   }
@@ -574,8 +581,11 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   public async initFromQuestion(): Promise<void> {
+    const initToken = ++this.initSeq;
     const q = this.question;
     if (!q) return;
+    await this.flushPendingWebSaves();
+    if (!this.isActiveInit(initToken, q)) return;
 
     const starters = this.getWebStarters(q);
     if (!this.isBrowser) {
@@ -608,13 +618,16 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
       // Backward-compat: archive legacy (unversioned) draft if it exists.
       const legacySnap = await this.codeStorage.getWebDraftSnapshotAsync(baseKey);
+      if (!this.isActiveInit(initToken, q)) return;
       if (legacySnap) {
         const legacyKey = makeDraftKey(baseKey, 'legacy');
         await this.codeStorage.cloneWebBundleAsync(baseKey, legacyKey).catch(() => false);
+        if (!this.isActiveInit(initToken, q)) return;
         upsertDraftIndexVersion(baseKey, { version: 'legacy', updatedAt: legacySnap.updatedAt || now }, { latestVersion: contentVersion });
       }
 
       const currentSnap = await this.codeStorage.getWebDraftSnapshotAsync(key);
+      if (!this.isActiveInit(initToken, q)) return;
       const idx = upsertDraftIndexVersion(
         baseKey,
         { version: contentVersion, updatedAt: currentSnap?.updatedAt || now },
@@ -626,6 +639,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       this.showUpdateBanner.set(others.length > 0 && !isUpdateBannerDismissed(baseKey, contentVersion));
 
       const { html, css, restored } = await this.codeStorage.initWebAsync(key, starters);
+      if (!this.isActiveInit(initToken, q)) return;
 
       this.htmlCode.set(html);
       this.cssCode.set(css);
@@ -640,27 +654,53 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (this.deferPreview) {
       this.previewReady.set(false);
       this.setPreviewHtml(null);
-      this.scheduleDeferredPreview();
+      this.scheduleDeferredPreview(initToken, q);
     } else {
       this.previewReady.set(true);
       this.scheduleWebPreview();
     }
   }
 
+  private isActiveInit(initToken: number, q: Question): boolean {
+    return !this.destroyed && initToken === this.initSeq && this.question?.id === q.id;
+  }
+
+  private scheduleWebSave(which: WebEditorLang, code: string): void {
+    if (this.disablePersistence) return;
+    const q = this.question;
+    if (!q) return;
+    const key = this.storageKeyFor(q);
+    if (!key) return;
+
+    this.pendingWebSaves[which] = { key, code };
+    if (this.webSaveTimer) clearTimeout(this.webSaveTimer);
+    this.webSaveTimer = setTimeout(() => {
+      void this.flushPendingWebSaves();
+    }, 200);
+  }
+
+  private async flushPendingWebSaves(): Promise<void> {
+    if (this.webSaveTimer) {
+      clearTimeout(this.webSaveTimer);
+      this.webSaveTimer = null;
+    }
+    const pending = this.pendingWebSaves;
+    this.pendingWebSaves = {};
+    const entries = Object.entries(pending) as Array<[WebEditorLang, { key: string; code: string } | undefined]>;
+    if (!entries.length) return;
+
+    await Promise.all(
+      entries
+        .filter((entry): entry is [WebEditorLang, { key: string; code: string }] => !!entry[1]?.key)
+        .map(([which, item]) => this.codeStorage.saveWebAsync(item.key, which, item.code, { allowEmpty: true }))
+    ).catch(() => { });
+  }
 
   // ---------- save + preview ----------
   onHtmlChange = (code: string) => {
     const q = this.question; if (!q) return;
     this.htmlCode.set(code);
-    clearTimeout(this.webSaveTimer);
-    this.webSaveTimer = setTimeout(() => {
-      if (!this.disablePersistence) {
-        const qid = this.question ? this.storageKeyFor(this.question) : null;
-        if (qid) {
-          void this.codeStorage.saveWebAsync(qid, 'html', code);
-        }
-      }
-    }, 200);
+    this.scheduleWebSave('html', code);
 
     if (this.viewingSolution()) {
       this.viewingSolution.set(false);
@@ -675,15 +715,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   onCssChange = (code: string) => {
     const q = this.question; if (!q) return;
     this.cssCode.set(code);
-    clearTimeout(this.webSaveTimer);
-    this.webSaveTimer = setTimeout(() => {
-      if (!this.disablePersistence) {
-        const qid = this.question ? this.storageKeyFor(this.question) : null;
-        if (qid) {
-          void this.codeStorage.saveWebAsync(qid, 'css', code);
-        }
-      }
-    }, 200);
+    this.scheduleWebSave('css', code);
 
     if (this.viewingSolution()) {
       this.viewingSolution.set(false);
@@ -734,7 +766,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     const starters = this.getWebStarters(q);
 
-    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+    await this.flushPendingWebSaves();
 
     if (!this.disablePersistence) {
       await this.codeStorage.resetWebBothAsync(this.storageKeyFor(q), starters);
@@ -756,11 +788,12 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.previewReady.set(true);
   }
 
-  private scheduleDeferredPreview() {
+  private scheduleDeferredPreview(initToken?: number, q?: Question) {
     if (!this.isBrowser || !this.deferPreview || this.previewReady()) return;
     if (this.deferredPreviewTimer) return;
     this.deferredPreviewTimer = window.setTimeout(() => {
       this.deferredPreviewTimer = undefined;
+      if (initToken !== undefined && q && !this.isActiveInit(initToken, q)) return;
       if (!this.deferPreview) return;
       this.previewReady.set(true);
       this.scheduleWebPreview();
@@ -862,11 +895,11 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (!q) return;
 
     if (!this.disablePersistence) {
-      if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+      await this.flushPendingWebSaves();
       const activeKey = this.storageKeyFor(q);
       await Promise.all([
-        this.codeStorage.saveWebAsync(activeKey, 'html', this.webHtml()),
-        this.codeStorage.saveWebAsync(activeKey, 'css', this.webCss()),
+        this.codeStorage.saveWebAsync(activeKey, 'html', this.webHtml(), { allowEmpty: true }),
+        this.codeStorage.saveWebAsync(activeKey, 'css', this.webCss(), { allowEmpty: true }),
       ]).catch(() => { });
     }
 
@@ -878,6 +911,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const q = this.question;
     if (!q || !version) return;
     if (this.disablePersistence) return;
+    const initToken = ++this.initSeq;
 
     const baseKey = this.baseDraftKey() || (this.storageKeyOverride || '').trim() || q.id;
     const currentVersion = this.currentContentVersion() || computeWebQuestionContentVersion(q as any);
@@ -886,14 +920,15 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       return;
     }
 
-    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
-
     // Persist current buffers before switching drafts.
+    await this.flushPendingWebSaves();
+    if (!this.isActiveInit(initToken, q)) return;
     const activeKey = this.storageKeyFor(q);
     await Promise.all([
-      this.codeStorage.saveWebAsync(activeKey, 'html', this.webHtml()),
-      this.codeStorage.saveWebAsync(activeKey, 'css', this.webCss()),
+      this.codeStorage.saveWebAsync(activeKey, 'html', this.webHtml(), { allowEmpty: true }),
+      this.codeStorage.saveWebAsync(activeKey, 'css', this.webCss(), { allowEmpty: true }),
     ]).catch(() => { });
+    if (!this.isActiveInit(initToken, q)) return;
 
     this.exitSolutionPreview('open older draft');
     this.viewingSolution.set(false);
@@ -904,6 +939,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.activeDraftVersion.set(version);
     const storageKey = makeDraftKey(baseKey, version);
     const snap = await this.codeStorage.getWebDraftSnapshotAsync(storageKey);
+    if (!this.isActiveInit(initToken, q)) return;
     if (!snap) {
       await this.initFromQuestion();
       return;
@@ -926,6 +962,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const q = this.question;
     if (!q || !fromVersion) return;
     if (this.disablePersistence) return;
+    await this.flushPendingWebSaves();
 
     const baseKey = this.baseDraftKey() || (this.storageKeyOverride || '').trim() || q.id;
     const currentVersion = this.currentContentVersion() || computeWebQuestionContentVersion(q as any);
@@ -940,8 +977,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     const nextHtml = (snap.html.code?.trim() ? snap.html.code : snap.html.baseline) || starters.html;
     const nextCss = (snap.css.code?.trim() ? snap.css.code : snap.css.baseline) || starters.css;
-
-    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
 
     await Promise.all([
       this.codeStorage.saveWebAsync(toKey, 'html', nextHtml, { force: true }),
@@ -975,7 +1010,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const q = this.question; if (!q) return;
     const starters = this.getWebStarters(q);
 
-    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+    await this.flushPendingWebSaves();
 
     if (!this.disablePersistence) {
       await this.codeStorage.resetWebBothAsync(this.storageKeyFor(q), starters);
@@ -1531,11 +1566,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       nextCss = this.prettifyCss(this.unescapeJsLiterals(payload?.css ?? ''));
     }
 
-    // 2) Cancel pending debounced saves
-    if (this.webSaveTimer) {
-      clearTimeout(this.webSaveTimer);
-      this.webSaveTimer = null;
-    }
+    // 2) Flush pending debounced saves before replacing editor content.
+    await this.flushPendingWebSaves();
 
     // 3) Update editors
     this.htmlCode.set(nextHtml);
