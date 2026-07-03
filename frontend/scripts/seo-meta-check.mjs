@@ -266,12 +266,14 @@ const criticalRouteContracts = [
   },
   {
     route: '/guides/system-design-blueprint/radio-framework',
-    title: 'RADIO Framework: The 5-Step Frontend System Design Answer Template',
-    h1: 'RADIO Framework: The 5-Step Frontend System Design Answer Template',
-    descriptionTerms: ['Requirements', 'Architecture', 'Data', 'Interface', 'Optimizations', 'broad frontend system design prompts', '45-minute answer script'],
+    title: 'RADIO Framework for Frontend System Design: R/A/D/I/O',
+    h1: 'RADIO Framework for Frontend System Design: R/A/D/I/O',
+    descriptionTerms: ['RADIO means', 'Requirements', 'Architecture', 'Data', 'Interface', 'Optimizations', '45-minute script'],
     bodyTerms: [
       'RADIO = Requirements, Architecture, Data, Interface, Optimizations',
+      'RADIO stands for Requirements, Architecture, Data, Interface, and Optimizations',
       'Copy this 45-minute frontend system design RADIO answer script',
+      'RADIO meaning',
       'Copyable 45-minute answer script',
       'Turn a broad prompt into a complete frontend system design interview answer',
       'Use RADIO to clarify scope, sketch architecture, define data and interface contracts',

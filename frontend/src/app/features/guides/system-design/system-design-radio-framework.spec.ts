@@ -23,16 +23,18 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     const host = fixture.nativeElement as HTMLElement;
     const text = host.textContent || '';
 
-    expect(text).toContain('RADIO Framework: The 5-Step Frontend System Design Answer Template');
+    expect(text).toContain('RADIO Framework for Frontend System Design: R/A/D/I/O');
     expect(text).toContain('frontend system design interview answer template');
     expect(text).toContain('RADIO = Requirements, Architecture, Data, Interface, Optimizations');
     expect(text).toContain('Copy this 45-minute frontend system design RADIO answer script');
+    expect(text).toContain('RADIO stands for Requirements, Architecture, Data, Interface, and Optimizations.');
+    expect(text).toContain('prompt into scope, system shape, data contracts, interface behavior, and optimization trade-offs.');
     expect(text).toContain('Template includes');
-    expect(text).toContain('Copy script');
+    expect(text).toContain('RADIO meaning');
     expect(text).toContain('45-minute timeline');
     expect(text).toContain('Diagram checklist');
     expect(text).toContain('Examples');
-    expect(text).toContain('RADIO means Requirements, Architecture, Data, Interface, and Optimizations.');
+    expect(text).not.toContain('not a definition');
     expect(text).toContain('RADIO definition table: what to say and draw');
     expect(text).toContain('What to say');
     expect(text).toContain('What to draw');
@@ -45,7 +47,7 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     expect(text).toContain('What each RADIO step proves to the interviewer');
     expect(text).toContain('You prevent the answer from solving the wrong problem.');
     expect(text).toContain('You can make architecture implementable for real users.');
-    expect(text).toContain('RADIO Framework: The 5-Step Frontend System Design Answer Template');
+    expect(text).toContain('RADIO Framework for Frontend System Design: R/A/D/I/O');
     expect(text).toContain('How to answer a frontend system design interview in 45 minutes');
     expect(text).toContain('Frontend system design checklist');
     expect(text).toContain('Interface taxonomy');
@@ -57,7 +59,7 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     expect(text).toContain('Example: Answer autocomplete with RADIO');
     expect(text).toContain('frontend system design interview example');
     expect(text).toContain('45-minute interview flow');
-    expect(text).toContain('What is the RADIO framework in frontend system design?');
+    expect(text).toContain('What does RADIO stand for in frontend system design?');
     expect(text).toContain('How do I use RADIO to answer a frontend system design interview question?');
     expect(text).toContain('What should I draw during a RADIO answer?');
     expect(text).toContain('How do I use RADIO for autocomplete, news feed, or chat?');

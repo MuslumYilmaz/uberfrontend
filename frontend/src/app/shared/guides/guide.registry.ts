@@ -1641,25 +1641,26 @@ export const SYSTEM: GuideEntry[] = [
     },
     {
         slug: 'radio-framework',
-        title: 'RADIO Framework: The 5-Step Frontend System Design Answer Template',
+        title: 'RADIO Framework for Frontend System Design: R/A/D/I/O',
         minutes: 20,
-        summary: 'Copy a 45-minute frontend system design RADIO answer script with requirements, architecture, data, interface, optimizations, timeline, and examples.',
+        summary: 'Learn how RADIO maps Requirements, Architecture, Data, Interface, and Optimizations to frontend system design answers with a 45-minute script and examples.',
         seo: {
-            title: 'RADIO Framework: The 5-Step Frontend System Design Answer Template',
-            description: 'Use RADIO to turn broad frontend system design prompts into a 5-step, 45-minute answer script: requirements, architecture, data, interface, optimizations.',
-            primaryKeyword: 'frontend system design interview answer template',
+            title: 'RADIO Framework for Frontend System Design: R/A/D/I/O',
+            description: 'RADIO means Requirements, Architecture, Data, Interface, and Optimizations. Use it for frontend system design interviews with a 45-minute script and examples.',
+            primaryKeyword: 'RADIO framework frontend system design',
             keywords: [
+                'RADIO framework frontend system design',
+                'requirements architecture data interface optimizations',
+                'what is the RADIO framework in frontend system design',
+                'RADIO approach system design',
+                'RADIO framework for frontend system design interviews',
+                'how to use RADIO framework for frontend system design interview',
+                'RADIO answer template',
                 'frontend system design interview answer template',
                 '45 minute frontend system design interview framework',
                 'how to answer frontend system design interview',
-                'RADIO framework frontend system design',
-                'RADIO answer template',
-                'RADIO framework for frontend system design interviews',
                 'frontend system design interview checklist',
                 'frontend system design 45 minute framework',
-                'requirements architecture data interface optimizations',
-                'what is the RADIO framework in frontend system design',
-                'how to use RADIO framework for frontend system design interview',
                 'frontend system design answer template 45 minutes',
                 'what should I draw during a frontend system design interview',
                 'RADIO framework autocomplete frontend system design',
@@ -1668,8 +1669,12 @@ export const SYSTEM: GuideEntry[] = [
                 'frontend system design interface API taxonomy',
             ],
             faqPage: {
-                name: 'Frontend system design answer template FAQ',
+                name: 'RADIO framework frontend system design FAQ',
                 items: [
+                    {
+                        question: 'What does RADIO stand for in frontend system design?',
+                        answer: 'RADIO stands for Requirements, Architecture, Data, Interface, and Optimizations. It is a frontend system design interview framework for turning broad UI architecture prompts into a structured 45-minute answer with diagrams, contracts, and trade-offs.',
+                    },
                     {
                         question: 'How do I use RADIO to answer a frontend system design interview question?',
                         answer: 'Start by clarifying the user flow and constraints, then sketch the frontend architecture, model server and client state, define component and API interfaces, and close with the highest-risk optimizations. Keep one core flow as the thread so every RADIO step supports the same answer.',
@@ -1683,21 +1688,17 @@ export const SYSTEM: GuideEntry[] = [
                         answer: 'Keep the RADIO steps stable while the prompt changes. For autocomplete, go deep on stale requests and combobox behavior; for news feed, pagination and cache consistency; for chat, realtime events, drafts, and recovery.',
                     },
                     {
-                        question: 'What is the RADIO framework in frontend system design?',
-                        answer: 'RADIO stands for Requirements, Architecture, Data, Interface, and Optimizations. It is a frontend system design interview framework for turning broad UI architecture prompts into a structured 45-minute answer with diagrams, contracts, and trade-offs.',
-                    },
-                    {
                         question: 'Is RADIO the best framework for frontend system design interviews?',
                         answer: 'RADIO is a strong default because it keeps frontend answers ordered from scope to architecture, data contracts, interface behavior, and optimization trade-offs. Adapt it when the interviewer asks to go deeper in one area.',
                     },
                 ],
             },
             itemList: {
-                name: 'Frontend system design answer template sections',
+                name: 'RADIO framework frontend system design sections',
                 items: [
                     {
-                        name: 'Opening script',
-                        description: 'Copy the first minute of the answer and set up the RADIO structure before drawing.',
+                        name: 'RADIO meaning',
+                        description: 'Define Requirements, Architecture, Data, Interface, and Optimizations before using the answer script.',
                         url: '#frontend-system-design-interview-answer-template',
                     },
                     {
@@ -1722,9 +1723,9 @@ export const SYSTEM: GuideEntry[] = [
                     },
                 ],
             },
-            readerPromise: 'Copy a 45-minute frontend system design RADIO answer script with requirements, architecture, data, interface, optimizations, timeline, and examples.',
+            readerPromise: 'Learn what RADIO means in frontend system design: Requirements, Architecture, Data, Interface, and Optimizations, then use the 45-minute answer script and examples.',
             publishedAt: '2026-02-18',
-            updatedAt: '2026-06-30',
+            updatedAt: '2026-07-03',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-radio-framework')
