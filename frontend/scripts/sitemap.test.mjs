@@ -403,6 +403,83 @@ function assertVercelCodingQueryNoindexHeaders() {
   }
 }
 
+function readVercelConfig() {
+  if (!fs.existsSync(VERCEL_CONFIG_PATH)) {
+    throw new Error(`Missing ${VERCEL_CONFIG_PATH}.`);
+  }
+
+  return JSON.parse(fs.readFileSync(VERCEL_CONFIG_PATH, 'utf8'));
+}
+
+function getGlobalVercelHeader(config, headerName) {
+  const normalizedHeaderName = String(headerName || '').toLowerCase();
+  const globalRule = (Array.isArray(config.headers) ? config.headers : [])
+    .find((rule) => rule?.source === '/(.*)');
+
+  const header = (Array.isArray(globalRule?.headers) ? globalRule.headers : [])
+    .find((entry) => String(entry?.key || '').toLowerCase() === normalizedHeaderName);
+
+  if (!header?.value) {
+    throw new Error(`vercel.json missing global ${headerName} header.`);
+  }
+
+  return String(header.value);
+}
+
+function parseCspDirectives(policy) {
+  const directives = new Map();
+  String(policy || '')
+    .split(';')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .forEach((part) => {
+      const [name, ...tokens] = part.split(/\s+/);
+      directives.set(name.toLowerCase(), new Set(tokens));
+    });
+  return directives;
+}
+
+function assertCspDirectiveSources({ headerName, policy, directiveName, requiredSources }) {
+  const directives = parseCspDirectives(policy);
+  const sources = directives.get(directiveName);
+  if (!sources) {
+    throw new Error(`${headerName} missing ${directiveName}.`);
+  }
+
+  const missing = requiredSources.filter((source) => !sources.has(source));
+  if (missing.length) {
+    throw new Error(`${headerName} ${directiveName} missing required source(s): ${missing.join(', ')}`);
+  }
+}
+
+function assertVercelCspAllowsCodingSandboxRunner() {
+  const config = readVercelConfig();
+  const headerNames = ['Content-Security-Policy', 'Content-Security-Policy-Report-Only'];
+
+  headerNames.forEach((headerName) => {
+    const policy = getGlobalVercelHeader(config, headerName);
+
+    assertCspDirectiveSources({
+      headerName,
+      policy,
+      directiveName: 'script-src',
+      requiredSources: ["'unsafe-eval'", 'blob:'],
+    });
+    assertCspDirectiveSources({
+      headerName,
+      policy,
+      directiveName: 'script-src-elem',
+      requiredSources: ['blob:'],
+    });
+    assertCspDirectiveSources({
+      headerName,
+      policy,
+      directiveName: 'worker-src',
+      requiredSources: ['blob:'],
+    });
+  });
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const locs = getAllSitemapLocs(sitemapFiles);
@@ -414,5 +491,6 @@ assertCoreIndexableCoverage(paths);
 assertIndexableRouteTitlesUnique();
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();
+assertVercelCspAllowsCodingSandboxRunner();
 
 console.log('Sitemap size check passed.');
