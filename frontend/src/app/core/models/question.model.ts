@@ -98,6 +98,7 @@ export interface Question {
   id: string;
   title: string;
   author?: string;        // default handled in UI/SEO when omitted
+  publishedAt?: string;   // ISO date string (optional)
   updatedAt?: string;     // ISO date string (optional)
   answer?: string;
   description?: string | StructuredDescription;

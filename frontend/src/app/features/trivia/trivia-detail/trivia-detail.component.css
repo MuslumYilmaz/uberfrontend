@@ -15,6 +15,8 @@ html, body { height: 100%; background: var(--uf-bg); }
 
 /* Sidebar */
 .side {
+  grid-column: 1;
+  grid-row: 1;
   background: var(--uf-bg);
   border-right: 1px solid var(--uf-border-subtle);
   overflow: auto;
@@ -53,8 +55,9 @@ html, body { height: 100%; background: var(--uf-bg); }
 @media (max-width: 1200px) { .side { display: none; } }
 
 /* Main */
-.main { overflow: auto; padding: 24px 32px; background: var(--uf-bg); -webkit-overflow-scrolling: touch; padding-top: 0;}
+.main { grid-column: 2; grid-row: 1; overflow: auto; padding: 24px 32px; background: var(--uf-bg); -webkit-overflow-scrolling: touch; padding-top: 0;}
 .main-stack { max-width: 920px; margin: 0 auto; display: grid; gap: 22px; }
+@media (max-width: 1200px) { .main { grid-column: 1; } }
 
 /* Mobile/tablet question navigator */
 .mobile-qnav { display: none; }

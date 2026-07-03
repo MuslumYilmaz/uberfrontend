@@ -1078,7 +1078,13 @@ describe('TriviaDetailComponent', () => {
         'Loose equality and strict equality differ because coercion can silently change operands.',
       technology: 'javascript',
       tags: ['operators', 'comparison', 'types', 'javascript'],
+      publishedAt: '2025-11-08',
       updatedAt: '2026-07-03',
+      seo: {
+        title: 'JavaScript == vs ===: frontend coercion bug playbook',
+        description:
+          'Debug form, query param, storage, API, NaN, and collection equality bugs with strict comparison, explicit normalization, and edge-case tests.',
+      },
     });
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -1087,9 +1093,13 @@ describe('TriviaDetailComponent', () => {
     const question = graph.find((node: any) => node?.['@type'] === 'Question');
     const typeNames = graph.map((node: any) => node?.['@type']);
 
+    expect(payload?.title).toBe('JavaScript == vs ===: frontend coercion bug playbook');
+    expect(payload?.description).toContain('Debug form, query param, storage, API, NaN');
     expect(typeNames).not.toContain('FAQPage');
     expect(typeNames).not.toContain('QAPage');
     expect(article?.articleSection).toBe('JavaScript equality and coercion');
+    expect(article?.datePublished).toBe('2025-11-08T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
     expect((article?.about || []).map((item: any) => item.name)).toEqual([
       'JavaScript equality operators',
       'Loose equality',
@@ -1103,6 +1113,11 @@ describe('TriviaDetailComponent', () => {
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('IsLooselyEqual');
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('!==');
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('Array.prototype.includes');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('DOM input');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('URLSearchParams');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('boundary normalization');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('equality test checklist');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('senior interview answer');
     expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('MDN Web Docs');
     expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('ECMAScript specification');
     expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('source reference');
@@ -1114,11 +1129,15 @@ describe('TriviaDetailComponent', () => {
     expect((article?.mentions || []).map((item: any) => item.name)).toContain('edge-case comparison drill');
     expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
       'Core idea',
+      'Frontend coercion bug matrix',
       'Loose equality',
       'How == decides',
       'Strict equality',
+      'Boundary normalization recipes',
+      'Junior, mid, and senior interview answer',
       'Beyond ===: Object.is and SameValueZero',
       'Pitfalls',
+      'Equality test checklist',
       'Practical rule',
       'FrontendAtlas review note',
       'Equality predictor',
@@ -1300,6 +1319,11 @@ describe('TriviaDetailComponent', () => {
   it('renders unlocked trivia shell with sidebar, similar, guides, and prep bridge blocks', async () => {
     const fixture = await createLoadedFixture();
 
+    const pageFrame = fixture.nativeElement.querySelector('.page-frame') as HTMLElement;
+    const main = fixture.nativeElement.querySelector('[data-testid="trivia-detail-main"]') as HTMLElement;
+    const side = fixture.nativeElement.querySelector('.side') as HTMLElement;
+    expect(pageFrame.firstElementChild).toBe(main);
+    expect(Boolean(main.compareDocumentPosition(side) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTrue();
     expect(fixture.nativeElement.querySelector('.side-list')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame"]')).toBeTruthy();
     expect(fixture.nativeElement.textContent || '').toContain('Interview answer drill');
