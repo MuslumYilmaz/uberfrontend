@@ -106,7 +106,7 @@ router.post('/complete', requireAuth, async (req, res) => {
         if (!VALID_TECHS.includes(tech)) return res.status(400).json({ error: 'Invalid tech' });
 
         const durationMinSafe = Math.min(Math.max(Number(durationMin) || 0, 0), 24 * 60);
-        const questionMeta = getQuestionMeta({ kind, itemId: String(itemId || '') });
+        const questionMeta = getQuestionMeta({ kind, tech, itemId: String(itemId || '') });
         const resolvedDifficulty = normalizeDifficulty(
             difficulty
             || questionMeta?.difficulty

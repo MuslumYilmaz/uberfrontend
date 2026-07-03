@@ -16,6 +16,7 @@ let EditorAssistAttempt;
 let WeeklyGoalBonusCredit;
 let UserAchievement;
 let loadQuestionCatalog;
+let getQuestionMeta;
 let loadPracticeCatalog;
 let getQuestionReadinessBucket;
 let loadEssentialPriority;
@@ -312,7 +313,7 @@ beforeAll(async () => {
   EditorAssistAttempt = require('../models/EditorAssistAttempt');
   WeeklyGoalBonusCredit = require('../models/WeeklyGoalBonusCredit');
   UserAchievement = require('../models/UserAchievement');
-  ({ loadQuestionCatalog } = require('../services/gamification/question-catalog'));
+  ({ loadQuestionCatalog, getQuestionMeta } = require('../services/gamification/question-catalog'));
   ({ loadPracticeCatalog } = require('../services/gamification/practice-catalog'));
   ({ getQuestionReadinessBucket } = require('../services/gamification/readiness-buckets'));
   ({ loadEssentialPriority } = require('../services/gamification/essential-priority'));
@@ -351,6 +352,25 @@ describe('GET /api/dashboard', () => {
     }
 
     expect(duplicates).toEqual([]);
+    expect(catalog.byTechKindKey.get('debug:javascript:js-debug-off-by-one')).toEqual(
+      expect.objectContaining({
+        id: 'js-debug-off-by-one',
+        kind: 'debug',
+        tech: 'javascript',
+        difficulty: 'easy',
+        route: '/javascript/debug/js-debug-off-by-one',
+      })
+    );
+    expect(catalog.byId.has('ng-debug-counter-change-detection')).toBe(true);
+    expect(getQuestionMeta({
+      kind: 'debug',
+      tech: 'javascript',
+      itemId: 'js-debug-off-by-one',
+    })).toEqual(expect.objectContaining({
+      id: 'js-debug-off-by-one',
+      kind: 'debug',
+      tech: 'javascript',
+    }));
   });
 
   test('prep readiness read path has dashboard-specific indexes', () => {

@@ -350,12 +350,18 @@ export class QuestionService {
       ? this.http.get<any>(primary).pipe(catchError(() => this.http.get<any>(fallback)))
       : this.http.get<any>(fallback);
 
+    let requestFailed = false;
     const list = await firstValueFrom(source$.pipe(
       map((raw) => this.normalizeQuestions(raw, technology, kind)),
-      catchError(() => of([] as Question[])),
+      catchError(() => {
+        requestFailed = true;
+        return of([] as Question[]);
+      }),
     ));
 
-    await this.persistence.set(cKey, JSON.stringify(list));
+    if (!requestFailed) {
+      await this.persistence.set(cKey, JSON.stringify(list));
+    }
     return list;
   }
 

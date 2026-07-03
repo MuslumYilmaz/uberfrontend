@@ -42,8 +42,8 @@ const CASES = [
   },
   {
     path: '/guides/system-design-blueprint/radio-framework',
-    titleIncludes: 'radio framework for frontend system design',
-    h1: 'RADIO Framework for Frontend System Design: R/A/D/I/O',
+    titleIncludes: 'radio framework: frontend system design interview template',
+    h1: 'RADIO Framework: Frontend System Design Interview Template',
     detail: true,
     indexable: true,
     singleHydratedH1: true,

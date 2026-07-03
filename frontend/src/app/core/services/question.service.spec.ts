@@ -159,6 +159,36 @@ describe('QuestionService', () => {
     expect(list[0]?.id).toBe('network-hit');
   });
 
+  it('does not cache an empty question list produced by a failed asset fetch', async () => {
+    const resultPromise = firstValueFrom(service.loadQuestions('javascript', 'coding'));
+    flushDataVersion('bank-v1');
+
+    const req = await waitForRequest(
+      (r) => r.url.includes('questions/javascript/coding.json'),
+      'failed coding fetch',
+    );
+    req.flush('server error', { status: 500, statusText: 'Server Error' });
+
+    const list = await resultPromise;
+    expect(list).toEqual([]);
+    expect(await persistence.get(cacheKey)).toBeNull();
+  });
+
+  it('caches a successful empty question list response', async () => {
+    const resultPromise = firstValueFrom(service.loadQuestions('javascript', 'coding'));
+    flushDataVersion('bank-v1');
+
+    const req = await waitForRequest(
+      (r) => r.url.includes('questions/javascript/coding.json'),
+      'successful empty coding fetch',
+    );
+    req.flush([]);
+
+    const list = await resultPromise;
+    expect(list).toEqual([]);
+    expect(await persistence.get(cacheKey)).toBe('[]');
+  });
+
   it('invalidates qcache keys on version change but keeps overrides', async () => {
     await persistence.set(cacheKey, JSON.stringify([makeCodingQuestion('stale-cache')]));
     await persistence.set(overrideKey, JSON.stringify([makeCodingQuestion('override-kept')]));
