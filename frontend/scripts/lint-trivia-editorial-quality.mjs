@@ -12,7 +12,7 @@ const STALE_AFTER_DAYS = 365;
 const EXPLICIT_EXAMPLE_RX = /\b(example|for example|scenario|worked example|e\.g\.)\b/i;
 const JUDGMENT_RX = /\b(trade(?:\s|[-‑–—])?offs?|mistakes?|pitfalls?|decision(?:s)?|constraints?)\b/i;
 const SUMMARY_RX = /\b(summary|takeaway|in short|the short version|remember)\b/i;
-const DOCS_INTENT_SEO_RX = /\b(?:official\s+docs\s+proof|official\s+(?:[a-z]+\s+){0,4}(?:docs?|documentation)|documentation|docs[\s-]?backed)\b/i;
+const DOCS_INTENT_SEO_RX = /\b(?:official\s+docs?|docs\s+wording|memorized\s+docs\s+wording|official\s+documentation|documentation|official\s+guide|official\s+api|api\s+docs?|api\s+reference|official\s+docs\s+proof|official\s+(?:[a-z]+\s+){0,4}(?:docs?|documentation)|docs[\s-]?backed)\b/i;
 const SEO_INTENT_FIELDS = ['title', 'description', 'h1', 'h1IntentLabel'];
 
 const errors = [];

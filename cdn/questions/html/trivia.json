@@ -1174,7 +1174,7 @@
             ],
             [
               "Download",
-              "<code>&lt;a href=\"/docs/guide.pdf\" download&gt;Download guide&lt;/a&gt;</code>"
+              "<code>&lt;a href=\"/files/guide.pdf\" download&gt;Download guide&lt;/a&gt;</code>"
             ]
           ],
           "caption": "One tag, many navigation patterns."
@@ -1186,7 +1186,7 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\">\n  Open docs in new tab\n</a>"
+          "code": "<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\">\n  Open guide in new tab\n</a>"
         },
         {
           "type": "text",
@@ -1295,7 +1295,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Absolute vs. Relative URLs</strong>\n\nThe `href` value can be **absolute** or **relative**:\n\n- **Absolute URL:** Points to an external website with the full address.\n``<code>html\n&lt;a href=\"https://developer.mozilla.org/\"&gt;MDN Docs&lt;/a&gt;\n</code>``\n\n- **Relative URL:** Points to a resource relative to the current page’s location.\n``<code>html\n&lt;a href=\"/coding\"&gt;Coding Practice&lt;/a&gt;\n</code>``"
+          "text": "<strong>Absolute vs. Relative URLs</strong>\n\nThe `href` value can be **absolute** or **relative**:\n\n- **Absolute URL:** Points to an external website with the full address.\n``<code>html\n&lt;a href=\"https://developer.mozilla.org/\"&gt;MDN&lt;/a&gt;\n</code>``\n\n- **Relative URL:** Points to a resource relative to the current page’s location.\n``<code>html\n&lt;a href=\"/coding\"&gt;Coding Practice&lt;/a&gt;\n</code>``"
         },
         {
           "type": "text",
@@ -2165,7 +2165,7 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<iframe src=\"/docs/guide.html\" sandbox></iframe>\n<!-- Disables scripts, forms, and same-origin access -->"
+          "code": "<iframe src=\"/guides/embedded-page.html\" sandbox></iframe>\n<!-- Disables scripts, forms, and same-origin access -->"
         },
         {
           "type": "text",
@@ -2705,7 +2705,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Open external docs in a new tab while keeping internal links in the same tab.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>target=\"_blank\"</code> without <code>rel=\"noopener noreferrer\"</code>, which is a security risk.</li><li>Overusing new tabs and hurting navigation flow.</li><li>Forgetting to announce new-tab behavior for accessibility.</li></ul><strong>Trade-off or test tip</strong><br>New tabs can preserve context but reduce control for users. Test with keyboard navigation and verify <code>rel</code> attributes are set."
+          "text": "<strong>Practical scenario</strong><br>Open an external guide in a new tab while keeping internal links in the same tab.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>target=\"_blank\"</code> without <code>rel=\"noopener noreferrer\"</code>, which is a security risk.</li><li>Overusing new tabs and hurting navigation flow.</li><li>Forgetting to announce new-tab behavior for accessibility.</li></ul><strong>Trade-off or test tip</strong><br>New tabs can preserve context but reduce control for users. Test with keyboard navigation and verify <code>rel</code> attributes are set."
         }
       ]
     },

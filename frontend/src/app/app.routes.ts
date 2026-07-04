@@ -1430,7 +1430,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Front-end interview concept question',
-            description: 'Quick front-end concept explanation for interview prep.',
+            description: 'Practice this topic with a quick interview answer, examples, common mistakes, and production-focused follow-ups.',
           },
         },
       },

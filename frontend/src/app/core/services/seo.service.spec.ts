@@ -44,6 +44,8 @@ describe('SeoService', () => {
     expect(title.getTitle()).toContain('SEO Test');
     const desc = meta.getTag('name="description"');
     expect(desc?.content).toBe('SEO description');
+    expect(meta.getTag('property="og:description"')?.content).toBe('SEO description');
+    expect(meta.getTag('name="twitter:description"')?.content).toBe('SEO description');
 
     const canonical = doc.head.querySelector('link[rel="canonical"]')?.getAttribute('href') || '';
     expect(canonical).toContain('/pricing');
