@@ -1169,6 +1169,450 @@ describe('TriviaDetailComponent', () => {
     expect(simulator?.textContent || '').toContain('Good memoization boundary for unrelated updates.');
   });
 
+  it('adds Angular forms schema and stacks target comparison tables on mobile', async () => {
+    const question = {
+      id: 'angular-template-driven-vs-reactive-forms-which-scales',
+      title: 'Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?',
+      description:
+        'Reactive forms scale better for large or dynamic Angular forms because the form model, validators, and state transitions live explicitly in TypeScript.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text:
+              '## Source of truth\n\nReactive forms scale better for large or dynamic Angular forms because the model lives in TypeScript. Use 5 practical signals to know when an Angular form outgrows ngModel: source of truth, validation state, dynamic fields, testability, and migration timing. When those signals accumulate, an ngModel-based template-driven form has usually reached the point where a reactive model is easier to change and test.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Worked example\n\nA checkout flow with conditional sections is easier to scale with reactive forms.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Decision rule\n\n<ul><li>Use template-driven forms for small forms.</li><li>Use reactive forms when fields are dynamic.</li></ul>',
+          },
+          {
+            type: 'list',
+            columns: ['Dimension', 'Template-driven', 'Reactive'],
+            rows: [
+              ['Where the model lives', 'In the template', 'In TypeScript'],
+              ['Validation', 'Template-based', 'Function-based'],
+            ],
+            caption: 'Template-driven vs reactive forms',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text: '## Template-driven example\n\nSmall and mostly static.',
+          },
+          {
+            type: 'code',
+            language: 'html',
+            code: '<form #f="ngForm">\n  <input name="email" ngModel required email />\n</form>',
+          },
+          {
+            type: 'text',
+            text: '## Reactive example\n\nExplicit TypeScript model.',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: "form = new FormGroup({\n  email: new FormControl('', [Validators.required])\n});",
+          },
+          {
+            type: 'text',
+            text:
+              '## Scaling pressure points\n\n<ul><li>Dynamic fields.</li><li>Cross-field validation.</li><li>Testable validation logic.</li></ul>',
+          },
+          {
+            type: 'text',
+            text:
+              '## Data flow timing\n\nReactive forms connect each input directly to a control instance: <code>input</code> event -> CVA -> <code>FormControl</code> -> <code>valueChanges</code>.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Interactive form flow comparator\n\nThe comparator below turns the abstract choice into four traces: reactive input updates, template-driven updates, validation state, and migration triggers.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Validation state and error UX\n\nBoth approaches expose <code>touched</code>, <code>dirty</code>, <code>pristine</code>, <code>valid</code>, and <code>invalid</code>.',
+          },
+          {
+            type: 'text',
+            text:
+              '## API ergonomics\n\n<code>FormBuilder</code>, <code>setValue</code>, <code>patchValue</code>, <code>reset</code>, and custom validator functions keep workflow changes in TypeScript.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Migration threshold checklist\n\nUse this as a practical threshold, not a style preference.',
+          },
+          {
+            type: 'list',
+            columns: ['Signal', 'Stay template-driven', 'Move reactive'],
+            rows: [
+              ['Dynamic rows', 'One fixed fieldset', 'Users can add/remove rows'],
+              ['Cross-field rule', 'Single-field checks', 'Rules compare controls'],
+              ['Async validator', 'No server lookup', 'Checks call an API'],
+              ['Draft/autosave', 'Submit once', 'Save intermediate states'],
+              ['Unit-tested business rule', 'Template-only validation', 'Pure TypeScript tests'],
+            ],
+            caption: 'Migration threshold checklist',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text:
+              '## Same form, three changes later\n\nThe migration point appears when state transitions are easier to model than infer from directives.',
+          },
+          {
+            type: 'list',
+            columns: ['Step', 'New requirement', 'Best fit'],
+            rows: [
+              ['Step 1', 'Email and password checks', 'Template-driven is acceptable'],
+              ['Step 2', 'Company users reveal VAT fields', 'Either works'],
+              ['Step 3', 'Users can add multiple shipping rows', 'Reactive form'],
+              ['Step 4', 'Async coupon check and draft restore', 'Reactive model'],
+            ],
+            caption: 'Same form progression',
+            stackOnMobile: true,
+          },
+          {
+            type: 'list',
+            columns: ['Real-world requirement', 'Template-driven', 'Reactive'],
+            rows: [
+              ['Dynamic rows', 'High setup', 'Built-in support'],
+              ['Unit testing', 'Requires template rendering', 'Pure TypeScript tests'],
+            ],
+            caption: 'Large-form tradeoffs',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text:
+              '## Architecture fit\n\n<ul><li><code>OnPush</code> change detection.</li><li>Observable-based workflows.</li></ul>',
+          },
+          {
+            type: 'text',
+            text:
+              '## When template-driven forms are still OK\n\n<ul><li>Very small forms.</li><li>Quick internal tools.</li></ul>',
+          },
+          {
+            type: 'text',
+            text:
+              '## Senior-level pitfalls\n\n<ul><li>Mixing both approaches in the same form.</li></ul>',
+          },
+          {
+            type: 'text',
+            text:
+              '## Testable proof\n\nReactive form rules can be checked without rendering the template.',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code:
+              "const email = new FormControl('', [Validators.required, Validators.email]);\n\nemail.setValue('not-an-email');\nemail.markAsTouched();\n\nexpect(email.invalid).toBeTrue();\nexpect(email.hasError('email')).toBeTrue();",
+          },
+          {
+            type: 'text',
+            text:
+              '## FrontendAtlas review note\n\nWhen we review Angular forms answers, we look for where the form model lives and whether the workflow can be tested without rendering the template.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Source check\n\nCompare this answer with Angular\'s <a href="https://angular.dev/guide/forms" target="_blank" rel="noopener">forms guide</a>, <a href="https://angular.dev/guide/forms/reactive-forms" target="_blank" rel="noopener">reactive forms guide</a>, <a href="https://angular.dev/guide/forms/template-driven-forms" target="_blank" rel="noopener">template-driven forms guide</a>, and <a href="https://angular.dev/guide/forms/form-validation" target="_blank" rel="noopener">form validation guide</a>. FrontendAtlas content is maintained under the <a href="/legal/editorial-policy">Editorial Policy</a>.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Practice next\n\nUse the <a href="/guides/framework-prep/angular-prep-path">Angular prep path</a>, <a href="/angular/coding/angular-contact-form-starter">Angular contact form starter</a>, <a href="/angular/coding/angular-multi-step-form-starter">Angular multi-step form starter</a>, and <a href="/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding">ControlValueAccessor vs two-way binding</a>.',
+          },
+          {
+            type: 'text',
+            text: '## Interview summary\n\nReactive forms are the better default once workflows need explicit state.',
+          },
+        ],
+      },
+      importance: 4,
+      difficulty: 'intermediate',
+      technology: 'angular',
+      access: 'free',
+      tags: ['angular', 'forms', 'reactive-forms', 'template-driven', 'basics'],
+      updatedAt: '2026-07-04',
+      seo: {
+        title: 'Reactive vs Template-Driven Forms: When ngModel Stops Scaling',
+        description:
+          'Use 5 practical signals for when an Angular form outgrows ngModel: source of truth, validation state, dynamic fields, testability, and migration timing.',
+      },
+    };
+
+    routeData$.next({
+      questionDetail: {
+        tech: 'angular',
+        kind: 'trivia',
+        id: question.id,
+        list: [question],
+        listSummaries: [toSummary(question)],
+        question,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h3Text).toEqual([
+      'Source of truth',
+      'Worked example',
+      'Decision rule',
+      'Template-driven example',
+      'Reactive example',
+      'Scaling pressure points',
+      'Data flow timing',
+      'Interactive form flow comparator',
+      'Validation state and error UX',
+      'API ergonomics',
+      'Migration threshold checklist',
+      'Same form, three changes later',
+      'Architecture fit',
+      'When template-driven forms are still OK',
+      'Senior-level pitfalls',
+      'Testable proof',
+      'FrontendAtlas review note',
+      'Source check',
+      'Practice next',
+      'Interview summary',
+    ]);
+
+    const stackedTables = Array.from(
+      fixture.nativeElement.querySelectorAll('table.table.table--stacked-mobile')
+    ) as HTMLTableElement[];
+    expect(stackedTables.length).toBe(4);
+    const firstTableCells = Array.from(stackedTables[0].querySelectorAll('tbody td')) as HTMLTableCellElement[];
+    expect(firstTableCells.map((cell) => cell.getAttribute('data-label')).slice(0, 3)).toEqual([
+      'Dimension',
+      'Template-driven',
+      'Reactive',
+    ]);
+    expect(fixture.nativeElement.textContent).toContain('Migration threshold checklist');
+    expect(fixture.nativeElement.textContent).toContain('5 practical signals');
+    expect(fixture.nativeElement.textContent).toContain('outgrows ngModel');
+    expect(fixture.nativeElement.textContent).toContain('source of truth, validation state, dynamic fields, testability, and migration timing');
+    expect(fixture.nativeElement.textContent).toContain('Dynamic rows');
+    expect(fixture.nativeElement.textContent).toContain('Same form progression');
+    expect(fixture.nativeElement.textContent).toContain('Step 1');
+    expect(fixture.nativeElement.textContent).toContain('Email and password checks');
+    expect(fixture.nativeElement.textContent).toContain('Reactive form rules can be checked without rendering the template');
+    expect(fixture.nativeElement.textContent).toContain('When we review Angular forms answers');
+    expect(fixture.nativeElement.textContent).toContain('Editorial Policy');
+    expect(fixture.nativeElement.textContent).toContain('The comparator below turns the abstract choice into four traces');
+    expect(fixture.nativeElement.textContent).toContain('Angular prep path');
+    expect(fixture.nativeElement.textContent).not.toContain('❌');
+    expect(fixture.nativeElement.textContent).not.toContain('✅');
+    expect(fixture.nativeElement.textContent).not.toContain('⚠️');
+    const codeText = Array.from(fixture.nativeElement.querySelectorAll('pre code'))
+      .map((node: any) => String(node.textContent || ''))
+      .join('\n');
+    expect(codeText).toContain("email.setValue('not-an-email')");
+    expect(codeText).toContain('email.markAsTouched()');
+    expect(codeText).toContain("email.hasError('email')");
+    expect(
+      fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms"]')
+    ).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/reactive-forms"]')
+    ).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/template-driven-forms"]')
+    ).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/form-validation"]')
+    ).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/legal/editorial-policy"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/angular-prep-path"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/angular/coding/angular-contact-form-starter"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/angular/coding/angular-multi-step-form-starter"]')).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding"]')
+    ).toBeTruthy();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
+    const typeNames = graph.map((node: any) => node?.['@type']);
+
+    expect(typeNames).toContain('Question');
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(article?.articleSection).toBe('Angular forms');
+    expect(article?.educationalLevel).toBe('Intermediate');
+    expect(article?.learningResourceType).toBe('Interview answer');
+    expect(article?.reviewedBy).toEqual({ '@type': 'Organization', name: 'FrontendAtlas' });
+    expect((article?.about || []).map((item: any) => item.name)).toEqual([
+      'Angular forms',
+      'Template-driven forms',
+      'Reactive forms',
+      'Form model source of truth',
+    ]);
+    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
+      'ngModel',
+      'ngModelChange',
+      'FormGroup',
+      'FormControl',
+      'FormArray',
+      'valueChanges',
+      'FormBuilder',
+      'Validators',
+      'setValue',
+      'patchValue',
+      'reset',
+      'two-way binding',
+      'cross-field validation',
+      'dynamic controls',
+      'dirty',
+      'touched',
+      'pristine',
+      'valid',
+      'invalid',
+      'custom validator',
+      'async validator',
+      'draft autosave',
+      'migration threshold',
+      'OnPush change detection',
+      'Observable-based workflows',
+      'ControlValueAccessor',
+      'unit testing',
+      'Angular forms guide',
+      'Angular form validation',
+      'editorial policy',
+      'review evidence',
+      'interactive form flow comparator',
+      'reactive input update trace',
+      'template-driven change detection trace',
+      'Angular prep path',
+      'reactive forms coding drill',
+    ]);
+    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
+      'Interview quick answer',
+      'Source of truth',
+      'Worked example',
+      'Decision rule',
+      'Template-driven example',
+      'Reactive example',
+      'Scaling pressure points',
+      'Data flow timing',
+      'Validation state and error UX',
+      'API ergonomics',
+      'Migration threshold checklist',
+      'Same form, three changes later',
+      'Interactive form flow comparator',
+      'Large-form tradeoffs',
+      'Architecture fit',
+      'When template-driven forms are still OK',
+      'Senior-level pitfalls',
+      'Testable proof',
+      'FrontendAtlas review note',
+      'Source check',
+      'Practice next',
+      'Interview summary',
+    ]);
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://angular.dev/guide/forms',
+      'https://angular.dev/guide/forms/reactive-forms',
+      'https://angular.dev/guide/forms/template-driven-forms',
+      'https://angular.dev/guide/forms/form-validation',
+      'https://frontendatlas.com/legal/editorial-policy',
+    ]);
+    expect(questionSchema).toEqual(jasmine.objectContaining({
+      '@id': 'https://frontendatlas.com/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales#question',
+      name: question.title,
+      url: 'https://frontendatlas.com/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales',
+      inLanguage: 'en',
+      acceptedAnswer: jasmine.objectContaining({
+        '@type': 'Answer',
+        text: jasmine.stringMatching(/^Reactive forms are the better default for large or dynamic Angular forms/),
+      }),
+    }));
+    expect(questionSchema?.acceptedAnswer?.text).toContain('migrate once dynamic rows');
+    expect(questionSchema?.acceptedAnswer?.text).toContain('autosave');
+  });
+
+  it('renders the Angular forms flow comparator only for the target question', async () => {
+    const targetFixture = await createLoadedFixture('free', {
+      id: 'angular-template-driven-vs-reactive-forms-which-scales',
+      title: 'Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?',
+      description: 'Reactive forms scale better for dynamic Angular forms.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: '## Source of truth\n\nReactive forms keep the model explicit.',
+          },
+        ],
+      },
+      technology: 'angular',
+      tags: ['angular', 'forms', 'reactive-forms'],
+      updatedAt: '2026-07-04',
+    });
+
+    const comparator = targetFixture.nativeElement.querySelector(
+      '[data-testid="angular-forms-flow-comparator"]'
+    ) as HTMLElement | null;
+    expect(comparator).toBeTruthy();
+    expect(comparator?.textContent || '').toContain('Angular form flow comparator');
+    expect(comparator?.textContent || '').toContain('valueChanges');
+    expect(comparator?.textContent || '').toContain('test assertion');
+    expect(comparator?.textContent || '').toContain('Reviewed by FrontendAtlas');
+    expect(comparator?.textContent || '').toContain('Cross-checked with Angular forms docs');
+    expect(comparator?.textContent || '').toContain('State transitions mapped to testable assertions');
+
+    const buttons = Array.from(comparator!.querySelectorAll('button')) as HTMLButtonElement[];
+    const reactiveButton = buttons.find((button) => String(button.textContent || '').trim() === 'Reactive input');
+    const templateButton = buttons.find((button) => String(button.textContent || '').trim() === 'Template-driven input');
+    expect(reactiveButton?.getAttribute('aria-pressed')).toBe('true');
+    expect(reactiveButton?.classList.contains('is-active')).toBeTrue();
+    expect(templateButton).toBeTruthy();
+
+    templateButton!.click();
+    targetFixture.detectChanges();
+
+    expect(reactiveButton?.getAttribute('aria-pressed')).toBe('false');
+    expect(templateButton?.getAttribute('aria-pressed')).toBe('true');
+    expect(comparator?.textContent || '').toContain('ngModelChange');
+    expect(comparator?.textContent || '').toContain('change detection');
+    expect(comparator?.textContent || '').toContain('two-way bound property');
+
+    targetFixture.destroy();
+
+    const nonTargetFixture = await createLoadedFixture('free', {
+      id: 'angular-change-detection-default-vs-onpush',
+      title: 'What is the difference between default and OnPush change detection in Angular?',
+      description: 'OnPush limits when Angular checks a component.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: '## Quick answer\n\nOnPush checks components on input changes and explicit marks.',
+          },
+        ],
+      },
+      technology: 'angular',
+      tags: ['angular', 'change-detection'],
+      updatedAt: '2026-07-04',
+    });
+
+    expect(nonTargetFixture.nativeElement.querySelector('[data-testid="angular-forms-flow-comparator"]')).toBeNull();
+    nonTargetFixture.destroy();
+  });
+
   it('adds equality TechArticle and Question schema without FAQPage or QAPage markup', async () => {
     const fixture = await createLoadedFixture('free', {
       id: 'js-equality-vs-strict-equality',

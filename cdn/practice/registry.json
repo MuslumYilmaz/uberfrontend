@@ -1301,7 +1301,7 @@
     "route": "/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Template-driven and reactive forms both build the same underlying form tree, but the model lives in different places. Template-driven forms infer it from the template, while reactive forms declare it in TypeScript, whic…",
+    "summary": "Reactive forms scale better for large or dynamic Angular forms because the form model, validators, and state transitions live explicitly in TypeScript. Template-driven forms are still useful for small static forms, but…",
     "tags": [
       "angular",
       "forms",
@@ -1311,7 +1311,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-07-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-template-driven-vs-reactive-forms-which-scales"
   },
