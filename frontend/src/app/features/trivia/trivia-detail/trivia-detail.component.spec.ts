@@ -264,7 +264,11 @@ describe('TriviaDetailComponent', () => {
 
     const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe('What is closure?');
-    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Frontend interview answer');
+    expect(h1?.textContent?.trim()).toBe('What is closure?');
+    expect(h1?.querySelector('.title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
+      'Frontend interview answer',
+    );
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     expect(payload.title).toBe('JavaScript Closure Interview SEO Title');
@@ -294,7 +298,11 @@ describe('TriviaDetailComponent', () => {
 
     const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe('What is closure?');
-    expect(h1?.querySelector('.title__intent')?.textContent?.trim()).toBe('Debugging interview answer');
+    expect(h1?.textContent?.trim()).toBe('What is closure?');
+    expect(h1?.querySelector('.title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
+      'Debugging interview answer',
+    );
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
@@ -317,7 +325,11 @@ describe('TriviaDetailComponent', () => {
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe(
       'React render nothing: return null, false, fragments, and undefined',
     );
+    expect(h1?.textContent?.trim()).toBe(
+      'React render nothing: return null, false, fragments, and undefined',
+    );
     expect(h1?.querySelector('.title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')).toBeNull();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
@@ -487,7 +499,9 @@ describe('TriviaDetailComponent', () => {
     const link = fixture.nativeElement.querySelector(
       '.blocks a[href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality"]'
     ) as HTMLAnchorElement | null;
+    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
 
+    expect(sourceCheck).toBeTruthy();
     expect(link?.textContent?.trim()).toBe('MDN Equality');
     expect(link?.getAttribute('target')).toBe('_blank');
     expect(link?.getAttribute('rel') || '').toContain('noopener');
@@ -511,7 +525,9 @@ describe('TriviaDetailComponent', () => {
     const link = root.querySelector(
       '.blocks a[href="https://angular.dev/api/common/http/testing/TestRequest"]'
     ) as HTMLAnchorElement | null;
+    const sourceCheck = root.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
 
+    expect(sourceCheck).toBeTruthy();
     expect(link).toBeTruthy();
     expect(link?.textContent?.trim()).toBe('TestRequest.cancelled');
     expect(link?.querySelector('code')?.textContent?.trim()).toBe('TestRequest.cancelled');
@@ -561,7 +577,7 @@ describe('TriviaDetailComponent', () => {
           { type: 'text', text: '## When the async work cannot be aborted\n\nUse a latest-version guard.' },
           { type: 'text', text: '## Shared-controller follow-up\n\nRoute cleanup can share one controller.' },
           { type: 'text', text: '## Pitfalls\n\nDebounce is not cancellation.' },
-          { type: 'text', text: '## Source check\n\nOfficial references back the cancellation behavior.' },
+          { type: 'text', text: '## Source check\n\nCompare this answer with MDN AbortController, the React useEffect page, and the RxJS switchMap operator page.' },
           { type: 'text', text: '## Testable proof\n\nAssert stale results cannot overwrite newer UI.' },
           { type: 'text', text: '## FrontendAtlas review note\n\nReviewed as a frontend debugging rule.' },
           { type: 'text', text: '## Production debugging standard\n\nOlder completions cannot update state.' },
@@ -573,7 +589,9 @@ describe('TriviaDetailComponent', () => {
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe(
       'Async Race Conditions and Stale UI Updates',
     );
+    expect(h1?.textContent?.trim()).toBe('Async Race Conditions and Stale UI Updates');
     expect(h1?.querySelector('.title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')).toBeNull();
     expect(fixture.nativeElement.querySelector('.main-stack--async-race')).toBeTruthy();
 
     const h2Text = Array.from(fixture.nativeElement.querySelectorAll('h2.card-head'))
@@ -595,6 +613,10 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('Testable proof');
     expect(h3Text).toContain('FrontendAtlas review note');
     expect(h3Text).toContain('Production debugging standard');
+
+    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
+    expect(sourceCheck).toBeTruthy();
+    expect(sourceCheck?.textContent || '').not.toContain('official docs');
   });
 
   it('uses async race practice-frame copy only for the target question', async () => {
@@ -646,7 +668,7 @@ describe('TriviaDetailComponent', () => {
     expect(simulator?.textContent || '').toContain('stale write');
     expect(simulator?.textContent || '').toContain("Stale UI: results for 'rea' overwrite the newer 'react' results.");
     expect(simulator?.textContent || '').toContain('Reviewed by FrontendAtlas');
-    expect(simulator?.textContent || '').toContain('Backed by MDN/React/RxJS references');
+    expect(simulator?.textContent || '').toContain('Cross-checked with MDN/React/RxJS pages');
     expect(simulator?.textContent || '').toContain('Race verified by deterministic test');
 
     targetFixture.destroy();
@@ -685,7 +707,7 @@ describe('TriviaDetailComponent', () => {
     expect(simulator.textContent || '').toContain('UI write blocked');
     expect(simulator.textContent || '').toContain('guarded');
     expect(simulator.textContent || '').toContain('The completion handler compares its id with the latest id before writing state.');
-    expect(simulator.textContent || '').toContain("Resolve B, then A; expect(view.results()).toEqual(['React docs']).");
+    expect(simulator.textContent || '').toContain("Resolve B, then A; expect(view.results()).toEqual(['React results']).");
     const blockedSteps = simulator.querySelectorAll('.async-race-timeline__step--blocked');
     expect(blockedSteps.length).toBeGreaterThan(0);
   });
@@ -957,7 +979,7 @@ describe('TriviaDetailComponent', () => {
           {
             type: 'text',
             text:
-              '## Source check\n\nCompare this with official NgRx docs.',
+              '## Source check\n\nCompare this answer with the NgRx <a href="https://ngrx.io/guide/store/selectors" target="_blank" rel="noopener">selectors guide</a> and <a href="https://ngrx.io/api/store/createSelector" target="_blank" rel="noopener"><code>createSelector</code> API page</a>.',
           },
           {
             type: 'text',
@@ -1005,6 +1027,9 @@ describe('TriviaDetailComponent', () => {
     expect(payload.description).toBe(
       'Trace 4 NgRx selector memoization paths, test projector logic, and avoid common Angular component churn mistakes with a focused interview answer.',
     );
+    expect(`${payload.title} ${payload.description}`.toLowerCase()).not.toContain('official docs');
+    expect(`${payload.title} ${payload.description}`.toLowerCase()).not.toContain('documentation');
+    expect(`${payload.title} ${payload.description}`.toLowerCase()).not.toContain('docs wording');
     expect(payload.canonical).toBe(
       'https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance',
     );
@@ -1042,8 +1067,8 @@ describe('TriviaDetailComponent', () => {
       'AsyncPipe',
       'selector projector',
       'memoization trace',
-      'NgRx official docs',
-      'source reference',
+      'NgRx selectors guide',
+      'primary source link',
       'projector unit test',
       'FrontendAtlas review note',
       'review evidence',
@@ -1085,6 +1110,9 @@ describe('TriviaDetailComponent', () => {
       }),
     }));
     expect(questionSchema?.acceptedAnswer?.text).toContain('projector unit tests prove the derived contract');
+    expect(JSON.stringify(graph).toLowerCase()).not.toContain('official docs');
+    expect(JSON.stringify(graph).toLowerCase()).not.toContain('documentation');
+    expect(JSON.stringify(graph).toLowerCase()).not.toContain('docs wording');
 
     const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
       .map((node: any) => String(node.textContent || '').trim());
@@ -1100,6 +1128,27 @@ describe('TriviaDetailComponent', () => {
       'FrontendAtlas review note',
       'Source check',
       'Interview summary',
+    ]);
+
+    const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
+    expect(h1?.textContent?.trim()).toBe(question.title);
+    expect(h1?.querySelector('.title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
+      'Frontend interview answer',
+    );
+
+    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
+    expect(sourceCheck).toBeTruthy();
+    expect((sourceCheck?.textContent || '').toLowerCase()).not.toContain('official docs');
+    expect((sourceCheck?.textContent || '').toLowerCase()).not.toContain('official ngrx');
+    const sourceLinks = Array.from(sourceCheck?.querySelectorAll('a') || []) as HTMLAnchorElement[];
+    expect(sourceLinks.map((link) => link.getAttribute('href'))).toEqual([
+      'https://ngrx.io/guide/store/selectors',
+      'https://ngrx.io/api/store/createSelector',
+    ]);
+    expect(sourceLinks.map((link) => link.textContent?.trim())).toEqual([
+      'selectors guide',
+      'createSelector API page',
     ]);
 
     const simulator = fixture.nativeElement.querySelector(
@@ -1418,7 +1467,11 @@ describe('TriviaDetailComponent', () => {
 
     const lockedHeading = fixture.nativeElement.querySelector('h1.locked-title') as HTMLElement | null;
     expect(lockedHeading?.querySelector('.locked-title__question')?.textContent?.trim()).toBe('What is closure?');
-    expect(lockedHeading?.querySelector('.locked-title__intent')?.textContent?.trim()).toBe('Frontend interview answer');
+    expect(lockedHeading?.textContent?.trim()).toBe('What is closure?');
+    expect(lockedHeading?.querySelector('.locked-title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.locked-title__intent')?.textContent?.trim()).toBe(
+      'Frontend interview answer',
+    );
   });
 
   it('fires trivia scroll depth exactly once per threshold from the main scroll container', fakeAsync(() => {

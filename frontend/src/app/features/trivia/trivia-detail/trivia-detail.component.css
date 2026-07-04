@@ -228,12 +228,14 @@ html, body { height: 100%; background: var(--uf-bg); }
 /* Title */
 .title-block { position: sticky; top: 0; z-index: 2; padding: 6px 0 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--uf-bg) 92%, transparent), color-mix(in srgb, var(--uf-bg) 78%, transparent), transparent); backdrop-filter: blur(2px); }
 .title-row { display:flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
-.title {
+.title-copy {
   display: grid;
   gap: 7px;
   flex: 1 1 620px;
   min-width: 0;
   max-width: 100%;
+}
+.title {
   font-size: 32px;
   font-weight: 900;
   letter-spacing: -0.02em;
@@ -259,6 +261,7 @@ html, body { height: 100%; background: var(--uf-bg); }
   font-weight: 800;
   letter-spacing: .02em;
   line-height: 1;
+  margin: 0;
 }
 .solved-pill,
 .report-issue-btn {
@@ -1163,9 +1166,6 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   margin: 0 auto;
 }
 .locked-title{
-  display: grid;
-  justify-items: center;
-  gap: 7px;
   margin: 4px 0 0;
   font-size: 22px;
   letter-spacing: -0.01em;
@@ -1188,6 +1188,7 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   font-weight: 800;
   letter-spacing: .02em;
   line-height: 1;
+  margin: 4px auto 0;
 }
 .locked-meta{
   font-size: 12px;

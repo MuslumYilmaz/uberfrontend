@@ -78,10 +78,12 @@
             <!-- Title + chips -->
             <header class="title-block">
                 <div class="title-row">
-                    <h1 class="title">
-                        <span class="title__question">{{ visibleH1QuestionText(q) }}</span>
-                        <span class="title__intent" *ngIf="visibleH1IntentLabel(q) as intentLabel">{{ intentLabel }}</span>
-                    </h1>
+                    <div class="title-copy">
+                        <p class="title__intent" *ngIf="visibleH1IntentLabel(q) as intentLabel">{{ intentLabel }}</p>
+                        <h1 class="title">
+                            <span class="title__question">{{ visibleH1QuestionText(q) }}</span>
+                        </h1>
+                    </div>
                     <span class="solved-pill" *ngIf="solved()" aria-label="Solved">
                         <app-fa-glyph class="solved-pill__icon" icon="fa-solid fa-check"></app-fa-glyph>
                         Solved
@@ -166,7 +168,11 @@
                         <div class="blocks">
                             <ng-container *ngFor="let b of answerBlocks(); let i = index; trackBy: trackByAnswerBlock">
                                 <!-- TEXT -->
-                                <div *ngIf="b.type === 'text'" class="block b-text">
+                                <div
+                                    *ngIf="b.type === 'text'"
+                                    class="block b-text"
+                                    [class.source-check]="isSourceCheckBlock($any(b))"
+                                    [attr.data-nosnippet]="isSourceCheckBlock($any(b)) ? '' : null">
                                     <div class="content" [innerHTML]="md($any(b).text) | safeHtml"></div>
                                 </div>
 
@@ -418,7 +424,7 @@
 
                         <div class="async-race-proof-strip" aria-label="Async race proof signals">
                             <span>Reviewed by FrontendAtlas</span>
-                            <span>Backed by MDN/React/RxJS references</span>
+                            <span>Cross-checked with MDN/React/RxJS pages</span>
                             <span>Race verified by deterministic test</span>
                         </div>
                     </div>
@@ -559,9 +565,9 @@
             <div class="locked-shell">
                 <div class="locked-card">
                     <div class="locked-pill">Premium</div>
+                    <p class="locked-title__intent" *ngIf="visibleH1IntentLabel(question()) as lockedIntentLabel">{{ lockedIntentLabel }}</p>
                     <h1 class="locked-title">
                         <span class="locked-title__question">{{ lockedTitle() }}</span>
-                        <span class="locked-title__intent">{{ visibleH1IntentLabel(question()) }}</span>
                     </h1>
                     <div class="locked-meta">
                         By {{ authorLabel(question()) }}

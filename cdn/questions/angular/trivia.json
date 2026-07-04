@@ -5952,7 +5952,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br><code>ControlValueAccessor</code> is Angular’s official way to make a custom component behave like a real form control. It integrates with Reactive Forms and ngModel, supports validation, touched/dirty state, disabled handling, and form APIs. Custom two-way binding only syncs a value and does not integrate with Angular Forms, which makes it unsuitable for serious form components."
+          "text": "<strong>Interview summary</strong><br><br><code>ControlValueAccessor</code> is the Angular Forms bridge that makes a custom component behave like a real form control. It integrates with Reactive Forms and ngModel, supports validation, touched/dirty state, disabled handling, and form APIs. Custom two-way binding only syncs a value and does not integrate with Angular Forms, which makes it unsuitable for serious form components."
         }
       ]
     },
@@ -7799,7 +7799,7 @@
         },
         {
           "type": "text",
-          "text": "## Source check\n\nCompare this answer with the official NgRx <a href=\"https://ngrx.io/guide/store/selectors\" target=\"_blank\" rel=\"noopener\">selectors guide</a> and <a href=\"https://ngrx.io/api/store/createSelector\" target=\"_blank\" rel=\"noopener\"><code>createSelector</code> API</a>. FrontendAtlas content is maintained under the <a href=\"/legal/editorial-policy\">Editorial Policy</a>, with corrections handled through the page issue flow."
+          "text": "## Source check\n\nCompare this answer with the NgRx <a href=\"https://ngrx.io/guide/store/selectors\" target=\"_blank\" rel=\"noopener\">selectors guide</a> and <a href=\"https://ngrx.io/api/store/createSelector\" target=\"_blank\" rel=\"noopener\"><code>createSelector</code> API page</a>. FrontendAtlas content is maintained under the <a href=\"/legal/editorial-policy\">Editorial Policy</a>, with corrections handled through the page issue flow."
         },
         {
           "type": "text",

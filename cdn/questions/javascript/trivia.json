@@ -7084,7 +7084,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Top interview pitfalls</strong>\n\n1) <strong>Mixing them up</strong>\n- <code>prototype</code> is on the constructor (<code>Foo.prototype</code>)\n- <code>__proto__</code>/<code>[[Prototype]]</code> is on the instance (<code>obj</code>)\n\n2) <strong>Thinking <code>__proto__</code> is the “official” API</strong>\nUse:\n- <code>Object.getPrototypeOf(obj)</code>\n- <code>Object.setPrototypeOf(obj, proto)</code>\n\n3) <strong>Forgetting functions are objects</strong>\nFunctions have <code>[[Prototype]]</code> too (so <code>Foo.__proto__</code> exists), and also have <code>Foo.prototype</code> (used for instances)."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Top interview pitfalls</strong>\n\n1) <strong>Mixing them up</strong>\n- <code>prototype</code> is on the constructor (<code>Foo.prototype</code>)\n- <code>__proto__</code>/<code>[[Prototype]]</code> is on the instance (<code>obj</code>)\n\n2) <strong>Thinking <code>__proto__</code> is the right API</strong>\nUse:\n- <code>Object.getPrototypeOf(obj)</code>\n- <code>Object.setPrototypeOf(obj, proto)</code>\n\n3) <strong>Forgetting functions are objects</strong>\nFunctions have <code>[[Prototype]]</code> too (so <code>Foo.__proto__</code> exists), and also have <code>Foo.prototype</code> (used for instances)."
         },
         {
           "type": "text",
@@ -10089,7 +10089,7 @@
         },
         {
           "type": "text",
-          "text": "## Source check\n\nMDN's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortController\" target=\"_blank\" rel=\"noopener noreferrer\">AbortController</a>, <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal\" target=\"_blank\" rel=\"noopener noreferrer\">AbortSignal</a>, and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch\" target=\"_blank\" rel=\"noopener noreferrer\">Fetch API</a> references establish the cancellation part: fetch can receive a signal and aborted requests reject as <code>AbortError</code>. React's official <a href=\"https://react.dev/reference/react/useEffect\" target=\"_blank\" rel=\"noopener noreferrer\">useEffect reference</a> documents the cleanup-flag pattern for ignoring stale state writes. RxJS <a href=\"https://rxjs.dev/api/operators/switchMap\" target=\"_blank\" rel=\"noopener noreferrer\">switchMap</a> documents stream ownership by replacing earlier inner work when newer input arrives. The local test below proves the UI rule this page relies on: even if older async work completes later, it cannot write stale state after newer work owns the screen."
+          "text": "## Source check\n\nCompare this answer with MDN's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortController\" target=\"_blank\" rel=\"noopener noreferrer\">AbortController</a>, <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal\" target=\"_blank\" rel=\"noopener noreferrer\">AbortSignal</a>, and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch\" target=\"_blank\" rel=\"noopener noreferrer\">Fetch API</a> pages for cancellation behavior: fetch can receive a signal and aborted requests reject as <code>AbortError</code>. Compare the cleanup-flag part with React's <a href=\"https://react.dev/reference/react/useEffect\" target=\"_blank\" rel=\"noopener noreferrer\">useEffect page</a>, and stream ownership with the RxJS <a href=\"https://rxjs.dev/api/operators/switchMap\" target=\"_blank\" rel=\"noopener noreferrer\">switchMap operator page</a>. The local test below proves the UI rule this page relies on: even if older async work completes later, it cannot write stale state after newer work owns the screen."
         },
         {
           "type": "text",
@@ -10098,7 +10098,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "test('ignores an older search response after a newer one wins', async () => {\n  const view = createSearchView();\n\n  const older = view.search('rea');\n  const newer = view.search('react');\n\n  await newer.resolveWith(['React docs']);\n  expect(view.results()).toEqual(['React docs']);\n\n  await older.resolveWith(['Real estate']);\n  expect(view.results()).toEqual(['React docs']);\n});"
+          "code": "test('ignores an older search response after a newer one wins', async () => {\n  const view = createSearchView();\n\n  const older = view.search('rea');\n  const newer = view.search('react');\n\n  await newer.resolveWith(['React results']);\n  expect(view.results()).toEqual(['React results']);\n\n  await older.resolveWith(['Real estate']);\n  expect(view.results()).toEqual(['React results']);\n});"
         },
         {
           "type": "text",

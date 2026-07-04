@@ -7,8 +7,7 @@ describe('trivia-seo.util', () => {
       title: 'Why does React sometimes show stale state in closures?',
     } as any);
 
-    expect(title).toContain('React');
-    expect(title).toContain('Interview Answer');
+    expect(title).toBe('Why does React sometimes show stale state in closures?');
     expect(title.toLowerCase()).not.toContain('interview question:');
     expect(title.length).toBeLessThanOrEqual(54);
   });
@@ -30,10 +29,48 @@ describe('trivia-seo.util', () => {
       '',
       'vue'
     );
-    expect(fallback).toContain('Vue interview answer');
-    expect(fallback.toLowerCase()).toContain('frontend interview prep');
+    expect(fallback).toBe(
+      'Practice Question title without override with a quick interview answer, examples, common mistakes, and production-focused follow-ups.'
+    );
     expect(fallback.toLowerCase()).not.toContain('question focus:');
+    expect(fallback.toLowerCase()).not.toContain('documentation');
     expect(fallback.length).toBeLessThanOrEqual(155);
+  });
+
+  it('generates behavior-question descriptions with quick answer and real example intent', () => {
+    const fallback = seoDescriptionForQuestion(
+      {
+        id: 'angular-httpclient-unsubscribe-cancel-request',
+        title: 'Does Angular HttpClient unsubscribe cancel requests?',
+        technology: 'angular',
+      } as any,
+      '',
+      'angular'
+    );
+
+    expect(fallback).toBe(
+      'Understand Angular HttpClient unsubscribe cancel requests: quick answer, real example, common mistake, and senior interview follow-up.'
+    );
+    expect(fallback.toLowerCase()).not.toContain('official docs');
+    expect(fallback.toLowerCase()).not.toContain('documentation');
+  });
+
+  it('generates comparison descriptions with vs and production pitfall intent', () => {
+    const fallback = seoDescriptionForQuestion(
+      {
+        id: 'react-usememo-vs-usecallback',
+        title: 'useMemo vs useCallback in React: what is the difference?',
+        technology: 'react',
+      } as any,
+      '',
+      'react'
+    );
+
+    expect(fallback).toBe(
+      'useMemo vs useCallback in React: quick interview answer, examples, common mistakes, and production pitfalls.'
+    );
+    expect(fallback.toLowerCase()).not.toContain('api docs');
+    expect(fallback.toLowerCase()).not.toContain('docs wording');
   });
 
   it('derives unique titles from question slug when needed', () => {
@@ -182,7 +219,7 @@ describe('trivia-seo.util', () => {
     );
   });
 
-  it('normalizes docs-style explicit seo metadata into interview answer intent', () => {
+  it('normalizes broad difference metadata into comparison interview intent', () => {
     const title = seoTitleForQuestion({
       id: 'react-usememo-vs-usecallback',
       title: 'useMemo vs useCallback in React: what is the difference?',
@@ -207,13 +244,38 @@ describe('trivia-seo.util', () => {
       'react'
     );
 
-    expect(title).toContain(': Interview Answer');
-    expect(title).toContain('useMemo vs useCallback');
+    expect(title).toBe('useMemo vs useCallback in React: Interview Answer');
     expect(title).not.toContain('the difference');
     expect(title.length).toBeLessThanOrEqual(54);
-    expect(description).toContain('Practice a React interview answer');
-    expect(description).toContain('common mistake');
-    expect(description).toContain('follow-up');
+    expect(description).toBe(
+      'useMemo vs useCallback in React: quick interview answer, examples, common mistakes, and production pitfalls.'
+    );
     expect(description.length).toBeLessThanOrEqual(155);
+  });
+
+  it('regenerates docs-intent explicit seo metadata', () => {
+    const question = {
+      id: 'react-useeffect-cleanup',
+      title: 'Does React useEffect cleanup cancel stale updates?',
+      technology: 'react',
+      seo: {
+        title: 'React useEffect official docs wording',
+        description:
+          'Official documentation and API docs wording for React useEffect cleanup behavior.',
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
+    const combined = `${title} ${description}`.toLowerCase();
+
+    expect(title).toBe('Does React useEffect cleanup cancel stale updates?');
+    expect(description).toBe(
+      'Understand React useEffect cleanup cancel stale updates: quick answer, real example, common mistake, and senior interview follow-up.'
+    );
+    expect(combined).not.toContain('official docs');
+    expect(combined).not.toContain('documentation');
+    expect(combined).not.toContain('api docs');
+    expect(combined).not.toContain('docs wording');
   });
 });

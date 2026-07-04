@@ -225,7 +225,7 @@ const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
     timeline: "A: 'rea' starts -> B: 'react' starts and aborts A -> only B can resolve.",
     finalUi: "Fresh UI: results for 'react' remain visible.",
     whyItHappens: 'The old fetch receives an AbortSignal before it can complete, so its result is ignored as cancelled work.',
-    testAssertion: "expect(view.results()).toEqual(['React docs']); expect(oldSignal.aborted).toBeTrue();",
+    testAssertion: "expect(view.results()).toEqual(['React results']); expect(oldSignal.aborted).toBeTrue();",
   },
   {
     key: 'request-id',
@@ -240,7 +240,7 @@ const ASYNC_RACE_SIMULATOR_OPTIONS: AsyncRaceSimulatorOption[] = [
     timeline: "A gets id 1 -> B gets id 2 -> B resolves -> A resolves but id 1 is stale.",
     finalUi: "Fresh UI: request B owns the screen, so A cannot overwrite it.",
     whyItHappens: 'The completion handler compares its id with the latest id before writing state.',
-    testAssertion: "Resolve B, then A; expect(view.results()).toEqual(['React docs']).",
+    testAssertion: "Resolve B, then A; expect(view.results()).toEqual(['React results']).",
   },
   {
     key: 'take-latest',
@@ -602,6 +602,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return (b as any)?.type === 'text'
       && typeof (b as any).text === 'string'
       && /<strong>\s*summary\s*<\/strong>|^#{1,6}\s*summary/i.test((b as any).text);
+  }
+
+  isSourceCheckBlock(b: AnswerBlock | null | undefined): b is BlockText {
+    return (b as any)?.type === 'text'
+      && typeof (b as any).text === 'string'
+      && /^\s*##\s*Source check\b/i.test((b as any).text);
   }
 
   /** Strip heading/icon from a help/summary text so only body remains */
@@ -1002,7 +1008,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const raw = this.descText(q.description || '');
     const plain = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     if (plain) return plain;
-    return `Front-end interview concept question for ${this.tech}.`;
+    return 'Practice this topic with a quick interview answer, examples, common mistakes, and production-focused follow-ups.';
   }
 
   private seoTitle(q: Question): string {
@@ -1081,7 +1087,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!q) {
       this.seo.updateTags({
         title: 'Front-end interview concept question',
-        description: 'Quick front-end concept explanation for interview prep.',
+        description: 'Practice this topic with a quick interview answer, examples, common mistakes, and production-focused follow-ups.',
       });
       return;
     }
@@ -1206,8 +1212,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           { '@type': 'Thing', name: 'AsyncPipe' },
           { '@type': 'Thing', name: 'selector projector' },
           { '@type': 'Thing', name: 'memoization trace' },
-          { '@type': 'Thing', name: 'NgRx official docs' },
-          { '@type': 'Thing', name: 'source reference' },
+          { '@type': 'Thing', name: 'NgRx selectors guide' },
+          { '@type': 'Thing', name: 'primary source link' },
           { '@type': 'Thing', name: 'projector unit test' },
           { '@type': 'Thing', name: 'FrontendAtlas review note' },
           { '@type': 'Thing', name: 'review evidence' },
