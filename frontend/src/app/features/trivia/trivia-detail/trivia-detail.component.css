@@ -655,6 +655,125 @@ html, body { height: 100%; background: var(--uf-bg); }
   line-height: 1.25;
 }
 
+.angular-forms-flow__visual {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 10px;
+  min-height: 152px;
+}
+
+.angular-forms-flow__step {
+  position: relative;
+  min-width: 0;
+  min-height: 152px;
+  padding: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--uf-surface-alt) 84%, transparent);
+}
+
+.angular-forms-flow__step::after {
+  content: '';
+  position: absolute;
+  top: 24px;
+  right: 0;
+  width: 11px;
+  height: 2px;
+  background: color-mix(in srgb, var(--uf-border-strong) 70%, transparent);
+}
+
+.angular-forms-flow__step:last-child::after {
+  display: none;
+}
+
+.angular-forms-flow__step--reactive {
+  border-color: color-mix(in srgb, var(--uf-learning-structured-accent) 62%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-learning-structured-accent) 9%, var(--uf-surface));
+}
+
+.angular-forms-flow__step--template {
+  border-color: color-mix(in srgb, var(--uf-badge-blue-b) 58%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-badge-blue-a) 13%, var(--uf-surface));
+}
+
+.angular-forms-flow__step--validation {
+  border-color: color-mix(in srgb, var(--uf-badge-amber-b) 66%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-badge-amber-a) 15%, var(--uf-surface));
+}
+
+.angular-forms-flow__step--migration {
+  border-color: color-mix(in srgb, var(--uf-accent) 54%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 8%, var(--uf-surface));
+}
+
+.angular-forms-flow__step--test {
+  border-color: color-mix(in srgb, var(--uf-learning-structured-accent) 70%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-learning-structured-accent) 12%, var(--uf-surface));
+}
+
+.angular-forms-flow__index {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.angular-forms-flow__copy {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.angular-forms-flow__head {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.angular-forms-flow__head strong {
+  color: var(--uf-text-primary);
+  font-size: 13px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.angular-forms-flow__status {
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px 7px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-pill);
+  color: var(--uf-text-secondary);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.angular-forms-flow__copy p {
+  margin: 0;
+  color: var(--uf-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.angular-forms-flow__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.angular-forms-flow__proof-strip {
+  margin-top: 0;
+}
+
 .return-simulator__metric {
   min-width: 0;
   padding: 12px;
@@ -1388,7 +1507,7 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   .main { padding: 18px 16px; padding-top: 0; }
   .main-stack { gap: 18px; }
   .title { font-size: 28px; }
-  .content { font-size: 15.5px; line-height: 1.68; }
+  .content { font-size: 16px; line-height: 1.68; }
 }
 
 @media (max-width: 980px) {
@@ -1425,13 +1544,17 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
     min-height: 0;
   }
   .async-race-timeline,
-  .async-race-proof-grid {
+  .async-race-proof-grid,
+  .angular-forms-flow__visual,
+  .angular-forms-flow__details {
     grid-template-columns: 1fr;
   }
-  .async-race-timeline__step {
+  .async-race-timeline__step,
+  .angular-forms-flow__step {
     min-height: 0;
   }
-  .async-race-timeline__step::after {
+  .async-race-timeline__step::after,
+  .angular-forms-flow__step::after {
     top: auto;
     right: auto;
     bottom: -11px;
@@ -1489,6 +1612,10 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   }
   pre.line-numbers .line-numbers-rows {
     display: none;
+  }
+  pre {
+    font-size: 12.8px;
+    line-height: 1.65;
   }
   pre code {
     width: 100%;
@@ -1594,7 +1721,7 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 @media (max-width: 520px) {
   .title { font-size: 24px; }
   .card-body { padding: 14px 12px; }
-  pre { padding: 12px 12px; font-size: 12.2px; }
+  pre { padding: 12px 12px; font-size: 12.8px; }
   pre.line-numbers { padding-left: 12px !important; }
   .table thead th,
   .table tbody td { font-size: 13px; }

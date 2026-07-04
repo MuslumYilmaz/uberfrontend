@@ -64,6 +64,7 @@ type BlockList = {
   columns: string[];
   rows: string[][];
   caption?: string;
+  stackOnMobile?: boolean;
 };
 
 type AnswerBlock = BlockText | BlockCode | BlockImage | BlockList;
@@ -133,6 +134,22 @@ type NgRxSelectorTraceOption = {
   projectorRuns: boolean;
   componentRebuilds: boolean;
 };
+type AngularFormsFlowKey = 'reactive-input' | 'template-driven-input' | 'validation-state' | 'migration-trigger';
+type AngularFormsFlowTone = 'neutral' | 'reactive' | 'template' | 'validation' | 'migration' | 'test';
+type AngularFormsFlowNode = {
+  id: string;
+  label: string;
+  detail: string;
+  status: string;
+  tone: AngularFormsFlowTone;
+};
+type AngularFormsFlowOption = {
+  key: AngularFormsFlowKey;
+  label: string;
+  nodes: AngularFormsFlowNode[];
+  decisionSignal: string;
+  proofPoint: string;
+};
 type LockedPath = {
   id: string;
   label: string;
@@ -146,6 +163,7 @@ const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
 const ASYNC_RACE_SIMULATOR_QUESTION_ID = 'js-async-race-conditions';
 const EQUALITY_PREDICTOR_QUESTION_ID = 'js-equality-vs-strict-equality';
 const NGRX_SELECTOR_TRACE_QUESTION_ID = 'ngrx-selectors-memoization-derived-state-performance';
+const ANGULAR_FORMS_FLOW_QUESTION_ID = 'angular-template-driven-vs-reactive-forms-which-scales';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
     key: 'null',
@@ -390,6 +408,60 @@ const NGRX_SELECTOR_TRACE_OPTIONS: NgRxSelectorTraceOption[] = [
     componentRebuilds: false,
   },
 ];
+const ANGULAR_FORMS_FLOW_OPTIONS: AngularFormsFlowOption[] = [
+  {
+    key: 'reactive-input',
+    label: 'Reactive input',
+    nodes: [
+      { id: 'reactive-input-event', label: 'input event', status: 'user update', tone: 'neutral', detail: 'The user changes a field value.' },
+      { id: 'reactive-cva', label: 'CVA', status: 'forms adapter', tone: 'neutral', detail: 'ControlValueAccessor translates the DOM event into Angular Forms.' },
+      { id: 'reactive-control', label: 'FormControl', status: 'explicit model', tone: 'reactive', detail: 'The TypeScript control owns value, validity, touched, and dirty state.' },
+      { id: 'reactive-value-changes', label: 'valueChanges', status: 'observable signal', tone: 'reactive', detail: 'Subscribers receive a traceable update from the control model.' },
+      { id: 'reactive-test', label: 'test assertion', status: 'proof point', tone: 'test', detail: 'A unit test can assert value and validation state without rendering the template.' },
+    ],
+    decisionSignal: 'Choose this path when updates trigger autosave, async checks, dynamic rows, or other logic that needs an explicit state transition.',
+    proofPoint: 'The same model used by the UI can be exercised in a pure TypeScript validator/state test.',
+  },
+  {
+    key: 'template-driven-input',
+    label: 'Template-driven input',
+    nodes: [
+      { id: 'template-input-event', label: 'input event', status: 'user update', tone: 'neutral', detail: 'The user changes a field controlled by template directives.' },
+      { id: 'template-cva', label: 'CVA', status: 'forms adapter', tone: 'neutral', detail: 'Angular Forms still uses a value accessor under the directive layer.' },
+      { id: 'template-control', label: 'FormControl', status: 'inferred model', tone: 'template', detail: 'The control exists, but the source of truth is inferred from template markup.' },
+      { id: 'template-ngmodel', label: 'ngModelChange', status: 'directive event', tone: 'template', detail: 'The directive emits changes back toward the component property.' },
+      { id: 'template-binding', label: 'two-way bound property', status: 'component state', tone: 'template', detail: 'The component property is reconciled through two-way binding.' },
+      { id: 'template-cd', label: 'change detection', status: 'view sync', tone: 'template', detail: 'Change detection settles the template state after the directive update.' },
+    ],
+    decisionSignal: 'This stays comfortable for small static forms where validation is local and the template remains the clearest place to read behavior.',
+    proofPoint: 'As workflows grow, proof usually moves through rendered template tests instead of direct control assertions.',
+  },
+  {
+    key: 'validation-state',
+    label: 'Validation state',
+    nodes: [
+      { id: 'validation-invalid', label: 'invalid', status: 'rule failed', tone: 'validation', detail: 'The validator marks the control or group invalid.' },
+      { id: 'validation-touched-dirty', label: 'touched/dirty', status: 'user interacted', tone: 'validation', detail: 'Interaction state prevents errors from showing before the user touches the field.' },
+      { id: 'validation-visible-error', label: 'visible error', status: 'UX gate', tone: 'validation', detail: 'The UI shows feedback when invalid state and interaction state both support it.' },
+      { id: 'validation-submit-guard', label: 'submit guard', status: 'blocked submit', tone: 'validation', detail: 'Submit stays disabled or guarded until the relevant model is valid.' },
+    ],
+    decisionSignal: 'The important comparison is not the flag names; it is where the team can read and test the state mapping.',
+    proofPoint: 'A strong implementation can explain why invalid alone is not enough for visible error UX.',
+  },
+  {
+    key: 'migration-trigger',
+    label: 'Migration trigger',
+    nodes: [
+      { id: 'migration-static-fieldset', label: 'static fieldset', status: 'simple start', tone: 'neutral', detail: 'A fixed login or signup form can remain template-driven.' },
+      { id: 'migration-conditional-field', label: 'conditional field', status: 'branching UI', tone: 'migration', detail: 'Fields begin appearing based on another value.' },
+      { id: 'migration-dynamic-rows', label: 'dynamic rows', status: 'repeatable state', tone: 'migration', detail: 'Users can add or remove rows that need their own controls.' },
+      { id: 'migration-cross-field', label: 'cross-field rule', status: 'group rule', tone: 'migration', detail: 'Validation now compares values across controls.' },
+      { id: 'migration-reactive-model', label: 'reactive model', status: 'migration point', tone: 'reactive', detail: 'The explicit TypeScript model becomes the clearer source of truth.' },
+    ],
+    decisionSignal: 'Migrate when the form is easier to describe as state transitions than as template directives.',
+    proofPoint: 'The migration threshold is visible when rows, group validators, and restore/autosave behavior need deterministic tests.',
+  },
+];
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray((TAG_REGISTRY as any)?.tags) ? (TAG_REGISTRY as any).tags : []),
@@ -452,10 +524,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedAsyncRaceSimulatorKey = signal<AsyncRaceSimulatorKey>('no-guard');
   selectedEqualityPredictorKey = signal<EqualityPredictorKey>('string-number');
   selectedNgRxSelectorTraceKey = signal<NgRxSelectorTraceKey>('root-state');
+  selectedAngularFormsFlowKey = signal<AngularFormsFlowKey>('reactive-input');
   returnValueSimulatorOptions = RETURN_VALUE_SIMULATOR_OPTIONS;
   asyncRaceSimulatorOptions = ASYNC_RACE_SIMULATOR_OPTIONS;
   equalityPredictorScenarios = EQUALITY_PREDICTOR_SCENARIOS;
   ngrxSelectorTraceOptions = NGRX_SELECTOR_TRACE_OPTIONS;
+  angularFormsFlowOptions = ANGULAR_FORMS_FLOW_OPTIONS;
   solved = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
@@ -569,10 +643,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackByEqualityPredictorScenario = (_: number, option: EqualityPredictorScenario): string => option.key;
   trackByEqualityPredictorResult = (_: number, result: EqualityPredictorResult): string => result.model;
   trackByNgRxSelectorTraceOption = (_: number, option: NgRxSelectorTraceOption): string => option.key;
+  trackByAngularFormsFlowOption = (_: number, option: AngularFormsFlowOption): string => option.key;
+  trackByAngularFormsFlowNode = (_: number, node: AngularFormsFlowNode): string => node.id;
 
   isStackedMobileTable(block: BlockList | null | undefined): boolean {
     const columns = block?.columns;
-    return Array.isArray(columns) && columns.length >= 4;
+    return block?.stackOnMobile === true || (Array.isArray(columns) && columns.length >= 4);
   }
 
   tableColumnLabel(block: BlockList | null | undefined, index: number): string {
@@ -669,6 +745,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return NGRX_SELECTOR_TRACE_OPTIONS.find((option) => option.key === key) ?? NGRX_SELECTOR_TRACE_OPTIONS[0];
   });
 
+  selectedAngularFormsFlowOption = computed<AngularFormsFlowOption>(() => {
+    const key = this.selectedAngularFormsFlowKey();
+    return ANGULAR_FORMS_FLOW_OPTIONS.find((option) => option.key === key) ?? ANGULAR_FORMS_FLOW_OPTIONS[0];
+  });
+
   showEqualityPredictor(q?: Question | null): boolean {
     return q?.id === EQUALITY_PREDICTOR_QUESTION_ID;
   }
@@ -683,6 +764,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectNgRxSelectorTrace(key: NgRxSelectorTraceKey): void {
     this.selectedNgRxSelectorTraceKey.set(key);
+  }
+
+  showAngularFormsFlowComparator(q?: Question | null): boolean {
+    return q?.id === ANGULAR_FORMS_FLOW_QUESTION_ID;
+  }
+
+  selectAngularFormsFlow(key: AngularFormsFlowKey): void {
+    this.selectedAngularFormsFlowKey.set(key);
   }
 
   showAsyncRaceSimulator(q?: Question | null): boolean {
@@ -1186,6 +1275,110 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private articleStructuredDataExtensions(q: Question): Record<string, any> {
+    if (q.id === 'angular-template-driven-vs-reactive-forms-which-scales') {
+      return {
+        articleSection: 'Angular forms',
+        educationalLevel: 'Intermediate',
+        learningResourceType: 'Interview answer',
+        reviewedBy: { '@type': 'Organization', name: 'FrontendAtlas' },
+        about: [
+          { '@type': 'Thing', name: 'Angular forms' },
+          { '@type': 'Thing', name: 'Template-driven forms' },
+          { '@type': 'Thing', name: 'Reactive forms' },
+          { '@type': 'Thing', name: 'Form model source of truth' },
+        ],
+        mentions: [
+          { '@type': 'Thing', name: 'ngModel' },
+          { '@type': 'Thing', name: 'ngModelChange' },
+          { '@type': 'Thing', name: 'FormGroup' },
+          { '@type': 'Thing', name: 'FormControl' },
+          { '@type': 'Thing', name: 'FormArray' },
+          { '@type': 'Thing', name: 'valueChanges' },
+          { '@type': 'Thing', name: 'FormBuilder' },
+          { '@type': 'Thing', name: 'Validators' },
+          { '@type': 'Thing', name: 'setValue' },
+          { '@type': 'Thing', name: 'patchValue' },
+          { '@type': 'Thing', name: 'reset' },
+          { '@type': 'Thing', name: 'two-way binding' },
+          { '@type': 'Thing', name: 'cross-field validation' },
+          { '@type': 'Thing', name: 'dynamic controls' },
+          { '@type': 'Thing', name: 'dirty' },
+          { '@type': 'Thing', name: 'touched' },
+          { '@type': 'Thing', name: 'pristine' },
+          { '@type': 'Thing', name: 'valid' },
+          { '@type': 'Thing', name: 'invalid' },
+          { '@type': 'Thing', name: 'custom validator' },
+          { '@type': 'Thing', name: 'async validator' },
+          { '@type': 'Thing', name: 'draft autosave' },
+          { '@type': 'Thing', name: 'migration threshold' },
+          { '@type': 'Thing', name: 'OnPush change detection' },
+          { '@type': 'Thing', name: 'Observable-based workflows' },
+          { '@type': 'Thing', name: 'ControlValueAccessor' },
+          { '@type': 'Thing', name: 'unit testing' },
+          { '@type': 'Thing', name: 'Angular forms guide' },
+          { '@type': 'Thing', name: 'Angular form validation' },
+          { '@type': 'Thing', name: 'editorial policy' },
+          { '@type': 'Thing', name: 'review evidence' },
+          { '@type': 'Thing', name: 'interactive form flow comparator' },
+          { '@type': 'Thing', name: 'reactive input update trace' },
+          { '@type': 'Thing', name: 'template-driven change detection trace' },
+          { '@type': 'Thing', name: 'Angular prep path' },
+          { '@type': 'Thing', name: 'reactive forms coding drill' },
+        ],
+        hasPart: [
+          { '@type': 'WebPageElement', name: 'Interview quick answer' },
+          { '@type': 'WebPageElement', name: 'Source of truth' },
+          { '@type': 'WebPageElement', name: 'Worked example' },
+          { '@type': 'WebPageElement', name: 'Decision rule' },
+          { '@type': 'WebPageElement', name: 'Template-driven example' },
+          { '@type': 'WebPageElement', name: 'Reactive example' },
+          { '@type': 'WebPageElement', name: 'Scaling pressure points' },
+          { '@type': 'WebPageElement', name: 'Data flow timing' },
+          { '@type': 'WebPageElement', name: 'Validation state and error UX' },
+          { '@type': 'WebPageElement', name: 'API ergonomics' },
+          { '@type': 'WebPageElement', name: 'Migration threshold checklist' },
+          { '@type': 'WebPageElement', name: 'Same form, three changes later' },
+          { '@type': 'WebPageElement', name: 'Interactive form flow comparator' },
+          { '@type': 'WebPageElement', name: 'Large-form tradeoffs' },
+          { '@type': 'WebPageElement', name: 'Architecture fit' },
+          { '@type': 'WebPageElement', name: 'When template-driven forms are still OK' },
+          { '@type': 'WebPageElement', name: 'Senior-level pitfalls' },
+          { '@type': 'WebPageElement', name: 'Testable proof' },
+          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
+          { '@type': 'WebPageElement', name: 'Source check' },
+          { '@type': 'WebPageElement', name: 'Practice next' },
+          { '@type': 'WebPageElement', name: 'Interview summary' },
+        ],
+        citation: [
+          {
+            '@type': 'WebPage',
+            name: 'Angular Forms',
+            url: 'https://angular.dev/guide/forms',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'Angular Reactive Forms',
+            url: 'https://angular.dev/guide/forms/reactive-forms',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'Angular Template-driven Forms',
+            url: 'https://angular.dev/guide/forms/template-driven-forms',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'Angular Form Validation',
+            url: 'https://angular.dev/guide/forms/form-validation',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'FrontendAtlas Editorial Policy',
+            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
+          },
+        ],
+      };
+    }
+
     if (q.id === 'ngrx-selectors-memoization-derived-state-performance') {
       return {
         articleSection: 'Angular state management',
@@ -1444,6 +1637,21 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private questionStructuredData(q: Question, canonical: string): Record<string, any> | null {
+    if (q.id === 'angular-template-driven-vs-reactive-forms-which-scales') {
+      return {
+        '@type': 'Question',
+        '@id': `${canonical}#question`,
+        name: q.title,
+        url: canonical,
+        inLanguage: 'en',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            'Reactive forms are the better default for large or dynamic Angular forms because the form model, validators, and state transitions live explicitly in TypeScript. Use template-driven forms for small static forms, and migrate once dynamic rows, cross-field rules, async validation, autosave, or unit-tested business logic become part of the workflow.',
+        },
+      };
+    }
+
     if (q.id === 'ngrx-selectors-memoization-derived-state-performance') {
       return {
         '@type': 'Question',

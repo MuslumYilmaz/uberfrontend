@@ -242,6 +242,70 @@
                 </div>
             </section>
 
+            <!-- Angular forms flow comparator -->
+            <section
+                class="card return-simulator angular-forms-flow-comparator"
+                *ngIf="showAngularFormsFlowComparator(q)"
+                aria-labelledby="angular-forms-flow-comparator-title"
+                data-testid="angular-forms-flow-comparator">
+                <h2 class="card-head" id="angular-forms-flow-comparator-title">Angular form flow comparator</h2>
+                <div class="card-body return-simulator__body">
+                    <div class="return-simulator__tabs" role="group" aria-label="Choose an Angular forms flow">
+                        <button
+                            type="button"
+                            class="return-simulator__tab"
+                            *ngFor="let option of angularFormsFlowOptions; trackBy: trackByAngularFormsFlowOption"
+                            [class.is-active]="selectedAngularFormsFlowKey() === option.key"
+                            [attr.aria-pressed]="selectedAngularFormsFlowKey() === option.key"
+                            (click)="selectAngularFormsFlow(option.key)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div
+                        class="angular-forms-flow__visual"
+                        role="list"
+                        aria-live="polite"
+                        [attr.aria-label]="selectedAngularFormsFlowOption().label + ' flow nodes'">
+                        <div
+                            class="angular-forms-flow__step"
+                            *ngFor="let node of selectedAngularFormsFlowOption().nodes; let stepIndex = index; trackBy: trackByAngularFormsFlowNode"
+                            role="listitem"
+                            [class.angular-forms-flow__step--reactive]="node.tone === 'reactive'"
+                            [class.angular-forms-flow__step--template]="node.tone === 'template'"
+                            [class.angular-forms-flow__step--validation]="node.tone === 'validation'"
+                            [class.angular-forms-flow__step--migration]="node.tone === 'migration'"
+                            [class.angular-forms-flow__step--test]="node.tone === 'test'">
+                            <span class="angular-forms-flow__index">{{ stepIndex + 1 }}</span>
+                            <div class="angular-forms-flow__copy">
+                                <div class="angular-forms-flow__head">
+                                    <strong>{{ node.label }}</strong>
+                                    <span class="angular-forms-flow__status">{{ node.status }}</span>
+                                </div>
+                                <p>{{ node.detail }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="angular-forms-flow__details" aria-live="polite">
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Decision signal</span>
+                            <p>{{ selectedAngularFormsFlowOption().decisionSignal }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Proof point</span>
+                            <p>{{ selectedAngularFormsFlowOption().proofPoint }}</p>
+                        </div>
+                    </div>
+
+                    <div class="async-race-proof-strip angular-forms-flow__proof-strip" aria-label="Angular forms comparator proof signals">
+                        <span>Reviewed by FrontendAtlas</span>
+                        <span>Cross-checked with Angular forms docs</span>
+                        <span>State transitions mapped to testable assertions</span>
+                    </div>
+                </div>
+            </section>
+
             <!-- Selector memoization trace simulator -->
             <section
                 class="card return-simulator selector-trace-simulator"
