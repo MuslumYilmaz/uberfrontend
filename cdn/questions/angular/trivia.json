@@ -7274,12 +7274,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "NgRx data flow is a predictable loop, but the high-value explanation is operational: UI intent dispatches actions, reducers stay pure, effects handle async side effects, and selectors expose debug-friendly read models back to Angular components.",
+    "description": "NgRx data flow in Angular is a 5-step, DevTools-traceable loop: component action dispatch, immutable reducer state diff, effect success/failure result, selector VM, and template loading/data/error/retry UI.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Operational loop</strong><br><br>NgRx is most useful when you explain it as a <strong>debuggable one-way loop</strong>: the UI dispatches intent, reducers compute immutable state, effects run async side effects beside that loop, and selectors expose a clean read model back to the template. That framing is what separates “I know the words” from production understanding."
+          "text": "## Operational loop\n\nNgRx is most useful when you explain it as a debuggable one-way loop that matches a DevTools trace: component action dispatch, immutable reducer state diff, effect success/failure result, selector VM, and template loading/data/error/retry UI. That 5-step framing is what separates memorized terms from production understanding."
         },
         {
           "type": "list",
@@ -7326,7 +7326,27 @@
         {
           "type": "code",
           "language": "typescript",
-          "code": "// books.actions.ts\nimport { createAction, props } from '@ngrx/store';\n\nexport const loadBooks = createAction('[Books Page] Load Books');\nexport const loadBooksSuccess = createAction(\n  '[Books API] Load Books Success',\n  props<{ books: Book[] }>()\n);\nexport const loadBooksFailure = createAction(\n  '[Books API] Load Books Failure',\n  props<{ error: string }>()\n);\n\n// books.reducer.ts\nimport { createReducer, on } from '@ngrx/store';\n\nexport interface BooksState {\n  books: Book[];\n  loading: boolean;\n  error: string | null;\n}\n\nexport const initialState: BooksState = {\n  books: [],\n  loading: false,\n  error: null\n};\n\nexport const booksReducer = createReducer(\n  initialState,\n  on(loadBooks, state => ({ ...state, loading: true, error: null })),\n  on(loadBooksSuccess, (state, { books }) => ({ ...state, books, loading: false })),\n  on(loadBooksFailure, (state, { error }) => ({ ...state, error, loading: false }))\n);\n\n// books.effects.ts\nimport { Injectable, inject } from '@angular/core';\nimport { Actions, createEffect, ofType } from '@ngrx/effects';\nimport { catchError, map, of, switchMap } from 'rxjs';\n\n@Injectable()\nexport class BooksEffects {\n  private actions$ = inject(Actions);\n  private api = inject(BooksApiService);\n\n  loadBooks$ = createEffect(() =>\n    this.actions$.pipe(\n      ofType(loadBooks),\n      switchMap(() =>\n        this.api.getBooks().pipe(\n          map(books => loadBooksSuccess({ books })),\n          catchError(err => of(loadBooksFailure({ error: String(err) })))\n        )\n      )\n    )\n  );\n}\n\n// books.selectors.ts\nimport { createFeatureSelector, createSelector } from '@ngrx/store';\n\nexport const selectBooksState = createFeatureSelector<BooksState>('books');\nexport const selectBooks = createSelector(selectBooksState, s => s.books);\nexport const selectLoading = createSelector(selectBooksState, s => s.loading);\nexport const selectError = createSelector(selectBooksState, s => s.error);\nexport const selectVm = createSelector(\n  selectBooks,\n  selectLoading,\n  selectError,\n  (books, loading, error) => ({ books, loading, error, total: books.length })\n);\n\n// books-page.component.ts\nimport { ChangeDetectionStrategy, Component, inject } from '@angular/core';\nimport { Store } from '@ngrx/store';\n\n@Component({\n  selector: 'app-books-page',\n  template: `\n    <button (click)=\"reload()\">Reload</button>\n\n    <ng-container *ngIf=\"vm$ | async as vm\">\n      <p *ngIf=\"vm.loading\">Loading...</p>\n      <p *ngIf=\"vm.error\">Error: {{ vm.error }}</p>\n      <p>Total: {{ vm.total }}</p>\n      <li *ngFor=\"let b of vm.books\">{{ b.title }}</li>\n    </ng-container>\n  `,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class BooksPageComponent {\n  private store = inject(Store);\n  readonly vm$ = this.store.select(selectVm);\n\n  ngOnInit(): void {\n    this.store.dispatch(loadBooks());\n  }\n\n  reload(): void {\n    this.store.dispatch(loadBooks());\n  }\n}\n"
+          "code": "// books.actions.ts\nimport { createAction, props } from '@ngrx/store';\n\nexport const loadBooks = createAction('[Books Page] Load Books');\nexport const loadBooksSuccess = createAction(\n  '[Books API] Load Books Success',\n  props<{ books: Book[] }>()\n);\nexport const loadBooksFailure = createAction(\n  '[Books API] Load Books Failure',\n  props<{ error: string }>()\n);"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// books.reducer.ts\nimport { createReducer, on } from '@ngrx/store';\n\nexport interface BooksState {\n  books: Book[];\n  loading: boolean;\n  error: string | null;\n}\n\nexport const initialState: BooksState = {\n  books: [],\n  loading: false,\n  error: null\n};\n\nexport const booksReducer = createReducer(\n  initialState,\n  on(loadBooks, state => ({ ...state, loading: true, error: null })),\n  on(loadBooksSuccess, (state, { books }) => ({ ...state, books, loading: false })),\n  on(loadBooksFailure, (state, { error }) => ({ ...state, error, loading: false }))\n);"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// books.effects.ts\nimport { Injectable, inject } from '@angular/core';\nimport { Actions, createEffect, ofType } from '@ngrx/effects';\nimport { catchError, map, of, switchMap } from 'rxjs';\n\n@Injectable()\nexport class BooksEffects {\n  private actions$ = inject(Actions);\n  private api = inject(BooksApiService);\n\n  loadBooks$ = createEffect(() =>\n    this.actions$.pipe(\n      ofType(loadBooks),\n      switchMap(() =>\n        this.api.getBooks().pipe(\n          map(books => loadBooksSuccess({ books })),\n          catchError(err => of(loadBooksFailure({ error: String(err) })))\n        )\n      )\n    )\n  );\n}"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// books.selectors.ts\nimport { createFeatureSelector, createSelector } from '@ngrx/store';\n\nexport const selectBooksState = createFeatureSelector<BooksState>('books');\nexport const selectBooks = createSelector(selectBooksState, s => s.books);\nexport const selectLoading = createSelector(selectBooksState, s => s.loading);\nexport const selectError = createSelector(selectBooksState, s => s.error);\nexport const selectVm = createSelector(\n  selectBooks,\n  selectLoading,\n  selectError,\n  (books, loading, error) => ({\n    books,\n    loading,\n    error,\n    total: books.length,\n    canRetry: Boolean(error)\n  })\n);"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// books-page.component.ts\nimport { ChangeDetectionStrategy, Component, inject } from '@angular/core';\nimport { Store } from '@ngrx/store';\n\n@Component({\n  selector: 'app-books-page',\n  template: `\n    <button (click)=\"reload()\">Reload</button>\n\n    <ng-container *ngIf=\"vm$ | async as vm\">\n      <p *ngIf=\"vm.loading\">Loading...</p>\n      <p *ngIf=\"vm.error\">Error: {{ vm.error }}</p>\n      <button *ngIf=\"vm.canRetry\" (click)=\"reload()\">Try again</button>\n      <p>Total: {{ vm.total }}</p>\n      <li *ngFor=\"let b of vm.books\">{{ b.title }}</li>\n    </ng-container>\n  `,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class BooksPageComponent {\n  private store = inject(Store);\n  readonly vm$ = this.store.select(selectVm);\n\n  ngOnInit(): void {\n    this.store.dispatch(loadBooks());\n  }\n\n  reload(): void {\n    this.store.dispatch(loadBooks());\n  }\n}"
         },
         {
           "type": "list",
@@ -7357,11 +7377,12 @@
               "Use event-style action naming (<code>[Source] Event</code>)"
             ]
           ],
-          "caption": "What interviewers flag quickly"
+          "caption": "What interviewers flag quickly",
+          "stackOnMobile": true
         },
         {
           "type": "text",
-          "text": "<strong>Pure reducer update vs effect-driven async update</strong><br><br>A quick way to explain NgRx clearly is to separate the sync transition from the async side effect. Reducers update flags synchronously. Effects handle API work and feed the result back into the store."
+          "text": "## Pure reducer update vs effect-driven async update\n\nA quick way to explain NgRx clearly is to separate the sync transition from the async side effect. Reducers update flags synchronously. Effects handle API work and feed the result back into the store."
         },
         {
           "type": "code",
@@ -7370,15 +7391,174 @@
         },
         {
           "type": "text",
-          "text": "<strong>Compact trace you should be able to say out loud</strong><br><br><code>Load Books click → loadBooks action → reducer sets loading=true → effect calls API → loadBooksSuccess/loadBooksFailure → reducer stores result → selector builds vm → template re-renders</code>. That is the end-to-end loop interviewers want."
+          "text": "## Compact trace you should be able to say out loud\n\n<code>Load Books click -> loadBooks action -> reducer sets loading=true -> effect calls API -> loadBooksSuccess/loadBooksFailure -> reducer stores result -> selector builds vm -> template re-renders</code>. That trace is useful because each step can be checked against a DevTools action log, reducer state diff, effect result, selector output, and template state."
         },
         {
           "type": "text",
-          "text": "<strong>Selectors are memoized read models</strong><br><br>A selector is not just a getter. It is the read layer that turns raw store state into a reusable, memoized view model so components do not keep sorting, filtering, and combining the same data in multiple places."
+          "text": "## Selectors are memoized read models\n\nA selector is not just a getter. It is the read layer that turns raw store state into a reusable, memoized view model so components do not keep sorting, filtering, and combining the same data in multiple places."
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br>In Angular state management with NgRx, components dispatch actions for user intent, reducers compute next immutable state, selectors expose memoized read models, and templates render selector output. Effects handle async side effects and dispatch success/failure actions back into the same loop. If you can explain that loop clearly, you understand NgRx data flow."
+          "text": "## When this loop is worth the ceremony\n\nUse NgRx when the state is shared, long-lived, business-critical, written by multiple workflows, or needs replayable debugging. Keep short-lived local UI details close to the component when no other screen depends on them."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "State pressure",
+            "Use NgRx when",
+            "Keep local when"
+          ],
+          "rows": [
+            [
+              "Shared ownership",
+              "Multiple routes, panels, or teams depend on the same entity state",
+              "One component owns the state and can reset it on destroy"
+            ],
+            [
+              "Async workflow",
+              "Loading, success, failure, retry, optimistic update, or WebSocket events need a trace",
+              "A single request updates one local view without cross-feature coordination"
+            ],
+            [
+              "Debug/audit need",
+              "You need action history, state diffs, and repeatable transitions",
+              "The state is a local toggle, hover, tab, drawer, or temporary form detail"
+            ]
+          ],
+          "caption": "NgRx ceremony decision check",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "## Store state vs selector view model\n\nThe store should hold the durable source of truth. Selectors should shape that truth into the exact read model the component needs. Components should render the selector contract instead of rebuilding state shape locally."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Layer",
+            "Owns",
+            "Avoid"
+          ],
+          "rows": [
+            [
+              "Store state",
+              "Raw/domain state such as ids, entities, loading, and error",
+              "Storing filtered or sorted UI-only copies as global truth"
+            ],
+            [
+              "Selector view model",
+              "Derived data such as visible books, total count, empty state, and retry visibility",
+              "Recomputing the same filter/sort/map work in every component"
+            ],
+            [
+              "Component template",
+              "Rendering <code>vm$ | async</code> and dispatching user intent",
+              "Manual subscriptions, hidden mutations, or service calls that bypass the loop"
+            ]
+          ],
+          "caption": "Store truth vs selector read model",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "## Where this plugs into Angular\n\nThe loop only works once the feature state and effects are registered at the Angular boundary. In a standalone Angular app, keep that setup near the feature route or app config so the reducer owns state transitions and the effect owns async workflows."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// books.routes.ts or app.config.ts\nimport { provideEffects } from '@ngrx/effects';\nimport { provideState } from '@ngrx/store';\n\nexport const booksFeatureProviders = [\n  provideState('books', booksReducer),\n  provideEffects(BooksEffects)\n];"
+        },
+        {
+          "type": "text",
+          "text": "## Debugging an NgRx loop in DevTools\n\nA production-quality explanation should map each step to a debugging signal. If the action log, state diff, effect result, selector output, and template state tell the same story, the loop is healthy."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Debug point",
+            "What to inspect",
+            "Bad signal"
+          ],
+          "rows": [
+            [
+              "Action log",
+              "<code>loadBooks</code>, then <code>loadBooksSuccess</code> or <code>loadBooksFailure</code>",
+              "No action appears, or vague action names hide the source"
+            ],
+            [
+              "State diff",
+              "<code>loading</code>, <code>books</code>, and <code>error</code> change immutably",
+              "Reducer mutates state or writes async data before the effect returns"
+            ],
+            [
+              "Selector output",
+              "<code>selectVm</code> exposes the exact render model",
+              "Component rebuilds filtered arrays or misses loading/error branches"
+            ],
+            [
+              "Template render",
+              "Async pipe renders loading, data, empty, error, and retry states",
+              "Manual subscriptions leak or stale UI stays visible after failure"
+            ]
+          ],
+          "caption": "NgRx DevTools debugging trace",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "## Failure path and retry UI trace\n\nThe failure path is where the architecture usually proves itself. The effect dispatches a failure action, the reducer records the error, the selector exposes retry state, and the retry button dispatches the same load intent again."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "State/action",
+            "UI result"
+          ],
+          "rows": [
+            [
+              "API fails",
+              "Effect maps the error to <code>loadBooksFailure({ error })</code>",
+              "Reducer clears loading and stores a readable error"
+            ],
+            [
+              "Selector builds VM",
+              "<code>{ books, loading: false, error, canRetry: true }</code>",
+              "Template shows the error and retry action without extra component mapping"
+            ],
+            [
+              "User retries",
+              "Retry button dispatches <code>loadBooks()</code>",
+              "The same loop restarts instead of calling the API directly from the template"
+            ]
+          ],
+          "caption": "Failure action to retry UI trace",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "## Interactive DevTools trace visual\n\nUse the interactive trace below to inspect the same loop as a DevTools-style proof: action log, reducer state diff, effect result, selector VM, template state, and the retry path after <code>loadBooksFailure</code>."
+        },
+        {
+          "type": "text",
+          "text": "## Testable proof\n\nA focused reducer and selector test should prove the failure path without bootstrapping Angular. After <code>loadBooksFailure</code>, the reducer should clear loading, store the error, and let the selector expose a retry-capable view model."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "it('exposes retry state after load failure', () => {\n  const failedState = booksReducer(\n    { books: [], loading: true, error: null },\n    loadBooksFailure({ error: 'Network error' })\n  );\n\n  expect(failedState).toEqual({\n    books: [],\n    loading: false,\n    error: 'Network error'\n  });\n\n  expect(selectVm.projector([], false, 'Network error')).toEqual({\n    books: [],\n    loading: false,\n    error: 'Network error',\n    total: 0,\n    canRetry: true\n  });\n});"
+        },
+        {
+          "type": "text",
+          "text": "## FrontendAtlas review note\n\nWhen we review an NgRx data-flow answer, we look for concrete boundaries: reducers stay pure, effects own async work, selectors expose the component view model, and the failure/retry path is visible in the same loop. A common failure mode is naming actions and selectors correctly while still hiding API calls, mapping, or retry state inside the component."
+        },
+        {
+          "type": "text",
+          "text": "## Source check\n\nCompare this answer with the NgRx <a href=\"https://ngrx.io/guide/store/actions\" target=\"_blank\" rel=\"noopener\">Actions guide</a>, <a href=\"https://ngrx.io/guide/store/reducers\" target=\"_blank\" rel=\"noopener\">Reducers guide</a>, <a href=\"https://ngrx.io/guide/effects\" target=\"_blank\" rel=\"noopener\">Effects guide</a>, and <a href=\"https://ngrx.io/guide/store/selectors\" target=\"_blank\" rel=\"noopener\">Selectors guide</a>. FrontendAtlas content is maintained under the <a href=\"/legal/editorial-policy\">Editorial Policy</a>, with corrections handled through the page issue flow."
+        },
+        {
+          "type": "text",
+          "text": "## Interview summary\n\nIn Angular state management with NgRx, components dispatch actions for user intent, reducers compute next immutable state, effects handle async side effects, selectors expose memoized read models, and templates render selector output. If you can explain that loop clearly, you understand NgRx data flow."
         }
       ]
     },
@@ -7393,8 +7573,8 @@
     ],
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "NgRx data flow in Angular: actions, reducers, effects, selectors, and debug loops",
-      "description": "Explain NgRx through the real loop: dispatch intent, keep reducers pure, run async work in effects, and expose memoized selectors that make state changes easier to debug."
+      "title": "NgRx Data Flow in Angular: From Action to Retry UI",
+      "description": "See how one Load Books click travels through action, reducer state diff, effect success/failure, selector VM, template render, and retry UI."
     },
     "incidentCard": {
       "title": "NgRx Flow Check",

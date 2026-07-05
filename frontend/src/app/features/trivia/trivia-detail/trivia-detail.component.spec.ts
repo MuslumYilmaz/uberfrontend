@@ -1169,6 +1169,417 @@ describe('TriviaDetailComponent', () => {
     expect(simulator?.textContent || '').toContain('Good memoization boundary for unrelated updates.');
   });
 
+  it('adds NgRx data flow TechArticle and Question schema without FAQPage or QAPage markup', async () => {
+    const question = {
+      id: 'ngrx-data-flow-end-to-end-angular',
+      title: 'NgRx data flow end-to-end in Angular: actions, reducers, effects, selectors',
+      description:
+        'NgRx data flow in Angular is a 5-step, DevTools-traceable loop: component action dispatch, immutable reducer state diff, effect success/failure result, selector VM, and template loading/data/error/retry UI.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text:
+              '## Operational loop\n\nNgRx is most useful when you explain it as a debuggable one-way loop that matches a DevTools trace: component action dispatch, immutable reducer state diff, effect success/failure result, selector VM, and template loading/data/error/retry UI.',
+          },
+          {
+            type: 'list',
+            columns: ['Step', 'Who does it', 'What happens', 'Why it matters'],
+            rows: [
+              ['1. UI intent', 'Component', 'Dispatches an action', 'Intent is traceable'],
+              ['2. State transition', 'Reducer', 'Returns immutable state', 'Updates stay predictable'],
+            ],
+            caption: 'NgRx data flow diagram (end-to-end loop)',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: "export const loadBooks = createAction('[Books Page] Load Books');",
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: 'on(loadBooks, state => ({ ...state, loading: true }))',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: 'loadBooks$ = createEffect(() => this.actions$.pipe(ofType(loadBooks)));',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: 'export const selectVm = createSelector(selectBooks, books => ({ books }));',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: 'readonly vm$ = this.store.select(selectVm);',
+          },
+          {
+            type: 'list',
+            columns: ['Common mistake', 'Why it breaks', 'Fix'],
+            rows: [
+              ['Putting HTTP in reducers', 'Reducers must be synchronous and pure', 'Move async work to effects'],
+              ['Doing heavy mapping in components', 'Duplicates logic', 'Use memoized selectors'],
+            ],
+            caption: 'What interviewers flag quickly',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text:
+              '## Pure reducer update vs effect-driven async update\n\nReducers update flags synchronously. Effects handle API work.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Compact trace you should be able to say out loud\n\nLoad Books click -> loadBooks action -> reducer -> effect -> selector -> template.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Selectors are memoized read models\n\nA selector is the read layer for the component view model.',
+          },
+          {
+            type: 'text',
+            text:
+              '## When this loop is worth the ceremony\n\nUse NgRx when state is shared, long-lived, async-heavy, or needs replayable debugging.',
+          },
+          {
+            type: 'list',
+            columns: ['State pressure', 'Use NgRx when', 'Keep local when'],
+            rows: [
+              ['Shared ownership', 'Multiple screens depend on the same entity state', 'One component owns it'],
+              ['Debug/audit need', 'Action history and state diffs matter', 'It is a local UI toggle'],
+            ],
+            caption: 'NgRx ceremony decision check',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text:
+              '## Store state vs selector view model\n\nStore state is durable truth; selectors expose the exact read model.',
+          },
+          {
+            type: 'list',
+            columns: ['Layer', 'Owns', 'Avoid'],
+            rows: [
+              ['Store state', 'Raw/domain state', 'Filtered UI-only copies'],
+              ['Selector view model', 'Derived render data', 'Component-local mapping'],
+            ],
+            caption: 'Store truth vs selector read model',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text:
+              '## Where this plugs into Angular\n\nRegister the feature reducer and effects at the Angular boundary.',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: "export const booksFeatureProviders = [provideState('books', booksReducer), provideEffects(BooksEffects)];",
+          },
+          {
+            type: 'text',
+            text:
+              '## Debugging an NgRx loop in DevTools\n\nThe action log, state diff, effect result, selector output, and template state should tell the same story.',
+          },
+          {
+            type: 'list',
+            columns: ['Debug point', 'What to inspect', 'Bad signal'],
+            rows: [
+              ['Action log', 'loadBooks then success or failure', 'No action appears'],
+              ['Selector output', 'selectVm exposes render model', 'Component rebuilds arrays'],
+            ],
+            caption: 'NgRx DevTools debugging trace',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text:
+              '## Failure path and retry UI trace\n\nThe effect dispatches failure, the reducer records error, the selector exposes retry state, and retry dispatches loadBooks again.',
+          },
+          {
+            type: 'list',
+            columns: ['Step', 'State/action', 'UI result'],
+            rows: [
+              ['API fails', 'loadBooksFailure({ error })', 'Error state is stored'],
+              ['User retries', 'Retry button dispatches loadBooks()', 'The same loop restarts'],
+            ],
+            caption: 'Failure action to retry UI trace',
+            stackOnMobile: true,
+          },
+          {
+            type: 'text',
+            text:
+              '## Interactive DevTools trace visual\n\nUse the interactive trace below to inspect action log, reducer state diff, effect result, selector VM, template state, and retry path.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Testable proof\n\nA focused reducer and selector test should prove the failure path without bootstrapping Angular.',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: "expect(selectVm.projector([], false, 'Network error')).toEqual({ canRetry: true });",
+          },
+          {
+            type: 'text',
+            text:
+              '## FrontendAtlas review note\n\nWhen we review an NgRx data-flow answer, we look for concrete boundaries.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Source check\n\nCompare this answer with the NgRx <a href="https://ngrx.io/guide/store/actions" target="_blank" rel="noopener">Actions guide</a>, <a href="https://ngrx.io/guide/store/reducers" target="_blank" rel="noopener">Reducers guide</a>, <a href="https://ngrx.io/guide/effects" target="_blank" rel="noopener">Effects guide</a>, and <a href="https://ngrx.io/guide/store/selectors" target="_blank" rel="noopener">Selectors guide</a>. FrontendAtlas content is maintained under the <a href="/legal/editorial-policy">Editorial Policy</a>.',
+          },
+          {
+            type: 'text',
+            text:
+              '## Interview summary\n\nComponents dispatch actions, reducers compute state, effects handle async work, selectors expose read models, and templates render output.',
+          },
+        ],
+      },
+      importance: 5,
+      difficulty: 'intermediate',
+      technology: 'angular',
+      access: 'free',
+      tags: ['angular', 'store', 'selectors', 'effects', 'state-management'],
+      updatedAt: '2026-04-10',
+      seo: {
+        title: 'NgRx Data Flow in Angular: From Action to Retry UI',
+        description:
+          'See how one Load Books click travels through action, reducer state diff, effect success/failure, selector VM, template render, and retry UI.',
+      },
+    };
+
+    routeData$.next({
+      questionDetail: {
+        tech: 'angular',
+        kind: 'trivia',
+        id: question.id,
+        list: [question],
+        listSummaries: [toSummary(question)],
+        question,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
+    const typeNames = graph.map((node: any) => node?.['@type']);
+
+    expect(payload.title).toBe('NgRx Data Flow in Angular: From Action to Retry UI');
+    expect(payload.description).toBe(
+      'See how one Load Books click travels through action, reducer state diff, effect success/failure, selector VM, template render, and retry UI.',
+    );
+    expect(payload.canonical).toBe('https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular');
+
+    expect(typeNames).toContain('BreadcrumbList');
+    expect(typeNames).toContain('TechArticle');
+    expect(typeNames).toContain('Question');
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(breadcrumb?.itemListElement?.[2]?.item).toBe(
+      'https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular',
+    );
+
+    expect(article?.articleSection).toBe('Angular state management');
+    expect(article?.educationalLevel).toBe('Intermediate');
+    expect(article?.learningResourceType).toBe('Interview answer');
+    expect(article?.reviewedBy?.name).toBe('FrontendAtlas');
+    expect((article?.about || []).map((item: any) => item.name)).toEqual([
+      'NgRx data flow',
+      'Angular state management',
+      'one-way data flow',
+      'immutable state updates',
+      'shared state',
+      'state vs view model',
+      'interactive DevTools trace',
+      'retry UI trace',
+    ]);
+    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
+      'actions',
+      'reducers',
+      'effects',
+      'selectors',
+      'Store',
+      'createAction',
+      'createReducer',
+      'createEffect',
+      'ofType',
+      'switchMap',
+      'createSelector',
+      'createFeatureSelector',
+      'AsyncPipe',
+      'OnPush change detection',
+      'success/failure actions',
+      'view model selector',
+      'action naming',
+      'debug loop',
+      'local UI state',
+      'feature state registration',
+      'provideState',
+      'provideEffects',
+      'DevTools trace',
+      'state diff',
+      'failure action',
+      'error state',
+      'retry UI',
+      'retry button',
+      'testable proof',
+      'reducer test',
+      'selector projector test',
+      'FrontendAtlas review note',
+      'source check',
+      'official NgRx guides',
+      'editorial policy',
+      'interactive DevTools trace',
+      'state diff proof',
+      'retry UI trace',
+      'selector VM proof',
+    ]);
+    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
+      'Interview quick answer',
+      'Operational loop',
+      'NgRx data flow diagram (end-to-end loop)',
+      'Actions example',
+      'Reducer example',
+      'Effect example',
+      'Selectors example',
+      'Component example',
+      'What interviewers flag quickly',
+      'Pure reducer update vs effect-driven async update',
+      'Compact trace you should be able to say out loud',
+      'Selectors are memoized read models',
+      'When this loop is worth the ceremony',
+      'NgRx ceremony decision check',
+      'Store state vs selector view model',
+      'Store truth vs selector read model',
+      'Where this plugs into Angular',
+      'Debugging an NgRx loop in DevTools',
+      'NgRx DevTools debugging trace',
+      'Failure path and retry UI trace',
+      'Failure action to retry UI trace',
+      'NgRx DevTools trace visual',
+      'Testable proof',
+      'FrontendAtlas review note',
+      'Source check',
+      'Interview summary',
+    ]);
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://ngrx.io/guide/store/actions',
+      'https://ngrx.io/guide/store/reducers',
+      'https://ngrx.io/guide/effects',
+      'https://ngrx.io/guide/store/selectors',
+      'https://frontendatlas.com/legal/editorial-policy',
+    ]);
+
+    expect(questionSchema).toEqual(jasmine.objectContaining({
+      '@id': 'https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular#question',
+      name: question.title,
+      url: 'https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular',
+      inLanguage: 'en',
+      acceptedAnswer: jasmine.objectContaining({
+        '@type': 'Answer',
+        text: jasmine.stringMatching(/^NgRx data flow in Angular is a 5-step, DevTools-traceable loop/),
+      }),
+    }));
+    expect(questionSchema?.acceptedAnswer?.text).toContain('immutable reducer state diff');
+    expect(questionSchema?.acceptedAnswer?.text).toContain('selector VM');
+    expect(questionSchema?.acceptedAnswer?.text).toContain('template loading/data/error/retry UI');
+
+    const quickAnswerText = String(
+      fixture.nativeElement.querySelector('.card .content')?.textContent || ''
+    );
+    expect(quickAnswerText).toContain('5-step');
+    expect(quickAnswerText).toContain('DevTools-traceable');
+    expect(quickAnswerText).toContain('component action dispatch');
+    expect(quickAnswerText).toContain('immutable reducer state diff');
+    expect(quickAnswerText).toContain('selector VM');
+    expect(quickAnswerText).toContain('retry UI');
+
+    const h3Text = Array.from(fixture.nativeElement.querySelectorAll('.blocks h3.md-h3'))
+      .map((node: any) => String(node.textContent || '').trim());
+    expect(h3Text).toEqual([
+      'Operational loop',
+      'Pure reducer update vs effect-driven async update',
+      'Compact trace you should be able to say out loud',
+      'Selectors are memoized read models',
+      'When this loop is worth the ceremony',
+      'Store state vs selector view model',
+      'Where this plugs into Angular',
+      'Debugging an NgRx loop in DevTools',
+      'Failure path and retry UI trace',
+      'Interactive DevTools trace visual',
+      'Testable proof',
+      'FrontendAtlas review note',
+      'Source check',
+      'Interview summary',
+    ]);
+
+    const dataFlowTrace = fixture.nativeElement.querySelector('[data-testid="ngrx-data-flow-trace"]') as HTMLElement | null;
+    expect(dataFlowTrace).toBeTruthy();
+    expect(dataFlowTrace?.textContent || '').toContain('[Books Page] Load Books');
+    expect(dataFlowTrace?.textContent || '').toContain('The user intent appears first as a named action');
+
+    const failureButton = Array.from(dataFlowTrace!.querySelectorAll('.return-simulator__tab'))
+      .find((button: any) => String(button.textContent || '').trim() === 'Effect failure') as HTMLButtonElement | undefined;
+    expect(failureButton).toBeTruthy();
+    failureButton!.click();
+    fixture.detectChanges();
+
+    expect(dataFlowTrace?.textContent || '').toContain('[Books API] Load Books Failure');
+    expect(dataFlowTrace?.textContent || '').toContain("loadBooksFailure({ error: 'Network error' })");
+    expect(dataFlowTrace?.textContent || '').toContain("canRetry: true");
+    expect(dataFlowTrace?.textContent || '').toContain('Try again button');
+    expect(dataFlowTrace?.textContent || '').toContain('retry dispatches loadBooks again');
+
+    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
+    expect(sourceCheck).toBeTruthy();
+    const sourceLinks = Array.from(sourceCheck?.querySelectorAll('a') || []) as HTMLAnchorElement[];
+    expect(sourceLinks.map((link) => link.getAttribute('href'))).toEqual([
+      'https://ngrx.io/guide/store/actions',
+      'https://ngrx.io/guide/store/reducers',
+      'https://ngrx.io/guide/effects',
+      'https://ngrx.io/guide/store/selectors',
+      '/legal/editorial-policy',
+    ]);
+    expect(sourceLinks.map((link) => link.textContent?.trim())).toEqual([
+      'Actions guide',
+      'Reducers guide',
+      'Effects guide',
+      'Selectors guide',
+      'Editorial Policy',
+    ]);
+
+    const findTableByCaption = (caption: string): HTMLTableElement | null => {
+      const figure = Array.from(fixture.nativeElement.querySelectorAll('figure.b-list'))
+        .find((node: any) => String(node.textContent || '').includes(caption)) as HTMLElement | undefined;
+      return figure?.querySelector('table.table') as HTMLTableElement | null;
+    };
+
+    [
+      'What interviewers flag quickly',
+      'NgRx ceremony decision check',
+      'Store truth vs selector read model',
+      'NgRx DevTools debugging trace',
+      'Failure action to retry UI trace',
+    ].forEach((caption) => {
+      expect(findTableByCaption(caption)?.classList.contains('table--stacked-mobile')).toBeTrue();
+    });
+  });
+
   it('adds Angular forms schema and stacks target comparison tables on mobile', async () => {
     const question = {
       id: 'angular-template-driven-vs-reactive-forms-which-scales',
