@@ -60,6 +60,9 @@ describe('CodingDetailComponent', () => {
           useValue: {
             migrateAllJsToIndexedDbOnce: () => Promise.resolve(),
             getJsAsync: () => Promise.resolve(null),
+            clearJsAsync: () => Promise.resolve(),
+            clearFrameworkAsync: () => Promise.resolve(),
+            clearWebAsync: () => Promise.resolve(),
           },
         },
         { provide: UserProgressService, useValue: progress },
@@ -498,6 +501,38 @@ describe('CodingDetailComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Question not found.');
   });
 
+  it('renders seo h1 and JavaScript prompt specs without renaming the catalog title', async () => {
+    const question = makeDeferredPromiseQuestion();
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const h1 = host.querySelector('[data-testid="question-title"]');
+    const text = host.textContent || '';
+
+    expect(question.title).toBe('Create a Deferred Promise (For Async Tests)');
+    expect(h1?.textContent?.trim()).toBe('Create a Deferred Promise in JavaScript');
+    expect(text).toContain('Implement createDeferred() to control promise resolution in async tests.');
+    expect(text).toContain("What you'll practice");
+    expect(text).toContain('Creating a promise with external resolve/reject controls');
+    expect(text).toContain('Expected behavior');
+    expect(text).toContain('Your solution should:');
+    expect(text).toContain('Adopt another promise when `resolve(Promise.resolve(value))` is used');
+    expect(text).not.toContain('Common interview follow-ups');
+  });
+
   it('ignores stale solution assets from an older question load', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -583,7 +618,7 @@ describe('CodingDetailComponent', () => {
 
     expect(payload.title).toContain('Angular & SEO title');
     expect(payload.title).not.toContain('<');
-    expect(payload.title.length).toBeLessThanOrEqual(65);
+    expect(payload.title.length).toBeLessThanOrEqual(70);
 
     expect(payload.description).toContain('Angular & explicit SEO description should be used first');
     expect(payload.description).not.toContain('<');
@@ -608,11 +643,84 @@ describe('CodingDetailComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
 
     expect(payload.title).toContain('Build an Angular Widget');
-    expect(payload.title.length).toBeLessThanOrEqual(65);
+    expect(payload.title.length).toBeLessThanOrEqual(70);
     expect(payload.description).toContain('Angular-focused:');
     expect(payload.description.length).toBeLessThanOrEqual(155);
   });
+
+  it('preserves the deferred promise SEO title without clipping Tests', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'javascript';
+
+    (component as any).updateSeoForQuestion(makeDeferredPromiseQuestion());
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+
+    expect(payload.title).toBe('Create Deferred Promise in JavaScript: Interview Challenge + Tests');
+    expect(payload.description).toBe(
+      'Build createDeferred() in JavaScript with starter code, tests, solution, and async edge cases for frontend coding interviews.'
+    );
+    expect(payload.canonical).toBe('https://frontendatlas.com/javascript/coding/js-create-deferred-promise');
+  });
 });
+
+function makeDeferredPromiseQuestion() {
+  return {
+    id: 'js-create-deferred-promise',
+    title: 'Create a Deferred Promise (For Async Tests)',
+    type: 'coding',
+    technology: 'javascript',
+    importance: 4,
+    difficulty: 'intermediate',
+    tags: ['testing', 'promise', 'async'],
+    description: {
+      summary: 'Implement createDeferred() to control promise resolution in async tests. This frontend interview challenge asks you to build a controllable Promise helper that returns { promise, resolve, reject }.',
+      specs: {
+        practice: [
+          'Creating a promise with external resolve/reject controls',
+          'Making async tests deterministic',
+          'Handling resolve, reject, and promise adoption behavior',
+        ],
+        expectedBehaviorIntro: 'Your solution should:',
+        expectedBehavior: [
+          'Return an object with `promise`, `resolve`, and `reject`',
+          'Fulfill the promise when `resolve(value)` is called',
+          'Reject the promise when `reject(error)` is called',
+          'Adopt another promise when `resolve(Promise.resolve(value))` is used',
+        ],
+      },
+      arguments: [],
+      returns: {
+        type: '{ promise: Promise, resolve: Function, reject: Function }',
+        desc: 'A deferred object whose promise can be resolved/rejected from the outside.',
+      },
+      examples: [],
+    },
+    starterCode: "export default function createDeferred() {\n  throw new Error('Not implemented');\n}\n",
+    starterCodeTs: "export default function createDeferred<T = unknown>() {\n  throw new Error('Not implemented');\n}\n",
+    tests: '',
+    testsTs: '',
+    solutionBlock: {
+      overview: 'Mental model: The Promise constructor gives you `resolve` and `reject` once.',
+      approaches: [],
+      followUp: [
+        'How would you type this utility in TypeScript?',
+        'When is a deferred promise useful in tests?',
+        'Why can deferred promises be risky in production code?',
+      ],
+    },
+    access: 'free',
+    updatedAt: '2026-02-05',
+    seo: {
+      title: 'Create Deferred Promise in JavaScript: Interview Challenge + Tests',
+      description: 'Build createDeferred() in JavaScript with starter code, tests, solution, and async edge cases for frontend coding interviews.',
+      h1: 'Create a Deferred Promise in JavaScript',
+    },
+    decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-create-deferred-promise.v1.json',
+  };
+}
 
 function deferred<T>() {
   let resolve!: (value: T) => void;

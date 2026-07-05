@@ -52,7 +52,7 @@
         <ng-container *ngIf="activePanel()===0">
           <section class="space-y-4">
             <div class="detail-title-row">
-              <h1 class="text-xl font-bold" data-testid="question-title">{{ question()?.title }}</h1>
+              <h1 class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h1>
               <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
                 <app-fa-glyph class="detail-solved__icon" icon="pi pi-check"></app-fa-glyph>
                 Solved
@@ -60,6 +60,7 @@
               <button
                 class="report-issue-btn"
                 type="button"
+                data-nosnippet
                 data-testid="coding-report-issue-btn"
                 (click)="reportIssue()"
                 aria-label="Report issue on this question">
@@ -110,6 +111,62 @@
               {{ displayText(prose) }}
             </div>
 
+            <!-- Prompt specs -->
+            <ng-container *ngIf="descSpecs() as specs">
+
+              <!-- Tech focus chips -->
+              <div *ngIf="specs.techFocus?.length" class="mt-2 flex flex-wrap gap-1">
+                <span *ngFor="let t of specs.techFocus" class="fa-chip">
+                  {{ t }}
+                </span>
+              </div>
+
+              <!-- Framework preview button styled like the yellow banner -->
+              <div *ngIf="isFrameworkTech()" class="mt-6">
+                <button
+                  class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-2 hover:bg-yellow-400 transition"
+                  (click)="openFrameworkSolutionPreview()">
+                  <app-fa-glyph class="text-sm" icon="pi pi-eye"></app-fa-glyph>
+                  <span class="font-medium">Preview what you need to build</span>
+                </button>
+              </div>
+
+              <!-- Practice focus -->
+              <div *ngIf="specs.practice?.length" class="mt-4">
+                <h3 class="text-sm font-semibold mb-1">What you'll practice:</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let p of specs.practice">{{ displayText(p) }}</li>
+                </ul>
+              </div>
+
+              <!-- Requirements -->
+              <div *ngIf="specs.requirements?.length" class="mt-4">
+                <h3 class="text-sm font-semibold mb-1">Requirements</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let r of specs.requirements">{{ displayText(r) }}</li>
+                </ul>
+              </div>
+
+              <!-- Expected behavior -->
+              <div *ngIf="specs.expectedBehavior?.length" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Expected behavior</h3>
+                <p *ngIf="specs.expectedBehaviorIntro" class="text-sm opacity-90 mb-1">
+                  {{ displayText(specs.expectedBehaviorIntro) }}
+                </p>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let b of specs.expectedBehavior">{{ displayText(b) }}</li>
+                </ul>
+              </div>
+
+              <!-- Implementation notes -->
+              <div *ngIf="specs.implementationNotes?.length" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Implementation notes</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let n of specs.implementationNotes">{{ displayText(n) }}</li>
+                </ul>
+              </div>
+            </ng-container>
+
             <!-- Algo-style questions: Arguments -->
             <div *ngIf="!isFrameworkTech() && !isWebTech() && descArgs().length" class="mt-4">
               <h3 class="text-sm font-semibold mb-1">Arguments</h3>
@@ -132,51 +189,6 @@
                 <span class="font-sm">{{ descReturns()?.desc }}</span>
               </div>
             </div>
-
-            <!-- Framework / UI questions: Specs -->
-            <ng-container *ngIf="(isFrameworkTech() || isWebTech()) && descSpecs() as specs">
-
-              <!-- Tech focus chips -->
-              <div *ngIf="specs.techFocus?.length" class="mt-2 flex flex-wrap gap-1">
-                <span *ngFor="let t of specs.techFocus" class="fa-chip">
-                  {{ t }}
-                </span>
-              </div>
-
-              <!-- Framework preview button styled like the yellow banner -->
-              <div *ngIf="isFrameworkTech()" class="mt-6">
-                <button
-                  class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-2 hover:bg-yellow-400 transition"
-                  (click)="openFrameworkSolutionPreview()">
-                  <app-fa-glyph class="text-sm" icon="pi pi-eye"></app-fa-glyph>
-                  <span class="font-medium">Preview what you need to build</span>
-                </button>
-              </div>
-
-              <!-- Requirements -->
-              <div *ngIf="specs.requirements?.length" class="mt-4">
-                <h3 class="text-sm font-semibold mb-1">Requirements</h3>
-                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let r of specs.requirements">{{ displayText(r) }}</li>
-                </ul>
-              </div>
-
-              <!-- Expected behavior -->
-              <div *ngIf="specs.expectedBehavior?.length" class="mt-3">
-                <h3 class="text-sm font-semibold mb-1">Expected behavior</h3>
-                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let b of specs.expectedBehavior">{{ displayText(b) }}</li>
-                </ul>
-              </div>
-
-              <!-- Implementation notes -->
-              <div *ngIf="specs.implementationNotes?.length" class="mt-3">
-                <h3 class="text-sm font-semibold mb-1">Implementation notes</h3>
-                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let n of specs.implementationNotes">{{ displayText(n) }}</li>
-                </ul>
-              </div>
-            </ng-container>
 
             <!-- Örnekler -->
             <ng-container *ngIf="!isFrameworkTech() && !isWebTech() && combinedExamples()">
@@ -247,7 +259,7 @@
             </section>
 
             <!-- Guide links -->
-            <section class="mt-6">
+            <section class="mt-6" data-nosnippet>
               <div class="flex items-center justify-between px-3 py-2 border border-white/15 rounded">
                 <h3 class="text-sm font-semibold">Guides</h3>
               </div>
@@ -275,7 +287,7 @@
               </div>
             </section>
 
-            <section class="detail-prep-bridge" data-testid="coding-prep-entry">
+            <section class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
               <p class="detail-prep-bridge__text">
                 Preparing for interviews? Use the Question Library first, then move into a concrete Study Plan before targeted Company Prep.
               </p>
@@ -483,6 +495,14 @@
                 </div>
               </section>
 
+              <!-- Short solution follow-ups -->
+              <section class="space-y-2 mb-6" *ngIf="structuredSolution()?.followUp?.length">
+                <h3 class="text-sm font-semibold opacity-90">Common interview follow-ups:</h3>
+                <ul class="list-disc list-inside text-sm space-y-1">
+                  <li class="font-sm" *ngFor="let f of structuredSolution()?.followUp">{{ f }}</li>
+                </ul>
+              </section>
+
               <!-- Follow-up -->
               <!-- Similar questions -->
               <section *ngIf="followUpItems().length" class="mt-6">
@@ -578,7 +598,7 @@
 
 <!-- Footer -->
 <ng-container *ngIf="!hideFooterBar; else demoFooter">
-  <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
+  <app-footer data-nosnippet [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
     [practiceLeftLabel]="!isCourseContext() ? 'Incidents hub' : null" [practiceLeftRoute]="!isCourseContext() ? ['/incidents'] : null"
     [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
@@ -590,7 +610,7 @@
 </ng-container>
 
 <ng-template #demoFooter>
-  <div class="demo-cta-bar" *ngIf="question() as q">
+  <div class="demo-cta-bar" data-nosnippet *ngIf="question() as q">
     <a class="demo-cta-btn"
       [routerLink]="(footerLinkTo || ['/coding', q.id])"
       >{{ footerLinkLabel || 'Open in full workspace' }}</a>
@@ -602,7 +622,7 @@
   <section class="mobile-workspace-shell" data-testid="coding-mobile-guard">
     <article class="mobile-workspace-card">
       <div class="mobile-workspace-pill">Desktop or Tablet</div>
-      <h1 class="mobile-workspace-title">{{ question()?.title }}</h1>
+      <h1 class="mobile-workspace-title">{{ questionHeading() }}</h1>
       <p class="mobile-workspace-copy">
         This coding workspace is disabled on small mobile screens.
         For the best experience, solve coding questions on desktop or tablet.
