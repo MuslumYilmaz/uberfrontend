@@ -480,6 +480,28 @@ function assertVercelCspAllowsCodingSandboxRunner() {
   });
 }
 
+function assertVercelCspAllowsGoogleAnalyticsCollection() {
+  const config = readVercelConfig();
+  const headerNames = ['Content-Security-Policy', 'Content-Security-Policy-Report-Only'];
+  const requiredSources = [
+    'https://analytics.google.com',
+    'https://*.analytics.google.com',
+    'https://www.google.com',
+    'https://stats.g.doubleclick.net',
+  ];
+
+  headerNames.forEach((headerName) => {
+    const policy = getGlobalVercelHeader(config, headerName);
+
+    assertCspDirectiveSources({
+      headerName,
+      policy,
+      directiveName: 'connect-src',
+      requiredSources,
+    });
+  });
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const locs = getAllSitemapLocs(sitemapFiles);
@@ -492,5 +514,6 @@ assertIndexableRouteTitlesUnique();
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();
 assertVercelCspAllowsCodingSandboxRunner();
+assertVercelCspAllowsGoogleAnalyticsCollection();
 
 console.log('Sitemap size check passed.');
