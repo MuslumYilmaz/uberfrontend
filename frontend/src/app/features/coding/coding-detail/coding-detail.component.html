@@ -49,24 +49,13 @@
 
       <div class="flex-1 overflow-auto p-6 font-sm">
         <!-- Description Panel -->
-        <ng-container *ngIf="activePanel()===0">
-          <section class="space-y-4">
+        <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0">
             <div class="detail-title-row">
               <h1 class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h1>
               <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
                 <app-fa-glyph class="detail-solved__icon" icon="pi pi-check"></app-fa-glyph>
                 Solved
               </span>
-              <button
-                class="report-issue-btn"
-                type="button"
-                data-nosnippet
-                data-testid="coding-report-issue-btn"
-                (click)="reportIssue()"
-                aria-label="Report issue on this question">
-                <app-fa-glyph class="report-issue-btn__icon" icon="fa-solid fa-bug" aria-hidden="true"></app-fa-glyph>
-                <span class="report-issue-btn__label">Report issue</span>
-              </button>
             </div>
             <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
             <div class="detail-meta text-xs text-gray-400">
@@ -240,82 +229,11 @@
               </div>
             </ng-container>
 
-            <!-- Similar questions -->
-            <section *ngIf="followUpItems().length" class="mt-6">
-              <div
-                class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
-                (click)="similarOpen.set(!similarOpen())">
-                <h3 class="text-sm font-semibold">Similar questions</h3>
-                <app-fa-glyph [icon]="similarOpen() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></app-fa-glyph>
-              </div>
-
-              <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
-                <a *ngFor="let f of followUpItems()" [routerLink]="f.to"
-                  class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
-                  <span class="truncate">{{ f.title }}</span>
-                  <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.difficulty || '—' }}</span>
-                </a>
-              </div>
-            </section>
-
-            <!-- Guide links -->
-            <section class="mt-6" data-nosnippet>
-              <div class="flex items-center justify-between px-3 py-2 border border-white/15 rounded">
-                <h3 class="text-sm font-semibold">Guides</h3>
-              </div>
-              <div class="mt-1 rounded border border-white/10 overflow-hidden">
-                <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
-                  [routerLink]="['/guides/interview-blueprint/intro']">
-                  <span class="truncate">Frontend interview preparation guide</span>
-                  <span class="text-yellow-300 text-sm ml-4">Guide</span>
-                </a>
-                <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
-                  [routerLink]="['/guides/interview-blueprint/coding-interviews']">
-                  <span class="truncate">Frontend coding interview questions and prep guide</span>
-                  <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
-                </a>
-                <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
-                  [routerLink]="['/guides/interview-blueprint/javascript-interviews']">
-                  <span class="truncate">JavaScript Problems That Actually Show Up</span>
-                  <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
-                </a>
-                <a class="flex items-center justify-between px-4 py-3 hover:bg-white/5"
-                  [routerLink]="['/guides/interview-blueprint/ui-interviews']">
-                  <span class="truncate">Build Great UI in 60 Minutes</span>
-                  <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
-                </a>
-              </div>
-            </section>
-
-            <section class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
-              <p class="detail-prep-bridge__text">
-                Preparing for interviews? Use the Question Library first, then move into a concrete Study Plan before targeted Company Prep.
-              </p>
-              <div class="detail-prep-bridge__links">
-                <a [routerLink]="['/interview-questions']">Open frontend interview questions</a>
-                <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
-                <a *ngIf="isWebTech()" [routerLink]="['/html-css/interview-questions']">Open HTML/CSS interview questions</a>
-                <a [routerLink]="['/interview-questions/essential']">Open Essential 60</a>
-                <a [routerLink]="['/machine-coding']">Open Machine Coding Hub</a>
-                <a [routerLink]="['/coding']">Open Question Library</a>
-                <a [routerLink]="['/system-design']">Open System Design</a>
-                <a [routerLink]="['/guides/interview-blueprint/intro']">Open Interview Prep Guide</a>
-                <a [routerLink]="['/guides/system-design-blueprint']">Open System Design Blueprint</a>
-                <a [routerLink]="['/guides/framework-prep']">Open Framework Prep Paths</a>
-                <a [routerLink]="['/tracks']">Open Study Plans</a>
-                <a [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
-                <a [routerLink]="['/companies']">Open Company Prep</a>
-                <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} Framework Prep Guide</a>
-              </div>
-            </section>
-
-          </section>
-        </ng-container>
+        </section>
 
 
         <!-- Solution Panel -->
-        <ng-container *ngIf="activePanel()===1">
-          <section class="space-y-4">
+        <section class="space-y-4" data-testid="coding-solution-panel" [hidden]="activePanel()!==1">
             <!-- Uyarı -->
             <ng-container *ngIf="showSolutionWarning(); else solBody">
               <div class="solution-warning" data-testid="solution-warning">
@@ -354,7 +272,7 @@
                   <h3 class="ap-title">{{ ap.title }}</h3>
                   <div class="ap-actions">
                     <button faButton [attr.data-testid]="'solution-load-approach-' + i"
-                      *ngIf="(isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs))"
+                      *ngIf="activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
                       (click)="loadApproach(ap, i)" title="Load into editor">
                       Load into editor
                     </button>
@@ -367,7 +285,7 @@
 
                 <!-- WEB: show HTML and CSS as separate, nicely labeled blocks -->
                 <ng-container *ngIf="isWebTech(); else nonWebApproach">
-                  <div class="code-wrap mb-2" *ngIf="ap.codeHtml">
+                  <div class="code-wrap mb-2" *ngIf="activePanel()===1 && ap.codeHtml">
                     <div class="px-2 py-1 text-xs opacity-80">&lt;html&gt;</div>
                     <ng-container *ngIf="!liteEditors(); else liteHtmlBlock">
                       <app-monaco-editor
@@ -385,7 +303,7 @@
                     </button>
                   </div>
 
-                  <div class="code-wrap" *ngIf="ap.codeCss">
+                  <div class="code-wrap" *ngIf="activePanel()===1 && ap.codeCss">
                     <div class="px-2 py-1 text-xs opacity-80"># CSS</div>
                     <ng-container *ngIf="!liteEditors(); else liteCssBlock">
                       <app-monaco-editor
@@ -407,7 +325,7 @@
                 <!-- JS/TS path (unchanged) -->
                 <ng-template #nonWebApproach>
                   <!-- Only show inline code for plain JS/TS. Frameworks use the Files section instead. -->
-                  <div class="code-wrap" *ngIf="!isFrameworkTech() && !isWebTech()">
+                  <div class="code-wrap" *ngIf="activePanel()===1 && !isFrameworkTech() && !isWebTech()">
                     <ng-container *ngIf="!liteEditors(); else liteApproachBlock">
                       <app-monaco-editor
                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
@@ -426,7 +344,7 @@
                 </ng-template>
 
                 <!-- Solution Files (read-only) -->
-                <section *ngIf="isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
+                <section *ngIf="activePanel()===1 && isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
                   <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold">Files</h3>
                     <button type="button" faButton class="text-[10px]" (click)="loadSolutionIntoEditor()"
@@ -503,25 +421,6 @@
                 </ul>
               </section>
 
-              <!-- Follow-up -->
-              <!-- Similar questions -->
-              <section *ngIf="followUpItems().length" class="mt-6">
-                <div
-                  class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
-                  (click)="similarOpen.set(!similarOpen())">
-                  <h3 class="text-sm font-semibold">Similar questions</h3>
-                  <app-fa-glyph [icon]="similarOpen() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></app-fa-glyph>
-                </div>
-
-                <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
-                  <a *ngFor="let f of followUpItems()" [routerLink]="f.to"
-                    class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
-                    <span class="truncate">{{ f.title }}</span>
-                    <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.difficulty || '—' }}</span>
-                  </a>
-                </div>
-              </section>
-
               <!-- Resources -->
               <section class="space-y-2" *ngIf="structuredSolution()?.resources?.length">
                 <h3 class="text-sm font-semibold opacity-90">Resources</h3>
@@ -534,9 +433,91 @@
                 </ul>
               </section>
 
+              <ng-container *ngIf="activePanel()===1">
+                <!-- Similar questions -->
+                <section *ngIf="followUpItems().length" class="mt-6" data-nosnippet data-testid="coding-similar-questions">
+                  <div
+                    class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
+                    (click)="similarOpen.set(!similarOpen())">
+                    <h3 class="text-sm font-semibold">Similar questions</h3>
+                    <app-fa-glyph [icon]="similarOpen() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></app-fa-glyph>
+                  </div>
+
+                  <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
+                    <a *ngFor="let f of followUpItems()" [routerLink]="f.to"
+                      class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
+                      <span class="truncate">{{ f.title }}</span>
+                      <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.difficulty || '—' }}</span>
+                    </a>
+                  </div>
+                </section>
+
+                <!-- Guide links -->
+                <section class="mt-6" data-nosnippet data-testid="coding-guide-links">
+                  <div class="flex items-center justify-between px-3 py-2 border border-white/15 rounded">
+                    <h3 class="text-sm font-semibold">Guides</h3>
+                  </div>
+                  <div class="mt-1 rounded border border-white/10 overflow-hidden">
+                    <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
+                      [routerLink]="['/guides/interview-blueprint/intro']">
+                      <span class="truncate">Frontend interview preparation guide</span>
+                      <span class="text-yellow-300 text-sm ml-4">Guide</span>
+                    </a>
+                    <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
+                      [routerLink]="['/guides/interview-blueprint/coding-interviews']">
+                      <span class="truncate">Frontend coding interview questions and prep guide</span>
+                      <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
+                    </a>
+                    <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
+                      [routerLink]="['/guides/interview-blueprint/javascript-interviews']">
+                      <span class="truncate">JavaScript Problems That Actually Show Up</span>
+                      <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
+                    </a>
+                    <a class="flex items-center justify-between px-4 py-3 hover:bg-white/5"
+                      [routerLink]="['/guides/interview-blueprint/ui-interviews']">
+                      <span class="truncate">Build Great UI in 60 Minutes</span>
+                      <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
+                    </a>
+                  </div>
+                </section>
+
+                <section class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
+                  <p class="detail-prep-bridge__text">
+                    Preparing for interviews? Use the Question Library first, then move into a concrete Study Plan before targeted Company Prep.
+                  </p>
+                  <div class="detail-prep-bridge__links">
+                    <a [routerLink]="['/interview-questions']">Open frontend interview questions</a>
+                    <a [routerLink]="interviewQuestionsHubRoute()">Browse {{ interviewQuestionsHubLabel() }}</a>
+                    <a *ngIf="isWebTech()" [routerLink]="['/html-css/interview-questions']">Open HTML/CSS interview questions</a>
+                    <a [routerLink]="['/interview-questions/essential']">Open Essential 60</a>
+                    <a [routerLink]="['/machine-coding']">Open Machine Coding Hub</a>
+                    <a [routerLink]="['/coding']">Open Question Library</a>
+                    <a [routerLink]="['/system-design']">Open System Design</a>
+                    <a [routerLink]="['/guides/interview-blueprint/intro']">Open Interview Prep Guide</a>
+                    <a [routerLink]="['/guides/system-design-blueprint']">Open System Design Blueprint</a>
+                    <a [routerLink]="['/guides/framework-prep']">Open Framework Prep Paths</a>
+                    <a [routerLink]="['/tracks']">Open Study Plans</a>
+                    <a [routerLink]="studyPlanRoute()">Open {{ studyPlanLabel() }}</a>
+                    <a [routerLink]="['/companies']">Open Company Prep</a>
+                    <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} Framework Prep Guide</a>
+                  </div>
+                </section>
+
+                <section class="mt-6" data-nosnippet data-testid="coding-post-task-actions">
+                  <button
+                    class="report-issue-btn"
+                    type="button"
+                    data-testid="coding-report-issue-btn"
+                    (click)="reportIssue()"
+                    aria-label="Report issue on this question">
+                    <app-fa-glyph class="report-issue-btn__icon" icon="fa-solid fa-bug" aria-hidden="true"></app-fa-glyph>
+                    <span class="report-issue-btn__label">Report issue</span>
+                  </button>
+                </section>
+              </ng-container>
+
             </ng-template>
-          </section>
-        </ng-container>
+        </section>
 
       </div>
     </ng-container>
@@ -547,7 +528,7 @@
     (pointerdown)="startHorizontalDrag($event)"></div>
 
   <!-- RIGHT COLUMN -->
-<main class="flex-1 min-h-0 flex flex-col overflow-hidden coding-detail__scroll">
+<main class="flex-1 min-h-0 flex flex-col overflow-hidden coding-detail__scroll" data-testid="coding-workspace-panel">
 
     <!-- FRAMEWORK PANEL -->
     <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"

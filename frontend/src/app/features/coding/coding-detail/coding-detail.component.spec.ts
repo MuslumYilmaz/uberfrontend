@@ -520,17 +520,50 @@ describe('CodingDetailComponent', () => {
 
     const host = fixture.nativeElement as HTMLElement;
     const h1 = host.querySelector('[data-testid="question-title"]');
-    const text = host.textContent || '';
+    const descriptionPanel = host.querySelector('[data-testid="coding-description-panel"]') as HTMLElement;
+    const solutionPanel = host.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    const workspacePanel = host.querySelector('[data-testid="coding-workspace-panel"]') as HTMLElement;
+    const descriptionText = descriptionPanel?.textContent || '';
+    const solutionText = solutionPanel?.textContent || '';
 
     expect(question.title).toBe('Create a Deferred Promise (For Async Tests)');
     expect(h1?.textContent?.trim()).toBe('Create a Deferred Promise in JavaScript');
-    expect(text).toContain('Implement createDeferred() to control promise resolution in async tests.');
-    expect(text).toContain("What you'll practice");
-    expect(text).toContain('Creating a promise with external resolve/reject controls');
-    expect(text).toContain('Expected behavior');
-    expect(text).toContain('Your solution should:');
-    expect(text).toContain('Adopt another promise when `resolve(Promise.resolve(value))` is used');
-    expect(text).not.toContain('Common interview follow-ups');
+    expect(descriptionPanel.hidden).toBeFalse();
+    expect(solutionPanel.hidden).toBeTrue();
+    expect(workspacePanel).not.toBeNull();
+
+    expect(descriptionText).toContain('Implement createDeferred() to control promise resolution in async tests.');
+    expect(descriptionText).toContain("What you'll practice");
+    expect(descriptionText).toContain('Creating a promise with external resolve/reject controls');
+    expect(descriptionText).toContain('Expected behavior');
+    expect(descriptionText).toContain('Your solution should:');
+    expect(descriptionText).toContain('Adopt another promise when `resolve(Promise.resolve(value))` is used');
+    expect(descriptionText).not.toContain('Common interview follow-ups');
+    expect(descriptionText).not.toContain('Guides');
+    expect(descriptionText).not.toContain('Preparing for interviews');
+    expect(descriptionText).not.toContain('Report issue');
+    expect(host.querySelector('[data-testid="coding-guide-links"]')).toBeNull();
+    expect(host.querySelector('[data-testid="coding-prep-entry"]')).toBeNull();
+    expect(host.querySelector('[data-testid="coding-report-issue-btn"]')).toBeNull();
+
+    expect(solutionText).toContain('Mental model:');
+    expect(solutionText).toContain('Common interview follow-ups:');
+    expect(solutionText).toContain('How would you type this utility in TypeScript?');
+    expect(solutionText).not.toContain('Guides');
+    expect(solutionText).not.toContain('Preparing for interviews');
+
+    component.activePanel.set(1);
+    fixture.detectChanges();
+
+    const openedSolutionText = solutionPanel.textContent || '';
+    expect(descriptionPanel.hidden).toBeTrue();
+    expect(solutionPanel.hidden).toBeFalse();
+    expect(solutionPanel.querySelector('[data-testid="coding-guide-links"]')).not.toBeNull();
+    expect(solutionPanel.querySelector('[data-testid="coding-prep-entry"]')).not.toBeNull();
+    expect(solutionPanel.querySelector('[data-testid="coding-report-issue-btn"]')).not.toBeNull();
+    expect(openedSolutionText.indexOf('Common interview follow-ups:')).toBeLessThan(openedSolutionText.indexOf('Guides'));
+    expect(openedSolutionText.indexOf('Guides')).toBeLessThan(openedSolutionText.indexOf('Preparing for interviews'));
+    expect(openedSolutionText.indexOf('Preparing for interviews')).toBeLessThan(openedSolutionText.indexOf('Report issue'));
   });
 
   it('ignores stale solution assets from an older question load', async () => {
@@ -659,6 +692,7 @@ describe('CodingDetailComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
 
     expect(payload.title).toBe('Create Deferred Promise in JavaScript: Interview Challenge + Tests');
+    expect(payload.title).not.toBe(makeDeferredPromiseQuestion().seo.h1);
     expect(payload.description).toBe(
       'Build createDeferred() in JavaScript with starter code, tests, solution, and async edge cases for frontend coding interviews.'
     );
