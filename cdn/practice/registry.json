@@ -1069,7 +1069,7 @@
     "route": "/angular/trivia/ngrx-data-flow-end-to-end-angular",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "NgRx data flow is a predictable loop, but the high-value explanation is operational: UI intent dispatches actions, reducers stay pure, effects handle async side effects, and selectors expose debug-friendly read models b…",
+    "summary": "NgRx data flow in Angular is a 5-step, DevTools-traceable loop: component action dispatch, immutable reducer state diff, effect success/failure result, selector VM, and template loading/data/error/retry UI.",
     "tags": [
       "angular",
       "store",

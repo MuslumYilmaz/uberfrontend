@@ -134,6 +134,19 @@ type NgRxSelectorTraceOption = {
   projectorRuns: boolean;
   componentRebuilds: boolean;
 };
+type NgRxDataFlowTraceKey = 'dispatch' | 'reducer' | 'effect-success' | 'effect-failure' | 'selector-vm' | 'template';
+type NgRxDataFlowTraceNode = 'action' | 'state' | 'view';
+type NgRxDataFlowTraceOption = {
+  key: NgRxDataFlowTraceKey;
+  label: string;
+  actionLog: string;
+  reducerDiff: string;
+  effectResult: string;
+  selectorVm: string;
+  templateState: string;
+  proofSignal: string;
+  activeNode: NgRxDataFlowTraceNode;
+};
 type AngularFormsFlowKey = 'reactive-input' | 'template-driven-input' | 'validation-state' | 'migration-trigger';
 type AngularFormsFlowTone = 'neutral' | 'reactive' | 'template' | 'validation' | 'migration' | 'test';
 type AngularFormsFlowNode = {
@@ -163,6 +176,7 @@ const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
 const ASYNC_RACE_SIMULATOR_QUESTION_ID = 'js-async-race-conditions';
 const EQUALITY_PREDICTOR_QUESTION_ID = 'js-equality-vs-strict-equality';
 const NGRX_SELECTOR_TRACE_QUESTION_ID = 'ngrx-selectors-memoization-derived-state-performance';
+const NGRX_DATA_FLOW_TRACE_QUESTION_ID = 'ngrx-data-flow-end-to-end-angular';
 const ANGULAR_FORMS_FLOW_QUESTION_ID = 'angular-template-driven-vs-reactive-forms-which-scales';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
@@ -408,6 +422,74 @@ const NGRX_SELECTOR_TRACE_OPTIONS: NgRxSelectorTraceOption[] = [
     componentRebuilds: false,
   },
 ];
+const NGRX_DATA_FLOW_TRACE_OPTIONS: NgRxDataFlowTraceOption[] = [
+  {
+    key: 'dispatch',
+    label: 'Dispatch',
+    actionLog: '[Books Page] Load Books',
+    reducerDiff: 'loading: false -> true; error: null',
+    effectResult: 'Effect receives loadBooks and starts BooksApiService.getBooks().',
+    selectorVm: '{ books: [], loading: true, error: null, canRetry: false }',
+    templateState: 'Loading message renders while the list stays owned by selector output.',
+    proofSignal: 'The user intent appears first as a named action, not as a hidden service call.',
+    activeNode: 'action',
+  },
+  {
+    key: 'reducer',
+    label: 'Reducer',
+    actionLog: '[Books Page] Load Books',
+    reducerDiff: 'State copy sets loading=true and clears stale error without mutation.',
+    effectResult: 'No HTTP runs inside the reducer; async work remains outside the pure transition.',
+    selectorVm: '{ books: [], loading: true, error: null, canRetry: false }',
+    templateState: 'The template can show progress before the API returns.',
+    proofSignal: 'The state diff is synchronous, immutable, and explainable from the action alone.',
+    activeNode: 'state',
+  },
+  {
+    key: 'effect-success',
+    label: 'Effect success',
+    actionLog: '[Books API] Load Books Success',
+    reducerDiff: 'books: [] -> api books; loading: true -> false; error remains null.',
+    effectResult: 'switchMap resolves the API request and maps data to loadBooksSuccess.',
+    selectorVm: '{ books, loading: false, error: null, total: books.length, canRetry: false }',
+    templateState: 'The list and total render from the selector VM.',
+    proofSignal: 'The successful async result re-enters the store as another explicit action.',
+    activeNode: 'state',
+  },
+  {
+    key: 'effect-failure',
+    label: 'Effect failure',
+    actionLog: '[Books API] Load Books Failure',
+    reducerDiff: "loading: true -> false; error: null -> 'Network error'.",
+    effectResult: "catchError maps the API failure to loadBooksFailure({ error: 'Network error' }).",
+    selectorVm: "{ books: [], loading: false, error: 'Network error', total: 0, canRetry: true }",
+    templateState: 'Error copy and Try again button render; retry dispatches loadBooks again.',
+    proofSignal: 'Failure is visible as action -> state diff -> retry-capable VM -> retry UI.',
+    activeNode: 'state',
+  },
+  {
+    key: 'selector-vm',
+    label: 'Selector VM',
+    actionLog: 'Last action determines which raw state fields changed.',
+    reducerDiff: 'Store keeps raw books/loading/error; derived totals stay out of state.',
+    effectResult: 'Effects are already done; selector work is pure projection.',
+    selectorVm: '{ books, loading, error, total, canRetry } is the render contract.',
+    templateState: 'The component binds vm$ instead of rebuilding arrays or flags locally.',
+    proofSignal: 'A projector test can prove the VM contract without Angular or Store setup.',
+    activeNode: 'view',
+  },
+  {
+    key: 'template',
+    label: 'Template',
+    actionLog: 'No new action is needed just to render current selector output.',
+    reducerDiff: 'No reducer runs during read-only rendering.',
+    effectResult: 'No effect runs unless the user clicks retry or reload.',
+    selectorVm: 'vm$ emits the final loading/data/error/retry shape.',
+    templateState: 'Async pipe renders loading, data, error, and retry states from one source.',
+    proofSignal: 'The UI is a projection of the store loop, so stale manual subscription state is avoided.',
+    activeNode: 'view',
+  },
+];
 const ANGULAR_FORMS_FLOW_OPTIONS: AngularFormsFlowOption[] = [
   {
     key: 'reactive-input',
@@ -524,11 +606,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedAsyncRaceSimulatorKey = signal<AsyncRaceSimulatorKey>('no-guard');
   selectedEqualityPredictorKey = signal<EqualityPredictorKey>('string-number');
   selectedNgRxSelectorTraceKey = signal<NgRxSelectorTraceKey>('root-state');
+  selectedNgRxDataFlowTraceKey = signal<NgRxDataFlowTraceKey>('dispatch');
   selectedAngularFormsFlowKey = signal<AngularFormsFlowKey>('reactive-input');
   returnValueSimulatorOptions = RETURN_VALUE_SIMULATOR_OPTIONS;
   asyncRaceSimulatorOptions = ASYNC_RACE_SIMULATOR_OPTIONS;
   equalityPredictorScenarios = EQUALITY_PREDICTOR_SCENARIOS;
   ngrxSelectorTraceOptions = NGRX_SELECTOR_TRACE_OPTIONS;
+  ngrxDataFlowTraceOptions = NGRX_DATA_FLOW_TRACE_OPTIONS;
   angularFormsFlowOptions = ANGULAR_FORMS_FLOW_OPTIONS;
   solved = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
@@ -643,6 +727,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   trackByEqualityPredictorScenario = (_: number, option: EqualityPredictorScenario): string => option.key;
   trackByEqualityPredictorResult = (_: number, result: EqualityPredictorResult): string => result.model;
   trackByNgRxSelectorTraceOption = (_: number, option: NgRxSelectorTraceOption): string => option.key;
+  trackByNgRxDataFlowTraceOption = (_: number, option: NgRxDataFlowTraceOption): string => option.key;
   trackByAngularFormsFlowOption = (_: number, option: AngularFormsFlowOption): string => option.key;
   trackByAngularFormsFlowNode = (_: number, node: AngularFormsFlowNode): string => node.id;
 
@@ -745,6 +830,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return NGRX_SELECTOR_TRACE_OPTIONS.find((option) => option.key === key) ?? NGRX_SELECTOR_TRACE_OPTIONS[0];
   });
 
+  selectedNgRxDataFlowTraceOption = computed<NgRxDataFlowTraceOption>(() => {
+    const key = this.selectedNgRxDataFlowTraceKey();
+    return NGRX_DATA_FLOW_TRACE_OPTIONS.find((option) => option.key === key) ?? NGRX_DATA_FLOW_TRACE_OPTIONS[0];
+  });
+
   selectedAngularFormsFlowOption = computed<AngularFormsFlowOption>(() => {
     const key = this.selectedAngularFormsFlowKey();
     return ANGULAR_FORMS_FLOW_OPTIONS.find((option) => option.key === key) ?? ANGULAR_FORMS_FLOW_OPTIONS[0];
@@ -764,6 +854,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectNgRxSelectorTrace(key: NgRxSelectorTraceKey): void {
     this.selectedNgRxSelectorTraceKey.set(key);
+  }
+
+  showNgRxDataFlowTrace(q?: Question | null): boolean {
+    return q?.id === NGRX_DATA_FLOW_TRACE_QUESTION_ID;
+  }
+
+  selectNgRxDataFlowTrace(key: NgRxDataFlowTraceKey): void {
+    this.selectedNgRxDataFlowTraceKey.set(key);
   }
 
   showAngularFormsFlowComparator(q?: Question | null): boolean {
@@ -1453,6 +1551,121 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       };
     }
 
+    if (q.id === 'ngrx-data-flow-end-to-end-angular') {
+      return {
+        articleSection: 'Angular state management',
+        educationalLevel: 'Intermediate',
+        learningResourceType: 'Interview answer',
+        reviewedBy: { '@type': 'Organization', name: 'FrontendAtlas' },
+        about: [
+          { '@type': 'Thing', name: 'NgRx data flow' },
+          { '@type': 'Thing', name: 'Angular state management' },
+          { '@type': 'Thing', name: 'one-way data flow' },
+          { '@type': 'Thing', name: 'immutable state updates' },
+          { '@type': 'Thing', name: 'shared state' },
+          { '@type': 'Thing', name: 'state vs view model' },
+          { '@type': 'Thing', name: 'interactive DevTools trace' },
+          { '@type': 'Thing', name: 'retry UI trace' },
+        ],
+        mentions: [
+          { '@type': 'Thing', name: 'actions' },
+          { '@type': 'Thing', name: 'reducers' },
+          { '@type': 'Thing', name: 'effects' },
+          { '@type': 'Thing', name: 'selectors' },
+          { '@type': 'Thing', name: 'Store' },
+          { '@type': 'Thing', name: 'createAction' },
+          { '@type': 'Thing', name: 'createReducer' },
+          { '@type': 'Thing', name: 'createEffect' },
+          { '@type': 'Thing', name: 'ofType' },
+          { '@type': 'Thing', name: 'switchMap' },
+          { '@type': 'Thing', name: 'createSelector' },
+          { '@type': 'Thing', name: 'createFeatureSelector' },
+          { '@type': 'Thing', name: 'AsyncPipe' },
+          { '@type': 'Thing', name: 'OnPush change detection' },
+          { '@type': 'Thing', name: 'success/failure actions' },
+          { '@type': 'Thing', name: 'view model selector' },
+          { '@type': 'Thing', name: 'action naming' },
+          { '@type': 'Thing', name: 'debug loop' },
+          { '@type': 'Thing', name: 'local UI state' },
+          { '@type': 'Thing', name: 'feature state registration' },
+          { '@type': 'Thing', name: 'provideState' },
+          { '@type': 'Thing', name: 'provideEffects' },
+          { '@type': 'Thing', name: 'DevTools trace' },
+          { '@type': 'Thing', name: 'state diff' },
+          { '@type': 'Thing', name: 'failure action' },
+          { '@type': 'Thing', name: 'error state' },
+          { '@type': 'Thing', name: 'retry UI' },
+          { '@type': 'Thing', name: 'retry button' },
+          { '@type': 'Thing', name: 'testable proof' },
+          { '@type': 'Thing', name: 'reducer test' },
+          { '@type': 'Thing', name: 'selector projector test' },
+          { '@type': 'Thing', name: 'FrontendAtlas review note' },
+          { '@type': 'Thing', name: 'source check' },
+          { '@type': 'Thing', name: 'official NgRx guides' },
+          { '@type': 'Thing', name: 'editorial policy' },
+          { '@type': 'Thing', name: 'interactive DevTools trace' },
+          { '@type': 'Thing', name: 'state diff proof' },
+          { '@type': 'Thing', name: 'retry UI trace' },
+          { '@type': 'Thing', name: 'selector VM proof' },
+        ],
+        hasPart: [
+          { '@type': 'WebPageElement', name: 'Interview quick answer' },
+          { '@type': 'WebPageElement', name: 'Operational loop' },
+          { '@type': 'WebPageElement', name: 'NgRx data flow diagram (end-to-end loop)' },
+          { '@type': 'WebPageElement', name: 'Actions example' },
+          { '@type': 'WebPageElement', name: 'Reducer example' },
+          { '@type': 'WebPageElement', name: 'Effect example' },
+          { '@type': 'WebPageElement', name: 'Selectors example' },
+          { '@type': 'WebPageElement', name: 'Component example' },
+          { '@type': 'WebPageElement', name: 'What interviewers flag quickly' },
+          { '@type': 'WebPageElement', name: 'Pure reducer update vs effect-driven async update' },
+          { '@type': 'WebPageElement', name: 'Compact trace you should be able to say out loud' },
+          { '@type': 'WebPageElement', name: 'Selectors are memoized read models' },
+          { '@type': 'WebPageElement', name: 'When this loop is worth the ceremony' },
+          { '@type': 'WebPageElement', name: 'NgRx ceremony decision check' },
+          { '@type': 'WebPageElement', name: 'Store state vs selector view model' },
+          { '@type': 'WebPageElement', name: 'Store truth vs selector read model' },
+          { '@type': 'WebPageElement', name: 'Where this plugs into Angular' },
+          { '@type': 'WebPageElement', name: 'Debugging an NgRx loop in DevTools' },
+          { '@type': 'WebPageElement', name: 'NgRx DevTools debugging trace' },
+          { '@type': 'WebPageElement', name: 'Failure path and retry UI trace' },
+          { '@type': 'WebPageElement', name: 'Failure action to retry UI trace' },
+          { '@type': 'WebPageElement', name: 'NgRx DevTools trace visual' },
+          { '@type': 'WebPageElement', name: 'Testable proof' },
+          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
+          { '@type': 'WebPageElement', name: 'Source check' },
+          { '@type': 'WebPageElement', name: 'Interview summary' },
+        ],
+        citation: [
+          {
+            '@type': 'WebPage',
+            name: 'NgRx Actions',
+            url: 'https://ngrx.io/guide/store/actions',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'NgRx Reducers',
+            url: 'https://ngrx.io/guide/store/reducers',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'NgRx Effects',
+            url: 'https://ngrx.io/guide/effects',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'NgRx Selectors',
+            url: 'https://ngrx.io/guide/store/selectors',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'FrontendAtlas Editorial Policy',
+            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
+          },
+        ],
+      };
+    }
+
     if (q.id === 'js-equality-vs-strict-equality') {
       return {
         articleSection: 'JavaScript equality and coercion',
@@ -1663,6 +1876,21 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           '@type': 'Answer',
           text:
             'NgRx selectors are memoized, pure projection functions that turn store state into reusable derived state. They stay fast when reducers preserve immutable references, components select focused view-model selectors instead of rebuilding data locally, and projector unit tests prove the derived contract without Store setup.',
+        },
+      };
+    }
+
+    if (q.id === 'ngrx-data-flow-end-to-end-angular') {
+      return {
+        '@type': 'Question',
+        '@id': `${canonical}#question`,
+        name: q.title,
+        url: canonical,
+        inLanguage: 'en',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            'NgRx data flow in Angular is a 5-step, DevTools-traceable loop: component action dispatch, immutable reducer state diff, effect success/failure result, selector VM, and template loading/data/error/retry UI. This keeps user intent, state transitions, side effects, and read models traceable.',
         },
       };
     }

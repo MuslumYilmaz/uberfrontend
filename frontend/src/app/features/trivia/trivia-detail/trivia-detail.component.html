@@ -242,6 +242,95 @@
                 </div>
             </section>
 
+            <!-- NgRx data flow DevTools trace -->
+            <section
+                class="card return-simulator selector-trace-simulator"
+                *ngIf="showNgRxDataFlowTrace(q)"
+                aria-labelledby="ngrx-data-flow-trace-title"
+                data-testid="ngrx-data-flow-trace">
+                <h2 class="card-head" id="ngrx-data-flow-trace-title">NgRx DevTools trace</h2>
+                <div class="card-body return-simulator__body">
+                    <div class="return-simulator__tabs" role="group" aria-label="Choose an NgRx data-flow trace step">
+                        <button
+                            type="button"
+                            class="return-simulator__tab"
+                            *ngFor="let option of ngrxDataFlowTraceOptions; trackBy: trackByNgRxDataFlowTraceOption"
+                            [class.is-active]="selectedNgRxDataFlowTraceKey() === option.key"
+                            [attr.aria-pressed]="selectedNgRxDataFlowTraceKey() === option.key"
+                            (click)="selectNgRxDataFlowTrace(option.key)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div class="selector-trace__visual" role="list" aria-live="polite" aria-label="NgRx DevTools loop trace">
+                        <div
+                            class="selector-trace__node"
+                            role="listitem"
+                            [class.is-hot]="selectedNgRxDataFlowTraceOption().activeNode === 'action'"
+                            [class.is-cached]="selectedNgRxDataFlowTraceOption().activeNode !== 'action'">
+                            <span class="selector-trace__label">Action log</span>
+                            <strong>{{ selectedNgRxDataFlowTraceOption().actionLog }}</strong>
+                            <p>Named user/API event entering the store loop.</p>
+                        </div>
+                        <div
+                            class="selector-trace__connector"
+                            [class.is-hot]="selectedNgRxDataFlowTraceOption().activeNode !== 'action'"
+                            aria-hidden="true">
+                        </div>
+                        <div
+                            class="selector-trace__node"
+                            role="listitem"
+                            [class.is-hot]="selectedNgRxDataFlowTraceOption().activeNode === 'state'"
+                            [class.is-cached]="selectedNgRxDataFlowTraceOption().activeNode !== 'state'">
+                            <span class="selector-trace__label">State + effect</span>
+                            <strong>Reducer diff</strong>
+                            <p>{{ selectedNgRxDataFlowTraceOption().reducerDiff }}</p>
+                        </div>
+                        <div
+                            class="selector-trace__connector"
+                            [class.is-hot]="selectedNgRxDataFlowTraceOption().activeNode === 'view'"
+                            aria-hidden="true">
+                        </div>
+                        <div
+                            class="selector-trace__node"
+                            role="listitem"
+                            [class.is-hot]="selectedNgRxDataFlowTraceOption().activeNode === 'view'"
+                            [class.is-cached]="selectedNgRxDataFlowTraceOption().activeNode !== 'view'">
+                            <span class="selector-trace__label">Selector + template</span>
+                            <strong>View contract</strong>
+                            <p>{{ selectedNgRxDataFlowTraceOption().selectorVm }}</p>
+                        </div>
+                    </div>
+
+                    <div class="return-simulator__output selector-trace__details" aria-live="polite">
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Action log</span>
+                            <p>{{ selectedNgRxDataFlowTraceOption().actionLog }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Reducer state diff</span>
+                            <p>{{ selectedNgRxDataFlowTraceOption().reducerDiff }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Effect result</span>
+                            <p>{{ selectedNgRxDataFlowTraceOption().effectResult }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Selector VM</span>
+                            <p>{{ selectedNgRxDataFlowTraceOption().selectorVm }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Template state</span>
+                            <p>{{ selectedNgRxDataFlowTraceOption().templateState }}</p>
+                        </div>
+                        <div class="return-simulator__metric">
+                            <span class="return-simulator__label">Proof signal</span>
+                            <p>{{ selectedNgRxDataFlowTraceOption().proofSignal }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Angular forms flow comparator -->
             <section
                 class="card return-simulator angular-forms-flow-comparator"
