@@ -7416,7 +7416,7 @@
             ],
             [
               "Async workflow",
-              "Loading, success, failure, retry, optimistic update, or websocket events need a trace",
+              "Loading, success, failure, retry, optimistic update, or WebSocket events need a trace",
               "A single request updates one local view without cross-feature coordination"
             ],
             [
