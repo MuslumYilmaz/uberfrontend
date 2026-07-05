@@ -41,9 +41,8 @@ export class TelemetryBootstrapService {
     if (!this.isBrowser) return;
 
     if (isMarketingPath(url)) {
-      if (!this.analytics.isInitialized()) {
-        this.armOnFirstInteraction();
-      }
+      this.scheduleAnalyticsInitialization();
+      this.armOnFirstInteraction();
       return;
     }
 

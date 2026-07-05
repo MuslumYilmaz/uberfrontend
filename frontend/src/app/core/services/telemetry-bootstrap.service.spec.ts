@@ -158,6 +158,20 @@ describe('TelemetryBootstrapService', () => {
     expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
   }));
 
+  it('initializes analytics on marketing routes after the post-load delay', fakeAsync(() => {
+    environment.production = false;
+    analytics.isInitialized.and.returnValue(false);
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/');
+
+    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
+    tick(1199);
+    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
+    tick(1);
+    expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+  }));
+
   function initializeSentry(): Promise<void> {
     const service = TestBed.inject(TelemetryBootstrapService);
     service.armForUrl('/dashboard');
