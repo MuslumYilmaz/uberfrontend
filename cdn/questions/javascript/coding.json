@@ -7503,7 +7503,21 @@
       "best-practices"
     ],
     "description": {
-      "summary": "Implement createDeferred() to build a controllable Promise: { promise, resolve, reject }. This is a common testing tool to make async flows deterministic (you decide exactly when something resolves/rejects).",
+      "summary": "Implement createDeferred() to control promise resolution in async tests. This frontend interview challenge asks you to build a controllable Promise helper that returns { promise, resolve, reject }.",
+      "specs": {
+        "practice": [
+          "Creating a promise with external resolve/reject controls",
+          "Making async tests deterministic",
+          "Handling resolve, reject, and promise adoption behavior"
+        ],
+        "expectedBehaviorIntro": "Your solution should:",
+        "expectedBehavior": [
+          "Return an object with `promise`, `resolve`, and `reject`",
+          "Fulfill the promise when `resolve(value)` is called",
+          "Reject the promise when `reject(error)` is called",
+          "Adopt another promise when `resolve(Promise.resolve(value))` is used"
+        ]
+      },
       "arguments": [],
       "returns": {
         "type": "{ promise: Promise, resolve: Function, reject: Function }",
@@ -7517,7 +7531,7 @@
     "starterCode": "export default function createDeferred() {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export type Deferred<T> = {\n  promise: Promise<T>;\n  resolve: (value: T | PromiseLike<T>) => void;\n  reject: (reason?: any) => void;\n};\n\nexport default function createDeferred<T = unknown>(): Deferred<T> {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Create a Promise and capture its resolve/reject functions from the constructor. Return them alongside the promise. This is often used in tests to control the timing of async operations without relying on real timers.",
+      "overview": "Create a Promise and capture its resolve/reject functions from the constructor. Return them alongside the promise. This is often used in tests to control the timing of async operations without relying on real timers.\n\nMental model: The Promise constructor gives you `resolve` and `reject` once. `createDeferred()` stores those callbacks and returns them with the promise so tests can control exactly when async work finishes.",
       "approaches": [
         {
           "title": "Approach: Capture resolve/reject from new Promise",
@@ -7549,6 +7563,11 @@
           "title": "MDN – Promise constructor",
           "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise"
         }
+      ],
+      "followUp": [
+        "How would you type this utility in TypeScript?",
+        "When is a deferred promise useful in tests?",
+        "Why can deferred promises be risky in production code?"
       ]
     },
     "tests": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred', () => {\n  test('resolves when resolve is called', async () => {\n    const d = createDeferred();\n    d.resolve(123);\n    const out = await d.promise;\n    expect(out).toBe(123);\n  });\n\n  test('rejects when reject is called', async () => {\n    const d = createDeferred();\n    const err = new Error('nope');\n    d.reject(err);\n\n    try {\n      await d.promise;\n      throw new Error('Expected promise to reject');\n    } catch (e) {\n      expect(e).toBe(err);\n    }\n  });\n\n  test('adopts another promise when resolving', async () => {\n    const d = createDeferred();\n    d.resolve(Promise.resolve('ok'));\n    const out = await d.promise;\n    expect(out).toBe('ok');\n  });\n});\n",
@@ -7556,8 +7575,9 @@
     "access": "free",
     "updatedAt": "2026-02-05",
     "seo": {
-      "title": "Create Deferred Promise in JavaScript",
-      "description": "Return a deferred object exposing a promise plus external settle controls for deterministic async test orchestration."
+      "title": "Create Deferred Promise in JavaScript: Interview Challenge + Tests",
+      "description": "Build createDeferred() in JavaScript with starter code, tests, solution, and async edge cases for frontend coding interviews.",
+      "h1": "Create a Deferred Promise in JavaScript"
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-create-deferred-promise.v1.json"
   },

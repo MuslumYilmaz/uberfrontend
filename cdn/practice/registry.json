@@ -3767,7 +3767,7 @@
     "route": "/javascript/coding/js-create-deferred-promise",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Implement createDeferred() to build a controllable Promise: { promise, resolve, reject }. This is a common testing tool to make async flows deterministic (you decide exactly when something resolves/rejects).",
+    "summary": "Implement createDeferred() to control promise resolution in async tests. This frontend interview challenge asks you to build a controllable Promise helper that returns { promise, resolve, reject }.",
     "tags": [
       "testing",
       "promise",

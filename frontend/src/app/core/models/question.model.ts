@@ -10,9 +10,19 @@ export type QuestionKind = 'trivia' | 'coding';
 
 export type StructuredDescription = {
   summary?: string;           // replaces plain text
+  specs?: StructuredDescriptionSpecs;
   arguments?: StructuredArgument[];
   returns?: StructuredReturn;
   examples?: string[];        // code snippets (strings)
+};
+
+export type StructuredDescriptionSpecs = {
+  practice?: string[];
+  requirements?: string[];
+  expectedBehaviorIntro?: string;
+  expectedBehavior?: string[];
+  implementationNotes?: string[];
+  techFocus?: string[];
 };
 
 export type StructuredArgument = {

@@ -113,7 +113,7 @@ type LockedPath = {
   queryParams?: Record<string, string>;
 };
 
-const SEO_TITLE_MAX_LEN = 65;
+const SEO_TITLE_MAX_LEN = 70;
 const SEO_DESCRIPTION_MAX_LEN = 155;
 
 @Component({
@@ -152,6 +152,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   tech!: Tech;
   kind: Kind = 'coding';
   question = signal<Question | null>(null);
+  questionHeading = computed(() => {
+    const q = this.question();
+    return String(q?.seo?.h1 || q?.title || '').trim();
+  });
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   private dataLoaded = false;
   private loadQuestionSeq = 0;
@@ -303,7 +307,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const user = this.auth.user();
     return q ? isQuestionLockedForTier(q, user) : false;
   });
-  lockedTitle = computed(() => this.question()?.title || 'Premium question');
+  lockedTitle = computed(() => this.questionHeading() || 'Premium question');
   lockedSummary = computed(() => {
     const q = this.question();
     if (!q) return '';
@@ -343,7 +347,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!specs) return null;
 
     return {
+      practice: specs.practice as string[] | undefined,
       requirements: specs.requirements as string[] | undefined,
+      expectedBehaviorIntro: specs.expectedBehaviorIntro as string | undefined,
       expectedBehavior: specs.expectedBehavior as string[] | undefined,
       implementationNotes: specs.implementationNotes as string[] | undefined,
       techFocus: specs.techFocus as string[] | undefined,
