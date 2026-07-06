@@ -3960,7 +3960,7 @@
     "route": "/javascript/coding/js-debounce",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Implement debounce(fn, wait) that delays execution until the user stops triggering events. Clear the previous timer on each call, preserve this/args, and make the timing predictable for search/resize use cases.",
+    "summary": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. Your solution must avoid synchronous execution, keep only the lates…",
     "tags": [
       "async",
       "functions",
@@ -3968,7 +3968,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-debounce"
   },

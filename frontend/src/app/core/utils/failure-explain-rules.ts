@@ -358,18 +358,45 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-debounce-trailing-delay',
+    questionId: 'js-debounce',
+    priority: 130,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['does not call synchronously', 'runs after delay']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-debounce-trailing-delay',
+      title: 'Debounce should wait for the trailing timer',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The base debounce contract schedules work after the delay instead of calling `fn` in the wrapper body.',
+      ),
+      actions: [
+        'Return a wrapper function and schedule `fn` inside `setTimeout`.',
+        'Do not call `fn` before the timer callback runs.',
+        'Check that the calls array is still empty immediately after invoking the debounced function.',
+      ],
+      confidence: 0.94,
+    }),
+  },
+  {
     ruleId: 'js-debounce-reset',
     questionId: 'js-debounce',
     priority: 120,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['resets timer on rapid calls', 'only last executes']),
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'rapid calls only run the latest argument',
+        'after the final delay',
+        'resets timer on rapid calls',
+        'only last executes',
+      ]),
     buildHint: (snapshot) => ({
       ruleId: 'js-debounce-reset',
-      title: 'Debounce timer is not being reset correctly',
-      why: buildProgressAwareWhy(snapshot, 'Rapid calls should cancel previous timers so only the latest invocation runs.'),
+      title: 'Latest call is not winning the debounce window',
+      why: buildProgressAwareWhy(snapshot, 'Rapid calls should cancel previous timers so only the latest invocation runs after the final delay.'),
       actions: [
         'Store timer id in closure scope and `clearTimeout(timer)` before scheduling a new one.',
         'Assign `timer = setTimeout(...)` on every call.',
-        'Validate with quick repeated calls: execution count should remain 0 until final delay completes.',
+        'Validate with A -> B -> C calls: execution should remain empty until C has waited the full delay.',
       ],
       confidence: 0.95,
     }),
@@ -378,7 +405,12 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'js-debounce-args-this',
     questionId: 'js-debounce',
     priority: 110,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['passes arguments', 'preserves this']),
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'preserves this context and arguments',
+        'passes arguments',
+        'preserves this',
+      ]),
     buildHint: (snapshot) => ({
       ruleId: 'js-debounce-args-this',
       title: 'Debounced callback is losing args or context',
@@ -386,7 +418,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Return a regular function wrapper (not arrow) if `this` must be preserved.',
         'Inside timeout use `fn.apply(this, args)`.',
-        'Confirm output for context-based examples like greeting methods.',
+        'Confirm context-based examples like `search-box:react` still pass after the delay.',
       ],
       confidence: 0.9,
     }),

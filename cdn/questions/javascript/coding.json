@@ -1397,7 +1397,7 @@
       "timing"
     ],
     "description": {
-      "summary": "Implement debounce(fn, wait) that delays execution until the user stops triggering events. Clear the previous timer on each call, preserve this/args, and make the timing predictable for search/resize use cases.",
+      "summary": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. Your solution must avoid synchronous execution, keep only the latest call in a burst, preserve `this` and arguments, and pass the starter tests. This page includes starter code, tests, timeline examples, edge cases, and follow-ups for cancel/flush and leading behavior.",
       "arguments": [
         {
           "name": "fn",
@@ -1407,7 +1407,7 @@
         {
           "name": "delay",
           "type": "number",
-          "desc": "The number of milliseconds to wait before executing the function."
+          "desc": "The delay in milliseconds before executing the function."
         }
       ],
       "returns": {
@@ -1415,6 +1415,7 @@
         "desc": "A debounced version of the original function that delays execution until the delay period has elapsed."
       },
       "examples": [
+        "// Example: timeline with delay=100\nconst log = debounce((value) => console.log(value), 100)\nlog('A') // t=0\n// t=50: log('B') resets the timer\n// t=90: log('C') resets it again\n// Only C runs at t=190",
         "// Basic examples\ndebounce(() => console.log('Hello!'), 300)",
         "// Multiple rapid calls — only last one runs\nconst log = debounce(() => console.log('Run!'), 500)\nlog()\nlog()\nlog() // Only this one executes after 500ms",
         "// With arguments\nconst greet = debounce(name => console.log(`Hi ${name}`), 400)\ngreet('Alice')\ngreet('Bob') // Only 'Hi Bob' logs after 400ms"
@@ -1424,7 +1425,7 @@
     "starterCodeTs": "export default function debounce<F extends (...a: any[]) => void>(fn: F, delay: number): F {\n  // TODO: Return a debounced function that delays execution until delay ms have passed\n  throw new Error('Not implemented');\n}\n",
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-debounce.v1.json",
     "solutionBlock": {
-      "overview": "Goal: ensure `fn` runs only after calls have stopped for `delay` ms (trailing-edge debounce by default). This is common for search inputs, resize/scroll handlers, and deduping rapid UI events. Approaches 2 and 3 show common extensions used in real-world libraries.",
+      "overview": "Interview answer: the base prompt is a trailing-edge debounce with one `timeoutId`; `cancel()`, `flush()`, and `leading` are follow-ups.\n\nGoal: ensure `fn` runs only after calls have stopped for `delay` ms. This is common for search inputs, resize/scroll handlers, and deduping rapid UI events. Approaches 2 and 3 show common extensions used in real-world libraries.",
       "approaches": [
         {
           "title": "Approach 1: Timeout-based debounce (canonical)",
@@ -1465,6 +1466,38 @@
           "Extending the basic pattern with cancel/flush helpers and leading-edge options."
         ]
       },
+      "followUp": [
+        "How would you add `.cancel()` so pending work can be cleared on unmount?",
+        "How would you add `.flush()` so the latest pending call runs immediately?",
+        "How would the implementation change for leading-edge debounce?"
+      ],
+      "relatedLinks": [
+        {
+          "title": "Implement throttle() in JavaScript",
+          "route": ["/", "javascript", "coding", "js-throttle"],
+          "label": "Coding"
+        },
+        {
+          "title": "React debounced search coding challenge",
+          "route": ["/", "react", "coding", "react-debounced-search"],
+          "label": "React"
+        },
+        {
+          "title": "Angular RxJS debounced search challenge",
+          "route": ["/", "angular", "coding", "angular-debounced-search"],
+          "label": "Angular"
+        },
+        {
+          "title": "Design realtime search with debounce and cache",
+          "route": ["/", "system-design", "realtime-search-debounce-cache"],
+          "label": "System design"
+        },
+        {
+          "title": "JavaScript coding interview questions",
+          "route": ["/", "guides", "interview-blueprint", "javascript-interviews"],
+          "label": "Guide"
+        }
+      ],
       "resources": [
         {
           "title": "MDN – setTimeout()",
@@ -1476,13 +1509,14 @@
         }
       ]
     },
-    "tests": "import debounce from './debounce';\n\nconst wait = (ms) => new Promise((r) => setTimeout(r, ms));\n\ndescribe('debounce', () => {\n  test('calls function after delay', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 120);\n\n    debounced();\n    expect(calls).toBe(0);\n\n    await wait(140);\n    expect(calls).toBe(1);\n  });\n\n  test('resets timer on rapid calls (only last executes)', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 100);\n\n    debounced();\n    await wait(50);\n    debounced();\n    await wait(50);\n    debounced();\n\n    await wait(90);\n    expect(calls).toBe(0);\n\n    await wait(20);\n    expect(calls).toBe(1);\n  });\n\n  test('passes arguments (and preserves this via apply)', async () => {\n    let last = '';\n    const debounced = debounce(function (name) {\n      last = `Hi ${name}`;\n    }, 80);\n\n    debounced.call({ tag: 'ctx' }, 'Alice');\n    await wait(100);\n    expect(last).toBe('Hi Alice');\n  });\n});\n",
-    "testsTs": "import debounce from './debounce';\n\nconst wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));\n\ndescribe('debounce (TypeScript)', () => {\n  it('delays function execution', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 120);\n\n    debounced();\n    expect(calls).toBe(0);\n\n    await wait(140);\n    expect(calls).toBe(1);\n  });\n\n  it('restarts timer on multiple calls', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 100);\n\n    debounced();\n    await wait(50);\n    debounced();\n    await wait(50);\n    debounced();\n\n    await wait(90);\n    expect(calls).toBe(0);\n\n    await wait(20);\n    expect(calls).toBe(1);\n  });\n\n  it('forwards parameters correctly', async () => {\n    let captured = '';\n    const debounced = debounce((msg: string) => { captured = msg; }, 80);\n\n    debounced('Hello');\n    await wait(100);\n    expect(captured).toBe('Hello');\n  });\n});\n",
+    "tests": "import debounce from './debounce';\n\nconst sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('debounce', () => {\n  test('does not call synchronously and runs after delay', async () => {\n    const calls = [];\n    const debounced = debounce((value) => { calls.push(value); }, 80);\n\n    debounced('A');\n\n    expect(calls).toEqual([]);\n\n    await sleep(90);\n    expect(calls).toEqual(['A']);\n  });\n\n  test('rapid calls only run the latest argument after the final delay', async () => {\n    const calls = [];\n    const debounced = debounce((value) => { calls.push(value); }, 100);\n\n    debounced('A'); // t=0\n    await sleep(50);\n    debounced('B'); // t=50\n    await sleep(40);\n    debounced('C'); // t=90\n\n    await sleep(95);\n    expect(calls).toEqual([]);\n\n    await sleep(20);\n    expect(calls).toEqual(['C']);\n  });\n\n  test('preserves this context and arguments', async () => {\n    const calls = [];\n    const debounced = debounce(function (value) {\n      calls.push(`${this.tag}:${value}`);\n    }, 60);\n\n    debounced.call({ tag: 'search-box' }, 'react');\n    await sleep(80);\n\n    expect(calls).toEqual(['search-box:react']);\n  });\n});\n",
+    "testsTs": "import debounce from './debounce';\n\nconst sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));\n\ndescribe('debounce (TypeScript)', () => {\n  it('does not call synchronously and runs after delay', async () => {\n    const calls: string[] = [];\n    const debounced = debounce((value: string) => { calls.push(value); }, 80);\n\n    debounced('A');\n\n    expect(calls).toEqual([]);\n\n    await sleep(90);\n    expect(calls).toEqual(['A']);\n  });\n\n  it('rapid calls only run the latest argument after the final delay', async () => {\n    const calls: string[] = [];\n    const debounced = debounce((value: string) => { calls.push(value); }, 100);\n\n    debounced('A');\n    await sleep(50);\n    debounced('B');\n    await sleep(40);\n    debounced('C');\n\n    await sleep(95);\n    expect(calls).toEqual([]);\n\n    await sleep(20);\n    expect(calls).toEqual(['C']);\n  });\n\n  it('preserves this context and arguments', async () => {\n    const calls: string[] = [];\n    const debounced = debounce(function (this: { tag: string }, value: string) {\n      calls.push(`${this.tag}:${value}`);\n    }, 60);\n\n    debounced.call({ tag: 'search-box' }, 'react');\n    await sleep(80);\n\n    expect(calls).toEqual(['search-box:react']);\n  });\n});\n",
     "access": "free",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-06",
     "seo": {
-      "title": "Debounce Function in JavaScript (Coding Problem)",
-      "description": "Build a debounced wrapper that limits rapid repeated calls and only triggers execution based on a wait interval."
+      "title": "Implement debounce() in JavaScript: Coding Challenge + Tests | FrontendAtlas",
+      "description": "Build debounce(fn, delay) with starter code, tests, timeline examples, this/args handling, edge cases, and cancel/flush follow-ups.",
+      "h1": "Implement debounce() in JavaScript"
     }
   },
   {

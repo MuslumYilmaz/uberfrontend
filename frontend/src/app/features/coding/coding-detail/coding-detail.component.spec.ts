@@ -614,6 +614,49 @@ describe('CodingDetailComponent', () => {
     expect(component.interviewQuestionsHubLabel()).toBe('CSS interview questions');
   });
 
+  it('uses explicit related links for cross-bank coding page recommendations', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.allQuestions = [];
+    component.question.set({
+      id: 'js-debounce',
+      title: 'Debounce Function',
+      type: 'coding',
+      technology: 'javascript',
+      access: 'free',
+      difficulty: 'intermediate',
+      tags: ['async', 'timing'],
+      importance: 4,
+      solutionBlock: {
+        relatedLinks: [
+          { title: 'Implement throttle() in JavaScript', route: ['/', 'javascript', 'coding', 'js-throttle'], label: 'Coding' },
+          { title: 'React debounced search coding challenge', route: ['/', 'react', 'coding', 'react-debounced-search'], label: 'React' },
+          { title: 'Angular RxJS debounced search challenge', route: ['/', 'angular', 'coding', 'angular-debounced-search'], label: 'Angular' },
+          { title: 'Design realtime search with debounce and cache', route: ['/', 'system-design', 'realtime-search-debounce-cache'], label: 'System design' },
+          { title: 'JavaScript coding interview questions', route: ['/', 'guides', 'interview-blueprint', 'javascript-interviews'], label: 'Guide' },
+        ],
+      },
+    } as any);
+
+    const items = component.followUpItems();
+
+    expect(component.relatedSectionTitle()).toBe('Related links');
+    expect(items.length).toBe(5);
+    expect(items.map((item) => item.title)).toEqual([
+      'Implement throttle() in JavaScript',
+      'React debounced search coding challenge',
+      'Angular RxJS debounced search challenge',
+      'Design realtime search with debounce and cache',
+      'JavaScript coding interview questions',
+    ]);
+    expect(items[3].to).toEqual(['/', 'system-design', 'realtime-search-debounce-cache']);
+    expect(items[4].to).toEqual(['/', 'guides', 'interview-blueprint', 'javascript-interviews']);
+    expect(items.map((item) => item.label)).toEqual(['Coding', 'React', 'Angular', 'System design', 'Guide']);
+  });
+
   it('restores document overflow on destroy', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -651,7 +694,7 @@ describe('CodingDetailComponent', () => {
 
     expect(payload.title).toContain('Angular & SEO title');
     expect(payload.title).not.toContain('<');
-    expect(payload.title.length).toBeLessThanOrEqual(70);
+    expect(payload.title.length).toBeLessThanOrEqual(80);
 
     expect(payload.description).toContain('Angular & explicit SEO description should be used first');
     expect(payload.description).not.toContain('<');
@@ -679,6 +722,30 @@ describe('CodingDetailComponent', () => {
     expect(payload.title.length).toBeLessThanOrEqual(70);
     expect(payload.description).toContain('Angular-focused:');
     expect(payload.description.length).toBeLessThanOrEqual(155);
+  });
+
+  it('preserves exact explicit SEO titles up to the FrontendAtlas suffix length', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'javascript';
+
+    const title = 'Implement debounce() in JavaScript: Coding Challenge + Tests | FrontendAtlas';
+
+    (component as any).updateSeoForQuestion({
+      id: 'js-debounce',
+      title: 'Debounce Function',
+      access: 'free',
+      description: '',
+      seo: {
+        title,
+        description: 'Build debounce(fn, delay) with starter code, tests, timeline examples, this/args handling, edge cases, and cancel/flush follow-ups.',
+      },
+    } as any);
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+
+    expect(payload.title).toBe(title);
   });
 
   it('preserves the deferred promise SEO title without clipping Tests', () => {

@@ -9,25 +9,25 @@
       "nodes": [
         {
           "id": "d1-reset-pending-timer",
-          "title": "Reset pending timer before scheduling",
+          "title": "Clear the pending timer before scheduling",
           "anchor": {
             "lineStart": 4,
             "lineEnd": 4,
             "snippet": "clearTimeout(timeoutId);"
           },
-          "why": "When events come in quickly (like typing), we only want the latest one to win. Clearing the old timer prevents stale calls from running.",
+          "why": "When events come in quickly (like typing), the earlier callbacks must not run. Clearing the old timer makes the latest call the only one that can fire after the final quiet delay.",
           "alternative": "Start a timer only once and ignore the rest until it fires (that behaves more like throttle).",
           "tradeoff": "This gives true trailing debounce behavior, but if input never pauses, execution keeps getting pushed back."
         },
         {
           "id": "d2-schedule-latest-call",
-          "title": "Schedule latest call with current context",
+          "title": "Schedule the latest trailing call",
           "anchor": {
             "lineStart": 5,
             "lineEnd": 5,
             "snippet": "timeoutId = setTimeout(() => fn.apply(this, args), delay);"
           },
-          "why": "After the user stops, we run exactly one call using the latest arguments and the correct `this` context.",
+          "why": "The wrapper should not call `fn` synchronously. It schedules one trailing callback that uses the latest arguments and the correct `this` context after the delay.",
           "alternative": "Store `lastArgs` and `lastThis` explicitly, then invoke them in the timeout callback.",
           "tradeoff": "Inline `apply` is compact and easy to read, while explicit state is easier to extend for richer APIs."
         },
@@ -39,7 +39,7 @@
             "lineEnd": 2,
             "snippet": "let timeoutId;"
           },
-          "why": "The timer id has to survive between calls. A closure is the simplest way to keep that shared state.",
+          "why": "The timer id has to survive between wrapper calls so each new invocation can cancel the previous pending callback.",
           "alternative": "Store timers in an external map keyed by function or component id.",
           "tradeoff": "Closure state keeps the implementation small and local, but external stores can be easier to inspect globally."
         }
