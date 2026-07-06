@@ -53,7 +53,7 @@ describe('SystemDesignCrossCuttingArticle', () => {
     expect(pageText).toContain('News Feed');
     expect(pageText).toContain('Dashboard Widgets');
     expect(pageText).toContain('AI Chat');
-    expect(pageText).toContain('Notification Toast');
+    expect(pageText).toContain('Toast Notification System');
     expect(pageText).toContain('Design System Architecture');
     expect(pageText).toContain('Interface FAQ');
     expect(pageText).toContain('What is frontend interface design in system design interviews?');

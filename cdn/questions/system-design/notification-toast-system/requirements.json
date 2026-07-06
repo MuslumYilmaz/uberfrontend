@@ -4,7 +4,59 @@
     "blocks": [
         {
             "type": "text",
-            "text": "In this step, the interviewer wants to see if you can clearly describe what a global toast system should do before you jump into components or code. You should sound like someone who has used and built these systems before: you talk about triggering toasts from anywhere, stacking, timers, accessibility, and placement."
+            "text": "Design a Toast Notification System for a frontend system design interview. You need a global API such as toast.success(message, options?) and toast.error(message, options?), a top-level toast layer rendered through a portal, predictable stacking, auto-dismiss timers, manual dismissal, responsive placement, and accessible screen-reader announcements. This guide walks through requirements, architecture, data model, API contracts, edge cases, and senior-level tradeoffs for building a production-ready toast system."
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "What you are designing",
+                            "items": [
+                                "A global toast API.",
+                                "A ToastProvider / ToastContainer layer.",
+                                "Stacked toast rendering.",
+                                "Auto-dismiss and manual close behavior.",
+                                "Accessible announcements.",
+                                "Timer cleanup and lifecycle handling.",
+                                "Responsive placement rules."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Expected interview answer shape",
+                            "items": [
+                                "Requirements and constraints.",
+                                "High-level architecture.",
+                                "Toast data model.",
+                                "Public API contract.",
+                                "Rendering and portal strategy.",
+                                "Timer lifecycle.",
+                                "Accessibility behavior.",
+                                "Performance and edge cases."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "success",
+            "title": "Scenario",
+            "text": "A user saves a profile. toast.success('Profile saved', { durationMs: 4000 }) is called. The store creates a toast with id, variant, message, placement, and duration. ToastProvider renders it through a portal. ToastItem starts an auto-dismiss timer. If the user closes it manually, the timer is cleared and the toast is removed."
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "Toast system vs notification feed",
+            "text": "A toast system is for short-lived, non-blocking feedback. A notification feed is persistent, user-specific, often server-backed, and may need unread state, pagination, realtime updates, and retention. This page focuses on designing the Toast Notification System, not a persistent notifications feed."
         },
         {
             "type": "divider"
@@ -16,7 +68,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**What you’re solving:**\nYou need a global notification system that lets any part of the app call something like `toast.success(\"Saved\")` or `toast.error(\"Failed\")` and shows small non-blocking messages on top of the UI.\n\nIt should support different variants (success, error, warning, info), auto-dismiss after a delay, allow manual close, and stack multiple toasts without breaking the layout."
+                            "text": "**What you are solving:**\nYou need a global Toast Notification System that lets any part of the app call something like `toast.success(message, options?)` or `toast.error(message, options?)` and shows small non-blocking messages on top of the UI.\n\nIt should support different variants (success, error, warning, info), auto-dismiss after a delay, manual close, predictable stacking, placement rules, accessibility, and cleanup without breaking the page layout."
                         }
                     ]
                 },
@@ -34,7 +86,7 @@
             "type": "callout",
             "variant": "info",
             "title": "How you should act here",
-            "text": "Start by restating the problem in your own words: \"We want a global toast API like `toast.success()` that shows short-lived notifications, stacks them nicely, and cleans up timers correctly.\" Then move into clarifying questions instead of jumping straight into implementation details."
+            "text": "Start by restating the problem in your own words: \"We want a global toast API like `toast.success(message, options?)` that shows short-lived notifications, stacks them nicely, and cleans up timers correctly.\" Then move into clarifying questions instead of jumping straight into implementation details."
         },
         {
             "type": "divider"
@@ -45,7 +97,7 @@
             "steps": [
                 {
                     "title": "1. Trigger",
-                    "text": "Some part of the app calls `toast.success(\"Profile saved\")` after an action completes."
+                    "text": "Some part of the app calls `toast.success('Profile saved', { durationMs: 4000 })` after an action completes."
                 },
                 {
                     "title": "2. Show toast",

@@ -47,6 +47,7 @@ describe('SystemDesignArchitectureArticle', () => {
     expect(pageText).toContain('Autocomplete / realtime search');
     expect(pageText).toContain('News feed');
     expect(pageText).toContain('Dashboard widgets');
+    expect(pageText).toContain('Portal-based toast architecture');
     expect(pageText).toContain('AI chat');
     expect(pageText).toContain('Design system architecture');
     expect(pageText).toContain('Architecture FAQ');
@@ -91,6 +92,7 @@ describe('SystemDesignArchitectureArticle', () => {
     expect(hasLink('/system-design/realtime-search-debounce-cache')).toBeTrue();
     expect(hasLink('/system-design/news-feed-timeline')).toBeTrue();
     expect(hasLink('/system-design/dashboard-widgets-draggable-resizable')).toBeTrue();
+    expect(hasLink('/system-design/notification-toast-system')).toBeTrue();
     expect(hasLink('/system-design/ai-chat-textarea-design')).toBeTrue();
     expect(hasLink('/system-design/component-design-system-architecture')).toBeTrue();
   });

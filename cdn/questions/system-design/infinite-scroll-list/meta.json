@@ -10,7 +10,9 @@
     "performance",
     "accessibility",
     "loading-states",
-    "error-handling"
+    "error-handling",
+    "frontend-architecture",
+    "responsive-ui"
   ],
   "sections": [
     {

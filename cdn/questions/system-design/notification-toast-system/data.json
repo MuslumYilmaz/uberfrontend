@@ -16,7 +16,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**How you should talk about data:**\n\"I’ll keep a simple model: a `Toast` type for each notification, a `ToastState` for the global list, and a `ToastConfig` for defaults like placement and duration. Each toast knows its id, type, message, lifetime, and placement.\""
+                            "text": "**How you should talk about data:**\n\"I’ll keep a simple model: a `Toast` interface for each notification, a `ToastState` for the global list, and a `ToastConfig` for defaults like placement and duration. Each toast knows its id, variant, message, lifetime, and placement.\""
                         }
                     ]
                 },
@@ -42,7 +42,7 @@
         {
             "type": "code",
             "language": "ts",
-            "code": "type ToastVariant = 'success' | 'error' | 'warning' | 'info';\n\ntype ToastPlacement =\n  | 'top-right'\n  | 'top-left'\n  | 'top-center'\n  | 'bottom-right'\n  | 'bottom-left'\n  | 'bottom-center';\n\ninterface Toast {\n  id: string;                     // unique per toast\n  variant: ToastVariant;          // success / error / warning / info\n  title?: string;                 // optional title\n  message: string;                // main text\n  description?: string;           // longer text if needed\n  placement?: ToastPlacement;     // overrides global default\n  autoDismiss: boolean;           // whether it auto-closes\n  durationMs: number;             // how long before dismiss\n  createdAt: number;              // Date.now()\n  ariaRole?: 'status' | 'alert';  // for screen readers\n  actionLabel?: string;           // e.g. \"Undo\"\n  actionId?: string;              // identifier for callbacks\n}\n\ninterface ToastState {\n  toasts: Toast[];                // currently visible toasts\n  defaultPlacement: ToastPlacement;\n  defaultDurationMs: number;\n  maxVisible: number;             // e.g. show up to 3–5 at once\n}"
+            "code": "type ToastVariant = 'success' | 'error' | 'warning' | 'info';\n\ntype ToastPlacement =\n  | 'top-right'\n  | 'top-left'\n  | 'top-center'\n  | 'bottom-right'\n  | 'bottom-left'\n  | 'bottom-center';\n\ninterface Toast {\n  id: string;\n  variant: ToastVariant;\n  message: string;\n  description?: string;\n  placement: ToastPlacement;\n  durationMs: number;\n  autoDismiss: boolean;\n  createdAt: number;\n  ariaRole: 'status' | 'alert';\n  action?: {\n    label: string;\n    onClick: () => void;\n  };\n}\n\ninterface ToastState {\n  toasts: Toast[];\n  defaultPlacement: ToastPlacement;\n  defaultDurationMs: number;\n  maxVisible: number;\n}"
         },
         {
             "type": "table",
@@ -55,8 +55,8 @@
             "rows": [
                 [
                     "Toast",
-                    "id, variant, message, title?, description?, placement?, autoDismiss, durationMs, createdAt, ariaRole?, actionLabel?, actionId?",
-                    "\"Each toast is a small object with an `id`, a `variant` like success/error, the message text, optional title/description, placement, auto-dismiss settings, and ARIA role. If it has an action like 'Undo', I also store `actionLabel` and an `actionId`.\""
+                    "id, variant, message, description?, placement, durationMs, autoDismiss, createdAt, ariaRole, action?",
+                    "\"Each toast is a small object with an `id`, a `variant` like success/error, message text, optional description, placement, duration, auto-dismiss flag, ARIA role, and optional action callback.\""
                 ],
                 [
                     "ToastState",
@@ -65,8 +65,8 @@
                 ],
                 [
                     "ToastConfig (optional)",
-                    "placement, durationMs, ariaRole, maxVisible",
-                    "\"When calling `toast.success(message, options?)`, I’d accept an options object that partially overrides defaults: placement, duration, ARIA role or max visible per call if needed.\""
+                    "placement, durationMs, ariaRole, maxVisible, duplicatePolicy, overflowPolicy",
+                    "\"When calling `toast.success(message, options?)`, I’d accept an options object that partially overrides defaults like placement, duration, ARIA role, and action behavior while provider config controls max visible and overflow policy.\""
                 ]
             ]
         },
@@ -81,11 +81,11 @@
                             "items": [
                                 "A **unique id** per toast so you can remove it reliably.",
                                 "A **variant** field for visual style and icon (success/error/etc.).",
-                                "A clear **message** and optional **title/description**.",
-                                "A **placement** field (or global default) to control where it appears.",
+                                "A clear **message** and optional **description**.",
+                                "A resolved **placement** field to control where it appears.",
                                 "An **autoDismiss** flag and **durationMs** for timers.",
                                 "An **ARIA role** (`status`/`alert`) for screen reader behavior.",
-                                "Optional **action** fields for interactive toasts (label/id)."
+                                "An optional **action** object for interactive toasts."
                             ]
                         }
                     ]
@@ -125,7 +125,7 @@
                 },
                 {
                     "title": "4. Optional action",
-                    "text": "If the toast has an action (e.g. \"Undo\"), clicking it can fire a callback identified by `actionId`, and then dismiss the toast by removing it from state."
+                    "text": "If the toast has an action (e.g. \"Undo\"), clicking it runs the action callback and then dismisses the toast by removing it from state."
                 }
             ]
         },
@@ -153,7 +153,7 @@
             "type": "callout",
             "variant": "warning",
             "title": "Key message to land",
-            "text": "A solid toast data model treats each toast as a small, self-contained piece of state with clear fields for type, placement, lifetime, and accessibility. This keeps the rendering logic simple and makes the global store easy to reason about."
+            "text": "A solid toast data model treats each toast as a small, self-contained piece of state with clear fields for variant, placement, lifetime, and accessibility. This keeps the rendering logic simple and makes the global store easy to reason about."
         }
     ]
 }

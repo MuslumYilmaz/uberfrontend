@@ -524,6 +524,11 @@ SearchResponse &#123;
             <td>One widget refresh invalidating the whole dashboard or losing layout on reload</td>
           </tr>
           <tr>
+            <td><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Toast state model</a></td>
+            <td>Toast entity, ToastState list, max visible limit, placement defaults, timer lifecycle, and dismiss actions</td>
+            <td>Mixing timer handles into persisted state or removing toasts without clearing timers</td>
+          </tr>
+          <tr>
             <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">AI Chat</a></td>
             <td>Draft state, message entities, streaming event schema, optimistic send, retry/reconnect state</td>
             <td>Duplicated messages or lost drafts after network interruption</td>

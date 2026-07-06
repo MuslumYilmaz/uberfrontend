@@ -189,7 +189,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           feed hydration, media loading, cursor strategy, realtime updates, and ranking boundaries.
         </li>
         <li>
-          <a [routerLink]="['/system-design/notification-toast-system']">Notification Toast</a>:
+          <a [routerLink]="['/system-design/notification-toast-system']">Toast Notification System</a>:
           global APIs, queues, timers, portals, and accessible announcements.
         </li>
         <li>

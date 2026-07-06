@@ -476,7 +476,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">Practice prompt</a></td>
           </tr>
           <tr>
-            <td>Notification Toast</td>
+            <td>Toast Notification System</td>
             <td>Global queue, stacking, timers, dismiss action, live region, reduced motion, and degraded delivery state</td>
             <td><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Practice prompt</a></td>
           </tr>

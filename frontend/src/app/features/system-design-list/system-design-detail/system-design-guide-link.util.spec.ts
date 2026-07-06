@@ -62,7 +62,8 @@ describe('system-design-guide-link.util', () => {
       .toBe('live chart performance system design');
     expect(performanceGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
       .toBe('form interaction latency frontend interview');
-    expect(performanceGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
+    expect(performanceGuideAnchorForQuestion({ id: 'notification-toast-system' }))
+      .toBe('toast timer cleanup tradeoffs');
   });
 
   it('provides keyword-focused evaluation guide anchors for cluster prompts', () => {
@@ -78,7 +79,8 @@ describe('system-design-guide-link.util', () => {
       .toBe('multi-step form frontend system design rubric');
     expect(evaluationGuideAnchorForQuestion({ id: 'component-design-system-architecture' }))
       .toBe('design system architecture interview rubric');
-    expect(evaluationGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
+    expect(evaluationGuideAnchorForQuestion({ id: 'notification-toast-system' }))
+      .toBe('toast notification system interview rubric');
   });
 
   it('provides keyword-focused pitfalls guide anchors for cluster prompts', () => {
@@ -94,7 +96,8 @@ describe('system-design-guide-link.util', () => {
       .toBe('multi step form autosave system design mistakes');
     expect(pitfallsGuideAnchorForQuestion({ id: 'component-design-system-architecture' }))
       .toBe('design system architecture interview mistakes');
-    expect(pitfallsGuideAnchorForQuestion({ id: 'notification-toast-system' })).toBeNull();
+    expect(pitfallsGuideAnchorForQuestion({ id: 'notification-toast-system' }))
+      .toBe('toast notification system design pitfalls');
   });
 
   it('maps architecture questions to architecture guide', () => {

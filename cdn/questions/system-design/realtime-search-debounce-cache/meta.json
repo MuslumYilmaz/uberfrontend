@@ -5,7 +5,9 @@
   "tags": [
     "search",
     "debounce",
-    "caching"
+    "caching",
+    "state-management",
+    "frontend-architecture"
   ],
   "type": "system-design",
   "sections": [

@@ -162,4 +162,34 @@ describe('SystemDesignDetailComponent', () => {
     expect(component.recommendedBlueprintGuide().slug).toBe('radio-requirements');
     expect(component.guideLinks().map((link) => link.slug)).toContain('radio-requirements');
   });
+
+  it('marks only the generic prep bridge CTA as nosnippet', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.q.set({
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Frontend system design interview example for global toasts.',
+      tags: ['toast'],
+      access: 'free',
+      radio: [
+        {
+          key: 'R',
+          title: 'Requirements exploration',
+          blocks: [{ type: 'text', text: 'Main toast notification system content.' }],
+        },
+      ],
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const mainText = host.querySelector('.sd-text') as HTMLElement | null;
+    const prepBridge = host.querySelector('[data-testid="system-design-prep-entry"]') as HTMLElement | null;
+
+    expect(mainText).not.toBeNull();
+    expect(prepBridge).not.toBeNull();
+    expect(mainText!.hasAttribute('data-nosnippet')).toBeFalse();
+    expect(prepBridge!.hasAttribute('data-nosnippet')).toBeTrue();
+  });
 });

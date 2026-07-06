@@ -77,13 +77,13 @@ describe('SystemDesignIndexComponent', () => {
 
     expect(promptCards.length).toBe(8);
     expect(pageText).toContain('Infinite Scroll List System Design');
-    expect(pageText).toContain('Notification Toast System');
+    expect(pageText).toContain('Design a Toast Notification System');
     expect(pageText).toContain('Real-time Search with Debounce & Caching');
     expect(pageText).toContain('AI Chat Text Area');
     expect(pageText).toContain('Component-driven Design System Architecture');
     expect(pageText).toContain('design autocomplete frontend system design');
     expect(pageText).toContain('design news feed frontend system design');
-    expect(pageText).toContain('design notification system frontend');
+    expect(pageText).toContain('design toast notification system');
     expect(pageText).toContain('design system architecture frontend interview');
     expect(pageText).toContain('realtime UI frontend system design');
     expect(pageText).toContain('dashboard widgets frontend system design');
