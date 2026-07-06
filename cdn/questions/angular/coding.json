@@ -2706,7 +2706,7 @@
   },
   {
     "id": "angular-snake-game",
-    "title": "Angular Snake Game (Grid + Food + Collision)",
+    "title": "Angular Snake Game",
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
@@ -2720,62 +2720,124 @@
       "dom"
     ],
     "description": {
-      "summary": "Build a Snake game in Angular using a grid board. Support keyboard controls, food spawning, score updates, and game-over handling for wall/body collisions.",
+      "summary": "Build a Snake game in Angular on a fixed grid board with starter code, tests, edge cases, and interview follow-ups. Move the snake on a timer, handle keyboard direction changes, spawn food, grow score and snake body, and end on wall or body collisions while explaining game-loop and component-state decisions.",
       "specs": {
         "requirements": [
-          "Render a fixed-size board (for example 14×14) with snake body and food cells.",
-          "Move the snake using Arrow keys (optionally WASD).",
-          "Run game ticks on an interval while the game is running.",
-          "Eating food should grow the snake and increment score.",
-          "Colliding with walls or snake body should end the game.",
-          "Provide Start/Pause and Reset controls.",
-          "Expose score and current snake length in the UI.",
-          "Keep keyboard interactions stable (no reverse-direction bug)."
+          "Render a 14x14 grid board with snake body segments and food.",
+          "Move one cell per game loop tick using keyboard controls.",
+          "Support Arrow key movement and WASD controls without changing the base grid board rules.",
+          "Ignore immediate reverse direction, such as Right → Left, so the snake cannot reverse into itself.",
+          "Grow the snake body and increment the score when the next head cell reaches food.",
+          "Respawn food in an empty grid cell that is not occupied by the snake body.",
+          "End the game on wall collision when the next head position leaves the grid board.",
+          "End the game on self collision when the next head position is inside the snake body.",
+          "Stop movement after game over so additional timer ticks cannot keep changing component state.",
+          "Provide a restart/reset action that restores the initial snake, score, direction, food, and paused status.",
+          "Clean up timers and keyboard-driven state when the Angular component is destroyed.",
+          "Keep template rendering predictable with stable cell identity or trackBy-style grid rendering."
         ],
+        "expectedBehaviorIntro": "Example gameplay timeline:",
         "expectedBehavior": [
-          "Initial state shows a short snake, one food cell, and score 0.",
-          "Press Start to begin movement; snake advances one cell per tick.",
-          "When head reaches food, score increases and snake length grows by 1.",
-          "Pressing opposite direction immediately should be ignored for safety.",
-          "Hitting boundary or own body stops the game and shows game-over state.",
-          "Reset returns to initial state with a new food position."
+          "t=0: the snake starts at row 7, col 7 and moves right on the fixed grid board.",
+          "t=150ms: the head moves to col 8 and the tail drops if no food was eaten.",
+          "t=300ms: the head reaches food at col 9, score increases by 1, and the snake grows.",
+          "t=450ms: new food appears in an empty cell, never on the snake body.",
+          "If the player presses ArrowLeft while moving right, the immediate reverse move is ignored.",
+          "If the next head position is outside the grid or inside the snake body, gameOver becomes true and movement stops."
         ],
         "implementationNotes": [
-          "Store snake as ordered coordinates, with index 0 as the head.",
-          "Track both current direction and pending direction to avoid race conditions.",
-          "Use Set/string keys for fast cell occupancy checks.",
-          "Generate food only on free cells that are not occupied by snake.",
-          "Clear interval correctly on pause, game over, and destroy."
+          "Keep the snake body as an ordered list of grid cells with the head at index 0.",
+          "Track current direction and pending direction separately so keyboard event handling stays predictable between timer ticks.",
+          "Compute the next head on each game loop tick before deciding whether to move, grow, or end the game.",
+          "Use Angular component state for score, food, gameOver, and running status, then render the grid through the template.",
+          "Use setInterval or an equivalent timer loop and clear it on pause, reset, wall collision, self collision, and ngOnDestroy.",
+          "Use deterministic fakeAsync/tick tests for timer behavior instead of relying on real elapsed time."
         ],
         "techFocus": [
-          "Angular standalone components",
-          "Interval lifecycle management",
-          "Keyboard event handling with HostListener",
-          "Immutable updates for moving/growing arrays"
+          "Angular component state for grid game data",
+          "Template rendering for grid board cells, snake body, and food",
+          "Keyboard event handling with reverse-direction guards",
+          "Timer/game loop cleanup and change detection considerations",
+          "Predictable snake body updates and collision detection",
+          "fakeAsync/tick tests for timer-driven movement"
         ]
       }
     },
-    "starterCodeHint": "Implement TODOs in app.component.ts: keyboard direction updates, game loop movement, collision checks, food growth, and reset flow.",
+    "starterCodeHint": "Implement TODOs in app.component.ts: keyboard direction updates, timer/game-loop movement, wall collision, self collision, food growth, score updates, reset, and timer cleanup.",
     "solutionBlock": {
-      "overview": "Keep snake coordinates, direction, pendingDirection, food, score, and run state in component state. Tick with setInterval, prepend next head, and pop tail unless food is eaten. End the game on wall/body collision.",
+      "overview": "Interview answer: the base prompt is a grid-state problem plus a timer-driven game loop. Keep the snake body as an ordered list of cells, track the current direction, compute the next head on each tick, then decide whether to move, grow, or end the game. Keyboard input should update direction without allowing immediate reversal. Food placement, restart behavior, speed changes, pause/resume, mobile controls, and deterministic tests are follow-ups. In Angular, keep the board, snake body, food, score, running state, and gameOver flag in component state, render cells through the template, and clean up the timer when the component stops or is destroyed.",
       "approaches": [
         {
-          "title": "Single standalone component with deterministic game-loop state",
-          "prose": "On each tick, compute the next head from current direction. Validate collisions before mutating state. If food is eaten, keep the tail (grow) and spawn new food on a free cell. Otherwise remove tail for standard movement. Use HostListener key mapping and block immediate opposite-direction turns."
+          "title": "Single Angular component with predictable grid-state updates",
+          "prose": "Render the grid board from component state, keep the snake body as ordered coordinates, and run movement through one timer/game loop. On each tick, derive the next head from the pending direction, check wall collision and self collision before mutating state, then either grow on food or drop the tail. Keyboard handling updates only valid directions, and cleanup clears the timer on pause, reset, game over, and destroy."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Allowing immediate reverse direction can cause instant self-collision artifacts.",
-          "Forgetting interval cleanup leads to duplicate timers and speed glitches.",
-          "Spawning food without excluding snake cells can make unreachable food."
+          "Allowing immediate reverse direction can create accidental self collision before the player sees a move.",
+          "Starting multiple timers creates duplicate game loops and inconsistent snake speed.",
+          "Spawning food without excluding snake body cells can hide food inside the snake.",
+          "Checking self collision against the wrong body slice can incorrectly block moves into the tail cell that is about to drop."
         ],
         "techniques": [
-          "Occupancy keys like `x,y` for constant-time lookups.",
-          "Pending direction buffer to avoid same-tick race conditions.",
-          "Deterministic tick flow with explicit collision branches."
+          "Use occupancy keys like `x,y` for constant-time snake body and food checks.",
+          "Buffer pendingDirection separately from direction so keyboard events between ticks stay deterministic.",
+          "Use fakeAsync/tick tests for timer-driven movement, growth, collision, restart, and cleanup behavior.",
+          "Use trackBy or stable cell identity when rendering the fixed grid board in Angular templates."
         ]
-      }
+      },
+      "relatedLinks": [
+        {
+          "title": "Angular Tic-Tac-Toe coding challenge",
+          "route": [
+            "/",
+            "angular",
+            "coding",
+            "angular-tictactoe-starter"
+          ],
+          "label": "Angular coding challenge"
+        },
+        {
+          "title": "Angular Todo List coding challenge",
+          "route": [
+            "/",
+            "angular",
+            "coding",
+            "angular-todo-list-starter"
+          ],
+          "label": "Angular coding challenge"
+        },
+        {
+          "title": "Angular Progress Bar coding challenge",
+          "route": [
+            "/",
+            "angular",
+            "coding",
+            "angular-progress-bar-thresholds"
+          ],
+          "label": "Angular coding challenge"
+        },
+        {
+          "title": "Build Snake Game in React",
+          "route": [
+            "/",
+            "react",
+            "coding",
+            "react-snake-game"
+          ],
+          "label": "React coding challenge"
+        },
+        {
+          "title": "Build Snake Game in Vue",
+          "route": [
+            "/",
+            "vue",
+            "coding",
+            "vue-snake-game"
+          ],
+          "label": "Vue coding challenge"
+        }
+      ]
     },
     "sdk": {
       "asset": "assets/sb/angular/question/angular-snake-game.v1.json",
@@ -2788,10 +2850,249 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-07-06",
     "seo": {
-      "title": "Build Snake Game in Angular",
-      "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."
-    }
+      "title": "Build a Snake Game in Angular: Coding Challenge + Tests",
+      "description": "Angular Snake game: grid board,keyboard controls,timer,food spawning,score updates,wall/body collision,starter code,tests,edge cases,interview follow-ups.",
+      "h1": "Build a Snake Game in Angular"
+    },
+    "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-snake-game.v1.json",
+    "frameworkTests": [
+      {
+        "id": "snake-initial-grid",
+        "name": "Initial grid, snake, and food",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".cell",
+            "count": 196
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 103,
+            "className": "cell--snake"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 102,
+            "className": "cell--snake"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 106,
+            "className": "cell--food"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status-row",
+            "text": "Score: 0",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status-row",
+            "text": "Length: 3",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "snake-timer-first-tick",
+        "name": "Timer movement waits for the first tick",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 105,
+            "className": "cell--head",
+            "expected": false
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "Shift"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "Shift"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 105,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 102,
+            "className": "cell--snake",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "snake-keyboard-grow-score",
+        "name": "Keyboard guard, growth, score, and food respawn",
+        "steps": [
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "Shift"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "Shift"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 106,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status-row",
+            "text": "Score: 1",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status-row",
+            "text": "Length: 4",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--food.cell--snake",
+            "count": 0
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "Shift"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "Shift"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 120,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-wall-collision-stop",
+        "name": "Wall collision ends the game and stops movement",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".status-row",
+            "text": "Game over",
+            "match": "contains",
+            "timeoutMs": 2200
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 190,
+            "className": "cell--head"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "Shift"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 190,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-reset-state",
+        "name": "Reset restores initial game state",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status-row",
+            "text": "Score: 0",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status-row",
+            "text": "Length: 3",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status-row",
+            "text": "Paused",
+            "match": "contains"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 106,
+            "className": "cell--food"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--snake",
+            "count": 3
+          }
+        ]
+      }
+    ]
   }
 ]

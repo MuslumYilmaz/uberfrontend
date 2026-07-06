@@ -15,9 +15,9 @@
             "lineEnd": 3,
             "snippet": "let resolve; let reject;"
           },
-          "why": "These references are filled inside the Promise constructor, then exposed to callers.",
+          "why": "These references are filled once inside the Promise constructor, then exposed as the createDeferred() controls.",
           "alternative": "Do not expose settle functions at all.",
-          "tradeoff": "External control is great for tests, but it can be misused in production flows."
+          "tradeoff": "External control is useful for deterministic async tests, but it can be risky in production flows."
         },
         {
           "id": "d2-create-promise-shell",
@@ -27,9 +27,9 @@
             "lineEnd": 8,
             "snippet": "const promise = new Promise((res, rej) =>"
           },
-          "why": "The deferred object should manage one promise instance with one lifecycle.",
+          "why": "The returned { promise, resolve, reject } object should manage one promise instance with one lifecycle.",
           "alternative": "Create a new Promise every time resolve/reject is called.",
-          "tradeoff": "Single promise keeps behavior predictable, but each deferred is one-shot."
+          "tradeoff": "A single promise preserves native pending and first-settlement-wins behavior, but each deferred is one-shot."
         },
         {
           "id": "d3-capture-resolve",
@@ -39,9 +39,9 @@
             "lineEnd": 6,
             "snippet": "resolve = res"
           },
-          "why": "This lets tests decide exactly when the promise should fulfill.",
+          "why": "This lets tests decide exactly when the promise should fulfill and allows native Promise adoption when resolving with another Promise.",
           "alternative": "Resolve immediately in the constructor.",
-          "tradeoff": "More control for tests, but timing now depends on outside calls."
+          "tradeoff": "More control for tests, but timing now depends on the caller invoking resolve."
         },
         {
           "id": "d4-capture-reject",
@@ -51,7 +51,7 @@
             "lineEnd": 7,
             "snippet": "reject = rej"
           },
-          "why": "Tests can force failure paths without waiting for real network or timers.",
+          "why": "Tests can reject with an exact reason without waiting for real network or timers.",
           "alternative": "Throw errors in helper code instead of rejecting.",
           "tradeoff": "Explicit rejection is realistic for async APIs, but callers must handle rejections."
         },
@@ -63,9 +63,9 @@
             "lineEnd": 10,
             "snippet": "return { promise, resolve, reject }"
           },
-          "why": "Keeping everything in one object makes test setup and orchestration straightforward.",
+          "why": "This is the createDeferred() contract: return the promise with its resolve(value) and reject(error) controls.",
           "alternative": "Return an array tuple like [promise, resolve, reject].",
-          "tradeoff": "Object return is self-describing, with slightly more property access overhead."
+          "tradeoff": "Object return is self-describing and matches the challenge tests."
         }
       ]
     }

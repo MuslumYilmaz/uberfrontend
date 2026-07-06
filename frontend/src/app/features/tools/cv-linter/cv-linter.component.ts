@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CvAnalyzeResponse, CvIssue, CvIssueEvidence, CvRole, CvSeverity } from '../../../core/models/cv-linter.model';
 import { CvLinterService } from '../../../core/services/cv-linter.service';
+import { SeoService } from '../../../core/services/seo.service';
 import {
   buildRoleKeywordSuggestions,
   computeIssueConfidence,
@@ -36,6 +37,198 @@ type QuickWin = {
   estimatedGain: string;
 };
 
+type ScoreMethodologyItem = {
+  label: string;
+  points: number;
+  detail: string;
+};
+
+type SimpleInfoItem = {
+  title: string;
+  detail: string;
+};
+
+type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+type SampleReportCategory = {
+  label: string;
+  score: number;
+  max: number;
+};
+
+type SampleReportIssue = {
+  severity: CvSeverity;
+  title: string;
+  detail: string;
+  evidence: string;
+};
+
+type SampleKeywordGroup = {
+  label: string;
+  terms: string;
+};
+
+type SampleFrontendReport = {
+  label: string;
+  targetRole: string;
+  overallScore: number;
+  parsingConfidence: string;
+  categories: SampleReportCategory[];
+  quickWins: string[];
+  issues: SampleReportIssue[];
+  keywordCoverage: SampleKeywordGroup[];
+};
+
+const CV_LINTER_TITLE = 'CV Linter: ATS Resume Score & Fixes';
+const CV_LINTER_DESCRIPTION =
+  'Upload or paste your resume to get a 100-point ATS-style score, section-level fixes, keyword gaps, readability warnings, and quick wins. Files are processed to text and not stored.';
+const CV_LINTER_CANONICAL_PATH = '/tools/cv';
+const CV_LINTER_FEATURES = [
+  'ATS-style structure checks for sections, contact details, and parse-friendly layout.',
+  'Frontend role keyword coverage for Angular, React, and general senior frontend targets.',
+  'Readability warnings for long bullets, dense text, and extraction quality issues.',
+  'Impact and evidence checks for metrics, scope, action verbs, and ownership signals.',
+  'Static sample frontend CV report preview with category scores, quick wins, evidence snippets, and keyword coverage.',
+];
+const SCORE_METHODOLOGY: ScoreMethodologyItem[] = [
+  {
+    label: 'ATS & Readability',
+    points: 25,
+    detail: 'Contact details, parse-friendly layout, file extraction, special characters, and dense lines.',
+  },
+  {
+    label: 'Structure & Completeness',
+    points: 20,
+    detail: 'Expected sections, headings, bullet coverage, experience/project evidence, and education/summary basics.',
+  },
+  {
+    label: 'Impact & Evidence',
+    points: 25,
+    detail: 'Metrics, scope, action verbs, outcomes, ownership signals, and concrete frontend delivery evidence.',
+  },
+  {
+    label: 'Consistency & Hygiene',
+    points: 15,
+    detail: 'Date consistency, duplicated wording, unclear formatting, and low-confidence parsing warnings.',
+  },
+  {
+    label: 'Keyword Coverage',
+    points: 15,
+    detail: 'Role-specific frontend keywords found in experience, missing critical terms, and skills-only matches.',
+  },
+];
+const FRONTEND_SIGNAL_ITEMS: SimpleInfoItem[] = [
+  {
+    title: 'Angular target',
+    detail: 'Weights signals such as RxJS, NgRx, change detection, signals, Angular SSR, accessibility, and performance.',
+  },
+  {
+    title: 'React target',
+    detail: 'Looks for React hooks, state management, TypeScript, testing, Next.js/SSR, performance, and accessibility.',
+  },
+  {
+    title: 'General frontend target',
+    detail: 'Keeps the focus on senior frontend fundamentals: TypeScript, a11y, performance, testing, CI/CD, and observability.',
+  },
+];
+const DETERMINISTIC_COMPARISON_ITEMS: SimpleInfoItem[] = [
+  {
+    title: 'Deterministic rule engine',
+    detail: 'Every warning comes from explicit rules and evidence snippets, not from a generated rewrite.',
+  },
+  {
+    title: 'No AI rewriting',
+    detail: 'The tool can suggest starter phrases, but it does not rewrite your CV or invent achievements.',
+  },
+  {
+    title: 'Privacy-first processing',
+    detail: 'Files are processed to text for the report and are not stored by the CV Linter.',
+  },
+  {
+    title: 'Parsing confidence',
+    detail: 'PDF extraction quality can lower confidence, so parsing-sensitive warnings are marked and may be undercounted.',
+  },
+];
+const SAMPLE_FRONTEND_REPORT: SampleFrontendReport = {
+  label: 'Static sample, not your uploaded CV',
+  targetRole: 'Senior Frontend (Angular)',
+  overallScore: 77,
+  parsingConfidence: 'High',
+  categories: [
+    { label: 'ATS & Readability', score: 20, max: 25 },
+    { label: 'Structure & Completeness', score: 16, max: 20 },
+    { label: 'Impact & Evidence', score: 17, max: 25 },
+    { label: 'Consistency & Hygiene', score: 12, max: 15 },
+    { label: 'Keyword Coverage', score: 12, max: 15 },
+  ],
+  quickWins: [
+    'Move Angular performance evidence from Skills into Experience bullets.',
+    'Add measurable impact to component architecture and accessibility work.',
+    'Replace passive ownership wording with action verbs and scope.',
+  ],
+  issues: [
+    {
+      severity: 'warn',
+      title: 'Missing measurable impact',
+      detail: 'The bullet explains dashboard work but lacks adoption, latency, conversion, or scale evidence.',
+      evidence: 'Built reusable dashboard components for checkout analytics.',
+    },
+    {
+      severity: 'warn',
+      title: 'Keyword only appears in Skills',
+      detail: 'NgRx is listed as a skill, but there is no experience bullet proving production state management work.',
+      evidence: 'Skills: Angular, NgRx, RxJS, accessibility, SSR, testing.',
+    },
+    {
+      severity: 'info',
+      title: 'PDF bullets may be merged',
+      detail: 'A parser-sensitive line joins two achievements, so keyword and impact scoring may be undercounted.',
+      evidence: 'Optimized LCP by 32% Implemented SSR and web vitals monitoring.',
+    },
+    {
+      severity: 'info',
+      title: 'Weak action verbs',
+      detail: 'Repeated passive phrasing makes ownership harder to scan in senior frontend experience.',
+      evidence: 'Responsible for frontend features across the checkout application.',
+    },
+  ],
+  keywordCoverage: [
+    { label: 'Found in experience', terms: 'Angular, RxJS, SSR, accessibility, web vitals' },
+    { label: 'Skills only', terms: 'NgRx, signals, CI/CD' },
+    { label: 'Missing critical', terms: 'change detection, lazy loading ownership' },
+  ],
+};
+const FAQ_ITEMS: FaqItem[] = [
+  {
+    question: 'Does this simulate a real ATS?',
+    answer:
+      'It runs ATS-style deterministic checks for structure, readability, parsing, keywords, and frontend evidence. It is not a proprietary ATS clone and does not guarantee recruiter ranking.',
+  },
+  {
+    question: 'What is a good CV score?',
+    answer:
+      'Use 80+ as a strong target, 65-79 as workable with clear fixes, and anything below 65 as a signal to improve structure, impact evidence, or role keyword coverage before applying.',
+  },
+  {
+    question: 'Is my CV stored?',
+    answer:
+      'No. Uploaded files or pasted text are processed to extract text and generate the report, then discarded by the CV Linter.',
+  },
+  {
+    question: 'PDF or DOCX?',
+    answer:
+      'DOCX usually gives the cleanest text extraction. PDF is supported, but complex layouts, columns, text boxes, and scanned files can reduce parsing confidence.',
+  },
+  {
+    question: 'Does it rewrite my resume with AI?',
+    answer:
+      'No. The report gives deterministic issues, evidence, and starter phrases. It does not use AI to rewrite your CV or invent content.',
+  },
+];
+
 @Component({
   selector: 'app-cv-linter',
   standalone: true,
@@ -43,7 +236,7 @@ type QuickWin = {
   templateUrl: './cv-linter.component.html',
   styleUrls: ['./cv-linter.component.css'],
 })
-export class CvLinterComponent implements OnDestroy {
+export class CvLinterComponent implements OnInit, OnDestroy {
   private readonly MAX_FILE_BYTES = 5 * 1024 * 1024;
   private readonly ALLOWED_MIME = new Set([
     'application/pdf',
@@ -81,6 +274,11 @@ export class CvLinterComponent implements OnDestroy {
     { id: 'impact', label: 'Impact-heavy' },
     { id: 'ownership', label: 'Ownership' },
   ];
+  readonly scoreMethodology = SCORE_METHODOLOGY;
+  readonly frontendSignalItems = FRONTEND_SIGNAL_ITEMS;
+  readonly deterministicComparisonItems = DETERMINISTIC_COMPARISON_ITEMS;
+  readonly sampleFrontendReport = SAMPLE_FRONTEND_REPORT;
+  readonly faqItems = FAQ_ITEMS;
 
   selectedRole: CvRole = 'senior_frontend_angular';
   inputMode: AnalyzeInputMode = 'file';
@@ -137,12 +335,95 @@ export class CvLinterComponent implements OnDestroy {
   @ViewChild('uploadSection') private uploadSectionRef?: ElementRef<HTMLElement>;
   @ViewChild('fileInput') private fileInputRef?: ElementRef<HTMLInputElement>;
 
-  constructor(private readonly cvLinterService: CvLinterService) {}
+  constructor(
+    private readonly cvLinterService: CvLinterService,
+    private readonly seo: SeoService,
+  ) {}
+
+  ngOnInit(): void {
+    this.publishSeoMeta();
+  }
 
   ngOnDestroy(): void {
     this.clearProgressTimers();
     this.clearUiTimers();
     this.clearSuccessToastTimer();
+  }
+
+  private publishSeoMeta(): void {
+    const canonicalUrl = this.seo.buildCanonicalUrl(CV_LINTER_CANONICAL_PATH);
+    const webApplication = {
+      '@type': 'WebApplication',
+      '@id': `${canonicalUrl}#cv-linter-app`,
+      url: canonicalUrl,
+      name: CV_LINTER_TITLE,
+      description: CV_LINTER_DESCRIPTION,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web browser',
+      browserRequirements: 'Requires JavaScript and a modern web browser.',
+      featureList: CV_LINTER_FEATURES,
+      publisher: { '@id': `${this.seo.getSiteUrl()}/#organization` },
+    };
+    const howTo = {
+      '@type': 'HowTo',
+      '@id': `${canonicalUrl}#how-to-use`,
+      url: canonicalUrl,
+      name: 'How to check a frontend resume with CV Linter',
+      description: 'Use the CV Linter to run deterministic resume checks and review category scores, quick wins, and actionable issues.',
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Analyze CV',
+          text: 'Choose a target frontend role, then upload a PDF or DOCX resume or paste resume text.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'Review results',
+          text: 'Review the overall score, category breakdown, keyword coverage, quick wins, and issue-level fixes.',
+        },
+      ],
+    };
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'CV Linter',
+          item: canonicalUrl,
+        },
+      ],
+    };
+    const faqPage = {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#faq`,
+      url: canonicalUrl,
+      name: 'CV Linter FAQ',
+      mainEntity: FAQ_ITEMS.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    };
+
+    this.seo.updateTags({
+      title: CV_LINTER_TITLE,
+      description: CV_LINTER_DESCRIPTION,
+      canonical: CV_LINTER_CANONICAL_PATH,
+      keywords: ['cv linter', 'ats score', 'resume checker', 'frontend cv review'],
+      jsonLd: [webApplication, howTo, breadcrumb, faqPage],
+    });
   }
 
   get progressLabel(): string {

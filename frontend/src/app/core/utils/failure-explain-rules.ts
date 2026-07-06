@@ -3575,20 +3575,31 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     priority: 110,
     matches: (snapshot) =>
       anyFailingTestNameIncludes(snapshot, [
+        'returns promise, resolve, and reject controls',
+        'does not settle before resolve or reject is called',
         'resolves when resolve is called',
-        'rejects when reject is called',
+        'rejects with the exact reason when reject is called',
         'adopts another promise when resolving',
+        'only the first settlement wins',
+        'then callbacks do not run synchronously after resolve',
       ]) ||
-      anyFailingErrorIncludes(snapshot, ['expected promise to reject']) ||
+      anyFailingErrorIncludes(snapshot, [
+        'expected promise to reject',
+        'to be "function"',
+        "to be 'function'",
+        'to be false',
+        'to be pending',
+        'to be first',
+      ]) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'js-create-deferred-promise-settle-contract',
-      title: 'Deferred promise does not expose/forward settle behavior correctly',
-      why: buildProgressAwareWhy(snapshot, 'The deferred object should surface Promise executor resolve/reject untouched.'),
+      title: 'createDeferred() does not expose Promise settle controls correctly',
+      why: buildProgressAwareWhy(snapshot, 'The returned { promise, resolve, reject } object should expose one native Promise and its captured settle controls.'),
       actions: [
         'Capture `resolve` and `reject` from `new Promise((res, rej) => ...)`.',
         'Return `{ promise, resolve, reject }` from the factory.',
-        'Do not wrap `resolve` values manually; allow Promise adoption semantics.',
+        'Do not wrap `resolve` values manually; native Promise behavior handles adoption, first-settlement wins, and async callbacks.',
       ],
       confidence: 0.92,
     }),
@@ -3600,12 +3611,12 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     matches: () => true,
     buildHint: (snapshot) => ({
       ruleId: 'js-create-deferred-promise-default',
-      title: 'Implement createDeferred by exposing Promise settle controls',
+      title: 'Implement createDeferred() by exposing Promise settle controls',
       why: buildProgressAwareWhy(snapshot, 'Most bugs are from missing resolver capture or wrong returned shape.'),
       actions: [
-        'Declare resolver variables outside Promise constructor.',
+        'Declare `resolve` and `reject` variables outside the Promise constructor.',
         'Assign them inside executor and return all three fields.',
-        'Keep function minimal; Promise already handles first-settle wins.',
+        'Keep the function minimal; Promise already handles pending state, first-settlement wins, and microtask timing.',
       ],
       confidence: 0.74,
     }),

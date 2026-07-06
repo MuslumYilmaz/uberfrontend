@@ -417,17 +417,17 @@ describe('failure-explain-rules', () => {
   it('returns question-specific hint for deferred promise settle contract', () => {
     const hint = buildFailureHint({
       questionId: 'js-create-deferred-promise',
-      errorLine: 'Expected promise to reject',
-      firstFailName: 'rejects when reject is called',
-      passCount: 1,
-      totalCount: 3,
+      errorLine: 'Expected "second" to be first',
+      firstFailName: 'only the first settlement wins',
+      passCount: 4,
+      totalCount: 7,
       failCount: 2,
       failedTests: [
-        { name: 'rejects when reject is called', errorLine: 'Expected promise to reject' },
+        { name: 'only the first settlement wins', errorLine: 'Expected "second" to be first' },
       ],
     });
     expect(hint.ruleId).toBe('js-create-deferred-promise-settle-contract');
-    expect(hint.title.toLowerCase()).toContain('deferred');
+    expect(hint.title).toContain('createDeferred()');
   });
 
   it('returns question-specific hint for LRU eviction and recency', () => {
