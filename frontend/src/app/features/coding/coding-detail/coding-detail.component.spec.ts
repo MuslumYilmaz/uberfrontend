@@ -527,17 +527,21 @@ describe('CodingDetailComponent', () => {
     const solutionText = solutionPanel?.textContent || '';
 
     expect(question.title).toBe('Create a Deferred Promise (For Async Tests)');
-    expect(h1?.textContent?.trim()).toBe('Create a Deferred Promise in JavaScript');
+    expect(h1?.textContent?.trim()).toBe('Implement createDeferred() in JavaScript');
     expect(descriptionPanel.hidden).toBeFalse();
     expect(solutionPanel.hidden).toBeTrue();
     expect(workspacePanel).not.toBeNull();
 
-    expect(descriptionText).toContain('Implement createDeferred() to control promise resolution in async tests.');
+    expect(descriptionText).toContain('Implement createDeferred() in JavaScript.');
+    expect(descriptionText).toContain('{ promise, resolve, reject }');
     expect(descriptionText).toContain("What you'll practice");
-    expect(descriptionText).toContain('Creating a promise with external resolve/reject controls');
+    expect(descriptionText).toContain('Creating createDeferred() with { promise, resolve, reject } controls');
     expect(descriptionText).toContain('Expected behavior');
-    expect(descriptionText).toContain('Your solution should:');
-    expect(descriptionText).toContain('Adopt another promise when `resolve(Promise.resolve(value))` is used');
+    expect(descriptionText).toContain('Your createDeferred() implementation should:');
+    expect(descriptionText).toContain('Adopt another Promise when resolve(Promise.resolve(value)) is used');
+    expect(descriptionText).toContain('Examples');
+    expect(component.combinedExamples()).toContain('// At t=0');
+    expect(component.combinedExamples()).toContain("await d.promise; // 'ok'");
     expect(descriptionText).not.toContain('Common interview follow-ups');
     expect(descriptionText).not.toContain('Guides');
     expect(descriptionText).not.toContain('Preparing for interviews');
@@ -546,9 +550,10 @@ describe('CodingDetailComponent', () => {
     expect(host.querySelector('[data-testid="coding-prep-entry"]')).toBeNull();
     expect(host.querySelector('[data-testid="coding-report-issue-btn"]')).toBeNull();
 
+    expect(solutionText).toContain('Interview answer:');
     expect(solutionText).toContain('Mental model:');
     expect(solutionText).toContain('Common interview follow-ups:');
-    expect(solutionText).toContain('How would you type this utility in TypeScript?');
+    expect(solutionText).toContain('How would you type { promise, resolve, reject } in TypeScript?');
     expect(solutionText).not.toContain('Guides');
     expect(solutionText).not.toContain('Preparing for interviews');
 
@@ -558,9 +563,13 @@ describe('CodingDetailComponent', () => {
     const openedSolutionText = solutionPanel.textContent || '';
     expect(descriptionPanel.hidden).toBeTrue();
     expect(solutionPanel.hidden).toBeFalse();
+    expect(solutionPanel.querySelector('[data-testid="coding-similar-questions"]')).not.toBeNull();
     expect(solutionPanel.querySelector('[data-testid="coding-guide-links"]')).not.toBeNull();
     expect(solutionPanel.querySelector('[data-testid="coding-prep-entry"]')).not.toBeNull();
     expect(solutionPanel.querySelector('[data-testid="coding-report-issue-btn"]')).not.toBeNull();
+    expect(openedSolutionText).toContain('Related links');
+    expect(openedSolutionText).toContain('Implement debounce() in JavaScript');
+    expect(openedSolutionText).toContain('Fix stale UI from async race conditions');
     expect(openedSolutionText.indexOf('Common interview follow-ups:')).toBeLessThan(openedSolutionText.indexOf('Guides'));
     expect(openedSolutionText.indexOf('Guides')).toBeLessThan(openedSolutionText.indexOf('Preparing for interviews'));
     expect(openedSolutionText.indexOf('Preparing for interviews')).toBeLessThan(openedSolutionText.indexOf('Report issue'));
@@ -758,10 +767,10 @@ describe('CodingDetailComponent', () => {
     expect(seo.updateTags).toHaveBeenCalled();
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
 
-    expect(payload.title).toBe('Create Deferred Promise in JavaScript: Interview Challenge + Tests');
+    expect(payload.title).toBe('Implement createDeferred() in JavaScript: Promise Challenge + Tests');
     expect(payload.title).not.toBe(makeDeferredPromiseQuestion().seo.h1);
     expect(payload.description).toBe(
-      'Build createDeferred() in JavaScript with starter code, tests, solution, and async edge cases for frontend coding interviews.'
+      'createDeferred(): {promise,resolve,reject}. Starter code/tests: resolve/reject, Promise adoption, pending, first-settlement-wins, TS/interview follow-ups.'
     );
     expect(payload.canonical).toBe('https://frontendatlas.com/javascript/coding/js-create-deferred-promise');
   });
@@ -777,47 +786,60 @@ function makeDeferredPromiseQuestion() {
     difficulty: 'intermediate',
     tags: ['testing', 'promise', 'async'],
     description: {
-      summary: 'Implement createDeferred() to control promise resolution in async tests. This frontend interview challenge asks you to build a controllable Promise helper that returns { promise, resolve, reject }.',
+      summary: 'Implement createDeferred() in JavaScript. Your function should return { promise, resolve, reject } so async tests can control exactly when a Promise fulfills or rejects. The challenge includes starter code, tests for resolve/reject behavior, promise adoption, pending state, first-settlement-wins edge cases, and interview follow-ups.',
       specs: {
         practice: [
-          'Creating a promise with external resolve/reject controls',
-          'Making async tests deterministic',
-          'Handling resolve, reject, and promise adoption behavior',
+          'Creating createDeferred() with { promise, resolve, reject } controls',
+          'Making async tests deterministic without real timers',
+          'Handling resolve(value), reject(error), Promise adoption, pending state, and first-settlement-wins behavior',
         ],
-        expectedBehaviorIntro: 'Your solution should:',
+        expectedBehaviorIntro: 'Your createDeferred() implementation should:',
         expectedBehavior: [
-          'Return an object with `promise`, `resolve`, and `reject`',
-          'Fulfill the promise when `resolve(value)` is called',
-          'Reject the promise when `reject(error)` is called',
-          'Adopt another promise when `resolve(Promise.resolve(value))` is used',
+          'Return { promise, resolve, reject }',
+          'Fulfill the promise when resolve(value) is called',
+          'Reject the promise with the exact reason when reject(error) is called',
+          'Adopt another Promise when resolve(Promise.resolve(value)) is used',
+          'Remain pending until resolve or reject is called',
+          'Use normal Promise semantics so only the first settlement wins and callbacks run in a later microtask',
         ],
       },
       arguments: [],
       returns: {
         type: '{ promise: Promise, resolve: Function, reject: Function }',
-        desc: 'A deferred object whose promise can be resolved/rejected from the outside.',
+        desc: 'The createDeferred() controls object: a Promise plus resolve(value) and reject(error) functions for settling it later.',
       },
-      examples: [],
+      examples: [
+        "// Example: timeline\n// At t=0\nconst d = createDeferred();\nconst result = d.promise.then((value) => `loaded:${value}`);\n\n// At t=50\n// d.promise is still pending because neither resolve nor reject has been called.\n\n// At t=100\nd.resolve('user');\n\n// After the next microtask\nawait result; // 'loaded:user'",
+        "// Promise adoption\nconst d = createDeferred();\nd.resolve(Promise.resolve('ok'));\nawait d.promise; // 'ok'",
+      ],
     },
     starterCode: "export default function createDeferred() {\n  throw new Error('Not implemented');\n}\n",
     starterCodeTs: "export default function createDeferred<T = unknown>() {\n  throw new Error('Not implemented');\n}\n",
     tests: '',
     testsTs: '',
     solutionBlock: {
-      overview: 'Mental model: The Promise constructor gives you `resolve` and `reject` once.',
+      overview: "Interview answer: the base prompt is to create one Promise and capture its resolve and reject functions from the Promise constructor. Return those controls with the promise so tests can decide when async work finishes. TypeScript typing, timeout safeguards, cancellation, and production-safety concerns are follow-ups, not part of the minimal createDeferred() contract.\n\nMental model: createDeferred() returns { promise, resolve, reject }. Calling resolve(value) fulfills the promise, calling reject(error) rejects it, and resolving with another Promise adopts that Promise's eventual state. Normal Promise semantics also keep callbacks asynchronous and make the first settlement win.",
       approaches: [],
       followUp: [
-        'How would you type this utility in TypeScript?',
-        'When is a deferred promise useful in tests?',
-        'Why can deferred promises be risky in production code?',
+        'How would you type { promise, resolve, reject } in TypeScript?',
+        'When is createDeferred() useful in async tests?',
+        'How would you add timeout safeguards without changing the minimal createDeferred() contract?',
+        'Why can deferred promise controls be risky in production code?',
+      ],
+      relatedLinks: [
+        { title: 'Implement debounce() in JavaScript', route: ['/', 'javascript', 'coding', 'js-debounce'], label: 'Coding' },
+        { title: 'Implement takeLatest in JavaScript', route: ['/', 'javascript', 'coding', 'js-take-latest'], label: 'Coding' },
+        { title: 'Fix stale UI from async race conditions', route: ['/', 'javascript', 'trivia', 'js-async-race-conditions'], label: 'JavaScript' },
+        { title: 'React debounced search coding challenge', route: ['/', 'react', 'coding', 'react-debounced-search'], label: 'React' },
+        { title: 'JavaScript coding interview questions', route: ['/', 'guides', 'interview-blueprint', 'javascript-interviews'], label: 'Guide' },
       ],
     },
     access: 'free',
-    updatedAt: '2026-02-05',
+    updatedAt: '2026-07-06',
     seo: {
-      title: 'Create Deferred Promise in JavaScript: Interview Challenge + Tests',
-      description: 'Build createDeferred() in JavaScript with starter code, tests, solution, and async edge cases for frontend coding interviews.',
-      h1: 'Create a Deferred Promise in JavaScript',
+      title: 'Implement createDeferred() in JavaScript: Promise Challenge + Tests',
+      description: 'createDeferred(): {promise,resolve,reject}. Starter code/tests: resolve/reject, Promise adoption, pending, first-settlement-wins, TS/interview follow-ups.',
+      h1: 'Implement createDeferred() in JavaScript',
     },
     decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-create-deferred-promise.v1.json',
   };

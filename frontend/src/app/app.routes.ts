@@ -638,7 +638,7 @@ export const routes: Routes = [
       seo: {
         title: 'CV Linter: ATS Resume Score & Fixes',
         description:
-          'Scan your resume with deterministic ATS-style checks, get actionable fixes by section, and improve clarity without AI-generated or stored files.',
+          'Upload or paste your resume to get a 100-point ATS-style score, section-level fixes, keyword gaps, readability warnings, and quick wins. Files are processed to text and not stored.',
         keywords: ['cv linter', 'ats score', 'resume checker', 'frontend cv review'],
       },
     },

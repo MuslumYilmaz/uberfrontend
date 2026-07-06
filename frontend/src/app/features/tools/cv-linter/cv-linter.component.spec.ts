@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { CvAnalyzeResponse, CvIssue } from '../../../core/models/cv-linter.model';
@@ -105,6 +106,169 @@ describe('CvLinterComponent', () => {
     req.flush(response);
     fixture.detectChanges();
   }
+
+  function currentSeoGraph(): Array<Record<string, any>> {
+    const doc = TestBed.inject(DOCUMENT);
+    const script = doc.head.querySelector<HTMLScriptElement>('script#seo-jsonld');
+    const payload = JSON.parse(script?.textContent || '{}');
+    return Array.isArray(payload?.['@graph']) ? payload['@graph'] : [];
+  }
+
+  it('renders answer-first copy near the header', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const intro = fixture.nativeElement.querySelector('[data-testid="cv-answer-first-copy"]');
+    const text = intro?.textContent || '';
+
+    expect(intro).toBeTruthy();
+    expect(text).toContain('Upload or paste your resume');
+    expect(text).toContain('100-point ATS-style score');
+    expect(text).toContain('Files are processed to text and not stored.');
+  });
+
+  it('renders a concise checks summary before the upload card', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const checksCard = fixture.nativeElement.querySelector('[data-testid="cv-checks-card"]');
+    const uploadCard = fixture.nativeElement.querySelector('[data-testid="cv-upload-card"]');
+    const heading = checksCard?.querySelector('h2');
+    const items = Array.from(checksCard?.querySelectorAll('li') || []) as HTMLElement[];
+    const text = checksCard?.textContent || '';
+
+    expect(checksCard).toBeTruthy();
+    expect(uploadCard).toBeTruthy();
+    expect(checksCard.compareDocumentPosition(uploadCard) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(heading?.textContent || '').toContain('What this CV checker reviews');
+    expect(items.length).toBe(4);
+    expect(text).toContain('ATS structure');
+    expect(text).toContain('Keyword coverage');
+    expect(text).toContain('Readability');
+    expect(text).toContain('Impact/evidence');
+  });
+
+  it('renders the score methodology with backend category weights', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const section = fixture.nativeElement.querySelector('[data-testid="cv-score-methodology"]');
+    const text = section?.textContent || '';
+
+    expect(section).toBeTruthy();
+    expect(text).toContain('How the 100-point CV score works');
+    expect(text).toContain('ATS & Readability');
+    expect(text).toContain('25 pts');
+    expect(text).toContain('Structure & Completeness');
+    expect(text).toContain('20 pts');
+    expect(text).toContain('Impact & Evidence');
+    expect(text).toContain('Consistency & Hygiene');
+    expect(text).toContain('Keyword Coverage');
+    expect((text.match(/15 pts/g) || []).length).toBe(2);
+  });
+
+  it('renders frontend-specific signals for Angular, React, and general frontend roles', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const section = fixture.nativeElement.querySelector('[data-testid="cv-frontend-signals"]');
+    const text = section?.textContent || '';
+
+    expect(section).toBeTruthy();
+    expect(text).toContain('Frontend-specific signals');
+    expect(text).toContain('Angular target');
+    expect(text).toContain('React target');
+    expect(text).toContain('General frontend target');
+    expect(text).toContain('accessibility');
+    expect(text).toContain('performance');
+    expect(text).toContain('CI/CD');
+    expect(text).toContain('observability');
+  });
+
+  it('renders deterministic-vs-AI trust copy', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const trustSection = fixture.nativeElement.querySelector('[data-testid="cv-deterministic-vs-ai"]');
+    const trustText = trustSection?.textContent || '';
+
+    expect(trustSection).toBeTruthy();
+    expect(trustText).toContain('Deterministic checks vs AI resume rewriting');
+    expect(trustText).toContain('No AI rewriting');
+    expect(trustText).toContain('not stored');
+    expect(trustText).toContain('Parsing confidence');
+  });
+
+  it('renders a static sample frontend CV report preview with score, evidence, and keywords', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const section = fixture.nativeElement.querySelector('[data-testid="cv-sample-report"]');
+    const heading = section?.querySelector('h2');
+    const text = section?.textContent || '';
+
+    expect(section).toBeTruthy();
+    expect(heading?.textContent || '').toContain('Sample frontend CV report');
+    expect(text).toContain('Static sample, not your uploaded CV');
+    expect(text).toContain('Senior Frontend (Angular)');
+    expect(text).toContain('77/100');
+    expect(text).toContain('High');
+    expect(text).toContain('ATS & Readability');
+    expect(text).toContain('20/25');
+    expect(text).toContain('Structure & Completeness');
+    expect(text).toContain('16/20');
+    expect(text).toContain('Impact & Evidence');
+    expect(text).toContain('17/25');
+    expect(text).toContain('Consistency & Hygiene');
+    expect(text).toContain('12/15');
+    expect(text).toContain('Keyword Coverage');
+    expect(text).toContain('Move Angular performance evidence from Skills into Experience bullets.');
+    expect(text).toContain('Found in experience');
+    expect(text).toContain('Angular, RxJS, SSR, accessibility, web vitals');
+    expect(text).toContain('Missing measurable impact');
+    expect(text).toContain('Built reusable dashboard components for checkout analytics.');
+    expect(text).toContain('Keyword only appears in Skills');
+    expect(text).toContain('Skills: Angular, NgRx, RxJS, accessibility, SSR, testing.');
+    expect(text).toContain('PDF bullets may be merged');
+    expect(text).toContain('Weak action verbs');
+  });
+
+  it('publishes CV tool structured data with FAQPage schema matching visible FAQ', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    fixture.detectChanges();
+
+    const graph = currentSeoGraph();
+    const typeNames = graph.map((node) => node['@type']);
+    const app = graph.find((node) => node['@type'] === 'WebApplication');
+    const howTo = graph.find((node) => node['@type'] === 'HowTo');
+    const breadcrumb = graph.find((node) => node['@type'] === 'BreadcrumbList');
+    const faqPage = graph.find((node) => node['@type'] === 'FAQPage');
+    const visibleQuestions = Array.from(
+      fixture.nativeElement.querySelectorAll('[data-testid="cv-faq-item"] h3'),
+    ).map((element: any) => (element.textContent || '').trim());
+    const schemaQuestions = (faqPage?.['mainEntity'] || []).map((item: any) => item.name);
+
+    expect(typeNames).toContain('WebApplication');
+    expect(typeNames).toContain('HowTo');
+    expect(typeNames).toContain('BreadcrumbList');
+    expect(typeNames).toContain('FAQPage');
+    expect(app?.['name']).toBe('CV Linter: ATS Resume Score & Fixes');
+    expect(app?.['url']).toContain('/tools/cv');
+    expect(app?.['featureList']?.length).toBe(5);
+    expect(app?.['featureList']).toContain(
+      'Static sample frontend CV report preview with category scores, quick wins, evidence snippets, and keyword coverage.',
+    );
+    expect(howTo?.['step']?.length).toBe(2);
+    expect(breadcrumb?.['itemListElement']?.map((item: any) => item.name)).toEqual(['FrontendAtlas', 'CV Linter']);
+    expect(visibleQuestions).toEqual([
+      'Does this simulate a real ATS?',
+      'What is a good CV score?',
+      'Is my CV stored?',
+      'PDF or DOCX?',
+      'Does it rewrite my resume with AI?',
+    ]);
+    expect(schemaQuestions).toEqual(visibleQuestions);
+  });
 
   it('shows Step 2 placeholder before any analysis', () => {
     const fixture = TestBed.createComponent(CvLinterComponent);

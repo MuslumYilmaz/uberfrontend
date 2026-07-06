@@ -7537,39 +7537,41 @@
       "best-practices"
     ],
     "description": {
-      "summary": "Implement createDeferred() to control promise resolution in async tests. This frontend interview challenge asks you to build a controllable Promise helper that returns { promise, resolve, reject }.",
+      "summary": "Implement createDeferred() in JavaScript. Your function should return { promise, resolve, reject } so async tests can control exactly when a Promise fulfills or rejects. The challenge includes starter code, tests for resolve/reject behavior, promise adoption, pending state, first-settlement-wins edge cases, and interview follow-ups.",
       "specs": {
         "practice": [
-          "Creating a promise with external resolve/reject controls",
-          "Making async tests deterministic",
-          "Handling resolve, reject, and promise adoption behavior"
+          "Creating createDeferred() with { promise, resolve, reject } controls",
+          "Making async tests deterministic without real timers",
+          "Handling resolve(value), reject(error), Promise adoption, pending state, and first-settlement-wins behavior"
         ],
-        "expectedBehaviorIntro": "Your solution should:",
+        "expectedBehaviorIntro": "Your createDeferred() implementation should:",
         "expectedBehavior": [
-          "Return an object with `promise`, `resolve`, and `reject`",
-          "Fulfill the promise when `resolve(value)` is called",
-          "Reject the promise when `reject(error)` is called",
-          "Adopt another promise when `resolve(Promise.resolve(value))` is used"
+          "Return { promise, resolve, reject }",
+          "Fulfill the promise when resolve(value) is called",
+          "Reject the promise with the exact reason when reject(error) is called",
+          "Adopt another Promise when resolve(Promise.resolve(value)) is used",
+          "Remain pending until resolve or reject is called",
+          "Use normal Promise semantics so only the first settlement wins and callbacks run in a later microtask"
         ]
       },
       "arguments": [],
       "returns": {
         "type": "{ promise: Promise, resolve: Function, reject: Function }",
-        "desc": "A deferred object whose promise can be resolved/rejected from the outside."
+        "desc": "The createDeferred() controls object: a Promise plus resolve(value) and reject(error) functions for settling it later."
       },
       "examples": [
-        "const d = createDeferred();\nsetTimeout(() => d.resolve('ok'), 0);\nawait d.promise; // => 'ok'",
-        "const d = createDeferred();\nd.reject(new Error('fail'));\nawait d.promise; // rejects"
+        "// Example: timeline\n// At t=0\nconst d = createDeferred();\nconst result = d.promise.then((value) => `loaded:${value}`);\n\n// At t=50\n// d.promise is still pending because neither resolve nor reject has been called.\n\n// At t=100\nd.resolve('user');\n\n// After the next microtask\nawait result; // 'loaded:user'",
+        "// Promise adoption\nconst d = createDeferred();\nd.resolve(Promise.resolve('ok'));\nawait d.promise; // 'ok'"
       ]
     },
     "starterCode": "export default function createDeferred() {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export type Deferred<T> = {\n  promise: Promise<T>;\n  resolve: (value: T | PromiseLike<T>) => void;\n  reject: (reason?: any) => void;\n};\n\nexport default function createDeferred<T = unknown>(): Deferred<T> {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Create a Promise and capture its resolve/reject functions from the constructor. Return them alongside the promise. This is often used in tests to control the timing of async operations without relying on real timers.\n\nMental model: The Promise constructor gives you `resolve` and `reject` once. `createDeferred()` stores those callbacks and returns them with the promise so tests can control exactly when async work finishes.",
+      "overview": "Interview answer: the base prompt is to create one Promise and capture its resolve and reject functions from the Promise constructor. Return those controls with the promise so tests can decide when async work finishes. TypeScript typing, timeout safeguards, cancellation, and production-safety concerns are follow-ups, not part of the minimal createDeferred() contract.\n\nMental model: createDeferred() returns { promise, resolve, reject }. Calling resolve(value) fulfills the promise, calling reject(error) rejects it, and resolving with another Promise adopts that Promise's eventual state. Normal Promise semantics also keep callbacks asynchronous and make the first settlement win.",
       "approaches": [
         {
-          "title": "Approach: Capture resolve/reject from new Promise",
-          "prose": "Steps:\n1) Declare variables resolve/reject.\n2) Create a new Promise((res, rej) => { resolve = res; reject = rej; }).\n3) Return { promise, resolve, reject }.\n\nComplexity: O(1) time, O(1) space.",
+          "title": "Approach: Capture resolve/reject from one Promise",
+          "prose": "Steps:\n1) Declare resolve and reject variables in the outer function scope.\n2) Create one Promise with new Promise((res, rej) => { resolve = res; reject = rej; }).\n3) Return { promise, resolve, reject }.\n\nDo not add timers, AbortController, retries, event emitters, cancellation APIs, or a custom Promise implementation for the base challenge. Native Promise behavior already handles promise adoption, asynchronous callbacks, and first-settlement-wins semantics.\n\nComplexity: O(1) time, O(1) space.",
           "codeJs": "export default function createDeferred() {\n  let resolve;\n  let reject;\n\n  const promise = new Promise((res, rej) => {\n    resolve = res;\n    reject = rej;\n  });\n\n  return { promise, resolve, reject };\n}\n",
           "codeTs": "export type Deferred<T> = {\n  promise: Promise<T>;\n  resolve: (value: T | PromiseLike<T>) => void;\n  reject: (reason?: any) => void;\n};\n\nexport default function createDeferred<T = unknown>(): Deferred<T> {\n  let resolve!: (value: T | PromiseLike<T>) => void;\n  let reject!: (reason?: any) => void;\n\n  const promise = new Promise<T>((res, rej) => {\n    resolve = res;\n    reject = rej;\n  });\n\n  return { promise, resolve, reject };\n}\n",
           "decisionGraphKey": "approach1"
@@ -7577,19 +7579,19 @@
       ],
       "notes": {
         "pitfalls": [
-          "Using deferred promises everywhere can hide real race conditions; use them for tests and controlled orchestration only.",
-          "If a deferred is never resolved/rejected, awaits can hang — add timeouts in real code.",
-          "Prefer dependency injection over global state to make async code testable."
+          "Do not create a new Promise inside resolve or reject; create one Promise and expose its captured controls.",
+          "Do not wrap resolve values manually; native Promise resolution already adopts PromiseLike values.",
+          "Do not add timeout, cancellation, retry, or event-emitter behavior to the minimal createDeferred() contract."
         ],
         "edgeCases": [
-          "Resolving/rejecting multiple times should not throw; only the first call wins (Promise semantics).",
-          "Resolving with another Promise should adopt its eventual state.",
-          "Rejecting with non-Error values is allowed but less debuggable."
+          "The promise stays pending until resolve or reject is called.",
+          "Only the first resolve/reject call wins; later settlement attempts are ignored by Promise semantics.",
+          "then/catch/finally callbacks run asynchronously in a later microtask, not in the same call stack as resolve."
         ],
         "techniques": [
-          "Promise constructor captures resolve/reject.",
-          "Use in tests to control async deterministically.",
-          "Adopt states by resolving with a PromiseLike."
+          "Capture resolve and reject from the Promise constructor.",
+          "Return { promise, resolve, reject } so tests can settle async work deterministically.",
+          "Rely on native Promise adoption when resolve receives another PromiseLike."
         ]
       },
       "resources": [
@@ -7599,19 +7601,72 @@
         }
       ],
       "followUp": [
-        "How would you type this utility in TypeScript?",
-        "When is a deferred promise useful in tests?",
-        "Why can deferred promises be risky in production code?"
+        "How would you type { promise, resolve, reject } in TypeScript?",
+        "When is createDeferred() useful in async tests?",
+        "How would you add timeout safeguards without changing the minimal createDeferred() contract?",
+        "Why can deferred promise controls be risky in production code?"
+      ],
+      "relatedLinks": [
+        {
+          "title": "Implement debounce() in JavaScript",
+          "route": [
+            "/",
+            "javascript",
+            "coding",
+            "js-debounce"
+          ],
+          "label": "Coding"
+        },
+        {
+          "title": "Implement takeLatest in JavaScript",
+          "route": [
+            "/",
+            "javascript",
+            "coding",
+            "js-take-latest"
+          ],
+          "label": "Coding"
+        },
+        {
+          "title": "Fix stale UI from async race conditions",
+          "route": [
+            "/",
+            "javascript",
+            "trivia",
+            "js-async-race-conditions"
+          ],
+          "label": "JavaScript"
+        },
+        {
+          "title": "React debounced search coding challenge",
+          "route": [
+            "/",
+            "react",
+            "coding",
+            "react-debounced-search"
+          ],
+          "label": "React"
+        },
+        {
+          "title": "JavaScript coding interview questions",
+          "route": [
+            "/",
+            "guides",
+            "interview-blueprint",
+            "javascript-interviews"
+          ],
+          "label": "Guide"
+        }
       ]
     },
-    "tests": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred', () => {\n  test('resolves when resolve is called', async () => {\n    const d = createDeferred();\n    d.resolve(123);\n    const out = await d.promise;\n    expect(out).toBe(123);\n  });\n\n  test('rejects when reject is called', async () => {\n    const d = createDeferred();\n    const err = new Error('nope');\n    d.reject(err);\n\n    try {\n      await d.promise;\n      throw new Error('Expected promise to reject');\n    } catch (e) {\n      expect(e).toBe(err);\n    }\n  });\n\n  test('adopts another promise when resolving', async () => {\n    const d = createDeferred();\n    d.resolve(Promise.resolve('ok'));\n    const out = await d.promise;\n    expect(out).toBe('ok');\n  });\n});\n",
-    "testsTs": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred (TypeScript)', () => {\n  it('resolves when resolve is called', async () => {\n    const d = createDeferred<number>();\n    d.resolve(42);\n    const out = await d.promise;\n    expect(out).toBe(42);\n  });\n\n  it('rejects when reject is called', async () => {\n    const d = createDeferred<number>();\n    const err = new Error('fail');\n    d.reject(err);\n\n    try {\n      await d.promise;\n      throw new Error('Expected promise to reject');\n    } catch (e) {\n      expect(e).toBe(err);\n    }\n  });\n\n  it('adopts another promise when resolving', async () => {\n    const d = createDeferred<string>();\n    d.resolve(Promise.resolve('ok'));\n    expect(await d.promise).toBe('ok');\n  });\n});\n",
+    "tests": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred', () => {\n  test('returns promise, resolve, and reject controls', () => {\n    const d = createDeferred();\n\n    expect(typeof d).toBe('object');\n    expect(typeof d.promise.then).toBe('function');\n    expect(typeof d.resolve).toBe('function');\n    expect(typeof d.reject).toBe('function');\n  });\n\n  test('does not settle before resolve or reject is called', async () => {\n    const d = createDeferred();\n    let settled = false;\n\n    d.promise.finally(() => {\n      settled = true;\n    });\n\n    await Promise.resolve();\n\n    expect(settled).toBe(false);\n\n    d.resolve('ok');\n    await d.promise;\n\n    expect(settled).toBe(true);\n  });\n\n  test('resolves when resolve is called', async () => {\n    const d = createDeferred();\n\n    d.resolve(123);\n\n    await expect(d.promise).resolves.toBe(123);\n  });\n\n  test('rejects with the exact reason when reject is called', async () => {\n    const d = createDeferred();\n    const error = new Error('nope');\n\n    d.reject(error);\n\n    await expect(d.promise).rejects.toBe(error);\n  });\n\n  test('adopts another promise when resolving', async () => {\n    const d = createDeferred();\n\n    d.resolve(Promise.resolve('ok'));\n\n    await expect(d.promise).resolves.toBe('ok');\n  });\n\n  test('only the first settlement wins', async () => {\n    const d = createDeferred();\n\n    d.resolve('first');\n    d.resolve('second');\n    d.reject(new Error('ignored'));\n\n    await expect(d.promise).resolves.toBe('first');\n  });\n\n  test('then callbacks do not run synchronously after resolve', async () => {\n    const d = createDeferred();\n    let value = 'pending';\n\n    d.promise.then((result) => {\n      value = result;\n    });\n\n    d.resolve('done');\n\n    expect(value).toBe('pending');\n\n    await Promise.resolve();\n\n    expect(value).toBe('done');\n  });\n});\n",
+    "testsTs": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred (TypeScript)', () => {\n  it('returns promise, resolve, and reject controls', () => {\n    const d = createDeferred<string>();\n\n    expect(typeof d).toBe('object');\n    expect(typeof d.promise.then).toBe('function');\n    expect(typeof d.resolve).toBe('function');\n    expect(typeof d.reject).toBe('function');\n  });\n\n  it('does not settle before resolve or reject is called', async () => {\n    const d = createDeferred<string>();\n    let settled = false;\n\n    d.promise.finally(() => {\n      settled = true;\n    });\n\n    await Promise.resolve();\n\n    expect(settled).toBe(false);\n\n    d.resolve('ok');\n    await d.promise;\n\n    expect(settled).toBe(true);\n  });\n\n  it('resolves when resolve is called', async () => {\n    const d = createDeferred<number>();\n\n    d.resolve(123);\n\n    await expect(d.promise).resolves.toBe(123);\n  });\n\n  it('rejects with the exact reason when reject is called', async () => {\n    const d = createDeferred<number>();\n    const error = new Error('nope');\n\n    d.reject(error);\n\n    await expect(d.promise).rejects.toBe(error);\n  });\n\n  it('adopts another promise when resolving', async () => {\n    const d = createDeferred<string>();\n\n    d.resolve(Promise.resolve('ok'));\n\n    await expect(d.promise).resolves.toBe('ok');\n  });\n\n  it('only the first settlement wins', async () => {\n    const d = createDeferred<string>();\n\n    d.resolve('first');\n    d.resolve('second');\n    d.reject(new Error('ignored'));\n\n    await expect(d.promise).resolves.toBe('first');\n  });\n\n  it('then callbacks do not run synchronously after resolve', async () => {\n    const d = createDeferred<string>();\n    let value = 'pending';\n\n    d.promise.then((result) => {\n      value = result;\n    });\n\n    d.resolve('done');\n\n    expect(value).toBe('pending');\n\n    await Promise.resolve();\n\n    expect(value).toBe('done');\n  });\n});\n",
     "access": "free",
-    "updatedAt": "2026-02-05",
+    "updatedAt": "2026-07-06",
     "seo": {
-      "title": "Create Deferred Promise in JavaScript: Interview Challenge + Tests",
-      "description": "Build createDeferred() in JavaScript with starter code, tests, solution, and async edge cases for frontend coding interviews.",
-      "h1": "Create a Deferred Promise in JavaScript"
+      "title": "Implement createDeferred() in JavaScript: Promise Challenge + Tests",
+      "description": "createDeferred(): {promise,resolve,reject}. Starter code/tests: resolve/reject, Promise adoption, pending, first-settlement-wins, TS/interview follow-ups.",
+      "h1": "Implement createDeferred() in JavaScript"
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-create-deferred-promise.v1.json"
   },

@@ -1,0 +1,109 @@
+{
+  "questionId": "angular-snake-game",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';\n\ntype Point = { x: number; y: number };\n\nclass AppComponent {\n  snake: Point[] = INITIAL_SNAKE.map((point) => ({ ...point }));\n  direction: Direction = 'RIGHT';\n  pendingDirection: Direction = 'RIGHT';\n  food: Point = { ...INITIAL_FOOD };\n  isRunning = false;\n  isGameOver = false;\n  score = 0;\n  private timerId: ReturnType<typeof setInterval> | null = null;\n\n  onKeydown(event: KeyboardEvent): void {\n    const nextDirection = this.directionFromKey(event.key.toLowerCase());\n    if (!nextDirection) return;\n\n    const activeDirection = this.pendingDirection || this.direction;\n    if (OPPOSITE[activeDirection] === nextDirection) return;\n    this.pendingDirection = nextDirection;\n  }\n\n  start(): void {\n    if (this.isRunning || this.isGameOver) return;\n    this.isRunning = true;\n    this.clearTimer();\n    this.timerId = setInterval(() => this.tick(), STEP_MS);\n  }\n\n  reset(): void {\n    this.clearTimer();\n    this.snake = INITIAL_SNAKE.map((point) => ({ ...point }));\n    this.direction = 'RIGHT';\n    this.pendingDirection = 'RIGHT';\n    this.food = { ...INITIAL_FOOD };\n    this.isRunning = false;\n    this.isGameOver = false;\n    this.score = 0;\n  }\n\n  private tick(): void {\n    if (!this.isRunning || this.isGameOver) return;\n\n    const stepDirection = this.pendingDirection || this.direction;\n    const nextHead = this.moveHead(this.snake[0], stepDirection);\n\n    if (this.outOfBounds(nextHead)) {\n      this.isGameOver = true;\n      this.pause();\n      return;\n    }\n\n    const bodyToCheck = this.snake.slice(0, -1);\n    if (bodyToCheck.some((part) => part.x === nextHead.x && part.y === nextHead.y)) {\n      this.isGameOver = true;\n      this.pause();\n      return;\n    }\n\n    const ateFood = nextHead.x === this.food.x && nextHead.y === this.food.y;\n    const nextSnake = [nextHead, ...this.snake];\n    if (!ateFood) nextSnake.pop();\n    else {\n      this.score += 1;\n      this.food = this.randomFood(nextSnake);\n    }\n\n    this.snake = nextSnake;\n    this.direction = stepDirection;\n  }\n\n  private randomFood(snake: Point[]): Point {\n    const occupied = new Set(snake.map((point) => `${point.x},${point.y}`));\n    const free = this.allCells().filter((cell) => !occupied.has(`${cell.x},${cell.y}`));\n    return free[Math.floor(Math.random() * free.length)] ?? { x: 0, y: 0 };\n  }\n\n  ngOnDestroy(): void {\n    this.clearTimer();\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-model-state",
+          "title": "Keep game state explicit",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 13,
+            "snippet": "snake, direction, pendingDirection, food, isRunning, isGameOver, score"
+          },
+          "why": "The board rendering, timer loop, keyboard input, and tests all read from the same predictable component state.",
+          "alternative": "Derive game state from DOM classes or mutable element data.",
+          "tradeoff": "Explicit state adds fields, but it keeps Angular rendering and unit tests deterministic."
+        },
+        {
+          "id": "d2-buffer-direction",
+          "title": "Buffer valid keyboard direction",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 22,
+            "snippet": "if (OPPOSITE[activeDirection] === nextDirection) return;"
+          },
+          "why": "Keyboard events can happen between timer ticks, so pendingDirection records the next safe move without letting the snake reverse into itself.",
+          "alternative": "Update direction immediately for every key press.",
+          "tradeoff": "A pending direction is one more piece of state, but it avoids same-tick race conditions and accidental self collisions."
+        },
+        {
+          "id": "d3-own-single-timer",
+          "title": "Start exactly one game loop",
+          "anchor": {
+            "lineStart": 24,
+            "lineEnd": 29,
+            "snippet": "this.timerId = setInterval(() => this.tick(), STEP_MS);"
+          },
+          "why": "Movement should advance only on scheduled ticks while the game is running and not over.",
+          "alternative": "Move immediately on start or create a new interval every time Start is clicked.",
+          "tradeoff": "Guarding and clearing the timer is a little ceremony, but it prevents duplicate loops and speed drift."
+        },
+        {
+          "id": "d4-reset-canonical-state",
+          "title": "Reset from canonical constants",
+          "anchor": {
+            "lineStart": 31,
+            "lineEnd": 41,
+            "snippet": "this.snake = INITIAL_SNAKE.map((point) => ({ ...point }));"
+          },
+          "why": "Reset must restore the same initial snake, direction, food, score, running flag, and game-over flag every time.",
+          "alternative": "Try to undo the latest moves from the current snake state.",
+          "tradeoff": "Constants make reset deterministic, but changing the initial scenario requires updating those constants intentionally."
+        },
+        {
+          "id": "d5-collision-before-mutation",
+          "title": "Check collisions before mutating snake",
+          "anchor": {
+            "lineStart": 47,
+            "lineEnd": 61,
+            "snippet": "outOfBounds(nextHead)"
+          },
+          "why": "The next head position decides whether the game ends before the component changes snake body or score state.",
+          "alternative": "Move first, then inspect whether the new snake is invalid.",
+          "tradeoff": "Pre-checks make the branches more explicit and keep the visible board frozen on the collision frame."
+        },
+        {
+          "id": "d6-grow-or-drop-tail",
+          "title": "Grow on food, otherwise drop tail",
+          "anchor": {
+            "lineStart": 63,
+            "lineEnd": 72,
+            "snippet": "const nextSnake = [nextHead, ...this.snake];"
+          },
+          "why": "Snake movement is a head prepend plus a tail drop; eating food keeps the tail and increments score.",
+          "alternative": "Mutate the existing snake array in place through several pushes and shifts.",
+          "tradeoff": "Building nextSnake is easy to reason about for tests, though it allocates a small array each tick."
+        },
+        {
+          "id": "d7-spawn-food-outside-snake",
+          "title": "Choose food from free cells",
+          "anchor": {
+            "lineStart": 76,
+            "lineEnd": 80,
+            "snippet": "const occupied = new Set"
+          },
+          "why": "Food should never appear inside the snake body after a growth tick.",
+          "alternative": "Pick random coordinates until one is not occupied.",
+          "tradeoff": "Building a free-cell list is straightforward and bounded on a 14x14 board, while retry loops need extra safeguards."
+        },
+        {
+          "id": "d8-cleanup-on-destroy",
+          "title": "Clear timer on component destroy",
+          "anchor": {
+            "lineStart": 82,
+            "lineEnd": 84,
+            "snippet": "ngOnDestroy(): void"
+          },
+          "why": "Angular can remove the component while an interval is still scheduled, so cleanup prevents state updates after teardown.",
+          "alternative": "Rely on the browser to discard timers eventually.",
+          "tradeoff": "Lifecycle cleanup is an extra method, but it protects navigation and tests from leaked intervals."
+        }
+      ]
+    }
+  }
+}

@@ -453,11 +453,11 @@
   {
     "id": "angular-snake-game",
     "family": "question",
-    "title": "Angular Snake Game (Grid + Food + Collision)",
+    "title": "Angular Snake Game",
     "route": "/angular/coding/angular-snake-game",
     "tech": "angular",
     "difficulty": "hard",
-    "summary": "Build a Snake game in Angular using a grid board. Support keyboard controls, food spawning, score updates, and game-over handling for wall/body collisions.",
+    "summary": "Build a Snake game in Angular on a fixed grid board with starter code, tests, edge cases, and interview follow-ups. Move the snake on a timer, handle keyboard direction changes, spawn food, grow score and snake body, an…",
     "tags": [
       "components",
       "state",
@@ -466,9 +466,9 @@
       "grid",
       "dom"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-07-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-snake-game"
   },
@@ -3767,7 +3767,7 @@
     "route": "/javascript/coding/js-create-deferred-promise",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Implement createDeferred() to control promise resolution in async tests. This frontend interview challenge asks you to build a controllable Promise helper that returns { promise, resolve, reject }.",
+    "summary": "Implement createDeferred() in JavaScript. Your function should return { promise, resolve, reject } so async tests can control exactly when a Promise fulfills or rejects. The challenge includes starter code, tests for re…",
     "tags": [
       "testing",
       "promise",
@@ -3779,7 +3779,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-05",
+    "updatedAt": "2026-07-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-create-deferred-promise"
   },

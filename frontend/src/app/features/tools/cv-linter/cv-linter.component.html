@@ -5,8 +5,9 @@
       <span class="step-chip" [class.is-active]="!!report">2. Review Results</span>
     </div>
     <h1>CV Linter: ATS Resume Score & Fixes</h1>
-    <p class="muted">
-      Use this after your core practice loop to catch ATS-style structure, keyword, and readability issues. Deterministic rules only: no AI rewriting and no storage.
+    <p class="muted page-intro" data-testid="cv-answer-first-copy">
+      Upload or paste your resume to get a 100-point ATS-style score, section-level fixes, keyword gaps,
+      readability warnings, and quick wins. Files are processed to text and not stored.
     </p>
     <a
       class="tooldirs-badge"
@@ -24,6 +25,40 @@
       />
     </a>
   </header>
+
+  <section class="checks-panel" aria-labelledby="cv-checks-heading" data-testid="cv-checks-card">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Checks</p>
+        <h2 id="cv-checks-heading">What this CV checker reviews</h2>
+      </div>
+    </div>
+    <ul class="checks-list" data-testid="cv-checks-list">
+      <li><strong>ATS structure:</strong> sections, contact details, and parse-friendly layout.</li>
+      <li><strong>Keyword coverage:</strong> frontend role signals for Angular, React, and senior FE targets.</li>
+      <li><strong>Readability:</strong> long bullets, dense text, and extraction quality issues.</li>
+      <li><strong>Impact/evidence:</strong> metrics, scope, action verbs, and ownership signals.</li>
+    </ul>
+  </section>
+
+  <section class="info-panel" aria-labelledby="cv-score-method-heading" data-testid="cv-score-methodology">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Methodology</p>
+        <h2 id="cv-score-method-heading">How the 100-point CV score works</h2>
+        <p class="muted small">The score uses the same category weights as the deterministic backend rules.</p>
+      </div>
+    </div>
+    <div class="score-method-grid">
+      <article class="score-method-item" *ngFor="let item of scoreMethodology">
+        <div class="score-method-head">
+          <strong>{{ item.label }}</strong>
+          <span>{{ item.points }} pts</span>
+        </div>
+        <p class="muted small">{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
 
   <div class="success-toast" *ngIf="successToastVisible" role="status" aria-live="polite" data-testid="cv-success-toast">
     <i class="pi pi-check-circle" aria-hidden="true"></i>
@@ -613,6 +648,127 @@
           </li>
         </ol>
       </section>
+    </div>
+  </section>
+
+  <section class="info-panel" aria-labelledby="cv-frontend-signals-heading" data-testid="cv-frontend-signals">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Frontend focus</p>
+        <h2 id="cv-frontend-signals-heading">Frontend-specific signals</h2>
+        <p class="muted small">
+          Target role changes keyword scoring while structure, readability, and impact checks stay mostly role-agnostic.
+        </p>
+      </div>
+    </div>
+    <div class="info-grid signal-grid">
+      <article class="info-card" *ngFor="let item of frontendSignalItems">
+        <h3>{{ item.title }}</h3>
+        <p class="muted small">{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="info-panel" aria-labelledby="cv-deterministic-heading" data-testid="cv-deterministic-vs-ai">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Trust model</p>
+        <h2 id="cv-deterministic-heading">Deterministic checks vs AI resume rewriting</h2>
+      </div>
+    </div>
+    <div class="comparison-list">
+      <article class="comparison-item" *ngFor="let item of deterministicComparisonItems">
+        <strong>{{ item.title }}</strong>
+        <p class="muted small">{{ item.detail }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="info-panel sample-report-panel" aria-labelledby="cv-sample-report-heading" data-testid="cv-sample-report">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Report preview</p>
+        <h2 id="cv-sample-report-heading">Sample frontend CV report</h2>
+        <p class="muted small">
+          {{ sampleFrontendReport.label }}. This shows the report shape before you upload or paste a CV.
+        </p>
+      </div>
+    </div>
+
+    <div class="sample-report-shell">
+      <div class="sample-report-summary">
+        <article class="sample-score-card">
+          <span class="score-label">Overall score</span>
+          <strong class="sample-score-value">{{ sampleFrontendReport.overallScore }}/100</strong>
+          <p class="muted small">
+            Target role: <strong>{{ sampleFrontendReport.targetRole }}</strong>
+          </p>
+          <p class="muted small">
+            Parsing confidence: <strong>{{ sampleFrontendReport.parsingConfidence }}</strong>
+          </p>
+        </article>
+
+        <article class="sample-report-card">
+          <h3>Category breakdown</h3>
+          <div class="sample-category-list">
+            <div class="sample-category-row" *ngFor="let category of sampleFrontendReport.categories">
+              <div class="sample-category-head">
+                <strong>{{ category.label }}</strong>
+                <span>{{ category.score }}/{{ category.max }}</span>
+              </div>
+              <div class="category-bar" aria-hidden="true">
+                <span [style.width.%]="(category.score / category.max) * 100"></span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="sample-report-grid">
+        <article class="sample-report-card">
+          <h3>Quick wins</h3>
+          <ol class="sample-quick-win-list">
+            <li *ngFor="let quickWin of sampleFrontendReport.quickWins">{{ quickWin }}</li>
+          </ol>
+        </article>
+
+        <article class="sample-report-card">
+          <h3>Keyword coverage</h3>
+          <div class="sample-keyword-list">
+            <div class="sample-keyword-row" *ngFor="let group of sampleFrontendReport.keywordCoverage">
+              <strong>{{ group.label }}</strong>
+              <span>{{ group.terms }}</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="sample-issue-list">
+        <article class="sample-issue-card" *ngFor="let issue of sampleFrontendReport.issues">
+          <span class="sample-label">{{ issue.severity | titlecase }}</span>
+          <h3>{{ issue.title }}</h3>
+          <p class="muted small">{{ issue.detail }}</p>
+          <p class="sample-evidence">
+            <strong>Evidence</strong>
+            <span>{{ issue.evidence }}</span>
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-panel" aria-labelledby="cv-faq-heading" data-testid="cv-faq-section">
+    <div class="section-head">
+      <div>
+        <p class="kicker">FAQ</p>
+        <h2 id="cv-faq-heading">CV Linter FAQ</h2>
+      </div>
+    </div>
+    <div class="faq-list">
+      <article class="faq-item" *ngFor="let item of faqItems" data-testid="cv-faq-item">
+        <h3>{{ item.question }}</h3>
+        <p class="muted small">{{ item.answer }}</p>
+      </article>
     </div>
   </section>
 </section>
