@@ -8576,7 +8576,9 @@
     "tags": [
       "design-system",
       "theming",
-      "performance"
+      "performance",
+      "frontend-architecture",
+      "accessibility"
     ],
     "access": "premium",
     "estimatedMinutes": 20,
@@ -8624,6 +8626,32 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/dashboard-widgets-draggable-resizable/meta.json"
+  },
+  {
+    "id": "notification-toast-system",
+    "family": "question",
+    "title": "Design a Toast Notification System",
+    "route": "/system-design/notification-toast-system",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Frontend system design interview example for a Toast Notification System with a global API like `toast.success(message, options?)`, portal-based rendering, stacking, timers, dismissal, responsive placement, accessibilit…",
+    "tags": [
+      "toast",
+      "notifications",
+      "global-state",
+      "state-management",
+      "frontend-architecture",
+      "portals",
+      "stacking",
+      "timers",
+      "accessibility",
+      "responsive-ui"
+    ],
+    "access": "free",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-07-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/notification-toast-system/meta.json"
   },
   {
     "id": "endless-short-video-feed",
@@ -8698,9 +8726,15 @@
     "summary": "Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.",
     "tags": [
       "infinite-scroll",
+      "intersection-observer",
+      "pagination",
       "virtualization",
       "performance",
-      "ux"
+      "accessibility",
+      "loading-states",
+      "error-handling",
+      "frontend-architecture",
+      "responsive-ui"
     ],
     "access": "free",
     "estimatedMinutes": 20,
@@ -8823,26 +8857,6 @@
     "assetRef": "questions/system-design/news-feed-timeline/meta.json"
   },
   {
-    "id": "notification-toast-system",
-    "family": "question",
-    "title": "Notification Toast System",
-    "route": "/system-design/notification-toast-system",
-    "tech": "system-design",
-    "difficulty": "intermediate",
-    "summary": "Design a global toast/alert system that can be triggered from anywhere in the app (e.g. `toast.success()`, `toast.error()`). Focus on global state, rendering through a portal, stacking multiple toasts, auto-dismiss time…",
-    "tags": [
-      "toast",
-      "notifications",
-      "global-state",
-      "timers"
-    ],
-    "access": "free",
-    "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/system-design/notification-toast-system/meta.json"
-  },
-  {
     "id": "model-training-progress-dashboard",
     "family": "question",
     "title": "Real-time Model Training Dashboard",
@@ -8875,7 +8889,9 @@
     "tags": [
       "search",
       "debounce",
-      "caching"
+      "caching",
+      "state-management",
+      "frontend-architecture"
     ],
     "access": "premium",
     "estimatedMinutes": 20,

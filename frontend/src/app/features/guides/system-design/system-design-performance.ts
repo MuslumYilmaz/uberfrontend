@@ -670,6 +670,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <ul>
         <li><a [routerLink]="['/', 'system-design', 'realtime-search-debounce-cache']">Typeahead performance system design with debounce and caching</a></li>
         <li><a [routerLink]="['/', 'system-design', 'infinite-scroll-list']">Infinite scroll virtualization system design</a></li>
+        <li><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Toast timer cleanup tradeoffs</a></li>
         <li><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard performance system design with draggable panels</a></li>
         <li><a [routerLink]="['/', 'system-design', 'live-chart-high-frequency-updates']">Live chart performance system design</a></li>
         <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Form interaction latency frontend interview prompt</a></li>

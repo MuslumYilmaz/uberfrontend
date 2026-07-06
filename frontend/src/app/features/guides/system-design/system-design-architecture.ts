@@ -503,6 +503,11 @@ Client side:
             <td>One slow widget blocking the whole screen</td>
           </tr>
           <tr>
+            <td><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Portal-based toast architecture</a></td>
+            <td>Global toast API, store boundary, ToastProvider, portal-based ToastContainer, stacking, and timer ownership</td>
+            <td>Leaking timers, rendering below modals, or forcing callers to own toast UI state</td>
+          </tr>
+          <tr>
             <td><a [routerLink]="['/', 'system-design', 'ai-chat-textarea-design']">AI chat</a></td>
             <td>Streaming path, draft persistence, message ordering, reconnect behavior, optimistic/error states</td>
             <td>Interrupted streams and duplicated messages after retry</td>

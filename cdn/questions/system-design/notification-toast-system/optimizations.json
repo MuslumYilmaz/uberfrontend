@@ -52,6 +52,7 @@
                                 "Ensure timers are always **cleared on unmount** or when toasts are removed.",
                                 "Pause auto-dismiss while the user **hovers** or focuses a toast (so they can read or click).",
                                 "Debounce or collapse identical messages (e.g. repeated \"Network error\" toasts).",
+                                "Make manual close cancel the active timer before removing the toast.",
                                 "Use **CSS transitions** for enter/exit animations instead of heavy JS-based animation loops."
                             ]
                         }
@@ -72,6 +73,24 @@
                         }
                     ]
                 }
+            ]
+        },
+        {
+            "type": "checklist",
+            "title": "Explicit edge cases you should cover",
+            "items": [
+                "Many toasts fired quickly: cap visible toasts and decide whether to queue, group, or drop oldest.",
+                "Duplicate messages: dedupe, collapse counts, or let callers provide stable ids.",
+                "Max visible toasts: keep layout bounded and avoid covering primary UI.",
+                "Queue vs drop oldest: queue preserves messages but can feel stale; dropping oldest keeps feedback current.",
+                "Pause on hover/focus: users must have time to read or click actions.",
+                "Manual close cancels timer: no timeout should fire after the toast is gone.",
+                "Route changes: choose whether to keep contextual toasts or clear them on navigation.",
+                "Provider unmount: clear subscriptions, timers, and pending queues.",
+                "Reduced motion: disable or simplify enter/exit animations.",
+                "Screen reader announcement overload: avoid spamming live regions during bursts.",
+                "Z-index conflicts with modals: define the toast layer relative to dialogs and popovers.",
+                "Mobile placement/full-width layout: avoid tiny corner toasts and use larger touch targets."
             ]
         },
         {

@@ -48,7 +48,7 @@ describe('SystemDesignRadioRequirementsArticle', () => {
     expect(pageText).toContain('Prompt-specific requirements questions');
     expect(pageText).toContain('Autocomplete / realtime search');
     expect(pageText).toContain('Dashboard widgets');
-    expect(pageText).toContain('Notification system');
+    expect(pageText).toContain('Toast notification system design');
     expect(pageText).toContain('Requirements FAQ');
     expect(pageText).toContain('What is a frontend system design requirements checklist?');
     expect(pageText).toContain('What clarifying questions should I ask first?');

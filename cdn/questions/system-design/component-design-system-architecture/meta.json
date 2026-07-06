@@ -5,7 +5,9 @@
   "tags": [
     "design-system",
     "theming",
-    "performance"
+    "performance",
+    "frontend-architecture",
+    "accessibility"
   ],
   "type": "system-design",
   "sections": [

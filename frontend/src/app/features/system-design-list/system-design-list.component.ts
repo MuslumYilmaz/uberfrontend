@@ -197,9 +197,9 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
       route: ['/', 'system-design', 'infinite-scroll-list'],
     },
     {
-      title: 'Notification Toast System',
-      keyword: 'design notification system frontend',
-      detail: 'Global APIs, timers, stacking, portals, and accessible announcements.',
+      title: 'Design a Toast Notification System',
+      keyword: 'design toast notification system',
+      detail: 'Global toast APIs, timers, stacking, portals, cleanup, and accessible announcements.',
       route: ['/', 'system-design', 'notification-toast-system'],
     },
     {

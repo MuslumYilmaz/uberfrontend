@@ -232,7 +232,7 @@ const criticalRouteContracts = [
       'Frontend system design interview rubric',
       'Frontend system design prompt bank',
       'Infinite Scroll List System Design',
-      'Notification Toast System',
+      'Design a Toast Notification System',
     ],
   },
   {

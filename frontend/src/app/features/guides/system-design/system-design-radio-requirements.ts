@@ -381,7 +381,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <td>State ownership, persistence boundary, layout engine choice, and widget isolation.</td>
           </tr>
           <tr>
-            <td><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Notification system</a></td>
+            <td><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Toast notification system design</a></td>
             <td>Priority, queue limits, stacking, timers, user actions, aria-live announcement rules.</td>
             <td>Global ownership, event API, dedupe policy, and accessibility behavior.</td>
           </tr>

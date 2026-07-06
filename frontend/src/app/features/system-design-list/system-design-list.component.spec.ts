@@ -23,7 +23,7 @@ describe('SystemDesignListComponent', () => {
     },
     {
       id: 'notification-toast-system',
-      title: 'Notification Toast System',
+      title: 'Design a Toast Notification System',
       description: 'Design a global toast API with stacking, timers, and accessible announcements.',
       tags: ['toast', 'notifications', 'global-state', 'timers'],
       type: 'system-design',
@@ -108,7 +108,7 @@ describe('SystemDesignListComponent', () => {
 
     expect(questionService.loadSystemDesign).not.toHaveBeenCalled();
     expect(text(fixture)).toContain('Infinite Scroll List System Design');
-    expect(text(fixture)).toContain('Notification Toast System');
+    expect(text(fixture)).toContain('Design a Toast Notification System');
     expect(text(fixture)).toContain('AI Chat Textarea Design');
     expect(fixture.nativeElement.querySelector('[data-testid="system-design-list-loading"]')).toBeNull();
   });
@@ -134,7 +134,7 @@ describe('SystemDesignListComponent', () => {
     component.search$.next('toast');
     fixture.detectChanges();
 
-    expect(bankText(fixture)).toContain('Notification Toast System');
+    expect(bankText(fixture)).toContain('Design a Toast Notification System');
     expect(bankText(fixture)).not.toContain('Infinite Scroll List System Design');
     expect(bankText(fixture)).not.toContain('AI Chat Textarea Design');
 
@@ -143,7 +143,7 @@ describe('SystemDesignListComponent', () => {
     fixture.detectChanges();
 
     expect(bankText(fixture)).toContain('AI Chat Textarea Design');
-    expect(bankText(fixture)).not.toContain('Notification Toast System');
+    expect(bankText(fixture)).not.toContain('Design a Toast Notification System');
     expect(bankText(fixture)).not.toContain('Infinite Scroll List System Design');
   });
 
@@ -178,6 +178,16 @@ describe('SystemDesignListComponent', () => {
         title: 'Infinite Scroll List System Design',
         description: 'Design a paginated list with virtualized rendering.',
         tags: ['infinite-scroll', 'virtualization', 'performance'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'intermediate',
+        companies: [],
+      },
+      {
+        id: 'notification-toast-system',
+        title: 'Design a Toast Notification System',
+        description: 'Design a global toast API with stacking, timers, and accessible announcements.',
+        tags: ['toast', 'notifications', 'global-state', 'timers'],
         type: 'system-design',
         access: 'free',
         difficulty: 'intermediate',
@@ -222,6 +232,7 @@ describe('SystemDesignListComponent', () => {
 
     expect(labels).toContain('typeahead performance system design');
     expect(labels).toContain('infinite scroll virtualization performance');
+    expect(labels).toContain('toast timer cleanup tradeoffs');
     expect(labels).toContain('dashboard performance system design');
     expect(labels).toContain('live chart performance system design');
     expect(labels).toContain('form interaction latency frontend interview');
@@ -240,7 +251,7 @@ describe('SystemDesignListComponent', () => {
     expect(pageText).toContain('Common mistakes');
     expect(pageText).toContain('Frontend system design interview questions FAQ');
     expect(pageText).toContain('design infinite scroll frontend system design');
-    expect(pageText).toContain('design notification system frontend');
+    expect(pageText).toContain('design toast notification system');
     expect(pageText).toContain('staff frontend engineer system design interview');
 
     const mostAskedSection = host.querySelector('[data-testid="system-design-most-asked-section"]');

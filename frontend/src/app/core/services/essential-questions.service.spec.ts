@@ -108,7 +108,7 @@ describe('EssentialQuestionsService', () => {
               of([
                 {
                   id: 'notification-toast-system',
-                  title: 'Notification Toast System',
+                  title: 'Design a Toast Notification System',
                   description: 'Design a toast API.',
                   access: 'free',
                   difficulty: 'intermediate',

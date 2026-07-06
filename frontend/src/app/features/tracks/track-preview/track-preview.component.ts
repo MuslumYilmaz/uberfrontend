@@ -301,7 +301,7 @@ const CRASH_7D_FALLBACKS: Record<string, Omit<PreviewQuestion, 'kind' | 'tech'>>
   },
   'notification-toast-system': {
     id: 'notification-toast-system',
-    title: 'Notification Toast System',
+    title: 'Design a Toast Notification System',
     difficulty: 'intermediate',
     access: 'free',
   },

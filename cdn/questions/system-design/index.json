@@ -8,9 +8,15 @@
     "description": "Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.",
     "tags": [
       "infinite-scroll",
+      "intersection-observer",
+      "pagination",
       "virtualization",
       "performance",
-      "ux"
+      "accessibility",
+      "loading-states",
+      "error-handling",
+      "frontend-architecture",
+      "responsive-ui"
     ],
     "type": "system-design",
     "access": "free",
@@ -42,21 +48,27 @@
   },
   {
     "id": "notification-toast-system",
-    "title": "Notification Toast System",
+    "title": "Design a Toast Notification System",
     "companies": [
       "google",
       "netflix"
     ],
-    "description": "Design a global toast/alert system that can be triggered from anywhere in the app (e.g. `toast.success()`, `toast.error()`). Focus on global state, rendering through a portal, stacking multiple toasts, auto-dismiss timers, and accessible behavior.\n\nKey considerations include: how to expose a simple global API, how to manage timers and cleanup safely, how to handle z-index and stacking order, and how to support responsive placements (top-right, bottom-left, mobile full-width) with good ARIA roles and focus handling.",
+    "description": "Frontend system design interview example for a Toast Notification System with a global API like `toast.success(message, options?)`, portal-based rendering, stacking, timers, dismissal, responsive placement, accessibility, data model, API contracts, edge cases, and tradeoffs.",
     "tags": [
       "toast",
       "notifications",
       "global-state",
-      "timers"
+      "state-management",
+      "frontend-architecture",
+      "portals",
+      "stacking",
+      "timers",
+      "accessibility",
+      "responsive-ui"
     ],
     "type": "system-design",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-06",
     "difficulty": "intermediate"
   },
   {
@@ -146,7 +158,9 @@
     "tags": [
       "search",
       "debounce",
-      "caching"
+      "caching",
+      "state-management",
+      "frontend-architecture"
     ],
     "type": "system-design",
     "access": "premium",
@@ -200,7 +214,9 @@
     "tags": [
       "design-system",
       "theming",
-      "performance"
+      "performance",
+      "frontend-architecture",
+      "accessibility"
     ],
     "type": "system-design",
     "access": "premium",

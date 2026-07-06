@@ -115,6 +115,7 @@ const PERFORMANCE_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'dashboard-widgets-draggable-resizable': 'dashboard performance system design',
   'live-chart-high-frequency-updates': 'live chart performance system design',
   'multi-step-form-autosave': 'form interaction latency frontend interview',
+  'notification-toast-system': 'toast timer cleanup tradeoffs',
 };
 
 const EVALUATION_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
@@ -124,6 +125,7 @@ const EVALUATION_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'live-chart-high-frequency-updates': 'live chart system design interview evaluation',
   'multi-step-form-autosave': 'multi-step form frontend system design rubric',
   'component-design-system-architecture': 'design system architecture interview rubric',
+  'notification-toast-system': 'toast notification system interview rubric',
 };
 
 const PITFALLS_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
@@ -133,6 +135,7 @@ const PITFALLS_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'live-chart-high-frequency-updates': 'live chart system design pitfalls',
   'multi-step-form-autosave': 'multi step form autosave system design mistakes',
   'component-design-system-architecture': 'design system architecture interview mistakes',
+  'notification-toast-system': 'toast notification system design pitfalls',
 };
 
 function normalize(value: string | null | undefined): string {

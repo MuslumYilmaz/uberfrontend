@@ -222,7 +222,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         clarify feed ranking, cursor pagination, media loading, realtime updates, moderation, and offline read behavior.
       </li>
       <li>
-        <a [routerLink]="['/', 'system-design', 'notification-toast-system']">Notification Toast</a>:
+        <a [routerLink]="['/', 'system-design', 'notification-toast-system']">Toast Notification System</a>:
         clarify global API ownership, stacking, timers, announcement behavior, and queue limits.
       </li>
     </ul>

@@ -118,7 +118,7 @@ describe('EssentialQuestionsComponent', () => {
                       alternates: [],
                       rationale: 'Global notifications.',
                       benchmarkTopics: ['toast'],
-                      title: 'Notification Toast System',
+                      title: 'Design a Toast Notification System',
                       shortDescription: 'Design a toast API.',
                       access: 'free',
                       difficulty: 'intermediate',
@@ -132,7 +132,7 @@ describe('EssentialQuestionsComponent', () => {
                         {
                           kind: 'system-design',
                           id: 'notification-toast-system',
-                          title: 'Notification Toast System',
+                          title: 'Design a Toast Notification System',
                           route: ['/system-design', 'notification-toast-system'],
                           path: '/system-design/notification-toast-system',
                           access: 'free',
@@ -299,7 +299,7 @@ describe('EssentialQuestionsComponent', () => {
     (host.querySelector('[data-testid="essential-section-system-design"]') as HTMLButtonElement).click();
     fixture.detectChanges();
     expect(host.querySelectorAll('[data-testid^="essential-row-"]').length).toBe(1);
-    expect(host.textContent || '').toContain('Notification Toast System');
+    expect(host.textContent || '').toContain('Design a Toast Notification System');
 
     (host.querySelector('[data-testid="essential-tier-must-know"]') as HTMLButtonElement).click();
     fixture.detectChanges();

@@ -859,6 +859,7 @@ export const routes: Routes = [
               'design autocomplete frontend system design',
               'design news feed frontend system design',
               'design infinite scroll frontend system design',
+              'design toast notification system',
               'design notification system frontend',
               'design chat app frontend system design',
               'design system architecture frontend interview',

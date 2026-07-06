@@ -48,6 +48,7 @@ describe('SystemDesignStateArticle', () => {
     expect(pageText).toContain('Real-time Search');
     expect(pageText).toContain('News Feed');
     expect(pageText).toContain('Dashboard Widgets');
+    expect(pageText).toContain('Toast state model');
     expect(pageText).toContain('AI Chat');
     expect(pageText).toContain('Design System Architecture');
     expect(pageText).toContain('Data Model FAQ');
@@ -92,6 +93,7 @@ describe('SystemDesignStateArticle', () => {
     expect(hasLink('/system-design/realtime-search-debounce-cache')).toBeTrue();
     expect(hasLink('/system-design/news-feed-timeline')).toBeTrue();
     expect(hasLink('/system-design/dashboard-widgets-draggable-resizable')).toBeTrue();
+    expect(hasLink('/system-design/notification-toast-system')).toBeTrue();
     expect(hasLink('/system-design/ai-chat-textarea-design')).toBeTrue();
     expect(hasLink('/system-design/component-design-system-architecture')).toBeTrue();
   });

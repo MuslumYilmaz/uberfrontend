@@ -588,7 +588,7 @@ Client policy:
       </a>
       <a class="practice-card" [routerLink]="['/system-design','notification-toast-system']">
         <div class="prompt-meta"><span>UI System</span><span>A11y</span></div>
-        <h3>Notification Toast System</h3>
+        <h3>Design a Toast Notification System</h3>
         <p>Practice queueing, priority, focus safety, live regions, dismissal policy, and animation trade-offs.</p>
       </a>
       <a class="practice-card" [routerLink]="['/system-design','ai-chat-textarea-design']">
