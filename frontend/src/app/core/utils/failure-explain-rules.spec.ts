@@ -97,6 +97,46 @@ describe('failure-explain-rules', () => {
     expect(hint.title.toLowerCase()).toContain('promiseall');
   });
 
+  it('returns debounce-specific hint when the wrapper calls synchronously', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-debounce',
+      errorLine: "Expected [ 'A' ] to equal []",
+      firstFailName: 'does not call synchronously and runs after delay',
+      passCount: 0,
+      totalCount: 3,
+      failCount: 3,
+      failedTests: [
+        {
+          name: 'does not call synchronously and runs after delay',
+          errorLine: "Expected [ 'A' ] to equal []",
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-debounce-trailing-delay');
+    expect(hint.title.toLowerCase()).toContain('timer');
+  });
+
+  it('returns debounce-specific hint for latest-argument reset failures', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-debounce',
+      errorLine: "Expected [ 'A', 'B', 'C' ] to equal [ 'C' ]",
+      firstFailName: 'rapid calls only run the latest argument after the final delay',
+      passCount: 1,
+      totalCount: 3,
+      failCount: 2,
+      failedTests: [
+        {
+          name: 'rapid calls only run the latest argument after the final delay',
+          errorLine: "Expected [ 'A', 'B', 'C' ] to equal [ 'C' ]",
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-debounce-reset');
+    expect(hint.title.toLowerCase()).toContain('latest call');
+  });
+
   it('returns question-specific hint for instanceof prototype-chain edge cases', () => {
     const hint = buildFailureHint({
       questionId: 'js-implement-instanceof',

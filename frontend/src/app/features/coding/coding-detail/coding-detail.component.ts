@@ -92,6 +92,7 @@ type FAApproach = {
 };
 
 type FAFollowUpRef = string | { id: string };
+type FARelatedLink = { title: string; route: any[]; label?: string; id?: string };
 
 type FASolutionBlock = {
   overview?: string;
@@ -99,13 +100,14 @@ type FASolutionBlock = {
   notes?: { pitfalls?: string[]; edgeCases?: string[]; techniques?: string[] };
   followUp?: string[];
   followUpQuestions?: FAFollowUpRef[];
+  relatedLinks?: FARelatedLink[];
   resources?: { title: string; url: string }[];
   explanation?: string;
   codeJs?: string;
   codeTs?: string;
 };
 
-type FollowUpItem = { id: string; title: string; difficulty: string; to: any[] };
+type FollowUpItem = { id: string; title: string; difficulty: string; to: any[]; label?: string };
 type LockedPath = {
   id: string;
   label: string;
@@ -113,7 +115,7 @@ type LockedPath = {
   queryParams?: Record<string, string>;
 };
 
-const SEO_TITLE_MAX_LEN = 70;
+const SEO_TITLE_MAX_LEN = 80;
 const SEO_DESCRIPTION_MAX_LEN = 155;
 
 @Component({
@@ -3085,6 +3087,26 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       .filter((it) => typeof it.id === 'string' && it.id.trim().length > 0);
   }
 
+  private normalizeRelatedLinks(list: FARelatedLink[] | undefined): FollowUpItem[] {
+    const arr = Array.isArray(list) ? list : [];
+    const seen = new Set<string>();
+
+    return arr
+      .map<FollowUpItem | null>((it, index) => {
+        const title = String(it?.title || '').trim();
+        const route = Array.isArray(it?.route) ? it.route : null;
+        if (!title || !route?.length) return null;
+
+        const label = String(it?.label || 'Related').trim() || 'Related';
+        const id = String(it?.id || JSON.stringify(route) || `${title}-${index}`).trim();
+        if (!id || seen.has(id)) return null;
+
+        seen.add(id);
+        return { id, title, difficulty: label, label, to: route };
+      })
+      .filter((it): it is FollowUpItem => it !== null);
+  }
+
   /** Find a question object by id from the loaded bank */
   private findQuestionById(id: string): Question | undefined {
     return (this.allQuestions || []).find(q => (q as any).id === id);
@@ -3144,15 +3166,30 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return picks;
   }
 
-  /** Resolve explicit follow-ups first, then fill with metadata-based similar questions. */
+  relatedSectionTitle = computed(() =>
+    this.normalizeRelatedLinks(this.structuredSolution()?.relatedLinks).length
+      ? 'Related links'
+      : 'Similar questions'
+  );
+
+  /** Resolve explicit related links/follow-ups first, then fill with metadata-based similar questions. */
   followUpItems = computed(() => {
     const current = this.question();
     if (!current) return [] as FollowUpItem[];
 
-    const maxItems = 3;
-    const explicitRefs = this.normalizeFollowUpRefs(this.structuredSolution()?.followUpQuestions).slice(0, maxItems);
+    const relatedLinks = this.normalizeRelatedLinks(this.structuredSolution()?.relatedLinks);
+    const maxItems = relatedLinks.length ? 5 : 3;
     const seenIds = new Set<string>();
     const resolvedExplicit: FollowUpItem[] = [];
+
+    for (const item of relatedLinks.slice(0, maxItems)) {
+      if (seenIds.has(item.id)) continue;
+      seenIds.add(item.id);
+      resolvedExplicit.push(item);
+    }
+
+    const explicitRefs = this.normalizeFollowUpRefs(this.structuredSolution()?.followUpQuestions)
+      .slice(0, maxItems - resolvedExplicit.length);
 
     for (const { id } of explicitRefs) {
       const target = this.findQuestionById(id);
