@@ -98,6 +98,7 @@ test('question change via similar questions clears prior test results', async ({
   const results = page.getByTestId('js-results-panel').getByTestId('test-result');
   await expect(results).not.toHaveCount(0);
 
+  await page.getByTestId('coding-solution-tab').click();
   const similarLinks = page.locator('section:has(h3:has-text("Similar questions")) a[href*="/javascript/coding/"]');
   await expect(similarLinks.first()).toBeVisible();
   await similarLinks.first().click();
