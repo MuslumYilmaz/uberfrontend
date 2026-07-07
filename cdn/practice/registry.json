@@ -8621,7 +8621,7 @@
       "performance",
       "local-storage"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 20,
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
