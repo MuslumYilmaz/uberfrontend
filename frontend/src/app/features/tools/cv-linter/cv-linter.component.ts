@@ -25,9 +25,11 @@ type IssueGroups = {
 
 type ResultsTab = 'overview' | 'issues' | 'keywords' | 'preview';
 type BulletTone = 'concise' | 'impact' | 'ownership';
+type CvRoleLevel = 'junior' | 'mid' | 'senior';
+type CvRoleStack = 'general' | 'angular' | 'react';
 
-type RoleOption = {
-  id: CvRole;
+type RoleSegmentOption<T extends string> = {
+  id: T;
   label: string;
 };
 
@@ -82,13 +84,26 @@ type SampleFrontendReport = {
   keywordCoverage: SampleKeywordGroup[];
 };
 
+function composeCvRole(level: CvRoleLevel, stack: CvRoleStack): CvRole {
+  return `${level}_frontend_${stack}` as CvRole;
+}
+
+function parseCvRole(role: CvRole): { level: CvRoleLevel; stack: CvRoleStack } | null {
+  const match = String(role || '').match(/^(junior|mid|senior)_frontend_(general|angular|react)$/);
+  if (!match) return null;
+  return {
+    level: match[1] as CvRoleLevel,
+    stack: match[2] as CvRoleStack,
+  };
+}
+
 const CV_LINTER_TITLE = 'CV Linter: ATS Resume Score & Fixes';
 const CV_LINTER_DESCRIPTION =
   'Upload or paste your resume to get a 100-point ATS-style score, section-level fixes, keyword gaps, readability warnings, and quick wins. Files are processed to text and not stored.';
 const CV_LINTER_CANONICAL_PATH = '/tools/cv';
 const CV_LINTER_FEATURES = [
   'ATS-style structure checks for sections, contact details, and parse-friendly layout.',
-  'Frontend role keyword coverage for Angular, React, and general senior frontend targets.',
+  'Frontend role keyword coverage for junior, mid-level, and senior Angular, React, and general targets.',
   'Readability warnings for long bullets, dense text, and extraction quality issues.',
   'Impact and evidence checks for metrics, scope, action verbs, and ownership signals.',
   'Static sample frontend CV report preview with category scores, quick wins, evidence snippets, and keyword coverage.',
@@ -131,7 +146,11 @@ const FRONTEND_SIGNAL_ITEMS: SimpleInfoItem[] = [
   },
   {
     title: 'General frontend target',
-    detail: 'Keeps the focus on senior frontend fundamentals: TypeScript, a11y, performance, testing, CI/CD, and observability.',
+    detail: 'Adjusts expectations from junior fundamentals to mid production delivery and senior architecture, CI/CD, and observability signals.',
+  },
+  {
+    title: 'Level target',
+    detail: 'Junior, mid-level, and senior roles use different thresholds for bullets, metrics, LinkedIn, education, and scope cues.',
   },
 ];
 const DETERMINISTIC_COMPARISON_ITEMS: SimpleInfoItem[] = [
@@ -191,7 +210,7 @@ const SAMPLE_FRONTEND_REPORT: SampleFrontendReport = {
     {
       severity: 'info',
       title: 'Weak action verbs',
-      detail: 'Repeated passive phrasing makes ownership harder to scan in senior frontend experience.',
+      detail: 'Repeated passive phrasing makes ownership harder to scan in frontend experience.',
       evidence: 'Responsible for frontend features across the checkout application.',
     },
   ],
@@ -256,10 +275,15 @@ export class CvLinterComponent implements OnInit, OnDestroy {
   private readonly KEYWORD_ISSUE_IDS = new Set(['keyword_missing', 'keyword_missing_critical']);
   private readonly SCAN_DURATION_MS = 7000;
 
-  roleOptions: RoleOption[] = [
-    { id: 'senior_frontend_angular', label: 'Senior Frontend (Angular)' },
-    { id: 'senior_frontend_react', label: 'Senior Frontend (React)' },
-    { id: 'senior_frontend_general', label: 'Senior Frontend (General FE)' },
+  readonly levelOptions: Array<RoleSegmentOption<CvRoleLevel>> = [
+    { id: 'junior', label: 'Junior' },
+    { id: 'mid', label: 'Mid' },
+    { id: 'senior', label: 'Senior' },
+  ];
+  readonly stackOptions: Array<RoleSegmentOption<CvRoleStack>> = [
+    { id: 'general', label: 'General FE' },
+    { id: 'angular', label: 'Angular' },
+    { id: 'react', label: 'React' },
   ];
 
   readonly severityOrder: CvSeverity[] = ['critical', 'warn', 'info'];
@@ -280,7 +304,8 @@ export class CvLinterComponent implements OnInit, OnDestroy {
   readonly sampleFrontendReport = SAMPLE_FRONTEND_REPORT;
   readonly faqItems = FAQ_ITEMS;
 
-  selectedRole: CvRole = 'senior_frontend_angular';
+  selectedLevel: CvRoleLevel = 'mid';
+  selectedStack: CvRoleStack = 'general';
   inputMode: AnalyzeInputMode = 'file';
   selectedFile: File | null = null;
   dragActive = false;
@@ -482,8 +507,23 @@ export class CvLinterComponent implements OnInit, OnDestroy {
     return issues.some((issue) => issue.id === 'low_numeric_density' || issue.id === 'weak_action_verbs');
   }
 
+  get selectedRole(): CvRole {
+    return composeCvRole(this.selectedLevel, this.selectedStack);
+  }
+
+  set selectedRole(role: CvRole) {
+    const parsed = parseCvRole(role);
+    if (!parsed) {
+      this.selectedLevel = 'mid';
+      this.selectedStack = 'general';
+      return;
+    }
+    this.selectedLevel = parsed.level;
+    this.selectedStack = parsed.stack;
+  }
+
   get selectedRoleLabel(): string {
-    return this.roleOptions.find((role) => role.id === this.selectedRole)?.label || 'Selected role';
+    return `${this.roleLevelLabel(this.selectedLevel)} Frontend (${this.roleStackLabel(this.selectedStack)})`;
   }
 
   get canAnalyzeFile(): boolean {
@@ -499,6 +539,24 @@ export class CvLinterComponent implements OnInit, OnDestroy {
       return '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     }
     return '.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  }
+
+  roleLevelLabel(level: CvRoleLevel): string {
+    return this.levelOptions.find((option) => option.id === level)?.label || 'Mid';
+  }
+
+  roleStackLabel(stack: CvRoleStack): string {
+    return this.stackOptions.find((option) => option.id === stack)?.label || 'General FE';
+  }
+
+  selectRoleLevel(level: CvRoleLevel): void {
+    if (this.analyzing) return;
+    this.selectedLevel = level;
+  }
+
+  selectRoleStack(stack: CvRoleStack): void {
+    if (this.analyzing) return;
+    this.selectedStack = stack;
   }
 
   get showDocxCta(): boolean {

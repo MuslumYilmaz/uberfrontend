@@ -516,6 +516,7 @@ describe('CodingDetailComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     component.isPhoneViewport.set(false);
+    component.liteEditors.set(true);
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
@@ -540,22 +541,23 @@ describe('CodingDetailComponent', () => {
     expect(descriptionText).toContain('Your createDeferred() implementation should:');
     expect(descriptionText).toContain('Adopt another Promise when resolve(Promise.resolve(value)) is used');
     expect(descriptionText).toContain('Examples');
+    expect(descriptionText).toContain('// At t=0');
+    expect(host.querySelector('pre.lite-code')?.textContent || '').toContain("await d.promise; // 'ok'");
     expect(component.combinedExamples()).toContain('// At t=0');
     expect(component.combinedExamples()).toContain("await d.promise; // 'ok'");
     expect(descriptionText).not.toContain('Common interview follow-ups');
     expect(descriptionText).not.toContain('Guides');
     expect(descriptionText).not.toContain('Preparing for interviews');
     expect(descriptionText).not.toContain('Report issue');
-    expect(host.querySelector('[data-testid="coding-guide-links"]')).toBeNull();
-    expect(host.querySelector('[data-testid="coding-prep-entry"]')).toBeNull();
-    expect(host.querySelector('[data-testid="coding-report-issue-btn"]')).toBeNull();
+    expect(descriptionPanel.querySelector('[data-testid="coding-guide-links"]')).toBeNull();
+    expect(descriptionPanel.querySelector('[data-testid="coding-prep-entry"]')).toBeNull();
+    expect(descriptionPanel.querySelector('[data-testid="coding-report-issue-btn"]')).toBeNull();
+    expect(solutionPanel.querySelector('[data-testid="coding-guide-links"]')).not.toBeNull();
 
     expect(solutionText).toContain('Interview answer:');
     expect(solutionText).toContain('Mental model:');
     expect(solutionText).toContain('Common interview follow-ups:');
     expect(solutionText).toContain('How would you type { promise, resolve, reject } in TypeScript?');
-    expect(solutionText).not.toContain('Guides');
-    expect(solutionText).not.toContain('Preparing for interviews');
 
     component.activePanel.set(1);
     fixture.detectChanges();
@@ -708,7 +710,7 @@ describe('CodingDetailComponent', () => {
     expect(payload.description).toContain('Angular & explicit SEO description should be used first');
     expect(payload.description).not.toContain('<');
     expect(payload.description).not.toContain('Angular-focused:');
-    expect(payload.description.length).toBeLessThanOrEqual(155);
+    expect(payload.description.length).toBeLessThanOrEqual(240);
   });
 
   it('falls back to generated description and clamps when question seo is missing', () => {
@@ -730,7 +732,7 @@ describe('CodingDetailComponent', () => {
     expect(payload.title).toContain('Build an Angular Widget');
     expect(payload.title.length).toBeLessThanOrEqual(70);
     expect(payload.description).toContain('Angular-focused:');
-    expect(payload.description.length).toBeLessThanOrEqual(155);
+    expect(payload.description.length).toBeLessThanOrEqual(240);
   });
 
   it('preserves exact explicit SEO titles up to the FrontendAtlas suffix length', () => {

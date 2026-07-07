@@ -5,43 +5,43 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "export default function shallowClone(value) {\n  if (Array.isArray(value)) return value.slice();\n  if (value && typeof value === 'object') return { ...value };\n  throw new TypeError('Expected object or array');\n}\n",
+      "code": "export default function shallowClone(value) {\n  if (value === null || typeof value !== 'object') {\n    throw new TypeError('Expected object or array');\n  }\n\n  if (Array.isArray(value)) {\n    return value.slice();\n  }\n\n  return Object.assign({}, value);\n}\n",
       "nodes": [
         {
-          "id": "d1-array-branch-with-slice",
-          "title": "Clone arrays with `slice()`",
+          "id": "d1-reject-invalid-inputs",
+          "title": "Reject null and primitive root values first",
           "anchor": {
             "lineStart": 2,
-            "lineEnd": 2,
-            "snippet": "if (Array.isArray(value)) return value.slice();"
+            "lineEnd": 4,
+            "snippet": "if (value === null || typeof value !== 'object') {\n    throw new TypeError('Expected object or array');\n  }"
+          },
+          "why": "The helper only supports object and array containers, and `null` needs an explicit guard because `typeof null` is `object`.",
+          "alternative": "Return primitives unchanged, but that changes this challenge's contract and weakens invalid-input tests.",
+          "tradeoff": "Strict validation makes caller mistakes obvious before any clone branch runs."
+        },
+        {
+          "id": "d2-array-branch-with-slice",
+          "title": "Clone arrays with `slice()`",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 8,
+            "snippet": "if (Array.isArray(value)) {\n    return value.slice();\n  }"
           },
           "why": "`slice()` makes a new top-level array while keeping the function short and familiar.",
           "alternative": "Use spread syntax like `[...value]`.",
           "tradeoff": "Very readable for arrays, but it is still only a shallow copy."
         },
         {
-          "id": "d2-object-branch-with-spread",
-          "title": "Clone plain objects with spread",
+          "id": "d3-object-branch-with-object-assign",
+          "title": "Clone objects with `Object.assign`",
           "anchor": {
-            "lineStart": 3,
-            "lineEnd": 3,
-            "snippet": "if (value && typeof value === 'object') return { ...value };"
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "return Object.assign({}, value);"
           },
-          "why": "Object spread is the simplest way to copy top-level enumerable properties.",
-          "alternative": "Use `Object.assign({}, value)`.",
-          "tradeoff": "Compact and modern syntax, but nested values still stay shared by reference."
-        },
-        {
-          "id": "d3-reject-invalid-inputs",
-          "title": "Throw for values that are not objects or arrays",
-          "anchor": {
-            "lineStart": 4,
-            "lineEnd": 4,
-            "snippet": "throw new TypeError('Expected object or array');"
-          },
-          "why": "The helper stays honest about what it supports instead of returning misleading output for primitives.",
-          "alternative": "Return the value unchanged for primitives.",
-          "tradeoff": "Stricter behavior, but easier to debug when the caller passes the wrong type."
+          "why": "`Object.assign({}, value)` creates a new top-level object and copies own enumerable string and symbol properties.",
+          "alternative": "Use object spread (`{ ...value }`) for equivalent base semantics in modern JavaScript.",
+          "tradeoff": "It ignores inherited prototype properties and does not preserve descriptors, which is exactly the base shallowClone contract here."
         }
       ]
     }

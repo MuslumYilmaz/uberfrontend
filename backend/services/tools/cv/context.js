@@ -1,6 +1,6 @@
 'use strict';
 
-const { normalizeRoleId } = require('./keyword-packs');
+const { getRolePack, normalizeRoleId } = require('./keyword-packs');
 const { analyzeExtractionQuality } = require('./linter/analyzers/extraction-quality');
 const { computeKeywordCoverage } = require('./linter/analyzers/keywords');
 
@@ -261,6 +261,10 @@ function hasMetricToken(content) {
   return METRIC_PATTERNS.some((regex) => regex.test(content)) || /\d/.test(content);
 }
 
+function hasAchievementMetricToken(content) {
+  return METRIC_PATTERNS.some((regex) => regex.test(content));
+}
+
 function hasOutcomeLanguage(content) {
   return OUTCOME_TERMS.some((item) => new RegExp(`\\b${item}\\b`, 'i').test(content));
 }
@@ -284,6 +288,27 @@ function buildBulletMeta(content) {
     hasScopeLanguage: hasScopeLanguage(content),
     hasTrailingPunctuation: /[.!?]$/.test(content),
   };
+}
+
+function isLikelyImplicitBullet(lineEntry, content) {
+  if (!lineEntry || lineEntry.region !== 'experience') return false;
+  if (lineEntry.section !== 'experience' && lineEntry.section !== 'projects') return false;
+  if (CONTACT_LINE_RE.test(content)) return false;
+
+  const words = String(content || '').split(/\s+/).filter(Boolean);
+  if (words.length < 6) return false;
+
+  const first = firstWord(content);
+  const startsWithActionVerb = ACTION_VERBS.has(first);
+  const hasOutcomeVerb = hasOutcomeLanguage(content);
+  const hasAchievementMetric = hasAchievementMetricToken(content);
+
+  if (!startsWithActionVerb && !hasOutcomeVerb && !hasAchievementMetric) return false;
+
+  const hasDateSignal = detectDateFormats(content).length > 0 || /\b(?:present|current)\b/i.test(content);
+  if (hasDateSignal && !startsWithActionVerb && !hasOutcomeVerb) return false;
+
+  return true;
 }
 
 function extractBulletSegments(line) {
@@ -397,6 +422,7 @@ function buildStackContradictions(lineEntries) {
 
 function buildCvContext(rawText, options = {}) {
   const roleId = normalizeRoleId(options.roleId);
+  const rolePack = getRolePack(roleId);
   const normalizedText = normalizeCvText(rawText);
   const lines = normalizedText ? normalizedText.split('\n') : [];
   const sectionLines = ensureSectionMap();
@@ -523,7 +549,24 @@ function buildCvContext(rawText, options = {}) {
       continue;
     }
 
-    if (!extractedSegments.length) continue;
+    if (!extractedSegments.length) {
+      if (isLikelyImplicitBullet(lineEntry, line)) {
+        const meta = buildBulletMeta(line);
+        const first = firstWord(line);
+        bulletStarts.set(first, (bulletStarts.get(first) || 0) + 1);
+        bulletLines.push({
+          section: currentSection,
+          region,
+          lineNumber,
+          sourceLine: line,
+          line,
+          marker: 'implicit',
+          implicit: true,
+          ...meta,
+        });
+      }
+      continue;
+    }
 
     if (hasMidlineBullet || hasMultipleTokens || extractedSegments.some((segment) => segment.tokenOffset > 0)) {
       mergedBulletLines.push({
@@ -564,6 +607,7 @@ function buildCvContext(rawText, options = {}) {
   const bulletCount = bulletLines.length;
   const bulletsWithMetrics = bulletLines.filter((item) => item.hasMetric).length;
   const experienceBullets = bulletLines.filter((item) => item.region === 'experience');
+  const projectBullets = bulletLines.filter((item) => item.section === 'projects');
   const experienceBulletsWithNumbers = experienceBullets.filter((item) => item.hasMetric).length;
   const responsibleForCount = bulletLines.filter((item) => item.startsWithResponsible).length;
   const weakActionVerbCount = bulletLines.filter((item) => !item.startsWithActionVerb).length;
@@ -620,6 +664,8 @@ function buildCvContext(rawText, options = {}) {
 
   return {
     roleId,
+    roleLevel: rolePack.level || 'senior',
+    roleStack: rolePack.stack || 'angular',
     text: normalizedText,
     textLength: normalizedText.length,
     lines,
@@ -655,6 +701,7 @@ function buildCvContext(rawText, options = {}) {
     bulletsWithMetrics,
     numericBulletRatio: bulletCount ? bulletsWithMetrics / bulletCount : 0,
     experienceBulletCount: experienceBullets.length,
+    projectBulletCount: projectBullets.length,
     experienceBulletsWithNumbers,
     responsibleForCount,
     responsibleForRatio: bulletCount ? responsibleForCount / bulletCount : 0,

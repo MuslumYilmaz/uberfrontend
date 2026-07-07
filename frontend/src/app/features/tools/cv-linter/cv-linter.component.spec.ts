@@ -144,6 +144,8 @@ describe('CvLinterComponent', () => {
     expect(items.length).toBe(4);
     expect(text).toContain('ATS structure');
     expect(text).toContain('Keyword coverage');
+    expect(text).toContain('junior, mid-level, and senior');
+    expect(text).not.toContain('senior FE targets');
     expect(text).toContain('Readability');
     expect(text).toContain('Impact/evidence');
   });
@@ -179,6 +181,7 @@ describe('CvLinterComponent', () => {
     expect(text).toContain('Angular target');
     expect(text).toContain('React target');
     expect(text).toContain('General frontend target');
+    expect(text).toContain('Level target');
     expect(text).toContain('accessibility');
     expect(text).toContain('performance');
     expect(text).toContain('CI/CD');
@@ -295,6 +298,66 @@ describe('CvLinterComponent', () => {
     expect(analyzeBtnAfter.disabled).toBeFalse();
   });
 
+  it('defaults to Mid Frontend (General FE) and renders all target roles', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    const component = fixture.componentInstance as CvLinterComponent;
+    fixture.detectChanges();
+
+    const levelButtons = Array.from(
+      fixture.nativeElement.querySelectorAll('button[data-testid^="cv-role-level-"]'),
+    ) as HTMLButtonElement[];
+    const stackButtons = Array.from(
+      fixture.nativeElement.querySelectorAll('button[data-testid^="cv-role-stack-"]'),
+    ) as HTMLButtonElement[];
+
+    expect(component.selectedRole).toBe('mid_frontend_general');
+    expect(component.selectedLevel).toBe('mid');
+    expect(component.selectedStack).toBe('general');
+    expect(component.selectedRoleLabel).toBe('Mid Frontend (General FE)');
+    expect(fixture.nativeElement.querySelector('[data-testid="cv-role-select"]')).toBeNull();
+    expect(levelButtons.map((button) => (button.textContent || '').trim())).toEqual(['Junior', 'Mid', 'Senior']);
+    expect(stackButtons.map((button) => (button.textContent || '').trim())).toEqual(['General FE', 'Angular', 'React']);
+    expect(levelButtons[1].getAttribute('aria-pressed')).toBe('true');
+    expect(stackButtons[0].getAttribute('aria-pressed')).toBe('true');
+
+    component.selectedRole = 'senior_frontend_angular';
+    expect(component.selectedLevel).toBe('senior');
+    expect(component.selectedStack).toBe('angular');
+    expect(component.selectedRoleLabel).toBe('Senior Frontend (Angular)');
+  });
+
+  it('sends the selected new role ID when analyzing pasted text', () => {
+    const fixture = TestBed.createComponent(CvLinterComponent);
+    const component = fixture.componentInstance as CvLinterComponent;
+    fixture.detectChanges();
+
+    const juniorButton = fixture.nativeElement.querySelector('[data-testid="cv-role-level-junior"]') as HTMLButtonElement;
+    const reactButton = fixture.nativeElement.querySelector('[data-testid="cv-role-stack-react"]') as HTMLButtonElement;
+    juniorButton.click();
+    reactButton.click();
+    fixture.detectChanges();
+
+    expect(component.selectedRole).toBe('junior_frontend_react');
+    component.pasteText = 'Junior React CV text with projects and JavaScript.';
+    component.analyzePastedText();
+
+    const req = httpMock.expectOne('/api/tools/cv/analyze');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.targetRole).toBe('junior_frontend_react');
+    req.flush(makeResponse({
+      keywordCoverage: {
+        ...makeResponse().keywordCoverage,
+        role: 'junior_frontend_react',
+        roleLabel: 'Junior Frontend (React)',
+      },
+      meta: {
+        ...makeResponse().meta,
+        role: 'junior_frontend_react',
+      },
+    }));
+    fixture.detectChanges();
+  });
+
   it('shows loading state and disables uploader controls during analyze', () => {
     const fixture = TestBed.createComponent(CvLinterComponent);
     const component = fixture.componentInstance;
@@ -306,15 +369,18 @@ describe('CvLinterComponent', () => {
 
     const req = httpMock.expectOne('/api/tools/cv/analyze');
     expect(req.request.method).toBe('POST');
+    expect((req.request.body as FormData).get('targetRole')).toBe('mid_frontend_general');
 
     const analyzeBtn = fixture.nativeElement.querySelector('[data-testid="cv-analyze-file"]') as HTMLButtonElement;
-    const roleSelect = fixture.nativeElement.querySelector('[data-testid="cv-role-select"]') as HTMLSelectElement;
+    const roleButtons = Array.from(
+      fixture.nativeElement.querySelectorAll('button[data-testid^="cv-role-level-"], button[data-testid^="cv-role-stack-"]'),
+    ) as HTMLButtonElement[];
     const sampleBtn = fixture.nativeElement.querySelector('[data-testid="cv-use-sample"]') as HTMLButtonElement;
     const dropzone = fixture.nativeElement.querySelector('[data-testid="cv-dropzone"]');
 
     expect(analyzeBtn.disabled).toBeTrue();
     expect(analyzeBtn.textContent || '').toContain('Analyzing...');
-    expect(roleSelect.disabled).toBeTrue();
+    expect(roleButtons.every((button) => button.disabled)).toBeTrue();
     expect(sampleBtn.disabled).toBeTrue();
     expect(dropzone.classList.contains('is-disabled')).toBeTrue();
 
@@ -787,6 +853,7 @@ describe('CvLinterComponent', () => {
 
     const guidance = fixture.nativeElement.querySelector('[data-testid="cv-role-impact-guidance"]');
     expect(guidance).toBeTruthy();
-    expect((guidance.textContent || '')).toContain('Target role mainly affects keyword scoring');
+    expect((guidance.textContent || '')).toContain('Level adjusts scoring expectations');
+    expect((guidance.textContent || '')).toContain('stack tunes frontend keyword matching');
   });
 });

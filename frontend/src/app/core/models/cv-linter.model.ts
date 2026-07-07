@@ -1,6 +1,15 @@
 export type CvSeverity = 'critical' | 'warn' | 'info';
 export type CvCategory = 'ats' | 'structure' | 'impact' | 'consistency' | 'keywords';
-export type CvRole = 'senior_frontend_angular' | 'senior_frontend_react' | 'senior_frontend_general';
+export type CvRole =
+  | 'junior_frontend_general'
+  | 'junior_frontend_angular'
+  | 'junior_frontend_react'
+  | 'mid_frontend_general'
+  | 'mid_frontend_angular'
+  | 'mid_frontend_react'
+  | 'senior_frontend_general'
+  | 'senior_frontend_angular'
+  | 'senior_frontend_react';
 export type CvExtractionStatus = 'ok' | 'low_text' | 'failed' | 'text_input';
 
 export interface CvIssue {

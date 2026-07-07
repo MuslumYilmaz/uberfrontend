@@ -326,7 +326,7 @@
         </div>
 
         <!-- BOTTOM: Actions + Results/Console -->
-        <div class="flex-1 min-h-0 flex flex-col fa-runner-shell">
+        <div class="flex-1 min-h-0 flex flex-col fa-runner-shell" data-nosnippet>
             <div class="fa-runner-topbar">
                 <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="runTests()"
                     [disabled]="!(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>

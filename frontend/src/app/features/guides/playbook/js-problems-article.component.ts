@@ -343,7 +343,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <li id="question-16"><a [routerLink]="['/javascript','trivia','js-map-filter-reduce']">Explain when to use map, filter, or reduce.</a></li>
       <li id="question-17"><a [routerLink]="['/javascript','coding','js-group-by']">Implement groupBy for UI-ready data shaping.</a></li>
       <li id="question-18"><a [routerLink]="['/javascript','coding','js-flatten-depth']">Flatten nested arrays to a given depth.</a></li>
-      <li id="question-19"><a [routerLink]="['/javascript','coding','js-deep-clone']">Implement deep clone and name unsupported values.</a></li>
+      <li id="question-19"><a [routerLink]="['/javascript','coding','js-deep-clone']">Implement deep clone and name unsupported values.</a><p>Warm up with <a [routerLink]="['/javascript','coding','js-shallow-clone']">Implement shallowClone() for objects and arrays.</a></p></li>
       <li id="question-20"><a [routerLink]="['/javascript','coding','js-deep-equal']">Implement deep equal for nested arrays and objects.</a></li>
     </ol>
 

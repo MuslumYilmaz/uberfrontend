@@ -73,6 +73,54 @@ describe('cv-linter issues utils', () => {
     expect(labels).toContain('CI/CD');
   });
 
+  it('generates keyword suggestions for junior, mid, and senior target roles', () => {
+    const junior = buildRoleKeywordSuggestions(
+      'junior_frontend_general',
+      'keyword_missing_critical',
+      { critical: ['git / github', 'api integration'] }
+    );
+    const mid = buildRoleKeywordSuggestions(
+      'mid_frontend_react',
+      'keyword_missing_critical',
+      { critical: ['react', 'state management'], strong: ['ci/cd'] }
+    );
+    const senior = buildRoleKeywordSuggestions(
+      'senior_frontend_general',
+      'keyword_missing',
+      { critical: ['performance'], strong: ['observability'] }
+    );
+
+    const juniorLabels = junior.map((item) => item.label);
+    const midLabels = mid.map((item) => item.label);
+    const seniorLabels = senior.map((item) => item.label);
+
+    expect(juniorLabels).toContain('Git/GitHub');
+    expect(juniorLabels).toContain('API integration');
+    expect(midLabels).toContain('React');
+    expect(midLabels).toContain('state management');
+    expect(midLabels).toContain('CI/CD');
+    expect(seniorLabels).toContain('performance');
+    expect(seniorLabels).toContain('observability');
+  });
+
+  it('exposes keyword suggestions for every CV role', () => {
+    const roles = [
+      'junior_frontend_general',
+      'junior_frontend_angular',
+      'junior_frontend_react',
+      'mid_frontend_general',
+      'mid_frontend_angular',
+      'mid_frontend_react',
+      'senior_frontend_general',
+      'senior_frontend_angular',
+      'senior_frontend_react',
+    ] as const;
+
+    for (const role of roles) {
+      expect(buildRoleKeywordSuggestions(role, 'keyword_missing').length).toBeGreaterThan(0);
+    }
+  });
+
   it('computes low-confidence for extraction-sensitive issues under low extraction quality', () => {
     const sensitive = makeIssue({ id: 'keyword_missing', severity: 'warn' });
     const nonSensitive = makeIssue({ id: 'stack_contradiction', category: 'consistency', severity: 'warn' });

@@ -35,7 +35,7 @@
     </div>
     <ul class="checks-list" data-testid="cv-checks-list">
       <li><strong>ATS structure:</strong> sections, contact details, and parse-friendly layout.</li>
-      <li><strong>Keyword coverage:</strong> frontend role signals for Angular, React, and senior FE targets.</li>
+      <li><strong>Keyword coverage:</strong> frontend role signals for junior, mid-level, and senior Angular, React, and general FE targets.</li>
       <li><strong>Readability:</strong> long bullets, dense text, and extraction quality issues.</li>
       <li><strong>Impact/evidence:</strong> metrics, scope, action verbs, and ownership signals.</li>
     </ul>
@@ -83,18 +83,55 @@
       </button>
     </div>
 
-    <label class="field-label" for="cv-role-select">Target role</label>
-    <select
-      id="cv-role-select"
-      [(ngModel)]="selectedRole"
-      [disabled]="analyzing"
-      [attr.disabled]="analyzing ? '' : null"
-      data-testid="cv-role-select"
-    >
-      <option *ngFor="let role of roleOptions" [value]="role.id">{{ role.label }}</option>
-    </select>
+    <div class="role-selector" data-testid="cv-role-selector">
+      <div class="role-segment-group">
+        <span class="field-label role-segment-label" id="cv-role-level-label">Level</span>
+        <div
+          class="role-segment-options"
+          role="group"
+          aria-labelledby="cv-role-level-label"
+          data-testid="cv-role-level-options"
+        >
+          <button
+            *ngFor="let level of levelOptions"
+            type="button"
+            class="role-segment-btn"
+            [class.active]="selectedLevel === level.id"
+            [disabled]="analyzing"
+            [attr.aria-pressed]="selectedLevel === level.id"
+            (click)="selectRoleLevel(level.id)"
+            [attr.data-testid]="'cv-role-level-' + level.id"
+          >
+            {{ level.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="role-segment-group">
+        <span class="field-label role-segment-label" id="cv-role-stack-label">Stack</span>
+        <div
+          class="role-segment-options"
+          role="group"
+          aria-labelledby="cv-role-stack-label"
+          data-testid="cv-role-stack-options"
+        >
+          <button
+            *ngFor="let stack of stackOptions"
+            type="button"
+            class="role-segment-btn"
+            [class.active]="selectedStack === stack.id"
+            [disabled]="analyzing"
+            [attr.aria-pressed]="selectedStack === stack.id"
+            (click)="selectRoleStack(stack.id)"
+            [attr.data-testid]="'cv-role-stack-' + stack.id"
+          >
+            {{ stack.label }}
+          </button>
+        </div>
+      </div>
+    </div>
     <p class="muted small role-impact-guidance" data-testid="cv-role-impact-guidance">
-      Target role mainly affects keyword scoring; structure and readability checks are mostly role-agnostic.
+      Level adjusts scoring expectations; stack tunes frontend keyword matching.
     </p>
 
     <div class="input-mode-switch" role="tablist" aria-label="CV input mode" data-testid="cv-input-mode-switch">

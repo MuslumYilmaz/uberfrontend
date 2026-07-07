@@ -187,7 +187,7 @@
                 </div>
 
                 <div class="code-wrap">
-                  <ng-container *ngIf="!liteEditors(); else liteExamples">
+                  <ng-container *ngIf="!examplesRenderStatic(); else liteExamples">
                     <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
                       [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
                       [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560"
@@ -433,9 +433,8 @@
                 </ul>
               </section>
 
-              <ng-container *ngIf="activePanel()===1">
-                <!-- Similar questions -->
-                <section *ngIf="followUpItems().length" class="mt-6" data-nosnippet data-testid="coding-similar-questions">
+              <!-- Similar questions -->
+              <section *ngIf="followUpItems().length" class="mt-6" data-nosnippet data-testid="coding-similar-questions">
                   <div
                     class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
                     (click)="similarOpen.set(!similarOpen())">
@@ -450,10 +449,10 @@
                       <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.label || f.difficulty || '—' }}</span>
                     </a>
                   </div>
-                </section>
+              </section>
 
-                <!-- Guide links -->
-                <section class="mt-6" data-nosnippet data-testid="coding-guide-links">
+              <!-- Guide links -->
+              <section class="mt-6" data-nosnippet data-testid="coding-guide-links">
                   <div class="flex items-center justify-between px-3 py-2 border border-white/15 rounded">
                     <h3 class="text-sm font-semibold">Guides</h3>
                   </div>
@@ -479,9 +478,9 @@
                       <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
                     </a>
                   </div>
-                </section>
+              </section>
 
-                <section class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
+              <section class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
                   <p class="detail-prep-bridge__text">
                     Preparing for interviews? Use the Question Library first, then move into a concrete Study Plan before targeted Company Prep.
                   </p>
@@ -501,9 +500,9 @@
                     <a [routerLink]="['/companies']">Open Company Prep</a>
                     <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} Framework Prep Guide</a>
                   </div>
-                </section>
+              </section>
 
-                <section class="mt-6" data-nosnippet data-testid="coding-post-task-actions">
+              <section class="mt-6" data-nosnippet data-testid="coding-post-task-actions">
                   <button
                     class="report-issue-btn"
                     type="button"
@@ -513,8 +512,7 @@
                     <app-fa-glyph class="report-issue-btn__icon" icon="fa-solid fa-bug" aria-hidden="true"></app-fa-glyph>
                     <span class="report-issue-btn__label">Report issue</span>
                   </button>
-                </section>
-              </ng-container>
+              </section>
 
             </ng-template>
         </section>
