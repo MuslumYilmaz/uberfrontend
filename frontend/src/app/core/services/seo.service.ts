@@ -51,9 +51,7 @@ export class SeoService {
     const robots = this.resolveRobots(payload.robots, hasQueryParams);
     const image = this.toAbsoluteUrl(payload.image || this.defaults.image);
     const canonical = this.normalizeCanonical(payload.canonical || this.currentUrl());
-    const title = payload.title
-      ? `${payload.title} | ${this.defaults.siteName}`
-      : `${this.defaults.siteName} | ${this.defaults.title}`;
+    const title = payload.title || `${this.defaults.siteName} | ${this.defaults.title}`;
     const ogType = payload.ogType || 'website';
 
     this.titleSvc.setTitle(title);

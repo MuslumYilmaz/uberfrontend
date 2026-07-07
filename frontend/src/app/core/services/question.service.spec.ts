@@ -7,6 +7,42 @@ import { Question } from '../models/question.model';
 import { QuestionPersistenceService } from './question-persistence.service';
 import { QuestionService } from './question.service';
 
+class MemoryQuestionPersistenceService {
+  private readonly store = new Map<string, string>();
+
+  async get(keyRaw: string): Promise<string | null> {
+    const key = String(keyRaw ?? '').trim();
+    if (!key) return null;
+    return this.store.get(key) ?? localStorage.getItem(key);
+  }
+
+  async set(keyRaw: string, valueRaw: string): Promise<void> {
+    const key = String(keyRaw ?? '').trim();
+    if (!key) return;
+    const value = String(valueRaw ?? '');
+    this.store.set(key, value);
+    localStorage.setItem(key, value);
+  }
+
+  async remove(keyRaw: string): Promise<void> {
+    const key = String(keyRaw ?? '').trim();
+    if (!key) return;
+    this.store.delete(key);
+    localStorage.removeItem(key);
+  }
+
+  async clearByPrefix(prefixRaw: string): Promise<void> {
+    const prefix = String(prefixRaw ?? '').trim();
+    if (!prefix) return;
+    Array.from(this.store.keys())
+      .filter((key) => key.startsWith(prefix))
+      .forEach((key) => this.store.delete(key));
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith(prefix))
+      .forEach((key) => localStorage.removeItem(key));
+  }
+}
+
 describe('QuestionService', () => {
   let service: QuestionService;
   let persistence: QuestionPersistenceService;
@@ -82,7 +118,13 @@ describe('QuestionService', () => {
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [QuestionService, QuestionPersistenceService],
+      providers: [
+        QuestionService,
+        {
+          provide: QuestionPersistenceService,
+          useClass: MemoryQuestionPersistenceService,
+        },
+      ],
     });
 
     service = TestBed.inject(QuestionService);

@@ -50,7 +50,7 @@ const CASES = [
   },
 ];
 
-const HOME_TITLE = 'Frontend Interview Prep Platform | FrontendAtlas';
+const HOME_TITLE = 'Frontend Interview Prep Platform';
 
 function expectedCanonical(path: string): string {
   if (path === '/') return `${CANONICAL_BASE}/`;
