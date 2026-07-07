@@ -1770,11 +1770,11 @@
     "companies": [
       "apple"
     ],
-    "access": "premium",
+    "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
-      "title": "Build React Autocomplete Search Component",
-      "description": "Create an autocomplete input that shows matching suggestions, supports keyboard interaction, and handles selection and close states."
+      "title": "React Autocomplete Search Challenge: Debounce + Tests",
+      "description": "Build React autocomplete with hooks: debounced search, filtered suggestions, keyboard selection, outside-click close, starter code, tests, and edge cases."
     },
     "frameworkTests": [
       {

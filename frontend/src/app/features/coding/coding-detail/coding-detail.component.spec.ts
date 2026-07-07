@@ -735,12 +735,12 @@ describe('CodingDetailComponent', () => {
     expect(payload.description.length).toBeLessThanOrEqual(240);
   });
 
-  it('preserves exact explicit SEO titles up to the FrontendAtlas suffix length', () => {
+  it('preserves exact explicit SEO titles up to the title length limit', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
     component.tech = 'javascript';
 
-    const title = 'Implement debounce() in JavaScript: Coding Challenge + Tests | FrontendAtlas';
+    const title = 'Implement debounce() in JavaScript: Coding Challenge + Tests';
 
     (component as any).updateSeoForQuestion({
       id: 'js-debounce',

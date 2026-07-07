@@ -26,7 +26,7 @@ test('seo: home has title/description/canonical and is indexable', async ({ page
   await page.goto('/');
   const base = new URL(page.url()).origin;
 
-  await expect(page).toHaveTitle(/Frontend Interview Prep Platform \| FrontendAtlas/i);
+  await expect(page).toHaveTitle(/Frontend Interview Prep Platform/i);
   await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
   await expect.poll(() => getCanonical(page)).toBe(`${base}/`);
   await expect.poll(async () => (await getMeta(page, 'robots')) || '').not.toContain('noindex');
@@ -38,7 +38,7 @@ test('seo: question detail has canonical + json-ld', async ({ page }) => {
   await page.goto('/javascript/coding/js-number-clamp');
   const base = new URL(page.url()).origin;
 
-  await expect(page).toHaveTitle(/clamp.*\| FrontendAtlas/i);
+  await expect(page).toHaveTitle(/clamp/i);
   await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
   await expect.poll(() => getCanonical(page)).toBe(`${base}/javascript/coding/js-number-clamp`);
 
