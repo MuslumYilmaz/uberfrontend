@@ -111,6 +111,7 @@ describe('JsProblemsArticle', () => {
     expect(hostText).toContain('Build an LRU cache with bounded memory.');
     expect(linkTargets).toContain('/javascript/coding/js-concurrency-map-limit');
     expect(linkTargets).toContain('/javascript/coding/js-take-latest');
+    expect(linkTargets).toContain('/javascript/coding/js-shallow-clone');
     expect(linkTargets).toContain('/javascript/coding/js-create-lru-cache');
   });
 

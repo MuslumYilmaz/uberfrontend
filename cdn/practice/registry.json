@@ -6008,7 +6008,7 @@
     "route": "/javascript/coding/js-shallow-clone",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Create a shallow copy of an array or object. Copy top-level properties but keep nested references intact, and document that limitation clearly. This clarifies the difference between shallow and deep cloning and helps av…",
+    "summary": "Implement shallowClone(value) in JavaScript. Your function should accept an object or array and return a new top-level container while preserving nested object and array references. Primitives, null, and unsupported roo…",
     "tags": [
       "clone",
       "objects",
@@ -6018,7 +6018,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-shallow-clone"
   },

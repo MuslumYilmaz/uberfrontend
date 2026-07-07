@@ -976,7 +976,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a shallow copy of an array or object. Copy top-level properties but keep nested references intact, and document that limitation clearly. This clarifies the difference between shallow and deep cloning and helps avoid accidental mutation bugs.",
+      "summary": "Implement shallowClone(value) in JavaScript. Your function should accept an object or array and return a new top-level container while preserving nested object and array references. Primitives, null, and unsupported root values should throw TypeError. This challenge includes starter code, tests, examples for object and array cloning, shallow vs deep clone edge cases, and interview follow-ups around Object.assign(), spread syntax, prototypes, descriptors, and structuredClone().",
       "arguments": [
         {
           "name": "value",
@@ -988,29 +988,45 @@
         "type": "Object | Array",
         "desc": "A new shallow-cloned object or array."
       },
+      "specs": {
+        "expectedBehaviorIntro": "Your shallowClone(value) implementation should:",
+        "expectedBehavior": [
+          "Accept only objects and arrays as root inputs.",
+          "Arrays return a new array reference with the same top-level items.",
+          "Objects return a new object reference with the same own enumerable properties.",
+          "Top-level primitive property and item values are copied by value inside the cloned container.",
+          "Nested objects and arrays remain shared references.",
+          "Updating a top-level property or array slot on the clone does not mutate the original container.",
+          "Mutating a nested object or nested array through the clone is visible through the original.",
+          "null and primitive root inputs throw TypeError.",
+          "The base solution copies own enumerable string and symbol properties.",
+          "Prototype chains and property descriptors are not preserved."
+        ]
+      },
       "examples": [
-        "// Object example\nconst obj = { a: 1, b: { c: 2 } };\nconst copy = shallowClone(obj);\ncopy !== obj; // true\ncopy.b === obj.b; // true (shallow)",
-        "// Array example\nconst arr = [1, { x: 2 }];\nconst out = shallowClone(arr);\nout !== arr; // true\nout[1] === arr[1]; // true (shallow)"
+        "// Array shallow clone\nconst original = [1, { count: 2 }];\nconst copy = shallowClone(original);\n\ncopy === original; // false\ncopy[1] === original[1]; // true\n\ncopy[0] = 99;\noriginal[0]; // 1\n\ncopy[1].count = 3;\noriginal[1].count; // 3",
+        "// Object shallow clone\nconst user = { name: 'Ada', meta: { active: true } };\nconst cloned = shallowClone(user);\n\ncloned === user; // false\ncloned.meta === user.meta; // true"
       ]
     },
     "starterCode": "export default function shallowClone(value) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function shallowClone<T extends Record<string, any> | any[]>(value: T): T {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "A shallow clone copies only the top-level container and its immediate properties. Nested objects and arrays remain shared references, which is the key limitation to call out. This is still valuable for state updates that only change top-level fields or for defensive copying in reducers.",
+      "overview": "Interview answer: the base prompt is to create a new top-level container while preserving nested references. Guard null and primitive values first. For arrays, use slice(). For objects, use Object.assign({}, value), which copies own enumerable string and symbol properties while ignoring inherited prototype properties. Deep cloning, structuredClone(), JSON cloning, prototypes, descriptors, Maps, Sets, Dates, and circular references are follow-ups, not part of the minimal shallowClone(value) contract.\n\nShallow clone vs deep clone: A shallow clone creates a new top-level object or array but keeps nested references shared. A deep clone recursively creates new nested objects and arrays. This challenge is intentionally shallow; deep clone behavior belongs in the related deep clone challenge.",
       "approaches": [
         {
           "title": "Approach: Branch on array vs object",
-          "prose": "Check if the input is an array; if so, return value.slice() or [...value]. If it’s a non-null object, return { ...value } or Object.assign({}, value). For non-objects, throw a TypeError. This is O(n) for top-level properties and preserves nested references by design.",
-          "codeJs": "export default function shallowClone(value) {\n  if (Array.isArray(value)) return value.slice();\n  if (value && typeof value === 'object') return { ...value };\n  throw new TypeError('Expected object or array');\n}\n",
-          "codeTs": "export default function shallowClone<T extends Record<string, any> | any[]>(value: T): T {\n  if (Array.isArray(value)) return value.slice() as T;\n  if (value && typeof value === 'object') return { ...(value as any) } as T;\n  throw new TypeError('Expected object or array');\n}\n",
+          "prose": "Guard unsupported root values before cloning: null and primitives should throw a TypeError. Then branch on arrays with value.slice(); otherwise clone the object with Object.assign({}, value). Object.assign copies own enumerable string and symbol properties, ignores inherited prototype properties, runs in O(n) time over top-level properties or items, uses O(n) space for the new top-level container, and preserves nested references by design.",
+          "codeJs": "export default function shallowClone(value) {\n  if (value === null || typeof value !== 'object') {\n    throw new TypeError('Expected object or array');\n  }\n\n  if (Array.isArray(value)) {\n    return value.slice();\n  }\n\n  return Object.assign({}, value);\n}\n",
+          "codeTs": "export default function shallowClone<T extends Record<string, any> | any[]>(value: T): T {\n  if (value === null || typeof value !== 'object') {\n    throw new TypeError('Expected object or array');\n  }\n\n  if (Array.isArray(value)) {\n    return value.slice() as T;\n  }\n\n  return Object.assign({}, value) as T;\n}\n",
           "decisionGraphKey": "approach1"
         }
       ],
       "notes": {
         "pitfalls": [
           "This is a shallow clone: nested objects and arrays are still shared by reference.",
-          "`null` is an object in JS, so always guard with `value && typeof value === \"object\"`.",
-          "Object spread does not preserve prototypes or non-enumerable properties."
+          "`null` is an object in JS, so guard `value === null` before the object branch.",
+          "`Object.assign({}, value)` copies own enumerable string and symbol properties, but it does not preserve descriptors or prototypes.",
+          "Avoid `for...in` for the base solution because it can walk inherited prototype properties."
         ],
         "edgeCases": [
           "`[]` returns a new empty array (different reference).",
@@ -1018,8 +1034,9 @@
           "Nested objects remain the same reference in the clone."
         ],
         "techniques": [
-          "Array copying with `.slice()` or spread.",
-          "Object copying with spread or `Object.assign`."
+          "Array copying with `.slice()`.",
+          "Object copying with `Object.assign({}, value)`.",
+          "Guard-first input validation before branching."
         ]
       },
       "resources": [
@@ -1031,15 +1048,74 @@
           "title": "MDN – Array.prototype.slice()",
           "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"
         }
+      ],
+      "followUp": [
+        "How would structuredClone() change the behavior for nested references?",
+        "When would you preserve prototypes or descriptors?",
+        "How would Maps, Sets, Dates, class instances, or circular references change the contract?",
+        "When is Object.assign({}, value) preferable to object spread, or vice versa?"
+      ],
+      "relatedLinks": [
+        {
+          "title": "JavaScript deep clone coding challenge",
+          "route": [
+            "/",
+            "javascript",
+            "coding",
+            "js-deep-clone"
+          ],
+          "label": "Coding"
+        },
+        {
+          "title": "shallow vs deep clone interview answer",
+          "route": [
+            "/",
+            "javascript",
+            "trivia",
+            "js-shallow-vs-deep-copy"
+          ],
+          "label": "JavaScript"
+        },
+        {
+          "title": "immutable array update challenge",
+          "route": [
+            "/",
+            "javascript",
+            "coding",
+            "js-update-at-index"
+          ],
+          "label": "Coding"
+        },
+        {
+          "title": "JavaScript object references interview question",
+          "route": [
+            "/",
+            "javascript",
+            "trivia",
+            "js-mutability-vs-immutability"
+          ],
+          "label": "JavaScript"
+        },
+        {
+          "title": "JavaScript coding interview questions",
+          "route": [
+            "/",
+            "guides",
+            "interview-blueprint",
+            "javascript-interviews"
+          ],
+          "label": "Guide"
+        }
       ]
     },
-    "tests": "import shallowClone from './file';\n\ndescribe('shallowClone', () => {\n  test('clones arrays shallowly', () => {\n    const arr = [1, { x: 2 }];\n    const copy = shallowClone(arr);\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(arr[1]);\n  });\n\n  test('clones objects shallowly', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const copy = shallowClone(obj);\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(obj.b);\n  });\n\n  test('throws for non-object/array', () => {\n    expect(() => shallowClone(42)).toThrow(TypeError);\n    expect(() => shallowClone('x')).toThrow(TypeError);\n  });\n});\n",
-    "testsTs": "import shallowClone from './file';\n\ndescribe('shallowClone (TypeScript)', () => {\n  it('clones arrays shallowly', () => {\n    const arr = [1, { x: 2 }];\n    const copy = shallowClone(arr);\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(arr[1]);\n  });\n\n  it('clones objects shallowly', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const copy = shallowClone(obj);\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(obj.b);\n  });\n\n  it('throws for non-object/array', () => {\n    expect(() => shallowClone(42 as any)).toThrow(TypeError);\n    expect(() => shallowClone('x' as any)).toThrow(TypeError);\n  });\n});\n",
+    "tests": "import shallowClone from './file';\n\ndescribe('shallowClone', () => {\n  test('clones arrays shallowly', () => {\n    const nested = { x: 2 };\n    const arr = [1, nested];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(nested);\n  });\n\n  test('clones objects shallowly', () => {\n    const nested = { c: 2 };\n    const obj = { a: 1, b: nested };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(nested);\n  });\n\n  test('returns a different array reference', () => {\n    const arr = [1, 2, 3];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  test('returns a different object reference', () => {\n    const obj = { a: 1, b: 2 };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n\n  test('preserves nested object references', () => {\n    const nested = { count: 1 };\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  test('preserves nested array references', () => {\n    const nested = [1, 2];\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  test('top-level mutation on the clone does not mutate the original', () => {\n    const obj = { a: 1, nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.a = 99;\n\n    expect(obj.a).toBe(1);\n    expect(copy.a).toBe(99);\n  });\n\n  test('nested mutation through the clone is visible through the original', () => {\n    const obj = { nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.nested.count = 2;\n\n    expect(obj.nested.count).toBe(2);\n  });\n\n  test('handles empty arrays and objects', () => {\n    const arr = [];\n    const obj = {};\n\n    const arrCopy = shallowClone(arr);\n    const objCopy = shallowClone(obj);\n\n    expect(arrCopy).toEqual([]);\n    expect(arrCopy === arr).toBe(false);\n    expect(objCopy).toEqual({});\n    expect(objCopy === obj).toBe(false);\n  });\n\n  test('throws TypeError for null and primitives', () => {\n    expect(() => shallowClone(null)).toThrow(TypeError);\n    expect(() => shallowClone(42)).toThrow(TypeError);\n    expect(() => shallowClone('x')).toThrow(TypeError);\n    expect(() => shallowClone(true)).toThrow(TypeError);\n    expect(() => shallowClone(undefined)).toThrow(TypeError);\n  });\n\n  test('does not mutate the original container while cloning', () => {\n    const arr = [1, { count: 1 }];\n    const obj = { a: 1, nested: { count: 1 } };\n    const arrBefore = arr.slice();\n    const objKeysBefore = Object.keys(obj);\n\n    shallowClone(arr);\n    shallowClone(obj);\n\n    expect(arr).toEqual(arrBefore);\n    expect(Object.keys(obj)).toEqual(objKeysBefore);\n    expect(obj).toEqual({ a: 1, nested: { count: 1 } });\n  });\n\n  test('copies own enumerable symbol properties', () => {\n    const key = Symbol('id');\n    const obj = { a: 1, [key]: 123 };\n\n    const copy = shallowClone(obj);\n\n    expect(copy[key]).toBe(123);\n  });\n\n  test('does not copy prototype properties', () => {\n    const proto = { inherited: true };\n    const obj = Object.create(proto);\n    obj.own = true;\n\n    const copy = shallowClone(obj);\n\n    expect(copy.own).toBe(true);\n    expect(copy.inherited).toBe(undefined);\n    expect('inherited' in copy).toBe(false);\n  });\n});\n",
+    "testsTs": "import shallowClone from './file';\n\ndescribe('shallowClone (TypeScript)', () => {\n  it('clones arrays shallowly', () => {\n    const nested = { x: 2 };\n    const arr = [1, nested];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(nested);\n  });\n\n  it('clones objects shallowly', () => {\n    const nested = { c: 2 };\n    const obj = { a: 1, b: nested };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(nested);\n  });\n\n  it('returns a different array reference', () => {\n    const arr = [1, 2, 3];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  it('returns a different object reference', () => {\n    const obj = { a: 1, b: 2 };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n\n  it('preserves nested object references', () => {\n    const nested = { count: 1 };\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  it('preserves nested array references', () => {\n    const nested = [1, 2];\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  it('top-level mutation on the clone does not mutate the original', () => {\n    const obj = { a: 1, nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.a = 99;\n\n    expect(obj.a).toBe(1);\n    expect(copy.a).toBe(99);\n  });\n\n  it('nested mutation through the clone is visible through the original', () => {\n    const obj = { nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.nested.count = 2;\n\n    expect(obj.nested.count).toBe(2);\n  });\n\n  it('handles empty arrays and objects', () => {\n    const arr: unknown[] = [];\n    const obj: Record<string, unknown> = {};\n\n    const arrCopy = shallowClone(arr);\n    const objCopy = shallowClone(obj);\n\n    expect(arrCopy).toEqual([]);\n    expect(arrCopy === arr).toBe(false);\n    expect(objCopy).toEqual({});\n    expect(objCopy === obj).toBe(false);\n  });\n\n  it('throws TypeError for null and primitives', () => {\n    expect(() => shallowClone(null as any)).toThrow(TypeError);\n    expect(() => shallowClone(42 as any)).toThrow(TypeError);\n    expect(() => shallowClone('x' as any)).toThrow(TypeError);\n    expect(() => shallowClone(true as any)).toThrow(TypeError);\n    expect(() => shallowClone(undefined as any)).toThrow(TypeError);\n  });\n\n  it('does not mutate the original container while cloning', () => {\n    const arr = [1, { count: 1 }];\n    const obj = { a: 1, nested: { count: 1 } };\n    const arrBefore = arr.slice();\n    const objKeysBefore = Object.keys(obj);\n\n    shallowClone(arr);\n    shallowClone(obj);\n\n    expect(arr).toEqual(arrBefore);\n    expect(Object.keys(obj)).toEqual(objKeysBefore);\n    expect(obj).toEqual({ a: 1, nested: { count: 1 } });\n  });\n\n  it('copies own enumerable symbol properties', () => {\n    const key = Symbol('id');\n    const obj = { a: 1, [key]: 123 };\n\n    const copy = shallowClone(obj);\n\n    expect(copy[key]).toBe(123);\n  });\n\n  it('does not copy prototype properties', () => {\n    const proto = { inherited: true };\n    const obj = Object.create(proto) as { own?: boolean; inherited?: boolean };\n    obj.own = true;\n\n    const copy = shallowClone(obj);\n\n    expect(copy.own).toBe(true);\n    expect(copy.inherited).toBe(undefined);\n    expect('inherited' in copy).toBe(false);\n  });\n});\n",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-07",
     "seo": {
-      "title": "Shallow Clone Object or Array in JavaScript",
-      "description": "Given an object or array, return a shallow copy where top-level values are copied but nested references remain shared."
+      "title": "Implement shallowClone() in JavaScript: Object & Array Challenge + Tests",
+      "description": "Implement shallowClone(value) in JavaScript for objects and arrays. Practice with starter code, tests, shallow vs deep clone examples, nested reference behavior, Object.assign(), spread syntax, edge cases, and interview follow-ups.",
+      "h1": "Implement shallowClone() in JavaScript"
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-shallow-clone.v1.json"
   },

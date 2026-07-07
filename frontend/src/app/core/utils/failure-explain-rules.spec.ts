@@ -500,6 +500,90 @@ describe('failure-explain-rules', () => {
     expect(hint.title.toLowerCase()).toContain('sanitizer');
   });
 
+  it('returns shallowClone hint for invalid root guard failures', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-shallow-clone',
+      errorLine: 'Expected function to throw TypeError',
+      firstFailName: 'throws TypeError for null and primitives',
+      passCount: 8,
+      totalCount: 13,
+      failCount: 5,
+      failedTests: [
+        {
+          name: 'throws TypeError for null and primitives',
+          errorLine: 'Expected function to throw TypeError',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-shallow-clone-invalid-root-guard');
+    expect(hint.actions.join(' ')).toContain('value === null');
+  });
+
+  it('returns shallowClone hint for same top-level reference failures', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-shallow-clone',
+      errorLine: 'Expected objects not to be the same reference',
+      firstFailName: 'returns a different object reference',
+      passCount: 4,
+      totalCount: 13,
+      failCount: 3,
+      failedTests: [
+        {
+          name: 'returns a different object reference',
+          errorLine: 'Expected objects not to be the same reference',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-shallow-clone-new-container');
+    expect(hint.actions.join(' ')).toContain('Object.assign({}, value)');
+  });
+
+  it('returns shallowClone hint when nested references are deep-cloned', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-shallow-clone',
+      errorLine: 'Expected nested object references to be identical',
+      firstFailName: 'preserves nested object references',
+      passCount: 7,
+      totalCount: 13,
+      failCount: 2,
+      failedTests: [
+        {
+          name: 'preserves nested object references',
+          errorLine: 'Expected nested object references to be identical',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-shallow-clone-nested-references');
+    expect(hint.actions.join(' ')).toContain('Avoid recursion');
+  });
+
+  it('returns shallowClone hint for symbol and prototype property failures', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-shallow-clone',
+      errorLine: 'Expected inherited to be undefined',
+      firstFailName: 'does not copy prototype properties',
+      passCount: 10,
+      totalCount: 13,
+      failCount: 2,
+      failedTests: [
+        {
+          name: 'does not copy prototype properties',
+          errorLine: 'Expected inherited to be undefined',
+        },
+        {
+          name: 'copies own enumerable symbol properties',
+          errorLine: 'Expected undefined to be 123',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-shallow-clone-own-enumerable-properties');
+    expect(hint.actions.join(' ')).toContain('for...in');
+  });
+
   it('maps undefined assertion mismatch to missing return hint', () => {
     const hint = buildFailureHint({
       errorLine: 'Expected undefined to be Hello World',

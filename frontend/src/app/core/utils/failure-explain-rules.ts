@@ -666,23 +666,110 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-shallow-clone-invalid-root-guard',
+    questionId: 'js-shallow-clone',
+    priority: 140,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['throws typeerror for null and primitives']) ||
+      anyFailingErrorIncludes(snapshot, ['typeerror']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-shallow-clone-invalid-root-guard',
+      title: 'Guard null and primitive root values first',
+      why: buildProgressAwareWhy(snapshot, 'The base contract accepts only object and array containers, and `typeof null` needs a separate check.'),
+      actions: [
+        'Start with `if (value === null || typeof value !== "object") throw new TypeError(...)`.',
+        'Place the guard before the array and object clone branches.',
+        'Verify `null`, `undefined`, numbers, strings, and booleans all throw `TypeError`.',
+      ],
+      confidence: 0.94,
+    }),
+  },
+  {
+    ruleId: 'js-shallow-clone-new-container',
+    questionId: 'js-shallow-clone',
+    priority: 130,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'returns a different array reference',
+        'returns a different object reference',
+        'top-level mutation on the clone does not mutate the original',
+        'does not mutate the original container while cloning',
+        'handles empty arrays and objects',
+        'clones arrays shallowly',
+        'clones objects shallowly',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-shallow-clone-new-container',
+      title: 'Return a new top-level container',
+      why: buildProgressAwareWhy(snapshot, 'A shallow clone must be equal in contents but not the same array or object reference.'),
+      actions: [
+        'For arrays, return `value.slice()` so the clone is a different array reference.',
+        'For objects, return `Object.assign({}, value)` so top-level writes to the clone do not mutate the original container.',
+        'Do not return `value` directly and do not mutate the input while copying.',
+      ],
+      confidence: 0.93,
+    }),
+  },
+  {
+    ruleId: 'js-shallow-clone-nested-references',
+    questionId: 'js-shallow-clone',
+    priority: 120,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'preserves nested object references',
+        'preserves nested array references',
+        'nested mutation through the clone is visible through the original',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-shallow-clone-nested-references',
+      title: 'Keep nested references shared',
+      why: buildProgressAwareWhy(snapshot, 'This prompt is intentionally shallow, so nested objects and arrays should not be recursively cloned.'),
+      actions: [
+        'Copy only the top-level array or object container.',
+        'Avoid recursion, `structuredClone()`, and JSON serialization for this base prompt.',
+        'Check that `copy.nested === original.nested` remains true after cloning.',
+      ],
+      confidence: 0.92,
+    }),
+  },
+  {
+    ruleId: 'js-shallow-clone-own-enumerable-properties',
+    questionId: 'js-shallow-clone',
+    priority: 115,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'copies own enumerable symbol properties',
+        'does not copy prototype properties',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-shallow-clone-own-enumerable-properties',
+      title: 'Copy own enumerable properties only',
+      why: buildProgressAwareWhy(snapshot, '`Object.assign({}, value)` copies own enumerable string and symbol properties while ignoring inherited prototype properties.'),
+      actions: [
+        'Use `Object.assign({}, value)` or object spread for the object branch.',
+        'Avoid `Object.keys(value)` alone if symbol keys need to be copied.',
+        'Avoid `for...in` because it can include inherited prototype properties.',
+      ],
+      confidence: 0.9,
+    }),
+  },
+  {
     ruleId: 'js-shallow-clone-contract',
     questionId: 'js-shallow-clone',
-    priority: 110,
+    priority: 90,
     matches: (snapshot) =>
-      anyFailingTestNameIncludes(snapshot, ['shallowly', 'non-object/array']) ||
-      anyFailingErrorIncludes(snapshot, ['typeerror']) ||
+      anyFailingTestNameIncludes(snapshot, ['shallowly']) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'js-shallow-clone-contract',
-      title: 'Clone should copy top-level only and reject invalid input',
-      why: buildProgressAwareWhy(snapshot, 'Shallow clone means new container, but nested references stay shared.'),
+      title: 'Clone one level and preserve shallow semantics',
+      why: buildProgressAwareWhy(snapshot, 'Shallow clone means new top-level container, own enumerable properties copied, and nested references shared.'),
       actions: [
-        'For arrays, return `value.slice()`; for objects, return `{ ...value }`.',
-        'Keep nested objects by reference (`copy.nested === original.nested`).',
-        'Throw `TypeError` for non-object/non-array values.',
+        'Guard invalid root values before cloning.',
+        'Use `value.slice()` for arrays and `Object.assign({}, value)` for objects.',
+        'Do not recurse or use deep-clone helpers for this prompt.',
       ],
-      confidence: 0.92,
+      confidence: 0.82,
     }),
   },
   {

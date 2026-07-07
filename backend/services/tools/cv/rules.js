@@ -6,10 +6,91 @@ function formatPercent(value) {
   return `${Math.round(numeric * 100)}%`;
 }
 
-const NUMERIC_RATIO_TARGET = 0.2;
+const ROLE_LEVELS = new Set(['junior', 'mid', 'senior']);
+const BULLET_COUNT_MIN_BY_LEVEL = Object.freeze({
+  junior: 4,
+  mid: 5,
+  senior: 6,
+});
+const NUMERIC_RATIO_TARGET_BY_LEVEL = Object.freeze({
+  junior: 0.1,
+  mid: 0.15,
+  senior: 0.2,
+});
 const NUMERIC_RATIO_TOLERANCE = 0.03;
 const OUTCOME_RATIO_TARGET = 0.25;
 const OUTCOME_RATIO_TOLERANCE = 0.05;
+
+function roleLevel(ctx) {
+  const level = String(ctx?.roleLevel || '').toLowerCase();
+  return ROLE_LEVELS.has(level) ? level : 'senior';
+}
+
+function minimumBulletCount(ctx) {
+  return BULLET_COUNT_MIN_BY_LEVEL[roleLevel(ctx)];
+}
+
+function numericRatioTarget(ctx) {
+  return NUMERIC_RATIO_TARGET_BY_LEVEL[roleLevel(ctx)];
+}
+
+function linkedInPenalty(ctx) {
+  switch (roleLevel(ctx)) {
+    case 'junior':
+      return {
+        severity: 'info',
+        scoreDelta: -1,
+        why: 'For junior roles, LinkedIn or GitHub helps validate projects and learning history.',
+      };
+    case 'mid':
+      return {
+        severity: 'warn',
+        scoreDelta: -2,
+        why: 'For mid-level roles, LinkedIn helps validate production experience and career history.',
+      };
+    default:
+      return {
+        severity: 'warn',
+        scoreDelta: -3,
+        why: 'For senior roles, LinkedIn helps validate seniority and history quickly.',
+      };
+  }
+}
+
+function educationPenalty(ctx) {
+  return roleLevel(ctx) === 'junior'
+    ? { severity: 'warn', scoreDelta: -3 }
+    : { severity: 'warn', scoreDelta: -2 };
+}
+
+function metricsInExperiencePenalty(ctx) {
+  switch (roleLevel(ctx)) {
+    case 'junior':
+      return { severity: 'info', scoreDelta: -1 };
+    case 'mid':
+      return { severity: 'warn', scoreDelta: -3 };
+    default:
+      return { severity: 'warn', scoreDelta: -4 };
+  }
+}
+
+function scopeLanguagePenalty(ctx) {
+  switch (roleLevel(ctx)) {
+    case 'junior':
+      return null;
+    case 'mid':
+      return { severity: 'info', scoreDelta: -1 };
+    default:
+      return { severity: 'info', scoreDelta: -2 };
+  }
+}
+
+function criticalKeywordScoreDelta(missingCount) {
+  if (missingCount >= 5) return -8;
+  if (missingCount >= 3) return -6;
+  if (missingCount === 2) return -4;
+  return -2;
+}
 
 function topLineEvidence(ctx, count = 2) {
   return (ctx.lineEntries || [])
@@ -65,13 +146,17 @@ function createRules() {
       severity: 'warn',
       category: 'ats',
       scoreDelta: -3,
-      evaluate: (ctx) => (!ctx.contact.hasLinkedIn ? {
-        title: 'Missing LinkedIn profile',
-        message: 'No LinkedIn URL was detected.',
-        why: 'For senior roles, LinkedIn helps validate seniority and history quickly.',
-        fix: 'Add a LinkedIn profile URL in your contact block.',
-        evidence: topLineEvidence(ctx, 2),
-      } : null),
+      evaluate: (ctx) => {
+        if (ctx.contact.hasLinkedIn) return null;
+        const penalty = linkedInPenalty(ctx);
+        return {
+          ...penalty,
+          title: 'Missing LinkedIn profile',
+          message: 'No LinkedIn URL was detected.',
+          fix: 'Add a LinkedIn profile URL in your contact block.',
+          evidence: topLineEvidence(ctx, 2),
+        };
+      },
     },
     {
       id: 'too_short_for_ats',
@@ -138,13 +223,21 @@ function createRules() {
       severity: 'critical',
       category: 'structure',
       scoreDelta: -8,
-      evaluate: (ctx) => (!ctx.sectionsPresent.experience ? {
-        title: 'Missing Experience section',
-        message: 'No dedicated Experience section heading was detected.',
-        why: 'Experience is the main signal for senior-level hiring.',
-        fix: 'Add a clear “Experience” heading with role-by-role bullets.',
-        evidence: topLineEvidence(ctx, 2),
-      } : null),
+      evaluate: (ctx) => {
+        if (ctx.sectionsPresent.experience) return null;
+        if (roleLevel(ctx) === 'junior' && ctx.sectionsPresent.projects && ctx.projectBulletCount > 0) return null;
+        return {
+          title: 'Missing Experience section',
+          message: 'No dedicated Experience section heading was detected.',
+          why: roleLevel(ctx) === 'junior'
+            ? 'Experience or project evidence is the main signal for early-career hiring.'
+            : 'Experience is the main signal for senior-level hiring.',
+          fix: roleLevel(ctx) === 'junior'
+            ? 'Add a clear “Experience” heading when you have role experience, or keep project bullets concrete.'
+            : 'Add a clear “Experience” heading with role-by-role bullets.',
+          evidence: topLineEvidence(ctx, 2),
+        };
+      },
     },
     {
       id: 'missing_skills_section',
@@ -178,6 +271,7 @@ function createRules() {
       category: 'structure',
       scoreDelta: -2,
       evaluate: (ctx) => (!ctx.sectionsPresent.education ? {
+        ...educationPenalty(ctx),
         title: 'Missing Education section',
         message: 'No Education section heading was detected.',
         why: 'Many ATS profiles expect a basic education block.',
@@ -229,13 +323,16 @@ function createRules() {
       severity: 'warn',
       category: 'structure',
       scoreDelta: -4,
-      evaluate: (ctx) => (ctx.bulletCount < 6 ? {
-        title: 'Low bullet count',
-        message: `Only ${ctx.bulletCount} bullet points were detected.`,
-        why: 'Bullet points make achievements easier to parse and compare.',
-        fix: 'Use action-oriented bullets for each role/project.',
-        evidence: topBulletEvidence(ctx.bulletLines, 2, 'detected bullet'),
-      } : null),
+      evaluate: (ctx) => {
+        const minimum = minimumBulletCount(ctx);
+        return ctx.bulletCount < minimum ? {
+          title: 'Low bullet count',
+          message: `Only ${ctx.bulletCount} bullet points were detected (target: ${minimum}).`,
+          why: 'Bullet points make achievements easier to parse and compare.',
+          fix: 'Use action-oriented bullets for each role/project.',
+          evidence: topBulletEvidence(ctx.bulletLines, 2, 'detected bullet'),
+        } : null;
+      },
     },
     {
       id: 'insufficient_impact_evidence',
@@ -272,15 +369,17 @@ function createRules() {
       category: 'impact',
       scoreDelta: -6,
       evaluate: (ctx) => {
-        if (ctx.bulletCount < 6 || ctx.numericBulletRatio >= NUMERIC_RATIO_TARGET) return null;
+        const minimum = minimumBulletCount(ctx);
+        const target = numericRatioTarget(ctx);
+        if (ctx.bulletCount < minimum || ctx.numericBulletRatio >= target) return null;
 
-        const borderline = ctx.numericBulletRatio >= (NUMERIC_RATIO_TARGET - NUMERIC_RATIO_TOLERANCE);
+        const borderline = ctx.numericBulletRatio >= (target - NUMERIC_RATIO_TOLERANCE);
         return {
           severity: borderline ? 'info' : 'warn',
           scoreDelta: borderline ? -2 : -6,
           title: borderline ? 'Quantified impact is slightly below target' : 'Low quantified impact',
           message: borderline
-            ? `${formatPercent(ctx.numericBulletRatio)} of bullets include metrics (target: ${formatPercent(NUMERIC_RATIO_TARGET)}).`
+            ? `${formatPercent(ctx.numericBulletRatio)} of bullets include metrics (target: ${formatPercent(target)}).`
             : `Only ${formatPercent(ctx.numericBulletRatio)} of bullets include metrics.`,
           why: 'Quantified impact strongly improves credibility for senior candidates.',
           fix: 'Add metrics such as %, latency, conversion, scale, or cost savings.',
@@ -297,30 +396,40 @@ function createRules() {
       severity: 'info',
       category: 'impact',
       scoreDelta: -1,
-      evaluate: (ctx) => (ctx.bulletCount > 0 && ctx.bulletCount < 6 && ctx.numericBulletRatio < NUMERIC_RATIO_TARGET ? {
-        title: 'Add more bullets before metric-density scoring',
-        message: 'The CV has too few bullets for strong metric-density analysis.',
-        why: 'Small bullet sets can produce noisy metric-density signals.',
-        fix: 'First add more experience bullets, then include measurable outcomes.',
-        evidence: topBulletEvidence(ctx.bulletLines, 2),
-      } : null),
+      evaluate: (ctx) => {
+        const minimum = minimumBulletCount(ctx);
+        const target = numericRatioTarget(ctx);
+        return ctx.bulletCount > 0 && ctx.bulletCount < minimum && ctx.numericBulletRatio < target ? {
+          title: 'Add more bullets before metric-density scoring',
+          message: 'The CV has too few bullets for strong metric-density analysis.',
+          why: 'Small bullet sets can produce noisy metric-density signals.',
+          fix: 'First add more experience bullets, then include measurable outcomes.',
+          evidence: topBulletEvidence(ctx.bulletLines, 2),
+        } : null;
+      },
     },
     {
       id: 'no_metrics_in_experience',
       severity: 'warn',
       category: 'impact',
       scoreDelta: -4,
-      evaluate: (ctx) => (ctx.experienceBulletCount >= 4 && ctx.experienceBulletsWithNumbers === 0 ? {
-        title: 'Experience bullets lack metrics',
-        message: 'Experience bullets do not contain measurable outcomes.',
-        why: 'Senior frontend impact should tie to business or performance results.',
-        fix: 'Add at least one metric per major experience entry.',
-        evidence: topBulletEvidence(
-          (ctx.bulletLines || []).filter((line) => line.region === 'experience'),
-          2,
-          'experience bullet without metric'
-        ),
-      } : null),
+      evaluate: (ctx) => {
+        if (ctx.experienceBulletCount < 4 || ctx.experienceBulletsWithNumbers > 0) return null;
+        return {
+          ...metricsInExperiencePenalty(ctx),
+          title: 'Experience bullets lack metrics',
+          message: 'Experience bullets do not contain measurable outcomes.',
+          why: roleLevel(ctx) === 'junior'
+            ? 'Even one concrete number can make early-career project or internship work more credible.'
+            : 'Frontend impact should tie to business or performance results.',
+          fix: 'Add at least one metric per major experience entry.',
+          evidence: topBulletEvidence(
+            (ctx.bulletLines || []).filter((line) => line.region === 'experience'),
+            2,
+            'experience bullet without metric'
+          ),
+        };
+      },
     },
     {
       id: 'too_many_responsible_for',
@@ -428,17 +537,22 @@ function createRules() {
       severity: 'info',
       category: 'impact',
       scoreDelta: -2,
-      evaluate: (ctx) => (ctx.experienceBulletCount >= 4 && ctx.scopeLanguageCount === 0 ? {
-        title: 'Missing scale or scope cues',
-        message: 'Bullets do not indicate system or user scale.',
-        why: 'Scope helps calibrate impact and seniority.',
-        fix: 'Add scope context such as users, traffic, or team size.',
-        evidence: topBulletEvidence(
-          (ctx.bulletLines || []).filter((line) => line.region === 'experience'),
-          2,
-          'experience bullet without scope'
-        ),
-      } : null),
+      evaluate: (ctx) => {
+        const penalty = scopeLanguagePenalty(ctx);
+        if (!penalty || ctx.experienceBulletCount < 4 || ctx.scopeLanguageCount > 0) return null;
+        return {
+          ...penalty,
+          title: 'Missing scale or scope cues',
+          message: 'Bullets do not indicate system or user scale.',
+          why: 'Scope helps calibrate impact and seniority.',
+          fix: 'Add scope context such as users, traffic, or team size.',
+          evidence: topBulletEvidence(
+            (ctx.bulletLines || []).filter((line) => line.region === 'experience'),
+            2,
+            'experience bullet without scope'
+          ),
+        };
+      },
     },
     {
       id: 'short_bullets_majority',
@@ -622,9 +736,8 @@ function createRules() {
         const missingCritical = ctx.keywordCoverage.missingByTier.critical;
         if (missingCritical.length === 0) return null;
 
-        const severeGap = missingCritical.length >= 3;
         return {
-          scoreDelta: severeGap ? -6 : -4,
+          scoreDelta: criticalKeywordScoreDelta(missingCritical.length),
           title: 'Critical keywords missing',
           message: 'Some high-priority role keywords are missing.',
           why: 'Critical keywords are often used as first-pass ATS filters.',

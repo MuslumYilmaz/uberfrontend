@@ -1964,6 +1964,9 @@
         <h3>{{ topic.title }}</h3>
         <p>{{ topic.answer }}</p>
         <a class="iq-topic-card__link" [routerLink]="topic.link.route">{{ topic.link.label }} &rarr;</a>
+        <a *ngFor="let link of topic.secondaryLinks || []" class="iq-topic-card__link" [routerLink]="link.route">
+          {{ link.label }} &rarr;
+        </a>
       </article>
     </div>
 

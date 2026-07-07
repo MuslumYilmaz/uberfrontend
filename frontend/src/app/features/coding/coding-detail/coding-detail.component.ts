@@ -116,7 +116,7 @@ type LockedPath = {
 };
 
 const SEO_TITLE_MAX_LEN = 80;
-const SEO_DESCRIPTION_MAX_LEN = 155;
+const SEO_DESCRIPTION_MAX_LEN = 240;
 
 @Component({
   selector: 'app-coding-detail',
@@ -623,6 +623,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       })
       .join('\n\n');
   });
+
+  examplesRenderStatic = computed(() => !this.isBrowser || this.liteEditors());
 
   constructor(
     private route: ActivatedRoute,

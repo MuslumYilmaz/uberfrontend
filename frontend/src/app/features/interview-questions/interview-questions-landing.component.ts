@@ -39,7 +39,7 @@ type SchemaQuestionLink = { title: string; path: string };
 type PrepPlanLink = { label: string; route: any[]; summary: string };
 type HubConceptLink = { label: string; route: any[]; ariaLabel: string };
 type JavaScriptCoverageLink = { label: string; route: any[] };
-type JavaScriptTopicCard = { title: string; answer: string; link: JavaScriptCoverageLink };
+type JavaScriptTopicCard = { title: string; answer: string; link: JavaScriptCoverageLink; secondaryLinks?: JavaScriptCoverageLink[] };
 type JavaScriptSupportItem = { title: string; detail: string };
 type JavaScriptResourceLink = { label: string; href: string; summary: string };
 type QuestionLevel = 'beginner' | 'intermediate' | 'advanced';
@@ -2143,6 +2143,12 @@ const JAVASCRIPT_TOPIC_CARDS: JavaScriptTopicCard[] = [
       label: 'Compare shallow and deep copy',
       route: ['/javascript', 'trivia', 'js-shallow-vs-deep-copy'],
     },
+    secondaryLinks: [
+      {
+        label: 'Practice shallowClone()',
+        route: ['/javascript', 'coding', 'js-shallow-clone'],
+      },
+    ],
   },
   {
     title: 'Promises and async operations',

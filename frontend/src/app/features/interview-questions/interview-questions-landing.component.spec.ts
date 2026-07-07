@@ -1195,6 +1195,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-array-sort"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/javascript-prep-path"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-shallow-vs-deep-copy"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-shallow-clone"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-promises-async-await"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-async-race-conditions"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-mutability-vs-immutability"]')).toBeTruthy();
