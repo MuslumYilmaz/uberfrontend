@@ -4693,7 +4693,7 @@ const CSS_RESPONSIVE_QUESTIONS: CssFocusedQuestionItem[] = [
     q: 'How do CSS variables support themes?',
     a: 'CSS variables let themes change tokens such as color, spacing, radius, and shadows through the cascade. They can be scoped globally, per component, or by state such as dark mode. The fallback and inheritance path should be clear so components do not receive accidental theme values.',
     route: ['/css', 'coding', 'css-theme-variables-dark-mode'],
-    cta: 'Build theme variables',
+    cta: 'Build a CSS variables dark mode challenge',
     level: 'intermediate',
   },
 ];

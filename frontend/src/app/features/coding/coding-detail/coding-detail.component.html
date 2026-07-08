@@ -50,6 +50,18 @@
       <div class="flex-1 overflow-auto p-6 font-sm">
         <!-- Description Panel -->
         <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0">
+            <nav class="detail-breadcrumb" aria-label="Breadcrumb" data-testid="coding-breadcrumb">
+              <a [routerLink]="['/']">Home</a>
+              <span aria-hidden="true">&gt;</span>
+              <a [routerLink]="interviewQuestionsHubRoute()">{{ interviewQuestionsHubLabel() }}</a>
+              <span aria-hidden="true">&gt;</span>
+              <a [routerLink]="codingChallengeBreadcrumbRoute()" [queryParams]="codingChallengeBreadcrumbQueryParams()">
+                {{ codingChallengeBreadcrumbLabel() }}
+              </a>
+              <span aria-hidden="true">&gt;</span>
+              <span aria-current="page">{{ questionBreadcrumbLabel() }}</span>
+            </nav>
+
             <div class="detail-title-row">
               <h1 class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h1>
               <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
@@ -136,6 +148,14 @@
                 </ul>
               </div>
 
+              <!-- Acceptance criteria -->
+              <div *ngIf="specs.acceptanceCriteria?.length" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Acceptance criteria</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let item of specs.acceptanceCriteria">{{ displayText(item) }}</li>
+                </ul>
+              </div>
+
               <!-- Expected behavior -->
               <div *ngIf="specs.expectedBehavior?.length" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Expected behavior</h3>
@@ -152,6 +172,28 @@
                 <h3 class="text-sm font-semibold mb-1">Implementation notes</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let n of specs.implementationNotes">{{ displayText(n) }}</li>
+                </ul>
+              </div>
+
+              <!-- Common mistakes -->
+              <div *ngIf="specs.commonMistakes?.length" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Common mistakes</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let item of specs.commonMistakes">{{ displayText(item) }}</li>
+                </ul>
+              </div>
+
+              <!-- Interview explanation -->
+              <div *ngIf="specs.interviewExplanation" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Interview explanation</h3>
+                <p class="text-sm opacity-90">{{ displayText(specs.interviewExplanation) }}</p>
+              </div>
+
+              <!-- Testing checklist -->
+              <div *ngIf="specs.testingChecklist?.length" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Testing checklist</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let item of specs.testingChecklist">{{ displayText(item) }}</li>
                 </ul>
               </div>
             </ng-container>

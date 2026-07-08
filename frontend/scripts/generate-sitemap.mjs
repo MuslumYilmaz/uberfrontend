@@ -37,6 +37,34 @@ function toUrl(p) {
   return clean === '/' ? `${BASE_URL}/` : `${BASE_URL}${clean}`;
 }
 
+function normalizeDateOnly(value) {
+  const raw = String(value || '').trim();
+  const match = raw.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (!match) return '';
+  const date = new Date(`${match[1]}T00:00:00.000Z`);
+  if (Number.isNaN(date.getTime())) return '';
+  return match[1];
+}
+
+function addUrl(entries, p, lastmod = '') {
+  const loc = toUrl(p);
+  const normalizedLastmod = normalizeDateOnly(lastmod);
+  const existing = entries.get(loc);
+
+  if (!existing) {
+    entries.set(loc, { loc, lastmod: normalizedLastmod });
+    return;
+  }
+
+  if (normalizedLastmod && (!existing.lastmod || normalizedLastmod > existing.lastmod)) {
+    existing.lastmod = normalizedLastmod;
+  }
+}
+
+function questionLastmod(q) {
+  return normalizeDateOnly(q?.updatedAt) || normalizeDateOnly(q?.createdAt);
+}
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
@@ -54,7 +82,7 @@ function addQuestionUrls(urls, tech, kind, list) {
   if (!Array.isArray(list)) return;
   list.forEach((q) => {
     if (!q?.id) return;
-    urls.add(toUrl(`/${tech}/${kind}/${q.id}`));
+    addUrl(urls, `/${tech}/${kind}/${q.id}`, questionLastmod(q));
   });
 }
 
@@ -118,7 +146,7 @@ function readPublicTrackSlugs() {
 }
 
 function buildUrls() {
-  const urls = new Set();
+  const urls = new Map();
   const companySlugs = new Set();
 
   const staticPaths = [
@@ -155,14 +183,14 @@ function buildUrls() {
     '/legal/cookies',
   ];
 
-  staticPaths.forEach((p) => urls.add(toUrl(p)));
+  staticPaths.forEach((p) => addUrl(urls, p));
 
   if (fs.existsSync(PRACTICE_REGISTRY)) {
     const items = readJson(PRACTICE_REGISTRY);
     if (Array.isArray(items)) {
       items.forEach((item) => {
         if (!item?.route) return;
-        urls.add(toUrl(item.route));
+        addUrl(urls, item.route, item.updatedAt);
       });
     }
   }
@@ -194,7 +222,7 @@ function buildUrls() {
     if (Array.isArray(items)) {
       items.forEach((q) => {
         if (!q?.id) return;
-        urls.add(toUrl(`/system-design/${q.id}`));
+        addUrl(urls, `/system-design/${q.id}`, questionLastmod(q));
       });
       addCompanySlugs(companySlugs, items);
     }
@@ -208,39 +236,42 @@ function buildUrls() {
     const frameworkPrep = playbook.filter((slug) => slug.endsWith('-prep-path'));
     const interviewBlueprintOnly = playbook.filter((slug) => !slug.endsWith('-prep-path'));
 
-    interviewBlueprintOnly.forEach((slug) => urls.add(toUrl(`/guides/interview-blueprint/${slug}`)));
-    frameworkPrep.forEach((slug) => urls.add(toUrl(`/guides/framework-prep/${slug}`)));
-    system.forEach((slug) => urls.add(toUrl(`/guides/system-design-blueprint/${slug}`)));
-    behavioral.forEach((slug) => urls.add(toUrl(`/guides/behavioral/${slug}`)));
+    interviewBlueprintOnly.forEach((slug) => addUrl(urls, `/guides/interview-blueprint/${slug}`));
+    frameworkPrep.forEach((slug) => addUrl(urls, `/guides/framework-prep/${slug}`));
+    system.forEach((slug) => addUrl(urls, `/guides/system-design-blueprint/${slug}`));
+    behavioral.forEach((slug) => addUrl(urls, `/guides/behavioral/${slug}`));
   }
 
   readActiveMasterySlugs().forEach((slug) => {
-    urls.add(toUrl(`/guides/framework-prep/${slug}/mastery`));
-    urls.add(toUrl(`/tracks/${slug}/mastery`));
+    addUrl(urls, `/guides/framework-prep/${slug}/mastery`);
+    addUrl(urls, `/tracks/${slug}/mastery`);
   });
 
   readPublicTrackSlugs().forEach((slug) => {
-    urls.add(toUrl(`/tracks/${slug}/preview`));
+    addUrl(urls, `/tracks/${slug}/preview`);
   });
 
   Array.from(companySlugs)
     .sort((a, b) => a.localeCompare(b))
     .forEach((slug) => {
-      urls.add(toUrl(`/companies/${slug}/preview`));
+      addUrl(urls, `/companies/${slug}/preview`);
     });
 
-  return Array.from(urls).sort();
+  return Array.from(urls.values()).sort((a, b) => a.loc.localeCompare(b.loc));
 }
 
-function buildXml(urls) {
+function buildXml(entries) {
   const lines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
   ];
 
-  urls.forEach((url) => {
+  entries.forEach((entry) => {
     lines.push('  <url>');
-    lines.push(`    <loc>${url}</loc>`);
+    lines.push(`    <loc>${entry.loc}</loc>`);
+    if (entry.lastmod) {
+      lines.push(`    <lastmod>${entry.lastmod}</lastmod>`);
+    }
     lines.push('  </url>');
   });
 
