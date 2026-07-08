@@ -2575,7 +2575,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-flexbox-navbar"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-grid-card-gallery"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-fluid-clamp"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-theme-variables-dark-mode"]')).toBeTruthy();
+    const themeVariablesLink = fixture.nativeElement.querySelector('a[href="/css/coding/css-theme-variables-dark-mode"]') as HTMLAnchorElement | null;
+    expect(themeVariablesLink).toBeTruthy();
+    expect(themeVariablesLink?.textContent || '').toContain('Build a CSS variables dark mode challenge');
 
     const codingTitle = fixture.nativeElement.querySelector('#iq-css-coding-preview-title');
     const conceptTitle = fixture.nativeElement.querySelector('#iq-css-concept-preview-title');

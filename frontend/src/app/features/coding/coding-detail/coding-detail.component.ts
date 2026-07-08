@@ -351,9 +351,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return {
       practice: specs.practice as string[] | undefined,
       requirements: specs.requirements as string[] | undefined,
+      acceptanceCriteria: specs.acceptanceCriteria as string[] | undefined,
       expectedBehaviorIntro: specs.expectedBehaviorIntro as string | undefined,
       expectedBehavior: specs.expectedBehavior as string[] | undefined,
       implementationNotes: specs.implementationNotes as string[] | undefined,
+      commonMistakes: specs.commonMistakes as string[] | undefined,
+      interviewExplanation: specs.interviewExplanation as string | undefined,
+      testingChecklist: specs.testingChecklist as string[] | undefined,
       techFocus: specs.techFocus as string[] | undefined,
     };
   });
@@ -1172,6 +1176,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const imageUrl = this.structuredDataImageUrl();
     const interviewHubUrl = this.seo.buildCanonicalUrl(this.interviewQuestionsHubPath());
     const interviewHubLabel = this.interviewQuestionsHubLabel();
+    const codingHubUrl = this.seo.buildCanonicalUrl('/coding');
+    const codingHubLabel = this.codingChallengeBreadcrumbLabel();
     const studyPlanUrl = this.seo.buildCanonicalUrl(this.studyPlanPath());
     const companiesUrl = this.seo.buildCanonicalUrl('/companies');
     const frameworkPrepUrl = this.hasFrameworkPrepPath()
@@ -1196,7 +1202,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         {
           '@type': 'ListItem',
           position: 3,
-          name: q.title,
+          name: codingHubLabel,
+          item: codingHubUrl,
+        },
+        {
+          '@type': 'ListItem',
+          position: 4,
+          name: this.questionBreadcrumbLabel(q),
           item: canonical,
         },
       ],
@@ -1293,15 +1305,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     add(summary);
 
     const specs = (desc && typeof desc === 'object') ? (desc as any).specs : null;
-    if (specs) {
-      const pushList = (items?: string[]) => {
-        if (!Array.isArray(items)) return;
-        items.forEach((item) => add(item));
-      };
-      pushList(specs.requirements);
-      pushList(specs.expectedBehavior);
-      pushList(specs.implementationNotes);
-    } else if (desc && typeof desc === 'object') {
+      if (specs) {
+        const pushList = (items?: string[]) => {
+          if (!Array.isArray(items)) return;
+          items.forEach((item) => add(item));
+        };
+        pushList(specs.requirements);
+        pushList(specs.expectedBehavior);
+        pushList(specs.implementationNotes);
+        pushList(specs.acceptanceCriteria);
+        pushList(specs.testingChecklist);
+      } else if (desc && typeof desc === 'object') {
       const args = (desc as StructuredDescription).arguments || [];
       if (args.length) {
         add(`Inputs: ${args.map((a) => a.name).join(', ')}`);
@@ -2515,6 +2529,42 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   interviewQuestionsHubRoute(): any[] {
     return [this.interviewQuestionsHubPath()];
+  }
+
+  codingChallengeBreadcrumbRoute(): any[] {
+    return ['/coding'];
+  }
+
+  codingChallengeBreadcrumbQueryParams(): Record<string, string> {
+    const tech = String(this.tech || '').trim().toLowerCase();
+    return tech ? { tech, kind: 'coding' } : { kind: 'coding' };
+  }
+
+  codingChallengeBreadcrumbLabel(): string {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+        return 'JavaScript coding challenges';
+      case 'react':
+        return 'React coding challenges';
+      case 'angular':
+        return 'Angular coding challenges';
+      case 'vue':
+        return 'Vue coding challenges';
+      case 'html':
+        return 'HTML coding challenges';
+      case 'css':
+        return 'CSS Coding Challenges';
+      default:
+        return 'Coding challenges';
+    }
+  }
+
+  questionBreadcrumbLabel(q: Question | null = this.question()): string {
+    const explicit = String(q?.seo?.h1IntentLabel || '').trim();
+    if (explicit) return explicit;
+
+    const heading = String(q?.seo?.h1 || q?.title || '').trim();
+    return heading.split(':')[0]?.trim() || heading;
   }
 
   interviewQuestionsHubLabel(): string {

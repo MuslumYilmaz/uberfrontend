@@ -48,6 +48,32 @@ test('seo: question detail has canonical + json-ld', async ({ page }) => {
     .toContain('TechArticle');
 });
 
+test('seo: css theme variables challenge is indexable with self canonical and crawlable content', async ({ page }) => {
+  await setSeoHost(page, 'frontendatlas.com');
+  await page.goto('/css/coding/css-theme-variables-dark-mode');
+  const base = new URL(page.url()).origin;
+
+  await expect(page).toHaveTitle('CSS Variables Dark Mode Challenge | FrontendAtlas');
+  await expect(page.locator('h1').first()).toContainText(/Theming with CSS Variables/i);
+  await expect.poll(() => getMeta(page, 'description')).toBe(
+    'Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.'
+  );
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/css/coding/css-theme-variables-dark-mode`);
+  await expect.poll(async () => ((await getMeta(page, 'robots')) || '').toLowerCase()).not.toContain('noindex');
+
+  await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/CSS custom properties/i);
+  await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/prefers-color-scheme/i);
+  await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/html\.theme-dark/i);
+  await expect(page.locator('[data-testid="coding-breadcrumb"] a[href="/css/interview-questions"]')).toHaveCount(1);
+  await expect(page.locator('[data-testid="web-css-editor"]').last()).toContainText(/box-shadow:\s*var\(--panel-shadow\)/i);
+  await page.getByRole('button', { name: 'Show preview' }).click();
+  await expect(page.getByText('Showing solution preview')).toBeVisible();
+
+  const jsonLd = page.locator('script#seo-jsonld');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
+});
+
 test('seo: css display flex page keeps route identity + structured data', async ({ page }) => {
   await setSeoHost(page, 'frontendatlas.com');
   await page.goto('/css/trivia/css-display-flex');
@@ -84,6 +110,7 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
   const robotsRes = await page.request.get('/robots.txt');
   expect(robotsRes.status()).toBe(200);
   const robotsText = await robotsRes.text();
+  expect(robotsText).toContain('Sitemap: https://frontendatlas.com/sitemap.xml');
   expect(robotsText).toContain('Sitemap: https://frontendatlas.com/sitemap-index.xml');
   expect(robotsText).not.toContain('Disallow: /coding?');
 

@@ -63,6 +63,12 @@ describe('CodingDetailComponent', () => {
             clearJsAsync: () => Promise.resolve(),
             clearFrameworkAsync: () => Promise.resolve(),
             clearWebAsync: () => Promise.resolve(),
+            getWebDraftSnapshotAsync: () => Promise.resolve(null),
+            cloneWebBundleAsync: () => Promise.resolve(false),
+            initWebAsync: (_key: string, starters: { html: string; css: string }) =>
+              Promise.resolve({ html: starters.html, css: starters.css, restored: false }),
+            saveWebAsync: () => Promise.resolve(),
+            resetWebBothAsync: () => Promise.resolve(),
           },
         },
         { provide: UserProgressService, useValue: progress },
@@ -776,6 +782,91 @@ describe('CodingDetailComponent', () => {
     );
     expect(payload.canonical).toBe('https://frontendatlas.com/javascript/coding/js-create-deferred-promise');
   });
+
+  it('publishes exact SEO metadata and four-level breadcrumbs for the CSS theme variables challenge', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'css';
+    component.kind = 'coding';
+
+    (component as any).updateSeoForQuestion(makeCssThemeVariablesQuestion());
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((entry: any) => entry?.['@type'] === 'TechArticle');
+
+    expect(payload.title).toBe('CSS Variables Dark Mode Challenge | FrontendAtlas');
+    expect(payload.description).toBe(
+      'Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.'
+    );
+    expect(payload.canonical).toBe('https://frontendatlas.com/css/coding/css-theme-variables-dark-mode');
+    expect(payload.ogType).toBe('article');
+
+    expect(article?.isAccessibleForFree).toBeTrue();
+    expect(article?.url).toBe('https://frontendatlas.com/css/coding/css-theme-variables-dark-mode');
+    expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
+      'FrontendAtlas',
+      'CSS interview questions',
+      'CSS Coding Challenges',
+      'Theming with CSS Variables',
+    ]);
+    expect(breadcrumb?.itemListElement?.map((item: any) => item.item)).toEqual([
+      'https://frontendatlas.com/',
+      'https://frontendatlas.com/css/interview-questions',
+      'https://frontendatlas.com/coding',
+      'https://frontendatlas.com/css/coding/css-theme-variables-dark-mode',
+    ]);
+  });
+
+  it('renders the CSS theme variables prompt, breadcrumb links, and tokenized shadow starter CSS', async () => {
+    const question = makeCssThemeVariablesQuestion();
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'css';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isPhoneViewport.set(false);
+    component.liteEditors.set(true);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const pageText = host.textContent || '';
+    const breadcrumb = host.querySelector('[data-testid="coding-breadcrumb"]') as HTMLElement;
+    const starterHtmlText = question.web?.starterHtml || '';
+    const starterCssText = question.web?.starterCss || '';
+
+    expect(host.querySelector('[data-testid="question-title"]')?.textContent || '').toContain('Theming with CSS Variables');
+    expect(pageText).toContain('CSS custom properties');
+    expect(pageText).toContain('prefers-color-scheme');
+    expect(pageText).toContain('html.theme-dark');
+    expect(pageText).toContain('Acceptance criteria');
+    expect(pageText).toContain('Common mistakes');
+    expect(pageText).toContain('Interview explanation');
+    expect(pageText).toContain('Testing checklist');
+
+    expect(breadcrumb?.textContent || '').toContain('Home');
+    expect(breadcrumb?.textContent || '').toContain('CSS interview questions');
+    expect(breadcrumb?.textContent || '').toContain('CSS Coding Challenges');
+    expect(breadcrumb?.textContent || '').toContain('Theming with CSS Variables');
+    expect(breadcrumb.querySelector('a[href="/"]')).toBeTruthy();
+    expect(breadcrumb.querySelector('a[href="/css/interview-questions"]')).toBeTruthy();
+    expect(breadcrumb.querySelector('a[href="/coding?tech=css&kind=coding"]')).toBeTruthy();
+
+    expect(starterHtmlText).toContain('<html lang="en">');
+    expect(starterHtmlText).toContain('Tokenized button');
+    expect(starterCssText).toContain('--panel-shadow');
+    expect(starterCssText).toContain('box-shadow: var(--panel-shadow)');
+    expect(starterCssText).not.toContain('box-shadow: 0 1px 2px rgba');
+  });
 });
 
 function makeDeferredPromiseQuestion() {
@@ -844,6 +935,68 @@ function makeDeferredPromiseQuestion() {
       h1: 'Implement createDeferred() in JavaScript',
     },
     decisionGraphAsset: 'assets/questions/javascript/decision-graphs/js-create-deferred-promise.v1.json',
+  };
+}
+
+function makeCssThemeVariablesQuestion() {
+  return {
+    id: 'css-theme-variables-dark-mode',
+    title: 'Theming with CSS Variables: OS Dark Mode + Manual Override',
+    type: 'coding',
+    technology: 'css',
+    importance: 5,
+    difficulty: 'intermediate',
+    tags: ['css', 'variables', 'custom-properties', 'dark-mode', 'theming', 'cascade'],
+    description: {
+      summary: 'Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual html.theme-dark override after the media query so it wins by source order.',
+      specs: {
+        practice: [
+          'CSS custom properties as live theme tokens',
+          'prefers-color-scheme for OS-level dark mode',
+          'Manual root-level theme overrides with html.theme-dark',
+        ],
+        requirements: [
+          'Define light theme tokens on :root: --bg, --text, --surface, --accent, --border, --accent-contrast, and --panel-shadow.',
+          'Define dark values for the same tokens inside @media (prefers-color-scheme: dark).',
+          'Define html.theme-dark after the media query and repeat the dark token values there.',
+        ],
+        acceptanceCriteria: [
+          'No hard-coded component colors or colored shadows remain inside .panel or .btn.',
+          'Dark OS preference switches the page, panel, border, accent, contrast, and panel shadow through variables.',
+        ],
+        expectedBehaviorIntro: 'Your CSS theme should:',
+        expectedBehavior: [
+          'Render a light theme by default from :root tokens.',
+          'Let html.theme-dark win because it is declared after the media query.',
+        ],
+        implementationNotes: [
+          'Keep the same variable names across :root, @media (prefers-color-scheme: dark), and html.theme-dark.',
+        ],
+        commonMistakes: [
+          'Placing html.theme-dark before the media query so the OS preference can override the manual class.',
+        ],
+        interviewExplanation: 'CSS custom properties let a design system swap values at runtime without rewriting every component. prefers-color-scheme respects the user OS preference, while a root class gives product UI a manual override.',
+        testingChecklist: [
+          'Test with a light OS preference and confirm :root values are used.',
+          'Add html.theme-dark manually and confirm it wins over the OS preference.',
+        ],
+      },
+    },
+    web: {
+      starterHtml: '<!doctype html><html lang="en"><head><title>Theme Demo</title></head><body><div class="panel"><h2>Theme Demo</h2><button class="btn" type="button">Tokenized button</button></div></body></html>',
+      starterCss: 'html, body { height: 100%; }\nbody { background: var(--bg); color: var(--text); }\n.panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: var(--panel-shadow); }\n.btn { background: var(--accent); color: var(--accent-contrast); border: 0; }',
+    },
+    solutionBlock: {
+      overview: 'A high-signal CSS theming setup is tokens on :root, OS dark override via prefers-color-scheme, then html.theme-dark declared later.',
+      approaches: [],
+    },
+    access: 'free',
+    updatedAt: '2026-01-30',
+    seo: {
+      title: 'CSS Variables Dark Mode Challenge | FrontendAtlas',
+      description: 'Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.',
+      h1IntentLabel: 'Theming with CSS Variables',
+    },
   };
 }
 

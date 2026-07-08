@@ -2788,6 +2788,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Practice next</strong><br>Use the <a href=\"/css/coding/css-theme-variables-dark-mode\">CSS theme variables coding challenge</a> to apply <code>prefers-color-scheme</code> with custom properties and a manual dark-mode override."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of media queries as smart CSS switches — they turn on or off specific styles depending on the screen’s size or features, just like adaptive headlights adjusting to road conditions."
         },
         {
@@ -3288,6 +3292,10 @@
         {
           "type": "text",
           "text": "<strong>Best Practices</strong><br><ul><li>Define global tokens in <code>:root</code> for theme consistency.</li><li>Use local overrides for component variants or dark/light modes.</li><li>Combine with media queries for responsive design (<code>@media (prefers-color-scheme: dark)</code>).</li><li>Maintain a naming convention like <code>--color-primary</code>, <code>--spacing-md</code>.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-theme-variables-dark-mode\">Build a CSS variables dark mode challenge</a> to practice token naming, <code>prefers-color-scheme</code>, and a manual <code>html.theme-dark</code> override."
         },
         {
           "type": "text",

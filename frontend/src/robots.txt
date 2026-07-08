@@ -9,4 +9,5 @@ Allow: /tracks/*/preview$
 Disallow: /companies/
 Allow: /companies/*/preview$
 
+Sitemap: https://frontendatlas.com/sitemap.xml
 Sitemap: https://frontendatlas.com/sitemap-index.xml

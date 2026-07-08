@@ -733,7 +733,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	    if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
 	    this.webPreviewTimer = setTimeout(() => {
 	      try {
-	        this.exitSolutionPreview('rebuilding from editors');
+	        if (this.showingSolutionPreview) return;
 	        const htmlDoc = this.previewDocRaw();
 	        this.setPreviewHtml(htmlDoc);
       } catch {

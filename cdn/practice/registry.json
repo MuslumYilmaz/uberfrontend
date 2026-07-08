@@ -2103,7 +2103,7 @@
     "route": "/css/coding/css-theme-variables-dark-mode",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "Create a themeable panel using ONLY CSS custom properties. Define light defaults on :root, redefine the SAME variables for OS dark mode via @media (prefers-color-scheme: dark), then add a manual override using html.them…",
+    "summary": "Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual html.theme-dark override after t…",
     "tags": [
       "css",
       "variables",

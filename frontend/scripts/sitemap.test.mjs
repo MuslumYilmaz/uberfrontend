@@ -98,6 +98,18 @@ function getAllSitemapLocs(fileNames) {
   });
 }
 
+function getAllSitemapEntries(fileNames) {
+  return fileNames.flatMap((fileName) => {
+    const xml = readXml(path.join(SRC_DIR, fileName));
+    return Array.from(xml.matchAll(/<url>([\s\S]*?)<\/url>/g), (match) => {
+      const block = match[1] || '';
+      const loc = (block.match(/<loc>([^<]+)<\/loc>/) || [])[1] || '';
+      const lastmod = (block.match(/<lastmod>([^<]+)<\/lastmod>/) || [])[1] || '';
+      return { loc, lastmod };
+    }).filter((entry) => entry.loc);
+  });
+}
+
 function getAllSitemapPaths(fileNames) {
   const paths = new Set();
   getAllSitemapLocs(fileNames).forEach((loc) => {
@@ -170,6 +182,17 @@ function assertCoreIndexableCoverage(paths) {
   const missing = core.filter((route) => !paths.has(normalizePath(route)));
   if (missing.length) {
     throw new Error(`Sitemap missing core indexable routes: ${missing.join(', ')}`);
+  }
+}
+
+function assertCssThemeVariablesSitemapEntry(entries) {
+  const loc = 'https://frontendatlas.com/css/coding/css-theme-variables-dark-mode';
+  const entry = entries.find((item) => item.loc === loc);
+  if (!entry) {
+    throw new Error(`Sitemap missing CSS theme variables challenge: ${loc}`);
+  }
+  if (entry.lastmod !== '2026-01-30') {
+    throw new Error(`CSS theme variables sitemap lastmod must be 2026-01-30, got ${entry.lastmod || '(missing)'}`);
   }
 }
 
@@ -366,6 +389,9 @@ function assertRobotsAllowsCodingQueryNoindex() {
   }
 
   const robots = fs.readFileSync(ROBOTS_PATH, 'utf8');
+  if (!/^\s*Sitemap:\s*https:\/\/frontendatlas\.com\/sitemap\.xml\s*$/im.test(robots)) {
+    throw new Error('robots.txt must expose Sitemap: https://frontendatlas.com/sitemap.xml');
+  }
   if (/^\s*Disallow:\s*\/coding\?/im.test(robots)) {
     throw new Error('robots.txt must not disallow /coding?; query variants need to be crawlable for noindex.');
   }
@@ -505,11 +531,13 @@ function assertVercelCspAllowsGoogleAnalyticsCollection() {
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const locs = getAllSitemapLocs(sitemapFiles);
+const entries = getAllSitemapEntries(sitemapFiles);
 const paths = getAllSitemapPaths(sitemapFiles);
 assertNoQueryOrHashInSitemapLocs(locs);
 assertPracticeCanonicalCoverage(paths, locs);
 assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
+assertCssThemeVariablesSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();

@@ -19,9 +19,13 @@ export type StructuredDescription = {
 export type StructuredDescriptionSpecs = {
   practice?: string[];
   requirements?: string[];
+  acceptanceCriteria?: string[];
   expectedBehaviorIntro?: string;
   expectedBehavior?: string[];
   implementationNotes?: string[];
+  commonMistakes?: string[];
+  interviewExplanation?: string;
+  testingChecklist?: string[];
   techFocus?: string[];
 };
 

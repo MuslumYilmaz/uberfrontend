@@ -27,6 +27,31 @@
   box-shadow: var(--uf-card-shadow);
 }
 
+.detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 82%, transparent);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.detail-breadcrumb a {
+  color: var(--uf-text-secondary);
+  text-decoration: none;
+}
+
+.detail-breadcrumb a:hover {
+  color: var(--uf-text-primary);
+  text-decoration: underline;
+}
+
+.detail-breadcrumb [aria-current="page"] {
+  color: var(--uf-text-primary);
+  font-weight: 600;
+}
+
 .detail-title-row {
   display: flex;
   align-items: center;

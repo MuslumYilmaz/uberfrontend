@@ -182,6 +182,23 @@ describe('CodingWebPanelComponent attempt feedback', () => {
     );
   }));
 
+  it('keeps solution preview active when a pending live preview rebuild fires', fakeAsync(() => {
+    component.question = {
+      ...question,
+      webSolutionHtml: '<main class="solution">Solution preview</main>',
+      webSolutionCss: '.solution { color: green; }',
+    };
+    const setPreviewHtml = spyOn(component as any, 'setPreviewHtml').and.stub();
+
+    (component as any).scheduleWebPreview();
+    component.openSolutionPreview();
+    tick(120);
+
+    expect(component.showingSolutionPreview).toBeTrue();
+    expect(setPreviewHtml.calls.count()).toBe(1);
+    expect(setPreviewHtml.calls.mostRecent().args[0]).toContain('Solution preview');
+  }));
+
   it('ignores stale async init results from an older question', async () => {
     const codeStorage = TestBed.inject(CodeStorageService) as jasmine.SpyObj<CodeStorageService>;
     const oldInit = deferred<{ html: string; css: string; restored: boolean }>();
