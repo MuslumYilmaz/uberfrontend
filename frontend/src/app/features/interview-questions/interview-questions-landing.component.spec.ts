@@ -632,7 +632,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('[data-testid^="prep-roadmap-item-"]').length).toBe(5);
     expect(fixture.componentInstance.previewRows('coding').length).toBe(6);
     expect(fixture.componentInstance.previewRows('trivia').length).toBe(6);
-    expect(fixture.nativeElement.textContent || '').toContain('View full coding list');
+    expect(fixture.nativeElement.textContent || '').toContain('View Frontend Coding Challenges');
     expect(fixture.nativeElement.textContent || '').toContain('View full concepts list');
     expect(fixture.nativeElement.textContent || '').toContain('Frontend interview preparation guide');
     expect(fixture.nativeElement.textContent || '').toContain('FrontendAtlas Essential 60');
@@ -1558,7 +1558,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
     expect(fixture.nativeElement.textContent || '').toContain('Frontend interview preparation guide');
     expect(fixture.nativeElement.textContent || '').toContain('Machine Coding / UI Coding');
-    expect(fixture.nativeElement.textContent || '').toContain('Question Library');
+    expect(fixture.nativeElement.textContent || '').toContain('Frontend Coding Challenges');
     expect(fixture.nativeElement.textContent || '').toContain('Framework interview hubs');
     expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]')?.getAttribute('href') || '').toContain('/machine-coding');
     expect(fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-4"]')?.getAttribute('href') || '').toContain('/coding');

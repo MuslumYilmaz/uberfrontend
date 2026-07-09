@@ -6183,10 +6183,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         },
         {
           step: 4,
-          title: 'Question Library',
-          description: 'Broaden into more coding and concept coverage by format, stack, difficulty, and weak area.',
+          title: 'Frontend Coding Challenges',
+          description: 'Broaden into focused JavaScript functions, UI exercises, HTML/CSS implementation, and debugging tasks.',
           route: ['/coding'],
-          meta: 'Broader coding + concepts',
+          meta: 'Focused coding practice',
           tone: 'structured',
         },
         {

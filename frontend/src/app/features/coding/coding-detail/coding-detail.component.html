@@ -566,7 +566,7 @@
 
               <section *ngIf="!curatedNextStepsOnly()" class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
                   <p class="detail-prep-bridge__text">
-                    Preparing for interviews? Use the Question Library first, then move into a concrete Study Plan before targeted Company Prep.
+                    Preparing for interviews? Use Frontend Coding Challenges first, then move into a concrete Study Plan before targeted Company Prep.
                   </p>
                   <div class="detail-prep-bridge__links">
                     <a [routerLink]="['/interview-questions']">Open frontend interview questions</a>
@@ -574,7 +574,7 @@
                     <a *ngIf="isWebTech()" [routerLink]="['/html-css/interview-questions']">Open HTML/CSS interview questions</a>
                     <a [routerLink]="['/interview-questions/essential']">Open Essential 60</a>
                     <a [routerLink]="['/machine-coding']">Open Machine Coding Hub</a>
-                    <a [routerLink]="['/coding']">Open Question Library</a>
+                    <a [routerLink]="['/coding']">Open Frontend Coding Challenges</a>
                     <a [routerLink]="['/system-design']">Open System Design</a>
                     <a [routerLink]="['/guides/interview-blueprint/intro']">Open Interview Prep Guide</a>
                     <a [routerLink]="['/guides/system-design-blueprint']">Open System Design Blueprint</a>
@@ -700,7 +700,7 @@
           Go back
         </button>
         <a faButton variant="ghost" [routerLink]="['/coding']">
-          Question Library
+          Frontend Coding Challenges
         </a>
       </div>
     </article>

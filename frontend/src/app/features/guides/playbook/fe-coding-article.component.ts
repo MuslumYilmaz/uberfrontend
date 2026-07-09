@@ -225,7 +225,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     <p>
       Use this page as the prep guide and question map. When you are ready to build,
       move into <a [routerLink]="['/machine-coding']">Frontend machine coding questions</a>
-      or the <a [routerLink]="['/coding']">coding practice workspace</a>.
+      or the <a [routerLink]="['/coding']">Frontend Coding Challenges hub</a>.
     </p>
 
     <div class="practice-proof" data-testid="coding-guide-practice-proof">
@@ -251,8 +251,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <a class="proof-cta proof-cta--primary" [routerLink]="['/machine-coding']">
           Start machine coding practice
         </a>
-        <a class="proof-cta" [routerLink]="['/coding']" [queryParams]="{ view: 'formats', category: 'ui' }">
-          Browse UI coding formats
+        <a class="proof-cta" [routerLink]="['/coding']">
+          Browse Frontend Coding Challenges
         </a>
       </div>
     </div>
@@ -602,7 +602,7 @@ if (requestId !== latestRequestId) return;</code></pre>
     </p>
     <div class="next-links">
       <a [routerLink]="['/machine-coding']">Frontend machine coding questions</a>
-      <a [routerLink]="['/coding']">Frontend coding interview practice workspace</a>
+      <a [routerLink]="['/coding']">Frontend Coding Challenges</a>
       <a [routerLink]="['/guides','interview-blueprint','javascript-interviews']">JavaScript interview patterns and answers</a>
       <a [routerLink]="['/guides','interview-blueprint','ui-interviews']">Frontend UI interview execution guide</a>
       <a [routerLink]="['/guides','interview-blueprint','dsa-for-fe']">DSA for frontend interviews</a>

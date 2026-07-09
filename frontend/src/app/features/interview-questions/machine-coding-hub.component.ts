@@ -360,6 +360,12 @@ export class MachineCodingHubComponent implements OnInit {
 
   readonly focusLinks: HubLink[] = [
     {
+      label: 'Frontend Coding Challenges',
+      description: 'Focused JavaScript functions, UI exercises, HTML/CSS implementation, and debugging tasks.',
+      route: ['/coding'],
+      path: '/coding',
+    },
+    {
       label: 'JavaScript utility rounds',
       description: 'Debounce, throttle, Promise utilities, deep clone, currying, and async reasoning.',
       route: ['/coding'],

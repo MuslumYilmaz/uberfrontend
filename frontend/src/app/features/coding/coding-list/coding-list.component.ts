@@ -9,14 +9,15 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { SliderModule } from 'primeng/slider';
 
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subscription } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, shareReplay, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { Difficulty, Question, QuestionKind, Technology, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
-import { MixedQuestionListItem, QuestionService } from '../../../core/services/question.service';
+import { MixedQuestionListItem, QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
 import { UserProgressService } from '../../../core/services/user-progress.service';
+import { CODING_HUB_DEBUG_DISCOVERY, CodingHubGeneratedDiscoveryItem } from '../../../generated/coding-hub-discovery';
 import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { FRAMEWORK_FAMILY_BY_ID, frameworkLabel, FrameworkVariant } from '../../../shared/framework-families';
@@ -81,9 +82,30 @@ type ContextualSupportLink = {
   eyebrow: string;
   title: string;
   body: string;
-  route: any[];
+  route: any[] | string;
   cta: string;
   testId: string;
+};
+
+type DiscoveryKind = 'coding' | 'debug';
+
+type CodingHubDiscoveryItem = {
+  id: string;
+  title: string;
+  description: string;
+  tech: Tech;
+  kind: DiscoveryKind;
+  difficulty: string;
+  access: string;
+  importance: number;
+  route: any[] | string;
+};
+
+type CodingHubDiscoverySection = {
+  title: string;
+  description: string;
+  totalCount: number;
+  items: CodingHubDiscoveryItem[];
 };
 
 type FocusSlug =
@@ -139,7 +161,8 @@ const SYSTEM_TITLE_HINTS = [
 ];
 
 const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 'system'];
-const QUESTION_LIBRARY_FIT_PILLS = ['Start here', 'All levels'] as const;
+const DISCOVERY_CODING_TECHS: Tech[] = ['javascript', 'react', 'angular', 'vue', 'html', 'css'];
+const CODING_CHALLENGE_FIT_PILLS = ['Real prompts', 'Starter code', 'Tests', 'Solutions + follow-ups', 'Free to start'] as const;
 const PRACTICE_TYPES_FIT_PILLS = ['Format-first', 'Good after basics'] as const;
 const SYSTEM_DESIGN_FIT_PILLS = ['Senior signal', 'Architecture + tradeoffs'] as const;
 const DEFAULT_START_QUESTION_ID = 'js-debounce';
@@ -475,6 +498,154 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return resolved.items;
   }
 
+  private loadDiscoveryRows(kind: DiscoveryKind): Observable<CodingHubDiscoveryItem[]> {
+    if (kind === 'debug') {
+      return of(CODING_HUB_DEBUG_DISCOVERY.map((item, index) => this.toGeneratedDiscoveryItem(item, index)));
+    }
+
+    const techs = DISCOVERY_CODING_TECHS;
+    return forkJoin(
+      techs.map((tech) => {
+        return this.qs.loadQuestionSummaries(tech, kind, { transferState: false }).pipe(
+          map((list): CodingHubDiscoveryItem[] =>
+            (list ?? [])
+              .filter((q) => q?.id && q?.title)
+              .map((q) => this.toDiscoveryItem(q, tech, kind)),
+          ),
+          catchError(() => of([] as CodingHubDiscoveryItem[])),
+        );
+      }),
+    ).pipe(
+      map((buckets) => buckets.flat()),
+    );
+  }
+
+  private toGeneratedDiscoveryItem(item: CodingHubGeneratedDiscoveryItem, index: number): CodingHubDiscoveryItem {
+    return {
+      id: item.id,
+      title: item.title,
+      description: this.preview(this.decodeHtmlEntities(item.summary || ''), 112),
+      tech: item.tech as Tech,
+      kind: 'debug',
+      difficulty: String(item.difficulty || 'easy'),
+      access: String(item.access || 'free'),
+      importance: Math.max(0, 1000 - index),
+      route: item.route,
+    };
+  }
+
+  private toDiscoveryItem(
+    q: Question | QuestionListItem,
+    tech: Tech,
+    kind: DiscoveryKind,
+  ): CodingHubDiscoveryItem {
+    return {
+      id: q.id,
+      title: q.title,
+      description: this.discoveryDescription(q),
+      tech,
+      kind,
+      difficulty: String(q.difficulty || 'easy'),
+      access: String(q.access || 'free'),
+      importance: Number(q.importance ?? 0),
+      route: ['/', tech, kind, q.id],
+    };
+  }
+
+  private discoveryDescription(q: QuestionListItem): string {
+    const raw = (q.shortDescription || q.description || '') as any;
+    const text = typeof raw === 'string'
+      ? raw
+      : String(raw?.summary || raw?.text || '');
+    return this.preview(this.decodeHtmlEntities(text), 112);
+  }
+
+  private buildCodingHubDiscoverySections(
+    coding: CodingHubDiscoveryItem[],
+    debug: CodingHubDiscoveryItem[],
+  ): CodingHubDiscoverySection[] {
+    const section = (
+      title: string,
+      description: string,
+      allItems: CodingHubDiscoveryItem[],
+      limit = 5,
+    ): CodingHubDiscoverySection | null => {
+      const items = this.sortDiscoveryItems(
+        allItems.filter((item) => !this.isPremiumDiscoveryItem(item)),
+      ).slice(0, limit);
+
+      if (!allItems.length || !items.length) return null;
+      return {
+        title,
+        description,
+        totalCount: allItems.length,
+        items,
+      };
+    };
+
+    return [
+      section(
+        'JavaScript coding challenges',
+        'Function, async, DOM, data-structure, and browser utility prompts with testable edge cases.',
+        coding.filter((item) => item.tech === 'javascript'),
+        6,
+      ),
+      section(
+        'React UI challenges',
+        'Focused component exercises for state, hooks, lists, forms, async UI, and interaction states.',
+        coding.filter((item) => item.tech === 'react'),
+      ),
+      section(
+        'Angular challenges',
+        'Standalone component, RxJS, forms, template-state, and service-boundary implementation drills.',
+        coding.filter((item) => item.tech === 'angular'),
+      ),
+      section(
+        'Vue challenges',
+        'Composition API, reactivity, forms, list rendering, and component communication exercises.',
+        coding.filter((item) => item.tech === 'vue'),
+      ),
+      section(
+        'HTML/CSS implementation exercises',
+        'Semantic markup, forms, accessibility, Flexbox, Grid, responsive layout, and CSS state drills.',
+        coding.filter((item) => item.tech === 'html' || item.tech === 'css'),
+        6,
+      ),
+      section(
+        'Debugging challenges',
+        'Small broken implementations with failing behavior for practicing root-cause analysis and fixes.',
+        debug,
+        6,
+      ),
+    ].filter((value): value is CodingHubDiscoverySection => value !== null);
+  }
+
+  private buildResolvedCodingHubDiscoverySections(data: Record<string, unknown>): CodingHubDiscoverySection[] {
+    const resolved = data['questionList'] as QuestionListResolved | undefined;
+    if (!resolved || resolved.source !== 'global-coding' || resolved.kind !== 'coding') {
+      return [];
+    }
+
+    const coding = (resolved.items ?? [])
+      .filter((q) => q?.id && q?.title && q?.tech)
+      .map((q) => this.toDiscoveryItem(q, q.tech, 'coding'));
+
+    return this.buildCodingHubDiscoverySections(coding, []);
+  }
+
+  private sortDiscoveryItems(items: CodingHubDiscoveryItem[]): CodingHubDiscoveryItem[] {
+    return items.slice().sort((a, b) => {
+      if (a.importance !== b.importance) return b.importance - a.importance;
+      const diff = this.difficultyRank(a.difficulty) - this.difficultyRank(b.difficulty);
+      if (diff !== 0) return diff;
+      return a.title.localeCompare(b.title);
+    });
+  }
+
+  private isPremiumDiscoveryItem(item: CodingHubDiscoveryItem): boolean {
+    return item.access.toLowerCase() === 'premium';
+  }
+
   allTagCounts$ = this.rawQuestions$.pipe(
     map(rows => {
       const counts = new Map<string, number>();
@@ -670,6 +841,23 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'trivia', label: 'Concepts' }
   ];
 
+  codingHubDiscovery$ = this.route.data.pipe(
+    switchMap((data) => {
+      const source = (data['source'] as ListSource | undefined) ?? this.source;
+      if (source !== 'global-coding') return of<CodingHubDiscoverySection[]>([]);
+      const initialSections = this.buildResolvedCodingHubDiscoverySections(data);
+
+      return forkJoin({
+        coding: this.loadDiscoveryRows('coding'),
+        debug: this.loadDiscoveryRows('debug'),
+      }).pipe(
+        map(({ coding, debug }) => this.buildCodingHubDiscoverySections(coding, debug)),
+        startWith(initialSections),
+      );
+    }),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
   currentFrameworkPrep(): FrameworkPrepLink | null {
     if (this.currentViewKey === 'formats') return null;
     const selectedTech = this.selectedTech$.value;
@@ -683,17 +871,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const links: ContextualSupportLink[] = [];
     if (!this.isFormatsMode()) {
       links.push({
-        eyebrow: 'Guided warm-up',
-        title: 'Need a lighter start before filtering?',
-        body: 'Use the guided warm-up page when you want a small decision surface before the full Question Library.',
+        eyebrow: 'Concept Q&A',
+        title: 'Need explanations instead of coding?',
+        body: 'Use the interview questions hub for conceptual frontend questions and concise answer practice.',
         route: ['/interview-questions'],
-        cta: 'Open guided warm-up',
+        cta: 'Open interview Q&A',
         testId: 'interview-hub-support-link',
       });
       links.push({
         eyebrow: 'Curated shortlist',
         title: 'Want the highest-signal questions only?',
-        body: 'Open the Essential 60 when you want a tighter list across JavaScript, UI, system design, and concepts.',
+        body: 'Open Essential 60 when you want a tighter route through JavaScript utilities, UI coding, system design, and concepts.',
         route: ['/interview-questions/essential'],
         cta: 'Open Essential 60',
         testId: 'essential-questions-support-link',
@@ -730,7 +918,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
       if (this.isFormatsMode()) return 'Practice Types';
-      return 'Question Library';
+      return 'Coding Challenge Hub';
     }
 
     if (this.source === 'company') return 'Company practice';
@@ -743,7 +931,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
       if (this.isFormatsMode()) return 'Practice Types';
-      return 'Frontend Interview Questions Bank';
+      return 'Frontend Coding Challenges';
     }
 
     return this.heading();
@@ -760,10 +948,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
       }
 
       if (this.isGuestDefaultGlobalLibrary()) {
-        return 'Use the broader question bank after the curated shortlist. If you want one strong first rep, start with the Debounce drill.';
+        return 'Build and debug focused frontend prompts across JavaScript functions, UI exercises, HTML/CSS implementation, and debugging tasks. Start with real prompts, starter code, tests, solutions, and follow-ups; selected challenges are free to start.';
       }
 
-      return 'Search the frontend interview question bank across coding, system design, and concept prompts, then filter by technology, difficulty, and focus area before opening one prompt.';
+      return 'Search focused frontend coding challenges by technology, difficulty, and focus area, then open one prompt with starter code, tests, solutions, and follow-ups.';
     }
 
     if (this.source === 'company') {
@@ -777,7 +965,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source !== 'global-coding') return [];
     if (this.isSystemCategoryActive()) return SYSTEM_DESIGN_FIT_PILLS;
     if (this.isFormatsMode()) return PRACTICE_TYPES_FIT_PILLS;
-    return QUESTION_LIBRARY_FIT_PILLS;
+    return CODING_CHALLENGE_FIT_PILLS;
   }
 
   primaryActionLabel(): string {
@@ -797,7 +985,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       if (this.isSystemCategoryActive()) return 'Opens the first matching system design scenario.';
       if (this.isFormatsMode()) return 'Opens the first matching prompt in this format.';
       if (this.isGuestDefaultGlobalLibrary()) return 'Opens Essential 60 #1: the high-signal debounce function drill.';
-      return 'Opens the first matching prompt from the current library view.';
+      return 'Opens the first matching coding challenge from the current view.';
     }
 
     return 'Opens the first matching prompt from this filtered list.';
@@ -846,6 +1034,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
   trackByQuestionId = (_: number, q: Row): string => q.id;
   trackByFrameworkOption = (_: number, option: FrameworkVariant): string =>
     `${option.kind}:${option.tech}:${option.id}`;
+  trackByDiscoverySection = (_: number, section: CodingHubDiscoverySection): string => section.title;
+  trackByDiscoveryItem = (_: number, item: CodingHubDiscoveryItem): string =>
+    `${item.kind}:${item.tech}:${item.id}`;
 
   handleCardClick(ev: Event, q: Row) {
     ev.preventDefault();
@@ -1276,8 +1467,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         map(list => (list ?? []).filter((q) => q?.id && q?.title)),
-        map(list => list.slice(0, this.maxItemListItems)),
-        map(list => ({ list, key: list.map((q) => q.id).join('|') })),
+        map(list => ({ list, key: list.slice(0, this.maxItemListItems).map((q) => q.id).join('|') })),
         distinctUntilChanged((a, b) => a.key === b.key),
       )
       .subscribe(({ list }) => {
@@ -1301,15 +1491,61 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (!baseSeo || this.isNoIndex(baseSeo)) return;
     const queryKeys = this.route.snapshot.queryParamMap.keys;
     const seoMeta = buildCodingListSeoMeta(baseSeo, queryKeys);
-    const itemList = this.buildItemListSchema(list);
+    const jsonLd = this.buildCodingHubJsonLd(list);
     this.seo.updateTags({
       ...seoMeta,
       canonical: this.seo.buildCanonicalUrl('/coding'),
-      jsonLd: itemList || undefined,
+      jsonLd,
     });
   }
 
-  private buildItemListSchema(list: Row[]): Record<string, any> | null {
+  private buildCodingHubJsonLd(list: Row[]): Record<string, any>[] {
+    const canonical = this.seo.buildCanonicalUrl('/coding');
+    const itemList = this.buildItemListSchema(list, canonical);
+    const schemas: Record<string, any>[] = [
+      {
+        '@type': 'CollectionPage',
+        '@id': canonical,
+        url: canonical,
+        name: 'Frontend Coding Challenges',
+        description:
+          'Focused frontend coding challenges with real prompts, starter code, tests, solutions, and follow-up practice across JavaScript, React, Angular, Vue, HTML, and CSS.',
+        inLanguage: 'en',
+        numberOfItems: list.length,
+        about: [
+          { '@type': 'Thing', name: 'frontend coding challenges' },
+          { '@type': 'Thing', name: 'JavaScript coding challenges' },
+          { '@type': 'Thing', name: 'React UI challenges' },
+          { '@type': 'Thing', name: 'Angular coding challenges' },
+          { '@type': 'Thing', name: 'Vue coding challenges' },
+          { '@type': 'Thing', name: 'HTML and CSS implementation exercises' },
+          { '@type': 'Thing', name: 'frontend debugging challenges' },
+        ],
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'FrontendAtlas',
+            item: this.seo.buildCanonicalUrl('/'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Frontend Coding Challenges',
+            item: canonical,
+          },
+        ],
+      },
+    ];
+
+    if (itemList) schemas.push(itemList);
+    return schemas;
+  }
+
+  private buildItemListSchema(list: Row[], canonical: string): Record<string, any> | null {
     const items = list
       .filter((q) => q?.id && q?.title)
       .slice(0, this.maxItemListItems)
@@ -1321,7 +1557,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
       }));
 
     if (!items.length) return null;
-    return { '@type': 'ItemList', itemListElement: items };
+    return {
+      '@type': 'ItemList',
+      '@id': `${canonical}#coding-challenges`,
+      url: canonical,
+      name: 'Frontend Coding Challenges',
+      numberOfItems: list.length,
+      itemListElement: items,
+    };
   }
 
   private listItemPath(q: Row): string {
@@ -1558,6 +1801,24 @@ export class CodingListComponent implements OnInit, OnDestroy {
       faang: 'FAANG'
     };
     return map[slug] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
+  }
+
+  techLabel(tech: Tech | null | undefined): string {
+    switch (tech) {
+      case 'angular': return 'Angular';
+      case 'react': return 'React';
+      case 'vue': return 'Vue';
+      case 'html': return 'HTML';
+      case 'css': return 'CSS';
+      default: return 'JavaScript';
+    }
+  }
+
+  discoverySectionTestId(section: CodingHubDiscoverySection): string {
+    return section.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   }
 
   private replaceQueryParams(params: Record<string, any>) {

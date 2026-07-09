@@ -1047,7 +1047,7 @@ export const routes: Routes = [
     data: NOT_FOUND_ROUTE_DATA,
   },
 
-  // Global Question Library — lists all practice questions; pills filter client-side
+  // Frontend Coding Challenges hub: focused implementation and debugging practice.
   {
     path: 'coding',
     loadComponent: () =>
@@ -1061,9 +1061,9 @@ export const routes: Routes = [
       source: 'global-coding',
       kind: 'coding',
       seo: {
-        title: 'Frontend Interview Questions Bank | Coding, System Design, Concepts',
+        title: 'Frontend Coding Challenges | JavaScript, React, Angular, HTML & CSS',
         description:
-          'Practice frontend interview questions across coding, system design, and concepts. Filter by technology, difficulty, and focus area, then open one prompt immediately.',
+          'Practice focused frontend coding challenges with real prompts, starter code, tests, and solution follow-ups across JavaScript, React, Angular, Vue, HTML, and CSS. Selected challenges are free to start; premium unlocks deeper sets and solutions.',
       },
     },
   },

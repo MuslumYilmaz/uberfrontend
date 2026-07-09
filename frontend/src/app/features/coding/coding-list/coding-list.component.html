@@ -31,7 +31,7 @@
 
   <section class="fa-access-note" *ngIf="source === 'global-coding'" aria-label="Access and pricing">
     <p class="fa-meta-text">
-      Most challenges and solutions are free to start. Premium unlocks additional question sets and full solution depth.
+      Selected frontend coding challenges are free to start. Premium unlocks additional question sets and deeper solution context while locked items stay gated.
     </p>
   </section>
 
@@ -59,11 +59,54 @@
     </section>
   </ng-container>
 
+  <ng-container *ngIf="codingHubDiscovery$ | async as discoverySections">
+    <section
+      class="fa-discovery"
+      *ngIf="source === 'global-coding' && discoverySections.length"
+      aria-labelledby="coding-discovery-title"
+      data-testid="coding-discovery-sections"
+    >
+      <div class="fa-discovery__head">
+        <p class="fa-page-kicker">Practice paths</p>
+        <h2 class="fa-section-title" id="coding-discovery-title">Frontend coding challenge categories</h2>
+        <p class="fa-meta-text">
+          Jump directly into implementation and debugging prompts by category.
+        </p>
+      </div>
+
+      <div class="fa-discovery__grid">
+        <article
+          class="fa-discovery-section"
+          *ngFor="let section of discoverySections; trackBy: trackByDiscoverySection"
+          [attr.data-testid]="'coding-discovery-section-' + discoverySectionTestId(section)"
+        >
+          <div class="fa-discovery-section__head">
+            <h3>{{ section.title }}</h3>
+            <span>{{ section.totalCount }} prompts</span>
+          </div>
+          <p>{{ section.description }}</p>
+          <div class="fa-discovery-section__links">
+            <a
+              *ngFor="let item of section.items; trackBy: trackByDiscoveryItem"
+              [routerLink]="item.route"
+              [attr.data-testid]="'coding-discovery-link-' + item.id"
+            >
+              <span class="fa-discovery-link__title">{{ item.title }}</span>
+              <span class="fa-discovery-link__meta">
+                {{ techLabel(item.tech) }} · {{ item.difficulty | titlecase }} · Free to start
+              </span>
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </ng-container>
+
   <ng-template #filterPanelTpl let-drawer="drawer">
       <div faCard elevated class="fa-filter-panel__surface" [class.fa-filter-panel__surface--drawer]="drawer">
         <div class="fa-filter-panel__header">
           <div>
-            <p class="fa-filter-panel__eyebrow fa-meta-label">All Questions</p>
+            <p class="fa-filter-panel__eyebrow fa-meta-label">All Challenges</p>
             <h2 class="fa-filter-panel__title fa-section-title">Refine the list</h2>
           </div>
           <div class="fa-filter-panel__header-actions">

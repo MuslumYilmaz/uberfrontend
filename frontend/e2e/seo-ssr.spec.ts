@@ -15,10 +15,18 @@ const SSR_ENABLED = (() => {
 const CASES = [
   {
     path: '/coding',
-    titleIncludes: 'frontend interview questions bank',
-    h1: 'Frontend Interview Questions Bank',
+    titleIncludes: 'frontend coding challenges',
+    h1: 'Frontend Coding Challenges',
     detail: false,
+    indexable: true,
     listTestIdPrefix: 'question-card-',
+    bodyTextIncludes: [
+      'JavaScript coding challenges',
+      'React UI challenges',
+      'Angular challenges',
+      'Vue challenges',
+      'HTML/CSS implementation exercises',
+    ],
   },
   {
     path: '/angular/coding/angular-autocomplete-search-starter',

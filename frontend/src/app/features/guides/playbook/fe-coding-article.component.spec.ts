@@ -90,7 +90,7 @@ describe('FeCodingArticle', () => {
     expect(proofText).toContain('editor + checks');
     expect(proofText).toContain('Most asked');
     expect(links[0]?.getAttribute('href') || '').toBe('/machine-coding');
-    expect(links[1]?.getAttribute('href') || '').toContain('/coding?view=formats&category=ui');
+    expect(links[1]?.getAttribute('href') || '').toBe('/coding');
   });
 
   it('renders 10 most-asked prompt cards with direct practice links', () => {

@@ -9257,13 +9257,18 @@ export class FrameworkPrepPathArticle {
         note: `Review the ${config.label} coding and concept prompts together before mixed rounds.`,
       },
       {
-        label: `${config.label} coding question library filter`,
+        label: 'Frontend Coding Challenges',
+        route: ['/coding'],
+        note: 'Use the main coding hub for focused functions, UI exercises, HTML/CSS implementation, and debugging tasks.',
+      },
+      {
+        label: `${config.label} coding challenges filter`,
         route: ['/coding'],
         queryParams: { tech: config.tech, kind: 'coding' },
         note: 'Apply the path with implementation drills and edge-case checks.',
       },
       {
-        label: `${config.label} trivia question library filter`,
+        label: `${config.label} concept Q&A filter`,
         route: ['/coding'],
         queryParams: { tech: config.tech, kind: 'trivia' },
         note: 'Practice concise explanations for framework concepts and trade-offs.',
