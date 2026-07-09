@@ -151,6 +151,26 @@ function buildProgressAwareWhy(snapshot: FailureSnapshot, base: string): string 
 
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   {
+    ruleId: 'css-flexbox-navbar-responsive-layout',
+    questionId: 'css-flexbox-navbar',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['nav', 'navbar', 'links', 'cta', 'flex', 'wrap', '480', 'overflow', 'focus']) ||
+      anyFailingErrorIncludes(snapshot, ['nav', 'navbar', 'links', 'cta', 'flex', 'wrap', '480', 'overflow', 'focus']),
+    buildHint: (snapshot) => ({
+      ruleId: 'css-flexbox-navbar-responsive-layout',
+      title: 'Use Flexbox for the responsive navbar contract',
+      why: buildProgressAwareWhy(snapshot, 'This prompt is testing layout strategy, not a hidden navigation toggle.'),
+      actions: [
+        'Start with `.nav { display:flex; align-items:center; gap:... }` so brand, links, and CTA share one Flexbox row.',
+        'Pick one desktop strategy: centered `.links { display:flex; flex:1; justify-content:center; }` or content-sized links plus `.cta { margin-left:auto; }`.',
+        'At `max-width:480px`, stack or wrap the layout without hiding links, then verify the CTA remains reachable.',
+        'Keep keyboard focus visibility with the default outline or an explicit `:focus-visible` style.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
     ruleId: 'js-sleep-return-promise',
     questionId: 'js-sleep',
     priority: 120,

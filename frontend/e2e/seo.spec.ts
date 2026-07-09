@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { getMonacoModelValue } from './helpers';
 
 async function setSeoHost(page: any, host: string): Promise<void> {
   await page.addInitScript((value: string) => {
@@ -65,7 +66,8 @@ test('seo: css theme variables challenge is indexable with self canonical and cr
   await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/prefers-color-scheme/i);
   await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/html\.theme-dark/i);
   await expect(page.locator('[data-testid="coding-breadcrumb"] a[href="/css/interview-questions"]')).toHaveCount(1);
-  await expect(page.locator('[data-testid="web-css-editor"]').last()).toContainText(/box-shadow:\s*var\(--panel-shadow\)/i);
+  const starterCss = await getMonacoModelValue(page, 'q-css-theme-variables-dark-mode-css');
+  expect(starterCss).toMatch(/box-shadow:\s*var\(--panel-shadow\)/i);
   await page.getByRole('button', { name: 'Show preview' }).click();
   await expect(page.getByText('Showing solution preview')).toBeVisible();
 

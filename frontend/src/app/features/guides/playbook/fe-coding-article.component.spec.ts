@@ -69,6 +69,8 @@ describe('FeCodingArticle', () => {
     expect(fixture.nativeElement.querySelectorAll('.question-list li').length).toBe(25);
     expect(hostText).toContain('Build accessible autocomplete with debounce and keyboard selection');
     expect(hostText).toContain('Design a shopping cart or transfer list with derived totals and selection');
+    expect(hostText).toContain('build a responsive navbar with CSS Flexbox');
+    expect(hrefs()).toContain('/css/coding/css-flexbox-navbar');
   });
 
   it('renders the practice proof band with machine-coding conversion links', () => {

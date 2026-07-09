@@ -218,6 +218,32 @@ const criticalRouteContracts = [
     ],
   },
   {
+    route: '/css/coding/css-flexbox-navbar',
+    title: 'Build Responsive Navbar with CSS Flexbox',
+    h1: 'Build a Responsive Navbar with CSS Flexbox',
+    canonical: 'https://frontendatlas.com/css/coding/css-flexbox-navbar',
+    robotsMustNotInclude: ['noindex'],
+    googlebotMustNotInclude: ['noindex'],
+    schemaTypes: ['BreadcrumbList', 'TechArticle', 'HowTo', 'FAQPage'],
+    descriptionTerms: [
+      'CSS Flexbox navbar challenge',
+      'align brand',
+      'links',
+      'CTA',
+      'mobile layout',
+      'interview trade-offs',
+    ],
+    bodyTerms: [
+      'Practice a realistic frontend interview prompt',
+      'Acceptance criteria',
+      'Common mistakes',
+      'flex-wrap',
+      'margin-left: auto',
+      'focus',
+      'No JavaScript',
+    ],
+  },
+  {
     route: '/system-design',
     title: 'Frontend System Design Interview Questions',
     h1: 'Frontend System Design Interview Questions',
@@ -348,6 +374,15 @@ function includesPhrase(value, phrase) {
   return normalizeText(value).toLowerCase().includes(String(phrase || '').toLowerCase());
 }
 
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractAttr(tag, attr) {
+  const match = String(tag || '').match(new RegExp(`\\b${escapeRegExp(attr)}=["']([^"']*)["']`, 'i'));
+  return normalizeText(match?.[1] || '');
+}
+
 function extractTitle(html) {
   const match = html.match(/<title>([\s\S]*?)<\/title>/i);
   return normalizeText(match?.[1] || '');
@@ -358,9 +393,23 @@ function extractMetaDescription(html) {
   return normalizeText(match?.[1] || '');
 }
 
+function extractMetaContentByName(html, name) {
+  const match = html.match(new RegExp(`<meta\\b(?=[^>]*\\bname=["']${escapeRegExp(name)}["'])[^>]*>`, 'i'));
+  return extractAttr(match?.[0] || '', 'content');
+}
+
+function extractCanonical(html) {
+  const match = html.match(/<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/i);
+  return extractAttr(match?.[0] || '', 'href');
+}
+
 function extractH1(html) {
   const match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
   return normalizeText(match?.[1] || '');
+}
+
+function hasJsonLdType(html, type) {
+  return new RegExp(`"@type"\\s*:\\s*"${escapeRegExp(type)}"`, 'i').test(html);
 }
 
 const files = collectHtmlFiles(BUILD_DIR);
@@ -403,11 +452,26 @@ for (const contract of criticalRouteContracts) {
   const title = extractTitle(html);
   const h1 = extractH1(html);
   const description = extractMetaDescription(html);
+  const canonical = extractCanonical(html);
+  const robots = extractMetaContentByName(html, 'robots');
+  const googlebot = extractMetaContentByName(html, 'googlebot');
   const missing = [];
 
   if (!includesPhrase(title, contract.title)) missing.push(`title lacks "${contract.title}"`);
   if (!includesPhrase(h1, contract.h1)) missing.push(`h1 lacks "${contract.h1}"`);
   if (description.length < 70) missing.push('description is too short');
+  if (contract.canonical && canonical !== contract.canonical) {
+    missing.push(`canonical is "${canonical || '(missing)'}", expected "${contract.canonical}"`);
+  }
+  for (const term of contract.robotsMustNotInclude || []) {
+    if (includesPhrase(robots, term)) missing.push(`robots includes "${term}"`);
+  }
+  for (const term of contract.googlebotMustNotInclude || []) {
+    if (includesPhrase(googlebot, term)) missing.push(`googlebot includes "${term}"`);
+  }
+  for (const type of contract.schemaTypes || []) {
+    if (!hasJsonLdType(html, type)) missing.push(`jsonLd lacks "${type}"`);
+  }
   for (const term of contract.descriptionTerms || []) {
     if (!includesPhrase(description, term)) missing.push(`description lacks "${term}"`);
   }

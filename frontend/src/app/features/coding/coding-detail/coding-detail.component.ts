@@ -22,7 +22,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { Subject, Subscription, filter, firstValueFrom, takeUntil } from 'rxjs';
 
-import type { Question, StructuredDescription } from '../../../core/models/question.model';
+import type { Question, QuestionFaqItem, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForCoding, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
@@ -359,6 +359,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       interviewExplanation: specs.interviewExplanation as string | undefined,
       testingChecklist: specs.testingChecklist as string[] | undefined,
       techFocus: specs.techFocus as string[] | undefined,
+      faq: specs.faq as QuestionFaqItem[] | undefined,
     };
   });
 
@@ -1184,6 +1185,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       ? this.seo.buildCanonicalUrl(this.frameworkPrepPath())
       : null;
 
+    const structuredName = this.structuredDataQuestionName(q);
     const breadcrumb = {
       '@type': 'BreadcrumbList',
       itemListElement: [
@@ -1217,7 +1219,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const article = {
       '@type': 'TechArticle',
       '@id': canonical,
-      headline: q.title,
+      headline: structuredName,
       description,
       url: canonical,
       image: [imageUrl],
@@ -1257,7 +1259,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     };
 
     const howTo = this.buildHowToSchema(q, canonical);
-    const jsonLd = howTo ? [breadcrumb, article, howTo] : [breadcrumb, article];
+    const faqPage = this.buildFaqSchema(q, canonical);
+    const jsonLd: Array<Record<string, any>> = [breadcrumb, article];
+    if (howTo) jsonLd.push(howTo);
+    if (faqPage) jsonLd.push(faqPage);
 
     this.seo.updateTags({
       title: seoTitle,
@@ -1277,7 +1282,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return {
       '@type': 'HowTo',
       '@id': `${canonical}#howto`,
-      name: q.title,
+      name: this.structuredDataQuestionName(q),
       description: this.seoDescription(q),
       image: [this.structuredDataImageUrl()],
       totalTime: this.estimateHowToTotalTime(q),
@@ -1289,6 +1294,45 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         text,
       })),
     };
+  }
+
+  private buildFaqSchema(q: Question, canonical: string): Record<string, any> | null {
+    const rawItems = typeof q.description === 'object'
+      ? ((q.description as any)?.specs?.faq as QuestionFaqItem[] | undefined)
+      : undefined;
+    if (!Array.isArray(rawItems)) return null;
+
+    const mainEntity = rawItems
+      .map((item) => ({
+        question: this.normalizePreviewText(item?.question || ''),
+        answer: this.normalizePreviewText(item?.answer || ''),
+      }))
+      .filter((item) => item.question && item.answer)
+      .map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      }));
+
+    if (!mainEntity.length) return null;
+
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      url: canonical,
+      name: `${this.structuredDataQuestionName(q)} FAQ`,
+      mainEntity,
+    };
+  }
+
+  private structuredDataQuestionName(q: Question): string {
+    return (
+      this.sanitizeSeoText(String(q?.seo?.h1 || q?.title || ''), SEO_TITLE_MAX_LEN)
+      || 'Frontend coding interview question'
+    );
   }
 
   private buildHowToSteps(q: Question): string[] {

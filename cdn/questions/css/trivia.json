@@ -2213,6 +2213,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-flexbox-navbar\">Practice a Flexbox navbar coding challenge</a> to apply main-axis alignment, <code>gap</code>, wrapping, and CTA placement in a realistic responsive navbar prompt."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of flexbox as a smart row or column manager. The parent decides the lane, spacing, and alignment rules; the children decide whether they keep their size, grow, or shrink inside that lane."
         },
         {
@@ -2788,7 +2792,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practice next</strong><br>Use the <a href=\"/css/coding/css-theme-variables-dark-mode\">CSS theme variables coding challenge</a> to apply <code>prefers-color-scheme</code> with custom properties and a manual dark-mode override."
+          "text": "<strong>Practice next</strong><br>Use the <a href=\"/css/coding/css-theme-variables-dark-mode\">CSS theme variables coding challenge</a> to apply <code>prefers-color-scheme</code> with custom properties and a manual dark-mode override. For a layout-focused breakpoint drill, <a href=\"/css/coding/css-flexbox-navbar\">build a responsive navbar with CSS Flexbox</a> and test the <code>max-width: 480px</code> behavior."
         },
         {
           "type": "text",
@@ -2980,6 +2984,10 @@
         {
           "type": "text",
           "text": "<strong>Performance & Accessibility Tips</strong><br><ul><li>Prefer mobile-first CSS; add features as space allows.</li><li>Avoid fixed widths/heights; use fluid constraints (<code>max-width</code>, <code>min()</code>, <code>max()</code>, <code>clamp()</code>).</li><li>Use <code>box-sizing: border-box;</code> to make sizing more predictable.</li><li>Respect user preferences: <code>@media (prefers-reduced-motion)</code>, <code>(prefers-color-scheme)</code>.</li><li>Test component responsiveness within various container widths, not just the viewport.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-flexbox-navbar\">Build a responsive navbar with CSS Flexbox</a> to practice fluid layout, wrapping, focus visibility, and narrow-width overflow checks."
         },
         {
           "type": "text",

@@ -328,6 +328,12 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <p>Requirement: build tabs that switch panels and preserve active state.</p>
         <p class="prompt-card__focus">Test focus: roving tabindex, ARIA tabs linkage, Home/End keys.</p>
       </a>
+      <a class="prompt-card" [routerLink]="['/css','coding','css-flexbox-navbar']" data-testid="ui-prompt-css-navbar">
+        <div class="prompt-meta"><span>CSS</span><span>Responsive layout</span></div>
+        <h3>Responsive Flexbox Navbar</h3>
+        <p>Requirement: practice a Flexbox navbar coding challenge with brand, links, CTA, and mobile behavior.</p>
+        <p class="prompt-card__focus">Test focus: readable links, visible focus, flex-wrap, gap, and no hidden navigation.</p>
+      </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-accordion-faq']" data-testid="ui-prompt-accordion">
         <div class="prompt-meta"><span>React</span><span>Disclosure</span></div>
         <h3>Accordion</h3>

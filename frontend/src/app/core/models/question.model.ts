@@ -27,6 +27,7 @@ export type StructuredDescriptionSpecs = {
   interviewExplanation?: string;
   testingChecklist?: string[];
   techFocus?: string[];
+  faq?: QuestionFaqItem[];
 };
 
 export type StructuredArgument = {
@@ -106,6 +107,11 @@ export type TriviaIncidentCard = {
   options: TriviaIncidentOption[];
   correctOptionId: string;
   rereadPrompt?: string;
+};
+
+export type QuestionFaqItem = {
+  question: string;
+  answer: string;
 };
 
 export interface Question {

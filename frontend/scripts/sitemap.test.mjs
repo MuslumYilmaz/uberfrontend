@@ -29,6 +29,14 @@ function extractLocs(xml) {
   return Array.from(matches, (m) => m[1]);
 }
 
+function parseAbsoluteUrl(value) {
+  try {
+    return new URL(String(value || '').trim());
+  } catch {
+    return null;
+  }
+}
+
 function toLocalFile(loc) {
   try {
     const url = new URL(loc);
@@ -147,6 +155,30 @@ function assertPracticeCanonicalCoverage(paths, locs) {
   if (codingQueryLocs.length) {
     throw new Error(
       `Sitemap must only include clean /coding, not query variants. Examples: ${codingQueryLocs.slice(0, 5).join(', ')}`
+    );
+  }
+}
+
+function assertFlexboxNavbarSitemapCoverage(paths, locs) {
+  const route = '/css/coding/css-flexbox-navbar';
+  const canonical = 'https://frontendatlas.com/css/coding/css-flexbox-navbar';
+  if (!paths.has(route)) {
+    throw new Error(`Sitemap missing canonical route: ${route}`);
+  }
+  if (!locs.some((loc) => String(loc || '').trim() === canonical)) {
+    throw new Error(`Sitemap missing exact canonical loc: ${canonical}`);
+  }
+
+  const variants = locs.filter((loc) => {
+    const raw = String(loc || '').trim();
+    if (raw === canonical) return false;
+
+    const parsed = parseAbsoluteUrl(raw);
+    return parsed?.origin === 'https://frontendatlas.com' && parsed.pathname === route;
+  });
+  if (variants.length) {
+    throw new Error(
+      `Sitemap must only include the canonical Flexbox navbar URL. Variants: ${variants.slice(0, 5).join(', ')}`
     );
   }
 }
@@ -535,6 +567,7 @@ const entries = getAllSitemapEntries(sitemapFiles);
 const paths = getAllSitemapPaths(sitemapFiles);
 assertNoQueryOrHashInSitemapLocs(locs);
 assertPracticeCanonicalCoverage(paths, locs);
+assertFlexboxNavbarSitemapCoverage(paths, locs);
 assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
 assertCssThemeVariablesSitemapEntry(entries);

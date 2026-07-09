@@ -1745,7 +1745,7 @@
     "route": "/css/coding/css-flexbox-navbar",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "Build a responsive navbar using Flexbox. Align brand left, links center or right, and actions to the end. Use gap for spacing, keep items aligned on one row, and ensure the layout wraps cleanly on small screens without…",
+    "summary": "Practice a realistic frontend interview prompt: build a responsive navigation bar with Flexbox, preserve readable links, keep the CTA reachable, and explain how the layout behaves when space gets tight.",
     "tags": [
       "css",
       "layout",
@@ -1755,7 +1755,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/coding.json#css-flexbox-navbar"
   },
