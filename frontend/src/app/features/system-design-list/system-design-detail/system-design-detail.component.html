@@ -262,6 +262,22 @@
                             </div>
                         </div>
 
+                        <!-- LINKS -->
+                        <div *ngIf="b.type === 'links'" class="sd-links">
+                            <div class="sd-links-title" *ngIf="b.title">{{ b.title }}</div>
+                            <div class="sd-links-list">
+                                <a
+                                    class="sd-link-item"
+                                    *ngFor="let link of b.items; trackBy: trackByLinkItem"
+                                    [routerLink]="link.href">
+                                    <span class="sd-link-item__label">{{ link.label }}</span>
+                                    <span class="sd-link-item__description" *ngIf="link.description">
+                                        {{ link.description }}
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- TABLE -->
                         <div *ngIf="b.type === 'table'" class="sd-table">
                             <div class="sd-table-title" *ngIf="b.title">{{ b.title }}</div>

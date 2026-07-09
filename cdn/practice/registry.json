@@ -8608,26 +8608,6 @@
     "assetRef": "questions/system-design/cross-device-preferences-sync/meta.json"
   },
   {
-    "id": "dashboard-widgets-draggable-resizable",
-    "family": "question",
-    "title": "Dashboard with Draggable & Resizable Widgets",
-    "route": "/system-design/dashboard-widgets-draggable-resizable",
-    "tech": "system-design",
-    "difficulty": "hard",
-    "summary": "Design a customizable dashboard made of widgets that the user can rearrange and resize. Widgets live on a grid layout, can be dragged to change position, and resized via handles. The dashboard layout is persisted (e.g.…",
-    "tags": [
-      "dashboard",
-      "drag-drop",
-      "performance",
-      "local-storage"
-    ],
-    "access": "free",
-    "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/system-design/dashboard-widgets-draggable-resizable/meta.json"
-  },
-  {
     "id": "notification-toast-system",
     "family": "question",
     "title": "Design a Toast Notification System",
@@ -8652,6 +8632,26 @@
     "updatedAt": "2026-07-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/notification-toast-system/meta.json"
+  },
+  {
+    "id": "dashboard-widgets-draggable-resizable",
+    "family": "question",
+    "title": "Drag-and-Drop Dashboard Frontend System Design",
+    "route": "/system-design/dashboard-widgets-draggable-resizable",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design a customizable frontend dashboard where widgets can be dragged, snapped to a grid, resized within constraints, and restored from a saved layout. Key considerations include: a logical grid data model, pointer-even…",
+    "tags": [
+      "dashboard",
+      "drag-drop",
+      "performance",
+      "local-storage"
+    ],
+    "access": "free",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-01-30",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/dashboard-widgets-draggable-resizable/meta.json"
   },
   {
     "id": "endless-short-video-feed",

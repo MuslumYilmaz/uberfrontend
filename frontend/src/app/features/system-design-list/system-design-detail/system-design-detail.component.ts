@@ -59,6 +59,15 @@ type Block =
     variant?: 'info' | 'success' | 'warning' | 'danger';
   }
   | {
+    type: 'links';
+    title?: string;
+    items: {
+      label: string;
+      href: string;
+      description?: string;
+    }[];
+  }
+  | {
     type: 'table';
     title?: string;
     columns: string[];
@@ -352,6 +361,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   trackByStatItem = (index: number, item: { label: string; value: string }): string =>
     `${item.label}:${item.value}:${index}`;
   trackByStepTitle = (index: number, step: { title: string }): string => `${step.title}:${index}`;
+  trackByLinkItem = (index: number, item: { href: string; label: string }): string =>
+    `${item.href}:${item.label}:${index}`;
   trackByRelatedId = (_: number, item: RelatedItem): string => item.id;
   trackByLockedPath = (_: number, path: LockedPath): string => path.id;
   trackByGuideSlug = (_: number, item: BlueprintGuideLink): string => item.slug;

@@ -174,11 +174,11 @@
   },
   {
     "id": "dashboard-widgets-draggable-resizable",
-    "title": "Dashboard with Draggable & Resizable Widgets",
+    "title": "Drag-and-Drop Dashboard Frontend System Design",
     "companies": [
       "google"
     ],
-    "description": "Design a customizable dashboard made of widgets that the user can rearrange and resize. Widgets live on a grid layout, can be dragged to change position, and resized via handles. The dashboard layout is persisted (e.g. localStorage snapshot) so the user sees the same configuration on reload.\n\nKey considerations include: drag & drop architecture for widgets, grid-based layout with snapping and collision handling, resize handles with min/max constraints, re-render optimizations so drag/resize feel smooth (60 FPS target), and saving/restoring layout snapshots for each user.",
+    "description": "Design a customizable frontend dashboard where widgets can be dragged, snapped to a grid, resized within constraints, and restored from a saved layout.\n\nKey considerations include: a logical grid data model, pointer-event drag and resize ownership, collision and snapping strategy, requestAnimationFrame rendering boundaries, optimistic local layout vs persisted server layout, versioned layout migrations, keyboard accessibility, and responsive behavior across devices.",
     "tags": [
       "dashboard",
       "drag-drop",
