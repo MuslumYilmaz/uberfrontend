@@ -2792,7 +2792,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practice next</strong><br>Use the <a href=\"/css/coding/css-theme-variables-dark-mode\">CSS theme variables coding challenge</a> to apply <code>prefers-color-scheme</code> with custom properties and a manual dark-mode override. For a layout-focused breakpoint drill, <a href=\"/css/coding/css-flexbox-navbar\">build a responsive navbar with CSS Flexbox</a> and test the <code>max-width: 480px</code> behavior."
+          "text": "<strong>Practice next</strong><br>Use the <a href=\"/css/coding/css-theme-variables-dark-mode\">CSS theme variables coding challenge</a> to apply <code>prefers-color-scheme</code> with custom properties and a manual dark-mode override. For a layout-focused breakpoint drill, try the <a href=\"/css/coding/css-grid-card-gallery\">CSS Grid minmax() card gallery challenge</a> and explain the required <code>min-width: 1024px</code> switch."
         },
         {
           "type": "text",
@@ -2987,7 +2987,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-flexbox-navbar\">Build a responsive navbar with CSS Flexbox</a> to practice fluid layout, wrapping, focus visibility, and narrow-width overflow checks."
+          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-grid-card-gallery\">CSS Grid minmax() card gallery challenge</a> to practice responsive tracks, card minimum width, extra cards, and narrow-width overflow checks."
         },
         {
           "type": "text",
@@ -3447,6 +3447,10 @@
         {
           "type": "text",
           "text": "<strong>Performance & Maintainability Tips</strong><br><ul><li>Prefer Grid for fixed or predictable layouts (e.g., landing pages).</li><li>Prefer Flexbox for components that require content-driven flexibility (e.g., toolbars, media lists).</li><li>Use named grid areas for readability and semantic mapping of layout regions.</li><li>Minimize unnecessary nesting — combining both systems too deeply can complicate debugging.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-grid-card-gallery\">Practice CSS Grid card layout</a> with a responsive card gallery prompt that uses <code>repeat()</code>, <code>minmax()</code>, <code>gap</code>, and real content overflow checks."
         },
         {
           "type": "text",

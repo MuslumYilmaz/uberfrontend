@@ -73,19 +73,20 @@ describe('FeUiIn60Article', () => {
     expect(links[1]?.getAttribute('href') || '').toBe('/guides/interview-blueprint/coding-interviews');
   });
 
-  it('renders 13 frontend UI prompt cards with direct practice links', () => {
+  it('renders 14 frontend UI prompt cards with direct practice links', () => {
     const host = fixture.nativeElement as HTMLElement;
     const hostText = text();
     const cards = host.querySelectorAll('[data-testid="ui-prompt-cards"] .prompt-card');
     const linkTargets = hrefs();
 
     expect(hostText).toContain('Most asked frontend UI interview questions and component prompts');
-    expect(cards.length).toBe(13);
+    expect(cards.length).toBe(14);
     expect(hostText).toContain('Modal / Confirm Dialog');
     expect(hostText).toContain('Autocomplete');
     expect(hostText).toContain('Contact Form');
     expect(hostText).toContain('Tabs');
     expect(hostText).toContain('Responsive Flexbox Navbar');
+    expect(hostText).toContain('CSS Grid Card Gallery');
     expect(hostText).toContain('Accordion');
     expect(hostText).toContain('Data Table / Pagination');
     expect(hostText).toContain('Nested Checkbox Tree');
@@ -94,6 +95,8 @@ describe('FeUiIn60Article', () => {
     expect(hostText).toContain('build autocomplete with filtering, debounce, and mouse or keyboard selection');
     expect(hostText).toContain('build tabs that switch panels and preserve active state');
     expect(hostText).toContain('practice a Flexbox navbar coding challenge');
+    expect(hostText).toContain('build a responsive CSS Grid card gallery');
+    expect(hostText).toContain('repeat(), minmax(), gap, long titles, extra cards');
     expect(hostText).toContain('build an accordion with predictable expand and collapse state');
     expect(hostText).toContain('build table rows, page controls, and derived visible data');
     expect(hostText).toContain('sync parent and child checkbox states in a tree');
@@ -101,6 +104,7 @@ describe('FeUiIn60Article', () => {
     expect(linkTargets).toContain('/react/coding/react-autocomplete-search-starter');
     expect(linkTargets).toContain('/react/coding/react-tabs-switcher');
     expect(linkTargets).toContain('/css/coding/css-flexbox-navbar');
+    expect(linkTargets).toContain('/css/coding/css-grid-card-gallery');
     expect(linkTargets).toContain('/react/coding/react-accordion-faq');
     expect(linkTargets).toContain('/react/coding/react-pagination-table');
     expect(linkTargets).toContain('/react/coding/react-nested-checkboxes');

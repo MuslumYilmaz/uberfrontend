@@ -593,7 +593,93 @@
       "gallery"
     ],
     "description": {
-      "summary": "Create a responsive card gallery using CSS Grid that adapts from 2 to 4 columns. Use `repeat()` with `minmax()` for flexible tracks, and `gap` for consistent spacing. Demonstrate how the grid naturally flows extra cards without manual positioning.",
+      "summary": "Practice a realistic frontend interview prompt: create a responsive card gallery with CSS Grid, keep cards readable across widths, and explain how track sizing, gaps, and auto-placement work.",
+      "specs": {
+        "practice": [
+          "CSS Grid container setup",
+          "`grid-template-columns`",
+          "`repeat()`",
+          "`minmax()`",
+          "`gap`",
+          "responsive breakpoints",
+          "auto-placement",
+          "card minimum width",
+          "avoiding horizontal overflow",
+          "testing long content and extra cards"
+        ],
+        "requirements": [
+          "Use the existing `.gallery` container and keep every `.card` as a direct grid child.",
+          "Required challenge solution: default layout must use `repeat(2, minmax(0, 1fr))`.",
+          "Required challenge solution: at `min-width: 1024px`, switch to `repeat(4, minmax(0, 1fr))`.",
+          "Use `gap` for spacing instead of card margins.",
+          "Set a safe shrink rule such as `.card { min-width: 0; }` so long content does not force horizontal overflow.",
+          "Do not manually position individual cards; let Grid auto-placement flow extra cards."
+        ],
+        "acceptanceCriteria": [
+          "`.gallery` uses `display: grid`.",
+          "Cards are direct grid children.",
+          "Spacing uses `gap`.",
+          "Default layout shows 2 equal columns.",
+          "Desktop layout switches to 4 columns at the required breakpoint.",
+          "Cards do not overlap or overflow.",
+          "Extra cards flow naturally without manual positioning.",
+          "Long text does not break the layout.",
+          "Solution explains why Grid is better than Flexbox for this two-dimensional layout."
+        ],
+        "expectedBehaviorIntro": "A strong solution should:",
+        "expectedBehavior": [
+          "Render readable cards in two equal columns before the desktop breakpoint.",
+          "Render four equal columns at `min-width: 1024px`.",
+          "Keep card spacing consistent with one `gap` declaration.",
+          "Allow seven or more cards to wrap into new rows automatically.",
+          "Keep long card titles inside their grid tracks without horizontal page scroll."
+        ],
+        "implementationNotes": [
+          "Use `minmax(0, 1fr)` for the exact required tracks so content minimums do not widen the columns.",
+          "Use `.card { min-width: 0; }` to let card contents shrink within their grid cell.",
+          "Use the optional `auto-fit/minmax()` approach only as a production variant; the challenge tests expect exact 2-to-4 columns.",
+          "Choose a real minimum card width, such as `220px`, when using the production fluid variant.",
+          "Do not treat the production variant as an exact two-column mobile layout; it is intentionally fluid and can collapse to one column when two `220px` tracks plus `gap` do not fit."
+        ],
+        "commonMistakes": [
+          "Using four hard-coded columns on all screens.",
+          "Forgetting `gap`.",
+          "Using fixed card widths that create horizontal scroll.",
+          "Using Flexbox when rows and columns both matter.",
+          "Using `repeat(4, 1fr)` without a mobile fallback.",
+          "Forgetting `minmax(0, 1fr)` or a safe minimum card width.",
+          "Assuming the mock data length is fixed.",
+          "Not testing long card titles or missing images.",
+          "Expecting the production `auto-fit` variant to keep the same exact column count as the required interview solution."
+        ],
+        "interviewExplanation": "CSS Grid is a good fit for a card gallery because rows and columns both matter. I would define the gallery as a grid container, use gap for spacing, and choose either fixed breakpoint columns or auto-fit/minmax depending on the requirements. I would test long titles, extra cards, and narrow screens because card grids often fail when content is less tidy than the mock.",
+        "testingChecklist": [
+          "Resize below 1024px and confirm the required solution stays at two equal columns.",
+          "Resize to 1024px or wider and confirm the required solution switches to four columns.",
+          "Add extra cards and confirm Grid auto-placement creates new rows.",
+          "Use a long title or missing image placeholder and confirm no horizontal overflow appears.",
+          "Compare the exact breakpoint solution with the optional `auto-fit/minmax()` production variant.",
+          "Load the production variant in a narrow preview and confirm a one-column fallback is acceptable when two `220px` tracks plus `gap` cannot fit."
+        ],
+        "faq": [
+          {
+            "question": "Is CSS Grid or Flexbox better for card galleries?",
+            "answer": "CSS Grid is usually better because card galleries are two-dimensional layouts. Flexbox can wrap items, but Grid gives clearer control over columns, rows, gaps, and responsive tracks."
+          },
+          {
+            "question": "What does minmax() do in a card grid?",
+            "answer": "minmax() defines the smallest and largest size a grid track can take. It helps cards stay readable instead of shrinking into unusable columns."
+          },
+          {
+            "question": "Should I use fixed breakpoints or auto-fit with minmax()?",
+            "answer": "Use fixed breakpoints when the design requires exact column counts. Use auto-fit/minmax when the gallery should adapt fluidly to available space."
+          },
+          {
+            "question": "What do interviewers look for in a CSS Grid card layout?",
+            "answer": "They look for correct Grid usage, clean spacing, responsive behavior, overflow awareness, and the ability to explain why Grid fits the layout."
+          }
+        ]
+      },
       "arguments": [
         {
           "name": ".gallery { display: grid }",
@@ -601,7 +687,7 @@
           "desc": "Enable CSS Grid layout for the gallery container."
         },
         {
-          "name": "grid-template-columns: repeat(2, 1fr)",
+          "name": "grid-template-columns: repeat(2, minmax(0, 1fr))",
           "type": "grid setup",
           "desc": "Define two equal-width columns by default for small screens."
         },
@@ -613,37 +699,98 @@
       ],
       "returns": {
         "type": "markup+style",
-        "desc": "A flexible card gallery that automatically adjusts from 2 to 4 columns depending on screen width."
+        "desc": "A responsive CSS Grid card gallery that meets the exact 2-to-4 column interview requirement without overflow."
       },
       "examples": [
-        ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }",
-        "@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
+        ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }",
+        "@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } }",
+        ".gallery { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }"
       ]
     },
     "web": {
-      "starterHtml": "<section class=\"gallery\">\\n  <article class=\"card\">1</article>\\n  <article class=\"card\">2</article>\\n  <article class=\"card\">3</article>\\n  <article class=\"card\">4</article>\\n  <article class=\"card\">5</article>\\n  <article class=\"card\">6</article>\\n</section>",
-      "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths ≥1024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}"
+      "starterHtml": "<section class=\"gallery\">\\n  <article class=\"card\">\\n    <h2>Analytics dashboard</h2>\\n    <p>Overview card with key product metrics.</p>\\n  </article>\\n  <article class=\"card\">\\n    <h2>Checkout recovery campaign with a longer title</h2>\\n    <p>Long copy should wrap without forcing horizontal scroll.</p>\\n  </article>\\n  <article class=\"card\">\\n    <h2>Team activity</h2>\\n    <p>Recent collaboration updates and notes.</p>\\n  </article>\\n  <article class=\"card\">\\n    <h2>Release checklist</h2>\\n    <p>Tasks that need review before launch.</p>\\n  </article>\\n  <article class=\"card\">\\n    <h2>Empty state plan</h2>\\n    <p>Fallback messaging for missing images or data.</p>\\n  </article>\\n  <article class=\"card\">\\n    <h2>Customer feedback</h2>\\n    <p>Signals from support and interviews.</p>\\n  </article>\\n  <article class=\"card\">\\n    <h2>Extra card</h2>\\n    <p>This should flow into the next row automatically.</p>\\n  </article>\\n</section>",
+      "starterCss": "/* TODOs:\\n  1) Make .gallery use display: grid.\\n  2) Add spacing with gap.\\n  3) Required default layout: repeat(2, minmax(0, 1fr)).\\n  4) At min-width: 1024px, switch to repeat(4, minmax(0, 1fr)).\\n  5) Prevent card content from forcing horizontal overflow.\\n\\n  Tests expect the exact 2-to-4 column requirement above.\\n  Save auto-fit/minmax() for the optional production variant.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  color: #111827;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 1rem;\\n}\\n\\n.card h2 {\\n  margin: 0 0 0.5rem;\\n  font-size: 1rem;\\n}\\n\\n.card p {\\n  margin: 0;\\n  opacity: 0.85;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Switch the required solution to 4 columns here */\\n}"
     },
+    "decisionGraphAsset": "assets/questions/css/decision-graphs/css-grid-card-gallery.v1.json",
     "solutionBlock": {
-      "overview": "CSS Grid is ideal for galleries because you declare the column structure once and let the layout engine flow items. Use `repeat(minmax())` to create fluid columns that shrink and grow, then switch to more columns at a larger breakpoint. This yields predictable alignment, uniform spacing, and clean responsiveness without extra wrapper elements.",
+      "overview": "A strong interview solution separates the required test contract from the production trade-off. For this challenge, Variant A is the expected answer: two equal tracks by default and four equal tracks at 1024px. Variant B is intentionally fluid: `auto-fit` with a minimum card width can adapt to the container, and it may render one, two, three, or more columns depending on available space.",
       "approaches": [
         {
-          "title": "Approach — Responsive Grid Columns",
-          "prose": "Define a `.gallery` container with `display: grid`, a `gap`, and `grid-template-columns: repeat(2, minmax(0, 1fr))` for small screens. Add a media query around 1024px to use `repeat(4, minmax(0, 1fr))` for desktop. Keep cards as direct children so grid auto-placement handles ordering and wrapping automatically without additional markup.",
-          "codeHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
-          "codeCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
+          "title": "Variant A — Required 2-to-4 Column Solution",
+          "decisionGraphKey": "approach1",
+          "prose": "Define `.gallery` as a grid, use `gap` for spacing, and set the default tracks to `repeat(2, minmax(0, 1fr))`. At `min-width: 1024px`, switch to `repeat(4, minmax(0, 1fr))`. This is the version aligned with the interview prompt and automated checks.",
+          "codeHtml": "<section class='gallery'>\\n  <article class='card'>\\n    <h2>Analytics dashboard</h2>\\n    <p>Overview card with key product metrics.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Checkout recovery campaign with a longer title</h2>\\n    <p>Long copy should wrap without forcing horizontal scroll.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Team activity</h2>\\n    <p>Recent collaboration updates and notes.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Release checklist</h2>\\n    <p>Tasks that need review before launch.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Empty state plan</h2>\\n    <p>Fallback messaging for missing images or data.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Customer feedback</h2>\\n    <p>Signals from support and interviews.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Extra card</h2>\\n    <p>This should flow into the next row automatically.</p>\\n  </article>\\n</section>",
+          "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  color: #111827;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  display: grid;\\n  gap: 1rem;\\n  grid-template-columns: repeat(2, minmax(0, 1fr));\\n}\\n\\n@media (min-width: 1024px) {\\n  .gallery {\\n    grid-template-columns: repeat(4, minmax(0, 1fr));\\n  }\\n}\\n\\n.card {\\n  min-width: 0;\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 1rem;\\n}\\n\\n.card h2 {\\n  margin: 0 0 0.5rem;\\n  font-size: 1rem;\\n  overflow-wrap: anywhere;\\n}\\n\\n.card p {\\n  margin: 0;\\n  opacity: 0.85;\\n}"
+        },
+        {
+          "title": "Variant B — Production Fluid auto-fit/minmax() Solution",
+          "decisionGraphKey": "approach2",
+          "prose": "For a production gallery, `repeat(auto-fit, minmax(220px, 1fr))` can be preferable because the grid adapts to available space and preserves a readable minimum card width. This variant is intentionally fluid: it may render one, two, three, or more columns depending on the preview or container width. Grid only creates a second column when two `220px` tracks plus `gap` fit, so a one-column narrow preview is expected. Use this when the product wants fluid behavior; keep Variant A when the challenge or tests require exact 2-to-4 columns.",
+          "codeHtml": "<section class='gallery'>\\n  <article class='card'>\\n    <h2>Analytics dashboard</h2>\\n    <p>Overview card with key product metrics.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Checkout recovery campaign with a longer title</h2>\\n    <p>Long copy should wrap without forcing horizontal scroll.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Team activity</h2>\\n    <p>Recent collaboration updates and notes.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Release checklist</h2>\\n    <p>Tasks that need review before launch.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Empty state plan</h2>\\n    <p>Fallback messaging for missing images or data.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Customer feedback</h2>\\n    <p>Signals from support and interviews.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Extra card</h2>\\n    <p>This should flow into the next row automatically.</p>\\n  </article>\\n</section>",
+          "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  color: #111827;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  display: grid;\\n  gap: 1rem;\\n  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));\\n}\\n\\n.card {\\n  min-width: 0;\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 1rem;\\n}\\n\\n.card h2 {\\n  margin: 0 0 0.5rem;\\n  font-size: 1rem;\\n  overflow-wrap: anywhere;\\n}\\n\\n.card p {\\n  margin: 0;\\n  opacity: 0.85;\\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Forgetting to use `repeat()` may lead to repetitive manual definitions.",
-          "Not including a `gap` can make cards stick together visually."
+          "Using four hard-coded columns on all screens creates narrow cards and mobile overflow.",
+          "Mixing the optional `auto-fit` solution into the required test answer can fail exact column-count checks.",
+          "Treating the production `auto-fit` variant as an exact two-column mobile layout ignores its intentional one-column fallback.",
+          "Using fixed card widths fights the grid track sizing and can create horizontal scroll.",
+          "Assuming the mock data length is fixed hides auto-placement bugs."
+        ],
+        "edgeCases": [
+          "Long card titles should wrap inside the card instead of widening the grid track.",
+          "Seven or more cards should flow into additional rows without manual placement.",
+          "Cards with missing images or shorter content should still keep consistent spacing."
         ],
         "techniques": [
-          "Use fractional units (`fr`) for flexible column sizing.",
-          "Use media queries to progressively enhance layout for larger viewports."
+          "Use `repeat(2, minmax(0, 1fr))` and `repeat(4, minmax(0, 1fr))` for exact breakpoint requirements.",
+          "Use `gap` on the grid container for consistent row and column spacing.",
+          "Use `auto-fit` with `minmax(220px, 1fr)` when production flexibility matters more than exact column counts."
         ]
       },
+      "relatedLinks": [
+        {
+          "title": "Review CSS Grid vs Flexbox for layout choice",
+          "route": [
+            "/",
+            "css",
+            "trivia",
+            "css-grid-vs-flexbox"
+          ],
+          "label": "CSS"
+        },
+        {
+          "title": "Review CSS media queries for responsive breakpoints",
+          "route": [
+            "/",
+            "css",
+            "trivia",
+            "css-media-queries"
+          ],
+          "label": "CSS"
+        },
+        {
+          "title": "Review responsive CSS overflow checks",
+          "route": [
+            "/",
+            "css",
+            "trivia",
+            "css-make-element-responsive"
+          ],
+          "label": "CSS"
+        },
+        {
+          "title": "Frontend coding interview questions and prep guide",
+          "route": [
+            "/",
+            "guides",
+            "interview-blueprint",
+            "coding-interviews"
+          ],
+          "label": "Guide"
+        }
+      ],
       "resources": [
         {
           "title": "MDN – CSS Grid Layout",
@@ -652,16 +799,22 @@
         {
           "title": "MDN – repeat()",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/repeat"
+        },
+        {
+          "title": "MDN – minmax()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/minmax"
         }
       ]
     },
-    "webSolutionHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
-    "webSolutionCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }",
+    "webSolutionHtml": "<section class='gallery'>\\n  <article class='card'>\\n    <h2>Analytics dashboard</h2>\\n    <p>Overview card with key product metrics.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Checkout recovery campaign with a longer title</h2>\\n    <p>Long copy should wrap without forcing horizontal scroll.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Team activity</h2>\\n    <p>Recent collaboration updates and notes.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Release checklist</h2>\\n    <p>Tasks that need review before launch.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Empty state plan</h2>\\n    <p>Fallback messaging for missing images or data.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Customer feedback</h2>\\n    <p>Signals from support and interviews.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Extra card</h2>\\n    <p>This should flow into the next row automatically.</p>\\n  </article>\\n</section>",
+    "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  color: #111827;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  display: grid;\\n  gap: 1rem;\\n  grid-template-columns: repeat(2, minmax(0, 1fr));\\n}\\n\\n@media (min-width: 1024px) {\\n  .gallery {\\n    grid-template-columns: repeat(4, minmax(0, 1fr));\\n  }\\n}\\n\\n.card {\\n  min-width: 0;\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 1rem;\\n}\\n\\n.card h2 {\\n  margin: 0 0 0.5rem;\\n  font-size: 1rem;\\n  overflow-wrap: anywhere;\\n}\\n\\n.card p {\\n  margin: 0;\\n  opacity: 0.85;\\n}",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-09",
     "seo": {
-      "title": "Build Responsive CSS Grid Card Gallery",
-      "description": "Create a card gallery that shifts from fewer to more columns across breakpoints while keeping spacing and card alignment consistent."
+      "title": "CSS Grid Card Gallery Challenge | Responsive minmax() Layout",
+      "description": "Practice a responsive CSS Grid card gallery: use repeat(), minmax(), gap, breakpoints, and overflow checks to build a 2-to-4 column interview layout.",
+      "h1": "Build a Responsive CSS Grid Card Gallery",
+      "h1IntentLabel": "Build Responsive CSS Grid Card Gallery"
     }
   },
   {

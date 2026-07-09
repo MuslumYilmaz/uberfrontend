@@ -96,6 +96,20 @@ describe('CodingWebPanelComponent attempt feedback', () => {
     expect(payload.sourceCode).toBeUndefined();
   });
 
+  it('preserves existing HTML when applying a CSS-only solution payload', async () => {
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+    (component as any).htmlCode.set('<section class="gallery"><article class="card">Card</article></section>');
+    (component as any).cssCode.set('.gallery { display: block; }');
+
+    await component.applySolution({
+      css: '.gallery {\\n  display: grid;\\n  gap: 1rem;\\n}',
+    });
+
+    expect(component.webHtml()).toBe('<section class="gallery"><article class="card">Card</article></section>');
+    expect(component.webCss()).toContain('display: grid');
+    expect(component.webCss()).toContain('gap: 1rem');
+  });
+
   it('updates and persists fallback textarea buffers after Monaco fails to load', fakeAsync(() => {
     const codeStorage = TestBed.inject(CodeStorageService) as jasmine.SpyObj<CodeStorageService>;
     component.disablePersistence = false;

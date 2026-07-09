@@ -183,6 +183,37 @@ function assertFlexboxNavbarSitemapCoverage(paths, locs) {
   }
 }
 
+function assertCssGridCardGallerySitemapCoverage(paths, entries, locs) {
+  const route = '/css/coding/css-grid-card-gallery';
+  const canonical = 'https://frontendatlas.com/css/coding/css-grid-card-gallery';
+  if (!paths.has(route)) {
+    throw new Error(`Sitemap missing canonical route: ${route}`);
+  }
+
+  const exactEntries = entries.filter((entry) => String(entry.loc || '').trim() === canonical);
+  if (exactEntries.length !== 1) {
+    throw new Error(`Sitemap must include exactly one CSS Grid card gallery canonical loc: ${canonical}`);
+  }
+  if (exactEntries[0].lastmod !== '2026-07-09') {
+    throw new Error(
+      `CSS Grid card gallery sitemap lastmod must be 2026-07-09, got ${exactEntries[0].lastmod || '(missing)'}`
+    );
+  }
+
+  const variants = locs.filter((loc) => {
+    const raw = String(loc || '').trim();
+    if (raw === canonical) return false;
+
+    const parsed = parseAbsoluteUrl(raw);
+    return parsed?.origin === 'https://frontendatlas.com' && parsed.pathname === route;
+  });
+  if (variants.length) {
+    throw new Error(
+      `Sitemap must only include the canonical CSS Grid card gallery URL. Variants: ${variants.slice(0, 5).join(', ')}`
+    );
+  }
+}
+
 function assertGuideDetailCoverage(paths) {
   if (!fs.existsSync(GUIDE_REGISTRY_PATH)) return;
   const registrySource = readXml(GUIDE_REGISTRY_PATH);
@@ -568,6 +599,7 @@ const paths = getAllSitemapPaths(sitemapFiles);
 assertNoQueryOrHashInSitemapLocs(locs);
 assertPracticeCanonicalCoverage(paths, locs);
 assertFlexboxNavbarSitemapCoverage(paths, locs);
+assertCssGridCardGallerySitemapCoverage(paths, entries, locs);
 assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
 assertCssThemeVariablesSitemapEntry(entries);

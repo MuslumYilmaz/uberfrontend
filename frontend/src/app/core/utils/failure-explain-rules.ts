@@ -171,6 +171,49 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'css-grid-card-gallery-track-sizing',
+    questionId: 'css-grid-card-gallery',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'gallery',
+        'grid',
+        'columns',
+        '2 columns',
+        '4 columns',
+        'gap',
+        'overflow',
+        'auto-fit',
+        'minmax',
+      ]) ||
+      anyFailingErrorIncludes(snapshot, [
+        '.gallery',
+        'display: grid',
+        'grid-template-columns',
+        'repeat(2',
+        'repeat(4',
+        'gap',
+        'overflow',
+        'auto-fit',
+        'minmax',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'css-grid-card-gallery-track-sizing',
+      title: 'Match the required CSS Grid card contract',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'This prompt expects exact 2-to-4 Grid tracks, with the auto-fit/minmax version kept as a production variant.',
+      ),
+      actions: [
+        'Start with `.gallery { display:grid; gap:1rem; grid-template-columns:repeat(2, minmax(0, 1fr)); }`.',
+        'At `min-width:1024px`, switch only the gallery to `repeat(4, minmax(0, 1fr))` for the required solution.',
+        'Add `.card { min-width:0; }` and heading wrapping so long card titles do not force horizontal overflow.',
+        'Do not use the `auto-fit/minmax(220px, 1fr)` production variant when the tests expect exact 2-to-4 columns.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
     ruleId: 'js-sleep-return-promise',
     questionId: 'js-sleep',
     priority: 120,

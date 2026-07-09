@@ -1808,7 +1808,7 @@
     "route": "/css/coding/css-grid-card-gallery",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "Create a responsive card gallery using CSS Grid that adapts from 2 to 4 columns. Use `repeat()` with `minmax()` for flexible tracks, and `gap` for consistent spacing. Demonstrate how the grid naturally flows extra cards…",
+    "summary": "Practice a realistic frontend interview prompt: create a responsive card gallery with CSS Grid, keep cards readable across widths, and explain how track sizing, gaps, and auto-placement work.",
     "tags": [
       "css",
       "layout",
@@ -1818,7 +1818,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/coding.json#css-grid-card-gallery"
   },

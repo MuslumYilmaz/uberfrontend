@@ -1,0 +1,137 @@
+{
+  "questionId": "css-grid-card-gallery",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "code": "body {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  background: #fafafa;\n  color: #111827;\n  line-height: 1.6;\n}\n\n.gallery {\n  display: grid;\n  gap: 1rem;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n}\n\n@media (min-width: 1024px) {\n  .gallery {\n    grid-template-columns: repeat(4, minmax(0, 1fr));\n  }\n}\n\n.card {\n  min-width: 0;\n  background: #222;\n  color: #fff;\n  border-radius: 8px;\n  padding: 1rem;\n}\n\n.card h2 {\n  margin: 0 0 0.5rem;\n  font-size: 1rem;\n  overflow-wrap: anywhere;\n}\n\n.card p {\n  margin: 0;\n  opacity: 0.85;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-grid-container",
+          "title": "Make the gallery a grid container",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 11,
+            "snippet": "display: grid;"
+          },
+          "why": "The cards need rows and columns, so CSS Grid gives direct control over the track structure and auto-placement.",
+          "alternative": "Use Flexbox with wrapping.",
+          "tradeoff": "Flexbox can wrap cards, but Grid makes the required column counts and row gaps easier to reason about."
+        },
+        {
+          "id": "d2-required-two-columns",
+          "title": "Use the exact two-column mobile contract",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 13,
+            "snippet": "repeat(2, minmax(0, 1fr))"
+          },
+          "why": "The interview prompt requires two equal columns by default, and `minmax(0, 1fr)` prevents content minimums from widening a track.",
+          "alternative": "Use `repeat(auto-fit, minmax(220px, 1fr))` for the main answer.",
+          "tradeoff": "The fluid variant is useful in production, but the required answer should keep exact 2-to-4 column behavior."
+        },
+        {
+          "id": "d3-desktop-four-columns",
+          "title": "Switch to four tracks at the desktop breakpoint",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 19,
+            "snippet": "@media (min-width: 1024px)"
+          },
+          "why": "The breakpoint turns the same direct card children into four equal desktop columns without manual placement.",
+          "alternative": "Hard-code four columns for all widths.",
+          "tradeoff": "A desktop-only override preserves the interview contract while avoiding unreadably narrow mobile cards."
+        },
+        {
+          "id": "d4-card-shrink-safety",
+          "title": "Let card content shrink inside its track",
+          "anchor": {
+            "lineStart": 21,
+            "lineEnd": 23,
+            "snippet": "min-width: 0;"
+          },
+          "why": "`min-width: 0` lets long titles wrap inside the grid cell instead of forcing horizontal overflow.",
+          "alternative": "Rely on default min-content sizing.",
+          "tradeoff": "The explicit shrink rule is small, but it protects the gallery against real content edge cases."
+        },
+        {
+          "id": "d5-long-title-wrap",
+          "title": "Wrap long card headings",
+          "anchor": {
+            "lineStart": 29,
+            "lineEnd": 33,
+            "snippet": "overflow-wrap: anywhere;"
+          },
+          "why": "Long titles are a common card-grid failure mode, so headings should wrap instead of stretching the card.",
+          "alternative": "Assume mock card titles are always short.",
+          "tradeoff": "Aggressive wrapping can break long words, but it is safer than horizontal scroll in an interview prompt."
+        }
+      ]
+    },
+    "approach2": {
+      "code": "body {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  background: #fafafa;\n  color: #111827;\n  line-height: 1.6;\n}\n\n.gallery {\n  display: grid;\n  gap: 1rem;\n  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));\n}\n\n.card {\n  min-width: 0;\n  background: #222;\n  color: #fff;\n  border-radius: 8px;\n  padding: 1rem;\n}\n\n.card h2 {\n  margin: 0 0 0.5rem;\n  font-size: 1rem;\n  overflow-wrap: anywhere;\n}\n\n.card p {\n  margin: 0;\n  opacity: 0.85;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-production-grid",
+          "title": "Keep the production variant as a grid",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 11,
+            "snippet": "display: grid;"
+          },
+          "why": "The production variant still benefits from Grid because the gallery is a two-dimensional card layout.",
+          "alternative": "Switch to Flexbox because the column count is fluid.",
+          "tradeoff": "Flexbox can flow cards, but Grid keeps track sizing and gaps more explicit."
+        },
+        {
+          "id": "d2-fluid-minimum-track",
+          "title": "Use auto-fit with a readable minimum width",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 13,
+            "snippet": "repeat(auto-fit, minmax(220px, 1fr))"
+          },
+          "why": "`auto-fit` creates as many columns as fit while `220px` keeps each card readable.",
+          "alternative": "Force the exact two-column mobile contract.",
+          "tradeoff": "The production variant adapts better to containers, but it may show one column when two 220px tracks plus gap do not fit."
+        },
+        {
+          "id": "d3-one-column-fallback",
+          "title": "Accept the narrow one-column fallback",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 13,
+            "snippet": "minmax(220px, 1fr)"
+          },
+          "why": "A one-column preview is expected when the container cannot fit two minimum-width tracks and the gap.",
+          "alternative": "Lower the minimum width just to preserve two columns.",
+          "tradeoff": "Lower minimums preserve more columns, but they can make cards less readable."
+        },
+        {
+          "id": "d4-card-overflow-safety",
+          "title": "Keep overflow protections in the variant",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 17,
+            "snippet": "min-width: 0;"
+          },
+          "why": "The fluid layout still needs card-level shrink safety so long content does not widen the page.",
+          "alternative": "Only set the gallery tracks and omit card rules.",
+          "tradeoff": "Complete variant CSS is longer, but it keeps the loaded solution preview faithful to the main solution."
+        },
+        {
+          "id": "d5-heading-wrap",
+          "title": "Wrap long headings in production too",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 27,
+            "snippet": "overflow-wrap: anywhere;"
+          },
+          "why": "Real product cards often have longer titles than mock data, so the fluid variant should keep the same long-text protection.",
+          "alternative": "Let titles wrap only at normal word boundaries.",
+          "tradeoff": "Normal wrapping looks cleaner for tidy content, but `anywhere` is more robust for edge cases."
+        }
+      ]
+    }
+  }
+}

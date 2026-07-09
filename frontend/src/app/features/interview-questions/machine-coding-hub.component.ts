@@ -398,6 +398,12 @@ export class MachineCodingHubComponent implements OnInit {
       path: '/css/coding/css-flexbox-navbar',
     },
     {
+      label: 'Responsive card grid interview prompt',
+      description: 'Build a responsive CSS Grid card gallery with exact breakpoint columns, minmax tracks, gap spacing, and overflow checks.',
+      route: ['/css', 'coding', 'css-grid-card-gallery'],
+      path: '/css/coding/css-grid-card-gallery',
+    },
+    {
       label: 'System design follow-up',
       description: 'Move from working UI into architecture, state, caching, performance, and tradeoffs.',
       route: ['/system-design'],

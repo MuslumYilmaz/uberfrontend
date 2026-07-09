@@ -807,7 +807,7 @@ describe('CodingDetailComponent', () => {
     expect(article?.isAccessibleForFree).toBeTrue();
     expect(article?.url).toBe('https://frontendatlas.com/css/coding/css-theme-variables-dark-mode');
     expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
-      'FrontendAtlas',
+      'Home',
       'CSS interview questions',
       'CSS Coding Challenges',
       'Theming with CSS Variables',
@@ -904,10 +904,134 @@ describe('CodingDetailComponent', () => {
     expect(faqPage?.url).toBe('https://frontendatlas.com/css/coding/css-flexbox-navbar');
     expect(faqPage?.mainEntity?.length).toBe(4);
     expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
-      'FrontendAtlas',
+      'Home',
       'CSS interview questions',
       'CSS Coding Challenges',
       'Build Responsive Navbar with CSS Flexbox',
+    ]);
+  });
+
+  it('renders the CSS Grid card gallery interview sections and solution variants', async () => {
+    const question = makeCssGridCardGalleryQuestion();
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'css';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isPhoneViewport.set(false);
+    component.liteEditors.set(true);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const descriptionPanel = host.querySelector('[data-testid="coding-description-panel"]') as HTMLElement;
+    const solutionPanel = host.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    const pageText = descriptionPanel.textContent || '';
+
+    expect(host.querySelector('[data-testid="question-title"]')?.textContent || '').toContain(
+      'Build a Responsive CSS Grid Card Gallery'
+    );
+    expect(pageText).toContain('Practice a realistic frontend interview prompt');
+    expect(pageText).toContain('What you\'ll practice');
+    expect(pageText).toContain('repeat()');
+    expect(pageText).toContain('minmax()');
+    expect(pageText).toContain('gap');
+    expect(pageText).toContain('Acceptance criteria');
+    expect(pageText).toContain('Common mistakes');
+    expect(pageText).toContain('FAQ');
+    expect(pageText).toContain('auto-fit');
+    expect(pageText).toContain('Desktop layout switches to 4 columns');
+    expect(pageText).toContain('Solution explains why Grid is better than Flexbox');
+
+    component.activePanel.set(1);
+    fixture.detectChanges();
+
+    const solutionText = solutionPanel.textContent || '';
+    expect(solutionPanel.hidden).toBeFalse();
+    expect(solutionText).toContain('Variant A');
+    expect(solutionText).toContain('Required 2-to-4 Column Solution');
+    expect(solutionText).toContain('repeat(2, minmax(0, 1fr))');
+    expect(solutionText).toContain('repeat(4, minmax(0, 1fr))');
+    expect(solutionText).toContain('Variant B');
+    expect(solutionText).toContain('Production Fluid auto-fit/minmax() Solution');
+    expect(solutionText).toContain('repeat(auto-fit, minmax(220px, 1fr))');
+    expect(solutionText).toContain('intentionally fluid');
+    expect(solutionText).toContain('one-column narrow preview is expected');
+    expect(solutionText).toContain('two 220px tracks plus gap');
+    expect(solutionText).toContain('min-width: 0');
+
+    const approaches = component.approaches();
+    expect(approaches.length).toBe(2);
+    approaches.forEach((approach) => {
+      expect(approach.codeHtml || '').toContain('class="gallery"');
+      expect(approach.codeHtml || '').toContain('Extra card');
+      expect(approach.codeCss || '').toContain('display: grid');
+      expect(approach.codeCss || '').toContain('background: #222');
+      expect(approach.codeCss || '').toContain('color: #fff');
+      expect(approach.codeCss || '').toContain('border-radius: 8px');
+      expect(approach.codeCss || '').toContain('padding: 1rem');
+      expect(approach.codeCss || '').toContain('overflow-wrap: anywhere');
+    });
+
+    const webPanel = { applySolution: jasmine.createSpy('applySolution') };
+    (component as any).webPanel = webPanel;
+
+    component.loadApproach(approaches[0], 0);
+    component.loadApproach(approaches[1], 1);
+
+    const firstPayload = webPanel.applySolution.calls.argsFor(0)[0] as { html?: string; css?: string };
+    const secondPayload = webPanel.applySolution.calls.argsFor(1)[0] as { html?: string; css?: string };
+    expect(firstPayload.html).toContain('class="gallery"');
+    expect(firstPayload.css).toContain('repeat(2, minmax(0, 1fr))');
+    expect(secondPayload.html).toContain('class="gallery"');
+    expect(secondPayload.css).toContain('repeat(auto-fit, minmax(220px, 1fr))');
+  });
+
+  it('publishes route-specific SEO and FAQ schema for the CSS Grid card gallery challenge', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'css';
+    component.kind = 'coding';
+
+    (component as any).updateSeoForQuestion(makeCssGridCardGalleryQuestion());
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const types = graph.map((entry: any) => entry?.['@type']);
+    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((entry: any) => entry?.['@type'] === 'TechArticle');
+    const howTo = graph.find((entry: any) => entry?.['@type'] === 'HowTo');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+
+    expect(payload.title).toBe('CSS Grid Card Gallery Challenge | Responsive minmax() Layout');
+    expect(payload.title).toContain('CSS Grid');
+    expect(payload.title).toContain('Card Gallery');
+    expect(payload.description).toBe(
+      'Practice a responsive CSS Grid card gallery: use repeat(), minmax(), gap, breakpoints, and overflow checks to build a 2-to-4 column interview layout.'
+    );
+    expect(payload.canonical).toBe('https://frontendatlas.com/css/coding/css-grid-card-gallery');
+    expect(types).toContain('BreadcrumbList');
+    expect(types).toContain('TechArticle');
+    expect(types).toContain('HowTo');
+    expect(types).toContain('FAQPage');
+    expect(article?.headline).toBe('Build a Responsive CSS Grid Card Gallery');
+    expect(article?.isAccessibleForFree).toBeTrue();
+    expect(howTo?.name).toBe('Build a Responsive CSS Grid Card Gallery');
+    expect(faqPage?.['@id']).toBe('https://frontendatlas.com/css/coding/css-grid-card-gallery#faq');
+    expect(faqPage?.url).toBe('https://frontendatlas.com/css/coding/css-grid-card-gallery');
+    expect(faqPage?.mainEntity?.length).toBe(4);
+    expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
+      'Home',
+      'CSS interview questions',
+      'CSS Coding Challenges',
+      'Build Responsive CSS Grid Card Gallery',
     ]);
   });
 
@@ -1196,6 +1320,119 @@ function makeCssFlexboxNavbarQuestion() {
       description: 'Practice a CSS Flexbox navbar challenge: align brand, links, and CTA, handle wrapping, add mobile layout behavior, and explain common interview trade-offs.',
       h1: 'Build a Responsive Navbar with CSS Flexbox',
       h1IntentLabel: 'Build Responsive Navbar with CSS Flexbox',
+    },
+  };
+}
+
+function makeCssGridCardGalleryQuestion() {
+  const galleryHtml = '<section class="gallery"><article class="card"><h2>Analytics dashboard</h2><p>Overview card.</p></article><article class="card"><h2>Checkout recovery campaign with a longer title</h2><p>Long copy should wrap.</p></article><article class="card"><h2>Team activity</h2><p>Recent updates.</p></article><article class="card"><h2>Release checklist</h2><p>Tasks before launch.</p></article><article class="card"><h2>Empty state plan</h2><p>Fallback messaging.</p></article><article class="card"><h2>Customer feedback</h2><p>Signals from support.</p></article><article class="card"><h2>Extra card</h2><p>This should flow naturally.</p></article></section>';
+
+  return {
+    id: 'css-grid-card-gallery',
+    title: 'Grid: Card Gallery (2-to-4 Columns)',
+    type: 'coding',
+    technology: 'css',
+    importance: 5,
+    difficulty: 'intermediate',
+    tags: ['css', 'layout', 'grid', 'responsive', 'gallery'],
+    description: {
+      summary: 'Practice a realistic frontend interview prompt: create a responsive card gallery with CSS Grid, keep cards readable across widths, and explain how track sizing, gaps, and auto-placement work.',
+      specs: {
+        practice: [
+          'CSS Grid container setup',
+          '`grid-template-columns`',
+          '`repeat()`',
+          '`minmax()`',
+          '`gap`',
+          'responsive breakpoints',
+          'auto-placement',
+          'card minimum width',
+          'avoiding horizontal overflow',
+          'testing long content and extra cards',
+        ],
+        requirements: [
+          'Required challenge solution: default layout must use `repeat(2, minmax(0, 1fr))`.',
+          'Required challenge solution: at `min-width: 1024px`, switch to `repeat(4, minmax(0, 1fr))`.',
+          'Use `gap` for spacing instead of card margins.',
+          'Do not manually position individual cards; let Grid auto-placement flow extra cards.',
+        ],
+        acceptanceCriteria: [
+          '`.gallery` uses `display: grid`.',
+          'Cards are direct grid children.',
+          'Spacing uses `gap`.',
+          'Default layout shows 2 equal columns.',
+          'Desktop layout switches to 4 columns at the required breakpoint.',
+          'Cards do not overlap or overflow.',
+          'Extra cards flow naturally without manual positioning.',
+          'Long text does not break the layout.',
+          'Solution explains why Grid is better than Flexbox for this two-dimensional layout.',
+        ],
+        implementationNotes: [
+          'Use `minmax(0, 1fr)` for the exact required tracks so content minimums do not widen the columns.',
+          'Use the optional `auto-fit/minmax()` approach only as a production variant; the challenge tests expect exact 2-to-4 columns.',
+          'Do not treat the production variant as an exact two-column mobile layout; it is intentionally fluid and can collapse to one column when two `220px` tracks plus `gap` do not fit.',
+        ],
+        commonMistakes: [
+          'Using four hard-coded columns on all screens.',
+          'Forgetting `gap`.',
+          'Using fixed card widths that create horizontal scroll.',
+          'Using `repeat(4, 1fr)` without a mobile fallback.',
+          'Expecting the production `auto-fit` variant to keep the same exact column count as the required interview solution.',
+        ],
+        interviewExplanation: 'CSS Grid is a good fit for a card gallery because rows and columns both matter. I would define the gallery as a grid container, use gap for spacing, and choose either fixed breakpoint columns or auto-fit/minmax depending on the requirements.',
+        testingChecklist: [
+          'Resize below 1024px and confirm the required solution stays at two equal columns.',
+          'Resize to 1024px or wider and confirm the required solution switches to four columns.',
+          'Load the production variant in a narrow preview and confirm a one-column fallback is acceptable when two `220px` tracks plus `gap` cannot fit.',
+        ],
+        faq: [
+          {
+            question: 'Is CSS Grid or Flexbox better for card galleries?',
+            answer: 'CSS Grid is usually better because card galleries are two-dimensional layouts.',
+          },
+          {
+            question: 'What does minmax() do in a card grid?',
+            answer: 'minmax() defines the smallest and largest size a grid track can take.',
+          },
+          {
+            question: 'Should I use fixed breakpoints or auto-fit with minmax()?',
+            answer: 'Use fixed breakpoints when the design requires exact column counts.',
+          },
+          {
+            question: 'What do interviewers look for in a CSS Grid card layout?',
+            answer: 'They look for correct Grid usage, clean spacing, responsive behavior, overflow awareness, and explanation.',
+          },
+        ],
+      },
+    },
+    web: {
+      starterHtml: galleryHtml,
+      starterCss: '.gallery { /* Your grid styles here */ }\n.card { background: #222; color: #fff; padding: 1rem; }',
+    },
+    solutionBlock: {
+      overview: 'A strong interview solution separates the required test contract from the production trade-off. Variant B is intentionally fluid and may render one, two, three, or more columns depending on available space.',
+      approaches: [
+        {
+          title: 'Variant A — Required 2-to-4 Column Solution',
+          prose: 'Use fixed breakpoint columns aligned with the interview prompt and automated checks.',
+          codeHtml: galleryHtml,
+          codeCss: 'body {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  background: #fafafa;\n  color: #111827;\n  line-height: 1.6;\n}\n\n.gallery {\n  display: grid;\n  gap: 1rem;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n}\n\n@media (min-width: 1024px) {\n  .gallery {\n    grid-template-columns: repeat(4, minmax(0, 1fr));\n  }\n}\n\n.card {\n  min-width: 0;\n  background: #222;\n  color: #fff;\n  border-radius: 8px;\n  padding: 1rem;\n}\n\n.card h2 {\n  margin: 0 0 0.5rem;\n  font-size: 1rem;\n  overflow-wrap: anywhere;\n}\n\n.card p {\n  margin: 0;\n  opacity: 0.85;\n}',
+        },
+        {
+          title: 'Variant B — Production Fluid auto-fit/minmax() Solution',
+          prose: 'This variant is intentionally fluid: it may render one, two, three, or more columns depending on the preview or container width. Grid only creates a second column when two 220px tracks plus gap fit, so a one-column narrow preview is expected. Use this when production flexibility matters more than exact column counts.',
+          codeHtml: galleryHtml,
+          codeCss: 'body {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  background: #fafafa;\n  color: #111827;\n  line-height: 1.6;\n}\n\n.gallery {\n  display: grid;\n  gap: 1rem;\n  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));\n}\n\n.card {\n  min-width: 0;\n  background: #222;\n  color: #fff;\n  border-radius: 8px;\n  padding: 1rem;\n}\n\n.card h2 {\n  margin: 0 0 0.5rem;\n  font-size: 1rem;\n  overflow-wrap: anywhere;\n}\n\n.card p {\n  margin: 0;\n  opacity: 0.85;\n}',
+        },
+      ],
+    },
+    access: 'free',
+    updatedAt: '2026-07-09',
+    seo: {
+      title: 'CSS Grid Card Gallery Challenge | Responsive minmax() Layout',
+      description: 'Practice a responsive CSS Grid card gallery: use repeat(), minmax(), gap, breakpoints, and overflow checks to build a 2-to-4 column interview layout.',
+      h1: 'Build a Responsive CSS Grid Card Gallery',
+      h1IntentLabel: 'Build Responsive CSS Grid Card Gallery',
     },
   };
 }
