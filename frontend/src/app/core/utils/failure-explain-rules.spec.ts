@@ -584,6 +584,35 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('for...in');
   });
 
+  it('returns css flexbox navbar hint for responsive layout failures', () => {
+    const hint = buildFailureHint({
+      questionId: 'css-flexbox-navbar',
+      errorLine: 'Expected .links to use flex-wrap and CTA to remain visible at 480px; focus outline missing',
+      firstFailName: 'navbar should wrap at max-width 480px',
+      passCount: 2,
+      totalCount: 5,
+      failCount: 3,
+      failedTests: [
+        {
+          name: 'navbar should wrap at max-width 480px',
+          errorLine: 'Expected .links to use flex-wrap and CTA to remain visible at 480px',
+        },
+        {
+          name: 'focus styles stay visible',
+          errorLine: 'Expected :focus-visible styles for nav links and CTA',
+        },
+      ],
+    });
+
+    const text = `${hint.title} ${hint.why} ${hint.actions.join(' ')}`.toLowerCase();
+
+    expect(hint.ruleId).toBe('css-flexbox-navbar-responsive-layout');
+    expect(text).toContain('flexbox');
+    expect(text).toContain('margin-left:auto');
+    expect(text).toContain('max-width:480px');
+    expect(text).toContain('focus');
+  });
+
   it('maps undefined assertion mismatch to missing return hint', () => {
     const hint = buildFailureHint({
       errorLine: 'Expected undefined to be Hello World',

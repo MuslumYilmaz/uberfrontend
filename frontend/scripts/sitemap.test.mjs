@@ -151,6 +151,27 @@ function assertPracticeCanonicalCoverage(paths, locs) {
   }
 }
 
+function assertFlexboxNavbarSitemapCoverage(paths, locs) {
+  const route = '/css/coding/css-flexbox-navbar';
+  const canonical = 'https://frontendatlas.com/css/coding/css-flexbox-navbar';
+  if (!paths.has(route)) {
+    throw new Error(`Sitemap missing canonical route: ${route}`);
+  }
+  if (!locs.includes(canonical)) {
+    throw new Error(`Sitemap missing exact canonical loc: ${canonical}`);
+  }
+
+  const variants = locs.filter((loc) => {
+    const raw = String(loc || '');
+    return raw.includes('/css/coding/css-flexbox-navbar') && raw !== canonical;
+  });
+  if (variants.length) {
+    throw new Error(
+      `Sitemap must only include the canonical Flexbox navbar URL. Variants: ${variants.slice(0, 5).join(', ')}`
+    );
+  }
+}
+
 function assertGuideDetailCoverage(paths) {
   if (!fs.existsSync(GUIDE_REGISTRY_PATH)) return;
   const registrySource = readXml(GUIDE_REGISTRY_PATH);
@@ -535,6 +556,7 @@ const entries = getAllSitemapEntries(sitemapFiles);
 const paths = getAllSitemapPaths(sitemapFiles);
 assertNoQueryOrHashInSitemapLocs(locs);
 assertPracticeCanonicalCoverage(paths, locs);
+assertFlexboxNavbarSitemapCoverage(paths, locs);
 assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
 assertCssThemeVariablesSitemapEntry(entries);

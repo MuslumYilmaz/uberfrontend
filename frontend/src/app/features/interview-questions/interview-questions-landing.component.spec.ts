@@ -1785,6 +1785,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-media-queries"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-make-element-responsive"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-flexbox-navbar"]')).toBeTruthy();
+    const htmlCssNavbarLinks = Array.from(
+      fixture.nativeElement.querySelectorAll('a[href="/css/coding/css-flexbox-navbar"]') as NodeListOf<HTMLAnchorElement>
+    );
+    expect(htmlCssNavbarLinks.some((link) => /responsive navbar|Flexbox navbar/i.test(link.textContent || ''))).toBeTrue();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-grid-card-gallery"]')).toBeTruthy();
     expect(codingViewAll.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css&kind=coding');
     expect(thirdItem.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css');
@@ -2578,6 +2582,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     const themeVariablesLink = fixture.nativeElement.querySelector('a[href="/css/coding/css-theme-variables-dark-mode"]') as HTMLAnchorElement | null;
     expect(themeVariablesLink).toBeTruthy();
     expect(themeVariablesLink?.textContent || '').toContain('Build a CSS variables dark mode challenge');
+    const cssNavbarLinks = Array.from(
+      fixture.nativeElement.querySelectorAll('a[href="/css/coding/css-flexbox-navbar"]') as NodeListOf<HTMLAnchorElement>
+    );
+    expect(cssNavbarLinks.some((link) => /responsive navbar|Flexbox navbar/i.test(link.textContent || ''))).toBeTrue();
 
     const codingTitle = fixture.nativeElement.querySelector('#iq-css-coding-preview-title');
     const conceptTitle = fixture.nativeElement.querySelector('#iq-css-concept-preview-title');

@@ -1,0 +1,137 @@
+{
+  "questionId": "css-flexbox-navbar",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "code": ".nav {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 1rem;\n  background: #222;\n  color: #fff;\n  padding: 12px 16px;\n  border-radius: 8px;\n}\n.logo { font-weight: 700; }\n.links {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 1rem;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n}\n.links a { color: #fff; text-decoration: none; }\n.links a:focus-visible,\n.cta:focus-visible {\n  outline: 3px solid #93c5fd;\n  outline-offset: 3px;\n}\n.cta {\n  margin-left: auto;\n  background: #e63946;\n  color: #fff;\n  text-decoration: none;\n  padding: 6px 12px;\n  border-radius: 6px;\n  font-weight: 600;\n}\n@media (max-width: 480px) {\n  .links { justify-content: center; width: 100%; }\n  .cta { margin-left: 0; text-align: center; }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-nav-flex-wrap",
+          "title": "Make the nav a wrapping flex row",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 5,
+            "snippet": "display: flex;"
+          },
+          "why": "The navbar is a one-dimensional row, so Flexbox handles horizontal alignment, vertical centering, spacing, and wrapping without extra wrappers.",
+          "alternative": "Use `justify-content: space-between` alone and let the children distribute themselves.",
+          "tradeoff": "Explicit flex and gap rules are easier to reason about, while space-between can make the link group drift when content changes."
+        },
+        {
+          "id": "d2-links-row",
+          "title": "Keep links as a visible flex list",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 16,
+            "snippet": ".links {"
+          },
+          "why": "The list itself needs Flexbox so the links remain a readable row, can wrap when needed, and use gap instead of fragile margins.",
+          "alternative": "Center text inside the list or hide links at small widths.",
+          "tradeoff": "A visible wrapping list stays CSS-only and accessible, but it needs a breakpoint check for narrow screens."
+        },
+        {
+          "id": "d3-cta-auto-margin",
+          "title": "Push the CTA only in the wrapping variant",
+          "anchor": {
+            "lineStart": 27,
+            "lineEnd": 28,
+            "snippet": "margin-left: auto;"
+          },
+          "why": "This variant keeps the links content-sized, so `margin-left:auto` can push the CTA to the end without fighting a centered flex:1 link group.",
+          "alternative": "Let `.links` take the middle space with `flex:1` and `justify-content:center`.",
+          "tradeoff": "Auto margin is compact for an end-aligned action, while a flexible link group is better when centered links are the primary requirement."
+        },
+        {
+          "id": "d4-mobile-reset",
+          "title": "Reset narrow-width spacing so nothing disappears",
+          "anchor": {
+            "lineStart": 37,
+            "lineEnd": 39,
+            "snippet": "@media (max-width: 480px)"
+          },
+          "why": "At 480px and below, the link group and CTA must remain visible and clickable instead of overflowing or being pushed off-screen.",
+          "alternative": "Hide links and replace them with a hamburger menu.",
+          "tradeoff": "Keeping links visible avoids JavaScript for this challenge, but it means the layout may take more vertical space."
+        },
+        {
+          "id": "d5-focus-visible",
+          "title": "Preserve keyboard focus styles",
+          "anchor": {
+            "lineStart": 22,
+            "lineEnd": 25,
+            "snippet": ":focus-visible"
+          },
+          "why": "Navbar links and the CTA are interactive controls, so keyboard users need a visible focus location while tabbing.",
+          "alternative": "Remove outlines for a cleaner visual state.",
+          "tradeoff": "Explicit focus styling adds a visible state, but it keeps the navigation usable and interview-ready."
+        }
+      ]
+    },
+    "approach2": {
+      "code": ".nav {\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n  background: #222;\n  color: #fff;\n  padding: 12px 16px;\n  border-radius: 8px;\n}\n.logo { font-weight: 700; }\n.links {\n  display: flex;\n  flex: 1;\n  justify-content: center;\n  gap: 1rem;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n}\n.links a { color: #fff; text-decoration: none; }\n.links a:focus-visible,\n.cta:focus-visible {\n  outline: 3px solid #93c5fd;\n  outline-offset: 3px;\n}\n.cta {\n  background: #e63946;\n  color: #fff;\n  text-decoration: none;\n  padding: 6px 12px;\n  border-radius: 6px;\n  font-weight: 600;\n}\n@media (max-width: 480px) {\n  .nav {\n    flex-direction: column;\n    align-items: stretch;\n  }\n\n  .links {\n    flex-wrap: wrap;\n    justify-content: center;\n  }\n\n  .cta {\n    text-align: center;\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-desktop-flex-row",
+          "title": "Create the desktop flex row",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 4,
+            "snippet": "display: flex;"
+          },
+          "why": "The desktop navbar needs a single row with vertical centering and predictable spacing between brand, links, and CTA.",
+          "alternative": "Use text alignment or inline-block spacing on each child.",
+          "tradeoff": "Flexbox gives clearer alignment and less spacing drift than inline or text-only layout."
+        },
+        {
+          "id": "d2-centered-links",
+          "title": "Let the link group own the center",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 15,
+            "snippet": "flex: 1;"
+          },
+          "why": "When centered links are the goal, `.links` should take available space with `flex:1` and center its own children.",
+          "alternative": "Keep `.links` content-sized and push `.cta` with `margin-left:auto`.",
+          "tradeoff": "The centered-link approach is visually balanced, but it should not be mixed with auto margin on the CTA."
+        },
+        {
+          "id": "d3-stack-at-breakpoint",
+          "title": "Stack the nav at the mobile breakpoint",
+          "anchor": {
+            "lineStart": 35,
+            "lineEnd": 38,
+            "snippet": "flex-direction: column;"
+          },
+          "why": "At max-width:480px, stacking creates enough horizontal room for the brand, link group, and CTA without overlap.",
+          "alternative": "Keep the row and rely on shrinking or fixed widths.",
+          "tradeoff": "Stacking uses more vertical space, but it avoids overflow with real link labels."
+        },
+        {
+          "id": "d4-wrap-mobile-links",
+          "title": "Wrap links instead of hiding them",
+          "anchor": {
+            "lineStart": 41,
+            "lineEnd": 44,
+            "snippet": "flex-wrap: wrap;"
+          },
+          "why": "The CSS-only prompt keeps navigation links visible, so the mobile link group should wrap and remain clickable.",
+          "alternative": "Hide links behind a JavaScript hamburger menu.",
+          "tradeoff": "Wrapping is simpler and accessible for this exercise, while a disclosure menu is a different JavaScript challenge."
+        },
+        {
+          "id": "d5-focus-visible",
+          "title": "Keep focus outlines visible",
+          "anchor": {
+            "lineStart": 22,
+            "lineEnd": 25,
+            "snippet": ":focus-visible"
+          },
+          "why": "A strong interview answer preserves keyboard focus on nav links and the CTA instead of removing outlines.",
+          "alternative": "Rely only on hover styles.",
+          "tradeoff": "Focus-visible styling adds an extra state, but it protects keyboard accessibility."
+        }
+      ]
+    }
+  }
+}

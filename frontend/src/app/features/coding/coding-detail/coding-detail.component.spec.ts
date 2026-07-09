@@ -820,6 +820,97 @@ describe('CodingDetailComponent', () => {
     ]);
   });
 
+  it('renders the Flexbox navbar interview prompt sections and read-only solution variants', async () => {
+    const question = makeCssFlexboxNavbarQuestion();
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'css';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isPhoneViewport.set(false);
+    component.liteEditors.set(true);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const descriptionPanel = host.querySelector('[data-testid="coding-description-panel"]') as HTMLElement;
+    const solutionPanel = host.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    const pageText = descriptionPanel.textContent || '';
+
+    expect(host.querySelector('[data-testid="question-title"]')?.textContent || '').toContain(
+      'Build a Responsive Navbar with CSS Flexbox'
+    );
+    expect(pageText).toContain('Practice a realistic frontend interview prompt');
+    expect(pageText).toContain('Acceptance criteria');
+    expect(pageText).toContain('Common mistakes');
+    expect(pageText).toContain('FAQ');
+    expect(pageText).toContain('flex-wrap');
+    expect(pageText).toContain('margin-left: auto');
+    expect(pageText).toContain('Focus styles are not removed');
+    expect(pageText).toContain('No JavaScript is required');
+
+    component.activePanel.set(1);
+    fixture.detectChanges();
+
+    const solutionText = solutionPanel.textContent || '';
+    expect(solutionPanel.hidden).toBeFalse();
+    expect(solutionText).toContain('Approach A');
+    expect(solutionText).toContain('Wrapping Navbar');
+    expect(solutionText).toContain('Approach B');
+    expect(solutionText).toContain('Stacked Mobile Navbar');
+    expect(solutionText).toContain('margin-left: auto');
+    expect(solutionText).toContain('flex-wrap');
+    expect(solutionText).toContain(':focus-visible');
+    expect(solutionText).toContain('@media (max-width: 480px)');
+  });
+
+  it('publishes self-canonical SEO and FAQ schema for the Flexbox navbar challenge', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'css';
+    component.kind = 'coding';
+
+    (component as any).updateSeoForQuestion(makeCssFlexboxNavbarQuestion());
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const types = graph.map((entry: any) => entry?.['@type']);
+    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((entry: any) => entry?.['@type'] === 'TechArticle');
+    const howTo = graph.find((entry: any) => entry?.['@type'] === 'HowTo');
+    const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+
+    expect(payload.title).toBe('Build Responsive Navbar with CSS Flexbox | Interview Challenge');
+    expect(payload.title).toContain('Responsive Navbar');
+    expect(payload.title).toContain('Flexbox');
+    expect(payload.description).toBe(
+      'Practice a CSS Flexbox navbar challenge: align brand, links, and CTA, handle wrapping, add mobile layout behavior, and explain common interview trade-offs.'
+    );
+    expect(payload.canonical).toBe('https://frontendatlas.com/css/coding/css-flexbox-navbar');
+    expect(types).toContain('BreadcrumbList');
+    expect(types).toContain('TechArticle');
+    expect(types).toContain('HowTo');
+    expect(types).toContain('FAQPage');
+    expect(article?.headline).toBe('Build a Responsive Navbar with CSS Flexbox');
+    expect(howTo?.name).toBe('Build a Responsive Navbar with CSS Flexbox');
+    expect(faqPage?.['@id']).toBe('https://frontendatlas.com/css/coding/css-flexbox-navbar#faq');
+    expect(faqPage?.url).toBe('https://frontendatlas.com/css/coding/css-flexbox-navbar');
+    expect(faqPage?.mainEntity?.length).toBe(4);
+    expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
+      'FrontendAtlas',
+      'CSS interview questions',
+      'CSS Coding Challenges',
+      'Build Responsive Navbar with CSS Flexbox',
+    ]);
+  });
+
   it('renders the CSS theme variables prompt, breadcrumb links, and tokenized shadow starter CSS', async () => {
     const question = makeCssThemeVariablesQuestion();
     const fixture = TestBed.createComponent(CodingDetailComponent);
@@ -996,6 +1087,115 @@ function makeCssThemeVariablesQuestion() {
       title: 'CSS Variables Dark Mode Challenge | FrontendAtlas',
       description: 'Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.',
       h1IntentLabel: 'Theming with CSS Variables',
+    },
+  };
+}
+
+function makeCssFlexboxNavbarQuestion() {
+  return {
+    id: 'css-flexbox-navbar',
+    title: 'Flexbox: Responsive Navbar',
+    type: 'coding',
+    technology: 'css',
+    importance: 5,
+    difficulty: 'intermediate',
+    tags: ['css', 'flexbox', 'responsive', 'navbar', 'layout'],
+    description: {
+      summary: 'Practice a realistic frontend interview prompt: build a responsive navigation bar with Flexbox, preserve readable links, keep the CTA reachable, and explain how the layout behaves when space gets tight.',
+      specs: {
+        practice: [
+          'Creating a flex container for navigation layout',
+          'Aligning brand, links, and CTA without extra wrappers',
+          'Using gap instead of margin hacks',
+          'Using `margin-left: auto` or flexible link groups intentionally',
+          'Handling small screens with wrapping or a mobile breakpoint',
+          'Keeping links readable and accessible',
+          'Avoiding overlap, overflow, and hidden navigation',
+        ],
+        requirements: [
+          'Use the existing nav.nav, div.logo, ul.links, and a.cta markup.',
+          'Set .nav to display:flex, align-items:center, and gap.',
+          'Set .links to display:flex, gap, and optionally flex:1 with justify-content:center.',
+          'Use margin-left: auto only if .links is not taking the center role.',
+          'At max-width: 480px, stack or wrap cleanly without hiding links.',
+          'No JavaScript or hamburger menu is required for this basic layout.',
+        ],
+        acceptanceCriteria: [
+          '.nav uses display: flex',
+          'Items are vertically centered with align-items: center',
+          'Brand stays on the left',
+          'Links are displayed as a horizontal list on wider screens',
+          'CTA stays visually separated and reachable',
+          'Spacing uses gap, not fragile manual margins only',
+          'Layout does not overflow with normal link labels',
+          'At max-width: 480px, layout stacks or wraps cleanly',
+          'Links remain visible and clickable',
+          'Focus styles are not removed',
+          'No JavaScript is required for this basic layout',
+        ],
+        implementationNotes: [
+          'Use flex-wrap when the row may need more than one line.',
+          'For centered links, let .links take flex: 1 and use justify-content: center.',
+          'For a CTA-push layout, keep .links content-sized and apply margin-left: auto to .cta.',
+          'Keep default focus behavior or add an explicit :focus-visible outline.',
+        ],
+        commonMistakes: [
+          'Using justify-content: space-between without considering link group behavior',
+          'Forgetting flex-wrap or a breakpoint',
+          'Removing focus outlines from links',
+        ],
+        interviewExplanation: 'Flexbox is a good fit for a navbar because the layout is mostly one-dimensional: brand, navigation links, and actions sit along a row and need alignment, spacing, and wrapping.',
+        testingChecklist: [
+          'Resize to 480px and narrower and confirm links and CTA remain visible.',
+          'Compare the centered-link approach with the margin-left: auto CTA-push approach.',
+          'Tab through links and CTA to confirm focus remains visible.',
+        ],
+        faq: [
+          {
+            question: 'Is Flexbox or Grid better for a navbar?',
+            answer: 'Flexbox is usually better because a navbar is mostly one-dimensional: items align along a row or column.',
+          },
+          {
+            question: 'How do you make a Flexbox navbar responsive?',
+            answer: 'Start with a row layout, allow wrapping or switch to a stacked layout at a small breakpoint, keep links visible, and test long labels.',
+          },
+          {
+            question: 'Should a responsive navbar hide links on mobile?',
+            answer: 'Not without an accessible alternate path. This CSS-only challenge keeps links visible by wrapping or stacking them.',
+          },
+          {
+            question: 'What do interviewers look for in a CSS navbar prompt?',
+            answer: 'They usually look for clean layout reasoning, correct Flexbox usage, responsive behavior, readable spacing, and accessibility awareness.',
+          },
+        ],
+      },
+    },
+    web: {
+      starterHtml: '<nav class="nav"><div class="logo">FrontendAtlas</div><ul class="links"><li><a href="#">Docs</a></li><li><a href="#">Pricing</a></li><li><a href="#">Blog</a></li></ul><a class="cta" href="#">Start</a></nav>',
+      starterCss: 'body { font-family: system-ui; }\n.nav { background: #222; color: #fff; }\n.links { list-style: none; padding: 0; margin: 0; }\n.links a:focus-visible, .cta:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }',
+    },
+    solutionBlock: {
+      overview: 'A strong solution explains the layout tradeoff instead of only dropping Flexbox declarations.',
+      approaches: [
+        {
+          title: 'Approach A — Wrapping Navbar',
+          prose: 'Let the navbar wrap, keep links visible, and use margin-left: auto only when the CTA owns the push-to-end behavior.',
+          codeCss: '.nav {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 1rem;\n}\n.links {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 1rem;\n}\n.cta { margin-left: auto; }\n.links a:focus-visible,\n.cta:focus-visible { outline: 3px solid #93c5fd; }\n@media (max-width: 480px) {\n  .links { justify-content: center; width: 100%; }\n  .cta { margin-left: 0; text-align: center; }\n}',
+        },
+        {
+          title: 'Approach B — Stacked Mobile Navbar',
+          prose: 'Use a desktop row, center the flexible link group, and stack the navbar at the small breakpoint.',
+          codeCss: '.nav {\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n}\n.links {\n  display: flex;\n  flex: 1;\n  justify-content: center;\n  gap: 1rem;\n}\n.links a:focus-visible,\n.cta:focus-visible { outline: 3px solid #93c5fd; }\n@media (max-width: 480px) {\n  .nav {\n    flex-direction: column;\n    align-items: stretch;\n  }\n\n  .links {\n    flex-wrap: wrap;\n    justify-content: center;\n  }\n\n  .cta {\n    text-align: center;\n  }\n}',
+        },
+      ],
+    },
+    access: 'free',
+    updatedAt: '2026-07-09',
+    seo: {
+      title: 'Build Responsive Navbar with CSS Flexbox | Interview Challenge',
+      description: 'Practice a CSS Flexbox navbar challenge: align brand, links, and CTA, handle wrapping, add mobile layout behavior, and explain common interview trade-offs.',
+      h1: 'Build a Responsive Navbar with CSS Flexbox',
+      h1IntentLabel: 'Build Responsive Navbar with CSS Flexbox',
     },
   };
 }

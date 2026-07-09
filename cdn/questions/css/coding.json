@@ -365,7 +365,87 @@
       "navbar"
     ],
     "description": {
-      "summary": "Build a responsive navbar using Flexbox. Align brand left, links center or right, and actions to the end. Use gap for spacing, keep items aligned on one row, and ensure the layout wraps cleanly on small screens without overlapping text or buttons.",
+      "summary": "Practice a realistic frontend interview prompt: build a responsive navigation bar with Flexbox, preserve readable links, keep the CTA reachable, and explain how the layout behaves when space gets tight.",
+      "specs": {
+        "practice": [
+          "Creating a flex container for navigation layout",
+          "Aligning brand, links, and CTA without extra wrappers",
+          "Using `gap` instead of margin hacks",
+          "Using `margin-left: auto` or flexible link groups intentionally",
+          "Handling small screens with wrapping or a mobile breakpoint",
+          "Keeping links readable and accessible",
+          "Avoiding overlap, overflow, and hidden navigation"
+        ],
+        "requirements": [
+          "Use the existing `nav.nav`, `.logo`, `.links`, and `.cta` markup.",
+          "Turn `.nav` into a flex container with vertical alignment and clear spacing.",
+          "Set `.links` to `display: flex`, add `gap`, and optionally use `flex: 1` with `justify-content: center` when links should occupy the middle.",
+          "Use `margin-left: auto` only if `.links` is not taking the center role.",
+          "At `max-width: 480px`, stack or wrap the layout cleanly without hiding links.",
+          "Do not add JavaScript or a hamburger menu for this CSS-only challenge."
+        ],
+        "acceptanceCriteria": [
+          "`.nav` uses `display: flex`.",
+          "Items are vertically centered with `align-items: center`.",
+          "Brand stays on the left on wider screens.",
+          "Links are displayed as a horizontal list on wider screens.",
+          "CTA stays visually separated and reachable.",
+          "Spacing uses `gap`, not fragile manual margins only.",
+          "Layout does not overflow with normal link labels.",
+          "At `max-width: 480px`, layout stacks or wraps cleanly.",
+          "Links remain visible and clickable.",
+          "Focus styles are not removed.",
+          "No JavaScript is required for this basic layout."
+        ],
+        "expectedBehaviorIntro": "A strong solution should:",
+        "expectedBehavior": [
+          "Keep brand, links, and CTA on one readable row when there is enough width.",
+          "Let the link group participate in Flexbox rather than relying on text alignment alone.",
+          "Use a small-screen rule so long labels, the CTA, and focus outlines do not overlap.",
+          "Preserve all navigation links in the DOM and visible layout."
+        ],
+        "implementationNotes": [
+          "For a centered-link layout, let `.links` take available space with `flex: 1` and center its children.",
+          "For a CTA-push layout, keep `.links` content-sized and apply `margin-left: auto` to `.cta`.",
+          "Use `flex-wrap` for a wrapping variant or `flex-direction: column` at the breakpoint for a stacked variant.",
+          "Keep default focus behavior or add an explicit `:focus-visible` outline."
+        ],
+        "commonMistakes": [
+          "Using `justify-content: space-between` without considering link group behavior.",
+          "Forgetting to reset `ul` margin, padding, and list-style.",
+          "Hiding links on mobile without an alternate navigation path.",
+          "Using fixed widths that cause overflow.",
+          "Using only `text-align: center` instead of actual Flexbox alignment.",
+          "Forgetting `flex-wrap` or a breakpoint.",
+          "Making the CTA unreachable on narrow screens.",
+          "Removing focus outlines from links."
+        ],
+        "interviewExplanation": "Flexbox is a good fit for a navbar because the layout is mostly one-dimensional: brand, navigation links, and actions sit along a row and need alignment, spacing, and wrapping. I would use a flex container, reset the list styles, use gap for spacing, and decide whether the mobile behavior should wrap or stack based on content length. I would also test long labels, keyboard focus, and narrow widths because nav bugs usually appear when real content is longer than the mock.",
+        "testingChecklist": [
+          "Resize below 480px and confirm links and CTA remain visible.",
+          "Tab through every nav link and the CTA to confirm focus remains visible.",
+          "Test a longer link label and confirm the layout does not overflow.",
+          "Compare the centered-link approach with the `margin-left: auto` CTA-push approach."
+        ],
+        "faq": [
+          {
+            "question": "Is Flexbox or Grid better for a navbar?",
+            "answer": "Flexbox is usually better because a navbar is mostly one-dimensional: items align along a row or column. Grid can work, but it is usually more structure than needed unless the navbar has a true two-dimensional layout."
+          },
+          {
+            "question": "How do you make a Flexbox navbar responsive?",
+            "answer": "Start with a row layout, allow wrapping or switch to a stacked layout at a small breakpoint, keep links visible, and test long labels so the navbar does not overflow."
+          },
+          {
+            "question": "Should a responsive navbar hide links on mobile?",
+            "answer": "Not without an accessible alternate path. This CSS-only challenge keeps links visible by wrapping or stacking them instead of building a JavaScript hamburger menu."
+          },
+          {
+            "question": "What do interviewers look for in a CSS navbar prompt?",
+            "answer": "They usually look for clean layout reasoning, correct Flexbox usage, responsive behavior, readable spacing, and awareness of accessibility and overflow edge cases."
+          }
+        ]
+      },
       "arguments": [
         {
           "name": ".nav { display: flex; align-items: center }",
@@ -380,43 +460,102 @@
         {
           "name": "Responsive layout",
           "type": "media query",
-          "desc": "Stack items vertically on small screens (≤480px)."
+          "desc": "Stack or wrap items cleanly on small screens at max-width: 480px."
         }
       ],
       "returns": {
         "type": "markup+style",
-        "desc": "A clean, responsive navigation bar that aligns logo–links–CTA in one line on desktop and stacks them neatly on mobile."
+        "desc": "A clean, responsive navigation bar that aligns logo, links, and CTA on desktop and keeps every link reachable on mobile."
       },
       "examples": [
         ".nav { display: flex; align-items: center; gap: 1rem; }",
         ".links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; }",
-        "@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } }"
+        "@media (max-width: 480px) { .nav { flex-direction: column; align-items: stretch; } }"
       ]
     },
     "web": {
       "starterHtml": "<nav class=\"nav\">\\n  <div class=\"logo\">Brand</div>\\n  <ul class=\"links\">\\n    <li><a href=\"#\">Docs</a></li>\\n    <li><a href=\"#\">Pricing</a></li>\\n    <li><a href=\"#\">Blog</a></li>\\n  </ul>\\n  <a class=\"cta\" href=\"#\">Sign up</a>\\n</nav>",
-      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens ≤480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}"
+      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container, vertically center its items, and add gap.\\n  2) Set .links to display:flex and gap; optionally use flex:1 with justify-content:center.\\n  3) If .links is not taking the center role, use margin-left:auto on .cta to push it right.\\n  4) At max-width:480px, stack or wrap cleanly without hiding links.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.links a:focus-visible,\\n.cta:focus-visible {\\n  outline: 3px solid #93c5fd;\\n  outline-offset: 3px;\\n}\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack or wrap the navbar here */\\n}"
     },
+    "decisionGraphAsset": "assets/questions/css/decision-graphs/css-flexbox-navbar.v1.json",
     "solutionBlock": {
-      "overview": "A navbar is a classic flexbox layout: align items horizontally, keep consistent spacing, and push actions to the end. Flexbox lets you keep the brand on the left, links in the middle, and CTAs on the right with minimal markup. Responsive behavior is handled by wrapping or small breakpoint tweaks, not extra containers.",
+      "overview": "A strong interview answer treats the navbar as a one-dimensional layout problem: brand, links, and CTA need alignment, spacing, and a small-screen policy. Flexbox handles that directly with `display:flex`, `align-items:center`, `gap`, a deliberate link-group strategy, and either wrapping or a breakpoint. The important trade-off is deciding whether the links own the middle space or the CTA is pushed with `margin-left:auto`.",
       "approaches": [
         {
-          "title": "Approach — Flex Container with Responsive Direction",
-          "prose": "Set the container to display:flex and align-items:center. Use gap for predictable spacing between links, and apply margin-left:auto to the right-side group so actions align to the end. Add flex-wrap: wrap so items flow on small screens, or switch to a stacked layout at a breakpoint while preserving readable spacing and tap targets.",
+          "title": "Approach A — Wrapping Navbar",
+          "decisionGraphKey": "approach1",
+          "prose": "Use `display:flex`, `align-items:center`, `gap`, and `flex-wrap:wrap` on `.nav`. Keep `.links` as a flex row with its own gap. In this variant, `.cta` can use `margin-left:auto` because the links are not taking over the center with `flex:1`; at the smallest width, remove that auto margin so the CTA remains reachable.",
           "codeHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
-          "codeCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }"
+          "codeCss": ".nav {\\n  display: flex;\\n  align-items: center;\\n  flex-wrap: wrap;\\n  gap: 1rem;\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n.logo { font-weight: 700; }\\n.links {\\n  display: flex;\\n  flex-wrap: wrap;\\n  gap: 1rem;\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n.links a { color: #fff; text-decoration: none; }\\n.links a:focus-visible,\\n.cta:focus-visible {\\n  outline: 3px solid #93c5fd;\\n  outline-offset: 3px;\\n}\\n.cta {\\n  margin-left: auto;\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n@media (max-width: 480px) {\\n  .links { justify-content: center; width: 100%; }\\n  .cta { margin-left: 0; text-align: center; }\\n}"
+        },
+        {
+          "title": "Approach B — Stacked Mobile Navbar",
+          "decisionGraphKey": "approach2",
+          "prose": "Use a desktop row layout where `.links` takes the middle with `flex:1` and `justify-content:center`. At `max-width:480px`, switch `.nav` to a column, stretch the items, let links wrap, and center the CTA text. This is the cleanest fit when the interview prompt asks for desktop centering plus a readable small-screen layout.",
+          "codeHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
+          "codeCss": ".nav {\\n  display: flex;\\n  align-items: center;\\n  gap: 1rem;\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n.logo { font-weight: 700; }\\n.links {\\n  display: flex;\\n  flex: 1;\\n  justify-content: center;\\n  gap: 1rem;\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n.links a { color: #fff; text-decoration: none; }\\n.links a:focus-visible,\\n.cta:focus-visible {\\n  outline: 3px solid #93c5fd;\\n  outline-offset: 3px;\\n}\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n@media (max-width: 480px) {\\n  .nav {\\n    flex-direction: column;\\n    align-items: stretch;\\n  }\\n\\n  .links {\\n    flex-wrap: wrap;\\n    justify-content: center;\\n  }\\n\\n  .cta {\\n    text-align: center;\\n  }\\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Forgetting to give `.links` flex:1 will prevent the center alignment.",
-          "Not resetting list-style and padding on `.links` can misalign the layout."
+          "Using `justify-content: space-between` can make the brand, links, and CTA drift without a clear link-group strategy.",
+          "Giving `.links` both `flex:1` and relying on `.cta { margin-left:auto; }` mixes two different alignment approaches.",
+          "Hiding links at the breakpoint fails this CSS-only prompt because there is no alternate navigation path.",
+          "Removing focus outlines makes the nav harder to use with a keyboard."
+        ],
+        "edgeCases": [
+          "Long labels should wrap or stack rather than overflow the nav container.",
+          "The CTA should remain visible and clickable at 480px and below.",
+          "Focus outlines need enough offset so they are not clipped by the navbar."
         ],
         "techniques": [
-          "Flexbox is ideal for aligning items both horizontally and vertically.",
-          "Use a media query to switch layouts responsively without changing HTML."
+          "Use `gap` on the flex container and the link group for stable spacing.",
+          "Reset `ul` margin, padding, and list-style before aligning the links.",
+          "Choose either a wrapping navbar or a stacked mobile breakpoint before writing the final CSS."
         ]
       },
+      "relatedLinks": [
+        {
+          "title": "Review the CSS Flexbox mental model",
+          "route": [
+            "/",
+            "css",
+            "trivia",
+            "css-display-flex"
+          ],
+          "label": "CSS"
+        },
+        {
+          "title": "Review CSS media queries for responsive breakpoints",
+          "route": [
+            "/",
+            "css",
+            "trivia",
+            "css-media-queries"
+          ],
+          "label": "CSS"
+        },
+        {
+          "title": "Review responsive CSS overflow checks",
+          "route": [
+            "/",
+            "css",
+            "trivia",
+            "css-make-element-responsive"
+          ],
+          "label": "CSS"
+        },
+        {
+          "title": "Frontend coding interview questions and prep guide",
+          "route": [
+            "/",
+            "guides",
+            "interview-blueprint",
+            "coding-interviews"
+          ],
+          "label": "Guide"
+        }
+      ],
       "resources": [
         {
           "title": "MDN – Flexbox basics",
@@ -429,12 +568,14 @@
       ]
     },
     "webSolutionHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
-    "webSolutionCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }",
+    "webSolutionCss": ".nav {\\n  display: flex;\\n  align-items: center;\\n  gap: 1rem;\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  display: flex;\\n  flex: 1;\\n  justify-content: center;\\n  gap: 1rem;\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.links a:focus-visible,\\n.cta:focus-visible {\\n  outline: 3px solid #93c5fd;\\n  outline-offset: 3px;\\n}\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  .nav {\\n    flex-direction: column;\\n    align-items: stretch;\\n  }\\n\\n  .links {\\n    flex-wrap: wrap;\\n    justify-content: center;\\n  }\\n\\n  .cta {\\n    text-align: center;\\n  }\\n}",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-09",
     "seo": {
-      "title": "Build Responsive Navbar with CSS Flexbox",
-      "description": "Create a single-row navbar with aligned brand, links, and actions, then keep spacing and wrapping usable on smaller screens."
+      "title": "Build Responsive Navbar with CSS Flexbox | Interview Challenge",
+      "description": "Practice a CSS Flexbox navbar challenge: align brand, links, and CTA, handle wrapping, add mobile layout behavior, and explain common interview trade-offs.",
+      "h1": "Build a Responsive Navbar with CSS Flexbox",
+      "h1IntentLabel": "Build Responsive Navbar with CSS Flexbox"
     }
   },
   {

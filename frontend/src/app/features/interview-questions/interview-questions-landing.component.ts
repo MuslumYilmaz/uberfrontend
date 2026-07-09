@@ -4174,7 +4174,7 @@ const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
     q: 'How should a navigation bar adapt on small screens?',
     a: 'The nav should preserve readable labels, reachable focus states, and clear current-location cues. Flex wrapping, overflow menus, or a disclosure pattern can work depending on item count. A responsive nav fails if it only hides links without giving users another path to them.',
     route: ['/css', 'coding', 'css-flexbox-navbar'],
-    cta: 'Build a responsive nav',
+    cta: 'Build a responsive navbar with CSS Flexbox',
     level: 'intermediate',
   },
   {
@@ -4603,7 +4603,7 @@ const CSS_LAYOUT_QUESTIONS: CssFocusedQuestionItem[] = [
     q: 'How do you build a wrapping nav with CSS?',
     a: 'Use Flexbox when the nav is a row of items that can align, distribute, and wrap. Preserve readable labels and visible focus states as items move to another line or into a disclosure pattern. Hiding links without an alternate path creates a navigation failure.',
     route: ['/css', 'coding', 'css-flexbox-navbar'],
-    cta: 'Build a Flexbox nav',
+    cta: 'Practice a Flexbox navbar coding challenge',
     level: 'intermediate',
   },
   {
@@ -4672,7 +4672,7 @@ const CSS_RESPONSIVE_QUESTIONS: CssFocusedQuestionItem[] = [
     q: 'How should navigation adapt at small widths?',
     a: 'Navigation should preserve reachable links, visible focus, and clear current-state cues. Wrapping, scrolling, disclosure menus, or priority links can work depending on item count. Simply hiding links for small screens removes navigation rather than making it responsive.',
     route: ['/css', 'coding', 'css-flexbox-navbar'],
-    cta: 'Build a responsive nav',
+    cta: 'CSS Flexbox responsive navbar interview prompt',
     level: 'intermediate',
   },
   {

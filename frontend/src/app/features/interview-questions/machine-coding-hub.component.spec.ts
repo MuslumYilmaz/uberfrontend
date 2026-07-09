@@ -39,10 +39,14 @@ describe('MachineCodingHubComponent', () => {
     expect(text).toContain('Most asked frontend machine coding questions');
     expect(text).toContain('JavaScript utility rounds');
     expect(text).toContain('React machine coding');
+    expect(text).toContain('CSS Flexbox responsive navbar interview prompt');
     expect(text).toContain('System design follow-up');
     expect(text).toContain('30-day guided plan');
     expect(primaryCta?.getAttribute('href') || '').toContain('/coding?view=formats&category=ui');
     expect(planCta?.getAttribute('href') || '').toContain('/tracks/foundations-30d/preview');
+    expect(host.querySelector('a[href="/css/coding/css-flexbox-navbar"]')?.textContent || '').toContain(
+      'CSS Flexbox responsive navbar interview prompt'
+    );
   });
 
   it('renders the core machine-coding prompt inventory with practice links', () => {

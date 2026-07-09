@@ -392,6 +392,12 @@ export class MachineCodingHubComponent implements OnInit {
       path: '/coding',
     },
     {
+      label: 'CSS Flexbox responsive navbar interview prompt',
+      description: 'Practice a CSS-only responsive navbar with Flexbox, readable links, mobile behavior, and acceptance criteria.',
+      route: ['/css', 'coding', 'css-flexbox-navbar'],
+      path: '/css/coding/css-flexbox-navbar',
+    },
+    {
       label: 'System design follow-up',
       description: 'Move from working UI into architecture, state, caching, performance, and tradeoffs.',
       route: ['/system-design'],
