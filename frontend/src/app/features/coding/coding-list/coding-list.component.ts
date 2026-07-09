@@ -500,7 +500,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   private loadDiscoveryRows(kind: DiscoveryKind): Observable<CodingHubDiscoveryItem[]> {
     if (kind === 'debug') {
-      return of(CODING_HUB_DEBUG_DISCOVERY.map((item, index) => this.toGeneratedDiscoveryItem(item, index)));
+      return of(this.generatedDebugDiscoveryItems());
     }
 
     const techs = DISCOVERY_CODING_TECHS;
@@ -518,6 +518,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
     ).pipe(
       map((buckets) => buckets.flat()),
     );
+  }
+
+  private generatedDebugDiscoveryItems(): CodingHubDiscoveryItem[] {
+    return CODING_HUB_DEBUG_DISCOVERY.map((item, index) => this.toGeneratedDiscoveryItem(item, index));
   }
 
   private toGeneratedDiscoveryItem(item: CodingHubGeneratedDiscoveryItem, index: number): CodingHubDiscoveryItem {
@@ -630,7 +634,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       .filter((q) => q?.id && q?.title && q?.tech)
       .map((q) => this.toDiscoveryItem(q, q.tech, 'coding'));
 
-    return this.buildCodingHubDiscoverySections(coding, []);
+    return this.buildCodingHubDiscoverySections(coding, this.generatedDebugDiscoveryItems());
   }
 
   private sortDiscoveryItems(items: CodingHubDiscoveryItem[]): CodingHubDiscoveryItem[] {
