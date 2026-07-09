@@ -29,6 +29,14 @@ function extractLocs(xml) {
   return Array.from(matches, (m) => m[1]);
 }
 
+function parseAbsoluteUrl(value) {
+  try {
+    return new URL(String(value || '').trim());
+  } catch {
+    return null;
+  }
+}
+
 function toLocalFile(loc) {
   try {
     const url = new URL(loc);
@@ -157,13 +165,16 @@ function assertFlexboxNavbarSitemapCoverage(paths, locs) {
   if (!paths.has(route)) {
     throw new Error(`Sitemap missing canonical route: ${route}`);
   }
-  if (!locs.includes(canonical)) {
+  if (!locs.some((loc) => String(loc || '').trim() === canonical)) {
     throw new Error(`Sitemap missing exact canonical loc: ${canonical}`);
   }
 
   const variants = locs.filter((loc) => {
-    const raw = String(loc || '');
-    return raw.includes('/css/coding/css-flexbox-navbar') && raw !== canonical;
+    const raw = String(loc || '').trim();
+    if (raw === canonical) return false;
+
+    const parsed = parseAbsoluteUrl(raw);
+    return parsed?.origin === 'https://frontendatlas.com' && parsed.pathname === route;
   });
   if (variants.length) {
     throw new Error(
