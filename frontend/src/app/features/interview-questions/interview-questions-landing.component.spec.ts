@@ -1790,6 +1790,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     );
     expect(htmlCssNavbarLinks.some((link) => /responsive navbar|Flexbox navbar/i.test(link.textContent || ''))).toBeTrue();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-grid-card-gallery"]')).toBeTruthy();
+    const htmlCssGridLinks = Array.from(
+      fixture.nativeElement.querySelectorAll('a[href="/css/coding/css-grid-card-gallery"]') as NodeListOf<HTMLAnchorElement>
+    );
+    expect(
+      htmlCssGridLinks.some((link) =>
+        /responsive CSS Grid card gallery|CSS Grid minmax\(\) card gallery challenge/i.test(link.textContent || '')
+      )
+    ).toBeTrue();
     expect(codingViewAll.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css&kind=coding');
     expect(thirdItem.getAttribute('href') || '').toContain('/coding?view=formats&category=html-css');
 
@@ -2578,6 +2586,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(hardwareAccelerationLinks.some((link) => (link.textContent || '').includes('CSS hardware acceleration and compositing'))).toBeTrue();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-flexbox-navbar"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-grid-card-gallery"]')).toBeTruthy();
+    const cssGridLinks = Array.from(
+      fixture.nativeElement.querySelectorAll('a[href="/css/coding/css-grid-card-gallery"]') as NodeListOf<HTMLAnchorElement>
+    );
+    expect(
+      cssGridLinks.some((link) =>
+        /Practice CSS Grid card layout|Responsive card grid interview prompt/i.test(link.textContent || '')
+      )
+    ).toBeTrue();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-fluid-clamp"]')).toBeTruthy();
     const themeVariablesLink = fixture.nativeElement.querySelector('a[href="/css/coding/css-theme-variables-dark-mode"]') as HTMLAnchorElement | null;
     expect(themeVariablesLink).toBeTruthy();

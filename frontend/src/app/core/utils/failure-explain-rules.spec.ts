@@ -613,6 +613,35 @@ describe('failure-explain-rules', () => {
     expect(text).toContain('focus');
   });
 
+  it('returns css grid card gallery hint for exact track sizing failures', () => {
+    const hint = buildFailureHint({
+      questionId: 'css-grid-card-gallery',
+      errorLine: 'Expected .gallery grid-template-columns to include repeat(2, minmax(0, 1fr)) and desktop repeat(4, minmax(0, 1fr))',
+      firstFailName: 'gallery should use exact 2 columns before the desktop breakpoint',
+      passCount: 3,
+      totalCount: 8,
+      failCount: 5,
+      failedTests: [
+        {
+          name: 'gallery should use exact 2 columns before the desktop breakpoint',
+          errorLine: 'Expected .gallery grid-template-columns to include repeat(2, minmax(0, 1fr))',
+        },
+        {
+          name: 'cards should not overflow with long titles',
+          errorLine: 'Expected no horizontal overflow for the gallery',
+        },
+      ],
+    });
+
+    const text = `${hint.title} ${hint.why} ${hint.actions.join(' ')}`.toLowerCase();
+
+    expect(hint.ruleId).toBe('css-grid-card-gallery-track-sizing');
+    expect(text).toContain('css grid');
+    expect(text).toContain('repeat(2, minmax(0, 1fr))');
+    expect(text).toContain('repeat(4, minmax(0, 1fr))');
+    expect(text).toContain('auto-fit/minmax(220px, 1fr)');
+  });
+
   it('maps undefined assertion mismatch to missing return hint', () => {
     const hint = buildFailureHint({
       errorLine: 'Expected undefined to be Hello World',

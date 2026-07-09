@@ -76,6 +76,36 @@ test('seo: css theme variables challenge is indexable with self canonical and cr
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
 });
 
+test('seo: css grid card gallery challenge is indexable with route-specific content', async ({ page }) => {
+  await setSeoHost(page, 'frontendatlas.com');
+  const response = await page.goto('/css/coding/css-grid-card-gallery');
+  const base = new URL(page.url()).origin;
+
+  expect(response?.status()).toBe(200);
+  await expect(page).toHaveTitle('CSS Grid Card Gallery Challenge | Responsive minmax() Layout');
+  await expect(page.locator('h1').first()).toContainText('Build a Responsive CSS Grid Card Gallery');
+  await expect.poll(() => getMeta(page, 'description')).toBe(
+    'Practice a responsive CSS Grid card gallery: use repeat(), minmax(), gap, breakpoints, and overflow checks to build a 2-to-4 column interview layout.'
+  );
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/css/coding/css-grid-card-gallery`);
+  await expect.poll(async () => ((await getMeta(page, 'robots')) || '').toLowerCase()).not.toContain('noindex');
+
+  const descriptionPanel = page.locator('[data-testid="coding-description-panel"]');
+  await expect(descriptionPanel).toContainText(/repeat\(\)/i);
+  await expect(descriptionPanel).toContainText(/minmax\(\)/i);
+  await expect(descriptionPanel).toContainText(/\bgap\b/i);
+  await expect(descriptionPanel).toContainText(/Acceptance criteria/i);
+  await expect(descriptionPanel).toContainText(/Common mistakes/i);
+  await expect(descriptionPanel).toContainText(/auto-fit/i);
+  await expect(descriptionPanel).toContainText(/Solution explains why Grid is better than Flexbox/i);
+
+  const jsonLd = page.locator('script#seo-jsonld');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('HowTo');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('FAQPage');
+});
+
 test('seo: css display flex page keeps route identity + structured data', async ({ page }) => {
   await setSeoHost(page, 'frontendatlas.com');
   await page.goto('/css/trivia/css-display-flex');
@@ -115,6 +145,7 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
   expect(robotsText).toContain('Sitemap: https://frontendatlas.com/sitemap.xml');
   expect(robotsText).toContain('Sitemap: https://frontendatlas.com/sitemap-index.xml');
   expect(robotsText).not.toContain('Disallow: /coding?');
+  expect(robotsText).not.toContain('Disallow: /css/coding');
 
   const indexRes = await page.request.get('/sitemap-index.xml');
   expect(indexRes.status()).toBe(200);
@@ -132,6 +163,7 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
   const sitemap = await chunkRes.text();
   expect(sitemap).toContain('https://frontendatlas.com/');
   expect(sitemap).toContain('https://frontendatlas.com/javascript/coding/js-number-clamp');
+  expect(sitemap).toContain('https://frontendatlas.com/css/coding/css-grid-card-gallery');
   const locs = extractLocs(sitemap);
   const disallowedPrefixes = ['/auth/', '/dashboard', '/profile', '/admin'];
   const disallowedExact = ['/auth/login', '/auth/register', '/dashboard', '/profile', '/admin'];

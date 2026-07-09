@@ -1554,16 +1554,21 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (!q) return;
     const storageKey = this.storageKeyFor(q);
 
-    // 1) Normalize incoming content
-    let nextHtml = '';
-    let nextCss = '';
+    // 1) Normalize incoming content. Object payloads may intentionally update
+    // only one pane, for example CSS-only solution variants.
+    let nextHtml = this.htmlCode();
+    let nextCss = this.cssCode();
 
     if (typeof payload === 'string') {
       nextHtml = this.unescapeJsLiterals(payload);
       nextCss = '';
     } else {
-      nextHtml = this.unescapeJsLiterals(payload?.html ?? '');
-      nextCss = this.prettifyCss(this.unescapeJsLiterals(payload?.css ?? ''));
+      if (payload.html !== undefined) {
+        nextHtml = this.unescapeJsLiterals(payload.html);
+      }
+      if (payload.css !== undefined) {
+        nextCss = this.prettifyCss(this.unescapeJsLiterals(payload.css));
+      }
     }
 
     // 2) Flush pending debounced saves before replacing editor content.

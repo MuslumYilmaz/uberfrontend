@@ -334,6 +334,12 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <p>Requirement: practice a Flexbox navbar coding challenge with brand, links, CTA, and mobile behavior.</p>
         <p class="prompt-card__focus">Test focus: readable links, visible focus, flex-wrap, gap, and no hidden navigation.</p>
       </a>
+      <a class="prompt-card" [routerLink]="['/css','coding','css-grid-card-gallery']" data-testid="ui-prompt-css-grid-gallery">
+        <div class="prompt-meta"><span>CSS</span><span>Grid layout</span></div>
+        <h3>CSS Grid Card Gallery</h3>
+        <p>Requirement: build a responsive CSS Grid card gallery with exact 2-to-4 column behavior.</p>
+        <p class="prompt-card__focus">Test focus: repeat(), minmax(), gap, long titles, extra cards, and no horizontal overflow.</p>
+      </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-accordion-faq']" data-testid="ui-prompt-accordion">
         <div class="prompt-meta"><span>React</span><span>Disclosure</span></div>
         <h3>Accordion</h3>

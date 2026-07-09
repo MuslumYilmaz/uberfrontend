@@ -4073,7 +4073,7 @@ const HTML_CSS_CODE_SCENARIOS: HtmlCssCodeQuestionItem[] = [
     code: `.cards {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n}`,
     explanation: 'Three fixed columns can exceed the viewport when the container is narrow. Use responsive tracks such as repeat(auto-fit, minmax(220px, 1fr)) or add a breakpoint. The fix should preserve card readability and avoid squeezing content below its usable width.',
     route: ['/css', 'coding', 'css-grid-card-gallery'],
-    cta: 'Build a responsive grid',
+    cta: 'Build a responsive CSS Grid card gallery',
     level: 'intermediate',
   },
   {
@@ -4181,7 +4181,7 @@ const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
     q: 'How should cards adapt in a responsive grid?',
     a: 'Cards should keep readable text, stable media ratios, and consistent action placement as columns change. Grid with minmax() and auto-fit can reduce breakpoint code while preserving minimum card width. Test long titles and missing images because they expose fragile card layouts.',
     route: ['/css', 'coding', 'css-grid-card-gallery'],
-    cta: 'Build card grids',
+    cta: 'CSS Grid minmax() card gallery challenge',
     level: 'intermediate',
   },
   {
@@ -4631,7 +4631,7 @@ const CSS_LAYOUT_QUESTIONS: CssFocusedQuestionItem[] = [
     q: 'How does auto-fit with minmax() help responsive grids?',
     a: 'auto-fit with minmax() lets the grid create as many columns as fit while preserving a usable minimum column width. It reduces breakpoint code for card galleries and dashboards. The minimum value should be chosen from content needs, not an arbitrary device width.',
     route: ['/css', 'coding', 'css-grid-card-gallery'],
-    cta: 'Build a responsive grid',
+    cta: 'Practice CSS Grid card layout',
     level: 'intermediate',
   },
   {
@@ -4665,7 +4665,7 @@ const CSS_RESPONSIVE_QUESTIONS: CssFocusedQuestionItem[] = [
     q: 'How should responsive cards be designed?',
     a: 'Cards should keep stable media ratios, readable text, predictable action placement, and enough space for long titles. Grid with minmax() can adapt columns without many breakpoints. Test missing images and long content because they expose fragile card layouts.',
     route: ['/css', 'coding', 'css-grid-card-gallery'],
-    cta: 'Build card grids',
+    cta: 'Responsive card grid interview prompt',
     level: 'intermediate',
   },
   {

@@ -415,7 +415,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     <ol class="question-list" start="19">
       <li id="question-19"><strong>Explain async versus defer and script loading behavior.</strong> Tie the answer to parsing, execution order, and render blocking.</li>
       <li id="question-20"><strong>Debug event loop ordering with promises and timers.</strong> Narrate microtasks, macrotasks, and rendering timing.</li>
-      <li id="question-21"><strong>Fix layout shift in a responsive card grid.</strong> Stabilize media dimensions and content height before polishing styles.</li>
+      <li id="question-21"><strong>Fix layout shift in a responsive card grid.</strong> Start with the CSS-only baseline: <a [routerLink]="['/css','coding','css-grid-card-gallery']">Build a responsive CSS Grid card gallery</a>, then stabilize media dimensions and content height before polishing styles.</li>
       <li id="question-22"><strong>Build responsive navigation with an accessible mobile menu.</strong> Start with the CSS-only baseline: <a [routerLink]="['/css','coding','css-flexbox-navbar']">build a responsive navbar with CSS Flexbox</a>, then add semantic buttons, focus behavior, and viewport-safe layout when the prompt asks for disclosure.</li>
     </ol>
 

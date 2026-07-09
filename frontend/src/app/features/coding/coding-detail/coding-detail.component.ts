@@ -1192,7 +1192,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         {
           '@type': 'ListItem',
           position: 1,
-          name: 'FrontendAtlas',
+          name: 'Home',
           item: this.seo.buildCanonicalUrl('/'),
         },
         {
@@ -2935,8 +2935,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.isWebTech()) {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
       const css = this.prettifyCss(this.unescapeJsLiterals(ap.codeCss ?? ''));
+      const payload: { html?: string; css?: string } = {};
 
-      this.webPanel?.applySolution({ html, css });
+      if (html.trim()) payload.html = html;
+      if (css.trim()) payload.css = css;
+
+      this.webPanel?.applySolution(payload);
       this.topTab.set('html');
       return;
     }
