@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -349,6 +349,100 @@ describe('CodingDetailComponent', () => {
       itemId: 'vue-counter',
     }));
     expect(component.solved()).toBeTrue();
+  });
+
+  it('tracks framework check analytics before completion side effects', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(false);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-autocomplete-search-starter',
+      access: 'free',
+      difficulty: 'intermediate',
+      frameworkTests: [{ id: 'aria', name: 'ARIA', steps: [{ type: 'expectExists', selector: '.input' }] }],
+    } as any);
+
+    await component.onFrameworkCheckRun({
+      questionId: 'react-autocomplete-search-starter',
+      passed: true,
+      results: [{ name: 'ARIA', passed: true }],
+    });
+
+    expect(analytics.track).toHaveBeenCalledWith('run_checks', jasmine.objectContaining({
+      question_id: 'react-autocomplete-search-starter',
+      pass_count: 1,
+      total_count: 1,
+    }));
+    expect(analytics.track).toHaveBeenCalledWith('first_passing_test', jasmine.objectContaining({
+      question_id: 'react-autocomplete-search-starter',
+    }));
+    expect(analytics.track).toHaveBeenCalledWith('all_tests_passed', jasmine.objectContaining({
+      question_id: 'react-autocomplete-search-starter',
+      total_count: 1,
+    }));
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('exposes interview hero metadata and tracks Start coding', fakeAsync(() => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const focusEditor = jasmine.createSpy('focusEditor');
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-autocomplete-search-starter',
+      access: 'free',
+      difficulty: 'intermediate',
+      estimatedMinutes: 40,
+      interviewFocus: {
+        summary: 'Intermediate Frontend machine coding interview question. Recommended time: 35-45 minutes.',
+        tests: ['Keyboard navigation and ARIA'],
+      },
+      description: {
+        summary: 'Build autocomplete.',
+        specs: {
+          techFocus: ['React state/effects', 'Debounce'],
+        },
+      },
+    } as any);
+    component.frameworkPanel = { focusEditor } as any;
+
+    expect(component.interviewFocusSummary()).toContain('Frontend machine coding interview question');
+    expect(component.questionTimeboxLabel()).toBe('35-45 min');
+    expect(component.assessedSkillChips()).toEqual(['React state/effects', 'Debounce']);
+
+    component.startCoding();
+    tick(0);
+
+    expect(analytics.track).toHaveBeenCalledWith('start_coding', jasmine.objectContaining({
+      question_id: 'react-autocomplete-search-starter',
+      tech: 'react',
+    }));
+    expect(focusEditor).toHaveBeenCalled();
+  }));
+
+  it('tracks solution reveal once when the solution body is shown', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({ id: 'react-autocomplete-search-starter', access: 'free' } as any);
+
+    component.onSolutionTabClick();
+    component.onSolutionTabClick();
+
+    const viewSolutionCalls = analytics.track.calls.allArgs()
+      .filter(([name]) => name === 'view_solution');
+    expect(viewSolutionCalls.length).toBe(1);
+    expect(viewSolutionCalls[0][1]).toEqual(jasmine.objectContaining({
+      question_id: 'react-autocomplete-search-starter',
+      tech: 'react',
+    }));
   });
 
   it('does not complete a structured framework question when checks fail', async () => {

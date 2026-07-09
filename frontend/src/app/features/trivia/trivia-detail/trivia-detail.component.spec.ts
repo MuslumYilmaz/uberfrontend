@@ -314,19 +314,19 @@ describe('TriviaDetailComponent', () => {
   it('uses question-level SEO H1 override without appending the default intent label', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
-        title: 'React render nothing: fix null, false, undefined bugs',
+        title: 'Can React Return undefined? React 18 vs null',
         description:
-          'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
-        h1: 'React render nothing: return null, false, fragments, and undefined',
+          'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
+        h1: 'Can React Components Return undefined? React 18 vs null',
       },
     });
 
     const h1 = fixture.nativeElement.querySelector('h1.title') as HTMLElement | null;
     expect(h1?.querySelector('.title__question')?.textContent?.trim()).toBe(
-      'React render nothing: return null, false, fragments, and undefined',
+      'Can React Components Return undefined? React 18 vs null',
     );
     expect(h1?.textContent?.trim()).toBe(
-      'React render nothing: return null, false, fragments, and undefined',
+      'Can React Components Return undefined? React 18 vs null',
     );
     expect(h1?.querySelector('.title__intent')).toBeNull();
     expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')).toBeNull();
@@ -335,7 +335,7 @@ describe('TriviaDetailComponent', () => {
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
 
-    expect(article?.headline).toBe('React render nothing: return null, false, fragments, and undefined');
+    expect(article?.headline).toBe('Can React Components Return undefined? React 18 vs null');
   });
 
   it('renders article body card headings as H2 and markdown answer headings as H3', async () => {
@@ -783,7 +783,7 @@ describe('TriviaDetailComponent', () => {
   it('renders the return value simulator only for the render-nothing question', async () => {
     const targetFixture = await createLoadedFixture('free', {
       id: 'react-render-nothing-return-value',
-      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      title: 'Can a React component return undefined?',
       technology: 'react',
       tags: ['react', 'rendering', 'null', 'conditional', 'components'],
     });
@@ -806,7 +806,7 @@ describe('TriviaDetailComponent', () => {
   it('updates return value simulator output when a segment is selected', async () => {
     const fixture = await createLoadedFixture('free', {
       id: 'react-render-nothing-return-value',
-      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      title: 'Can a React component return undefined?',
       technology: 'react',
       tags: ['react', 'rendering', 'null', 'conditional', 'components'],
     });
@@ -814,6 +814,17 @@ describe('TriviaDetailComponent', () => {
     const simulator = fixture.nativeElement.querySelector('[data-testid="return-value-simulator"]') as HTMLElement;
     expect(simulator.textContent || '').toContain('No DOM output for this component render.');
     expect(simulator.textContent || '').toContain('queryByRole');
+
+    const undefinedButton = Array.from(simulator.querySelectorAll('.return-simulator__tab'))
+      .find((button: any) => String(button.textContent || '').trim() === 'undefined') as HTMLButtonElement | undefined;
+    expect(undefinedButton).toBeTruthy();
+
+    undefinedButton?.click();
+    fixture.detectChanges();
+
+    expect(simulator.textContent || '').toContain('React 18+: no DOM output.');
+    expect(simulator.textContent || '').toContain('React 17 and earlier could throw');
+    expect(simulator.textContent || '').toContain('TypeScript and linting');
 
     const zeroButton = Array.from(simulator.querySelectorAll('.return-simulator__tab'))
       .find((button: any) => String(button.textContent || '').trim() === '0') as HTMLButtonElement | undefined;
@@ -2108,14 +2119,14 @@ describe('TriviaDetailComponent', () => {
   it('adds render-nothing TechArticle schema fields without FAQPage or QAPage markup', async () => {
     const question = {
       id: 'react-render-nothing-return-value',
-      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      title: 'Can a React component return undefined?',
       description:
-        'React renders nothing when a component returns null or false; a fragment renders children without adding a wrapper. Returning undefined usually means a missing return, so fix it instead of using it as intentional empty UI.',
+        'Yes. In React 18+, a component may return undefined and React renders no DOM for that return. In React 17 and earlier, the same return could throw "Nothing was returned from render." Use return null for intentional empty UI, and catch accidental missing returns with TypeScript and lint rules.',
       answer: {
         blocks: [
           {
             type: 'text',
-            text: '## Quick answer\n\nReturn null for intentional empty UI.',
+            text: '## Quick answer\n\nReact 18+ permits undefined component returns, but return null is clearer.',
           },
         ],
       },
@@ -2126,10 +2137,10 @@ describe('TriviaDetailComponent', () => {
       tags: ['react', 'rendering', 'null', 'conditional', 'components'],
       updatedAt: '2026-06-29',
       seo: {
-        title: 'React render nothing: fix null, false, undefined bugs',
+        title: 'Can React Return undefined? React 18 vs null',
         description:
-          'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
-        h1: 'React render nothing: return null, false, fragments, and undefined',
+          'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
+        h1: 'Can React Components Return undefined? React 18 vs null',
       },
     };
 
@@ -2165,9 +2176,13 @@ describe('TriviaDetailComponent', () => {
       'null',
       'false',
       'undefined',
+      'React 18',
+      'React 17 and earlier',
       'Fragment',
       'ReactNode',
       'missing return',
+      'TypeScript return types',
+      'ESLint consistent-return',
       'short-circuit rendering',
       'parent conditional rendering',
       'JSX holes',
@@ -2179,21 +2194,27 @@ describe('TriviaDetailComponent', () => {
       'interactive demo',
       'DOM output',
       'mounted state',
+      'source check',
     ]);
     expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
       'Quick answer',
+      'React 17 and earlier vs React 18+ comparison',
       'Return value map',
-      'Common render-nothing bugs',
-      'Code examples',
+      'Explicit return undefined',
+      'Accidental missing return',
+      'return null',
       'Return value simulator',
       'Return null vs parent conditional rendering',
-      'Return null lifecycle notes',
       'Component return vs JSX child semantics',
+      'Follow-up question',
+      'Common production mistake',
+      'Source check',
       'Testable proof',
       'FrontendAtlas review note',
-      'Testing and accessibility notes',
     ]);
-    expect(article?.citation).toBeUndefined();
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://github.com/reactwg/react-18/discussions/75',
+    ]);
   });
 
   it('renders non-crawlable sidebar buttons and crawlable practice entry links', async () => {

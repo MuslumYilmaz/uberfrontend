@@ -192,6 +192,51 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         }, true);
       })();
 
+      (function(){
+        const originalSetTimeout = window.setTimeout.bind(window);
+        const originalClearTimeout = window.clearTimeout.bind(window);
+        const originalAddEventListener = document.addEventListener.bind(document);
+        const originalRemoveEventListener = document.removeEventListener.bind(document);
+        const activeTimers = new Set();
+        const documentListeners = new Set();
+
+        window.setTimeout = function(fn, delay){
+          let id;
+          const wrapped = function(){
+            activeTimers.delete(id);
+            if (typeof fn === 'function') {
+              return fn.apply(this, arguments);
+            }
+            try { return (0, eval)(String(fn)); } catch (_e) { return undefined; }
+          };
+          id = originalSetTimeout(wrapped, delay);
+          activeTimers.add(id);
+          return id;
+        };
+
+        window.clearTimeout = function(id){
+          activeTimers.delete(id);
+          return originalClearTimeout(id);
+        };
+
+        document.addEventListener = function(type, listener, options){
+          if (listener) documentListeners.add(type + ':' + String(listener));
+          return originalAddEventListener(type, listener, options);
+        };
+
+        document.removeEventListener = function(type, listener, options){
+          if (listener) documentListeners.delete(type + ':' + String(listener));
+          return originalRemoveEventListener(type, listener, options);
+        };
+
+        window.__FA_GET_PREVIEW_LEAKS = function(){
+          return {
+            timers: activeTimers.size,
+            documentListeners: documentListeners.size
+          };
+        };
+      })();
+
       const rootEl = document.getElementById('root');
       const overlay = document.getElementById('_fa_overlay');
       const overlayMsg = document.getElementById('_fa_overlay_msg');
@@ -367,6 +412,9 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         );
 
         const root = ReactDOM.createRoot(rootEl);
+        window.__FA_UNMOUNT_PREVIEW = function(){
+          try { root.unmount(); } catch (_e) {}
+        };
         if (typeof AppRef === 'function') {
           root.render(
             React.createElement(FAErrorBoundary, null, React.createElement(AppRef))

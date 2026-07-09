@@ -62,26 +62,34 @@ export type QuestionInterviewFocus = {
 export type FrameworkTestStepType =
   | 'expectExists'
   | 'expectText'
+  | 'expectNoText'
   | 'expectDisabled'
   | 'click'
+  | 'mouseDown'
+  | 'pointerDown'
+  | 'wait'
   | 'waitForText'
   | 'setValue'
   | 'expectValue'
+  | 'expectFocused'
   | 'expectCount'
   | 'waitForCount'
   | 'expectAttribute'
   | 'expectClass'
-  | 'key';
+  | 'key'
+  | 'unmountPreview'
+  | 'expectNoPreviewLeaks';
 
 export type FrameworkTestStep = {
   type?: FrameworkTestStepType;
   action?: FrameworkTestStepType;
-  selector: string;
+  selector?: string;
   index?: number;
   text?: string;
   match?: 'equals' | 'contains';
   disabled?: boolean;
   timeoutMs?: number;
+  durationMs?: number;
   value?: string;
   key?: string;
   count?: number;

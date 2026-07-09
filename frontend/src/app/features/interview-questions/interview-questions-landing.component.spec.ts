@@ -822,7 +822,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--react-testing')).toBeTruthy();
     expect(fixture.nativeElement.querySelectorAll('.iq-section--react-testing .iq-focused-card').length).toBe(8);
     expect(fixture.nativeElement.querySelector('.iq-section--react-scenarios')).toBeTruthy();
-    expect(fixture.nativeElement.querySelectorAll('.iq-scenario-card').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('.iq-scenario-card').length).toBe(9);
     expect(fixture.nativeElement.querySelector('.iq-section--react-modern')).toBeTruthy();
     expect(fixture.nativeElement.querySelectorAll('.iq-modern-card').length).toBe(8);
     expect(fixture.nativeElement.querySelector('.iq-section--vue-clusters')).toBeNull();
@@ -834,7 +834,7 @@ describe('InterviewQuestionsLandingComponent', () => {
       fixture.nativeElement.querySelectorAll(
         '.iq-short-answer, .iq-scenario-card, .iq-modern-card, .iq-focused-card'
       ).length
-    ).toBe(65);
+    ).toBe(66);
     expect(fixture.nativeElement.querySelector('.iq-section--angular-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--angular-audience')).toBeNull();

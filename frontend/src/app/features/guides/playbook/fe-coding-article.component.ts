@@ -325,7 +325,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </a>
       <a class="prompt-card" [routerLink]="['/react','coding','react-autocomplete-search-starter']" data-testid="coding-prompt-autocomplete">
         <div class="prompt-meta"><span>Must know</span><span>Keyboard</span></div>
-        <h3>Autocomplete</h3>
+        <h3>React autocomplete interview question</h3>
         <p>Requirement: fetch suggestions, support keyboard selection, handle empty/no-results/error states, and preserve focus.</p>
         <p class="prompt-card__focus">Test focus: Arrow keys, Escape, selection, and stale responses.</p>
       </a>
@@ -500,7 +500,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     </p>
     <p>
       Open the hands-on version when you want to implement it:
-      <a [routerLink]="['/react','coding','react-autocomplete-search-starter']">Autocomplete Search Bar (Hooks)</a>.
+      <a [routerLink]="['/react','coding','react-autocomplete-search-starter']">build an autocomplete search bar in React</a>.
     </p>
     <div class="worked-grid" data-testid="coding-guide-worked-example">
       <article class="worked-panel">

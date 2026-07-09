@@ -132,7 +132,7 @@ const REACT_PREP_PATTERNS: ReactPrepPatternCard[] = [
     prepGoal: 'Use this React component coding interview drill to model input value, selected value, suggestions, keyboard behavior, loading, empty, and error states.',
     testFocus: 'Stale responses, Escape/Enter/arrow keys, option identity, empty results, and blur/selection timing.',
     route: ['/react', 'coding', 'react-autocomplete-search-starter'],
-    linkLabel: 'Practice autocomplete',
+    linkLabel: 'Practice autocomplete with debounce and keyboard navigation',
     testId: 'react-prep-pattern-autocomplete',
   },
   {
@@ -2299,7 +2299,7 @@ function onInput(value) {
             },
             {
               id: 'react-autocomplete-search-starter',
-              title: 'Autocomplete Search Bar (Hooks)',
+              title: 'React autocomplete interview question',
               filePath: 'cdn/questions/react/coding.json',
               route: ['/react', 'coding', 'react-autocomplete-search-starter'],
               routeUrl: '/react/coding/react-autocomplete-search-starter',
@@ -2547,7 +2547,7 @@ function onInput(value) {
             },
             {
               id: 'react-autocomplete-search-starter',
-              title: 'Autocomplete Search Bar (Hooks)',
+              title: 'React autocomplete interview question',
               filePath: 'cdn/questions/react/coding.json',
               route: ['/react', 'coding', 'react-autocomplete-search-starter'],
               routeUrl: '/react/coding/react-autocomplete-search-starter',

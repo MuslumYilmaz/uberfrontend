@@ -28,6 +28,19 @@ const CASES = [
     premiumPreviewText: 'autocomplete search bar',
   },
   {
+    path: '/react/coding/react-autocomplete-search-starter',
+    titleIncludes: 'React Autocomplete Interview Question: Debounce \\+ Tests',
+    h1: 'Build a React Autocomplete Search Bar',
+    detail: true,
+    indexable: true,
+    bodyTextIncludes: [
+      'Frontend machine coding interview question',
+      'Controlled query input',
+      'Prevent stale slow responses',
+      'React debounced search state practice',
+    ],
+  },
+  {
     path: '/react/coding/react-counter',
     titleIncludes: 'Counter',
     h1: 'React Counter (Guarded Decrement)',
@@ -39,6 +52,19 @@ const CASES = [
     h1: 'Explain the JavaScript Event Loop',
     detail: true,
     expectNoMonaco: true,
+  },
+  {
+    path: '/react/trivia/react-render-nothing-return-value',
+    titleIncludes: 'Can React Return undefined\\? React 18 vs null',
+    h1: 'Can React Components Return undefined? React 18 vs null',
+    detail: true,
+    indexable: true,
+    bodyTextIncludes: [
+      'Quick answer',
+      'React 18\\+ permits undefined component returns',
+      'React 17 and earlier',
+      'return null',
+    ],
   },
   {
     path: '/guides/system-design-blueprint/radio-framework',
@@ -106,6 +132,7 @@ async function assertSsrBasics(
     listTestIdPrefix?: string;
     indexable?: boolean;
     singleHydratedH1?: boolean;
+    bodyTextIncludes?: string[];
   },
 ) {
   const title = await page.title();
@@ -152,6 +179,10 @@ async function assertSsrBasics(
     await expect(page.locator('script[src*="monaco"]')).toHaveCount(0);
     await expect(page.locator('script:has-text("monaco")')).toHaveCount(0);
   }
+
+  for (const expectedText of entry.bodyTextIncludes || []) {
+    await expect(page.getByText(new RegExp(expectedText, 'i')).first()).toHaveCount(1);
+  }
 }
 
 async function assertHydratedBasics(
@@ -165,6 +196,7 @@ async function assertHydratedBasics(
     listTestIdPrefix?: string;
     indexable?: boolean;
     singleHydratedH1?: boolean;
+    bodyTextIncludes?: string[];
   },
 ) {
   await expect(page).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
@@ -205,6 +237,10 @@ async function assertHydratedBasics(
     await expect(page.getByTestId('premium-preview')).toContainText(
       new RegExp(entry.premiumPreviewText, 'i'),
     );
+  }
+
+  for (const expectedText of entry.bodyTextIncludes || []) {
+    await expect(page.getByText(new RegExp(expectedText, 'i')).first()).toHaveCount(1);
   }
 }
 

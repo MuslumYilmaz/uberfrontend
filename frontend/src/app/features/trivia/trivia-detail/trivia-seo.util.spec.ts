@@ -130,22 +130,22 @@ describe('trivia-seo.util', () => {
   it('preserves React render-nothing SEO title when description carries interview intent', () => {
     const question = {
       id: 'react-render-nothing-return-value',
-      title: 'Why does a React component sometimes render nothing, and how does React interpret its return value?',
+      title: 'Can a React component return undefined?',
       technology: 'react',
       seo: {
-        title: 'React render nothing: fix null, false, undefined bugs',
+        title: 'Can React Return undefined? React 18 vs null',
         description:
-          'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
+          'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
 
-    expect(title).toBe('React render nothing: fix null, false, undefined bugs');
+    expect(title).toBe('Can React Return undefined? React 18 vs null');
     expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'Use the return-value map to fix missing returns, JSX holes, numeric && leaks, fragment confusion, and DOM absence tests before interviews.',
+      'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });

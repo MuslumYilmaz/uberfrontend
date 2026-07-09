@@ -285,7 +285,7 @@
         { "tech": "angular", "kind": "coding", "id": "angular-autocomplete-search-starter" },
         { "tech": "vue", "kind": "coding", "id": "vue-autocomplete-search" }
       ],
-      "rationale": "Autocomplete adds keyboard, async, focus, and accessibility constraints to search.",
+      "rationale": "Autocomplete adds debounce, stale-response handling, keyboard, focus, no-results, and accessibility constraints to search.",
       "benchmarkTopics": ["autocomplete", "keyboard", "accessibility"]
     },
     {

@@ -1546,8 +1546,8 @@ export const SHOWCASE_STATS = {
       "system": 1
     },
     "apple": {
-      "all": 41,
-      "coding": 22,
+      "all": 40,
+      "coding": 21,
       "trivia": 14,
       "system": 5
     },

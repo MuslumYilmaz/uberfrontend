@@ -76,6 +76,57 @@
   font-size: 12px;
 }
 
+.detail-interview-hero {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+}
+
+.detail-interview-hero__intent {
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 650;
+}
+
+.detail-interview-hero__facts,
+.detail-interview-hero__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detail-interview-hero__fact {
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 74%, var(--uf-text-secondary) 26%);
+  color: var(--uf-text-secondary);
+  background: color-mix(in srgb, var(--uf-text-primary) 5%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.detail-interview-hero__checks {
+  margin: 0;
+  padding-left: 18px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.detail-interview-hero__cta {
+  justify-self: start;
+}
+
 .report-issue-btn {
   display: inline-flex;
   align-items: center;
