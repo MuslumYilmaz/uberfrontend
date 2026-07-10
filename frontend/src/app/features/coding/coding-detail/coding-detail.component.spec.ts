@@ -875,6 +875,36 @@ describe('CodingDetailComponent', () => {
       'createDeferred(): {promise,resolve,reject}. Starter code/tests: resolve/reject, Promise adoption, pending, first-settlement-wins, TS/interview follow-ups.'
     );
     expect(payload.canonical).toBe('https://frontendatlas.com/javascript/coding/js-create-deferred-promise');
+    expect(payload.robots).toBeUndefined();
+  });
+
+  it('marks premium coding content noindex without exposing solution-style schema, even for premium users', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'css';
+    component.kind = 'coding';
+    auth.user.and.returnValue({ accessTier: 'premium' } as any);
+
+    const question = {
+      ...makeCssFlexboxNavbarQuestion(),
+      access: 'premium',
+    };
+
+    (component as any).updateSeoForQuestion(question);
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((entry: any) => entry?.['@type'] === 'TechArticle');
+    const typeNames = graph.map((entry: any) => entry?.['@type']);
+
+    expect(payload.robots).toBe('noindex,follow');
+    expect(payload.canonical).toBe('https://frontendatlas.com/css/coding/css-flexbox-navbar');
+    expect(article?.isAccessibleForFree).toBeFalse();
+    expect(typeNames).toContain('BreadcrumbList');
+    expect(typeNames).toContain('TechArticle');
+    expect(typeNames).not.toContain('HowTo');
+    expect(typeNames).not.toContain('FAQPage');
   });
 
   it('publishes exact SEO metadata and four-level breadcrumbs for the CSS theme variables challenge', () => {

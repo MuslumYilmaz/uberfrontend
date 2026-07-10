@@ -17,6 +17,10 @@ import { Tech } from '../../../core/models/user.model';
 import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import { QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
+import {
+  isContentAccessibleForFree,
+  robotsForContentAccess,
+} from '../../../core/utils/content-access-policy.util';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
@@ -1292,6 +1296,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const studyPlanUrl = this.seo.buildCanonicalUrl(this.studyPlanPath());
     const companiesUrl = this.seo.buildCanonicalUrl('/companies');
     const articleExtensions = this.articleStructuredDataExtensions(q);
+    const accessibleForFree = isContentAccessibleForFree(q.access);
+    const robots = robotsForContentAccess(q.access);
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -1352,12 +1358,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ],
       ...articleExtensions,
-      isAccessibleForFree: q.access !== 'premium',
+      isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
     };
 
-    const questionStructuredData = this.questionStructuredData(q, canonical);
+    const questionStructuredData = accessibleForFree ? this.questionStructuredData(q, canonical) : null;
     const jsonLd = questionStructuredData
       ? [breadcrumb, article, questionStructuredData]
       : [breadcrumb, article];
@@ -1366,6 +1372,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       title: seoTitle,
       description,
       keywords,
+      robots,
       canonical,
       ogType: 'article',
       jsonLd,

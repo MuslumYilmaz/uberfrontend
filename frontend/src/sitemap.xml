@@ -4,79 +4,7 @@
     <loc>https://frontendatlas.com/</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-autocomplete-search-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-chessboard-click-highlight</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-chips-input-autocomplete</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-contact-form-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-counter-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-debounced-search</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-dynamic-counter-buttons</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-dynamic-table-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-faq-accordion</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-filterable-user-list</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-image-slider-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-input-output-two-way</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-like-button</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-multi-step-form-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-nested-checkboxes</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-nested-comments</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-pagination-table</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-progress-bar-thresholds</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-shopping-cart-mini</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
@@ -84,27 +12,7 @@
     <lastmod>2026-07-06</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-star-rating</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-tabs-switcher</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-theme-toggle</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-tictactoe-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-todo-list-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/angular/coding/angular-transfer-list</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
@@ -623,10 +531,6 @@
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/html/coding/html-dialog-confirm-a11y</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/html/coding/html-forms-validation-required</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
@@ -773,18 +677,6 @@
     <lastmod>2026-03-21</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/incidents/angular-onpush-stale-row</loc>
-    <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/incidents/autosave-overwrites-latest-edit</loc>
-    <lastmod>2026-03-19</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/incidents/context-rerender-storm</loc>
-    <lastmod>2026-03-19</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/incidents/modal-screen-reader-failure</loc>
     <lastmod>2026-03-19</lastmod>
   </url>
@@ -801,50 +693,14 @@
     <lastmod>2026-03-21</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/incidents/vue-pinia-destructure-stale-filter</loc>
-    <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/incidents/websocket-memory-leak</loc>
-    <lastmod>2026-03-20</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/interview-questions</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/interview-questions/essential</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-abortable-helpers</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-add-strings</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-add-two-promises</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-array-foreach</loc>
     <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-array-prototype-filter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-array-prototype-map</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-array-prototype-reduce</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-array-sort</loc>
-    <lastmod>2026-02-01</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-arrays-equal</loc>
@@ -857,14 +713,6 @@
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-compact</loc>
     <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-compose</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-concurrency-map-limit</loc>
-    <lastmod>2026-01-31</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-count-vowels</loc>
@@ -891,76 +739,16 @@
     <lastmod>2026-02-05</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-curry-function</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-debounce</loc>
     <lastmod>2026-07-06</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-deep-clone</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-deep-clone-cycles-3</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-deep-equal</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-delegated-events-1</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-delegated-events-2</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-delegated-events-3</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-dom-find-node</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-dom-renderer</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-dom-twin-node</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-1</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-2</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-3</loc>
-    <lastmod>2026-01-31</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-escape-html</loc>
     <lastmod>2026-02-03</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-event-emitter-mini</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-fetch-json-timeout</loc>
     <lastmod>2026-02-03</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-flatten-depth</loc>
-    <lastmod>2026-01-31</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-flatten-once</loc>
@@ -973,10 +761,6 @@
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-get-by-path-1</loc>
     <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-group-by</loc>
-    <lastmod>2026-01-31</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-implement-bind</loc>
@@ -995,32 +779,8 @@
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-lodash-get</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-max-char</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-maze-path</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-measure-duration</loc>
     <lastmod>2026-02-03</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-median-of-array</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-memoize-function</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-merge-sorted-arrays</loc>
-    <lastmod>2026-02-01</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-number-clamp</loc>
@@ -1035,16 +795,8 @@
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-palindrome-check</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-poll-until</loc>
     <lastmod>2026-02-03</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-promise-all</loc>
-    <lastmod>2026-01-30</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-promise-any</loc>
@@ -1055,24 +807,8 @@
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-querystring-parse-3</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-querystring-stringify-2</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-recover-bst-swapped-nodes</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-resolve-package-exports</loc>
     <lastmod>2026-02-05</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-reverse-string</loc>
-    <lastmod>2026-02-01</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-run-with-perf-budget</loc>
@@ -1087,32 +823,12 @@
     <lastmod>2026-02-06</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-selector-polyfill-closest-2</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-selector-polyfill-matches-1</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-selector-polyfill-qsa-3</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-set-by-path-2</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-shallow-clone</loc>
     <lastmod>2026-07-07</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-sleep</loc>
     <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-stack-queue-implementation</loc>
-    <lastmod>2026-02-01</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-storage-ttl-cache</loc>
@@ -1123,10 +839,6 @@
     <lastmod>2026-02-03</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-streaming-ndjson-parser</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-sum-numbers</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
@@ -1135,32 +847,8 @@
     <lastmod>2026-02-03</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-three-sum</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-throttle</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-timer-manager</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-timer-manager-and-dom-renderer</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-unique-array</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-update-at-index</loc>
     <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/javascript/coding/js-valid-anagram</loc>
-    <lastmod>2026-01-31</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-validate-username</loc>
@@ -1550,115 +1238,15 @@
     <loc>https://frontendatlas.com/pricing</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/react/coding/react-accordion-faq</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/react/coding/react-autocomplete-search-starter</loc>
     <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-chat-streaming-ui</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-chessboard-click-highlight</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-chips-input-autocomplete</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-contact-form-starter</loc>
-    <lastmod>2026-01-30</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-counter</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/react/coding/react-debounced-search</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-debug-double-render</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-dynamic-counter-buttons</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-dynamic-table</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-filterable-user-list</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-image-slider</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-like-button</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-multi-step-signup</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-nested-checkboxes</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-nested-comments</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-pagination-table</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-progress-bar-thresholds</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-shopping-cart</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-snake-game</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-star-rating</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-tabs-switcher</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-theme-toggle</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-tictactoe</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/react/coding/react-todo-list</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-transfer-list</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/react/coding/react-use-effect-once</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
@@ -1832,39 +1420,7 @@
     <loc>https://frontendatlas.com/system-design</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/system-design/ai-chat-textarea-design</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/ai-image-generation-mvp</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/ai-ux-considerations</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/component-design-system-architecture</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/cross-device-preferences-sync</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/system-design/dashboard-widgets-draggable-resizable</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/endless-short-video-feed</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/flashcard-language-trainer</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/image-upload-preview</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
@@ -1872,44 +1428,8 @@
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/system-design/live-chart-high-frequency-updates</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/live-comments-global-stream</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/model-training-progress-dashboard</loc>
-    <lastmod>2026-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/multi-step-form-autosave</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/netflix-scale-expansion</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/news-feed-timeline</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/system-design/notification-toast-system</loc>
     <lastmod>2026-07-06</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/realtime-search-debounce-cache</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/scalable-notifications-feed</loc>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/system-design/ui-component-state-from-mock</loc>
-    <lastmod>2026-02-01</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/tools/cv</loc>
@@ -1934,68 +1454,8 @@
     <lastmod>2026-03-29</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/tradeoffs/composable-vs-pinia-vue-shared-product-state</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/computed-vs-method-template-vue-derived-ui</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/computed-vs-watch-vue-catalog</loc>
-    <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/tradeoffs/context-vs-zustand-vs-redux</loc>
     <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/controlled-vs-uncontrolled-react-inputs</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/csr-vs-ssr-vs-rsc-react-rendering</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/debounce-vs-throttle-live-search</loc>
-    <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/derive-in-render-vs-store-derived-state</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/event-delegation-vs-direct-listeners</loc>
-    <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/feature-service-signals-rxjs-vs-ngrx-angular-platform</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/feature-service-vs-ngrx-angular</loc>
-    <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/input-output-vs-shared-service-angular-communication</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/lift-state-up-vs-keep-local-react</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/local-state-vs-extracted-composable-vue-feature-logic</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/localstorage-vs-sessionstorage-browser-persistence</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/mutation-vs-immutable-copy-shared-state</loc>
-    <lastmod>2026-03-29</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs/object-vs-map-keyed-collections</loc>
@@ -2014,151 +1474,27 @@
     <lastmod>2026-03-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/tradeoffs/props-emits-vs-vmodel-vue-custom-input-api</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/pure-pipe-vs-component-method-template-angular</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/tradeoffs/reactive-forms-vs-template-driven-angular</loc>
     <lastmod>2026-03-21</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/ref-vs-reactive-vue-state-shape</loc>
-    <lastmod>2026-03-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/route-resolver-vs-fetch-in-ngoninit-angular</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/settimeout-vs-requestanimationframe-ui-updates</loc>
-    <lastmod>2026-03-29</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs/sse-vs-websocket-live-dashboard</loc>
     <lastmod>2026-03-21</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/tradeoffs/useeffect-vs-event-handler-logic</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/tradeoffs/usestate-vs-usereducer-growing-state</loc>
     <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tradeoffs/vif-vs-vshow-vue-visibility-toggle</loc>
-    <lastmod>2026-03-30</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/tradeoffs/watch-vs-watcheffect-vue-reactive-effects</loc>
     <lastmod>2026-03-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/tradeoffs/web-worker-vs-main-thread-heavy-compute</loc>
-    <lastmod>2026-03-29</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-accordion-faq</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-autocomplete-search</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-chessboard-click-highlight</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-chips-input-autocomplete</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-contact-form-starter</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-counter</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-debounced-search</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-dynamic-counter-buttons</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-dynamic-table</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-filterable-user-list</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-image-slider</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-like-button</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-multi-step-form</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-nested-checkboxes</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-nested-comments</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-pagination-table</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-progress-bar-thresholds</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-shopping-cart</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-snake-game</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-star-rating</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-tabs-switcher</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-theme-toggle</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-tictactoe</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-todo-list</loc>
-    <lastmod>2026-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/vue/coding/vue-transfer-list</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
   <url>

@@ -282,8 +282,29 @@ describe('TriviaDetailComponent', () => {
     const qaPage = graph.find((node: any) => node?.['@type'] === 'QAPage');
 
     expect(article?.headline).toBe('What is closure? - Frontend interview answer');
+    expect(article?.isAccessibleForFree).toBeTrue();
+    expect(payload.robots).toBeUndefined();
     expect(faq).toBeUndefined();
     expect(qaPage).toBeUndefined();
+  });
+
+  it('marks premium trivia content noindex without accepted-answer schema, even for premium users', async () => {
+    auth.user.and.returnValue({ accessTier: 'premium' } as any);
+
+    await createLoadedFixture('premium', {
+      id: 'js-async-race-conditions',
+      title: 'Fix stale UI from async race conditions',
+    });
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
+
+    expect(payload.robots).toBe('noindex,follow');
+    expect(payload.canonical).toBe('https://frontendatlas.com/javascript/trivia/js-async-race-conditions');
+    expect(article?.isAccessibleForFree).toBeFalse();
+    expect(questionSchema).toBeUndefined();
   });
 
   it('uses question-level SEO H1 intent label for visible H1 and article headline', async () => {
@@ -2348,6 +2369,9 @@ describe('TriviaDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('.locked-title__intent')?.textContent?.trim()).toBe(
       'Frontend interview answer',
     );
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    expect(payload.robots).toBe('noindex,follow');
   });
 
   it('fires trivia scroll depth exactly once per threshold from the main scroll container', fakeAsync(() => {

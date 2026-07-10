@@ -86,6 +86,80 @@ const CASES = [
   },
 ];
 
+const RAW_HTML_CASES: Array<{
+  path: string;
+  access: 'free' | 'premium';
+  titleText: string;
+  includeText: string[];
+  excludeText?: string[];
+}> = [
+  {
+    path: '/angular/coding/angular-counter-starter',
+    access: 'free',
+    titleText: 'Counter (Standalone Component)',
+    includeText: ['Implement a standalone counter', 'Guard the decrement at zero'],
+  },
+  {
+    path: '/css/coding/css-selectors-text-basics',
+    access: 'free',
+    titleText: 'Selectors & Text',
+    includeText: ['Style a small hero header', 'selector targeting'],
+  },
+  {
+    path: '/angular/coding/angular-contact-form-starter',
+    access: 'premium',
+    titleText: 'Contact Form (Standalone Component + HTTP)',
+    includeText: ['Premium', 'View pricing'],
+    excludeText: ['This exercise combines a standalone component', 'reactive forms, and HttpClient'],
+  },
+  {
+    path: '/angular/coding/angular-image-slider-starter',
+    access: 'premium',
+    titleText: 'Image Slider (Standalone Component)',
+    includeText: ['Premium', 'View pricing'],
+    excludeText: ['Model the slider as a small view model', 'readonly `slides`'],
+  },
+  {
+    path: '/system-design/infinite-scroll-list',
+    access: 'free',
+    titleText: 'Infinite Scroll List System Design',
+    includeText: ['paginated loading', 'virtualization'],
+  },
+  {
+    path: '/system-design/endless-short-video-feed',
+    access: 'premium',
+    titleText: 'Endless Short-Video Feed',
+    includeText: ['Premium', 'View pricing'],
+    excludeText: ['Use RADIO', 'Time-to-first-frame <= 1.0s', 'Queue the next 1-3 videos'],
+  },
+  {
+    path: '/incidents/search-typing-lag',
+    access: 'free',
+    titleText: 'Search box typing lag under product-card load',
+    includeText: ['Begin simulator', 'Typing gets laggy'],
+  },
+  {
+    path: '/incidents/websocket-memory-leak',
+    access: 'premium',
+    titleText: 'Realtime feed leaks sockets and listeners',
+    includeText: ['Premium', 'View pricing'],
+    excludeText: ['Effect excerpt', 'Correct. The main problem', 'useEffect(() =>'],
+  },
+  {
+    path: '/tradeoffs/object-vs-map-keyed-collections',
+    access: 'free',
+    titleText: 'Object vs Map for keyed JavaScript collections',
+    includeText: ['Reveal analysis', 'A dashboard keeps adding'],
+  },
+  {
+    path: '/tradeoffs/localstorage-vs-sessionstorage-browser-persistence',
+    access: 'premium',
+    titleText: 'localStorage vs sessionStorage for browser persistence',
+    includeText: ['Premium', 'View pricing'],
+    excludeText: ['A strong answer here would separate durable preferences', 'Decision matrix', 'I would use localStorage because it persists more'],
+  },
+];
+
 const HOME_TITLE = 'Frontend Interview Prep Platform';
 
 function expectedCanonical(path: string): string {
@@ -106,9 +180,49 @@ function isSkeletonH1(text: string): boolean {
 
 function normalizeText(value: string): string {
   return String(value || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+function rawVisibleText(html: string): string {
+  return normalizeText(
+    html
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' '),
+  );
+}
+
+function extractRawMeta(html: string, name: string): string {
+  const tag = html.match(new RegExp(`<meta\\s+[^>]*name=["']${name}["'][^>]*>`, 'i'))?.[0] || '';
+  return tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '';
+}
+
+function extractRawCanonical(html: string): string {
+  const tag = html.match(/<link\s+[^>]*rel=["']canonical["'][^>]*>/i)?.[0] || '';
+  return tag.match(/\shref=["']([^"']*)["']/i)?.[1] || '';
+}
+
+function rawBodyMarkup(html: string): string {
+  return (html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] || html)
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ');
+}
+
+function hasLockedShellMarkup(html: string): boolean {
+  return /\bclass=(["'])[^"']*\blocked-shell\b[^"']*\1/i.test(rawBodyMarkup(html));
+}
+
+async function readRawHtml(request: any, path: string): Promise<string> {
+  const response = await request.get(fullUrl(path));
+  expect(response.status(), `status for ${path}`).toBe(200);
+  return response.text();
 }
 
 function collectClientRuntimeIssues(page: Page): string[] {
@@ -270,6 +384,36 @@ test.describe('seo-ssr', () => {
     }
 
     await context.close();
+  });
+
+  test('raw prerendered HTML carries premium index intent without paid-content exposure', async ({ request }) => {
+    for (const entry of RAW_HTML_CASES) {
+      const html = await readRawHtml(request, entry.path);
+      const text = rawVisibleText(html);
+      const searchableHtml = normalizeText(html.replace(/<[^>]+>/g, ' '));
+      const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+
+      expect(extractRawCanonical(html), `canonical for ${entry.path}`).toBe(expectedCanonical(entry.path));
+      expect(text, `title/H1 text for ${entry.path}`).toContain(normalizeText(entry.titleText));
+
+      if (entry.access === 'premium') {
+        expect(robots, `robots for ${entry.path}`).toBe('noindex,follow');
+        expect(hasLockedShellMarkup(html), `locked shell for ${entry.path}`).toBe(true);
+      } else {
+        expect(robots, `robots for ${entry.path}`).not.toContain('noindex');
+        expect(hasLockedShellMarkup(html), `no locked shell for ${entry.path}`).toBe(false);
+      }
+
+      for (const expectedText of entry.includeText || []) {
+        expect(text, `raw HTML includes ${expectedText} on ${entry.path}`).toContain(normalizeText(expectedText));
+      }
+
+      for (const forbiddenText of entry.excludeText || []) {
+        expect(searchableHtml, `raw HTML excludes paid text ${forbiddenText} on ${entry.path}`).not.toContain(
+          normalizeText(forbiddenText),
+        );
+      }
+    }
   });
 
   test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {

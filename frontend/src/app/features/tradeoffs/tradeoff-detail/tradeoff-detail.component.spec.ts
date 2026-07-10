@@ -199,10 +199,12 @@ describe('TradeoffDetailComponent', () => {
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
 
+    expect(payload.robots).toBeUndefined();
     expect(breadcrumb).toBeTruthy();
     expect(resource).toBeTruthy();
     expect(resource?.url || '').toContain('/tradeoffs/context-vs-zustand-vs-redux');
     expect(resource?.learningResourceType).toBe('Tradeoff battle');
+    expect(resource?.isAccessibleForFree).toBeTrue();
   });
 
   it('reveals analysis after choosing an option', async () => {
@@ -285,5 +287,30 @@ describe('TradeoffDetailComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('View pricing');
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeTruthy();
     expect(fixture.nativeElement.textContent || '').not.toContain('Reveal analysis');
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+    expect(payload.robots).toBe('noindex,follow');
+    expect(payload.canonical).toBe('/tradeoffs/context-vs-zustand-vs-redux');
+    expect(resource?.isAccessibleForFree).toBeFalse();
+    expect(JSON.stringify(graph)).not.toContain('Lean Zustand for this prompt');
+  });
+
+  it('keeps premium tradeoff robots noindex for active premium users', async () => {
+    const premiumDetail = JSON.parse(JSON.stringify(resolvedDetail));
+    premiumDetail.list[0].access = 'premium';
+    premiumDetail.battle.meta.access = 'premium';
+    authUser.set({ accessTier: 'premium' });
+    routeData$.next({ tradeoffBattleDetail: premiumDetail });
+
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    expect(payload.robots).toBe('noindex,follow');
+    expect(fixture.nativeElement.textContent || '').toContain('Reveal analysis');
   });
 });

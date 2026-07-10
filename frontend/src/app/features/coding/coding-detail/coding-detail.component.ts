@@ -25,6 +25,10 @@ import { Subject, Subscription, filter, firstValueFrom, takeUntil } from 'rxjs';
 import type { Question, QuestionFaqItem, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForCoding, LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import {
+  isContentAccessibleForFree,
+  robotsForContentAccess,
+} from '../../../core/utils/content-access-policy.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -1219,6 +1223,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const frameworkPrepUrl = this.hasFrameworkPrepPath()
       ? this.seo.buildCanonicalUrl(this.frameworkPrepPath())
       : null;
+    const accessibleForFree = isContentAccessibleForFree(q.access);
+    const robots = robotsForContentAccess(q.access);
 
     const structuredName = this.structuredDataQuestionName(q);
     const breadcrumb = {
@@ -1288,13 +1294,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
           ? [{ '@type': 'WebPage', name: `${this.frameworkPrepLabel()} prep path`, url: frameworkPrepUrl }]
           : []),
       ],
-      isAccessibleForFree: q.access !== 'premium',
+      isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
     };
 
-    const howTo = this.buildHowToSchema(q, canonical);
-    const faqPage = this.buildFaqSchema(q, canonical);
+    const howTo = accessibleForFree ? this.buildHowToSchema(q, canonical) : null;
+    const faqPage = accessibleForFree ? this.buildFaqSchema(q, canonical) : null;
     const jsonLd: Array<Record<string, any>> = [breadcrumb, article];
     if (howTo) jsonLd.push(howTo);
     if (faqPage) jsonLd.push(faqPage);
@@ -1303,6 +1309,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       title: seoTitle,
       description,
       keywords,
+      robots,
       canonical,
       ogType: 'article',
       jsonLd,

@@ -19,6 +19,10 @@ import { LockedPreviewComponent } from '../../../shared/components/locked-previe
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
+import {
+  isContentAccessibleForFree,
+  robotsForContentAccess,
+} from '../../../core/utils/content-access-policy.util';
 
 type LockedPath = {
   id: string;
@@ -324,6 +328,7 @@ export class TradeoffDetailComponent {
     const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
     const tradeoffHubUrl = this.seo.buildCanonicalUrl('/tradeoffs');
     const imageUrl = this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
+    const accessibleForFree = isContentAccessibleForFree(meta.access);
     const description =
       `Practice this ${techLabel.toLowerCase()} tradeoff interview question. ${meta.summary} Learn how to compare the options and defend a balanced answer clearly.`;
     const breadcrumb = {
@@ -361,7 +366,7 @@ export class TradeoffDetailComponent {
       learningResourceType: 'Tradeoff battle',
       educationalUse: 'Interview practice',
       timeRequired: `PT${meta.estimatedMinutes}M`,
-      isAccessibleForFree: meta.access !== 'premium',
+      isAccessibleForFree: accessibleForFree,
       keywords: meta.tags.join(', '),
       dateModified: `${meta.updatedAt}T00:00:00Z`,
       author: { '@type': 'Organization', name: 'FrontendAtlas' },
@@ -389,6 +394,7 @@ export class TradeoffDetailComponent {
       title: `${meta.title} - ${techLabel} Tradeoff Question`,
       description,
       canonical: canonicalPath,
+      robots: robotsForContentAccess(meta.access),
       keywords: [
         ...meta.tags,
         'frontend tradeoff interview questions',

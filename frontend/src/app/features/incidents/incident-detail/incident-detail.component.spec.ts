@@ -295,11 +295,13 @@ describe('IncidentDetailComponent', () => {
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
 
+    expect(payload.robots).toBeUndefined();
     expect(breadcrumb).toBeTruthy();
     expect(resource).toBeTruthy();
     expect(resource?.url || '').toContain('/incidents/incident-1');
     expect(resource?.isPartOf?.url || '').toContain('/incidents');
     expect(resource?.learningResourceType).toBe('Debug scenario');
+    expect(resource?.isAccessibleForFree).toBeTrue();
   });
 
   it('renders the locked premium preview on premium incidents', async () => {
@@ -317,6 +319,31 @@ describe('IncidentDetailComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('View pricing');
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeTruthy();
     expect(fixture.nativeElement.textContent || '').not.toContain('Begin simulator');
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+    expect(payload.robots).toBe('noindex,follow');
+    expect(payload.canonical).toBe('/incidents/incident-1');
+    expect(resource?.isAccessibleForFree).toBeFalse();
+    expect(JSON.stringify(graph)).not.toContain('Ideal runbook');
+  });
+
+  it('keeps premium incident robots noindex for active premium users', async () => {
+    const premiumDetail = JSON.parse(JSON.stringify(resolvedDetail));
+    premiumDetail.list[0].access = 'premium';
+    premiumDetail.incident.meta.access = 'premium';
+    authUser.set({ accessTier: 'premium' });
+    routeData$.next({ incidentDetail: premiumDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    expect(payload.robots).toBe('noindex,follow');
+    expect(fixture.nativeElement.textContent || '').toContain('Begin simulator');
   });
 
   it('reorders priority candidates with keyboard controls', async () => {
