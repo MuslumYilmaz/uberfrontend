@@ -572,7 +572,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       title: string,
       description: string,
       allItems: CodingHubDiscoveryItem[],
-      limit = 5,
+      limit = 3,
     ): CodingHubDiscoverySection | null => {
       const items = this.sortDiscoveryItems(
         allItems.filter((item) => !this.isPremiumDiscoveryItem(item)),
@@ -592,7 +592,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
         'JavaScript coding challenges',
         'Function, async, DOM, data-structure, and browser utility prompts with testable edge cases.',
         coding.filter((item) => item.tech === 'javascript'),
-        6,
       ),
       section(
         'React UI challenges',
@@ -613,13 +612,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
         'HTML/CSS implementation exercises',
         'Semantic markup, forms, accessibility, Flexbox, Grid, responsive layout, and CSS state drills.',
         coding.filter((item) => item.tech === 'html' || item.tech === 'css'),
-        6,
       ),
       section(
         'Debugging challenges',
         'Small broken implementations with failing behavior for practicing root-cause analysis and fixes.',
         debug,
-        6,
       ),
     ].filter((value): value is CodingHubDiscoverySection => value !== null);
   }
@@ -952,10 +949,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
       }
 
       if (this.isGuestDefaultGlobalLibrary()) {
-        return 'Build and debug focused frontend prompts across JavaScript functions, UI exercises, HTML/CSS implementation, and debugging tasks. Start with real prompts, starter code, tests, solutions, and follow-ups; selected challenges are free to start.';
+        return 'Build and debug focused frontend prompts across JavaScript functions, UI exercises, HTML/CSS implementation, and debugging tasks.';
       }
 
-      return 'Search focused frontend coding challenges by technology, difficulty, and focus area, then open one prompt with starter code, tests, solutions, and follow-ups.';
+      return 'Search by technology, difficulty, and focus area, then open a prompt with starter code, tests, solutions, and follow-ups.';
     }
 
     if (this.source === 'company') {

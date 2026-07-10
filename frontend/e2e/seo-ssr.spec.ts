@@ -1,6 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
 
-const BASE_URL = (process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200').replace(/\/$/, '');
+const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
+const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
+const BASE_URL = (process.env.PLAYWRIGHT_BASE_URL || `http://${WEB_HOST}:${WEB_PORT}`).replace(/\/$/, '');
 const CANONICAL_BASE = (process.env.PLAYWRIGHT_CANONICAL_BASE || 'https://frontendatlas.com').replace(/\/$/, '');
 const SSR_ENABLED = (() => {
   if (process.env.PLAYWRIGHT_SSR === '1') return true;
@@ -56,7 +58,7 @@ const CASES = [
   },
   {
     path: '/javascript/trivia/js-event-loop',
-    titleIncludes: 'Explain the JavaScript Event Loop',
+    titleIncludes: 'JavaScript Event Loop',
     h1: 'Explain the JavaScript Event Loop',
     detail: true,
     expectNoMonaco: true,

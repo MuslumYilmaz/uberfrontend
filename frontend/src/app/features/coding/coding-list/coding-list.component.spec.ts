@@ -216,6 +216,12 @@ describe('CodingListComponent', () => {
     expect(host.textContent || '').toContain('Selected frontend coding challenges are free to start');
     expect(host.querySelector('[data-testid="interview-hub-support-link"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="essential-questions-support-link"]')).not.toBeNull();
+
+    const results = host.querySelector('[data-testid="coding-list-results"]') as HTMLElement | null;
+    const discovery = host.querySelector('[data-testid="coding-discovery-sections"]') as HTMLElement | null;
+    expect(results).not.toBeNull();
+    expect(discovery).not.toBeNull();
+    expect(results!.compareDocumentPosition(discovery!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('renders free coding hub discovery anchors by technology and skips premium discovery items', async () => {
@@ -245,8 +251,8 @@ describe('CodingListComponent', () => {
       .toBe('/javascript/coding/js-debounce');
     expect(discovery?.querySelector('[data-testid="coding-discovery-link-react-state-toggle"]')?.getAttribute('href'))
       .toBe('/react/coding/react-state-toggle');
-    expect(discovery?.querySelector('[data-testid="coding-discovery-link-js-debug-off-by-one"]')?.getAttribute('href'))
-      .toBe('/javascript/debug/js-debug-off-by-one');
+    expect(discovery?.querySelector('[data-testid="coding-discovery-link-js-debug-async-race"]')?.getAttribute('href'))
+      .toBe('/javascript/debug/js-debug-async-race');
     expect(discovery?.querySelector('[data-testid="coding-discovery-link-react-premium-grid"]')).toBeNull();
     expect(discovery?.textContent || '').not.toContain('React Premium Grid');
   });
