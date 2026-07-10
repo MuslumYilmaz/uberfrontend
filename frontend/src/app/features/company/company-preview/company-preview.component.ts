@@ -7,6 +7,7 @@ import { AccessLevel, Difficulty } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { companyBrandFor } from '../../../shared/company-branding';
 import { CompanyCountBucket, collectCompanyCounts } from '../../../shared/company-counts.util';
 import {
   FaQuestionRowComponent,
@@ -27,6 +28,162 @@ type CompanyPreviewData = {
   samples: CompanyPreviewQuestion[];
 };
 
+type OpenAiPracticePrompt = {
+  id: string;
+  title: string;
+  intent: string;
+  rubric: string[];
+};
+
+type OpenAiPrepDay = {
+  day: string;
+  focus: string;
+};
+
+type OpenAiResourceLink = {
+  label: string;
+  route: string[];
+  path: string;
+};
+
+const OPENAI_PREVIEW_TITLE = 'OpenAI Frontend Interview: 5 Practice Questions + Prep Guide';
+const OPENAI_PREVIEW_H1 = 'OpenAI Frontend Interview Questions';
+const OPENAI_PREVIEW_DESCRIPTION =
+  'Practice for OpenAI frontend interviews with representative prompts on streaming chat UI, stale stream handling, optimistic React state, accessibility, and history design.';
+const OPENAI_PREVIEW_CANONICAL_PATH = '/companies/openai/preview';
+const OPENAI_PREVIEW_DATE_MODIFIED = '2026-07-11T00:00:00.000Z';
+const OPENAI_TRUST_NOTE =
+  'Bunlar leaked veya confirmed OpenAI questions değildir; role-relevant representative practice prompts’tur.';
+
+const OPENAI_RESOURCE_LINKS: OpenAiResourceLink[] = [
+  {
+    label: 'AI streaming data handling',
+    route: ['/javascript', 'trivia', 'ai-streaming-data-handling'],
+    path: '/javascript/trivia/ai-streaming-data-handling',
+  },
+  {
+    label: 'Chat conversation state management',
+    route: ['/javascript', 'trivia', 'chat-conversation-state-management'],
+    path: '/javascript/trivia/chat-conversation-state-management',
+  },
+  {
+    label: 'SSE vs WebSocket trade-offs',
+    route: ['/javascript', 'trivia', 'sse-vs-websocket-real-time'],
+    path: '/javascript/trivia/sse-vs-websocket-real-time',
+  },
+  {
+    label: 'AI UX integration challenges',
+    route: ['/javascript', 'trivia', 'ai-ux-integration-challenges'],
+    path: '/javascript/trivia/ai-ux-integration-challenges',
+  },
+  {
+    label: 'ReadableStream to text',
+    route: ['/javascript', 'coding', 'js-stream-to-text'],
+    path: '/javascript/coding/js-stream-to-text',
+  },
+  {
+    label: 'takeLatest request handling',
+    route: ['/javascript', 'coding', 'js-take-latest'],
+    path: '/javascript/coding/js-take-latest',
+  },
+];
+
+const OPENAI_PRACTICE_PROMPTS: OpenAiPracticePrompt[] = [
+  {
+    id: 'streaming-chat-composer',
+    title: 'Streaming chat composer',
+    intent:
+      'Build a composer that accepts a user message, renders the user bubble immediately, and appends an assistant response as streamed chunks arrive.',
+    rubric: [
+      'Readable state shape for messages, draft input, pending request id, and stream status.',
+      'Incremental text rendering without blocking typing, selection, or scroll position.',
+      'Error and retry states that preserve the user prompt and partial assistant text.',
+      'Clear separation between transport code and rendering logic.',
+    ],
+  },
+  {
+    id: 'stop-regenerate-stale-stream-handling',
+    title: 'Stop/regenerate and stale stream handling',
+    intent:
+      'Add stop and regenerate controls while ensuring old chunks cannot mutate the latest assistant message after cancellation or a second request.',
+    rubric: [
+      'AbortController or equivalent cancellation path for active stream work.',
+      'A request token, generation id, or takeLatest guard before every state write.',
+      'Predictable UI states for stopping, stopped, regenerating, failed, and complete.',
+      'Cleanup for readers, timers, event listeners, and pending promises.',
+    ],
+  },
+  {
+    id: 'react-state-optimistic-messages',
+    title: 'React state + optimistic messages',
+    intent:
+      'Model optimistic user messages and assistant placeholders in React without duplicating messages or losing order when network responses resolve late.',
+    rubric: [
+      'Immutable message updates keyed by stable ids instead of array index assumptions.',
+      'Optimistic user bubble creation before the network call completes.',
+      'Rollback or retry behavior for failed sends without deleting the draft context.',
+      'Derived rendering for pending, partial, and final assistant messages.',
+    ],
+  },
+  {
+    id: 'accessibility-keyboard-interaction',
+    title: 'Accessibility/keyboard interaction',
+    intent:
+      'Make the chat input, send button, stop control, regenerate action, and message list usable from keyboard and assistive technology.',
+    rubric: [
+      'Correct textarea behavior for Enter, Shift+Enter, focus restoration, and disabled states.',
+      'Accessible button names that change with send, stop, and regenerate modes.',
+      'Live region strategy for streamed assistant output without excessive announcements.',
+      'Visible focus states and logical tab order across composer and message actions.',
+      'Respect for reduced motion and high-contrast reading needs.',
+    ],
+  },
+  {
+    id: 'frontend-system-design-conversation-history',
+    title: 'Frontend system design/conversation history',
+    intent:
+      'Design the frontend architecture for conversation history, message virtualization, search, local recovery, and sync with server-side threads.',
+    rubric: [
+      'Data model for threads, messages, streaming drafts, attachments, and pagination cursors.',
+      'Cache and persistence plan for recent conversations, offline recovery, and invalidation.',
+      'Virtualized rendering and scroll anchoring for long conversations.',
+      'Privacy, retention, and redaction considerations for sensitive chat content.',
+      'Observability for latency, stream failures, and client-side rendering errors.',
+    ],
+  },
+];
+
+const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
+  {
+    day: 'Day 1',
+    focus: 'Review streaming fundamentals: ReadableStream, SSE/WebSocket trade-offs, cancellation, and how partial text becomes UI state.',
+  },
+  {
+    day: 'Day 2',
+    focus: 'Implement a small stream-to-text utility and write tests for chunk order, decoding, cancellation, and error paths.',
+  },
+  {
+    day: 'Day 3',
+    focus: 'Build the chat composer shell with draft state, optimistic user messages, assistant placeholders, loading states, and retry copy.',
+  },
+  {
+    day: 'Day 4',
+    focus: 'Add stop, regenerate, and stale-stream guards. Force slow responses locally and prove old chunks cannot update the newest request.',
+  },
+  {
+    day: 'Day 5',
+    focus: 'Audit accessibility: keyboard flow, button names, focus restoration, live announcements, visible focus, and reduced-motion behavior.',
+  },
+  {
+    day: 'Day 6',
+    focus: 'Design conversation history: thread model, pagination, virtualization, local recovery, privacy constraints, and cache invalidation.',
+  },
+  {
+    day: 'Day 7',
+    focus: 'Run a timed mock: explain trade-offs first, code the smallest reliable slice, then review edge cases and testing strategy aloud.',
+  },
+];
+
 @Component({
   standalone: true,
   selector: 'app-company-preview',
@@ -37,6 +194,13 @@ type CompanyPreviewData = {
 export class CompanyPreviewComponent implements OnInit {
   slug = '';
   label = '';
+  isOpenAiPreview = false;
+  readonly openAiTitle = OPENAI_PREVIEW_TITLE;
+  readonly openAiH1 = OPENAI_PREVIEW_H1;
+  readonly openAiTrustNote = OPENAI_TRUST_NOTE;
+  readonly openAiPracticePrompts = OPENAI_PRACTICE_PROMPTS;
+  readonly openAiPrepSequence = OPENAI_PREP_SEQUENCE;
+  readonly openAiResourceLinks = OPENAI_RESOURCE_LINKS;
   data$: Observable<CompanyPreviewData> = of({
     counts: { all: 0, coding: 0, trivia: 0, system: 0 },
     samples: [],
@@ -57,6 +221,13 @@ export class CompanyPreviewComponent implements OnInit {
     }
 
     this.label = this.prettyCompany(this.slug);
+    this.isOpenAiPreview = this.slug === 'openai';
+
+    if (this.isOpenAiPreview) {
+      this.publishOpenAiSeo();
+      return;
+    }
+
     this.seo.updateTags({
       title: `${this.label} Frontend Interview Questions Preview`,
       description: `Preview ${this.label} frontend interview question coverage across coding, concept prompts, and system design before unlocking premium.`,
@@ -153,6 +324,71 @@ export class CompanyPreviewComponent implements OnInit {
     }
   }
 
+  private publishOpenAiSeo(): void {
+    const canonicalUrl = this.seo.buildCanonicalUrl(OPENAI_PREVIEW_CANONICAL_PATH);
+    const collectionPage = {
+      '@type': 'CollectionPage',
+      '@id': `${canonicalUrl}#collection`,
+      url: canonicalUrl,
+      name: OPENAI_PREVIEW_TITLE,
+      headline: OPENAI_PREVIEW_H1,
+      description: OPENAI_PREVIEW_DESCRIPTION,
+      inLanguage: 'en',
+      dateModified: OPENAI_PREVIEW_DATE_MODIFIED,
+      about: [
+        { '@type': 'Thing', name: 'OpenAI frontend interview practice' },
+        { '@type': 'Thing', name: 'Streaming chat frontend practice' },
+        { '@type': 'Thing', name: 'Frontend system design for conversation history' },
+      ],
+      mentions: OPENAI_RESOURCE_LINKS.map((link) => ({
+        '@type': 'WebPage',
+        name: link.label,
+        url: this.seo.buildCanonicalUrl(link.path),
+      })),
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: OPENAI_PRACTICE_PROMPTS.map((prompt, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: prompt.title,
+          url: `${canonicalUrl}#${prompt.id}`,
+        })),
+      },
+    };
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Company Frontend Interview Questions',
+          item: this.seo.buildCanonicalUrl('/companies'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: OPENAI_PREVIEW_H1,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: OPENAI_PREVIEW_TITLE,
+      description: OPENAI_PREVIEW_DESCRIPTION,
+      robots: 'index,follow',
+      canonical: OPENAI_PREVIEW_CANONICAL_PATH,
+      jsonLd: [collectionPage, breadcrumb],
+    });
+  }
+
   private buildSamples(
     slug: string,
     coding: Array<any>,
@@ -228,16 +464,7 @@ export class CompanyPreviewComponent implements OnInit {
   }
 
   private prettyCompany(slug: string): string {
-    const names: Record<string, string> = {
-      google: 'Google',
-      amazon: 'Amazon',
-      apple: 'Apple',
-      meta: 'Meta',
-      microsoft: 'Microsoft',
-      uber: 'Uber',
-      airbnb: 'Airbnb',
-      netflix: 'Netflix',
-    };
-    return names[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+    const brand = companyBrandFor(slug);
+    return brand?.label || slug.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
   }
 }

@@ -265,6 +265,48 @@ function rawVisibleText(html: string): string {
   );
 }
 
+function rawVisibleTextPreserveCase(html: string): string {
+  return stripScriptAndStyleBlocks(html)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractRawTitle(html: string): string {
+  return html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] || '';
+}
+
+function extractRawH1(html: string): string {
+  const raw = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || '';
+  return raw
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractRawJsonLdTypes(html: string): string[] {
+  const types: string[] = [];
+  for (const match of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const payload = JSON.parse(match[1]);
+      const graph = Array.isArray(payload?.['@graph']) ? payload['@graph'] : [payload];
+      for (const node of graph) {
+        const type = node?.['@type'];
+        if (Array.isArray(type)) types.push(...type.map((item) => String(item)));
+        else if (type) types.push(String(type));
+      }
+    } catch {
+      types.push('JSONLD_PARSE_ERROR');
+    }
+  }
+  return types;
+}
+
 function extractRawMeta(html: string, name: string): string {
   const tag = html.match(new RegExp(`<meta\\s+[^>]*name=["']${name}["'][^>]*>`, 'i'))?.[0] || '';
   return tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '';
@@ -478,6 +520,50 @@ test.describe('seo-ssr', () => {
         );
       }
     }
+  });
+
+  test('raw OpenAI company preview is indexable, crawlable, and free of premium leakage', async ({ request }) => {
+    const html = await readRawHtml(request, '/companies/openai/preview');
+    const text = rawVisibleText(html);
+    const caseText = rawVisibleTextPreserveCase(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe('OpenAI Frontend Interview: 5 Practice Questions + Prep Guide');
+    expect(extractRawMeta(html, 'description')).toBe(
+      'Practice for OpenAI frontend interviews with representative prompts on streaming chat UI, stale stream handling, optimistic React state, accessibility, and history design.',
+    );
+    expect(extractRawH1(html)).toBe('OpenAI Frontend Interview Questions');
+    expect(extractRawCanonical(html)).toBe(expectedCanonical('/companies/openai/preview'));
+    expect(robots).toBe('index,follow');
+    expect(schemaTypes).toContain('CollectionPage');
+    expect(schemaTypes).toContain('BreadcrumbList');
+
+    [
+      'streaming chat composer',
+      'stop/regenerate and stale stream handling',
+      'react state + optimistic messages',
+      'accessibility/keyboard interaction',
+      'frontend system design/conversation history',
+      'strong answer should cover',
+      'walk through stale stream handling before you code',
+      'unlock the full openai practice set',
+    ].forEach((expectedText) => {
+      expect(text, `OpenAI preview includes ${expectedText}`).toContain(normalizeText(expectedText));
+    });
+
+    expect(caseText).toContain(
+      'Bunlar leaked veya confirmed OpenAI questions değildir; role-relevant representative practice prompts’tur.',
+    );
+    expect(caseText).toContain('OpenAI');
+    expect(caseText).not.toContain('Openai');
+    expect(caseText).not.toContain('Chat UI with Streaming Response');
+    expect(caseText).not.toContain('AI Chat Text Area (ChatGPT-Style)');
+    expect(caseText).not.toContain('AI UX Resilience and Control Patterns');
+
+    const companiesHtml = await readRawHtml(request, '/companies');
+    expect(companiesHtml).toMatch(/<a\b[^>]*href=["']\/companies\/openai\/preview["'][^>]*>/i);
+    expect(companiesHtml).not.toMatch(/href=["']\/companies\/openai\/preview\?/i);
   });
 
   test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {

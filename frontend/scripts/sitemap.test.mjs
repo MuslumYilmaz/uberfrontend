@@ -406,6 +406,17 @@ function assertCssThemeVariablesSitemapEntry(entries) {
   }
 }
 
+function assertOpenAiCompanyPreviewSitemapEntry(entries) {
+  const loc = 'https://frontendatlas.com/companies/openai/preview';
+  const matches = entries.filter((item) => item.loc === loc);
+  if (matches.length !== 1) {
+    throw new Error(`Sitemap must include exactly one OpenAI company preview loc: ${loc}`);
+  }
+  if (matches[0].lastmod !== '2026-07-11') {
+    throw new Error(`OpenAI company preview sitemap lastmod must be 2026-07-11, got ${matches[0].lastmod || '(missing)'}`);
+  }
+}
+
 function normalizeTitle(value) {
   return String(value || '')
     .trim()
@@ -753,6 +764,7 @@ assertRegistryDetailAccessPolicy(paths);
 assertPreviewAndHubCoverage(paths);
 assertNoPrivateOrRedirectRoutes(paths);
 assertCssThemeVariablesSitemapEntry(entries);
+assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();
