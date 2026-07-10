@@ -178,13 +178,17 @@ function isSkeletonH1(text: string): boolean {
   return /loading|skeleton|preparing|please wait/i.test(text);
 }
 
-function normalizeText(value: string): string {
-  return String(value || '')
-    .replace(/&amp;/g, '&')
+function decodeBasicHtmlEntities(value: string): string {
+  return value
     .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+}
+
+function normalizeText(value: string): string {
+  return decodeBasicHtmlEntities(String(value || ''))
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
@@ -266,13 +270,9 @@ function rawVisibleText(html: string): string {
 }
 
 function rawVisibleTextPreserveCase(html: string): string {
-  return stripScriptAndStyleBlocks(html)
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&#39;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+  return decodeBasicHtmlEntities(
+    stripScriptAndStyleBlocks(html).replace(/<[^>]+>/g, ' '),
+  )
     .replace(/\s+/g, ' ')
     .trim();
 }
