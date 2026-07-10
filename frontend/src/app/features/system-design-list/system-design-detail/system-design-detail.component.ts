@@ -15,6 +15,10 @@ import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import {
+  isContentAccessibleForFree,
+  robotsForContentAccess,
+} from '../../../core/utils/content-access-policy.util';
 import { SYSTEM } from '../../../shared/guides/guide.registry';
 import {
   evaluationGuideAnchorForQuestion,
@@ -57,6 +61,15 @@ type Block =
     title?: string;
     text: string;
     variant?: 'info' | 'success' | 'warning' | 'danger';
+  }
+  | {
+    type: 'links';
+    title?: string;
+    items: {
+      label: string;
+      href: string;
+      description?: string;
+    }[];
   }
   | {
     type: 'table';
@@ -352,6 +365,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   trackByStatItem = (index: number, item: { label: string; value: string }): string =>
     `${item.label}:${item.value}:${index}`;
   trackByStepTitle = (index: number, step: { title: string }): string => `${step.title}:${index}`;
+  trackByLinkItem = (index: number, item: { href: string; label: string }): string =>
+    `${item.href}:${item.label}:${index}`;
   trackByRelatedId = (_: number, item: RelatedItem): string => item.id;
   trackByLockedPath = (_: number, path: LockedPath): string => path.id;
   trackByGuideSlug = (_: number, item: BlueprintGuideLink): string => item.slug;
@@ -739,7 +754,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       learningResourceType: 'System design practice question',
       educationalLevel: question.difficulty || 'intermediate',
       teaches,
-      isAccessibleForFree: question.access !== 'premium',
+      isAccessibleForFree: isContentAccessibleForFree(question.access),
       author: { '@type': 'Organization', name: this.resolveAuthor(question) },
     };
   }
@@ -813,7 +828,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const dateModified = this.resolveUpdatedIso(question);
     const datePublished = this.resolvePublishedIso(dateModified);
     const imageUrl = this.structuredDataImageUrl();
-    const isLocked = this.locked();
+    const accessibleForFree = isContentAccessibleForFree(question.access);
+    const robots = robotsForContentAccess(question.access);
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -858,19 +874,20 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
           url: imageUrl,
         },
       },
-      isAccessibleForFree: question.access !== 'premium',
+      isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
     };
 
     const learningResource = this.buildLearningResourceSchema(question, canonical);
-    const faq = this.buildFaqSchema(question, canonical, isLocked);
+    const faq = accessibleForFree ? this.buildFaqSchema(question, canonical, false) : null;
     const jsonLd = faq ? [breadcrumb, article, learningResource, faq] : [breadcrumb, article, learningResource];
 
     this.seo.updateTags({
       title: seoTitle,
       description,
       keywords,
+      robots,
       canonical,
       ogType: 'article',
       jsonLd,

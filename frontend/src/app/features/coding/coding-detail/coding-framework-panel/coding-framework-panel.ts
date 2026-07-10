@@ -80,6 +80,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Output() frameworkCheckRun = new EventEmitter<FrameworkCheckRunEvent>();
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
+  @ViewChild('frameworkEditor') frameworkEditor?: MonacoEditorComponent;
 
   // Workspace state
   filesMap = signal<Record<string, string>>({});
@@ -299,6 +300,11 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   onEditorReady() {
     this.editorReady.set(true);
+  }
+
+  focusEditor(): void {
+    this.ensurePreviewReady();
+    this.frameworkEditor?.focusEditor();
   }
 
   onEditorLoadFailed(): void {
@@ -869,7 +875,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.frameworkChecksRan.set(true);
     this.frameworkCheckResults.set([]);
 
-    let mount: FrameworkCheckMount | null = null;
     let results: TestResult[] = [];
 
     try {
@@ -879,10 +884,22 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
         throw new Error('Preview build returned empty HTML');
       }
 
-      mount = await this.mountFrameworkScratchDoc(html);
       results = [];
       for (const check of checks) {
-        results.push(await this.executeFrameworkCheck(check, mount.doc));
+        let mount: FrameworkCheckMount | null = null;
+        try {
+          mount = await this.mountFrameworkScratchDoc(html);
+          results.push(await this.executeFrameworkCheck(check, mount));
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error || 'Check failed');
+          results.push({
+            name: check.name || check.id || 'Framework check',
+            passed: false,
+            error: message || 'Check failed',
+          });
+        } finally {
+          mount?.cleanup();
+        }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error || 'Framework checks failed');
@@ -892,7 +909,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
         error: message || 'Framework checks failed',
       }];
     } finally {
-      mount?.cleanup();
       this.frameworkChecksRunning.set(false);
       this.frameworkCheckResults.set(results);
       this.recordFrameworkAttempt(q, results);
@@ -908,14 +924,14 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     return results;
   }
 
-  private async executeFrameworkCheck(check: FrameworkTest, doc: Document): Promise<TestResult> {
+  private async executeFrameworkCheck(check: FrameworkTest, mount: FrameworkCheckMount): Promise<TestResult> {
     try {
       const steps = Array.isArray(check.steps) ? check.steps : [];
       if (!steps.length) {
         throw new Error('No check steps configured');
       }
       for (const step of steps) {
-        await this.executeFrameworkCheckStep(step, doc);
+        await this.executeFrameworkCheckStep(step, mount);
       }
       return { name: check.name || check.id || 'Framework check', passed: true };
     } catch (error) {
@@ -928,9 +944,25 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }
   }
 
-  private async executeFrameworkCheckStep(step: FrameworkTestStep, doc: Document): Promise<void> {
+  private async executeFrameworkCheckStep(step: FrameworkTestStep, mount: FrameworkCheckMount): Promise<void> {
+    const doc = mount.doc;
     const type = String(step.type || step.action || '').trim();
     const selector = String(step.selector || '').trim();
+
+    if (type === 'wait') {
+      const durationMs = Math.max(0, Number(step.durationMs ?? step.timeoutMs ?? 0));
+      await this.delay(durationMs);
+      return;
+    }
+    if (type === 'unmountPreview') {
+      await this.unmountPreviewForStep(mount);
+      return;
+    }
+    if (type === 'expectNoPreviewLeaks') {
+      this.assertNoPreviewLeaks(mount);
+      return;
+    }
+
     if (!selector) {
       throw new Error(`${type || 'step'} is missing a selector`);
     }
@@ -958,6 +990,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }
     if (type === 'expectText') {
       this.assertStepText(el, step);
+      return;
+    }
+    if (type === 'expectNoText') {
+      this.assertStepText(el, step, true);
       return;
     }
     if (type === 'setValue') {
@@ -994,9 +1030,25 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       await this.delay(50);
       return;
     }
+    if (type === 'mouseDown') {
+      this.dispatchStepMouseDown(el);
+      await this.delay(50);
+      return;
+    }
+    if (type === 'pointerDown') {
+      this.dispatchStepPointerDown(el);
+      await this.delay(50);
+      return;
+    }
     if (type === 'key') {
       this.dispatchStepKey(el, step);
       await this.delay(50);
+      return;
+    }
+    if (type === 'expectFocused') {
+      if (doc.activeElement !== el) {
+        throw new Error(`${selector} expected focus but active element was ${this.describeElement(doc.activeElement)}`);
+      }
       return;
     }
 
@@ -1011,11 +1063,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     return matches[index] || null;
   }
 
-  private assertStepText(el: Element, step: FrameworkTestStep): void {
+  private assertStepText(el: Element, step: FrameworkTestStep, negate = false): void {
     const expected = String(step.text ?? '').trim();
     const actual = String((el.textContent || '').replace(/\s+/g, ' ')).trim();
     const match = step.match || 'equals';
     const passed = match === 'contains' ? actual.includes(expected) : actual === expected;
+    if (negate) {
+      if (passed) {
+        throw new Error(`${step.selector} expected not to contain text "${expected}" but found "${actual}"`);
+      }
+      return;
+    }
     if (!passed) {
       throw new Error(`${step.selector} expected text "${expected}" but found "${actual}"`);
     }
@@ -1101,6 +1159,51 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     target.focus?.();
     target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
     target.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
+  }
+
+  private dispatchStepMouseDown(el: Element): void {
+    el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }));
+    el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, button: 0 }));
+  }
+
+  private dispatchStepPointerDown(el: Element): void {
+    const view = el.ownerDocument?.defaultView as (Window & { PointerEvent?: typeof PointerEvent }) | null;
+    const EventCtor = view?.PointerEvent || MouseEvent;
+    el.dispatchEvent(new EventCtor('pointerdown', { bubbles: true, cancelable: true, button: 0 }));
+    el.dispatchEvent(new EventCtor('pointerup', { bubbles: true, cancelable: true, button: 0 }));
+  }
+
+  private async unmountPreviewForStep(mount: FrameworkCheckMount): Promise<void> {
+    const win = mount.doc.defaultView as (Window & { __FA_UNMOUNT_PREVIEW?: () => void }) | null;
+    if (!win || typeof win.__FA_UNMOUNT_PREVIEW !== 'function') {
+      throw new Error('Preview did not expose an unmount hook');
+    }
+    win.__FA_UNMOUNT_PREVIEW();
+    await this.delay(25);
+  }
+
+  private assertNoPreviewLeaks(mount: FrameworkCheckMount): void {
+    const win = mount.doc.defaultView as (Window & {
+      __FA_GET_PREVIEW_LEAKS?: () => { timers?: number; documentListeners?: number };
+    }) | null;
+    if (!win || typeof win.__FA_GET_PREVIEW_LEAKS !== 'function') {
+      throw new Error('Preview did not expose leak instrumentation');
+    }
+    const leaks = win.__FA_GET_PREVIEW_LEAKS() || {};
+    const timers = Number(leaks.timers || 0);
+    const documentListeners = Number(leaks.documentListeners || 0);
+    if (timers || documentListeners) {
+      throw new Error(`Preview leaked ${timers} timer(s) and ${documentListeners} document listener(s)`);
+    }
+  }
+
+  private describeElement(el: Element | null): string {
+    if (!el) return 'none';
+    const id = el.id ? `#${el.id}` : '';
+    const cls = typeof el.className === 'string' && el.className.trim()
+      ? `.${el.className.trim().replace(/\s+/g, '.')}`
+      : '';
+    return `${el.tagName.toLowerCase()}${id}${cls}`;
   }
 
   private async waitForStepText(doc: Document, step: FrameworkTestStep): Promise<void> {

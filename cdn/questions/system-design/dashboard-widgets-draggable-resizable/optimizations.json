@@ -1,166 +1,183 @@
 {
-    "key": "O",
-    "title": "Optimizations & Deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Performance, sync, and edge cases",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The performance answer should name the expensive boundary. The costly mistake is not drag itself; it is doing layout reads, collision scans, widget rerenders, JSON serialization, storage writes, or network mutations for every pointermove."
+    },
+    {
+      "type": "table",
+      "title": "Hot-path boundaries",
+      "columns": [
+        "Boundary",
+        "What happens there",
+        "What to avoid",
+        "Better approach"
+      ],
+      "rows": [
+        [
+          "pointermove",
+          "Receives many events per second and records latest pointer coordinates.",
+          "setState/store dispatch plus collision and persistence work on every event.",
+          "Store latest input in a controller/ref and schedule one rAF if none is pending."
+        ],
+        [
+          "requestAnimationFrame",
+          "Runs at most once per frame and computes the visible candidate rectangle.",
+          "Reading layout after writing styles, causing forced reflow.",
+          "Read container metrics before the interaction, then write transform/placeholder styles together."
+        ],
+        [
+          "Framework commit",
+          "Updates durable layout state and rerenders containers.",
+          "Rerendering every heavy chart/table on each tiny pointer delta.",
+          "Commit on grid-cell change, drag end, or a throttled preview; memoize widget content."
+        ],
+        [
+          "Persistence",
+          "Serializes layout and writes localStorage or calls an API.",
+          "JSON.stringify, storage writes, and fetch requests inside the move loop.",
+          "Persist on pointerup/keyboard confirm/Save with retry and visible save status."
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Optimization trade-offs",
+      "columns": [
+        "Topic",
+        "Choice",
+        "Trade-off"
+      ],
+      "rows": [
+        [
+          "rAF batching",
+          "Batch visual updates in requestAnimationFrame.",
+          "Keeps frames predictable, but the code must handle dropped intermediate pointer events by using the latest input."
+        ],
+        [
+          "Collision indexing",
+          "Bucket widgets by row/column or active region.",
+          "Reduces scans for large dashboards, but adds bookkeeping and invalidation complexity."
+        ],
+        [
+          "Transform previews",
+          "Move the active widget with transform before committing grid position.",
+          "Smooth preview, but final layout still needs a committed rectangle and accessible DOM order policy."
+        ],
+        [
+          "Widget memoization",
+          "Keep chart/table internals stable while only containers move.",
+          "Improves drag smoothness, but stale props bugs are possible if widget data dependencies are hidden."
+        ],
+        [
+          "Virtualization",
+          "Render only visible widgets in very tall dashboards.",
+          "Useful for large dashboards, but drag across virtual boundaries needs placeholder and scroll handling."
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Optimistic layout vs persisted layout",
+      "columns": [
+        "Approach",
+        "Benefit",
+        "Risk",
+        "Mitigation"
+      ],
+      "rows": [
+        [
+          "Optimistic local layout",
+          "The dashboard feels instant after drop.",
+          "Server save can fail or another device can have a newer layout.",
+          "Show save status, retry, and keep a serverVersion or updatedAt in the snapshot."
+        ],
+        [
+          "Wait for server before applying",
+          "UI always reflects persisted truth.",
+          "Drag/drop feels laggy and failure blocks editing.",
+          "Use only for highly regulated dashboards; otherwise prefer optimistic commit."
+        ],
+        [
+          "LocalStorage only",
+          "Simple and works offline on one device.",
+          "No cross-device sync and data can be cleared.",
+          "Good baseline for interview scope; mention server sync as an extension."
+        ],
+        [
+          "Server-backed per-user layout",
+          "Cross-device restore and team/device policy support.",
+          "Needs conflicts, auth, migrations, and failure states.",
+          "Persist on commit, not per frame; include layout version and conflict policy."
+        ]
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Performance validation path",
+      "steps": [
         {
-            "type": "text",
-            "text": "In this step, the interviewer wants to see if you understand what breaks in a big, interactive dashboard: janky drag at 20 FPS, layouts that lag when many widgets move, snapshots saved too often, and collision logic that’s too heavy. You should talk about how you keep drag/resize smooth, how you scale to many widgets, and how you avoid doing expensive work on every frame."
+          "title": "1. Baseline",
+          "text": "Record dragging and resizing 20-50 widgets with charts/tables loaded."
         },
         {
-            "type": "divider"
+          "title": "2. Inspect frames",
+          "text": "Look for long tasks, forced reflow, excessive component updates, layout/paint spikes, and INP regressions."
         },
         {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame optimizations:**\n\"First I’d ship a correct baseline: grid layout, drag/resize, collision resolution, snapshot on drop. Then I’d profile what happens when we have many widgets. If we see frame drops, I’d move more logic off the hot path (pointermove), cache layout calculations, and ensure widgets themselves don’t re-render unnecessarily during drag.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You care about **60 FPS drag/resize**, not just \"it works\".\n- You minimize work in **pointermove** handlers.\n- You understand **re-render optimization** (memoization, pure components, transforms).\n- You mention **layout complexity** (O(n) vs O(n²)) for collision handling.\n- You think about **snapshot throttling** and localStorage cost.\n- You have a plan for **very large dashboards** (dozens of widgets)."
-                        }
-                    ]
-                }
-            ]
+          "title": "3. Move work",
+          "text": "Move storage, analytics, server sync, and heavy collision compaction out of pointermove."
         },
         {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Pick 2–3 realistic pain points: dragging a heavy dashboard with many charts, quickly resizing a big widget, or spamming layout changes. Walk through what makes it slow (too many reflows, too many React/Angular updates, too many localStorage writes) and what you’d change to keep it smooth."
+          "title": "4. Protect widgets",
+          "text": "Memoize heavy widgets and move only their containers or a drag preview layer."
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Baseline performance hygiene to mention",
-                            "items": [
-                                "Use **CSS transforms** (`translate3d`, `scale`) instead of changing `top/left` for smoother GPU-accelerated moves.",
-                                "Avoid heavy layout work directly inside **pointermove**; keep the handler tiny and defer expensive operations.",
-                                "Only re-render the **moving widget** and maybe a lightweight overlay, not all widget contents.",
-                                "Use **requestAnimationFrame** if you need to batch visual updates during drag/resize.",
-                                "Persist layout snapshots on **interaction end** (drag/resize end, or with a short debounce), not every frame."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Deep-dive topics you can bring up",
-                            "items": [
-                                "Grid collision algorithm complexity for large `layout[]`.",
-                                "Virtualizing or “parking” off-screen widgets in very tall dashboards.",
-                                "Memoizing widget content so charts/tables don’t re-render while you drag.",
-                                "Using a separate **render layer** for drag previews vs committed layout.",
-                                "Throttling how often you emit `onLayoutChange` to parents / analytics."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Deep-dive angles and how to explain them",
-            "columns": [
-                "Topic",
-                "Angle",
-                "How you talk about it"
-            ],
-            "rows": [
-                [
-                    "60 FPS drag",
-                    "Minimal work per frame",
-                    "\"During drag I only update a small piece of state used for the active widget’s transform and keep collision/layout math as cheap as possible. Rendering uses `transform: translate3d(...)` so the GPU does the work, and I avoid triggering full layout reflows.\""
-                ],
-                [
-                    "Collision handling cost",
-                    "O(n) vs O(n²)",
-                    "\"For each move, I ideally run collision checks against a limited set of neighbours, not every widget. If the dashboard is large, I can bucket widgets by rows/columns so we don’t scan the entire `layout[]` on every move.\""
-                ],
-                [
-                    "Re-render optimization",
-                    "Avoiding unnecessary updates",
-                    "\"Widgets are memoized/pure: while I drag widget A, widgets B–Z don’t re-render; only their container positions may shift. The grid container might update a lightweight style, but the heavy chart/table internals stay untouched.\""
-                ],
-                [
-                    "Snapshot saving",
-                    "Throttle/persist carefully",
-                    "\"I only serialize `layout[]` to localStorage when the interaction ends, or with a short debounce if the user keeps editing. That prevents jank from frequent JSON stringify + disk writes while still keeping their layout safe.\""
-                ],
-                [
-                    "Large dashboards",
-                    "Scaling to many widgets",
-                    "\"If dashboards can have dozens of widgets, I’d consider capping animation richness, virtualizing very low-priority widgets, and simplifying collision rules so we maintain predictable performance as the layout grows.\""
-                ]
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Optimization path you should describe",
-            "steps": [
-                {
-                    "title": "1. Ship a correct baseline",
-                    "text": "Grid layout, drag/resize, collision handling, and snapshot persistence all work correctly for a moderate number of widgets."
-                },
-                {
-                    "title": "2. Profile interactions",
-                    "text": "Use dev tools to record dragging/resizing a large dashboard. Look at frame time, number of component updates, and where time is spent (JS vs layout vs paint)."
-                },
-                {
-                    "title": "3. Reduce hot-path work",
-                    "text": "Move non-essential logic out of pointermove; use memoized components, keep state updates localized, and rely on transforms for visual movement."
-                },
-                {
-                    "title": "4. Optimize layout engine",
-                    "text": "Simplify collision rules where possible, precompute structures that speed up overlap checks, and avoid scanning the entire widget list for every tiny move."
-                },
-                {
-                    "title": "5. Harden snapshots & UX",
-                    "text": "Throttle snapshot writes, handle corrupt snapshots gracefully, and provide subtle feedback (e.g. \"Layout updated\") without blocking interactions."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Hot path",
-                    "value": "pointermove + layout updates",
-                    "helperText": "Do as little as possible here."
-                },
-                {
-                    "label": "Key performance lever",
-                    "value": "Transform-only movement",
-                    "helperText": "Avoid costly layout thrash by using translate3d."
-                },
-                {
-                    "label": "Key robustness lever",
-                    "value": "Throttled snapshots",
-                    "helperText": "Keep layout safe without freezing the UI."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "Strong answers don’t stop at \"we can drag widgets\". They explain how to keep drag/resize at 60 FPS, how to avoid layout explosions when many widgets exist, and how to persist layouts without making every movement a performance problem."
+          "title": "5. Verify edges",
+          "text": "Test dense collisions, fast pointer movement, window resize during edit, failed saves, keyboard moves, and mobile stacked layouts."
         }
-    ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Edge cases to mention",
+      "columns": [
+        "Edge case",
+        "Frontend behavior"
+      ],
+      "rows": [
+        [
+          "Window resizes mid-drag",
+          "Either freeze the grid metrics until drop or cancel/recompute safely; do not mix old pointer math with new columns."
+        ],
+        [
+          "Widget removed while layout exists",
+          "Ignore unknown saved ids and migrate the snapshot on next save."
+        ],
+        [
+          "Breakpoint changes",
+          "Choose separate breakpoint layouts or derive a stacked mobile order from desktop."
+        ],
+        [
+          "Corrupt saved JSON",
+          "Discard it, restore defaults, and avoid blocking the page."
+        ],
+        [
+          "Keyboard and pointer edits race",
+          "Use one active interaction lock so two controllers cannot mutate the same layout at once."
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Performance signal",
+      "text": "Say exactly which update boundary is expensive. A strong answer keeps pointer input cheap, batches visual work in rAF, commits durable layout intentionally, and persists after interaction end."
+    }
+  ]
 }

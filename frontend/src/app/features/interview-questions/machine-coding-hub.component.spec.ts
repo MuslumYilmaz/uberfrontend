@@ -63,7 +63,7 @@ describe('MachineCodingHubComponent', () => {
     const transferList = host.querySelector('[data-testid="machine-question-12"]') as HTMLAnchorElement | null;
 
     expect(questionCards.length).toBe(16);
-    expect(text).toContain('Autocomplete Search Bar (Hooks)');
+    expect(text).toContain('React Autocomplete Interview Question');
     expect(text).toContain('React Nested Checkbox Tree');
     expect(text).toContain('React Paginated Data Table');
     expect(text).toContain('React Transfer List');
@@ -115,7 +115,7 @@ describe('MachineCodingHubComponent', () => {
     expect(collection?.about?.some((entry: any) => entry?.name === 'UI component coding interview questions')).toBeTrue();
     expect(collection?.mentions?.some((entry: any) => entry?.name === '30-day guided plan')).toBeTrue();
     expect(itemList?.numberOfItems).toBe(16);
-    expect(itemList?.itemListElement?.some((entry: any) => entry?.name === 'Autocomplete Search Bar (Hooks)')).toBeTrue();
+    expect(itemList?.itemListElement?.some((entry: any) => entry?.name === 'React Autocomplete Interview Question')).toBeTrue();
     expect(faqPage?.mainEntity?.some((entry: any) => entry?.name === 'What is a frontend machine coding round?')).toBeTrue();
     expect(faqPage?.mainEntity?.some((entry: any) => entry?.name === 'How should I prepare for a 60-minute machine coding round?')).toBeTrue();
   });

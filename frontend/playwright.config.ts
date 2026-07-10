@@ -2,18 +2,19 @@ import { defineConfig, devices } from '@playwright/test';
 
 const isCI = !!process.env.CI;
 const useWebServer = process.env.PLAYWRIGHT_WEB_SERVER === '1';
+const ssrMode = process.env.PLAYWRIGHT_SSR === '1';
 // Keep critical E2E deterministic across local and CI by defaulting to Chromium.
 // WebKit remains opt-in via PLAYWRIGHT_ENABLE_WEBKIT=1 when explicitly requested.
 const includeWebkit = process.env.PLAYWRIGHT_ENABLE_WEBKIT === '1';
 const webHost = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const webPort = Number.parseInt(process.env.PLAYWRIGHT_PORT || '4200', 10);
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || `http://${webHost}:${webPort}`;
-const reuseExistingServer =
-  process.env.PLAYWRIGHT_REUSE_SERVER === '1'
-    ? true
-    : process.env.PLAYWRIGHT_REUSE_SERVER === '0'
-      ? false
-      : !isCI;
+const reuseExistingServer = (() => {
+  if (process.env.PLAYWRIGHT_REUSE_SERVER === '1') return true;
+  if (process.env.PLAYWRIGHT_REUSE_SERVER === '0') return false;
+  if (ssrMode) return false;
+  return !isCI;
+})();
 
 export default defineConfig({
   testDir: './e2e',

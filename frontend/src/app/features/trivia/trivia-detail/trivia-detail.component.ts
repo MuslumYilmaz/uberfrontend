@@ -17,6 +17,10 @@ import { Tech } from '../../../core/models/user.model';
 import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import { QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
+import {
+  isContentAccessibleForFree,
+  robotsForContentAccess,
+} from '../../../core/utils/content-access-policy.util';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
@@ -199,9 +203,9 @@ const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
     key: 'undefined',
     label: 'undefined',
     componentReturn: 'return undefined;',
-    domOutput: 'Unclear intent, usually a missing return bug.',
-    mountedState: 'Do not rely on this as an empty UI state; fix the return path.',
-    testingAssertion: 'Use an explicit return null, then assert the intended DOM is absent.',
+    domOutput: 'React 18+: no DOM output. React 17 and earlier could throw "Nothing was returned from render".',
+    mountedState: 'Mounted if the parent still renders it in React 18+, but the return path is ambiguous.',
+    testingAssertion: 'Prefer return null for intentional empty UI; use TypeScript and linting to catch missing returns.',
   },
   {
     key: 'zero',
@@ -1292,6 +1296,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const studyPlanUrl = this.seo.buildCanonicalUrl(this.studyPlanPath());
     const companiesUrl = this.seo.buildCanonicalUrl('/companies');
     const articleExtensions = this.articleStructuredDataExtensions(q);
+    const accessibleForFree = isContentAccessibleForFree(q.access);
+    const robots = robotsForContentAccess(q.access);
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -1352,12 +1358,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ],
       ...articleExtensions,
-      isAccessibleForFree: q.access !== 'premium',
+      isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
     };
 
-    const questionStructuredData = this.questionStructuredData(q, canonical);
+    const questionStructuredData = accessibleForFree ? this.questionStructuredData(q, canonical) : null;
     const jsonLd = questionStructuredData
       ? [breadcrumb, article, questionStructuredData]
       : [breadcrumb, article];
@@ -1366,6 +1372,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       title: seoTitle,
       description,
       keywords,
+      robots,
       canonical,
       ogType: 'article',
       jsonLd,
@@ -1818,9 +1825,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'Thing', name: 'null' },
         { '@type': 'Thing', name: 'false' },
         { '@type': 'Thing', name: 'undefined' },
+        { '@type': 'Thing', name: 'React 18' },
+        { '@type': 'Thing', name: 'React 17 and earlier' },
         { '@type': 'Thing', name: 'Fragment' },
         { '@type': 'Thing', name: 'ReactNode' },
         { '@type': 'Thing', name: 'missing return' },
+        { '@type': 'Thing', name: 'TypeScript return types' },
+        { '@type': 'Thing', name: 'ESLint consistent-return' },
         { '@type': 'Thing', name: 'short-circuit rendering' },
         { '@type': 'Thing', name: 'parent conditional rendering' },
         { '@type': 'Thing', name: 'JSX holes' },
@@ -1832,19 +1843,30 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         { '@type': 'Thing', name: 'interactive demo' },
         { '@type': 'Thing', name: 'DOM output' },
         { '@type': 'Thing', name: 'mounted state' },
+        { '@type': 'Thing', name: 'source check' },
       ],
       hasPart: [
         { '@type': 'WebPageElement', name: 'Quick answer' },
+        { '@type': 'WebPageElement', name: 'React 17 and earlier vs React 18+ comparison' },
         { '@type': 'WebPageElement', name: 'Return value map' },
-        { '@type': 'WebPageElement', name: 'Common render-nothing bugs' },
-        { '@type': 'WebPageElement', name: 'Code examples' },
+        { '@type': 'WebPageElement', name: 'Explicit return undefined' },
+        { '@type': 'WebPageElement', name: 'Accidental missing return' },
+        { '@type': 'WebPageElement', name: 'return null' },
         { '@type': 'WebPageElement', name: 'Return value simulator' },
         { '@type': 'WebPageElement', name: 'Return null vs parent conditional rendering' },
-        { '@type': 'WebPageElement', name: 'Return null lifecycle notes' },
         { '@type': 'WebPageElement', name: 'Component return vs JSX child semantics' },
+        { '@type': 'WebPageElement', name: 'Follow-up question' },
+        { '@type': 'WebPageElement', name: 'Common production mistake' },
+        { '@type': 'WebPageElement', name: 'Source check' },
         { '@type': 'WebPageElement', name: 'Testable proof' },
         { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
-        { '@type': 'WebPageElement', name: 'Testing and accessibility notes' },
+      ],
+      citation: [
+        {
+          '@type': 'WebPage',
+          name: 'React 18 Working Group: Update to allow components to render undefined',
+          url: 'https://github.com/reactwg/react-18/discussions/75',
+        },
       ],
     };
   }

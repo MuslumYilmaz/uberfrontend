@@ -1,6 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
+import {
+  cdnPracticeRegistryPath as PRACTICE_REGISTRY_PATH,
+  cdnQuestionTrackRegistryPath as TRACK_REGISTRY_PATH,
+} from './content-paths.mjs';
+import {
+  isScopedRegistryDetailRoute,
+  normalizeAccess,
+  normalizeRoutePath,
+} from './registry-detail-access-policy.mjs';
 
 const SRC_DIR = path.resolve('src');
 const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
@@ -245,6 +254,144 @@ function assertCoreIndexableCoverage(paths) {
   const missing = core.filter((route) => !paths.has(normalizePath(route)));
   if (missing.length) {
     throw new Error(`Sitemap missing core indexable routes: ${missing.join(', ')}`);
+  }
+}
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function readPracticeRegistryDetailRoutes() {
+  if (!fs.existsSync(PRACTICE_REGISTRY_PATH)) {
+    throw new Error(`Missing ${PRACTICE_REGISTRY_PATH}. Run: npm run gen:data`);
+  }
+
+  const registry = readJson(PRACTICE_REGISTRY_PATH);
+  if (!Array.isArray(registry)) {
+    throw new Error('Practice registry must be an array.');
+  }
+
+  return registry
+    .map((item) => ({
+      route: normalizeRoutePath(item?.route),
+      access: normalizeAccess(item?.access),
+      family: String(item?.family || ''),
+    }))
+    .filter((item) => item.route && isScopedRegistryDetailRoute(item.route));
+}
+
+function assertRegistryDetailAccessPolicy(paths) {
+  const detailRoutes = readPracticeRegistryDetailRoutes();
+  const premium = detailRoutes.filter((item) => item.access === 'premium');
+  const free = detailRoutes.filter((item) => item.access === 'free');
+
+  const premiumIncluded = premium.filter((item) => paths.has(item.route));
+  if (premiumIncluded.length) {
+    throw new Error(
+      `Sitemap must exclude premium locked detail routes. Examples: ${
+        premiumIncluded.slice(0, 10).map((item) => item.route).join(', ')
+      }`,
+    );
+  }
+
+  const freeMissing = free.filter((item) => !paths.has(item.route));
+  if (freeMissing.length) {
+    throw new Error(
+      `Sitemap missing free registry detail routes. Examples: ${
+        freeMissing.slice(0, 10).map((item) => item.route).join(', ')
+      }`,
+    );
+  }
+
+  const premiumByFamily = premium.reduce((acc, item) => {
+    acc[item.family] = (acc[item.family] || 0) + 1;
+    return acc;
+  }, {});
+  console.log(
+    `[sitemap:test] registry detail access policy checked: free=${free.length} premium_excluded=${premium.length} ${JSON.stringify(premiumByFamily)}`,
+  );
+}
+
+function readPublicTrackPreviewRoutes() {
+  if (!fs.existsSync(TRACK_REGISTRY_PATH)) return [];
+  const registry = readJson(TRACK_REGISTRY_PATH);
+  const tracks = Array.isArray(registry?.tracks) ? registry.tracks : [];
+  return tracks
+    .filter((track) => track?.slug && !track?.hidden)
+    .map((track) => normalizeRoutePath(`/tracks/${track.slug}/preview`));
+}
+
+function assertPreviewAndHubCoverage(paths) {
+  const requiredHubs = [
+    '/coding',
+    '/incidents',
+    '/tradeoffs',
+    '/system-design',
+    '/tracks',
+    '/companies',
+  ];
+  const missingHubs = requiredHubs.filter((route) => !paths.has(route));
+  if (missingHubs.length) {
+    throw new Error(`Sitemap missing public hub routes: ${missingHubs.join(', ')}`);
+  }
+
+  const missingTrackPreviews = readPublicTrackPreviewRoutes().filter((route) => !paths.has(route));
+  if (missingTrackPreviews.length) {
+    throw new Error(
+      `Sitemap missing public track preview routes. Examples: ${missingTrackPreviews.slice(0, 5).join(', ')}`,
+    );
+  }
+
+  const hasCompanyPreview = Array.from(paths).some((route) => /^\/companies\/[^/]+\/preview$/.test(route));
+  if (!hasCompanyPreview) {
+    throw new Error('Sitemap must keep public company preview routes.');
+  }
+}
+
+function assertNoPrivateOrRedirectRoutes(paths) {
+  const forbiddenExact = [
+    '/auth/login',
+    '/auth/signup',
+    '/auth/callback',
+    '/dashboard',
+    '/profile',
+    '/admin/users',
+    '/billing/success',
+    '/billing/cancel',
+    '/onboarding/quick-start',
+    '/tools/cv-linter',
+    '/track',
+  ];
+  const forbiddenPrefixes = [
+    '/auth/',
+    '/admin/',
+    '/billing/',
+    '/onboarding/',
+  ];
+  const forbiddenRedirects = [
+    '/guides/interview-blueprint/javascript-prep-path',
+    '/guides/interview-blueprint/react-prep-path',
+    '/guides/interview-blueprint/angular-prep-path',
+    '/guides/interview-blueprint/vue-prep-path',
+    '/guides/system-design',
+    '/guides/system-design/radio',
+    '/guides/system-design/radio/framework',
+    '/guides/system-design/radio/requirements',
+    '/guides/system-design/radio/architecture',
+    '/guides/system-design/radio/data-model',
+    '/guides/system-design/radio/interface',
+    '/guides/system-design/radio/optimizations',
+  ];
+
+  const offenders = Array.from(paths).filter((route) => {
+    if (forbiddenExact.includes(route) || forbiddenRedirects.includes(route)) return true;
+    return forbiddenPrefixes.some((prefix) => route.startsWith(prefix));
+  });
+
+  if (offenders.length) {
+    throw new Error(
+      `Sitemap must not include private or redirect routes. Examples: ${offenders.slice(0, 10).join(', ')}`,
+    );
   }
 }
 
@@ -602,6 +749,9 @@ assertFlexboxNavbarSitemapCoverage(paths, locs);
 assertCssGridCardGallerySitemapCoverage(paths, entries, locs);
 assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
+assertRegistryDetailAccessPolicy(paths);
+assertPreviewAndHubCoverage(paths);
+assertNoPrivateOrRedirectRoutes(paths);
 assertCssThemeVariablesSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
 assertRobotsAllowsCodingQueryNoindex();

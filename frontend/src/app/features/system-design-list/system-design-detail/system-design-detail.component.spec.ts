@@ -11,11 +11,13 @@ import { SystemDesignDetailComponent } from './system-design-detail.component';
 describe('SystemDesignDetailComponent', () => {
   let bugReport: jasmine.SpyObj<BugReportService>;
   let seo: jasmine.SpyObj<SeoService>;
+  let authUser: any;
 
   beforeEach(async () => {
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     seo.buildCanonicalUrl.and.callFake((value: string) => value);
+    authUser = null;
 
     await TestBed.configureTestingModule({
       imports: [SystemDesignDetailComponent, RouterTestingModule],
@@ -25,7 +27,7 @@ describe('SystemDesignDetailComponent', () => {
           useValue: { loadSystemDesign: () => { }, loadSystemDesignQuestion: () => { }, clearCache: () => { } },
         },
         { provide: SeoService, useValue: seo },
-        { provide: AuthService, useValue: { user: () => null, isLoggedIn: () => false } },
+        { provide: AuthService, useValue: { user: () => authUser, isLoggedIn: () => !!authUser } },
         { provide: OnboardingService, useValue: { getProfile: () => null } },
         { provide: AnalyticsService, useValue: { track: () => { } } },
         { provide: BugReportService, useValue: bugReport },
@@ -83,22 +85,103 @@ describe('SystemDesignDetailComponent', () => {
 
     (component as any).applyResolvedQuestion({
       id: 'dashboard-widgets-draggable-resizable',
-      title: 'Drag & Resize Dashboard',
+      title: 'Drag-and-Drop Dashboard Frontend System Design',
       description: 'Long visible challenge description.',
       tags: ['dashboard'],
-      access: 'premium',
+      access: 'free',
       seo: {
-        title: 'Drag & Resize Dashboard System Design: What Interviewers Look For',
-        description: 'Practice a frontend system design answer for draggable dashboard widgets, with the grid, resize, performance, persistence, and tradeoffs interviewers expect.',
+        title: 'Drag-and-Drop Dashboard Frontend System Design: Grid Layout, Resize, Collision and Persistence',
+        description: 'Practice draggable dashboard frontend system design with a grid data model, pointer interactions, collision snapping, rAF rendering, persistence migrations, responsive behavior, and accessibility.',
       },
     });
 
-    expect(component.title()).toBe('Drag & Resize Dashboard');
+    expect(component.title()).toBe('Drag-and-Drop Dashboard Frontend System Design');
     expect(seo.updateTags).toHaveBeenCalledWith(jasmine.objectContaining({
-      title: 'Drag & Resize Dashboard System Design: What Interviewers Look For',
-      description: 'Practice a frontend system design answer for draggable dashboard widgets, with the grid, resize, performance, persistence, and tradeoffs interviewers expect.',
+      title: 'Drag-and-Drop Dashboard Frontend System Design: Grid Layout, Resize, Collision and Persistence',
+      description: 'Practice draggable dashboard frontend system design with a grid data model, pointer interactions, collision snapping, rAF rendering, persistence migrations, responsive behavior, and accessibility.',
       canonical: '/system-design/dashboard-widgets-draggable-resizable',
+      robots: undefined,
     }));
+  });
+
+  it('marks premium system design content noindex without FAQ answer schema', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    authUser = { accessTier: 'premium' };
+
+    (component as any).applyResolvedQuestion({
+      id: 'endless-short-video-feed',
+      title: 'Design an Endless Short-Video Feed',
+      description: 'Premium system design prompt teaser.',
+      tags: ['feeds'],
+      access: 'premium',
+      radio: [
+        {
+          key: 'R',
+          title: 'Requirements',
+          blocks: [{ type: 'text', text: 'Full paid requirements analysis should not appear in schema.' }],
+        },
+      ],
+    });
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((entry: any) => entry?.['@type'] === 'Article');
+    const learningResource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+    const typeNames = graph.map((entry: any) => entry?.['@type']);
+
+    expect(payload.robots).toBe('noindex,follow');
+    expect(payload.canonical).toBe('/system-design/endless-short-video-feed');
+    expect(article?.isAccessibleForFree).toBeFalse();
+    expect(learningResource?.isAccessibleForFree).toBeFalse();
+    expect(typeNames).not.toContain('FAQPage');
+    expect(component.locked()).toBeFalse();
+  });
+
+  it('renders system design link blocks as real internal anchors', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.q.set({
+      id: 'dashboard-widgets-draggable-resizable',
+      title: 'Drag-and-Drop Dashboard Frontend System Design',
+      description: 'Dashboard layout question.',
+      tags: ['dashboard'],
+      access: 'free',
+      radio: [
+        {
+          key: 'R',
+          title: 'Interview framing and requirements',
+          blocks: [
+            {
+              type: 'links',
+              title: 'Contextual practice links',
+              items: [
+                {
+                  label: 'Frontend system design question bank',
+                  href: '/system-design',
+                  description: 'Use this prompt alongside other frontend architecture scenarios.',
+                },
+                {
+                  label: 'Machine coding hub',
+                  href: '/machine-coding',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const links = Array.from(host.querySelectorAll('.sd-link-item')) as HTMLAnchorElement[];
+    const hrefs = links.map((link) => link.getAttribute('href'));
+
+    expect(hrefs).toContain('/system-design');
+    expect(hrefs).toContain('/machine-coding');
+    expect(host.textContent || '').toContain('Use this prompt alongside other frontend architecture scenarios.');
   });
 
   it('surfaces RADIO plus the matched blueprint guide without duplicate guide links', () => {

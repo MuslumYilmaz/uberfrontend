@@ -25,6 +25,10 @@ import { Subject, Subscription, filter, firstValueFrom, takeUntil } from 'rxjs';
 import type { Question, QuestionFaqItem, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForCoding, LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import {
+  isContentAccessibleForFree,
+  robotsForContentAccess,
+} from '../../../core/utils/content-access-policy.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -101,6 +105,7 @@ type FASolutionBlock = {
   followUp?: string[];
   followUpQuestions?: FAFollowUpRef[];
   relatedLinks?: FARelatedLink[];
+  curatedNextStepsOnly?: boolean;
   resources?: { title: string; url: string }[];
   explanation?: string;
   codeJs?: string;
@@ -280,6 +285,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private lastTrackedChallengeOpenKey: string | null = null;
   private ahaFirstTestRunTracked = false;
   private ahaFirstPassTracked = false;
+  private firstPassingTestTracked = false;
+  private allTestsPassedTracked = false;
+  private solutionViewedTracked = false;
   quickWinActive = signal(false);
   quickWinEngaged = signal(false);
   quickWinCompleted = signal(false);
@@ -493,9 +501,40 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
   }
 
+  startCoding() {
+    const q = this.question();
+    this.activePanel.set(0);
+    this.markQuickWinEngaged('start_coding');
+    this.analytics.track('start_coding', {
+      question_id: q?.id ?? null,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+    });
+
+    if (!this.isBrowser) return;
+    window.setTimeout(() => {
+      const workspace = document.querySelector('[data-testid="coding-workspace-panel"]') as HTMLElement | null;
+      workspace?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      if (this.isFrameworkTech()) {
+        this.frameworkPanel?.focusEditor();
+      }
+    }, 0);
+  }
+
   goToPricing() {
     const profile = this.onboarding.getProfile();
     this.analytics.track('premium_gate_path_clicked', {
+      action: 'view_pricing',
+      context: 'coding_locked',
+      question_id: this.question()?.id ?? null,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+    this.analytics.track('premium_cta_click', {
       action: 'view_pricing',
       context: 'coding_locked',
       question_id: this.question()?.id ?? null,
@@ -1184,6 +1223,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const frameworkPrepUrl = this.hasFrameworkPrepPath()
       ? this.seo.buildCanonicalUrl(this.frameworkPrepPath())
       : null;
+    const accessibleForFree = isContentAccessibleForFree(q.access);
+    const robots = robotsForContentAccess(q.access);
 
     const structuredName = this.structuredDataQuestionName(q);
     const breadcrumb = {
@@ -1253,13 +1294,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
           ? [{ '@type': 'WebPage', name: `${this.frameworkPrepLabel()} prep path`, url: frameworkPrepUrl }]
           : []),
       ],
-      isAccessibleForFree: q.access !== 'premium',
+      isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
     };
 
-    const howTo = this.buildHowToSchema(q, canonical);
-    const faqPage = this.buildFaqSchema(q, canonical);
+    const howTo = accessibleForFree ? this.buildHowToSchema(q, canonical) : null;
+    const faqPage = accessibleForFree ? this.buildFaqSchema(q, canonical) : null;
     const jsonLd: Array<Record<string, any>> = [breadcrumb, article];
     if (howTo) jsonLd.push(howTo);
     if (faqPage) jsonLd.push(faqPage);
@@ -1268,6 +1309,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       title: seoTitle,
       description,
       keywords,
+      robots,
       canonical,
       ogType: 'article',
       jsonLd,
@@ -1417,6 +1459,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.trackQuickWinStarted(q.id);
     this.ahaFirstTestRunTracked = false;
     this.ahaFirstPassTracked = false;
+    this.firstPassingTestTracked = false;
+    this.allTestsPassedTracked = false;
+    this.solutionViewedTracked = false;
     this.trackChallengeOpened(q.id);
     this.maybePromptOnboardingFromPending(q.id);
     this.refreshLockedPersonalization();
@@ -1707,11 +1752,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (this.hasFrameworkStructuredChecks(q)) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
-      await this.completeFrameworkCheckRun({
+      const event = {
         questionId: q.id,
         passed: results.length > 0 && results.every((result) => result.passed),
         results,
-      });
+      };
+      this.trackFrameworkCheckAnalytics(event);
+      await this.completeFrameworkCheckRun(event);
       return;
     }
 
@@ -1774,7 +1821,50 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   async onFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
+    this.trackFrameworkCheckAnalytics(event);
     await this.completeFrameworkCheckRun(event);
+  }
+
+  private trackFrameworkCheckAnalytics(event: FrameworkCheckRunEvent): void {
+    const q = this.question();
+    if (!q || event.questionId !== q.id) return;
+
+    const results = Array.isArray(event.results) ? event.results : [];
+    const passCount = results.filter((result) => result.passed).length;
+    const totalCount = results.length;
+
+    this.analytics.track('run_checks', {
+      question_id: q.id,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+      pass_count: passCount,
+      total_count: totalCount,
+    });
+
+    if (passCount > 0 && !this.firstPassingTestTracked) {
+      this.firstPassingTestTracked = true;
+      this.analytics.track('first_passing_test', {
+        question_id: q.id,
+        tech: this.tech,
+        kind: this.kind,
+        src: this.challengeSource,
+        pass_count: passCount,
+        total_count: totalCount,
+      });
+    }
+
+    if (event.passed && !this.allTestsPassedTracked) {
+      this.allTestsPassedTracked = true;
+      this.analytics.track('all_tests_passed', {
+        question_id: q.id,
+        tech: this.tech,
+        kind: this.kind,
+        src: this.challengeSource,
+        elapsed_sec: Math.max(0, Math.round((Date.now() - this.sessionStart) / 1000)),
+        total_count: totalCount,
+      });
+    }
   }
 
   private async completeFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
@@ -1897,7 +1987,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.persistQuickWinNextDismissed(true);
   }
 
-  private markQuickWinEngaged(via: 'run_tests' | 'submit' | 'reveal_solution'): void {
+  private markQuickWinEngaged(via: 'run_tests' | 'submit' | 'reveal_solution' | 'start_coding'): void {
     if (!this.quickWinActive() || this.quickWinEngaged()) return;
     this.quickWinEngaged.set(true);
     this.analytics.track('quick_win_progressed', {
@@ -2811,6 +2901,41 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return this.descriptionText(); // uses your existing helper
   });
 
+  interviewFocusSummary = computed(() => {
+    const q = this.question();
+    return this.displayText(String((q as any)?.interviewFocus?.summary || '').trim());
+  });
+
+  interviewFocusItems = computed<string[]>(() => {
+    const q = this.question();
+    const items = (q as any)?.interviewFocus?.tests;
+    return Array.isArray(items)
+      ? items.map((item) => this.displayText(String(item || '').trim())).filter(Boolean)
+      : [];
+  });
+
+  questionTimeboxLabel = computed(() => {
+    const q = this.question();
+    const minutes = Number((q as any)?.estimatedMinutes ?? (q as any)?.durationMin ?? (q as any)?.durationMinutes ?? 0);
+    if (!Number.isFinite(minutes) || minutes <= 0) return '';
+    if (minutes === 40) return '35-45 min';
+    return `${Math.max(1, Math.round(minutes))} min`;
+  });
+
+  assessedSkillChips = computed<string[]>(() => {
+    const specs = this.descSpecs();
+    const focusRaw = specs?.techFocus;
+    const focus = Array.isArray(focusRaw) ? focusRaw : [];
+    return focus
+      .map((item) => this.displayText(String(item || '').trim()))
+      .filter(Boolean)
+      .slice(0, 8);
+  });
+
+  hasInterviewHeroMeta = computed(() =>
+    !!(this.interviewFocusSummary() || this.questionTimeboxLabel() || this.assessedSkillChips().length || this.interviewFocusItems().length)
+  );
+
   descArgs = computed(() => {
     const q = this.question(); if (!q) return [] as Array<{ name: string; type?: string; desc?: string }>;
     if (q.description && typeof q.description === 'object') {
@@ -2860,6 +2985,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return { overview: legacy.explanation };
   });
 
+  curatedNextStepsOnly = computed<boolean>(() => this.structuredSolution()?.curatedNextStepsOnly === true);
 
   // Convenience getters for template
   approaches = computed<FAApproach[]>(() => {
@@ -3044,6 +3170,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.showSolutionWarning.set(true);
     } else {
       this.showSolutionWarning.set(false);
+      this.trackSolutionViewed();
       this.markQuickWinEngaged('reveal_solution');
     }
   }
@@ -3052,7 +3179,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   confirmSolutionReveal() {
     this.showSolutionWarning.set(false);
     this.activePanel.set(1); // shows read-only solution panel
+    this.trackSolutionViewed();
     this.markQuickWinEngaged('reveal_solution');
+  }
+
+  private trackSolutionViewed(): void {
+    const q = this.question();
+    if (!q || this.solutionViewedTracked) return;
+    this.solutionViewedTracked = true;
+    this.analytics.track('view_solution', {
+      question_id: q.id,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+    });
   }
 
   // Keep a dedicated overwrite action

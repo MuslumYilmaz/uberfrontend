@@ -7036,27 +7036,25 @@
     "assetRef": "questions/javascript/trivia.json#js-why-eval-function-considered-dangerous"
   },
   {
-    "id": "react-autocomplete-search-starter",
+    "id": "react-render-nothing-return-value",
     "family": "question",
-    "title": "Autocomplete Search Bar (Hooks)",
-    "route": "/react/coding/react-autocomplete-search-starter",
+    "title": "Can a React component return undefined?",
+    "route": "/react/trivia/react-render-nothing-return-value",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Build an **autocomplete search bar** in React. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, keyboard navigation (↑/↓/Enter/Escape), and close-on-ou…",
+    "summary": "Yes. In React 18+, a component may return undefined and React renders no DOM for that return. In React 17 and earlier, the same return could throw \"Nothing was returned from render.\" Use return null for intentional empt…",
     "tags": [
       "react",
-      "hooks",
-      "state",
-      "events",
-      "debounce",
-      "accessibility",
-      "keyboard"
+      "rendering",
+      "null",
+      "conditional",
+      "components"
     ],
     "access": "free",
-    "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-07-09",
     "schemaVersion": "question.v1",
-    "assetRef": "questions/react/coding.json#react-autocomplete-search-starter"
+    "assetRef": "questions/react/trivia.json#react-render-nothing-return-value"
   },
   {
     "id": "react-chat-streaming-ui",
@@ -7444,6 +7442,30 @@
     "assetRef": "questions/react/coding.json#react-accordion-faq"
   },
   {
+    "id": "react-autocomplete-search-starter",
+    "family": "question",
+    "title": "React Autocomplete Interview Question",
+    "route": "/react/coding/react-autocomplete-search-starter",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Practice a React autocomplete interview question in a live editor. Build a controlled search input with debounce, stale-response protection, keyboard navigation, ARIA, loading, empty, no-results, error states, and runna…",
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "effects",
+      "debounce",
+      "async",
+      "accessibility",
+      "keyboard"
+    ],
+    "access": "free",
+    "estimatedMinutes": 40,
+    "updatedAt": "2026-07-09",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-autocomplete-search-starter"
+  },
+  {
     "id": "react-chessboard-click-highlight",
     "family": "question",
     "title": "React Chessboard Click/Highlight (N×N Board)",
@@ -7493,7 +7515,7 @@
     "route": "/react/coding/react-debounced-search",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects. React…",
+    "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel pending debounce work, guard stale responses from updating state, and manage loading, error, and empty states for re…",
     "tags": [
       "react",
       "state",
@@ -8312,27 +8334,6 @@
     "assetRef": "questions/react/trivia.json#react-why-hooks-have-rules"
   },
   {
-    "id": "react-render-nothing-return-value",
-    "family": "question",
-    "title": "Why does a React component sometimes render nothing, and how does React interpret its return value?",
-    "route": "/react/trivia/react-render-nothing-return-value",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "React renders nothing when a component returns null or false; a fragment renders children without adding a wrapper. Returning undefined usually means a missing return, so fix it instead of using it as intentional empty…",
-    "tags": [
-      "react",
-      "rendering",
-      "null",
-      "conditional",
-      "components"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-07-03",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-render-nothing-return-value"
-  },
-  {
     "id": "react-context-performance-issues",
     "family": "question",
     "title": "Why does Context cause performance issues? How do you fix them?",
@@ -8608,26 +8609,6 @@
     "assetRef": "questions/system-design/cross-device-preferences-sync/meta.json"
   },
   {
-    "id": "dashboard-widgets-draggable-resizable",
-    "family": "question",
-    "title": "Dashboard with Draggable & Resizable Widgets",
-    "route": "/system-design/dashboard-widgets-draggable-resizable",
-    "tech": "system-design",
-    "difficulty": "hard",
-    "summary": "Design a customizable dashboard made of widgets that the user can rearrange and resize. Widgets live on a grid layout, can be dragged to change position, and resized via handles. The dashboard layout is persisted (e.g.…",
-    "tags": [
-      "dashboard",
-      "drag-drop",
-      "performance",
-      "local-storage"
-    ],
-    "access": "free",
-    "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/system-design/dashboard-widgets-draggable-resizable/meta.json"
-  },
-  {
     "id": "notification-toast-system",
     "family": "question",
     "title": "Design a Toast Notification System",
@@ -8652,6 +8633,26 @@
     "updatedAt": "2026-07-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/notification-toast-system/meta.json"
+  },
+  {
+    "id": "dashboard-widgets-draggable-resizable",
+    "family": "question",
+    "title": "Drag-and-Drop Dashboard Frontend System Design",
+    "route": "/system-design/dashboard-widgets-draggable-resizable",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design a customizable frontend dashboard where widgets can be dragged, snapped to a grid, resized within constraints, and restored from a saved layout. Key considerations include: a logical grid data model, pointer-even…",
+    "tags": [
+      "dashboard",
+      "drag-drop",
+      "performance",
+      "local-storage"
+    ],
+    "access": "free",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-01-30",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/dashboard-widgets-draggable-resizable/meta.json"
   },
   {
     "id": "endless-short-video-feed",

@@ -1,5 +1,9 @@
 import { SeoMeta } from '../services/seo.service';
 import { IncidentScenario } from '../models/incident.model';
+import {
+  isContentAccessibleForFree,
+  robotsForContentAccess,
+} from './content-access-policy.util';
 
 export const INCIDENT_DETAIL_FALLBACK_SEO: SeoMeta = {
   title: 'Frontend Debug Scenario for Interview Practice',
@@ -37,6 +41,7 @@ export function buildIncidentSeoMeta(
   const incidentsHubUrl = buildCanonicalUrl('/incidents');
   const imageUrl = buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
   const detailDescription = `Practice this ${techLabel.toLowerCase()} debugging interview question. ${meta.summary} Work through the root cause, the first debug steps, the best fix, and the regression guard.`;
+  const accessibleForFree = isContentAccessibleForFree(meta.access);
   const breadcrumb = {
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -72,7 +77,7 @@ export function buildIncidentSeoMeta(
     learningResourceType: 'Debug scenario',
     educationalUse: 'Interview practice',
     timeRequired: `PT${meta.estimatedMinutes}M`,
-    isAccessibleForFree: meta.access !== 'premium',
+    isAccessibleForFree: accessibleForFree,
     keywords: meta.tags.join(', '),
     dateModified: `${meta.updatedAt}T00:00:00Z`,
     author: { '@type': 'Organization', name: 'FrontendAtlas' },
@@ -100,6 +105,7 @@ export function buildIncidentSeoMeta(
     title: `${meta.title} - ${techLabel} Debug Scenario`,
     description: detailDescription,
     canonical: canonicalPath,
+    robots: robotsForContentAccess(meta.access),
     keywords: [
       ...meta.tags,
       'frontend debug scenario',

@@ -11,6 +11,7 @@ import {
   srcSitemapIndexPath as INDEX_PATH,
   srcSitemapPath as OUT_PATH,
 } from './content-paths.mjs';
+import { shouldIncludeRegistryDetailInSitemap } from './registry-detail-access-policy.mjs';
 
 const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com').replace(/\/+$/, '');
 const MAX_URLS = 50000;
@@ -82,7 +83,9 @@ function addQuestionUrls(urls, tech, kind, list) {
   if (!Array.isArray(list)) return;
   list.forEach((q) => {
     if (!q?.id) return;
-    addUrl(urls, `/${tech}/${kind}/${q.id}`, questionLastmod(q));
+    const route = `/${tech}/${kind}/${q.id}`;
+    if (!shouldIncludeRegistryDetailInSitemap(route, q.access)) return;
+    addUrl(urls, route, questionLastmod(q));
   });
 }
 
@@ -190,6 +193,7 @@ function buildUrls() {
     if (Array.isArray(items)) {
       items.forEach((item) => {
         if (!item?.route) return;
+        if (!shouldIncludeRegistryDetailInSitemap(item.route, item.access)) return;
         addUrl(urls, item.route, item.updatedAt);
       });
     }
@@ -222,7 +226,9 @@ function buildUrls() {
     if (Array.isArray(items)) {
       items.forEach((q) => {
         if (!q?.id) return;
-        addUrl(urls, `/system-design/${q.id}`, questionLastmod(q));
+        const route = `/system-design/${q.id}`;
+        if (!shouldIncludeRegistryDetailInSitemap(route, q.access)) return;
+        addUrl(urls, route, questionLastmod(q));
       });
       addCompanySlugs(companySlugs, items);
     }

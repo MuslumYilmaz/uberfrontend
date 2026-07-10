@@ -657,6 +657,52 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-autocomplete-async-keyboard-a11y',
+    questionId: 'react-autocomplete-search-starter',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'empty',
+        'loading',
+        'no results',
+        'error',
+        'stale',
+        'arrow',
+        'enter',
+        'escape',
+        'pointer',
+        'outside',
+        'aria',
+        'cleanup',
+      ]) ||
+      anyFailingErrorIncludes(snapshot, [
+        'combobox',
+        'listbox',
+        'aria-activedescendant',
+        'stale',
+        'no results',
+        'loading',
+        'pointer',
+        'listener',
+        'timer',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-autocomplete-async-keyboard-a11y',
+      title: 'Treat autocomplete as async state plus combobox behavior',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'This prompt tests debounce, stale-response protection, keyboard navigation, ARIA wiring, and cleanup together.',
+      ),
+      actions: [
+        'Model `query`, `results`, `status`, `isOpen`, and `activeIndex` separately so loading, no-results, and error states do not overlap.',
+        'Use effect cleanup for the debounce timer, and also guard resolved async work with a request id or ignore flag.',
+        'Keep DOM focus on the input; drive ArrowUp/ArrowDown/Enter/Escape through `activeIndex` and `aria-activedescendant`.',
+        'Use pointer or mousedown selection before outside-close timing can swallow option selection.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
     ruleId: 'js-number-clamp-range',
     questionId: 'js-number-clamp',
     priority: 110,

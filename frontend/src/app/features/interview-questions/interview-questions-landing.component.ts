@@ -2755,6 +2755,16 @@ const REACT_SCENARIO_QUESTIONS: ReactScenarioQuestionItem[] = [
   },
   {
     level: 'intermediate',
+    q: 'How would you build an autocomplete search bar in React?',
+    code: `function Autocomplete() {
+  // query, results, status, isOpen, activeIndex
+}`,
+    explanation: 'A strong implementation uses a controlled input, debounced async search, stale-response protection, keyboard wrap-around, input-held focus, ARIA combobox attributes, and visible tests for loading, empty, no-results, and error states.',
+    route: ['/react', 'coding', 'react-autocomplete-search-starter'],
+    cta: 'Practice autocomplete with debounce and keyboard navigation',
+  },
+  {
+    level: 'intermediate',
     q: 'Why can an index key reset the wrong row state?',
     code: `{users.map((user, index) => (
   <UserRow key={index} user={user} />
@@ -6173,10 +6183,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         },
         {
           step: 4,
-          title: 'Question Library',
-          description: 'Broaden into more coding and concept coverage by format, stack, difficulty, and weak area.',
+          title: 'Frontend Coding Challenges',
+          description: 'Broaden into focused JavaScript functions, UI exercises, HTML/CSS implementation, and debugging tasks.',
           route: ['/coding'],
-          meta: 'Broader coding + concepts',
+          meta: 'Focused coding practice',
           tone: 'structured',
         },
         {

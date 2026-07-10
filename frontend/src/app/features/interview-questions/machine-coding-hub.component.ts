@@ -101,14 +101,14 @@ export class MachineCodingHubComponent implements OnInit {
     },
     {
       rank: 3,
-      title: 'Autocomplete Search Bar (Hooks)',
+      title: 'React Autocomplete Interview Question',
       route: ['/', 'react', 'coding', 'react-autocomplete-search-starter'],
       path: '/react/coding/react-autocomplete-search-starter',
       tier: 'Must know',
       difficulty: 'Intermediate',
       tags: ['autocomplete', 'keyboard', 'a11y'],
       signal: 'Keyboard behavior, async suggestions, focus state, and accessible listbox UX.',
-      requirement: 'Fetch suggestions, debounce typing, support keyboard selection, and recover from empty/error states.',
+      requirement: 'Build an autocomplete search bar in React with debounce, keyboard selection, no-results, and error states.',
     },
     {
       rank: 4,
@@ -317,7 +317,7 @@ export class MachineCodingHubComponent implements OnInit {
   ];
 
   readonly workedExample: WorkedExample = {
-    title: 'Autocomplete Search Bar (Hooks)',
+    title: 'React autocomplete interview question',
     route: ['/', 'react', 'coding', 'react-autocomplete-search-starter'],
     path: '/react/coding/react-autocomplete-search-starter',
     intro:
@@ -359,6 +359,12 @@ export class MachineCodingHubComponent implements OnInit {
   };
 
   readonly focusLinks: HubLink[] = [
+    {
+      label: 'Frontend Coding Challenges',
+      description: 'Focused JavaScript functions, UI exercises, HTML/CSS implementation, and debugging tasks.',
+      route: ['/coding'],
+      path: '/coding',
+    },
     {
       label: 'JavaScript utility rounds',
       description: 'Debounce, throttle, Promise utilities, deep clone, currying, and async reasoning.',

@@ -101,7 +101,7 @@
 
             <section class="min-w-0 min-h-0 flex-1 flex editor-shell">
                 <ng-container *ngIf="useMonaco(); else liteFrameworkEditor">
-                    <app-monaco-editor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
+                    <app-monaco-editor #frameworkEditor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
                         [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions"
                         (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()"
                         (loadFailed)="onEditorLoadFailed()">
@@ -161,8 +161,8 @@
                     </div>
                 </div>
 
-                <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400">
-                    No preview yet. Click “Rebuild preview”.
+                <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center px-6 text-center text-xs text-gray-400">
+                    Starter preview loads when the editor is ready. Use Rebuild preview after editing.
                 </div>
 
                 <iframe #previewFrame class="preview-frame absolute inset-0 w-full h-full border-0" title="Framework live preview" referrerpolicy="no-referrer"

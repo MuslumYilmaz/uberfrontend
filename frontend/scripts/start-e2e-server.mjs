@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from 'child_process';
+import { startSeoStaticServer } from './seo-static-server.mjs';
 
 function resolveBin(name) {
   if (process.platform === 'win32') return `${name}.cmd`;
@@ -40,6 +41,29 @@ function parseArg(name, fallback) {
 
 const host = parseArg('host', process.env.PLAYWRIGHT_HOST || '127.0.0.1');
 const port = parseArg('port', process.env.PLAYWRIGHT_PORT || '4200');
+
+if (process.env.PLAYWRIGHT_SSR === '1') {
+  const server = await startSeoStaticServer({
+    host,
+    port: Number(port),
+    logPrefix: '[start:e2e-server:ssr]',
+  });
+  console.log(`[start:e2e-server:ssr] serving prerender output at ${server.baseUrl}`);
+
+  let shuttingDown = false;
+  const terminateServer = async () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    await server.close();
+    process.exit(0);
+  };
+
+  process.on('SIGINT', terminateServer);
+  process.on('SIGTERM', terminateServer);
+  process.on('SIGHUP', terminateServer);
+
+  await new Promise(() => {});
+}
 
 await runStep(resolveBin('npm'), ['run', 'gen:data']);
 

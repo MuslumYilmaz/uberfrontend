@@ -132,7 +132,7 @@ const REACT_PREP_PATTERNS: ReactPrepPatternCard[] = [
     prepGoal: 'Use this React component coding interview drill to model input value, selected value, suggestions, keyboard behavior, loading, empty, and error states.',
     testFocus: 'Stale responses, Escape/Enter/arrow keys, option identity, empty results, and blur/selection timing.',
     route: ['/react', 'coding', 'react-autocomplete-search-starter'],
-    linkLabel: 'Practice autocomplete',
+    linkLabel: 'Practice autocomplete with debounce and keyboard navigation',
     testId: 'react-prep-pattern-autocomplete',
   },
   {
@@ -2299,7 +2299,7 @@ function onInput(value) {
             },
             {
               id: 'react-autocomplete-search-starter',
-              title: 'Autocomplete Search Bar (Hooks)',
+              title: 'React autocomplete interview question',
               filePath: 'cdn/questions/react/coding.json',
               route: ['/react', 'coding', 'react-autocomplete-search-starter'],
               routeUrl: '/react/coding/react-autocomplete-search-starter',
@@ -2547,7 +2547,7 @@ function onInput(value) {
             },
             {
               id: 'react-autocomplete-search-starter',
-              title: 'Autocomplete Search Bar (Hooks)',
+              title: 'React autocomplete interview question',
               filePath: 'cdn/questions/react/coding.json',
               route: ['/react', 'coding', 'react-autocomplete-search-starter'],
               routeUrl: '/react/coding/react-autocomplete-search-starter',
@@ -9257,13 +9257,18 @@ export class FrameworkPrepPathArticle {
         note: `Review the ${config.label} coding and concept prompts together before mixed rounds.`,
       },
       {
-        label: `${config.label} coding question library filter`,
+        label: 'Frontend Coding Challenges',
+        route: ['/coding'],
+        note: 'Use the main coding hub for focused functions, UI exercises, HTML/CSS implementation, and debugging tasks.',
+      },
+      {
+        label: `${config.label} coding challenges filter`,
         route: ['/coding'],
         queryParams: { tech: config.tech, kind: 'coding' },
         note: 'Apply the path with implementation drills and edge-case checks.',
       },
       {
-        label: `${config.label} trivia question library filter`,
+        label: `${config.label} concept Q&A filter`,
         route: ['/coding'],
         queryParams: { tech: config.tech, kind: 'trivia' },
         note: 'Practice concise explanations for framework concepts and trade-offs.',

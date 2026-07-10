@@ -14,6 +14,7 @@ describe('CodingListComponent', () => {
   async function createComponent(options?: {
     queryParams?: Record<string, string>;
     items?: any[];
+    debugItems?: any[];
     systemDesignItems?: any[];
     solved?: string[];
     source?: 'global-coding' | 'company';
@@ -61,7 +62,14 @@ describe('CodingListComponent', () => {
           provide: QuestionService,
           useValue: {
             loadAllQuestionSummaries: jasmine.createSpy('loadAllQuestionSummaries').and.returnValue(of(options?.items ?? [])),
-            loadQuestionSummaries: jasmine.createSpy('loadQuestionSummaries').and.returnValue(of([])),
+            loadQuestionSummaries: jasmine.createSpy('loadQuestionSummaries').and.callFake((tech: string, kind: string) => {
+              const source = kind === 'debug' ? (options?.debugItems ?? []) : (options?.items ?? []);
+              return of(source.filter((item) => !item.tech || item.tech === tech));
+            }),
+            loadQuestions: jasmine.createSpy('loadQuestions').and.callFake((tech: string, kind: string) => {
+              const source = kind === 'debug' ? (options?.debugItems ?? []) : (options?.items ?? []);
+              return of(source.filter((item) => !item.tech || item.tech === tech));
+            }),
             loadSystemDesignList: jasmine
               .createSpy('loadSystemDesignList')
               .and.returnValue(of(options?.systemDesignItems ?? [])),
@@ -192,22 +200,61 @@ describe('CodingListComponent', () => {
     expect(host.querySelector('[data-testid^="company-signal-"]')).toBeNull();
   });
 
-  it('frames the default global coding route as a frontend interview question bank', async () => {
+  it('frames the default global coding route as a frontend coding challenge hub', async () => {
     const fixture = await createComponent({
       queryParams: { reset: '1' },
     });
     const host = fixture.nativeElement as HTMLElement;
 
-    expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Question Library');
-    expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Frontend Interview Questions Bank');
-    expect(host.textContent || '').toContain('If you want one strong first rep, start with the Debounce drill');
+    expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Coding Challenge Hub');
+    expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Frontend Coding Challenges');
+    expect(host.textContent || '').toContain('Build and debug focused frontend prompts');
     expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start with Debounce');
     expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
       pill.textContent?.trim()
-    )).toEqual(['Start here', 'All levels']);
-    expect(host.textContent || '').not.toContain('Frontend coding challenges');
+    )).toEqual(['Real prompts', 'Starter code', 'Tests', 'Solutions + follow-ups', 'Free to start']);
+    expect(host.textContent || '').toContain('Selected frontend coding challenges are free to start');
     expect(host.querySelector('[data-testid="interview-hub-support-link"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="essential-questions-support-link"]')).not.toBeNull();
+
+    const results = host.querySelector('[data-testid="coding-list-results"]') as HTMLElement | null;
+    const discovery = host.querySelector('[data-testid="coding-discovery-sections"]') as HTMLElement | null;
+    expect(results).not.toBeNull();
+    expect(discovery).not.toBeNull();
+    expect(results!.compareDocumentPosition(discovery!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('renders free coding hub discovery anchors by technology and skips premium discovery items', async () => {
+    const fixture = await createComponent({
+      queryParams: { reset: '1' },
+      items: [
+        question({ id: 'js-debounce', title: 'Debounce Function', importance: 5, difficulty: 'intermediate' }),
+        question({ id: 'react-state-toggle', title: 'React State Toggle', technology: 'react', tech: 'react', importance: 5 }),
+        question({ id: 'react-premium-grid', title: 'React Premium Grid', technology: 'react', tech: 'react', access: 'premium', importance: 6 }),
+        question({ id: 'angular-form-control', title: 'Angular Form Control', technology: 'angular', tech: 'angular' }),
+        question({ id: 'vue-todo-list', title: 'Vue Todo List', technology: 'vue', tech: 'vue' }),
+        question({ id: 'html-form-semantics', title: 'HTML Form Semantics', technology: 'html', tech: 'html' }),
+        question({ id: 'css-card-grid', title: 'CSS Card Grid', technology: 'css', tech: 'css' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const discovery = host.querySelector('[data-testid="coding-discovery-sections"]') as HTMLElement | null;
+
+    expect(discovery).not.toBeNull();
+    expect(discovery?.textContent || '').toContain('JavaScript coding challenges');
+    expect(discovery?.textContent || '').toContain('React UI challenges');
+    expect(discovery?.textContent || '').toContain('Angular challenges');
+    expect(discovery?.textContent || '').toContain('Vue challenges');
+    expect(discovery?.textContent || '').toContain('HTML/CSS implementation exercises');
+    expect(discovery?.textContent || '').toContain('Debugging challenges');
+    expect(discovery?.querySelector('[data-testid="coding-discovery-link-js-debounce"]')?.getAttribute('href'))
+      .toBe('/javascript/coding/js-debounce');
+    expect(discovery?.querySelector('[data-testid="coding-discovery-link-react-state-toggle"]')?.getAttribute('href'))
+      .toBe('/react/coding/react-state-toggle');
+    expect(discovery?.querySelector('[data-testid="coding-discovery-link-js-debug-async-race"]')?.getAttribute('href'))
+      .toBe('/javascript/debug/js-debug-async-race');
+    expect(discovery?.querySelector('[data-testid="coding-discovery-link-react-premium-grid"]')).toBeNull();
+    expect(discovery?.textContent || '').not.toContain('React Premium Grid');
   });
 
   it('opens Debounce directly from the unfiltered guest global library start action', async () => {

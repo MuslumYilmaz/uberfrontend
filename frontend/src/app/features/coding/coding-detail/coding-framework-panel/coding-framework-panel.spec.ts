@@ -347,13 +347,22 @@ describe('CodingFrameworkPanelComponent', () => {
           name: 'Extended DSL',
           steps: [
             { type: 'expectCount', selector: '.item', count: 0 },
+            { type: 'expectNoText', selector: 'body', text: 'Ada', match: 'contains' },
             { type: 'expectAttribute', selector: '.entry', attribute: 'aria-label', expected: 'Entry' },
             { type: 'setValue', selector: '.entry', value: 'Ada' },
             { type: 'expectValue', selector: '.entry', value: 'Ada' },
             { type: 'key', selector: '.entry', key: 'Enter' },
+            { type: 'expectFocused', selector: '.entry' },
             { type: 'waitForCount', selector: '.item', count: 1 },
             { type: 'expectText', selector: '.item', text: 'Ada' },
             { type: 'expectClass', selector: '.item', className: 'active' },
+            { type: 'mouseDown', selector: '.mouse-target' },
+            { type: 'expectText', selector: '.interaction-state', text: 'mouse down' },
+            { type: 'pointerDown', selector: '.pointer-target' },
+            { type: 'expectText', selector: '.interaction-state', text: 'pointer down' },
+            { type: 'wait', durationMs: 10 },
+            { type: 'unmountPreview' },
+            { type: 'expectNoPreviewLeaks' },
           ],
         },
       ],
@@ -363,10 +372,20 @@ describe('CodingFrameworkPanelComponent', () => {
     component.filesMap.set({ 'src/App.tsx': 'const marker = "hash-only";' });
     previewBuilder.build.and.resolveTo(`<!doctype html><html><body>
       <input class="entry" aria-label="Entry" />
+      <button class="mouse-target" type="button">Mouse target</button>
+      <button class="pointer-target" type="button">Pointer target</button>
+      <div class="interaction-state"></div>
       <ul class="items"></ul>
       <script>
         const input = document.querySelector('.entry');
         const items = document.querySelector('.items');
+        const state = document.querySelector('.interaction-state');
+        document.querySelector('.mouse-target').addEventListener('mousedown', () => {
+          state.textContent = 'mouse down';
+        });
+        document.querySelector('.pointer-target').addEventListener('pointerdown', () => {
+          state.textContent = 'pointer down';
+        });
         input.addEventListener('keydown', (event) => {
           if (event.key !== 'Enter' || !input.value.trim()) return;
           const li = document.createElement('li');
@@ -374,6 +393,8 @@ describe('CodingFrameworkPanelComponent', () => {
           li.textContent = input.value.trim();
           items.appendChild(li);
         });
+        window.__FA_UNMOUNT_PREVIEW = () => {};
+        window.__FA_GET_PREVIEW_LEAKS = () => ({ timers: 0, documentListeners: 0 });
         setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY && window.__FA_NOTIFY_PREVIEW_READY('test'), 0);
       </script>
     </body></html>`);
@@ -390,6 +411,49 @@ describe('CodingFrameworkPanelComponent', () => {
       passCount: 1,
       totalCount: 1,
     }));
+  });
+
+  it('mounts a fresh scratch preview for each framework check', async () => {
+    const component = createComponent();
+    component.question = {
+      id: 'react-isolated-checks',
+      tags: ['react'],
+      frameworkTests: [
+        {
+          id: 'mutates-dom',
+          name: 'Mutates DOM',
+          steps: [
+            { type: 'click', selector: '.add' },
+            { type: 'expectCount', selector: '.item', count: 1 },
+          ],
+        },
+        {
+          id: 'starts-clean',
+          name: 'Starts clean',
+          steps: [
+            { type: 'expectCount', selector: '.item', count: 0 },
+          ],
+        },
+      ],
+    } as any;
+    component.initFromQuestion();
+    previewBuilder.build.and.resolveTo(`<!doctype html><html><body>
+      <button class="add" type="button">Add</button>
+      <ul class="items"></ul>
+      <script>
+        document.querySelector('.add').addEventListener('click', () => {
+          const li = document.createElement('li');
+          li.className = 'item';
+          li.textContent = 'item';
+          document.querySelector('.items').appendChild(li);
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY && window.__FA_NOTIFY_PREVIEW_READY('test'), 0);
+      </script>
+    </body></html>`);
+
+    const results = await component.runFrameworkChecks();
+
+    expect(results.map((result) => result.passed)).toEqual([true, true]);
   });
 });
 

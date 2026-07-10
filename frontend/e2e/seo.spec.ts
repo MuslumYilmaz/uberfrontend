@@ -49,6 +49,31 @@ test('seo: question detail has canonical + json-ld', async ({ page }) => {
     .toContain('TechArticle');
 });
 
+test('seo: coding query variants keep clean canonical, noindex, and filter state', async ({ page }) => {
+  await setSeoHost(page, 'frontendatlas.com');
+  await page.goto('/coding?q=debounce');
+  const base = new URL(page.url()).origin;
+
+  await expect(page).toHaveTitle(/Frontend Coding Challenges/i);
+  await expect(page.locator('h1').first()).toContainText('Frontend Coding Challenges');
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/coding`);
+  await expect.poll(async () => ((await getMeta(page, 'robots')) || '').toLowerCase()).toContain('noindex,follow');
+  await expect(page.getByTestId('coding-list-search')).toHaveValue('debounce');
+  await expect(page.getByTestId('coding-discovery-sections')).toContainText('JavaScript coding challenges');
+
+  const jsonLd = page.locator('script#seo-jsonld');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('CollectionPage');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
+
+  await page.goto('/coding?tech=javascript');
+  await expect(page).toHaveTitle(/Frontend Coding Challenges/i);
+  await expect(page.locator('h1').first()).toContainText('Frontend Coding Challenges');
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/coding`);
+  await expect.poll(async () => ((await getMeta(page, 'robots')) || '').toLowerCase()).toContain('noindex,follow');
+  await expect(page.getByTestId('coding-list-results')).toContainText('JavaScript');
+  await expect(page.getByTestId('coding-discovery-sections')).toContainText('Debugging challenges');
+});
+
 test('seo: css theme variables challenge is indexable with self canonical and crawlable content', async ({ page }) => {
   await setSeoHost(page, 'frontendatlas.com');
   await page.goto('/css/coding/css-theme-variables-dark-mode');

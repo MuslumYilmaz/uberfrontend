@@ -259,6 +259,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     }
   }
 
+  focusEditor(): void {
+    this.editor?.focus?.();
+  }
+
 
   ngOnDestroy() {
     if (!this.isBrowser) return;

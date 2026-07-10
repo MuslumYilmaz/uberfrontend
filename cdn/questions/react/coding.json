@@ -1321,7 +1321,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects. React focus: debounce with useEffect + setTimeout cleanup, and manage loading/error state. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel pending debounce work, guard stale responses from updating state, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects. React focus: debounce with useEffect + setTimeout cleanup, and manage loading/error state. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -1690,121 +1690,703 @@
   },
   {
     "id": "react-autocomplete-search-starter",
-    "title": "Autocomplete Search Bar (Hooks)",
+    "title": "React Autocomplete Interview Question",
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-autocomplete-search.v1.json",
     "tags": [
       "react",
       "hooks",
       "state",
-      "events",
+      "effects",
       "debounce",
+      "async",
       "accessibility",
       "keyboard"
     ],
     "description": {
-      "summary": "Build an **autocomplete search bar** in React. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, keyboard navigation (↑/↓/Enter/Escape), and close-on-outside-click. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "summary": "Practice a React autocomplete interview question in a live editor. Build a controlled search input with debounce, stale-response protection, keyboard navigation, ARIA, loading, empty, no-results, error states, and runnable tests for a frontend coding interview.",
       "specs": {
-        "requirements": [
-          "Render a single `<App />` as the main UI.",
-          "Show an input with a dropdown of suggestions filtered by the current query (case-insensitive, substring match).",
-          "Debounce input changes (e.g. 250–400ms) before searching.",
-          "Support mouse selection (mousedown on an option selects it, closes dropdown, resets active index).",
-          "Support keyboard navigation: ArrowDown/ArrowUp moves active option (wrap-around), Enter selects, Escape closes.",
-          "Close the dropdown when clicking outside the component.",
-          "Basic accessibility: `role=\"combobox\"`, `role=\"listbox\"`, `role=\"option\"`, `aria-expanded`, `aria-activedescendant`."
+        "practice": [
+          "Frontend machine coding interview question at intermediate level.",
+          "Recommended time: 35-45 minutes.",
+          "Build an autocomplete search bar in React, then run checks against visible behavior."
         ],
+        "requirements": [
+          "Render a single App component as the main UI for this first version.",
+          "Use a controlled query input and keep the query as React state.",
+          "Debounce search work before filtering suggestions.",
+          "Filter suggestions case-insensitively by substring match.",
+          "Show a loading state while the debounced async search is pending.",
+          "Close the popup and clear results for an empty or whitespace-only query.",
+          "Show a no-results state when a valid query returns no matches.",
+          "Show a deterministic error state for a known failing query such as error.",
+          "Use ArrowDown and ArrowUp with wrap-around navigation.",
+          "Use Enter to select the active option and Escape to close the popup without changing the query.",
+          "Close the dropdown on outside pointer or click interaction.",
+          "Handle pointer option selection so blur or outside-click timing cannot swallow the selection.",
+          "Prevent stale slow responses from overwriting newer query results.",
+          "Clean up timers and document listeners when effects rerun or the component unmounts."
+        ],
+        "acceptanceCriteria": [
+          "The first screen explains the challenge goal, 35-45 minute timebox, assessed React skills, and Start coding action.",
+          "The editor preview is meaningful on first load and the page body is useful without waiting for the editor bundle.",
+          "The solution keeps the first implementation in one component and discusses extraction only as a follow-up.",
+          "Match highlighting uses React text nodes and mark, not HTML string injection.",
+          "Async explanation distinguishes debounce timer cleanup from cancelling an already-started request."
+        ],
+        "expectedBehaviorIntro": "The autocomplete should behave like an editable combobox with list autocomplete.",
         "expectedBehavior": [
-          "Typing updates suggestions after the debounce delay.",
-          "If query is empty/whitespace, dropdown is closed and no suggestions are shown.",
-          "ArrowDown from no selection activates the first option; ArrowUp activates the last option.",
-          "Enter selects the active option (if any) and closes the dropdown.",
-          "Escape closes the dropdown without changing the input.",
-          "Clicking outside closes the dropdown."
+          "Typing a non-empty query opens the popup, sets loading, then shows matching suggestions after the debounce and fake async search complete.",
+          "Whitespace-only input closes the popup, clears suggestions, and returns to idle.",
+          "A query with no matches shows No results rather than an error.",
+          "The error query shows an error message and does not also show No results.",
+          "ArrowDown from no active option selects the first option; ArrowUp selects the last option; both wrap around.",
+          "Enter selects the active option, writes it to the input, and closes the popup.",
+          "Escape closes the popup while preserving the current query.",
+          "Pointer selection on an option works even when the input would otherwise blur.",
+          "If san is slow and se is faster, the later se results remain visible when the old san response finishes."
         ],
         "implementationNotes": [
-          "Create a fake async `search(q)` that returns a Promise of results (simulate latency with `setTimeout`).",
-          "Drive results via a debounced effect; avoid stale results (use a sequence id or cleanup).",
-          "Prefer derived rendering (`results` state + `isOpen`) rather than imperatively manipulating the DOM.",
-          "Keep everything in a single component (no need for external libs)."
+          "Use query, results, status, isOpen, activeIndex, and a request sequence ref as the core state model.",
+          "Use setTimeout cleanup to cancel pending debounce work before it starts a request.",
+          "Use a request id or ignore flag to stop stale fake async responses from updating state after they resolve.",
+          "For real fetch calls, use AbortController in addition to a stale-response guard when the platform request can be cancelled.",
+          "Put role=\"combobox\", aria-expanded, aria-autocomplete=\"list\", aria-controls, and aria-activedescendant on the input.",
+          "Put role=\"listbox\" on the popup and role=\"option\" with stable ids and aria-selected on every result.",
+          "Keep DOM focus on the input while keyboard navigation changes activeIndex.",
+          "Keep mouse and pointer behavior as an alternative path, not the only accessible path."
+        ],
+        "commonMistakes": [
+          "Saying that clearing the debounce timer cancels an already-started request.",
+          "Using dangerouslySetInnerHTML or HTML strings for highlighting matched text.",
+          "Using onClick for option selection when blur or outside handlers can close the popup first.",
+          "Moving DOM focus into list options instead of managing aria-activedescendant on the input.",
+          "Letting an older slow response overwrite results for a newer query."
+        ],
+        "interviewExplanation": "Interviewers evaluate visible correctness, async safety, keyboard and focus behavior, accessibility contracts, tests, and whether you can explain the trade-offs without over-engineering the first version.",
+        "testingChecklist": [
+          "Empty or whitespace query clears results and closes the popup.",
+          "Rapid typing only starts the expected final debounced search.",
+          "A stale slow response cannot overwrite newer results.",
+          "Loading opens and closes correctly.",
+          "Error and no-results states are distinct.",
+          "ArrowDown and ArrowUp wrap around.",
+          "Enter selects the active option.",
+          "Escape closes without changing the query.",
+          "Outside interaction closes the popup.",
+          "Pointer option selection survives blur and outside-click races.",
+          "aria-controls, aria-activedescendant, and option ids are connected.",
+          "Unmount leaves no pending debounce timer or document listener."
         ],
         "techFocus": [
-          "React state + effects",
-          "Debounce with timers in useEffect",
-          "Keyboard navigation state management",
-          "Click-outside handling with document listener",
-          "A11y roles/aria"
+          "React state/effects",
+          "Debounce",
+          "Async race handling",
+          "Keyboard navigation",
+          "Focus management",
+          "Accessibility",
+          "Tests"
+        ],
+        "faq": [
+          {
+            "question": "Is this the same intent as debounced search?",
+            "answer": "No. Debounced search practices async search state in general; this challenge owns the React autocomplete implementation with combobox behavior, keyboard navigation, ARIA, and tests."
+          },
+          {
+            "question": "Should I extract hooks first?",
+            "answer": "No for the first interview pass. Keep one component until behavior is correct, then discuss hook or component extraction as a senior follow-up."
+          }
         ]
       }
     },
     "solutionBlock": {
-      "overview": "Use `query`, `results`, `isOpen`, and `activeIndex` state. Debounce changes to `query` in an effect, then call an async `search()` that filters a local dataset and resolves after ~150ms. Open the dropdown when the query is non-empty, close it when empty or on Escape/outside click. For keyboard navigation, update `activeIndex` with wrap-around and select on Enter. Use `(onMouseDown)` on options so selection happens before input blur/click-outside closes.\n\n**Test cases**\n- Type \"san\" → after debounce, results include \"San Francisco\" / \"San Jose\".\n- Type \"\" → dropdown closes.\n- ArrowDown/ArrowUp wraps.\n- Enter selects active option.\n- Escape closes.\n- Outside click closes.\n- MouseDown on option selects and closes.",
+      "overview": "### State model\n- Source state: query, results, status, isOpen, activeIndex, and requestSeqRef.\n- Derived state: trimmedQuery, hasResults, active option id, and the visible status text.\n- status should be one of idle, loading, success, empty, or error so loading, no-results, and error cannot collapse into the same branch.\n\n### The tempting wrong solution\n- A common first pass starts search(query) after every debounce and sets results when the Promise resolves. Timeline: san starts slowly, se starts later but resolves first, then the old san response resolves and overwrites the se results.\n- Clearing the debounce timer only stops a request that has not started yet. Once fake async work has started, guard the resolution with a request id or ignore flag.\n\n### Request ID vs AbortController\n- Request ID or ignore flag: best for fake async work and any uncancellable Promise. It does not stop the work; it only prevents stale state updates.\n- AbortController: best for real fetch requests because it can cancel network work and free resources. You still keep a stale-response guard for defensive correctness.\n\n### Interviewer rubric\n- Visible correctness: controlled input, popup states, selection, and close behavior work.\n- Async safety: debounce cleanup and stale response handling are explained separately.\n- Keyboard/focus behavior: Arrow keys, Enter, Escape, wrap-around, and input focus are correct.\n- Accessibility: combobox/listbox roles, stable ids, aria-controls, aria-activedescendant, and aria-selected are wired.\n- Tests: checks cover loading, empty, error, no-results, stale responses, pointer behavior, and cleanup.\n- Trade-off explanation: first version stays in one component; extraction is a follow-up, not a blocker.\n\n### Senior follow-ups\n- Remote API contract, client cache, minimum query length, result limits, virtualization for very large lists, and analytics or observability. Keep this short in the coding interview and use the realtime search system design route for architecture depth.",
       "approaches": [
         {
-          "title": "Hooks + debounced effect + outside click",
-          "prose": "1) Store `query`, `results`, `isOpen`, `activeIndex` in state.\n2) Debounce `query` changes in `useEffect` using `setTimeout` + cleanup.\n3) When query is empty, clear results and close.\n4) Implement `onKeyDown` for navigation/selection.\n5) Add a document `mousedown` listener for outside click; use `ref` to test containment.\n6) Highlight matches using escaped HTML and `<mark>`."
+          "title": "One component, debounced effect, request guard, accessible combobox",
+          "prose": "1. Store query, results, status, isOpen, activeIndex, and requestSeqRef.\n2. In the query effect, trim whitespace, close on empty input, set loading for valid input, and start a debounce timer.\n3. When the debounced fake search resolves, update state only if the request id still matches and the effect has not been cleaned up.\n4. Implement keyboard navigation with wrap-around and keep DOM focus on the input.\n5. Use document pointerdown cleanup for outside close and onMouseDown on options for pointer selection before blur.\n6. Render highlighted matches with React text nodes and mark elements."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Not cleaning up debounce timers (causes race conditions).",
-          "Using onClick on options (click-outside / blur can close before selection).",
-          "Not trimming whitespace queries.",
-          "Not guarding Enter when no active option."
+          "Do not describe debounce cleanup as network cancellation.",
+          "Do not use dangerouslySetInnerHTML for highlight markup.",
+          "Do not let no-results and error share the same UI state.",
+          "Do not move focus from the input to list options during keyboard navigation."
+        ],
+        "edgeCases": [
+          "Whitespace-only query",
+          "Slow stale response after a newer query",
+          "Pointer selection while the input would blur",
+          "Unmount with pending debounce and document listener"
         ],
         "techniques": [
-          "Debounce with useEffect cleanup.",
-          "Use refs for outside click detection.",
-          "Wrap-around navigation with modulo arithmetic."
+          "Request sequence refs for uncancellable fake async work",
+          "AbortController for real fetch follow-ups",
+          "aria-activedescendant for input-owned active option state",
+          "Modulo arithmetic for wrap-around navigation"
         ]
-      }
+      },
+      "followUp": [
+        "How would you add a remote API contract and retries without making the component harder to test?",
+        "When would you introduce a client cache or minimum query length?",
+        "How would result limits and virtualization change the rendering path for very large lists?",
+        "Which analytics events would you track for search quality and abandonment?"
+      ],
+      "relatedLinks": [
+        {
+          "id": "react-debounced-search",
+          "title": "React debounced search state practice",
+          "route": [
+            "/",
+            "react",
+            "coding",
+            "react-debounced-search"
+          ],
+          "label": "Next drill"
+        },
+        {
+          "id": "machine-coding",
+          "title": "Machine coding interview hub",
+          "route": [
+            "/",
+            "machine-coding"
+          ],
+          "label": "Hub"
+        },
+        {
+          "id": "react-prep-path",
+          "title": "React interview preparation path",
+          "route": [
+            "/",
+            "guides",
+            "framework-prep",
+            "react-prep-path"
+          ],
+          "label": "Guide"
+        },
+        {
+          "id": "autocomplete-system-design",
+          "title": "Autocomplete and realtime search system design",
+          "route": [
+            "/",
+            "system-design",
+            "realtime-search-debounce-cache"
+          ],
+          "label": "System design"
+        },
+        {
+          "id": "essential-60",
+          "title": "Frontend Essential 60 practice set",
+          "route": [
+            "/",
+            "interview-questions",
+            "essential"
+          ],
+          "label": "Set"
+        }
+      ],
+      "curatedNextStepsOnly": true
     },
     "sdk": {
       "asset": "assets/sb/react/question/react-autocomplete-search.v2.json",
       "openFile": "/src/App.tsx",
-      "storageKey": "v2:ui:react:react-autocomplete-search-starter"
+      "storageKey": "v3:ui:react:react-autocomplete-search-starter"
     },
     "solutionAsset": "assets/sb/react/solution/react-autocomplete-search-solution.v2.json",
-    "companies": [
-      "apple"
-    ],
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-09",
     "seo": {
-      "title": "React Autocomplete Search Challenge: Debounce + Tests",
-      "description": "Build React autocomplete with hooks: debounced search, filtered suggestions, keyboard selection, outside-click close, starter code, tests, and edge cases."
+      "title": "React Autocomplete Interview Question: Debounce + Tests",
+      "description": "Build a React autocomplete in a live editor. Practice debounce, stale-response handling, keyboard navigation, ARIA, and tests for a frontend coding interview.",
+      "h1": "Build a React Autocomplete Search Bar",
+      "h1IntentLabel": "React autocomplete interview question"
     },
     "frameworkTests": [
       {
-        "id": "autocomplete-selects-option",
-        "name": "Autocomplete selects option",
+        "id": "autocomplete-empty-query-closes",
+        "name": "Empty query closes popup",
         "steps": [
           {
             "type": "setValue",
             "selector": ".input",
-            "value": "Lo"
+            "value": "   "
+          },
+          {
+            "type": "wait",
+            "durationMs": 380
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".option",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-debounce-final-query",
+        "name": "Debounce waits for final query",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "s"
+          },
+          {
+            "type": "wait",
+            "durationMs": 80
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "sa"
+          },
+          {
+            "type": "wait",
+            "durationMs": 80
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "san"
+          },
+          {
+            "type": "wait",
+            "durationMs": 240
+          },
+          {
+            "type": "expectCount",
+            "selector": ".option",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Loading suggestions for \"san\"",
+            "match": "contains",
+            "timeoutMs": 500
           },
           {
             "type": "waitForCount",
             "selector": ".option",
-            "count": 1,
-            "timeoutMs": 800
+            "count": 3,
+            "timeoutMs": 1200
           },
           {
-            "type": "click",
+            "type": "expectText",
+            "selector": ".option",
+            "text": "San",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-stale-response-ignored",
+        "name": "Stale response cannot overwrite newer results",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "san"
+          },
+          {
+            "type": "wait",
+            "durationMs": 340
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "se"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".option",
+            "text": "Seattle",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "wait",
+            "durationMs": 250
+          },
+          {
+            "type": "expectText",
+            "selector": ".option",
+            "text": "Seattle",
+            "match": "contains"
+          },
+          {
+            "type": "expectNoText",
+            "selector": ".list",
+            "text": "San Francisco",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-loading-state",
+        "name": "Loading opens and closes correctly",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "par"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Loading suggestions for \"par\"",
+            "match": "contains",
+            "timeoutMs": 700
+          },
+          {
+            "type": "waitForText",
+            "selector": ".option",
+            "text": "Paris",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectNoText",
+            "selector": ".list",
+            "text": "Loading suggestions",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-error-and-no-results",
+        "name": "Error and no-results states are distinct",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "error"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Search failed",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectNoText",
+            "selector": ".list",
+            "text": "No results",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "zz"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "No results",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectNoText",
+            "selector": ".list",
+            "text": "Search failed",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-arrow-wraparound",
+        "name": "Arrow navigation wraps and keeps input focus",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "san"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 3,
+            "timeoutMs": 1200
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".input"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-activedescendant",
+            "expected": "autocomplete-option-san-jose"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "#autocomplete-option-san-jose",
+            "attribute": "aria-selected",
+            "expected": "true"
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-activedescendant",
+            "expected": "autocomplete-option-san-diego"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-enter-selects-active",
+        "name": "Enter selects active option",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "sea"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".option",
+            "text": "Seattle",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "Enter"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".input",
+            "value": "Seattle"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-escape-closes",
+        "name": "Escape closes without changing query",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "sea"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".option",
+            "text": "Seattle",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "Escape"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".input",
+            "value": "sea"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-outside-pointer-closes",
+        "name": "Outside pointer closes popup",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "sea"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".option",
+            "text": "Seattle",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "pointerDown",
+            "selector": "body"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-pointer-selects-option",
+        "name": "Pointer selection survives blur race",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "lon"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".option",
+            "text": "London",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "mouseDown",
             "selector": ".option"
           },
           {
             "type": "expectValue",
             "selector": ".input",
-            "value": "London",
-            "match": "contains"
+            "value": "London"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-aria-contract",
+        "name": "ARIA combobox relationships are wired",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "role",
+            "expected": "combobox"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-autocomplete",
+            "expected": "list"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-controls",
+            "expected": "autocomplete-listbox"
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "san"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 3,
+            "timeoutMs": 1200
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-activedescendant",
+            "expected": "autocomplete-option-san-diego"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "#autocomplete-listbox",
+            "attribute": "role",
+            "expected": "listbox"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "#autocomplete-option-san-diego",
+            "attribute": "role",
+            "expected": "option"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "#autocomplete-option-san-diego",
+            "attribute": "aria-selected",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-unmount-cleans-up",
+        "name": "Unmount cleans pending timer and document listener",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "sea"
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "unmountPreview"
+          },
+          {
+            "type": "wait",
+            "durationMs": 50
+          },
+          {
+            "type": "expectNoPreviewLeaks"
           }
         ]
       }
-    ]
+    ],
+    "estimatedMinutes": 40,
+    "interviewFocus": {
+      "summary": "Intermediate Frontend machine coding interview question. Recommended time: 35-45 minutes.",
+      "tests": [
+        "Debounced async search and stale-response protection",
+        "Keyboard navigation, focus management, and ARIA combobox contract",
+        "Loading, empty, no-results, error, pointer, and cleanup edge cases"
+      ]
+    }
   },
   {
     "id": "react-transfer-list",
