@@ -190,12 +190,78 @@ function normalizeText(value: string): string {
     .toLowerCase();
 }
 
+function isTagNameBoundary(value: string): boolean {
+  return value === '' || value === '>' || value === '/' || value.trim() === '';
+}
+
+function findElementStart(lowerHtml: string, tagName: string, fromIndex: number): number {
+  const needle = `<${tagName}`;
+  let cursor = fromIndex;
+  while (cursor < lowerHtml.length) {
+    const start = lowerHtml.indexOf(needle, cursor);
+    if (start === -1) return -1;
+    const next = lowerHtml.charAt(start + needle.length);
+    if (isTagNameBoundary(next)) return start;
+    cursor = start + needle.length;
+  }
+  return -1;
+}
+
+function findElementEnd(html: string, lowerHtml: string, tagName: string, fromIndex: number): number {
+  const needle = `</${tagName}`;
+  let cursor = fromIndex;
+  while (cursor < lowerHtml.length) {
+    const start = lowerHtml.indexOf(needle, cursor);
+    if (start === -1) return -1;
+    const next = lowerHtml.charAt(start + needle.length);
+    if (!isTagNameBoundary(next)) {
+      cursor = start + needle.length;
+      continue;
+    }
+    const close = html.indexOf('>', start);
+    return close === -1 ? -1 : close + 1;
+  }
+  return -1;
+}
+
+function stripElementBlocks(html: string, tagName: 'script' | 'style'): string {
+  const lowerHtml = html.toLowerCase();
+  let cursor = 0;
+  let stripped = '';
+
+  while (cursor < html.length) {
+    const start = findElementStart(lowerHtml, tagName, cursor);
+    if (start === -1) {
+      stripped += html.slice(cursor);
+      break;
+    }
+
+    const openEnd = html.indexOf('>', start);
+    if (openEnd === -1) {
+      stripped += html.slice(cursor);
+      break;
+    }
+
+    const end = findElementEnd(html, lowerHtml, tagName, openEnd + 1);
+    if (end === -1) {
+      stripped += html.slice(cursor);
+      break;
+    }
+
+    stripped += `${html.slice(cursor, start)} `;
+    cursor = end;
+  }
+
+  return stripped;
+}
+
+function stripScriptAndStyleBlocks(html: string): string {
+  return stripElementBlocks(stripElementBlocks(html, 'script'), 'style');
+}
+
 function rawVisibleText(html: string): string {
   return normalizeText(
-    html
-      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-      .replace(/<[^>]+>/g, ' '),
+    stripScriptAndStyleBlocks(html).replace(/<[^>]+>/g, ' '),
   );
 }
 
@@ -210,9 +276,7 @@ function extractRawCanonical(html: string): string {
 }
 
 function rawBodyMarkup(html: string): string {
-  return (html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] || html)
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ');
+  return stripScriptAndStyleBlocks(html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] || html);
 }
 
 function hasLockedShellMarkup(html: string): boolean {
