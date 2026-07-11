@@ -67,6 +67,68 @@ describe('CodeStorageService JS save guards', () => {
   });
 });
 
+describe('CodeStorageService JS IndexedDB migration', () => {
+  let service: CodeStorageService;
+  const migrationFlag = 'fa:js:idb:migrated:v1';
+  const existingQid = 'spec-js-migration-existing';
+  const missingQid = 'spec-js-migration-missing';
+
+  const keyFor = (qid: string) => `v2:code:js2:${qid}`;
+  const bundleFor = (code: string) => {
+    const now = new Date('2026-01-01T00:00:00.000Z').toISOString();
+    return JSON.stringify({
+      version: 'v2',
+      updatedAt: now,
+      lastLang: 'js',
+      js: {
+        code,
+        baseline: 'const starter = true;',
+        updatedAt: now,
+      },
+      ts: {
+        code: '',
+        baseline: '',
+        updatedAt: now,
+      },
+    });
+  };
+
+  beforeEach(async () => {
+    service = new CodeStorageService();
+    localStorage.removeItem(migrationFlag);
+    await service.clearJsAsync(existingQid);
+    await service.clearJsAsync(missingQid);
+  });
+
+  afterEach(async () => {
+    localStorage.removeItem(migrationFlag);
+    await service.clearJsAsync(existingQid);
+    await service.clearJsAsync(missingQid);
+  });
+
+  it('does not overwrite an existing IndexedDB JS draft with stale localStorage data', async () => {
+    await service.setJsBaselineAsync(existingQid, 'js', 'const starter = true;');
+    await service.saveJsAsync(existingQid, 'const idbDraft = true;', 'js', { force: true });
+    localStorage.setItem(keyFor(existingQid), bundleFor('const staleLocalStorageDraft = true;'));
+
+    await service.migrateAllJsToIndexedDbOnce();
+    localStorage.removeItem(keyFor(existingQid));
+
+    const freshService = new CodeStorageService();
+    expect(await freshService.getJsForLangAsync(existingQid, 'js')).toBe('const idbDraft = true;');
+  });
+
+  it('copies a localStorage JS draft into IndexedDB when IndexedDB has no record', async () => {
+    localStorage.setItem(keyFor(missingQid), bundleFor('const localStorageDraft = true;'));
+
+    await service.migrateAllJsToIndexedDbOnce();
+    localStorage.removeItem(keyFor(missingQid));
+
+    const freshService = new CodeStorageService();
+    expect(await freshService.getJsForLangAsync(missingQid, 'js')).toBe('const localStorageDraft = true;');
+  });
+});
+
 describe('CodeStorageService web save guards', () => {
   let service: CodeStorageService;
   const qid = 'spec-web-empty-guard';
