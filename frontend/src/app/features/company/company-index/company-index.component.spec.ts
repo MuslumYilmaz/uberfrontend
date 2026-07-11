@@ -74,4 +74,12 @@ describe('CompanyIndexComponent', () => {
     expect(host.querySelector('a[href="/machine-coding"]')).toBeTruthy();
     expect(host.querySelector('a[href="/system-design"]')).toBeTruthy();
   });
+
+  it('exposes a clean crawlable OpenAI preview anchor in the SSR shell', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    const openAiPreview = host.querySelector<HTMLAnchorElement>('a[href="/companies/openai/preview"]');
+
+    expect(openAiPreview).toBeTruthy();
+    expect(openAiPreview?.textContent).toContain('OpenAI interview preview');
+  });
 });

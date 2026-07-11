@@ -2,9 +2,148 @@
   <nav class="preview-breadcrumb" aria-label="Company preview breadcrumb">
     <a [routerLink]="['/companies']">Companies</a>
     <span>/</span>
-    <span>{{ label }} frontend interview questions preview</span>
+    <span>{{ isOpenAiPreview ? openAiH1 : label + ' frontend interview questions preview' }}</span>
   </nav>
 
+  <ng-container *ngIf="isOpenAiPreview; else genericPreview">
+    <header class="preview-hero openai-hero fa-card fa-card--elevated">
+      <p class="preview-kicker">Public OpenAI prep guide</p>
+      <h1>{{ openAiH1 }}</h1>
+      <p class="preview-subtitle">
+        Prepare for OpenAI frontend interviews by practicing the product surfaces that matter most:
+        streaming chat UI, stale stream control, optimistic React state, keyboard-first interaction,
+        and frontend system design for conversation history.
+      </p>
+      <div class="preview-meta" aria-label="OpenAI preview coverage">
+        <span class="preview-chip">5 representative prompts</span>
+        <span class="preview-chip">Streaming, state, accessibility, system design</span>
+        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+      </div>
+    </header>
+
+    <section class="openai-section openai-section--intro" aria-labelledby="openai-study-focus">
+      <div>
+        <p class="preview-kicker">What to study first</p>
+        <h2 id="openai-study-focus">Focus on product-grade AI interface behavior before generic algorithms</h2>
+        <p>
+          A strong OpenAI frontend preparation pass should look less like memorizing company trivia and more like
+          rehearsing the UI decisions behind a reliable AI product. Start with a chat composer that remains responsive
+          while assistant text streams in. Then practice cancellation, regeneration, stale request guards, and optimistic
+          state updates until you can explain the failure modes without hand waving.
+        </p>
+        <p>
+          The highest-signal practice is to connect implementation details to user trust. Users need to know whether a
+          response is still generating, whether stopping actually stopped the request, whether regeneration replaced the
+          right assistant turn, and whether keyboard users can control the same workflow. The prompts below are designed
+          to exercise that judgment without publishing paid solutions or claiming access to private OpenAI interview
+          material.
+        </p>
+      </div>
+      <aside class="openai-note" aria-label="Trust note">
+        <strong>Trust note:</strong> {{ openAiTrustNote }}
+      </aside>
+    </section>
+
+    <section class="openai-section" aria-labelledby="openai-prompts">
+      <div class="openai-section__head">
+        <p class="preview-kicker">Representative practice prompts</p>
+        <h2 id="openai-prompts">Five OpenAI frontend interview practice questions</h2>
+        <p>
+          Use these prompts as role-relevant drills. They are intentionally public, representative, and scoped to
+          frontend interview skills rather than leaked or confirmed company questions.
+        </p>
+      </div>
+
+      <div class="openai-prompt-list">
+        <article
+          class="openai-prompt"
+          *ngFor="let prompt of openAiPracticePrompts; let i = index"
+          [attr.id]="prompt.id">
+          <p class="openai-prompt__number">Question {{ i + 1 }}</p>
+          <h3>{{ prompt.title }}</h3>
+          <p>{{ prompt.intent }}</p>
+          <h4>Strong answer should cover</h4>
+          <ul>
+            <li *ngFor="let item of prompt.rubric">{{ item }}</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="openai-section openai-walkthrough" aria-labelledby="openai-walkthrough">
+      <p class="preview-kicker">Public mini walkthrough</p>
+      <h2 id="openai-walkthrough">Walk through stale stream handling before you code</h2>
+      <p>
+        For the stop/regenerate prompt, describe the state machine before writing components. Keep a current request id
+        beside the active assistant message id. When the user sends a prompt, create the user message and an empty
+        assistant placeholder immediately. Start the stream with an AbortController and store the request id in state.
+        Every chunk handler should check that its request id is still current before appending text. If the user clicks
+        stop, abort the controller, mark the assistant placeholder as stopped, and ignore any late chunks that arrive
+        after cancellation.
+      </p>
+      <p>
+        Regenerate should be treated as a new request, not a continuation of the old one. The clean answer either
+        replaces the last assistant message with a fresh placeholder or appends a new assistant attempt with a version
+        label. In both cases, the stale guard prevents a slow previous stream from corrupting the new response. Tests
+        should force out-of-order chunks, aborted reads, rejected promises, and rapid stop-then-regenerate clicks.
+      </p>
+    </section>
+
+    <section class="openai-section" aria-labelledby="openai-prep-sequence">
+      <div class="openai-section__head">
+        <p class="preview-kicker">7-day sequence</p>
+        <h2 id="openai-prep-sequence">A short preparation path for the OpenAI frontend interview intent</h2>
+        <p>
+          Keep the week practical. Each day should leave behind code, notes, or a system-design artifact you can explain
+          under interview pressure.
+        </p>
+      </div>
+      <ol class="openai-sequence">
+        <li *ngFor="let item of openAiPrepSequence">
+          <strong>{{ item.day }}</strong>
+          <span>{{ item.focus }}</span>
+        </li>
+      </ol>
+    </section>
+
+    <section class="openai-section openai-links" aria-labelledby="openai-free-practice">
+      <div>
+        <p class="preview-kicker">Free public practice</p>
+        <h2 id="openai-free-practice">Use these free pages to support the preview</h2>
+        <p>
+          These links are intentionally limited to public, relevant practice. Use them to rehearse the concepts behind
+          the representative prompts before deciding whether to unlock the premium OpenAI route.
+        </p>
+      </div>
+      <div class="openai-link-grid">
+        <a
+          *ngFor="let link of openAiResourceLinks"
+          class="openai-resource-link"
+          [routerLink]="link.route">
+          {{ link.label }}
+        </a>
+      </div>
+    </section>
+
+    <section class="openai-section openai-cta" aria-labelledby="openai-unlock">
+      <div>
+        <p class="preview-kicker">Premium company route</p>
+        <h2 id="openai-unlock">Unlock the full OpenAI practice set</h2>
+        <p>
+          The public preview gives you the intent, prompts, and rubric. Premium keeps the deeper company route gated,
+          including the broader set navigation and focused drills across coding, concept questions, and system design.
+        </p>
+      </div>
+      <a
+        class="preview-btn preview-btn--primary"
+        [routerLink]="['/pricing']"
+        [queryParams]="{ src: 'company_preview_openai' }">
+        Unlock the full OpenAI practice set
+      </a>
+    </section>
+  </ng-container>
+
+  <ng-template #genericPreview>
   <header class="preview-hero fa-card fa-card--elevated">
     <p class="preview-kicker">Public preview</p>
     <h1>{{ label }} Frontend Interview Questions Preview</h1>
@@ -82,4 +221,5 @@
       </a>
     </section>
   </ng-container>
+  </ng-template>
 </section>

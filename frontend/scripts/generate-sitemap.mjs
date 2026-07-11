@@ -15,6 +15,9 @@ import { shouldIncludeRegistryDetailInSitemap } from './registry-detail-access-p
 
 const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com').replace(/\/+$/, '');
 const MAX_URLS = 50000;
+const COMPANY_PREVIEW_LASTMOD_OVERRIDES = new Map([
+  ['openai', '2026-07-11'],
+]);
 
 function normalizePath(p) {
   const raw = String(p || '').trim();
@@ -260,7 +263,7 @@ function buildUrls() {
   Array.from(companySlugs)
     .sort((a, b) => a.localeCompare(b))
     .forEach((slug) => {
-      addUrl(urls, `/companies/${slug}/preview`);
+      addUrl(urls, `/companies/${slug}/preview`, COMPANY_PREVIEW_LASTMOD_OVERRIDES.get(slug) || '');
     });
 
   return Array.from(urls.values()).sort((a, b) => a.loc.localeCompare(b.loc));

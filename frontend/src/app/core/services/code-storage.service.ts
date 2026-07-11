@@ -789,7 +789,10 @@ export class CodeStorageService {
         if (!raw) continue;
 
         try {
-          await store.setItem(k, raw);   // mirror LS -> IDB as-is
+          const existing = await store.getItem<string>(k);
+          if (existing != null) continue;
+
+          await store.setItem(k, raw);   // mirror LS -> IDB only when IDB is missing
         } catch {
           // ignore per-key failure; continue others
         }
