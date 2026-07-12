@@ -7,12 +7,22 @@ const User = require('../models/User');
 const { createBillingEventStore } = require('../services/billing/billing-events');
 const { applyNormalizedLemonSqueezyEventToUser } = require('../services/billing/user-billing-state');
 const { normalizeLemonSqueezyEvent } = require('../services/billing/providers/lemonsqueezy');
+const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
 const {
     SUPPORTED_SCENARIOS,
     buildLemonSqueezySimulationPayload,
 } = require('../services/billing/providers/lemonsqueezy-simulator');
 
 const eventStore = createBillingEventStore(BillingEvent);
+
+async function completeClaimedEvent(data) {
+    const result = await eventStore.completeEvent(data);
+    if (!result.completed) {
+        const error = new Error('Billing event lease was lost before completion');
+        error.code = 'BILLING_EVENT_LEASE_LOST';
+        throw error;
+    }
+}
 
 function clampLimit(rawValue, fallback = 50, max = 200) {
     const value = Number(rawValue);
@@ -61,6 +71,9 @@ function extractPendingUserIdFromPayload(payload) {
 }
 
 function resolvePendingBindingStatus(item) {
+    if (item.provider === 'gumroad') {
+        return 'verified_email_required';
+    }
     if (item.provider !== 'lemonsqueezy') {
         return 'email_claimable';
     }
@@ -119,6 +132,12 @@ function serializeReconciliationBillingEvent(event) {
         userId: event.userId ? String(event.userId) : null,
         receivedAt: event.receivedAt,
         processedAt: event.processedAt || null,
+        attemptCount: event.attemptCount || 0,
+        lastAttemptAt: event.lastAttemptAt || null,
+        leaseExpiresAt: event.leaseExpiresAt || null,
+        lastErrorCode: event.lastErrorCode || null,
+        lastErrorMessage: event.lastErrorMessage || null,
+        lastErrorAt: event.lastErrorAt || null,
     };
 }
 
@@ -188,13 +207,15 @@ router.put('/users/:id', async (req, res) => {
 
 // POST /api/admin/billing/simulate/lemonsqueezy
 router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
+    let acquisition = null;
+    let acquiredEventId = '';
     try {
         const userId = String(req.body?.userId || '').trim();
         if (!userId) {
             return res.status(400).json({ error: 'Missing "userId"' });
         }
 
-        const user = await User.findById(userId);
+        let user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -214,25 +235,43 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
         const normalized = normalizeLemonSqueezyEvent(simulation.payload, rawBody);
         const eventId = `simulate:${simulation.mode}:${normalized.eventId}`;
 
-        await eventStore.recordEvent({
+        acquiredEventId = eventId;
+        acquisition = await eventStore.acquireEvent({
             provider: 'lemonsqueezy',
             eventId,
             eventType: normalized.eventType,
             email: normalized.email || normalized.purchaseEmail || user.email,
             payload: simulation.payload,
-            processingStatus: 'received_simulated',
         });
 
-        applyNormalizedLemonSqueezyEventToUser(user, normalized, {
+        if (!acquisition.acquired) {
+            if (acquisition.busy) {
+                res.set('Retry-After', String(acquisition.retryAfterSeconds || 5));
+            }
+            const status = acquisition.busy ? 503 : 200;
+            return res.status(status).json({
+                ok: !acquisition.busy,
+                duplicate: true,
+                retryable: !!acquisition.busy,
+                eventId,
+            });
+        }
+
+        const orderedUpdate = await applyOrderedProviderEvent({
+            user,
+            provider: 'lemonsqueezy',
             eventId,
-            purchaseEmail: normalized.purchaseEmail,
+            eventOrderKey: acquisition.eventOrderKey,
+            mutate: (currentUser) => {
+                applyNormalizedLemonSqueezyEventToUser(currentUser, normalized, {
+                    eventId,
+                    purchaseEmail: normalized.purchaseEmail,
+                    eventReceivedAt: acquisition.event.receivedAt,
+                    eventOrderKey: acquisition.eventOrderKey,
+                });
+            },
         });
-
-        await user.save();
-        await BillingEvent.updateOne(
-            { provider: 'lemonsqueezy', eventId },
-            { $set: { processingStatus: 'processed_simulated', processedAt: new Date(), userId: user._id } }
-        );
+        user = orderedUpdate.user;
         await updateCheckoutAttempt(normalized.attemptId, {
             status: 'applied',
             billingEventId: eventId,
@@ -243,6 +282,13 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
             customerUserId: String(user._id),
             lastErrorCode: null,
             lastErrorMessage: null,
+        });
+        await completeClaimedEvent({
+            provider: 'lemonsqueezy',
+            eventId,
+            leaseToken: acquisition.leaseToken,
+            processingStatus: orderedUpdate.outcome === 'stale' ? 'processed_stale' : 'processed_simulated',
+            userId: user._id,
         });
 
         const safeUser = await User.findById(user._id).select('-passwordHash').lean();
@@ -261,6 +307,18 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
         });
     } catch (err) {
         console.error('[admin] lemonsqueezy simulation failed:', err);
+        if (acquisition?.acquired && acquiredEventId) {
+            try {
+                await eventStore.failEvent({
+                    provider: 'lemonsqueezy',
+                    eventId: acquiredEventId,
+                    leaseToken: acquisition.leaseToken,
+                    error: err,
+                });
+            } catch (failErr) {
+                console.error('[admin] failed to persist retryable simulation state:', failErr);
+            }
+        }
         return res.status(500).json({ error: err.message || 'Simulation failed' });
     }
 });
@@ -283,7 +341,16 @@ router.get('/billing/reconciliation', async (req, res) => {
                     .limit(limit)
                     .lean(),
                 BillingEvent.find({
-                    processingStatus: { $in: ['received', 'received_unknown_type', 'pending_user'] },
+                    processingStatus: {
+                        $in: [
+                            'processing',
+                            'failed_retryable',
+                            'received',
+                            'received_unknown_type',
+                            'received_simulated',
+                            'pending_user',
+                        ],
+                    },
                 })
                     .sort({ receivedAt: -1 })
                     .limit(limit)
@@ -293,7 +360,16 @@ router.get('/billing/reconciliation', async (req, res) => {
                 }),
                 PendingEntitlement.countDocuments({ appliedAt: null, ignoredAt: null }),
                 BillingEvent.countDocuments({
-                    processingStatus: { $in: ['received', 'received_unknown_type', 'pending_user'] },
+                    processingStatus: {
+                        $in: [
+                            'processing',
+                            'failed_retryable',
+                            'received',
+                            'received_unknown_type',
+                            'received_simulated',
+                            'pending_user',
+                        ],
+                    },
                 }),
             ]);
 

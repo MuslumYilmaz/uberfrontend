@@ -627,4 +627,269 @@ describe('LemonSqueezy billing lifecycle', () => {
     expect(recoveredView.body.accessTierEffective).toBe('premium');
     expect(recoveredView.body.effectiveProActive).toBe(true);
   });
+
+  test('a retryable user write failure is reacquired and grants exactly once on retry', async () => {
+    const user = await createUser({
+      email: 'lease-retry@example.com',
+      username: 'lease_retry_user',
+    });
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_lease_retry',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00.000Z',
+          custom_data: { fa_user_id: String(user._id), fa_user_email: user.email },
+        },
+      },
+    };
+    const saveSpy = jest
+      .spyOn(User, 'updateOne')
+      .mockRejectedValueOnce(Object.assign(new Error('synthetic write failure'), { code: 'DB_TEMPORARY' }));
+
+    const first = await postWebhook(payload);
+    saveSpy.mockRestore();
+
+    expect(first.status).toBe(500);
+    let event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventType: 'subscription_created' }).lean();
+    expect(event.processingStatus).toBe('failed_retryable');
+    expect(event.attemptCount).toBe(1);
+    expect(event.lastErrorCode).toBe('DB_TEMPORARY');
+
+    const retry = await postWebhook(payload);
+    expect(retry.status).toBe(200);
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('active');
+    event = await BillingEvent.findById(event._id).lean();
+    expect(event.processingStatus).toBe('processed');
+    expect(event.attemptCount).toBe(2);
+  });
+
+  test('an older activation retry is processed stale after a newer refund completes', async () => {
+    const user = await createUser({
+      email: 'stale-lease@example.com',
+      username: 'stale_lease_user',
+    });
+    const activation = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_stale_activation',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00.000Z',
+          custom_data: { fa_user_id: String(user._id), fa_user_email: user.email },
+        },
+      },
+    };
+
+    setNow('2026-01-01T00:00:00.000Z');
+    const saveSpy = jest
+      .spyOn(User, 'updateOne')
+      .mockRejectedValueOnce(new Error('synthetic activation interruption'));
+    const interrupted = await postWebhook(activation);
+    saveSpy.mockRestore();
+    expect(interrupted.status).toBe(500);
+
+    setNow('2026-01-02T00:00:00.000Z');
+    const refund = await postWebhook({
+      meta: { event_name: 'order_refunded', test_mode: true },
+      data: {
+        id: 'order_newer_refund',
+        attributes: {
+          user_email: user.email,
+          custom_data: { fa_user_id: String(user._id), fa_user_email: user.email },
+        },
+      },
+    });
+    expect(refund.status).toBe(200);
+
+    setNow('2026-01-03T00:00:00.000Z');
+    const retriedActivation = await postWebhook(activation);
+    expect(retriedActivation.status).toBe(200);
+
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('none');
+    expect(updated.accessTier).toBe('free');
+    const staleEvent = await BillingEvent.findOne({
+      provider: 'lemonsqueezy',
+      eventType: 'subscription_created',
+    }).lean();
+    expect(staleEvent.processingStatus).toBe('processed_stale');
+    expect(staleEvent.attemptCount).toBe(2);
+  });
+
+  test('CAS prevents a concurrently resumed older activation from overwriting a newer refund', async () => {
+    const user = await createUser({
+      email: 'concurrent-order@example.com',
+      username: 'concurrent_order_user',
+    });
+    const activation = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_concurrent_activation',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00.000Z',
+          custom_data: { fa_user_id: String(user._id), fa_user_email: user.email },
+        },
+      },
+    };
+    const refund = {
+      meta: { event_name: 'order_refunded', test_mode: true },
+      data: {
+        id: 'order_concurrent_refund',
+        attributes: {
+          user_email: user.email,
+          custom_data: { fa_user_id: String(user._id), fa_user_email: user.email },
+        },
+      },
+    };
+
+    const initialWriteFailure = jest
+      .spyOn(User, 'updateOne')
+      .mockRejectedValueOnce(new Error('synthetic pre-concurrency interruption'));
+    expect((await postWebhook(activation)).status).toBe(500);
+    initialWriteFailure.mockRestore();
+
+    const originalUpdateOne = User.updateOne.bind(User);
+    const queued = [];
+    const updateGate = jest.spyOn(User, 'updateOne').mockImplementation((...args) => {
+      const marker = String(args[1]?.$set?.['billing.providers.lemonsqueezy.lastEventId'] || '');
+      if (!marker.includes('sub_concurrent_activation') && !marker.includes('order_concurrent_refund')) {
+        return originalUpdateOne(...args);
+      }
+      return new Promise((resolve, reject) => {
+        queued.push({ args, marker, resolve, reject });
+        if (queued.length !== 2) return;
+        queueMicrotask(async () => {
+          const refundWrite = queued.find((entry) => entry.marker.includes('order_concurrent_refund'));
+          const activationWrite = queued.find((entry) => entry.marker.includes('sub_concurrent_activation'));
+          try {
+            refundWrite.resolve(await originalUpdateOne(...refundWrite.args));
+            activationWrite.resolve(await originalUpdateOne(...activationWrite.args));
+          } catch (error) {
+            refundWrite.reject(error);
+            activationWrite.reject(error);
+          }
+        });
+      });
+    });
+
+    let responses;
+    try {
+      responses = await Promise.all([postWebhook(activation), postWebhook(refund)]);
+    } finally {
+      updateGate.mockRestore();
+    }
+
+    expect(responses.map((response) => response.status)).toEqual([200, 200]);
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('none');
+    expect(updated.accessTier).toBe('free');
+    const events = await BillingEvent.find({ provider: 'lemonsqueezy' }).lean();
+    const activationEvent = events.find((event) => event.eventType === 'subscription_created');
+    const refundEvent = events.find((event) => event.eventType === 'order_refunded');
+    expect(activationEvent.processingStatus).toBe('processed_stale');
+    expect(activationEvent.attemptCount).toBe(2);
+    expect(refundEvent.processingStatus).toBe('processed');
+  });
+
+  test('CAS retries from fresh entitlement state and preserves unrelated project access', async () => {
+    const user = await createUser({
+      email: 'cross-state-cas@example.com',
+      username: 'cross_state_cas_user',
+    });
+    const originalUpdateOne = User.updateOne.bind(User);
+    let injectedConcurrentWrite = false;
+    const updateSpy = jest.spyOn(User, 'updateOne').mockImplementation(async (...args) => {
+      const marker = String(args[1]?.$set?.['billing.providers.lemonsqueezy.lastEventId'] || '');
+      if (!injectedConcurrentWrite && marker.includes('sub_cross_state_cas')) {
+        injectedConcurrentWrite = true;
+        await originalUpdateOne(
+          { _id: user._id },
+          {
+            $set: {
+              'entitlements.pro.status': 'lifetime',
+              'entitlements.pro.validUntil': null,
+              'entitlements.projects.status': 'active',
+              'entitlements.projects.validUntil': new Date('2099-06-01T00:00:00Z'),
+              accessTier: 'premium',
+              'billing.providers.gumroad.lastEventId': 'gumroad_concurrent_lifetime',
+              'billing.providers.gumroad.lastEventOrderKey': '2099-01-01T00:00:00.000Z:ffffffffffffffffffffffff',
+            },
+          }
+        );
+      }
+      return originalUpdateOne(...args);
+    });
+
+    let response;
+    try {
+      response = await postWebhook({
+        meta: { event_name: 'subscription_created', test_mode: true },
+        data: {
+          id: 'sub_cross_state_cas',
+          attributes: {
+            user_email: user.email,
+            status: 'active',
+            renews_at: '2099-01-01T00:00:00.000Z',
+            custom_data: { fa_user_id: String(user._id), fa_user_email: user.email },
+          },
+        },
+      });
+    } finally {
+      updateSpy.mockRestore();
+    }
+
+    expect(response.status).toBe(200);
+    expect(injectedConcurrentWrite).toBe(true);
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('lifetime');
+    expect(updated.entitlements.projects.status).toBe('active');
+    expect(new Date(updated.entitlements.projects.validUntil).toISOString())
+      .toBe('2099-06-01T00:00:00.000Z');
+    expect(updated.accessTier).toBe('premium');
+  });
+
+  test('CAS accepts legacy documents with absent default entitlement fields', async () => {
+    const user = await createUser({
+      email: 'legacy-cas-defaults@example.com',
+      username: 'legacy_cas_defaults_user',
+    });
+    await User.collection.updateOne(
+      { _id: user._id },
+      {
+        $unset: {
+          'entitlements.pro.status': '',
+          'entitlements.pro.validUntil': '',
+          accessTier: '',
+        },
+      }
+    );
+
+    const response = await postWebhook({
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_legacy_cas_defaults',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00.000Z',
+          custom_data: { fa_user_id: String(user._id), fa_user_email: user.email },
+        },
+      },
+    });
+
+    expect(response.status).toBe(200);
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('active');
+    expect(updated.accessTier).toBe('premium');
+    const event = await BillingEvent.findOne({ eventType: 'subscription_created' }).lean();
+    expect(event.processingStatus).toBe('processed');
+    expect(event.attemptCount).toBe(1);
+  });
 });

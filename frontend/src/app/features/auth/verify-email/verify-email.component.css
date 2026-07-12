@@ -1,0 +1,42 @@
+.verify-shell {
+  min-height: calc(100vh - 80px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--uf-text-primary);
+}
+
+.verify-card {
+  width: min(100%, 480px);
+  display: grid;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-card-radius);
+  background: var(--uf-surface);
+  box-shadow: var(--uf-card-shadow-strong);
+}
+
+.verify-card h1,
+.verify-card p {
+  margin: 0;
+}
+
+.verify-card p {
+  color: var(--uf-text-secondary);
+  line-height: 1.55;
+}
+
+.verify-success {
+  color: var(--uf-status-success-text) !important;
+}
+
+.verify-error {
+  color: var(--uf-status-danger-text) !important;
+}
+
+.verify-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

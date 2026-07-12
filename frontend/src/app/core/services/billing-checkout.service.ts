@@ -22,7 +22,12 @@ type BillingProvider = {
 };
 
 type CheckoutMode = CheckoutLaunchMode;
-type CheckoutFailureReason = 'missing-url' | 'provider-unavailable' | 'invalid-url' | 'start-failed';
+type CheckoutFailureReason =
+  | 'missing-url'
+  | 'provider-unavailable'
+  | 'invalid-url'
+  | 'verification-required'
+  | 'start-failed';
 export type CheckoutAttemptState =
   | 'awaiting_webhook'
   | 'applied'
@@ -255,6 +260,7 @@ function mapCheckoutStartError(error: unknown, provider: PaymentsProvider): Chec
   }
 
   const code = String(error.error?.code || '').trim().toUpperCase();
+  if (code === 'EMAIL_VERIFICATION_REQUIRED') return 'verification-required';
   if (code === 'CHECKOUT_UNAVAILABLE') return 'missing-url';
   if (code === 'INVALID_CHECKOUT_URL') return 'invalid-url';
   if (code === 'PROVIDER_UNAVAILABLE' || code === 'UNSUPPORTED_PROVIDER') return 'provider-unavailable';

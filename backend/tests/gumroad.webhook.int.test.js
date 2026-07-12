@@ -25,6 +25,7 @@ function signPayload(rawBody) {
 async function seedUser() {
   return User.create({
     email: 'test@example.com',
+    emailVerifiedAt: new Date(),
     username: 'test_user',
     passwordHash: 'hash',
     accessTier: 'free',
@@ -180,6 +181,28 @@ describe('Gumroad webhook integration', () => {
     expect(event.processingStatus).toBe('pending_user');
   });
 
+  test('verified email is required before a Gumroad grant can be claimed', async () => {
+    await User.updateOne({ email: 'test@example.com' }, { $set: { emailVerifiedAt: null } });
+    const payload = {
+      resource_name: 'sale',
+      email: 'test@example.com',
+      sale_id: 'sale_unverified',
+      next_billing_date: '2099-01-01T00:00:00Z',
+    };
+    const rawBody = JSON.stringify(payload);
+    const res = await request(app)
+      .post('/api/billing/webhooks/gumroad')
+      .set('Content-Type', 'application/json')
+      .set('x-gumroad-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, userFound: false });
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    expect(user.entitlements.pro.status).toBe('none');
+    expect(await PendingEntitlement.countDocuments({ eventId: 'sale_unverified' })).toBe(1);
+  });
+
   test('Unknown event type is marked for monitoring', async () => {
     const payload = {
       resource_name: 'mystery_event',
@@ -253,5 +276,68 @@ describe('Gumroad webhook integration', () => {
 
     const eventCount = await BillingEvent.countDocuments({ provider: 'gumroad', eventId: 'sale_dup' });
     expect(eventCount).toBe(1);
+  });
+
+  test('active duplicate lease returns retryable 503 without applying', async () => {
+    await BillingEvent.create({
+      provider: 'gumroad',
+      eventId: 'sale_busy_lease',
+      eventType: 'sale',
+      email: 'test@example.com',
+      processingStatus: 'processing',
+      attemptCount: 1,
+      leaseToken: 'existing-lease',
+      leaseExpiresAt: new Date(Date.now() + 60_000),
+    });
+    const payload = {
+      resource_name: 'sale',
+      email: 'test@example.com',
+      sale_id: 'sale_busy_lease',
+      next_billing_date: '2099-01-01T00:00:00Z',
+    };
+    const rawBody = JSON.stringify(payload);
+    const res = await request(app)
+      .post('/api/billing/webhooks/gumroad')
+      .set('Content-Type', 'application/json')
+      .set('x-gumroad-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(res.status).toBe(503);
+    expect(res.headers['retry-after']).toBe('5');
+    expect(res.body.retryable).toBe(true);
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    expect(user.entitlements.pro.status).toBe('none');
+  });
+
+  test('an expired lease is reacquired and completed', async () => {
+    await BillingEvent.create({
+      provider: 'gumroad',
+      eventId: 'sale_expired_lease',
+      eventType: 'sale',
+      email: 'test@example.com',
+      processingStatus: 'processing',
+      attemptCount: 1,
+      leaseToken: 'expired-lease',
+      leaseExpiresAt: new Date(Date.now() - 1_000),
+      receivedAt: new Date(Date.now() - 10_000),
+    });
+    const payload = {
+      resource_name: 'sale',
+      email: 'test@example.com',
+      sale_id: 'sale_expired_lease',
+      next_billing_date: '2099-01-01T00:00:00Z',
+    };
+    const rawBody = JSON.stringify(payload);
+    const res = await request(app)
+      .post('/api/billing/webhooks/gumroad')
+      .set('Content-Type', 'application/json')
+      .set('x-gumroad-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    const event = await BillingEvent.findOne({ eventId: 'sale_expired_lease' }).lean();
+    expect(event.processingStatus).toBe('processed');
+    expect(event.attemptCount).toBe(2);
+    expect(event.leaseToken).toBeFalsy();
   });
 });

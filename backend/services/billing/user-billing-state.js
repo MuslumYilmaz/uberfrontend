@@ -51,6 +51,8 @@ function applyNormalizedGumroadEventToUser(user, normalized, options = {}) {
   if (options.purchaserEmail) gumroadMeta.purchaserEmail = options.purchaserEmail;
   gumroadMeta.lastEventId = options.eventId || normalized.eventId || gumroadMeta.lastEventId;
   gumroadMeta.lastEventAt = new Date();
+  if (options.eventReceivedAt) gumroadMeta.lastEventReceivedAt = options.eventReceivedAt;
+  if (options.eventOrderKey) gumroadMeta.lastEventOrderKey = options.eventOrderKey;
   user.billing.providers.gumroad = gumroadMeta;
 
   syncAccessTierFromEntitlements(user);
@@ -112,6 +114,8 @@ function applyNormalizedLemonSqueezyEventToUser(user, normalized, options = {}) 
   if (options.purchaseEmail) lsMeta.purchaserEmail = options.purchaseEmail;
   lsMeta.lastEventId = options.eventId || normalized.eventId || lsMeta.lastEventId;
   lsMeta.lastEventAt = new Date();
+  if (options.eventReceivedAt) lsMeta.lastEventReceivedAt = options.eventReceivedAt;
+  if (options.eventOrderKey) lsMeta.lastEventOrderKey = options.eventOrderKey;
   user.billing.providers.lemonsqueezy = lsMeta;
 
   syncAccessTierFromEntitlements(user);

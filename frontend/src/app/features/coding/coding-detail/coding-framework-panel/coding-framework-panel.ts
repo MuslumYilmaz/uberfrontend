@@ -19,7 +19,7 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { FrameworkTest, FrameworkTestStep, Question } from '../../../../core/models/question.model';
+import { FrameworkTest, Question } from '../../../../core/models/question.model';
 import { Tech } from '../../../../core/models/user.model';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
@@ -42,16 +42,11 @@ import { RestoreBannerComponent } from '../../../../shared/components/restore-ba
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 import { TestResult } from '../../console-logger/console-logger.component';
+import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-check-runner';
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
   | { type: 'file'; name: string; path: string; crumb?: string };
-
-type FrameworkCheckMount = {
-  frame: HTMLIFrameElement;
-  doc: Document;
-  cleanup: () => void;
-};
 
 export type FrameworkCheckRunEvent = {
   questionId: string;
@@ -145,7 +140,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private latestEntryHint = '';
   private destroy = false;
   private initSeq = 0;
+  private frameworkCheckRunSeq = 0;
+  private readonly opaqueCheckRunner = new OpaqueDomCheckRunner();
   private frameworkCheckReadyTimeoutMs = 8000;
+  private frameworkCheckTimeoutMs = 10000;
 
   // File tree computed
   fileList = computed(() =>
@@ -243,6 +241,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   ngOnChanges(changes: SimpleChanges): void {
     if (this.destroy) return;
 
+    if (changes['question'] || changes['tech']) {
+      this.cancelFrameworkCheckRun();
+    }
     if ((changes['question'] || changes['tech']) && this.question && this.tech && this.isFrameworkTech()) {
       this.initFromQuestion();
     }
@@ -260,6 +261,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   ngOnDestroy(): void {
     this.destroy = true;
     this.initSeq += 1;
+    this.frameworkCheckRunSeq += 1;
+    this.opaqueCheckRunner.destroy();
     this.flushPendingPersist();
     if (this.persistTimer) clearTimeout(this.persistTimer);
     if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
@@ -874,6 +877,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.frameworkChecksRunning.set(true);
     this.frameworkChecksRan.set(true);
     this.frameworkCheckResults.set([]);
+    const runSeq = ++this.frameworkCheckRunSeq;
 
     let results: TestResult[] = [];
 
@@ -884,441 +888,39 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
         throw new Error('Preview build returned empty HTML');
       }
 
-      results = [];
-      for (const check of checks) {
-        let mount: FrameworkCheckMount | null = null;
-        try {
-          mount = await this.mountFrameworkScratchDoc(html);
-          results.push(await this.executeFrameworkCheck(check, mount));
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error || 'Check failed');
-          results.push({
-            name: check.name || check.id || 'Framework check',
-            passed: false,
-            error: message || 'Check failed',
-          });
-        } finally {
-          mount?.cleanup();
-        }
-      }
+      results = await this.opaqueCheckRunner.runFramework(html, checks, {
+        readyTimeoutMs: this.frameworkCheckReadyTimeoutMs,
+        checkTimeoutMs: this.frameworkCheckTimeoutMs,
+      });
     } catch (error) {
+      if (error instanceof OpaqueCheckCancelledError) return [];
       const message = error instanceof Error ? error.message : String(error || 'Framework checks failed');
       results = [{
         name: 'Framework checks',
         passed: false,
         error: message || 'Framework checks failed',
       }];
-    } finally {
-      this.frameworkChecksRunning.set(false);
-      this.frameworkCheckResults.set(results);
-      this.recordFrameworkAttempt(q, results);
-      if (options?.emitCompletion !== false) {
-        this.frameworkCheckRun.emit({
-          questionId: q.id,
-          passed: results.length > 0 && results.every((result) => result.passed),
-          results,
-        });
-      }
+    }
+
+    if (runSeq !== this.frameworkCheckRunSeq || this.destroy || this.question?.id !== q.id) return results;
+    this.frameworkChecksRunning.set(false);
+    this.frameworkCheckResults.set(results);
+    this.recordFrameworkAttempt(q, results);
+    if (options?.emitCompletion !== false) {
+      this.frameworkCheckRun.emit({
+        questionId: q.id,
+        passed: results.length > 0 && results.every((result) => result.passed),
+        results,
+      });
     }
 
     return results;
   }
 
-  private async executeFrameworkCheck(check: FrameworkTest, mount: FrameworkCheckMount): Promise<TestResult> {
-    try {
-      const steps = Array.isArray(check.steps) ? check.steps : [];
-      if (!steps.length) {
-        throw new Error('No check steps configured');
-      }
-      for (const step of steps) {
-        await this.executeFrameworkCheckStep(step, mount);
-      }
-      return { name: check.name || check.id || 'Framework check', passed: true };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error || 'Check failed');
-      return {
-        name: check.name || check.id || 'Framework check',
-        passed: false,
-        error: message || 'Check failed',
-      };
-    }
-  }
-
-  private async executeFrameworkCheckStep(step: FrameworkTestStep, mount: FrameworkCheckMount): Promise<void> {
-    const doc = mount.doc;
-    const type = String(step.type || step.action || '').trim();
-    const selector = String(step.selector || '').trim();
-
-    if (type === 'wait') {
-      const durationMs = Math.max(0, Number(step.durationMs ?? step.timeoutMs ?? 0));
-      await this.delay(durationMs);
-      return;
-    }
-    if (type === 'unmountPreview') {
-      await this.unmountPreviewForStep(mount);
-      return;
-    }
-    if (type === 'expectNoPreviewLeaks') {
-      this.assertNoPreviewLeaks(mount);
-      return;
-    }
-
-    if (!selector) {
-      throw new Error(`${type || 'step'} is missing a selector`);
-    }
-
-    if (type === 'waitForText') {
-      await this.waitForStepText(doc, step);
-      return;
-    }
-    if (type === 'waitForCount') {
-      await this.waitForStepCount(doc, step);
-      return;
-    }
-    if (type === 'expectCount') {
-      this.assertStepCount(doc, step);
-      return;
-    }
-
-    const el = this.queryStepElement(doc, step);
-    if (!el) {
-      throw new Error(`${selector} was not found`);
-    }
-
-    if (type === 'expectExists') {
-      return;
-    }
-    if (type === 'expectText') {
-      this.assertStepText(el, step);
-      return;
-    }
-    if (type === 'expectNoText') {
-      this.assertStepText(el, step, true);
-      return;
-    }
-    if (type === 'setValue') {
-      this.setStepValue(el, step);
-      await this.delay(50);
-      return;
-    }
-    if (type === 'expectValue') {
-      this.assertStepValue(el, step);
-      return;
-    }
-    if (type === 'expectDisabled') {
-      const expected = step.disabled !== false;
-      const actual = this.isElementDisabled(el);
-      if (actual !== expected) {
-        throw new Error(`${selector} expected ${expected ? 'disabled' : 'enabled'} but was ${actual ? 'disabled' : 'enabled'}`);
-      }
-      return;
-    }
-    if (type === 'expectAttribute') {
-      this.assertStepAttribute(el, step);
-      return;
-    }
-    if (type === 'expectClass') {
-      this.assertStepClass(el, step);
-      return;
-    }
-    if (type === 'click') {
-      const clickable = el as HTMLElement & { click?: () => void };
-      if (typeof clickable.click !== 'function') {
-        throw new Error(`${selector} is not clickable`);
-      }
-      clickable.click();
-      await this.delay(50);
-      return;
-    }
-    if (type === 'mouseDown') {
-      this.dispatchStepMouseDown(el);
-      await this.delay(50);
-      return;
-    }
-    if (type === 'pointerDown') {
-      this.dispatchStepPointerDown(el);
-      await this.delay(50);
-      return;
-    }
-    if (type === 'key') {
-      this.dispatchStepKey(el, step);
-      await this.delay(50);
-      return;
-    }
-    if (type === 'expectFocused') {
-      if (doc.activeElement !== el) {
-        throw new Error(`${selector} expected focus but active element was ${this.describeElement(doc.activeElement)}`);
-      }
-      return;
-    }
-
-    throw new Error(`Unsupported framework check step: ${type || 'unknown'}`);
-  }
-
-  private queryStepElement(doc: Document, step: FrameworkTestStep): Element | null {
-    const selector = String(step.selector || '').trim();
-    const rawIndex = Number(step.index);
-    const index = Math.max(0, Number.isFinite(rawIndex) ? rawIndex : 0);
-    const matches = Array.from(doc.querySelectorAll(selector));
-    return matches[index] || null;
-  }
-
-  private assertStepText(el: Element, step: FrameworkTestStep, negate = false): void {
-    const expected = String(step.text ?? '').trim();
-    const actual = String((el.textContent || '').replace(/\s+/g, ' ')).trim();
-    const match = step.match || 'equals';
-    const passed = match === 'contains' ? actual.includes(expected) : actual === expected;
-    if (negate) {
-      if (passed) {
-        throw new Error(`${step.selector} expected not to contain text "${expected}" but found "${actual}"`);
-      }
-      return;
-    }
-    if (!passed) {
-      throw new Error(`${step.selector} expected text "${expected}" but found "${actual}"`);
-    }
-  }
-
-  private assertStepValue(el: Element, step: FrameworkTestStep): void {
-    const expected = String(step.value ?? step.text ?? '').trim();
-    const actual = String((el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value ?? '').trim();
-    const match = step.match || 'equals';
-    const passed = match === 'contains' ? actual.includes(expected) : actual === expected;
-    if (!passed) {
-      throw new Error(`${step.selector} expected value "${expected}" but found "${actual}"`);
-    }
-  }
-
-  private setStepValue(el: Element, step: FrameworkTestStep): void {
-    const value = String(step.value ?? step.text ?? '');
-    const control = el as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-    const proto = Object.getPrototypeOf(control);
-    const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
-    if (descriptor?.set) {
-      descriptor.set.call(control, value);
-    } else {
-      control.value = value;
-    }
-    control.dispatchEvent(new Event('input', { bubbles: true }));
-    control.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-
-  private assertStepCount(doc: Document, step: FrameworkTestStep): void {
-    const expected = Math.max(0, Number(step.count ?? step.expected ?? 0));
-    const actual = doc.querySelectorAll(String(step.selector || '').trim()).length;
-    if (actual !== expected) {
-      throw new Error(`${step.selector} expected ${expected} match${expected === 1 ? '' : 'es'} but found ${actual}`);
-    }
-  }
-
-  private async waitForStepCount(doc: Document, step: FrameworkTestStep): Promise<void> {
-    const rawTimeout = Number(step.timeoutMs);
-    const timeoutMs = Math.max(50, Number.isFinite(rawTimeout) ? rawTimeout : 1000);
-    const expected = Math.max(0, Number(step.count ?? step.expected ?? 0));
-    const startedAt = Date.now();
-    let lastCount = 0;
-    while (Date.now() - startedAt <= timeoutMs) {
-      lastCount = doc.querySelectorAll(String(step.selector || '').trim()).length;
-      if (lastCount === expected) return;
-      await this.delay(25);
-    }
-    throw new Error(`${step.selector} did not reach ${expected} match${expected === 1 ? '' : 'es'} before timeout. Last count: ${lastCount}`);
-  }
-
-  private assertStepAttribute(el: Element, step: FrameworkTestStep): void {
-    const attr = String(step.attribute || '').trim();
-    if (!attr) throw new Error(`${step.selector} is missing an attribute name`);
-    const actual = el.getAttribute(attr);
-    if (step.expected === false) {
-      if (actual !== null) throw new Error(`${step.selector} expected ${attr} to be absent`);
-      return;
-    }
-    if (step.expected === undefined || step.expected === true) {
-      if (actual === null) throw new Error(`${step.selector} expected ${attr} to exist`);
-      return;
-    }
-    const expected = String(step.expected);
-    if (actual !== expected) {
-      throw new Error(`${step.selector} expected ${attr}="${expected}" but found "${actual ?? ''}"`);
-    }
-  }
-
-  private assertStepClass(el: Element, step: FrameworkTestStep): void {
-    const className = String(step.className || step.value || '').trim();
-    if (!className) throw new Error(`${step.selector} is missing a className`);
-    const expected = step.expected !== false;
-    const actual = el.classList.contains(className);
-    if (actual !== expected) {
-      throw new Error(`${step.selector} expected class "${className}" to be ${expected ? 'present' : 'absent'}`);
-    }
-  }
-
-  private dispatchStepKey(el: Element, step: FrameworkTestStep): void {
-    const key = String(step.key || step.value || 'Enter');
-    const target = el as HTMLElement;
-    target.focus?.();
-    target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
-    target.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
-  }
-
-  private dispatchStepMouseDown(el: Element): void {
-    el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }));
-    el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, button: 0 }));
-  }
-
-  private dispatchStepPointerDown(el: Element): void {
-    const view = el.ownerDocument?.defaultView as (Window & { PointerEvent?: typeof PointerEvent }) | null;
-    const EventCtor = view?.PointerEvent || MouseEvent;
-    el.dispatchEvent(new EventCtor('pointerdown', { bubbles: true, cancelable: true, button: 0 }));
-    el.dispatchEvent(new EventCtor('pointerup', { bubbles: true, cancelable: true, button: 0 }));
-  }
-
-  private async unmountPreviewForStep(mount: FrameworkCheckMount): Promise<void> {
-    const win = mount.doc.defaultView as (Window & { __FA_UNMOUNT_PREVIEW?: () => void }) | null;
-    if (!win || typeof win.__FA_UNMOUNT_PREVIEW !== 'function') {
-      throw new Error('Preview did not expose an unmount hook');
-    }
-    win.__FA_UNMOUNT_PREVIEW();
-    await this.delay(25);
-  }
-
-  private assertNoPreviewLeaks(mount: FrameworkCheckMount): void {
-    const win = mount.doc.defaultView as (Window & {
-      __FA_GET_PREVIEW_LEAKS?: () => { timers?: number; documentListeners?: number };
-    }) | null;
-    if (!win || typeof win.__FA_GET_PREVIEW_LEAKS !== 'function') {
-      throw new Error('Preview did not expose leak instrumentation');
-    }
-    const leaks = win.__FA_GET_PREVIEW_LEAKS() || {};
-    const timers = Number(leaks.timers || 0);
-    const documentListeners = Number(leaks.documentListeners || 0);
-    if (timers || documentListeners) {
-      throw new Error(`Preview leaked ${timers} timer(s) and ${documentListeners} document listener(s)`);
-    }
-  }
-
-  private describeElement(el: Element | null): string {
-    if (!el) return 'none';
-    const id = el.id ? `#${el.id}` : '';
-    const cls = typeof el.className === 'string' && el.className.trim()
-      ? `.${el.className.trim().replace(/\s+/g, '.')}`
-      : '';
-    return `${el.tagName.toLowerCase()}${id}${cls}`;
-  }
-
-  private async waitForStepText(doc: Document, step: FrameworkTestStep): Promise<void> {
-    const rawTimeout = Number(step.timeoutMs);
-    const timeoutMs = Math.max(50, Number.isFinite(rawTimeout) ? rawTimeout : 1000);
-    const startedAt = Date.now();
-    let lastText = '';
-    while (Date.now() - startedAt <= timeoutMs) {
-      const el = this.queryStepElement(doc, step);
-      if (el) {
-        lastText = String((el.textContent || '').replace(/\s+/g, ' ')).trim();
-        try {
-          this.assertStepText(el, step);
-          return;
-        } catch {
-          // Keep polling until timeout.
-        }
-      }
-      await this.delay(25);
-    }
-    throw new Error(`${step.selector} did not reach text "${String(step.text ?? '').trim()}" before timeout. Last text: "${lastText}"`);
-  }
-
-  private isElementDisabled(el: Element): boolean {
-    const control = el as Element & { disabled?: boolean };
-    if (typeof control.disabled === 'boolean') {
-      return !!control.disabled;
-    }
-    return el.getAttribute('disabled') !== null || el.getAttribute('aria-disabled') === 'true';
-  }
-
-  private async mountFrameworkScratchDoc(html: string): Promise<FrameworkCheckMount> {
-    const frame = document.createElement('iframe');
-    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-    frame.style.cssText = 'position:fixed;left:-10000px;top:-10000px;width:0;height:0;border:0;visibility:hidden;';
-
-    const token = `fa-framework-check-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const bridged = this.injectPreviewReadyBridgeWithToken(html, token);
-
-    return new Promise<FrameworkCheckMount>((resolve, reject) => {
-      let done = false;
-      let timer: number | undefined;
-
-      const cleanupListener = () => {
-        window.removeEventListener('message', onMessage);
-        if (timer) window.clearTimeout(timer);
-      };
-
-      const finish = () => {
-        if (done) return;
-        done = true;
-        cleanupListener();
-        const doc = frame.contentDocument;
-        if (!doc) {
-          reject(new Error('Framework checks timed out before preview document loaded'));
-          return;
-        }
-        resolve({
-          frame,
-          doc,
-          cleanup: () => {
-            cleanupListener();
-            try { frame.remove(); } catch { }
-          },
-        });
-      };
-
-      const fail = (message: string) => {
-        if (done) return;
-        done = true;
-        cleanupListener();
-        try { frame.remove(); } catch { }
-        reject(new Error(message));
-      };
-
-      const onMessage = (ev: MessageEvent) => {
-        if (ev.source !== frame.contentWindow) return;
-        const payload = ev.data as { type?: unknown; token?: unknown } | null;
-        if (!payload || payload.type !== 'FA_PREVIEW_READY') return;
-        const receivedToken = typeof payload.token === 'string' ? payload.token : '';
-        if (receivedToken && receivedToken !== token) return;
-        finish();
-      };
-
-      window.addEventListener('message', onMessage);
-      timer = window.setTimeout(() => {
-        fail('Framework checks timed out waiting for preview render');
-      }, this.frameworkCheckReadyTimeoutMs);
-
-      document.body.appendChild(frame);
-      const doc = frame.contentDocument;
-      if (!doc) {
-        fail('Framework checks could not create preview document');
-        return;
-      }
-
-      try {
-        doc.open();
-        doc.write(bridged);
-        doc.close();
-      } catch {
-        fail('Framework checks could not mount preview document');
-      }
-    });
-  }
-
-  private injectPreviewReadyBridgeWithToken(html: string, token: string): string {
-    const bridge = `<script>(function(){var token=${JSON.stringify(token)};var sent=false;window.__FA_PREVIEW_READY_TOKEN=token;window.__FA_NOTIFY_PREVIEW_READY=function(reason){if(sent) return; sent=true; try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_READY',token:token,reason:String(reason||'render')},'*');}}catch(_e){}};})();</script>`;
-    if (/<head[^>]*>/i.test(html)) {
-      return html.replace(/<head[^>]*>/i, `$&\n${bridge}`);
-    }
-    if (/<body[^>]*>/i.test(html)) {
-      return html.replace(/<body[^>]*>/i, `$&\n${bridge}`);
-    }
-    return `${bridge}\n${html}`;
+  private cancelFrameworkCheckRun(): void {
+    this.frameworkCheckRunSeq += 1;
+    this.opaqueCheckRunner.cancel();
+    this.frameworkChecksRunning.set(false);
   }
 
   private recordFrameworkAttempt(question: Question, results: TestResult[]): void {
@@ -1362,10 +964,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       .sort()
       .map((path) => `${path}\n${files[path] ?? ''}`)
       .join('\n---FILE---\n');
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => window.setTimeout(resolve, ms));
   }
 
   private setPreviewHtml(html: string | null) {

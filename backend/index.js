@@ -11,7 +11,6 @@ const crypto = require('crypto');
 const { requireAuth } = require('./middleware/Auth');
 const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
-const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
 const { rateLimit, getClientIp } = require('./middleware/rateLimit');
 const { createRequestMetricsMiddleware } = require('./middleware/observability');
@@ -19,6 +18,7 @@ const { createSecurityHeadersMiddleware } = require('./middleware/securityHeader
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
+const { sendMail } = require('./services/email');
 
 const app = express();
 
@@ -128,6 +128,26 @@ app.use(async (req, res, next) => {
 const User = require('./models/User');
 const ActivityEvent = require('./models/ActivityEvent'); // need the model for the heatmap route
 
+function safeUserResponse(user) {
+    const value = typeof user?.toObject === 'function' ? user.toObject() : { ...(user || {}) };
+    const linkedProviders = Array.from(new Set(
+        (Array.isArray(value.providers) ? value.providers : [])
+            .map((entry) => entry?.provider)
+            .filter((provider) => provider === 'google' || provider === 'github')
+    ));
+    const emailVerified = Boolean(value.emailVerifiedAt);
+    delete value.passwordHash;
+    delete value.providers;
+    delete value.emailVerifiedAt;
+    delete value.authInvalidatedAt;
+    return {
+        ...value,
+        emailVerified,
+        pendingEmail: value.pendingEmail || null,
+        linkedProviders,
+    };
+}
+
 // ---- Routes (basic) ----
 app.get('/', (_, res) => res.send('Backend is working 🚀'));
 app.get('/api/hello', (_, res) => res.json({ message: 'Hello from backend 👋' }));
@@ -177,18 +197,6 @@ function rememberBugFingerprint(key, now = Date.now()) {
             if (now >= expiresAt) recentBugReportFingerprints.delete(fp);
         }
     }
-}
-
-function createSupportTransporter() {
-    return nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: Number(process.env.SMTP_PORT || 465),
-        secure: String(process.env.SMTP_SECURE || 'true') === 'true', // true for 465
-        auth: {
-            user: process.env.SMTP_USER, // e.g. yourgmail@gmail.com
-            pass: process.env.SMTP_PASS, // Gmail App Password
-        },
-    });
 }
 
 function isValidEmailAddress(value) {
@@ -250,7 +258,6 @@ app.post(
                 return res.status(413).json({ error: 'Contact url too long' });
             }
 
-            const transporter = createSupportTransporter();
             const sentAt = new Date().toISOString();
             const subject = `Contact form from FrontendAtlas: ${safeTopic} - ${safeName}`;
             const html = `
@@ -265,7 +272,7 @@ app.post(
       <p style="color:#64748b;font-size:12px;margin:0">Sent ${sentAt}</p>
     `;
 
-            await transporter.sendMail({
+            await sendMail({
                 from: `"FrontendAtlas Contact" <${process.env.SMTP_USER}>`,
                 to: SUPPORT_EMAIL,
                 replyTo: safeEmail,
@@ -335,8 +342,6 @@ app.post(
                 return res.status(429).json({ error: 'Duplicate bug report detected. Please wait before sending again.' });
             }
 
-            const transporter = createSupportTransporter();
-
             const html = `
       <h2 style="margin:0 0 8px">New Bug Report</h2>
       <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">
@@ -347,7 +352,7 @@ app.post(
       <p style="color:#64748b;font-size:12px;margin:0">Sent ${new Date().toISOString()}</p>
     `;
 
-            await transporter.sendMail({
+            await sendMail({
                 from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
                 to: SUPPORT_EMAIL,
                 subject: 'Bug report from FrontendAtlas',
@@ -429,7 +434,7 @@ app.get('/api/users/:id', requireAuth, async (req, res) => {
         }
         const user = await User.findById(req.params.id).select('-passwordHash');
         if (!user) return res.status(404).json({ message: 'User not found' });
-        res.json(user);
+        res.json(safeUserResponse(user));
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -443,8 +448,16 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
 
         // Never allow passwordHash via this route
         if ('passwordHash' in req.body) delete req.body.passwordHash;
-        // Whitelist updatable fields
-        const allowed = ['username', 'email', 'bio', 'avatarUrl', 'prefs'];
+        const requestedEmail = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+        if (requestedEmail && requestedEmail !== String((await User.findById(req.params.id).select('email').lean())?.email || '').toLowerCase()) {
+            return res.status(409).json({
+                code: 'EMAIL_CHANGE_REQUIRES_VERIFICATION',
+                error: 'Request an email verification link to change your email address.',
+            });
+        }
+
+        // Whitelist updatable fields. Email changes use the verification flow.
+        const allowed = ['username', 'bio', 'avatarUrl', 'prefs'];
         const update = {};
         for (const k of allowed) {
             if (k in req.body) update[k] = req.body[k];
@@ -465,7 +478,7 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
         }).select('-passwordHash');
 
         if (!user) return res.status(404).json({ message: 'User not found' });
-        res.json(user);
+        res.json(safeUserResponse(user));
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

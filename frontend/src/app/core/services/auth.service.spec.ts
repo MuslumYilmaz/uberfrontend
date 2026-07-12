@@ -211,4 +211,48 @@ describe('AuthService', () => {
     expect(authority.state()).toBe('authenticated');
     expect(authority.hasSessionHint()).toBeTrue();
   });
+
+  it('requests an email verification without mutating the current user optimistically', async () => {
+    service.user.set(sampleUser);
+    const result = firstValueFrom(service.requestEmailVerification('new@example.com'));
+    const req = httpMock.expectOne((request) =>
+      request.method === 'POST' && request.url.endsWith('/api/auth/email-verification/request')
+    );
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.body).toEqual({ email: 'new@example.com' });
+    req.flush({ ok: true, purpose: 'change_email', expiresAt: new Date().toISOString() });
+
+    expect((await result).purpose).toBe('change_email');
+    expect(service.user()?.email).toBe('test@example.com');
+  });
+
+  it('applies the provider-safe user contract after email confirmation', async () => {
+    const confirmedUser: User = {
+      ...sampleUser,
+      emailVerified: true,
+      pendingEmail: null,
+      linkedProviders: ['google'],
+    };
+    const result = firstValueFrom(service.confirmEmailVerification('verification-token'));
+    const req = httpMock.expectOne((request) =>
+      request.method === 'POST' && request.url.endsWith('/api/auth/email-verification/confirm')
+    );
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.body).toEqual({ token: 'verification-token' });
+    req.flush({ ok: true, user: confirmedUser });
+
+    expect((await result).user.emailVerified).toBeTrue();
+    expect(service.user()?.linkedProviders).toEqual(['google']);
+  });
+
+  it('preserves stable OAuth conflict codes from the callback query', async () => {
+    const error = await firstValueFrom(service.completeOAuthCallback({
+      error: 'An account already uses this email.',
+      code: 'OAUTH_EMAIL_CONFLICT',
+    })).catch((value) => value);
+
+    expect(error?.status).toBe(400);
+    expect(error?.error?.code).toBe('OAUTH_EMAIL_CONFLICT');
+    expect(error?.error?.error).toContain('already uses this email');
+  });
 });

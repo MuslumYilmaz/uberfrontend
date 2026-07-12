@@ -282,6 +282,34 @@ describe('PricingPlansSectionComponent', () => {
     }));
   });
 
+  it('tells an unverified Gumroad user how to unblock checkout', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    auth.user.and.returnValue({
+      _id: 'user_1',
+      username: 'billing_user',
+      email: 'billing@example.com',
+      emailVerified: false,
+    } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: false,
+      provider: 'gumroad',
+      reason: 'verification-required',
+    });
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = {
+      monthly: true,
+      quarterly: true,
+      annual: true,
+      lifetime: false,
+    };
+
+    await component.onCta('monthly');
+
+    expect(component.checkoutNotice).toBe('Verify your email in Profile → Account before starting checkout.');
+  });
+
   it('shows the shared manage-url fallback message when billing portal is unavailable', () => {
     const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     auth.user.and.returnValue({

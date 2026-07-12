@@ -4,6 +4,7 @@ const {
   applyNormalizedLemonSqueezyEventToUser,
   syncAccessTierFromEntitlements,
 } = require('./user-billing-state');
+const { applyOrderedProviderEvent } = require('./ordered-user-event');
 
 function normalizeEmail(raw) {
   if (!raw) return '';
@@ -11,14 +12,27 @@ function normalizeEmail(raw) {
 }
 
 async function recordPendingEntitlement(model, data) {
+  const provider = String(data.provider || '').trim().toLowerCase();
+  const email = normalizeEmail(data.email);
+  const userId = data.userId ? String(data.userId).trim() : '';
+  const hasSafeBinding = provider === 'lemonsqueezy' ? Boolean(userId || email) : Boolean(email);
+  if (!hasSafeBinding) {
+    const error = new TypeError(
+      provider === 'lemonsqueezy'
+        ? 'LemonSqueezy pending entitlement requires a user id or email binding'
+        : 'Email-bound pending entitlement requires an email'
+    );
+    error.code = 'PENDING_ENTITLEMENT_BINDING_REQUIRED';
+    throw error;
+  }
   try {
     const payload = {
-      provider: data.provider,
+      provider,
       scope: data.scope || 'pro',
       eventId: data.eventId,
       eventType: data.eventType,
-      email: normalizeEmail(data.email),
-      userId: data.userId ? String(data.userId).trim() : undefined,
+      email,
+      userId: userId || undefined,
       entitlement: data.entitlement,
       saleId: data.saleId,
       orderId: data.orderId,
@@ -26,6 +40,8 @@ async function recordPendingEntitlement(model, data) {
       customerId: data.customerId,
       manageUrl: data.manageUrl,
       payload: data.payload,
+      eventReceivedAt: data.eventReceivedAt,
+      eventOrderKey: data.eventOrderKey,
     };
     await model.create(payload);
     return { duplicate: false };
@@ -82,7 +98,18 @@ function compareReceivedAtAsc(left, right) {
   return String(left?._id || '').localeCompare(String(right?._id || ''));
 }
 
-function applyProjectsPendingEntitlement(user, item) {
+function isGrantingEntitlement(item) {
+  return ['active', 'lifetime'].includes(String(item?.entitlement?.status || '').toLowerCase());
+}
+
+function resolvePendingOrderKey(item) {
+  if (item?.eventOrderKey) return String(item.eventOrderKey);
+  const receivedAt = new Date(item?.eventReceivedAt || item?.receivedAt || item?.createdAt || 0);
+  if (Number.isNaN(receivedAt.getTime()) || !item?._id) return '';
+  return `${receivedAt.toISOString()}:${String(item._id)}`;
+}
+
+function applyProjectsPendingEntitlement(user, item, eventOrderKey) {
   ensureEntitlements(user);
   ensureBillingProviders(user);
 
@@ -97,6 +124,8 @@ function applyProjectsPendingEntitlement(user, item) {
     gumroadMeta.purchaserEmail = normalizeEmail(item.email);
     gumroadMeta.lastEventId = item.eventId;
     gumroadMeta.lastEventAt = item.receivedAt || new Date();
+    if (item.eventReceivedAt) gumroadMeta.lastEventReceivedAt = item.eventReceivedAt;
+    if (eventOrderKey) gumroadMeta.lastEventOrderKey = eventOrderKey;
     user.billing.providers.gumroad = gumroadMeta;
   }
 
@@ -107,15 +136,28 @@ function applyProjectsPendingEntitlement(user, item) {
     if (item.manageUrl) lsMeta.manageUrl = item.manageUrl;
     lsMeta.lastEventId = item.eventId;
     lsMeta.lastEventAt = item.receivedAt || new Date();
+    if (item.eventReceivedAt) lsMeta.lastEventReceivedAt = item.eventReceivedAt;
+    if (eventOrderKey) lsMeta.lastEventOrderKey = eventOrderKey;
     user.billing.providers.lemonsqueezy = lsMeta;
+  }
+
+  if (item.provider === 'stripe') {
+    const stripeMeta = user.billing.providers.stripe || {};
+    if (item.customerId) stripeMeta.customerId = item.customerId;
+    if (item.subscriptionId) stripeMeta.subscriptionId = item.subscriptionId;
+    stripeMeta.lastEventId = item.eventId;
+    stripeMeta.lastEventAt = item.receivedAt || new Date();
+    if (item.eventReceivedAt) stripeMeta.lastEventReceivedAt = item.eventReceivedAt;
+    if (eventOrderKey) stripeMeta.lastEventOrderKey = eventOrderKey;
+    user.billing.providers.stripe = stripeMeta;
   }
 
   syncAccessTierFromEntitlements(user);
 }
 
-function applyPendingEntitlementToUser(user, item) {
+function applyPendingEntitlementToUser(user, item, eventOrderKey) {
   if (item.scope === 'projects') {
-    applyProjectsPendingEntitlement(user, item);
+    applyProjectsPendingEntitlement(user, item, eventOrderKey);
     return;
   }
 
@@ -131,6 +173,8 @@ function applyPendingEntitlementToUser(user, item) {
       {
         eventId: item.eventId,
         purchaserEmail: normalizeEmail(item.email),
+        eventReceivedAt: item.eventReceivedAt,
+        eventOrderKey,
       }
     );
     return;
@@ -150,26 +194,63 @@ function applyPendingEntitlementToUser(user, item) {
       {
         eventId: item.eventId,
         purchaseEmail: normalizeEmail(item.email),
+        eventReceivedAt: item.eventReceivedAt,
+        eventOrderKey,
       }
     );
     return;
   }
 
-  applyProjectsPendingEntitlement(user, item);
+  if (item.provider === 'stripe') {
+    ensureEntitlements(user);
+    ensureBillingProviders(user);
+    user.entitlements.pro = {
+      status: item.entitlement?.status || 'none',
+      validUntil: item.entitlement?.validUntil || null,
+    };
+    const stripeMeta = user.billing.providers.stripe || {};
+    if (item.customerId) stripeMeta.customerId = item.customerId;
+    if (item.subscriptionId) stripeMeta.subscriptionId = item.subscriptionId;
+    stripeMeta.lastEventId = item.eventId;
+    stripeMeta.lastEventAt = item.receivedAt || new Date();
+    if (item.eventReceivedAt) stripeMeta.lastEventReceivedAt = item.eventReceivedAt;
+    if (eventOrderKey) stripeMeta.lastEventOrderKey = eventOrderKey;
+    user.billing.providers.stripe = stripeMeta;
+    syncAccessTierFromEntitlements(user);
+    return;
+  }
+
+  applyProjectsPendingEntitlement(user, item, eventOrderKey);
 }
 
 async function applyPendingEntitlementsForUser(model, user) {
   const email = normalizeEmail(user?.email);
-  if (!email) return { applied: false };
+  const userId = String(user?._id || '').trim();
+  if (!email && !userId) return { applied: false };
 
-  const pending = await model.find({ email, appliedAt: null, ignoredAt: null }).sort({ receivedAt: 1, _id: 1 });
+  const bindingQueries = [];
+  if (email) {
+    bindingQueries.push({ provider: { $ne: 'lemonsqueezy' }, email });
+    // Legacy LemonSqueezy records are still discovered by email, then rejected unless their user id matches.
+    bindingQueries.push({ provider: 'lemonsqueezy', email });
+  }
+  if (userId) bindingQueries.push({ provider: 'lemonsqueezy', userId });
+
+  const pending = await model
+    .find({ appliedAt: null, ignoredAt: null, $or: bindingQueries })
+    .sort({ receivedAt: 1, _id: 1 });
   if (!pending.length) return { applied: false };
 
   const applicable = [];
   let sawLemonSqueezyMismatch = false;
   let sawLemonSqueezyWithoutBinding = false;
+  let sawUnverifiedGumroadGrant = false;
 
   for (const item of pending) {
+    if (item.provider === 'gumroad' && isGrantingEntitlement(item) && !user.emailVerifiedAt) {
+      sawUnverifiedGumroadGrant = true;
+      continue;
+    }
     if (item.provider !== 'lemonsqueezy') {
       applicable.push(item);
       continue;
@@ -194,6 +275,9 @@ async function applyPendingEntitlementsForUser(model, user) {
     if (sawLemonSqueezyWithoutBinding) {
       return { applied: false, reason: 'lemonsqueezy_user_binding_missing', eventId: pending[pending.length - 1]?.eventId };
     }
+    if (sawUnverifiedGumroadGrant) {
+      return { applied: false, reason: 'gumroad_email_verification_required', eventId: pending[pending.length - 1]?.eventId };
+    }
     return { applied: false };
   }
 
@@ -201,16 +285,36 @@ async function applyPendingEntitlementsForUser(model, user) {
   ensureBillingProviders(user);
 
   const orderedApplicable = [...applicable].sort(compareReceivedAtAsc);
+  let currentUser = user;
   for (const item of orderedApplicable) {
-    applyPendingEntitlementToUser(user, item);
+    const eventOrderKey = resolvePendingOrderKey(item);
+    if (item.provider === 'gumroad' || item.provider === 'lemonsqueezy' || item.provider === 'stripe') {
+      const orderedUpdate = await applyOrderedProviderEvent({
+        user: currentUser,
+        provider: item.provider,
+        eventId: item.eventId,
+        eventOrderKey,
+        stateScope: item.scope === 'projects' ? 'projects' : 'pro',
+        mutate: (targetUser) => applyPendingEntitlementToUser(targetUser, item, eventOrderKey),
+      });
+      currentUser = orderedUpdate.user;
+    } else {
+      const error = new Error(`Unsupported pending entitlement provider: ${item.provider}`);
+      error.code = 'PENDING_ENTITLEMENT_PROVIDER_UNSUPPORTED';
+      throw error;
+    }
   }
 
-  await user.save();
+  // Callers serialize the document they supplied, so mirror the CAS result without
+  // issuing a second unconditional save.
+  user.entitlements = currentUser.entitlements;
+  user.billing = currentUser.billing;
+  user.accessTier = currentUser.accessTier;
 
   const now = new Date();
   await model.updateMany(
     { _id: { $in: orderedApplicable.map((item) => item._id) } },
-    { $set: { appliedAt: now, appliedUserId: user._id } }
+    { $set: { appliedAt: now, appliedUserId: currentUser._id } }
   );
 
   return {

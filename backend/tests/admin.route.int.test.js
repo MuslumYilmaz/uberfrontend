@@ -118,6 +118,57 @@ describe('Admin DB diagnostics', () => {
 });
 
 describe('Admin billing simulator', () => {
+  test('returns retryable 503 when the simulated event already has an active lease', async () => {
+    const admin = await User.create({
+      email: 'admin-busy@example.com',
+      username: 'admin_busy_user',
+      passwordHash: 'hash',
+      role: 'admin',
+    });
+    const user = await User.create({
+      email: 'subscriber-busy@example.com',
+      username: 'subscriber_busy_user',
+      passwordHash: 'hash',
+    });
+    const input = {
+      userId: String(user._id),
+      scenario: 'activate',
+      externalId: 'sim_busy_event',
+      validUntil: daysFromNowIso(30),
+    };
+    const { buildLemonSqueezySimulationPayload } = require('../services/billing/providers/lemonsqueezy-simulator');
+    const { normalizeLemonSqueezyEvent } = require('../services/billing/providers/lemonsqueezy');
+    const simulation = buildLemonSqueezySimulationPayload({ user, input });
+    const rawBody = JSON.stringify(simulation.payload);
+    const normalized = normalizeLemonSqueezyEvent(simulation.payload, rawBody);
+    const eventId = `simulate:${simulation.mode}:${normalized.eventId}`;
+    await BillingEvent.create({
+      provider: 'lemonsqueezy',
+      eventId,
+      eventType: normalized.eventType,
+      email: user.email,
+      payload: simulation.payload,
+      processingStatus: 'processing',
+      attemptCount: 1,
+      leaseToken: 'busy-simulator-lease',
+      leaseExpiresAt: new Date(Date.now() + 60_000),
+    });
+
+    const response = await request(app)
+      .post('/api/admin/billing/simulate/lemonsqueezy')
+      .set('Authorization', authHeader(admin._id))
+      .send(input);
+
+    expect(response.status).toBe(503);
+    expect(response.headers['retry-after']).toBe('5');
+    expect(response.body).toEqual(expect.objectContaining({
+      ok: false,
+      duplicate: true,
+      retryable: true,
+      eventId,
+    }));
+  });
+
   test('simulates activate, renew, cancel, and refund scenarios for LemonSqueezy', async () => {
     const admin = await User.create({
       email: 'admin@example.com',

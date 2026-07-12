@@ -199,6 +199,13 @@ async function createCheckoutAttempt(CheckoutAttempt, { user, provider: rawProvi
   if (!planId) {
     throw new CheckoutStartError('INVALID_PLAN', 'Plan not supported', 400);
   }
+  if (provider === 'gumroad' && !user?.emailVerifiedAt) {
+    throw new CheckoutStartError(
+      'EMAIL_VERIFICATION_REQUIRED',
+      'Verify your email before starting a Gumroad checkout',
+      409
+    );
+  }
 
   const mode = resolveMode();
   const baseUrl = resolveCheckoutUrl(provider, planId, mode);

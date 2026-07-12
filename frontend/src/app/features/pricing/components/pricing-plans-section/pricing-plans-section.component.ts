@@ -928,7 +928,9 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
           });
           if (!result.ok) {
             this.clearCheckoutContext();
-            if (result.reason === 'invalid-url') {
+            if (result.reason === 'verification-required') {
+              this.setCheckoutNotice('Verify your email in Profile → Account before starting checkout.');
+            } else if (result.reason === 'invalid-url') {
               this.setCheckoutNotice('Checkout is misconfigured right now. Please contact support.');
             } else {
               this.setCheckoutNotice('Checkout is unavailable right now. Please try again in a moment.');
