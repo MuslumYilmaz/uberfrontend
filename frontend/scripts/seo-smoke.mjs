@@ -145,8 +145,8 @@ function normalizeText(value) {
 function extractVisibleText(html) {
   return normalizeText(
     String(html || '')
-      .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
-      .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<script\b[\s\S]*?<\/script\b[^>]*>/gi, ' ')
+      .replace(/<style\b[\s\S]*?<\/style\b[^>]*>/gi, ' ')
       .replace(/<[^>]+>/g, ' '),
   );
 }
@@ -169,7 +169,7 @@ function extractInternalLinkPaths(html) {
 }
 
 function extractSeoJsonLd(html) {
-  const scripts = Array.from(String(html || '').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi));
+  const scripts = Array.from(String(html || '').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi));
   const match = scripts.find((entry) => extractAttribute(entry[1], 'id') === 'seo-jsonld');
   if (!match) return { graph: [], error: 'script#seo-jsonld is missing' };
 
