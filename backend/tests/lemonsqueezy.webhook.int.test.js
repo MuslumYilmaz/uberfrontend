@@ -77,6 +77,39 @@ beforeEach(async () => {
 });
 
 describe('LemonSqueezy webhook integration', () => {
+  test('keeps a userId-bound pending entitlement when purchaser email is absent', async () => {
+    const futureUserId = new (require('mongoose').Types.ObjectId)();
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_user_id_only_pending',
+        attributes: {
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: { fa_user_id: String(futureUserId) },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+
+    const response = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ ok: true, userFound: false });
+    const pending = await PendingEntitlement.findOne({
+      provider: 'lemonsqueezy',
+      userId: String(futureUserId),
+    }).lean();
+    expect(pending).toEqual(expect.objectContaining({
+      email: '',
+      userId: String(futureUserId),
+    }));
+  });
+
   test('returns 500 when webhook secret is missing', async () => {
     const payload = {
       meta: { event_name: 'subscription_created' },
@@ -699,5 +732,209 @@ describe('LemonSqueezy webhook integration', () => {
     expect(updatedAttempt.providerSubscriptionId).toBe('sub_attempt_123');
     expect(updatedAttempt.completedAt).toBeTruthy();
     expect(updatedAttempt.lastErrorCode).toBeFalsy();
+  });
+
+  test('retry completes checkout bookkeeping without reapplying after user save succeeded', async () => {
+    const user = await User.findOne({ email: 'test@example.com' });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_retry_after_save',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_retry_after_save',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_retry_after_save',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    });
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_retry_after_save',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_retry_after_save',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+    const originalUpdateOne = CheckoutAttempt.updateOne.bind(CheckoutAttempt);
+    let updateCalls = 0;
+    const updateSpy = jest.spyOn(CheckoutAttempt, 'updateOne').mockImplementation((...args) => {
+      updateCalls += 1;
+      if (updateCalls === 2) {
+        return Promise.reject(new Error('synthetic checkout update failure'));
+      }
+      return originalUpdateOne(...args);
+    });
+
+    const first = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+    updateSpy.mockRestore();
+
+    expect(first.status).toBe(500);
+    const afterFirst = await User.findById(user._id).lean();
+    expect(afterFirst.entitlements.pro.status).toBe('active');
+    const firstEvent = await BillingEvent.findOne({ eventType: 'subscription_created' }).lean();
+    expect(firstEvent.processingStatus).toBe('failed_retryable');
+
+    const retry = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(retry.status).toBe(200);
+    const attempt = await CheckoutAttempt.findOne({ attemptId: 'chk_retry_after_save' }).lean();
+    expect(attempt.status).toBe('applied');
+    const completedEvent = await BillingEvent.findById(firstEvent._id).lean();
+    expect(completedEvent.processingStatus).toBe('processed');
+    expect(completedEvent.attemptCount).toBe(2);
+  });
+
+  test('a worker that lost its lease cannot regress an already applied checkout attempt', async () => {
+    const user = await User.findOne({ email: 'test@example.com' });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_lost_lease',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_lost_lease',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_lost_lease',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    });
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_lost_lease',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_lost_lease',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+    const originalUpdateOne = CheckoutAttempt.updateOne.bind(CheckoutAttempt);
+    let calls = 0;
+    const updateSpy = jest.spyOn(CheckoutAttempt, 'updateOne').mockImplementation(async (...args) => {
+      calls += 1;
+      if (calls !== 2) return originalUpdateOne(...args);
+
+      const eventId = args[1]?.$set?.billingEventId;
+      await BillingEvent.updateOne(
+        { provider: 'lemonsqueezy', eventId },
+        {
+          $set: { processingStatus: 'processed', processedAt: new Date(), userId: user._id },
+          $unset: { leaseToken: '', leaseExpiresAt: '' },
+        }
+      );
+      await originalUpdateOne(
+        { attemptId: 'chk_lost_lease' },
+        {
+          $set: {
+            status: 'applied',
+            billingEventId: eventId,
+            completedAt: new Date(),
+            lastErrorCode: null,
+            lastErrorMessage: null,
+          },
+        }
+      );
+      throw new Error('synthetic stale worker resumed after lease loss');
+    });
+
+    let response;
+    try {
+      response = await request(app)
+        .post('/api/billing/webhooks/lemonsqueezy')
+        .set('Content-Type', 'application/json')
+        .set('x-signature', signature)
+        .send(rawBody);
+    } finally {
+      updateSpy.mockRestore();
+    }
+
+    expect(response.status).toBe(500);
+    const attempt = await CheckoutAttempt.findOne({ attemptId: 'chk_lost_lease' }).lean();
+    expect(attempt.status).toBe('applied');
+    expect(attempt.lastErrorCode).toBeFalsy();
+    const event = await BillingEvent.findOne({ eventType: 'subscription_created' }).lean();
+    expect(event.processingStatus).toBe('processed');
+  });
+
+  test('webhook_received and failure transitions cannot regress a terminal attempt', async () => {
+    const user = await User.findOne({ email: 'test@example.com' });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_terminal_guard',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'applied',
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_terminal_guard',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_terminal_guard',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+      billingEventId: 'newer-event-already-applied',
+      completedAt: new Date(),
+    });
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_terminal_guard',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_terminal_guard',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const userWriteFailure = jest
+      .spyOn(User, 'updateOne')
+      .mockRejectedValueOnce(new Error('synthetic failure after attempted early transition'));
+
+    let response;
+    try {
+      response = await request(app)
+        .post('/api/billing/webhooks/lemonsqueezy')
+        .set('Content-Type', 'application/json')
+        .set('x-signature', signPayload(rawBody))
+        .send(rawBody);
+    } finally {
+      userWriteFailure.mockRestore();
+    }
+
+    expect(response.status).toBe(500);
+    const attempt = await CheckoutAttempt.findOne({ attemptId: 'chk_terminal_guard' }).lean();
+    expect(attempt.status).toBe('applied');
+    expect(attempt.billingEventId).toBe('newer-event-already-applied');
+    expect(attempt.lastErrorCode).toBeFalsy();
   });
 });

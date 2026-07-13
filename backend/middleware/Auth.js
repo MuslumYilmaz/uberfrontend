@@ -1,28 +1,19 @@
 const { getJwtVerifyOptions } = require('../config/jwt');
 const AuthSession = require('../models/AuthSession');
 const User = require('../models/User');
-const { verifyAccessToken } = require('../services/auth-sessions');
+const { resolvePasswordVersion, verifyAccessToken } = require('../services/auth-sessions');
 const {
     getCachedAuthValidation,
     setCachedAuthValidation,
 } = require('../services/auth-validation-cache');
+const { ACCESS_TOKEN_COOKIE } = require('../config/auth-cookies');
+const { isStateChanging, validateCookieCsrf } = require('./Csrf');
 
-const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
-const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
 const AUTH_CODES = {
     missing: 'AUTH_MISSING',
     invalid: 'AUTH_INVALID',
     csrf: 'AUTH_CSRF_INVALID',
 };
-
-function isStateChanging(method = '') {
-    const m = String(method).toUpperCase();
-    return m === 'POST' || m === 'PUT' || m === 'PATCH' || m === 'DELETE';
-}
-
-function shouldEnforceCsrf() {
-    return String(process.env.COOKIE_SAMESITE || 'lax').toLowerCase() === 'none';
-}
 
 function getBearerToken(req) {
     const h = req.headers.authorization || '';
@@ -51,11 +42,7 @@ function getTokenPasswordVersion(payload) {
 }
 
 function getUserPasswordVersion(user) {
-    const raw = user?.passwordUpdatedAt;
-    if (!raw) return 0;
-    const date = raw instanceof Date ? raw : new Date(raw);
-    const ts = date.getTime();
-    return Number.isFinite(ts) ? ts : 0;
+    return resolvePasswordVersion(user);
 }
 
 function isTokenFreshEnoughForPasswordVersion(payload, user) {
@@ -82,14 +69,9 @@ async function requireAuth(req, res, next) {
         const { token, via } = getAuthToken(req);
         if (!token) return sendAuthError(res, 401, AUTH_CODES.missing, 'Missing token');
 
-        // Double-submit CSRF protection when SameSite=None and auth is cookie-based.
-        if (via === 'cookie' && shouldEnforceCsrf() && isStateChanging(req.method)) {
-            const csrfCookie = req?.cookies?.[CSRF_COOKIE];
-            const csrfHeader = req.headers['x-csrf-token'];
-            const csrf = Array.isArray(csrfHeader) ? csrfHeader[0] : csrfHeader;
-            if (!csrfCookie || !csrf || String(csrf) !== String(csrfCookie)) {
-                return sendAuthError(res, 403, AUTH_CODES.csrf, 'CSRF token missing or invalid');
-            }
+        // Keep defense in depth for routers that compose requireAuth directly.
+        if (via === 'cookie' && isStateChanging(req.method) && !validateCookieCsrf(req, res)) {
+            return undefined;
         }
 
         const payload = verifyAccessToken(token, getJwtVerifyOptions());
@@ -104,7 +86,7 @@ async function requireAuth(req, res, next) {
             return next();
         }
 
-        const user = await User.findById(payload.sub).select('passwordUpdatedAt role').lean();
+        const user = await User.findById(payload.sub).select('passwordUpdatedAt authInvalidatedAt role').lean();
         if (!user) return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
         if (!isTokenFreshEnoughForPasswordVersion(payload, user)) {
             return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
@@ -112,11 +94,14 @@ async function requireAuth(req, res, next) {
 
         const sessionId = typeof payload?.sid === 'string' && payload.sid ? payload.sid : null;
         if (sessionId) {
-            const session = await AuthSession.findById(sessionId).select('revokedAt expiresAt userId').lean();
+            const session = await AuthSession.findById(sessionId).select('revokedAt expiresAt userId passwordVersion').lean();
             if (!session || session.revokedAt || String(session.userId) !== String(payload.sub)) {
                 return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
             }
             if (session.expiresAt && new Date(session.expiresAt).getTime() <= Date.now()) {
+                return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
+            }
+            if (Number(session.passwordVersion || 0) !== getUserPasswordVersion(user)) {
                 return sendAuthError(res, 401, AUTH_CODES.invalid, 'Invalid or expired token');
             }
         }

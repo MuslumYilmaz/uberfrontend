@@ -1,35 +1,48 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const net = require('net');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User.js');
 const AuthSession = require('../models/AuthSession');
 const AuthAttemptReceipt = require('../models/AuthAttemptReceipt');
+const EmailVerification = require('../models/EmailVerification');
+const OAuthIdentity = require('../models/OAuthIdentity');
 const PendingEntitlement = require('../models/PendingEntitlement');
 const { applyPendingEntitlementsForUser } = require('../services/billing/pending-entitlements');
-const { AUTH_CODES, requireAuth } = require('../middleware/Auth.js');
-const { getJwtVerifyOptions, isProd } = require('../config/jwt');
+const { requireAuth } = require('../middleware/Auth.js');
+const { getJwtSecret, getJwtVerifyOptions, isProd } = require('../config/jwt');
 const { resolveAllowedFrontendOrigins, resolveFrontendBase, resolveServerBase } = require('../config/urls');
 const { rateLimit, getClientIp } = require('../middleware/rateLimit');
+const { validateCookieCsrf } = require('../middleware/Csrf');
+const {
+    ACCESS_TOKEN_COOKIE,
+    REFRESH_TOKEN_COOKIE,
+    CSRF_COOKIE,
+    accessCookieOptions,
+    refreshCookieOptions,
+    csrfCookieOptions,
+} = require('../config/auth-cookies');
+const {
+    createAndSendVerification,
+    hashVerificationToken,
+    isValidEmail,
+    normalizeEmail,
+} = require('../services/email-verification');
 const {
     createAuthSession,
     buildReplayableRefreshTokenForSession,
     findRefreshSession,
-    getAccessTokenExpiresIn,
-    getRefreshSessionTtlMs,
-    parseDurationToMs,
     revokeAllSessionsForUser,
+    revokeOtherSessionsForUser,
     revokeSessionById,
     rotateAuthSession,
     resolvePasswordVersion,
     signAccessToken,
     verifyAccessToken,
 } = require('../services/auth-sessions');
+const { clearAuthValidationCacheForUser } = require('../services/auth-validation-cache');
+const { claimOAuthIdentity, findOAuthIdentityUser } = require('../services/oauth-identities');
 
-const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
-const REFRESH_TOKEN_COOKIE = process.env.REFRESH_COOKIE_NAME || 'refresh_token';
-const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
 const REFRESH_CODES = {
     missing: 'REFRESH_MISSING',
     invalid: 'REFRESH_INVALID',
@@ -41,80 +54,8 @@ const AUTH_CONTEXT_HEADER = 'x-auth-context-id';
 const AUTH_REQUEST_HEADER = 'x-auth-request-id';
 const AUTH_ATTEMPT_WAIT_RETRIES = 40;
 const AUTH_ATTEMPT_WAIT_MS = 50;
-
-function getCookieSameSite() {
-    const raw = String(process.env.COOKIE_SAMESITE || 'lax').toLowerCase();
-    if (raw === 'lax' || raw === 'strict' || raw === 'none') return raw;
-    return 'lax';
-}
-
-function getCookieSecure() {
-    const v = String(process.env.COOKIE_SECURE || '').toLowerCase();
-    if (v === 'true') return true;
-    if (v === 'false') return false;
-    return isProd();
-}
-
-function getCookieDomain() {
-    const explicit = String(process.env.COOKIE_DOMAIN || '').trim();
-    if (explicit) return explicit;
-    try {
-        const host = new URL(FRONTEND_BASE || SERVER_BASE || '').hostname || '';
-        const normalizedHost = host.replace(/^\[|\]$/g, '').toLowerCase();
-        if (
-            !normalizedHost ||
-            normalizedHost === 'localhost' ||
-            normalizedHost.endsWith('.localhost') ||
-            net.isIP(normalizedHost)
-        ) {
-            return undefined;
-        }
-        const parts = normalizedHost.replace(/^www\./, '').split('.');
-        if (parts.length < 2) return undefined;
-        return `.${parts.slice(-2).join('.')}`;
-    } catch {
-        return undefined;
-    }
-}
-
-function cookieBaseOptions() {
-    const sameSite = getCookieSameSite();
-    const secure = getCookieSecure();
-    const domain = getCookieDomain();
-    return {
-        sameSite,
-        secure,
-        ...(domain ? { domain } : {}),
-    };
-}
-
-function accessCookieOptions() {
-    const base = cookieBaseOptions();
-    const maxAge = parseDurationToMs(getAccessTokenExpiresIn(), 15 * 60 * 1000);
-    return {
-        ...base,
-        path: '/',
-        maxAge,
-    };
-}
-
-function refreshCookieOptions() {
-    const base = cookieBaseOptions();
-    return {
-        ...base,
-        path: '/api/auth',
-        maxAge: getRefreshSessionTtlMs(),
-    };
-}
-
-function csrfCookieOptions() {
-    const base = cookieBaseOptions();
-    return {
-        ...base,
-        path: '/',
-        maxAge: getRefreshSessionTtlMs(),
-    };
-}
+const EMAIL_CHANGE_FINALIZATION_TTL_MS = 24 * 60 * 60 * 1000;
+const EMAIL_CHANGE_FINALIZATION_LEASE_MS = 2 * 60 * 1000;
 
 function setAuthCookies(req, res, { accessToken, refreshToken }) {
     res.cookie(ACCESS_TOKEN_COOKIE, accessToken, { ...accessCookieOptions(), httpOnly: true });
@@ -122,20 +63,16 @@ function setAuthCookies(req, res, { accessToken, refreshToken }) {
         res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, { ...refreshCookieOptions(), httpOnly: true });
     }
 
-    const sameSite = getCookieSameSite();
-    if (sameSite === 'none') {
-        const existingCsrf = String(req?.cookies?.[CSRF_COOKIE] || '').trim();
-        const csrf = existingCsrf || crypto.randomBytes(32).toString('hex');
-        res.cookie(CSRF_COOKIE, csrf, { ...csrfCookieOptions(), httpOnly: false });
-        return csrf;
-    }
-    return null;
+    const existingCsrf = String(req?.cookies?.[CSRF_COOKIE] || '').trim();
+    const csrf = existingCsrf || crypto.randomBytes(32).toString('hex');
+    res.cookie(CSRF_COOKIE, csrf, csrfCookieOptions());
+    return csrf;
 }
 
 function clearAuthCookies(res) {
     res.clearCookie(ACCESS_TOKEN_COOKIE, { ...accessCookieOptions(), httpOnly: true });
     res.clearCookie(REFRESH_TOKEN_COOKIE, { ...refreshCookieOptions(), httpOnly: true });
-    res.clearCookie(CSRF_COOKIE, { ...csrfCookieOptions(), httpOnly: false });
+    res.clearCookie(CSRF_COOKIE, csrfCookieOptions());
 }
 
 function getRefreshTokenFromRequest(req) {
@@ -143,20 +80,8 @@ function getRefreshTokenFromRequest(req) {
     return typeof raw === 'string' && raw ? raw : null;
 }
 
-function shouldEnforceCsrf() {
-    return getCookieSameSite() === 'none';
-}
-
 function enforceCookieCsrf(req, res) {
-    if (!shouldEnforceCsrf()) return true;
-    const csrfCookie = req?.cookies?.[CSRF_COOKIE];
-    const csrfHeader = req.headers['x-csrf-token'];
-    const csrf = Array.isArray(csrfHeader) ? csrfHeader[0] : csrfHeader;
-    if (!csrfCookie || !csrf || String(csrf) !== String(csrfCookie)) {
-        res.status(403).json({ code: AUTH_CODES.csrf, error: 'CSRF token missing or invalid' });
-        return false;
-    }
-    return true;
+    return validateCookieCsrf(req, res);
 }
 
 async function issueAuthSessionCookies(req, res, user, replayContext = null) {
@@ -175,6 +100,72 @@ async function rotateAuthSessionCookies(req, res, user, session) {
     const accessToken = signAccessToken(user, rotated.session);
     setAuthCookies(req, res, { accessToken, refreshToken: rotated.refreshToken });
     return { accessToken, refreshToken: rotated.refreshToken, session: rotated.session };
+}
+
+async function finalizeEmailChangeSession(req, res, user, verification) {
+    const leaseToken = crypto.randomBytes(24).toString('base64url');
+    const now = new Date();
+    const lease = await EmailVerification.findOneAndUpdate(
+        {
+            _id: verification._id,
+            userId: user._id,
+            consumedAt: verification.consumedAt,
+            finalizedAt: null,
+            supersededAt: null,
+            $or: [
+                { finalizationLeaseToken: null },
+                { finalizationLeaseExpiresAt: { $lte: now } },
+            ],
+        },
+        {
+            $set: {
+                finalizationLeaseToken: leaseToken,
+                finalizationLeaseExpiresAt: new Date(now.getTime() + EMAIL_CHANGE_FINALIZATION_LEASE_MS),
+            },
+        },
+        { new: true }
+    );
+    if (!lease) {
+        const error = new Error('Email change session finalization is already in progress.');
+        error.code = 'EMAIL_VERIFICATION_PENDING';
+        error.status = 409;
+        throw error;
+    }
+
+    try {
+        const { session } = await issueAuthSessionCookies(req, res, user);
+        await revokeOtherSessionsForUser(AuthSession, user._id, session._id, 'email_changed');
+        const finalized = await EmailVerification.updateOne(
+            {
+                _id: verification._id,
+                finalizationLeaseToken: leaseToken,
+                finalizedAt: null,
+                supersededAt: null,
+            },
+            {
+                $set: { finalizedAt: new Date() },
+                $unset: { finalizationLeaseToken: 1, finalizationLeaseExpiresAt: 1 },
+            }
+        );
+        if (finalized.matchedCount !== 1) {
+            throw new Error('Email change session finalization lost its lease.');
+        }
+    } catch (error) {
+        try {
+            await EmailVerification.updateOne(
+                {
+                    _id: verification._id,
+                    finalizationLeaseToken: leaseToken,
+                    finalizedAt: null,
+                    supersededAt: null,
+                },
+                { $unset: { finalizationLeaseToken: 1, finalizationLeaseExpiresAt: 1 } }
+            );
+        } catch (releaseError) {
+            console.error('Failed to release email change finalization lease:', releaseError);
+        }
+        throw error;
+    }
 }
 
 async function resolveLogoutUserIdFromRequest(req) {
@@ -222,8 +213,42 @@ function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function buildAuthAttemptHash(parts) {
-    return crypto.createHash('sha256').update(parts.join('\n')).digest('hex');
+const AUTH_ATTEMPT_HMAC_CONTEXT = 'frontendatlas:auth-attempt:v1';
+const AUTH_ATTEMPT_HMAC_PREFIX = 'hmac-sha256-v1:';
+const OAUTH_STATE_HMAC_CONTEXT = 'frontendatlas:oauth-state:v1';
+const OAUTH_STATE_MAX_AGE_MS = 10 * 60 * 1000;
+
+function deriveContextKey(context) {
+    // This derives a domain-separated MAC key from the JWT secret. It is not a
+    // password verifier and must remain deterministic across rolling deploys.
+    return crypto.createHmac('sha256', getJwtSecret()).update(context).digest();
+}
+
+function buildAuthAttemptHashes(parts) {
+    const canonical = JSON.stringify(parts.map((part) => String(part)));
+    const digest = crypto
+        .createHmac('sha256', deriveContextKey(AUTH_ATTEMPT_HMAC_CONTEXT))
+        .update(canonical)
+        .digest('hex');
+    return {
+        current: `${AUTH_ATTEMPT_HMAC_PREFIX}${digest}`,
+        // Read-only compatibility for 15-minute receipts written by the prior
+        // revision. New receipts always persist `current`, never this digest.
+        legacy: crypto.createHash('sha256').update(parts.join('\n')).digest('hex'),
+    };
+}
+
+function timingSafeStringEqual(left, right) {
+    const leftBuffer = Buffer.from(String(left || ''), 'utf8');
+    const rightBuffer = Buffer.from(String(right || ''), 'utf8');
+    return leftBuffer.length === rightBuffer.length && crypto.timingSafeEqual(leftBuffer, rightBuffer);
+}
+
+function authAttemptHashMatches(stored, hashes) {
+    if (String(stored || '').startsWith(AUTH_ATTEMPT_HMAC_PREFIX)) {
+        return timingSafeStringEqual(stored, hashes.current);
+    }
+    return /^[a-f0-9]{64}$/i.test(String(stored || '')) && timingSafeStringEqual(stored, hashes.legacy);
 }
 
 function getAuthAttemptContext(req, action, requestHash) {
@@ -233,11 +258,11 @@ function getAuthAttemptContext(req, action, requestHash) {
     return { action, contextId, requestId, requestHash };
 }
 
-async function waitForCompletedAuthAttemptReceipt(action, contextId, requestId, requestHash) {
+async function waitForCompletedAuthAttemptReceipt(action, contextId, requestId, requestHashes) {
     for (let attempt = 0; attempt < AUTH_ATTEMPT_WAIT_RETRIES; attempt += 1) {
         const receipt = await AuthAttemptReceipt.findOne({ action, contextId, requestId });
         if (!receipt) return null;
-        if (receipt.requestHash !== requestHash) {
+        if (!authAttemptHashMatches(receipt.requestHash, requestHashes)) {
             return { conflict: true };
         }
         if (receipt.status === 'completed') {
@@ -248,8 +273,8 @@ async function waitForCompletedAuthAttemptReceipt(action, contextId, requestId, 
     return { pending: true };
 }
 
-async function reserveAuthAttemptReceipt(req, action, requestHash) {
-    const context = getAuthAttemptContext(req, action, requestHash);
+async function reserveAuthAttemptReceipt(req, action, requestHashes) {
+    const context = getAuthAttemptContext(req, action, requestHashes.current);
     if (!context) return { mode: 'disabled', context: null, receipt: null };
 
     const existing = await AuthAttemptReceipt.findOne({
@@ -258,13 +283,13 @@ async function reserveAuthAttemptReceipt(req, action, requestHash) {
         requestId: context.requestId,
     });
     if (existing) {
-        if (existing.requestHash !== requestHash) {
+        if (!authAttemptHashMatches(existing.requestHash, requestHashes)) {
             return { mode: 'conflict', context, receipt: existing };
         }
         if (existing.status === 'completed') {
             return { mode: 'replay', context, receipt: existing };
         }
-        const waited = await waitForCompletedAuthAttemptReceipt(action, context.contextId, context.requestId, requestHash);
+        const waited = await waitForCompletedAuthAttemptReceipt(action, context.contextId, context.requestId, requestHashes);
         if (waited?.conflict) return { mode: 'conflict', context, receipt: existing };
         if (waited?.receipt) return { mode: 'replay', context, receipt: waited.receipt };
         return { mode: 'pending', context, receipt: existing };
@@ -275,13 +300,13 @@ async function reserveAuthAttemptReceipt(req, action, requestHash) {
             action,
             contextId: context.contextId,
             requestId: context.requestId,
-            requestHash,
+            requestHash: requestHashes.current,
             status: 'pending',
         });
         return { mode: 'reserved', context, receipt };
     } catch (error) {
         if (error?.code !== 11000) throw error;
-        const waited = await waitForCompletedAuthAttemptReceipt(action, context.contextId, context.requestId, requestHash);
+        const waited = await waitForCompletedAuthAttemptReceipt(action, context.contextId, context.requestId, requestHashes);
         if (waited?.conflict) return { mode: 'conflict', context, receipt: null };
         if (waited?.receipt) return { mode: 'replay', context, receipt: waited.receipt };
         return { mode: 'pending', context, receipt: null };
@@ -323,6 +348,10 @@ async function replayAuthAttemptReceipt(req, res, receipt) {
         AuthSession.findById(receipt.sessionId),
     ]);
     if (!user || !session || session.revokedAt || (session.expiresAt && session.expiresAt.getTime() <= Date.now())) {
+        await releaseAuthAttemptReceipt(receipt);
+        return false;
+    }
+    if (Number(session.passwordVersion || 0) !== resolvePasswordVersion(user)) {
         await releaseAuthAttemptReceipt(receipt);
         return false;
     }
@@ -414,6 +443,31 @@ const oauth = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_RE
 const b64 = s => Buffer.from(s, 'utf8').toString('base64url');
 const fromB64 = s => Buffer.from(s, 'base64url').toString('utf8');
 
+function signOAuthState(payload) {
+    const encoded = b64(JSON.stringify(payload));
+    const signature = crypto
+        .createHmac('sha256', deriveContextKey(OAUTH_STATE_HMAC_CONTEXT))
+        .update(encoded)
+        .digest('base64url');
+    return `${encoded}.${signature}`;
+}
+
+function readOAuthState(rawState) {
+    const [encoded, signature, extra] = String(rawState || '').split('.');
+    if (!encoded || !signature || extra) throw new Error('Bad state');
+    const expected = crypto
+        .createHmac('sha256', deriveContextKey(OAUTH_STATE_HMAC_CONTEXT))
+        .update(encoded)
+        .digest('base64url');
+    if (!timingSafeStringEqual(signature, expected)) throw new Error('Bad state');
+    const payload = JSON.parse(fromB64(encoded));
+    const issuedAt = Number(payload?.iat || 0);
+    if (!Number.isFinite(issuedAt) || issuedAt <= 0 || Date.now() - issuedAt > OAUTH_STATE_MAX_AGE_MS || issuedAt > Date.now() + 30_000) {
+        throw new Error('Expired state');
+    }
+    return payload;
+}
+
 function isAllowedRedirectUri(uri) {
     try {
         const u = new URL(String(uri));
@@ -430,7 +484,7 @@ function getClientState(req) {
 
 function getClientMode(req) {
     const m = req?.query?.mode;
-    return typeof m === 'string' ? m.slice(0, 64) : '';
+    return ['login', 'signup', 'link'].includes(String(m || '')) ? String(m) : 'login';
 }
 
 function normalizeEmailInput(value) {
@@ -462,6 +516,7 @@ const AUTH_REFRESH_WINDOW_MS = Number(process.env.AUTH_REFRESH_WINDOW_MS || 60 *
 const AUTH_REFRESH_MAX = Number(process.env.AUTH_REFRESH_MAX || 30);
 const AUTH_OAUTH_START_WINDOW_MS = Number(process.env.AUTH_OAUTH_START_WINDOW_MS || 10 * 60 * 1000);
 const AUTH_OAUTH_START_MAX = Number(process.env.AUTH_OAUTH_START_MAX || 20);
+const EMAIL_VERIFICATION_WINDOW_MS = 15 * 60 * 1000;
 
 const loginRateLimit = rateLimit({
     name: 'auth-login',
@@ -498,6 +553,24 @@ const oauthStartRateLimit = rateLimit({
     max: AUTH_OAUTH_START_MAX,
     code: AUTH_RATE_LIMIT_CODE,
     message: 'Too many OAuth attempts. Please wait and try again.',
+});
+
+const emailVerificationRequestRateLimit = rateLimit({
+    name: 'email-verification-request',
+    windowMs: EMAIL_VERIFICATION_WINDOW_MS,
+    max: 5,
+    code: AUTH_RATE_LIMIT_CODE,
+    message: 'Too many verification emails requested. Please wait and try again.',
+    keyGenerator: (req) => buildIdentifierKey(req, [req.auth?.userId]),
+});
+
+const emailVerificationConfirmRateLimit = rateLimit({
+    name: 'email-verification-confirm',
+    windowMs: EMAIL_VERIFICATION_WINDOW_MS,
+    max: 10,
+    code: AUTH_RATE_LIMIT_CODE,
+    message: 'Too many verification attempts. Please wait and try again.',
+    keyGenerator: (req) => buildIdentifierKey(req, [req.auth?.userId]),
 });
 
 function buildDefaultPrefs() {
@@ -545,26 +618,14 @@ function hasLinkedProvider(user, provider, providerId) {
 async function findUserByProviderIdentity(provider, providerId) {
     const normalizedProviderId = String(providerId || '').trim();
     if (!provider || !normalizedProviderId) return null;
-    return User.findOne({
-        providers: {
-            $elemMatch: {
-                provider,
-                providerId: normalizedProviderId,
-            },
-        },
-    });
+    return findOAuthIdentityUser(OAuthIdentity, User, provider, normalizedProviderId);
 }
 
 async function linkProviderToUser(user, provider, providerId) {
     const normalizedProviderId = String(providerId || '').trim();
     if (!user || !provider || !normalizedProviderId) return user;
 
-    const existingOwner = await findUserByProviderIdentity(provider, normalizedProviderId);
-    if (existingOwner && String(existingOwner._id) !== String(user._id)) {
-        const error = new Error('This OAuth provider is already linked to another account.');
-        error.code = 'OAUTH_PROVIDER_LINK_CONFLICT';
-        throw error;
-    }
+    await claimOAuthIdentity(OAuthIdentity, User, provider, normalizedProviderId, user._id);
 
     if (!hasLinkedProvider(user, provider, normalizedProviderId)) {
         user.providers = Array.isArray(user.providers) ? user.providers : [];
@@ -575,19 +636,6 @@ async function linkProviderToUser(user, provider, providerId) {
         });
     }
 
-    return user;
-}
-
-async function maybeUpgradeOAuthEmail(user, trustedEmail) {
-    const normalizedTrustedEmail = normalizeEmailInput(trustedEmail);
-    if (!user || !normalizedTrustedEmail || isGithubNoreplyEmail(normalizedTrustedEmail)) return user;
-    if (!isGithubNoreplyEmail(user.email)) return user;
-    if (normalizeEmailInput(user.email) === normalizedTrustedEmail) return user;
-
-    const existingOwner = await User.findOne({ email: normalizedTrustedEmail }).select('_id').lean();
-    if (existingOwner && String(existingOwner._id) !== String(user._id)) return user;
-
-    user.email = normalizedTrustedEmail;
     return user;
 }
 
@@ -610,9 +658,10 @@ async function resolveCurrentAuthenticatedUser(req) {
 
         const sessionId = typeof payload?.sid === 'string' && payload.sid ? payload.sid : null;
         if (sessionId) {
-            const session = await AuthSession.findById(sessionId).select('revokedAt expiresAt userId').lean();
+            const session = await AuthSession.findById(sessionId).select('revokedAt expiresAt userId passwordVersion').lean();
             if (!session || session.revokedAt || String(session.userId) !== String(user._id)) return null;
             if (session.expiresAt && new Date(session.expiresAt).getTime() <= Date.now()) return null;
+            if (Number(session.passwordVersion || 0) !== resolvePasswordVersion(user)) return null;
         }
 
         return user;
@@ -629,50 +678,48 @@ async function resolveOAuthUser({
     emailTrusted = false,
     usernameHint,
     avatarUrl,
-    allowGithubNoreplyFallback = false,
+    mode = 'login',
+    linkUserId = '',
 }) {
     const normalizedProviderId = String(providerId || '').trim();
     const normalizedEmail = normalizeEmailInput(email);
-    const currentUser = await resolveCurrentAuthenticatedUser(req);
-
     let user = await findUserByProviderIdentity(provider, normalizedProviderId);
-    if (user) {
-        touchOAuthProfile(user, avatarUrl);
-        if (emailTrusted) {
-            await maybeUpgradeOAuthEmail(user, normalizedEmail);
-        }
-        await user.save();
-        return user;
-    }
 
-    if (currentUser) {
+    if (mode === 'link') {
+        const currentUser = await resolveCurrentAuthenticatedUser(req);
+        if (!currentUser || String(currentUser._id) !== String(linkUserId || '')) {
+            const error = new Error('Your sign-in session changed. Start the account link again.');
+            error.code = 'OAUTH_LINK_SESSION_MISMATCH';
+            throw error;
+        }
+        if (user && String(user._id) !== String(currentUser._id)) {
+            const error = new Error('This OAuth provider is already linked to another account.');
+            error.code = 'OAUTH_PROVIDER_LINK_CONFLICT';
+            throw error;
+        }
         await linkProviderToUser(currentUser, provider, normalizedProviderId);
-        if (emailTrusted) {
-            await maybeUpgradeOAuthEmail(currentUser, normalizedEmail);
+        if (emailTrusted && normalizedEmail === normalizeEmailInput(currentUser.email)) {
+            currentUser.emailVerifiedAt = currentUser.emailVerifiedAt || new Date();
         }
         touchOAuthProfile(currentUser, avatarUrl);
         await currentUser.save();
         return currentUser;
     }
 
-    if (emailTrusted && normalizedEmail && !isGithubNoreplyEmail(normalizedEmail)) {
-        user = await User.findOne({ email: normalizedEmail });
-        if (user) {
-            await linkProviderToUser(user, provider, normalizedProviderId);
-            touchOAuthProfile(user, avatarUrl);
-            await user.save();
-            return user;
+    if (user) {
+        await linkProviderToUser(user, provider, normalizedProviderId);
+        touchOAuthProfile(user, avatarUrl);
+        if (emailTrusted && normalizedEmail === normalizeEmailInput(user.email)) {
+            user.emailVerifiedAt = user.emailVerifiedAt || new Date();
         }
+        await user.save();
+        return user;
     }
 
-    if (allowGithubNoreplyFallback && normalizedEmail && isGithubNoreplyEmail(normalizedEmail)) {
-        user = await User.findOne({ email: normalizedEmail });
-        if (user) {
-            await linkProviderToUser(user, provider, normalizedProviderId);
-            touchOAuthProfile(user, avatarUrl);
-            await user.save();
-            return user;
-        }
+    if (normalizedEmail && await User.exists({ email: normalizedEmail })) {
+        const error = new Error('An account already uses this email. Sign in with your password, then link the provider from Security.');
+        error.code = 'OAUTH_EMAIL_CONFLICT';
+        throw error;
     }
 
     user = await createOAuthUserWithUniqueUsername({
@@ -681,25 +728,48 @@ async function resolveOAuthUser({
         avatarUrl,
         provider,
         providerId: normalizedProviderId,
+        emailVerified: emailTrusted,
     });
+    await linkProviderToUser(user, provider, normalizedProviderId);
     touchOAuthProfile(user, avatarUrl);
     await user.save();
     return user;
 }
 
-function redirectOAuthFailure(res, redirectUri, state, mode, message) {
+const OAUTH_PUBLIC_FAILURES = Object.freeze({
+    OAUTH_EMAIL_CONFLICT: 'An account already uses this email. Sign in with your password, then link the provider from Security.',
+    OAUTH_EMAIL_UNVERIFIED: 'Your OAuth provider did not return a verified email address.',
+    OAUTH_LINK_SESSION_MISMATCH: 'Your sign-in session changed. Start the account link again.',
+    OAUTH_PROVIDER_LINK_CONFLICT: 'This OAuth provider is already linked to another account.',
+    OAUTH_PROVIDER_IDENTITY_AMBIGUOUS: 'This OAuth provider requires support review before it can be used.',
+});
+const OAUTH_DEFAULT_FAILURE = Object.freeze({
+    code: 'OAUTH_ERROR',
+    error: 'We could not finish authentication. Please try again.',
+});
+
+function getPublicOAuthFailure(error) {
+    const requestedCode = typeof error?.code === 'string' ? error.code.trim() : '';
+    const publicMessage = OAUTH_PUBLIC_FAILURES[requestedCode];
+    if (!publicMessage) return OAUTH_DEFAULT_FAILURE;
+    return { code: requestedCode, error: publicMessage };
+}
+
+function redirectOAuthFailure(res, redirectUri, state, mode, error) {
+    const failure = getPublicOAuthFailure(error);
     if (!redirectUri || !isAllowedRedirectUri(redirectUri)) {
-        return res.status(400).send(message || 'OAuth error');
+        return res.status(400).json(failure);
     }
 
     const dest = new URL(String(redirectUri));
     if (state) dest.searchParams.set('state', String(state));
     if (mode) dest.searchParams.set('mode', String(mode));
-    dest.searchParams.set('error', String(message || 'OAuth error'));
+    dest.searchParams.set('error', failure.error);
+    dest.searchParams.set('code', failure.code);
     return res.redirect(dest.toString());
 }
 
-async function createOAuthUserWithUniqueUsername({ email, usernameHint, avatarUrl, provider, providerId }) {
+async function createOAuthUserWithUniqueUsername({ email, usernameHint, avatarUrl, provider, providerId, emailVerified = false }) {
     const normalizedEmail = normalizeEmailInput(email);
     if (!normalizedEmail) throw new Error('Missing email for OAuth user');
 
@@ -712,23 +782,22 @@ async function createOAuthUserWithUniqueUsername({ email, usernameHint, avatarUr
         try {
             return await User.create({
                 email: normalizedEmail,
+                emailVerifiedAt: emailVerified ? new Date() : null,
                 username: candidate,
                 avatarUrl: avatarUrl || undefined,
                 passwordHash,
                 lastLoginAt: new Date(),
                 prefs: buildDefaultPrefs(),
-                providers: provider && providerId
-                    ? [{ provider, providerId: String(providerId), linkedAt: new Date() }]
-                    : [],
+                providers: [],
             });
         } catch (e) {
             if (!isDuplicateKeyError(e)) throw e;
             const fields = parseDuplicateFieldsFromError(e);
 
             if (fields.email) {
-                const existingByEmail = await User.findOne({ email: normalizedEmail });
-                if (existingByEmail) return existingByEmail;
-                continue;
+                const conflict = new Error('An account already uses this email. Sign in with your password, then link the provider from Security.');
+                conflict.code = 'OAUTH_EMAIL_CONFLICT';
+                throw conflict;
             }
             if (fields.username || !hasDuplicateField(fields)) continue;
         }
@@ -738,19 +807,22 @@ async function createOAuthUserWithUniqueUsername({ email, usernameHint, avatarUr
     try {
         return await User.create({
             email: normalizedEmail,
+            emailVerifiedAt: emailVerified ? new Date() : null,
             username: fallbackUsername,
             avatarUrl: avatarUrl || undefined,
             passwordHash,
             lastLoginAt: new Date(),
             prefs: buildDefaultPrefs(),
-            providers: provider && providerId
-                ? [{ provider, providerId: String(providerId), linkedAt: new Date() }]
-                : [],
+            providers: [],
         });
     } catch (e) {
         if (!isDuplicateKeyError(e)) throw e;
-        const existingByEmail = await User.findOne({ email: normalizedEmail });
-        if (existingByEmail) return existingByEmail;
+        const fields = parseDuplicateFieldsFromError(e);
+        if (fields.email) {
+            const conflict = new Error('An account already uses this email. Sign in with your password, then link the provider from Security.');
+            conflict.code = 'OAUTH_EMAIL_CONFLICT';
+            throw conflict;
+        }
         throw e;
     }
 }
@@ -806,6 +878,13 @@ const pick = (u) => {
         _id: u._id,
         username: u.username,
         email: u.email,
+        emailVerified: Boolean(u.emailVerifiedAt),
+        pendingEmail: u.pendingEmail || null,
+        linkedProviders: Array.from(new Set(
+            (Array.isArray(u.providers) ? u.providers : [])
+                .map((entry) => entry?.provider)
+                .filter((provider) => provider === 'google' || provider === 'github')
+        )),
         bio: u.bio,
         avatarUrl: u.avatarUrl,
         role: u.role,
@@ -826,8 +905,196 @@ const pick = (u) => {
 // GET /api/auth/ping
 router.get('/ping', (_req, res) => res.json({ ok: true }));
 
+// POST /api/auth/email-verification/request
+router.post(
+    '/email-verification/request',
+    requireAuth,
+    emailVerificationRequestRateLimit,
+    async (req, res) => {
+        try {
+            if (!enforceCookieCsrf(req, res)) return;
+            const user = await User.findById(req.auth.userId);
+            if (!user) return res.status(404).json({ error: 'User not found' });
+
+            const targetEmail = normalizeEmail(req.body?.email || user.email);
+            if (!isValidEmail(targetEmail)) {
+                return res.status(400).json({ code: 'INVALID_EMAIL', error: 'Please provide a valid email address.' });
+            }
+
+            const changingEmail = targetEmail !== normalizeEmail(user.email);
+            if (changingEmail) {
+                const existing = await User.exists({ email: targetEmail, _id: { $ne: user._id } });
+                if (existing) {
+                    return res.status(409).json({ code: 'EMAIL_IN_USE', error: 'That email address is already in use.' });
+                }
+                user.pendingEmail = targetEmail;
+                await user.save();
+            }
+
+            const result = await createAndSendVerification(EmailVerification, user, targetEmail);
+            return res.json({ ok: true, purpose: result.purpose, expiresAt: result.expiresAt });
+        } catch (error) {
+            console.error('Failed to send verification email:', error);
+            return res.status(503).json({ code: 'EMAIL_DELIVERY_FAILED', error: 'Verification email could not be sent. Please try again.' });
+        }
+    }
+);
+
+// POST /api/auth/email-verification/confirm
+router.post(
+    '/email-verification/confirm',
+    requireAuth,
+    emailVerificationConfirmRateLimit,
+    async (req, res) => {
+        try {
+            if (!enforceCookieCsrf(req, res)) return;
+            const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+            if (!token || token.length > 256) {
+                return res.status(400).json({ code: 'EMAIL_VERIFICATION_INVALID', error: 'Verification link is invalid or expired.' });
+            }
+
+            const now = new Date();
+            const verification = await EmailVerification.findOne({
+                userId: req.auth.userId,
+                tokenHash: hashVerificationToken(token),
+                $or: [
+                    {
+                        consumedAt: null,
+                        finalizedAt: null,
+                        supersededAt: null,
+                        expiresAt: { $gt: now },
+                    },
+                    {
+                        purpose: 'change_email',
+                        consumedAt: { $ne: null },
+                        finalizedAt: null,
+                        supersededAt: null,
+                        expiresAt: { $gt: now },
+                    },
+                ],
+            });
+            if (!verification) {
+                return res.status(400).json({ code: 'EMAIL_VERIFICATION_INVALID', error: 'Verification link is invalid or expired.' });
+            }
+
+            const user = await User.findById(req.auth.userId);
+            if (!user) return res.status(404).json({ error: 'User not found' });
+            const targetEmail = normalizeEmail(verification.email);
+            const finalizationRetry = Boolean(
+                verification.purpose === 'change_email' && verification.consumedAt && !verification.finalizedAt
+            );
+
+            if (finalizationRetry) {
+                if (
+                    normalizeEmail(user.email) !== targetEmail ||
+                    !user.emailVerifiedAt ||
+                    !user.authInvalidatedAt
+                ) {
+                    return res.status(400).json({ code: 'EMAIL_VERIFICATION_INVALID', error: 'Verification finalization state is invalid.' });
+                }
+                await finalizeEmailChangeSession(req, res, user, verification);
+                try {
+                    await applyPendingEntitlementsForUser(PendingEntitlement, user);
+                } catch (error) {
+                    console.error('Failed to apply pending entitlements after email verification:', error);
+                }
+                return res.json({ ok: true, user: pick(user) });
+            }
+
+            if (verification.purpose === 'change_email') {
+                if (normalizeEmail(user.pendingEmail) !== targetEmail) {
+                    return res.status(400).json({ code: 'EMAIL_VERIFICATION_INVALID', error: 'Verification link is no longer active.' });
+                }
+                const existing = await User.exists({ email: targetEmail, _id: { $ne: user._id } });
+                if (existing) {
+                    return res.status(409).json({ code: 'EMAIL_IN_USE', error: 'That email address is already in use.' });
+                }
+            } else if (normalizeEmail(user.email) !== targetEmail) {
+                return res.status(400).json({ code: 'EMAIL_VERIFICATION_INVALID', error: 'Verification link is no longer active.' });
+            }
+
+            const claimAt = new Date();
+            const originalExpiresAt = verification.expiresAt;
+            const emailChanged = verification.purpose === 'change_email';
+            const consumed = await EmailVerification.findOneAndUpdate(
+                {
+                    _id: verification._id,
+                    userId: user._id,
+                    consumedAt: null,
+                    finalizedAt: null,
+                    supersededAt: null,
+                    expiresAt: { $gt: claimAt },
+                },
+                {
+                    $set: {
+                        consumedAt: claimAt,
+                        ...(emailChanged
+                            ? { expiresAt: new Date(claimAt.getTime() + EMAIL_CHANGE_FINALIZATION_TTL_MS) }
+                            : {}),
+                    },
+                },
+                { new: true }
+            );
+            if (!consumed) {
+                return res.status(400).json({ code: 'EMAIL_VERIFICATION_INVALID', error: 'Verification link is invalid or expired.' });
+            }
+
+            if (emailChanged) user.email = targetEmail;
+            user.emailVerifiedAt = now;
+            user.pendingEmail = null;
+            if (emailChanged) {
+                // Put the version on the next whole second so even legacy access tokens
+                // without a pwdv claim that were minted in this second fail closed.
+                user.authInvalidatedAt = new Date((Math.floor(claimAt.getTime() / 1000) + 1) * 1000);
+            }
+            try {
+                await user.save();
+            } catch (error) {
+                await EmailVerification.updateOne(
+                    {
+                        _id: verification._id,
+                        consumedAt: claimAt,
+                        finalizedAt: null,
+                        supersededAt: null,
+                    },
+                    {
+                        $set: { consumedAt: null, expiresAt: originalExpiresAt },
+                        $unset: {
+                            finalizationLeaseToken: 1,
+                            finalizationLeaseExpiresAt: 1,
+                        },
+                    }
+                );
+                if (isDuplicateKeyError(error)) {
+                    return res.status(409).json({ code: 'EMAIL_IN_USE', error: 'That email address is already in use.' });
+                }
+                throw error;
+            }
+
+            if (emailChanged) {
+                clearAuthValidationCacheForUser(user._id);
+                await finalizeEmailChangeSession(req, res, user, consumed);
+            }
+
+            try {
+                await applyPendingEntitlementsForUser(PendingEntitlement, user);
+            } catch (error) {
+                console.error('Failed to apply pending entitlements after email verification:', error);
+            }
+
+            return res.json({ ok: true, user: pick(user) });
+        } catch (error) {
+            console.error('Failed to confirm verification email:', error);
+            return res.status(error?.status || 500).json({
+                ...(error?.code ? { code: error.code } : {}),
+                error: error?.status === 409 ? error.message : 'Failed to verify email',
+            });
+        }
+    }
+);
+
 // GET /api/auth/oauth/google/start
-router.get('/oauth/google/start', oauthStartRateLimit, (req, res) => {
+router.get('/oauth/google/start', oauthStartRateLimit, async (req, res) => {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
         return res.status(500).send('Google OAuth not configured');
     }
@@ -845,12 +1112,23 @@ router.get('/oauth/google/start', oauthStartRateLimit, (req, res) => {
 
     const clientState = getClientState(req);
     const mode = getClientMode(req);
+    const linkUser = mode === 'link' ? await resolveCurrentAuthenticatedUser(req) : null;
+    if (mode === 'link' && !linkUser) {
+        return res.status(401).json({ code: 'AUTH_REQUIRED', error: 'Sign in before linking an account.' });
+    }
 
     const nonce = crypto.randomUUID();
     // store CSRF nonce in cookie for the short hop
     res.cookie('g_csrf', nonce, { httpOnly: true, sameSite: 'lax', secure: isProd(), maxAge: 10 * 60 * 1000 });
 
-    const state = b64(JSON.stringify({ r: redirectParam, n: nonce, s: clientState, m: mode }));
+    const state = signOAuthState({
+        r: redirectParam,
+        n: nonce,
+        s: clientState,
+        m: mode,
+        u: linkUser ? String(linkUser._id) : '',
+        iat: Date.now(),
+    });
 
     const url = oauth.generateAuthUrl({
         access_type: 'offline',
@@ -873,7 +1151,7 @@ router.get('/oauth/google/callback', async (req, res) => {
         const rawState = String(req.query.state || '');
         if (!code || !rawState) return res.status(400).send('Missing code/state');
 
-        const { r, n, s, m } = JSON.parse(fromB64(rawState));
+        const { r, n, s, m, u } = readOAuthState(rawState);
         redirectUri = r;
         clientState = s;
         clientMode = m;
@@ -890,6 +1168,11 @@ router.get('/oauth/google/callback', async (req, res) => {
         const payload = ticket.getPayload(); // { email, name, picture, sub, ... }
         const email = normalizeEmailInput(payload?.email);
         if (!email) return res.status(400).send('No email');
+        if (payload?.email_verified !== true) {
+            const error = new Error('Google email is not verified');
+            error.code = 'OAUTH_EMAIL_UNVERIFIED';
+            throw error;
+        }
         const name = payload.name || (email ? email.split('@')[0] : `user_${String(payload?.sub || '').slice(-6)}`);
         const avatarUrl = payload?.picture || undefined;
         const providerId = String(payload?.sub || '').trim();
@@ -903,9 +1186,11 @@ router.get('/oauth/google/callback', async (req, res) => {
             emailTrusted: true,
             usernameHint: name,
             avatarUrl,
+            mode: m,
+            linkUserId: u,
         });
 
-        await issueAuthSessionCookies(req, res, user);
+        if (m !== 'link') await issueAuthSessionCookies(req, res, user);
 
         const dest = new URL(r);
         if (s) dest.searchParams.set('state', String(s));
@@ -914,12 +1199,12 @@ router.get('/oauth/google/callback', async (req, res) => {
         return res.redirect(dest.toString());
     } catch (e) {
         console.error('Google OAuth error:', e);
-        return redirectOAuthFailure(res, redirectUri, clientState, clientMode, e?.message || 'OAuth error');
+        return redirectOAuthFailure(res, redirectUri, clientState, clientMode, e);
     }
 });
 
 // GET /api/auth/oauth/github/start
-router.get('/oauth/github/start', oauthStartRateLimit, (req, res) => {
+router.get('/oauth/github/start', oauthStartRateLimit, async (req, res) => {
     if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
         return res.status(500).send('GitHub OAuth not configured');
     }
@@ -934,10 +1219,21 @@ router.get('/oauth/github/start', oauthStartRateLimit, (req, res) => {
 
     const clientState = getClientState(req);
     const mode = getClientMode(req);
+    const linkUser = mode === 'link' ? await resolveCurrentAuthenticatedUser(req) : null;
+    if (mode === 'link' && !linkUser) {
+        return res.status(401).json({ code: 'AUTH_REQUIRED', error: 'Sign in before linking an account.' });
+    }
 
     const nonce = crypto.randomUUID();
     res.cookie('gh_csrf', nonce, { httpOnly: true, sameSite: 'lax', secure: isProd(), maxAge: 10 * 60 * 1000 });
-    const state = b64(JSON.stringify({ r: redirectParam, n: nonce, s: clientState, m: mode }));
+    const state = signOAuthState({
+        r: redirectParam,
+        n: nonce,
+        s: clientState,
+        m: mode,
+        u: linkUser ? String(linkUser._id) : '',
+        iat: Date.now(),
+    });
 
     const url = new URL('https://github.com/login/oauth/authorize');
     url.searchParams.set('client_id', GITHUB_CLIENT_ID);
@@ -959,7 +1255,7 @@ router.get('/oauth/github/callback', async (req, res) => {
         const rawState = String(req.query.state || '');
         if (!code || !rawState) return res.status(400).send('Missing code/state');
 
-        const { r, n, s, m } = JSON.parse(fromB64(rawState));
+        const { r, n, s, m, u } = readOAuthState(rawState);
         redirectUri = r;
         clientState = s;
         clientMode = m;
@@ -996,13 +1292,14 @@ router.get('/oauth/github/callback', async (req, res) => {
         const emailsPayload = await emailsRes.json();
         const emails = Array.isArray(emailsPayload) ? emailsPayload : [];
 
-        const publicEmail = normalizeEmailInput(gh.email || '');
         const primaryVerified = normalizeEmailInput(emails.find((entry) => entry?.primary && entry?.verified)?.email || '');
         const anyVerified = normalizeEmailInput(emails.find((entry) => entry?.verified)?.email || '');
-        const noreplyAlias = normalizeEmailInput(`${gh.id}+${gh.login}@users.noreply.github.com`);
         const trustedEmail = primaryVerified || anyVerified || '';
-        const email = trustedEmail || noreplyAlias || publicEmail;
-        const emailTrusted = Boolean(trustedEmail) && !isGithubNoreplyEmail(trustedEmail);
+        if (!trustedEmail || isGithubNoreplyEmail(trustedEmail)) {
+            const error = new Error('GitHub account has no verified email');
+            error.code = 'OAUTH_EMAIL_UNVERIFIED';
+            throw error;
+        }
 
         const username = gh.name || gh.login;
         const avatarUrl = gh.avatar_url;
@@ -1010,14 +1307,15 @@ router.get('/oauth/github/callback', async (req, res) => {
             req,
             provider: 'github',
             providerId,
-            email,
-            emailTrusted,
+            email: trustedEmail,
+            emailTrusted: true,
             usernameHint: username,
             avatarUrl,
-            allowGithubNoreplyFallback: true,
+            mode: m,
+            linkUserId: u,
         });
 
-        await issueAuthSessionCookies(req, res, user);
+        if (m !== 'link') await issueAuthSessionCookies(req, res, user);
         const dest = new URL(String(r));
         if (s) dest.searchParams.set('state', String(s));
         if (m) dest.searchParams.set('mode', String(m));
@@ -1025,7 +1323,7 @@ router.get('/oauth/github/callback', async (req, res) => {
         return res.redirect(dest.toString());
     } catch (e) {
         console.error('GitHub OAuth error:', e);
-        return redirectOAuthFailure(res, redirectUri, clientState, clientMode, e?.message || 'OAuth error');
+        return redirectOAuthFailure(res, redirectUri, clientState, clientMode, e);
     }
 });
 
@@ -1046,13 +1344,13 @@ router.post('/signup', signupRateLimit, async (req, res) => {
             return res.status(400).json({ error: 'Password must be at least 8 characters and include a letter and a number.' });
         }
 
-        const requestHash = buildAuthAttemptHash([
+        const requestHashes = buildAuthAttemptHashes([
             'signup',
             normalizedEmail,
             normalizedUsername,
             String(password),
         ]);
-        attemptReservation = await reserveAuthAttemptReceipt(req, 'signup', requestHash);
+        attemptReservation = await reserveAuthAttemptReceipt(req, 'signup', requestHashes);
         if (attemptReservation.mode === 'conflict') {
             return res.status(409).json({
                 code: AUTH_DUPLICATE_CONFLICT_CODE,
@@ -1111,6 +1409,14 @@ router.post('/signup', signupRateLimit, async (req, res) => {
             userId: user._id,
             sessionId: session._id,
         });
+        if (process.env.NODE_ENV !== 'test' || process.env.EMAIL_VERIFICATION_AUTO_SEND === 'true') {
+            try {
+                await createAndSendVerification(EmailVerification, user, user.email);
+            } catch (error) {
+                // Account/session creation must not depend on SMTP availability.
+                console.error('Failed to send signup verification email:', error);
+            }
+        }
         return sendAuthSuccess(req, res, 201, user, accessToken);
     } catch (e) {
         await releaseAuthAttemptReceipt(attemptReservation?.receipt);
@@ -1138,6 +1444,26 @@ router.post('/login', loginRateLimit, async (req, res) => {
         const identifier = normalizeLoginIdentifier(emailOrUsername);
         if (!identifier || !password) return res.status(400).json({ error: 'Missing fields' });
 
+        const requestHashes = buildAuthAttemptHashes([
+            'login',
+            /@/.test(identifier) ? normalizeEmailInput(identifier) : normalizeUsernameInput(identifier),
+            String(password),
+        ]);
+        const existingAttemptContext = getAuthAttemptContext(req, 'login', requestHashes.current);
+        if (existingAttemptContext) {
+            const existingAttempt = await AuthAttemptReceipt.findOne({
+                action: 'login',
+                contextId: existingAttemptContext.contextId,
+                requestId: existingAttemptContext.requestId,
+            });
+            if (existingAttempt && !authAttemptHashMatches(existingAttempt.requestHash, requestHashes)) {
+                return res.status(409).json({
+                    code: AUTH_DUPLICATE_CONFLICT_CODE,
+                    error: 'This sign-in request conflicts with a pending authentication attempt.',
+                });
+            }
+        }
+
         const query = /@/.test(identifier)
             ? { email: normalizeEmailInput(identifier) }
             : { username: normalizeUsernameInput(identifier) };
@@ -1148,12 +1474,7 @@ router.post('/login', loginRateLimit, async (req, res) => {
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
 
-        const requestHash = buildAuthAttemptHash([
-            'login',
-            /@/.test(identifier) ? normalizeEmailInput(identifier) : normalizeUsernameInput(identifier),
-            String(password),
-        ]);
-        attemptReservation = await reserveAuthAttemptReceipt(req, 'login', requestHash);
+        attemptReservation = await reserveAuthAttemptReceipt(req, 'login', requestHashes);
         if (attemptReservation.mode === 'conflict') {
             return res.status(409).json({
                 code: AUTH_DUPLICATE_CONFLICT_CODE,

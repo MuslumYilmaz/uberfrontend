@@ -66,11 +66,11 @@ function getRefreshSessionTtlDays() {
 }
 
 function resolvePasswordVersion(user) {
-  const raw = user?.passwordUpdatedAt;
-  if (!raw) return 0;
-  const date = raw instanceof Date ? raw : new Date(raw);
-  const ts = date.getTime();
-  return Number.isFinite(ts) ? ts : 0;
+  const timestamps = [user?.passwordUpdatedAt, user?.authInvalidatedAt]
+    .filter(Boolean)
+    .map((raw) => raw instanceof Date ? raw.getTime() : new Date(raw).getTime())
+    .filter(Number.isFinite);
+  return timestamps.length ? Math.max(...timestamps) : 0;
 }
 
 function hashRefreshSecret(secret) {
@@ -194,6 +194,15 @@ async function revokeAllSessionsForUser(AuthSession, userId, reason) {
   clearAuthValidationCacheForUser(userId);
 }
 
+async function revokeOtherSessionsForUser(AuthSession, userId, keepSessionId, reason) {
+  if (!userId || !keepSessionId) return;
+  await AuthSession.updateMany(
+    { userId, _id: { $ne: keepSessionId }, revokedAt: null },
+    { $set: { revokedAt: new Date(), revokedReason: String(reason || 'revoked') } }
+  );
+  clearAuthValidationCacheForUser(userId);
+}
+
 async function findRefreshSession(AuthSession, rawToken) {
   const parsed = parseRefreshToken(rawToken);
   if (!parsed) return { session: null, status: 'invalid' };
@@ -239,6 +248,7 @@ module.exports = {
   parseDurationToMs,
   parseRefreshToken,
   revokeAllSessionsForUser,
+  revokeOtherSessionsForUser,
   revokeSessionById,
   rotateAuthSession,
   signAccessToken,

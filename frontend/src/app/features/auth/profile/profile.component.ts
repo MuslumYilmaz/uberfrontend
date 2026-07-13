@@ -21,6 +21,7 @@ import { openExternalWindow } from '../../../core/utils/external-window.util';
 import { ConfiguredPaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
+import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 
 type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
 type ProfileShelfBadge = DashboardAchievement & {
@@ -31,7 +32,7 @@ type ProfileShelfBadge = DashboardAchievement & {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, DialogModule, RouterModule, FaGlyphComponent],
+  imports: [CommonModule, FormsModule, DialogModule, RouterModule, FaGlyphComponent, FaButtonComponent],
   styleUrls: ['./profile.component.css'],
   template: `
     <div class="profile-layout" *ngIf="user(); else loadingTpl">
@@ -294,9 +295,30 @@ type ProfileShelfBadge = DashboardAchievement & {
 
           <div class="account-card">
             <h4>Email</h4>
-            <p class="desc">Update your email address.</p>
-            <input [(ngModel)]="form.email" />
-            <button class="btn-save" [disabled]="saving() || !dirty()" (click)="save()">Save changes</button>
+            <p class="desc">
+              {{ user()!.emailVerified ? 'Verified email' : 'Verify this email before using email-based purchases.' }}
+            </p>
+            <input [(ngModel)]="form.email" type="email" autocomplete="email" />
+            <p class="desc" *ngIf="user()!.pendingEmail" data-testid="profile-pending-email">
+              Waiting for confirmation: {{ user()!.pendingEmail }}
+            </p>
+            <p class="field-success" *ngIf="emailVerificationMessage()" data-testid="profile-email-verification-success">
+              {{ emailVerificationMessage() }}
+            </p>
+            <p class="field-error" *ngIf="emailVerificationError()" data-testid="profile-email-verification-error">
+              {{ emailVerificationError() }}
+            </p>
+            <button
+              faButton
+              variant="primary"
+              size="sm"
+              data-testid="profile-request-email-verification"
+              [loading]="emailVerificationLoading()"
+              [disabled]="!canRequestEmailVerification()"
+              (click)="requestEmailVerification()"
+            >
+              {{ emailVerificationButtonLabel() }}
+            </button>
           </div>
         </section>
 
@@ -347,6 +369,27 @@ type ProfileShelfBadge = DashboardAchievement & {
 
         <!-- Security -->
         <section *ngIf="tab() === 'security'" class="panel">
+          <div class="account-card" data-testid="profile-connected-accounts">
+            <h4>Connected accounts</h4>
+            <p class="desc">Providers are linked only when you start the connection from this signed-in account.</p>
+            <div class="connected-account-row" *ngFor="let provider of oauthProviders">
+              <div>
+                <strong>{{ provider.label }}</strong>
+                <p class="desc">{{ isProviderLinked(provider.id) ? 'Connected' : 'Not connected' }}</p>
+              </div>
+              <button
+                faButton
+                variant="neutral"
+                size="sm"
+                [attr.data-testid]="'profile-link-' + provider.id"
+                [disabled]="isProviderLinked(provider.id)"
+                (click)="linkProvider(provider.id)"
+              >
+                {{ isProviderLinked(provider.id) ? 'Connected' : 'Connect' }}
+              </button>
+            </div>
+          </div>
+
           <div class="account-card">
             <h4>Change password</h4>
             <p class="desc">Update your password to keep your account secure.</p>
@@ -502,6 +545,13 @@ export class ProfileComponent implements OnInit {
   solved = signal<SolvedQuestion[]>([]);
   solvedLoading = signal(false);
   saving = signal(false);
+  emailVerificationLoading = signal(false);
+  emailVerificationMessage = signal<string | null>(null);
+  emailVerificationError = signal<string | null>(null);
+  readonly oauthProviders: ReadonlyArray<{ id: 'google' | 'github'; label: string }> = [
+    { id: 'google', label: 'Google' },
+    { id: 'github', label: 'GitHub' },
+  ];
   changePasswordOpen = signal(false);
   changePasswordSaving = signal(false);
   changePasswordError = signal<string | null>(null);
@@ -762,10 +812,53 @@ export class ProfileComponent implements OnInit {
   dirty(): boolean {
     const u = this.user();
     if (!u) return false;
-    return (
-      u.username !== this.form.username ||
-      u.email !== this.form.email
-    );
+    return u.username !== this.form.username;
+  }
+
+  canRequestEmailVerification(): boolean {
+    const u = this.user();
+    const email = this.form.email.trim().toLowerCase();
+    if (!u || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+    return !u.emailVerified || email !== u.email.toLowerCase();
+  }
+
+  emailVerificationButtonLabel(): string {
+    const u = this.user();
+    if (!u) return 'Send verification email';
+    return this.form.email.trim().toLowerCase() === u.email.toLowerCase()
+      ? 'Send verification email'
+      : 'Confirm new email';
+  }
+
+  requestEmailVerification(): void {
+    if (!this.canRequestEmailVerification()) return;
+    this.emailVerificationLoading.set(true);
+    this.emailVerificationMessage.set(null);
+    this.emailVerificationError.set(null);
+    this.auth.requestEmailVerification(this.form.email.trim()).pipe(take(1)).subscribe({
+      next: ({ purpose }) => {
+        this.emailVerificationLoading.set(false);
+        this.emailVerificationMessage.set(
+          purpose === 'change_email'
+            ? 'Check your new inbox to confirm the email change.'
+            : 'Check your inbox to verify your email.',
+        );
+        this.auth.fetchMe().pipe(take(1)).subscribe();
+      },
+      error: (error) => {
+        this.emailVerificationLoading.set(false);
+        this.emailVerificationError.set(error?.error?.error || 'We could not send the verification email.');
+      },
+    });
+  }
+
+  isProviderLinked(provider: 'google' | 'github'): boolean {
+    return this.user()?.linkedProviders?.includes(provider) === true;
+  }
+
+  linkProvider(provider: 'google' | 'github'): void {
+    if (this.isProviderLinked(provider)) return;
+    this.auth.oauthStart(provider, 'link', '/profile?tab=security');
   }
 
   formatTech(t: string): string {
@@ -789,7 +882,6 @@ export class ProfileComponent implements OnInit {
     this.auth
       .updateProfile(u._id, {
         username: this.form.username,
-        email: this.form.email,
       })
       .subscribe({
         next: (updated) => {

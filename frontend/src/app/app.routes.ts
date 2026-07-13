@@ -229,6 +229,19 @@ export const routes: Routes = [
     ],
   },
 
+  {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./features/auth/verify-email/verify-email.component').then((m) => m.VerifyEmailComponent),
+    data: {
+      seo: {
+        title: 'Verify email',
+        description: 'Verify the email address for your FrontendAtlas account.',
+        robots: 'noindex,nofollow',
+      },
+    },
+  },
+
   // Courses
   // {
   //   path: 'courses',

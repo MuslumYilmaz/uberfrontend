@@ -248,4 +248,19 @@ describe('billing checkout start route', () => {
     expect(res.status).toBe(409);
     expect(res.body.code).toBe('CHECKOUT_UNAVAILABLE');
   });
+
+  test('rejects Gumroad checkout before creating an attempt when email is unverified', async () => {
+    process.env.BILLING_PROVIDER = 'gumroad';
+    process.env.GUMROAD_MONTHLY_URL = 'https://gumroad.example.test/buy/monthly';
+    const user = await seedUser({ emailVerifiedAt: null });
+
+    const res = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly' });
+
+    expect(res.status).toBe(409);
+    expect(res.body.code).toBe('EMAIL_VERIFICATION_REQUIRED');
+    expect(await CheckoutAttempt.countDocuments({ userId: user._id })).toBe(0);
+  });
 });

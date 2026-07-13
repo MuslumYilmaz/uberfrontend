@@ -73,6 +73,9 @@ export interface User {
   _id: string;
   username: string;
   email: string;
+  emailVerified?: boolean;
+  pendingEmail?: string | null;
+  linkedProviders?: Array<'google' | 'github'>;
   bio?: string;
   avatarUrl?: string;
   role: Role;
@@ -293,15 +296,35 @@ export class AuthService {
       prefs: u.prefs ? { ...u.prefs } : u.prefs,
       stats: u.stats ? { ...u.stats } as any : u.stats,
       billing: u.billing ? { ...u.billing } as any : u.billing,
+      linkedProviders: Array.isArray(u.linkedProviders) ? [...u.linkedProviders] : [],
       solvedQuestionIds: Array.isArray(u.solvedQuestionIds) ? [...u.solvedQuestionIds] : []
     };
   }
 
   /** PUT /api/users/:id */
-  updateProfile(id: string, data: Partial<Pick<User, 'username' | 'email' | 'bio' | 'avatarUrl' | 'prefs'>>) {
+  updateProfile(id: string, data: Partial<Pick<User, 'username' | 'bio' | 'avatarUrl' | 'prefs'>>) {
     return this.http
       .put<User>(apiUrl(`/users/${id}`), data, { withCredentials: true })
-      .pipe(tap((u) => this.user.set(u)));
+      .pipe(
+        map((u) => this.cloneUser(u)),
+        tap((u) => this.user.set(u)),
+      );
+  }
+
+  requestEmailVerification(email?: string) {
+    return this.http.post<{ ok: boolean; purpose: 'verify_email' | 'change_email'; expiresAt: string }>(
+      `${this.base}/email-verification/request`,
+      email ? { email } : {},
+      { withCredentials: true },
+    );
+  }
+
+  confirmEmailVerification(token: string) {
+    return this.http.post<{ ok: boolean; user: User }>(
+      `${this.base}/email-verification/confirm`,
+      { token },
+      { withCredentials: true },
+    ).pipe(tap(({ user }) => this.user.set(this.cloneUser(user))));
   }
 
   /** POST /api/auth/change-password */
@@ -340,7 +363,7 @@ export class AuthService {
   /** Start OAuth: redirects to backend which 302s to Google */
   oauthStart(
     provider: 'google' | 'github',
-    mode: 'login' | 'signup' = 'login',
+    mode: 'login' | 'signup' | 'link' = 'login',
     redirectTo?: string | null,
   ) {
     const base = this.frontendBase || (typeof window !== 'undefined' ? window.location.origin : '');
@@ -383,7 +406,13 @@ export class AuthService {
     } catch { }
 
     if (qp['error']) {
-      return throwError(() => new Error(String(qp['error'])));
+      return throwError(() => ({
+        status: 400,
+        error: {
+          code: String(qp['code'] || 'OAUTH_ERROR'),
+          error: String(qp['error']),
+        },
+      }));
     }
 
     // token may be in query OR in the hash (legacy)
@@ -452,11 +481,11 @@ export class AuthService {
     }
   }
 
-  consumeOAuthMode(): 'login' | 'signup' | null {
+  consumeOAuthMode(): 'login' | 'signup' | 'link' | null {
     try {
       const stored = sessionStorage.getItem(AuthService.OAUTH_MODE_KEY);
       sessionStorage.removeItem(AuthService.OAUTH_MODE_KEY);
-      return stored === 'login' || stored === 'signup' ? stored : null;
+      return stored === 'login' || stored === 'signup' || stored === 'link' ? stored : null;
     } catch {
       return null;
     }

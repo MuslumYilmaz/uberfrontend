@@ -26,6 +26,8 @@ const GumroadProviderSchema = new mongoose.Schema(
     purchaserEmail: String,
     lastEventId: String,
     lastEventAt: Date,
+    lastEventReceivedAt: Date,
+    lastEventOrderKey: String,
   },
   { _id: false }
 );
@@ -39,6 +41,8 @@ const LemonSqueezyProviderSchema = new mongoose.Schema(
     purchaserEmail: String,
     lastEventId: String,
     lastEventAt: Date,
+    lastEventReceivedAt: Date,
+    lastEventOrderKey: String,
   },
   { _id: false }
 );
@@ -49,6 +53,8 @@ const StripeProviderSchema = new mongoose.Schema(
     subscriptionId: String,
     lastEventId: String,
     lastEventAt: Date,
+    lastEventReceivedAt: Date,
+    lastEventOrderKey: String,
   },
   { _id: false }
 );
@@ -58,6 +64,8 @@ const UserSchema = new mongoose.Schema(
     // identity
     username: { type: String, required: true, unique: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    emailVerifiedAt: { type: Date, default: null },
+    pendingEmail: { type: String, lowercase: true, trim: true, default: null },
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     accessTier: { type: String, enum: ['free', 'premium'], default: 'free' },
@@ -166,6 +174,7 @@ const UserSchema = new mongoose.Schema(
 
     // security / housekeeping
     passwordUpdatedAt: Date,
+    authInvalidatedAt: Date,
     lastLoginAt: Date,
   },
   { timestamps: true }

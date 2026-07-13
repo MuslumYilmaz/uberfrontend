@@ -38,6 +38,7 @@ import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../../console-logger/console-logger.component';
+import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-check-runner';
 
 type WebEditorLang = 'html' | 'css';
 
@@ -447,6 +448,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private webSaveTimer: any = null;
   private pendingWebSaves: Partial<Record<WebEditorLang, { key: string; code: string }>> = {};
   private initSeq = 0;
+  private webTestRunSeq = 0;
+  private readonly opaqueCheckRunner = new OpaqueDomCheckRunner();
   private destroyed = false;
   private webPreviewTimer: any = null;
   private deferredPreviewTimer?: number;
@@ -466,6 +469,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   ngOnChanges(ch: SimpleChanges): void {
+    if (ch['question']) {
+      this.cancelWebTestRun();
+    }
     if (ch['question'] && this.question) {
       void this.initFromQuestion();
     }
@@ -489,6 +495,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   ngOnDestroy(): void {
     this.destroyed = true;
     this.initSeq += 1;
+    this.webTestRunSeq += 1;
+    this.opaqueCheckRunner.destroy();
     void this.flushPendingWebSaves();
     if (this.isBrowser) {
       window.removeEventListener('pointermove', this.onPointerMove);
@@ -804,6 +812,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   // ---------- tests ----------
   async runWebTests(): Promise<TestResult[]> {
     const q = this.question; if (!q) return [];
+    const runSeq = ++this.webTestRunSeq;
+    this.opaqueCheckRunner.cancel();
 
     this.subTab.set('tests');
     this.hasRunTests = false;
@@ -817,32 +827,25 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       return [];
     }
 
-    const htmlDoc = this.previewDocRaw();
-    const { frame, doc, win } = await this.mountScratchDoc(htmlDoc);
-
-    const results: TestResult[] = [];
-    const it = async (name: string, fn: () => any | Promise<any>) => {
-      try { await fn(); results.push({ name, passed: true }); }
-      catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
-    };
-    const test = it;
-    const expect = this.makeDomExpect(doc, win);
-    const q$ = (sel: string) => doc.querySelector(sel);
-    const qa$ = (sel: string) => Array.from(doc.querySelectorAll(sel));
-
+    let results: TestResult[];
     try {
-      const runner = new Function('document', 'window', 'it', 'test', 'expect', 'q', 'qa', code);
-      await runner.call(undefined, doc, win, it, test, expect as any, q$, qa$);
-    } catch (e: any) {
-      results.unshift({ name: 'Failed to execute test file', passed: false, error: String(e?.message ?? e) });
-    } finally {
-      try { frame.remove(); } catch { }
+      results = await this.opaqueCheckRunner.runWeb(this.previewDocRaw(), code);
+    } catch (error) {
+      if (error instanceof OpaqueCheckCancelledError) return [];
+      const message = error instanceof Error ? error.message : String(error || 'Web checks failed');
+      results = [{ name: 'Failed to execute test file', passed: false, error: message.slice(0, 4000) }];
     }
 
+    if (runSeq !== this.webTestRunSeq || this.destroyed || this.question?.id !== q.id) return results;
     this.testResults.set(results);
     this.hasRunTests = true;
     this.recordWebAttempt(q, results);
     return results;
+  }
+
+  private cancelWebTestRun(): void {
+    this.webTestRunSeq += 1;
+    this.opaqueCheckRunner.cancel();
   }
 
   private recordWebAttempt(question: Question, results: TestResult[]): void {
@@ -1026,50 +1029,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.showRestoreBanner.set(false);
   }
 
-  // ---------- helpers (unchanged) ----------
-  private makeDomExpect(doc: Document, win: Window) {
-    const fmt = (v: any) => {
-      try { if (v instanceof Element) return `<${v.tagName.toLowerCase()}>`; return JSON.stringify(v); }
-      catch { return String(v); }
-    };
-    const expect = (received: any) => ({
-      toBe: (exp: any) => { if (received !== exp) throw new Error(`Expected ${fmt(received)} to be ${fmt(exp)}`); },
-      toBeTruthy: () => { if (!received) throw new Error(`Expected value to be truthy, got ${fmt(received)}`); },
-      toHaveAttribute: (name: string, value?: string) => {
-        if (!(received instanceof Element)) throw new Error('toHaveAttribute expects an Element');
-        const got = received.getAttribute(name);
-        const ok = (value === undefined) ? got !== null : got === value;
-        if (!ok) throw new Error(`Expected element to have [${name}${value !== undefined ? `="${value}"` : ''}], got ${fmt(got)}`);
-      },
-      toHaveText: (substr: string) => {
-        if (!(received instanceof Element)) throw new Error('toHaveText expects an Element');
-        const txt = (received.textContent || '').trim();
-        if (!txt.includes(substr)) throw new Error(`Expected text to include "${substr}", got "${txt}"`);
-      },
-      toBeVisible: () => {
-        if (!(received instanceof Element)) throw new Error('toBeVisible expects Element');
-        const cs = win.getComputedStyle(received);
-        if (cs.display === 'none' || cs.visibility === 'hidden') throw new Error('Element is not visible');
-      }
-    });
-    return expect;
-  }
-
-  private async mountScratchDoc(html: string): Promise<{ frame: HTMLIFrameElement; doc: Document; win: Window }> {
-    const frame = document.createElement('iframe');
-    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-    frame.style.cssText = 'position:fixed;left:-10000px;top:-10000px;width:0;height:0;border:0;visibility:hidden;';
-    document.body.appendChild(frame);
-    const doc = frame.contentDocument as Document;
-    doc.open(); doc.write(html); doc.close();
-    await new Promise<void>((res) => {
-      if (doc.readyState === 'complete' || doc.readyState === 'interactive') res();
-      else doc.addEventListener('DOMContentLoaded', () => res(), { once: true });
-    });
-    const win = frame.contentWindow as Window;
-    return { frame, doc, win };
-  }
-
+  // ---------- helpers ----------
   private buildWebPreviewDoc(userHtml: string, css: string): string {
     const html = this.stripScriptTags((userHtml || '').trim());
     const cssBlock = (css || '').trim();
@@ -1524,7 +1484,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	    if (!html) {
 	      this.previewContentWindow = null;
 	      try {
-	        // Avoid touching `contentDocument` (cross-origin when sandboxed without allow-same-origin).
+	        // Avoid touching the iframe DOM across its opaque origin.
 	        // Use replace() to avoid adding a joint-history entry.
 	        frameEl.contentWindow?.location.replace('about:blank');
 	      } catch { }

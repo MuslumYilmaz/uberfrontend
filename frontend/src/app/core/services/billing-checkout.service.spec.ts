@@ -181,6 +181,32 @@ describe('BillingCheckoutService', () => {
     expect(lemonSqueezyCheckout.open).not.toHaveBeenCalled();
   });
 
+  it('maps Gumroad email verification gating without opening checkout', async () => {
+    const configPromise = service.getCheckoutConfig();
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'gumroad',
+      provider: 'gumroad',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: false },
+    });
+    await configPromise;
+
+    const checkoutPromise = service.checkout('monthly');
+    await Promise.resolve();
+
+    httpMock.expectOne(apiUrl('/billing/checkout/start')).flush(
+      { code: 'EMAIL_VERIFICATION_REQUIRED', error: 'Verify your email before starting a Gumroad checkout' },
+      { status: 409, statusText: 'Conflict' },
+    );
+
+    await expectAsync(checkoutPromise).toBeResolvedTo({
+      ok: false,
+      reason: 'verification-required',
+      provider: 'gumroad',
+    });
+  });
+
   it('loads checkout configuration from the backend', async () => {
     const configPromise = service.getCheckoutConfig();
 

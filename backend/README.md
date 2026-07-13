@@ -17,9 +17,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - Short-lived access tokens are stored in an `httpOnly` cookie (`access_token`) to reduce XSS token theft risk.
 - Long-lived refresh sessions are stored server-side and rotated through an `httpOnly` cookie (`refresh_token`).
 - Protected routes accept the cookie (primary) and `Authorization: Bearer <token>` (fallback).
-- If `COOKIE_SAMESITE=none`, the backend enables double-submit CSRF protection:
-  - Sets a non-`httpOnly` `csrf_token` cookie on login/signup/OAuth.
-  - Requires `X-CSRF-Token` header to match `csrf_token` on `POST/PUT/PATCH/DELETE` protected routes and refresh/logout requests.
+- The backend enables double-submit CSRF protection for cookie authentication in every `SameSite` mode:
+  - Sets a non-`httpOnly` `csrf_token` cookie on login/signup/OAuth/refresh and repairs it during authenticated safe GET requests.
+  - Requires a timing-safe `X-CSRF-Token` match on cookie-authenticated `POST/PUT/PATCH/DELETE` requests. Bearer-only requests and signed webhooks are unaffected.
 
 ### Required env vars
 
@@ -32,6 +32,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `COOKIE_SAMESITE`: `lax` (default), `strict`, or `none`.
 - `COOKIE_DOMAIN`: optional, e.g. `.frontendatlas.com` to share cookies across subdomains.
 - `COOKIE_SECURE`: `true` in production over HTTPS, `false` for local HTTP dev.
+- `API_RATE_LIMIT_MAX` / `API_RATE_LIMIT_WINDOW_MS`: general `/api/**` IP quota (defaults: `300` / `60000`).
+- `WEBHOOK_RATE_LIMIT_MAX` / `WEBHOOK_RATE_LIMIT_WINDOW_MS`: billing webhook IP quota (defaults: `1200` / `60000`).
+- `RATE_LIMIT_STORE`: `auto` (Upstash when configured), `redis`, or process-local `memory`.
 
 ### Billing (webhooks)
 
@@ -128,6 +131,12 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 - `FRONTEND_BASE` (frontend base URL, used for OAuth redirect URLs)
 - `COOKIE_SECURE=true`
 - `TRUST_PROXY=true` (recommended on Vercel so `req.ip` and cookies behave correctly behind proxies)
+
+**Rate limiting on Vercel**
+- Configure `RATE_LIMIT_STORE=redis` with `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` so API and webhook quotas are shared across serverless instances.
+- `RATE_LIMIT_STORE=auto` falls back to process-local memory when Upstash is absent or unavailable. This preserves availability but does not provide a global quota across Vercel instances.
+- Keep `RATE_LIMIT_REDIS_FAIL_CLOSED=false` unless rejecting requests during a Redis outage is an explicit availability tradeoff.
+- Defaults are `API_RATE_LIMIT_MAX=300` per minute and `WEBHOOK_RATE_LIMIT_MAX=1200` per minute; both windows and limits are configurable with the corresponding `_WINDOW_MS` and `_MAX` variables.
 
 **Cookie/SameSite**
 - If your frontend + backend share the same site (recommended, e.g. `frontendatlas.com` and `api.frontendatlas.com`), keep `COOKIE_SAMESITE=lax` and consider `COOKIE_DOMAIN=.frontendatlas.com` if you set cookies from different subdomains.

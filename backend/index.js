@@ -5,20 +5,22 @@ const { initSentry, setupSentryErrorHandler } = require('./config/sentry');
 initSentry();
 
 const express = require('express');
+const { rateLimit: expressRateLimit } = require('express-rate-limit');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const { requireAuth } = require('./middleware/Auth');
 const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
-const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
-const { rateLimit, getClientIp } = require('./middleware/rateLimit');
+const { createExpressRateLimitStore, rateLimit, getClientIp } = require('./middleware/rateLimit');
+const { cookieCsrfProtection } = require('./middleware/Csrf');
 const { createRequestMetricsMiddleware } = require('./middleware/observability');
 const { createSecurityHeadersMiddleware } = require('./middleware/securityHeaders');
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
+const { sendMail } = require('./services/email');
 
 const app = express();
 
@@ -42,6 +44,10 @@ const BUG_REPORT_DUP_WINDOW_MS = Number(process.env.BUG_REPORT_DUP_WINDOW_MS || 
 const BUG_REPORT_MIN_NOTE_CHARS = Number(process.env.BUG_REPORT_MIN_NOTE_CHARS || 8);
 const BUG_REPORT_MAX_NOTE_CHARS = Number(process.env.BUG_REPORT_MAX_NOTE_CHARS || 4000);
 const BUG_REPORT_MAX_URL_CHARS = Number(process.env.BUG_REPORT_MAX_URL_CHARS || 2000);
+const API_RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.API_RATE_LIMIT_WINDOW_MS) || 60_000);
+const API_RATE_LIMIT_MAX = Math.max(1, Number(process.env.API_RATE_LIMIT_MAX) || 300);
+const WEBHOOK_RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.WEBHOOK_RATE_LIMIT_WINDOW_MS) || 60_000);
+const WEBHOOK_RATE_LIMIT_MAX = Math.max(1, Number(process.env.WEBHOOK_RATE_LIMIT_MAX) || 1200);
 
 // Validate critical secrets early (fail-fast in production)
 getJwtSecret();
@@ -111,6 +117,48 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 
+const apiRateLimitHandler = (_req, res) => res.status(429).json({
+    code: 'API_RATE_LIMITED',
+    error: 'Too many requests. Please try again shortly.',
+});
+
+const webhookRateLimiter = expressRateLimit({
+    windowMs: WEBHOOK_RATE_LIMIT_WINDOW_MS,
+    limit: WEBHOOK_RATE_LIMIT_MAX,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    skip: (req) => req.method === 'OPTIONS',
+    handler: apiRateLimitHandler,
+    store: createExpressRateLimitStore({
+        name: 'billing-webhooks-global',
+        windowMs: WEBHOOK_RATE_LIMIT_WINDOW_MS,
+    }),
+});
+
+const apiRateLimiter = expressRateLimit({
+    windowMs: API_RATE_LIMIT_WINDOW_MS,
+    limit: API_RATE_LIMIT_MAX,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    skip: (req) => {
+        if (req.method === 'OPTIONS') return true;
+        const path = String(req.originalUrl || req.url || '').split('?')[0];
+        return path === '/api/hello' ||
+            path === '/api/health' ||
+            path === '/api/billing/webhooks' ||
+            path.startsWith('/api/billing/webhooks/');
+    },
+    handler: apiRateLimitHandler,
+    store: createExpressRateLimitStore({
+        name: 'api-global',
+        windowMs: API_RATE_LIMIT_WINDOW_MS,
+    }),
+});
+
+app.use('/api/billing/webhooks', webhookRateLimiter);
+app.use('/api', apiRateLimiter);
+app.use('/api', cookieCsrfProtection);
+
 // ---- DB (lazy for serverless, fail-fast for local server) ----
 const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/contact', '/api/bug-report', '/api/health']);
 app.use(async (req, res, next) => {
@@ -127,6 +175,26 @@ app.use(async (req, res, next) => {
 // ---- Models ----
 const User = require('./models/User');
 const ActivityEvent = require('./models/ActivityEvent'); // need the model for the heatmap route
+
+function safeUserResponse(user) {
+    const value = typeof user?.toObject === 'function' ? user.toObject() : { ...(user || {}) };
+    const linkedProviders = Array.from(new Set(
+        (Array.isArray(value.providers) ? value.providers : [])
+            .map((entry) => entry?.provider)
+            .filter((provider) => provider === 'google' || provider === 'github')
+    ));
+    const emailVerified = Boolean(value.emailVerifiedAt);
+    delete value.passwordHash;
+    delete value.providers;
+    delete value.emailVerifiedAt;
+    delete value.authInvalidatedAt;
+    return {
+        ...value,
+        emailVerified,
+        pendingEmail: value.pendingEmail || null,
+        linkedProviders,
+    };
+}
 
 // ---- Routes (basic) ----
 app.get('/', (_, res) => res.send('Backend is working 🚀'));
@@ -177,18 +245,6 @@ function rememberBugFingerprint(key, now = Date.now()) {
             if (now >= expiresAt) recentBugReportFingerprints.delete(fp);
         }
     }
-}
-
-function createSupportTransporter() {
-    return nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: Number(process.env.SMTP_PORT || 465),
-        secure: String(process.env.SMTP_SECURE || 'true') === 'true', // true for 465
-        auth: {
-            user: process.env.SMTP_USER, // e.g. yourgmail@gmail.com
-            pass: process.env.SMTP_PASS, // Gmail App Password
-        },
-    });
 }
 
 function isValidEmailAddress(value) {
@@ -250,7 +306,6 @@ app.post(
                 return res.status(413).json({ error: 'Contact url too long' });
             }
 
-            const transporter = createSupportTransporter();
             const sentAt = new Date().toISOString();
             const subject = `Contact form from FrontendAtlas: ${safeTopic} - ${safeName}`;
             const html = `
@@ -265,7 +320,7 @@ app.post(
       <p style="color:#64748b;font-size:12px;margin:0">Sent ${sentAt}</p>
     `;
 
-            await transporter.sendMail({
+            await sendMail({
                 from: `"FrontendAtlas Contact" <${process.env.SMTP_USER}>`,
                 to: SUPPORT_EMAIL,
                 replyTo: safeEmail,
@@ -335,8 +390,6 @@ app.post(
                 return res.status(429).json({ error: 'Duplicate bug report detected. Please wait before sending again.' });
             }
 
-            const transporter = createSupportTransporter();
-
             const html = `
       <h2 style="margin:0 0 8px">New Bug Report</h2>
       <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">
@@ -347,7 +400,7 @@ app.post(
       <p style="color:#64748b;font-size:12px;margin:0">Sent ${new Date().toISOString()}</p>
     `;
 
-            await transporter.sendMail({
+            await sendMail({
                 from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
                 to: SUPPORT_EMAIL,
                 subject: 'Bug report from FrontendAtlas',
@@ -429,7 +482,7 @@ app.get('/api/users/:id', requireAuth, async (req, res) => {
         }
         const user = await User.findById(req.params.id).select('-passwordHash');
         if (!user) return res.status(404).json({ message: 'User not found' });
-        res.json(user);
+        res.json(safeUserResponse(user));
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -443,8 +496,16 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
 
         // Never allow passwordHash via this route
         if ('passwordHash' in req.body) delete req.body.passwordHash;
-        // Whitelist updatable fields
-        const allowed = ['username', 'email', 'bio', 'avatarUrl', 'prefs'];
+        const requestedEmail = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+        if (requestedEmail && requestedEmail !== String((await User.findById(req.params.id).select('email').lean())?.email || '').toLowerCase()) {
+            return res.status(409).json({
+                code: 'EMAIL_CHANGE_REQUIRES_VERIFICATION',
+                error: 'Request an email verification link to change your email address.',
+            });
+        }
+
+        // Whitelist updatable fields. Email changes use the verification flow.
+        const allowed = ['username', 'bio', 'avatarUrl', 'prefs'];
         const update = {};
         for (const k of allowed) {
             if (k in req.body) update[k] = req.body[k];
@@ -465,7 +526,7 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
         }).select('-passwordHash');
 
         if (!user) return res.status(404).json({ message: 'User not found' });
-        res.json(user);
+        res.json(safeUserResponse(user));
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

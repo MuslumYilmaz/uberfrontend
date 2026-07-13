@@ -585,6 +585,28 @@
   width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--uf-border-subtle); background: var(--uf-surface); color: var(--uf-text-primary); font-size: 13px;
 }
 .account-card textarea { min-height: 80px; }
+
+.connected-account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--uf-border-subtle);
+}
+
+.connected-account-row > div {
+  min-width: 0;
+}
+
+.connected-account-row strong {
+  color: var(--uf-text-primary);
+  font-size: 13px;
+}
+
+.connected-account-row .desc {
+  margin: 3px 0 0;
+}
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .grid2 .row { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; }
 

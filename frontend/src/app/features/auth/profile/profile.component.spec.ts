@@ -14,6 +14,7 @@ describe('ProfileComponent', () => {
   let fixture: ComponentFixture<ProfileComponent>;
   let gamification: jasmine.SpyObj<GamificationService>;
   let solvedQuestions: jasmine.SpyObj<SolvedQuestionsService>;
+  let authStub: any;
   const userSig = signal<any>({
     _id: 'user-1',
     username: 'badge_user',
@@ -150,7 +151,7 @@ describe('ProfileComponent', () => {
     });
     solvedIdsSig.set(['react-counter']);
 
-    const authStub = {
+    authStub = {
       user: userSig,
       isLoggedIn: jasmine.createSpy('isLoggedIn').and.callFake(() => Boolean(userSig())),
       ensureMe: jasmine.createSpy('ensureMe').and.callFake(() => of(userSig())),
@@ -161,6 +162,13 @@ describe('ProfileComponent', () => {
       }),
       changePassword: jasmine.createSpy('changePassword').and.returnValue(of({ ok: true })),
       getManageSubscriptionUrl: jasmine.createSpy('getManageSubscriptionUrl').and.returnValue(of({ url: '' })),
+      requestEmailVerification: jasmine.createSpy('requestEmailVerification').and.returnValue(of({
+        ok: true,
+        purpose: 'verify_email',
+        expiresAt: new Date().toISOString(),
+      })),
+      fetchMe: jasmine.createSpy('fetchMe').and.callFake(() => of(userSig())),
+      oauthStart: jasmine.createSpy('oauthStart'),
     };
 
     gamification = jasmine.createSpyObj<GamificationService>('GamificationService', ['getDashboard']);
@@ -242,5 +250,37 @@ describe('ProfileComponent', () => {
     expect(pageText).not.toContain('Next badges');
     expect(pageText.indexOf('Badges')).toBeLessThan(pageText.indexOf('Progress details'));
     expect(pageText.indexOf('Practice completed')).toBeLessThan(pageText.indexOf('XP + level'));
+  });
+
+  it('shows provider-safe connected account state and starts only explicit link mode', () => {
+    userSig.update((user) => ({ ...user, linkedProviders: ['google'] }));
+    fixture = createComponent();
+    fixture.componentInstance.tab.set('security');
+    fixture.detectChanges();
+
+    const card = fixture.nativeElement.querySelector('[data-testid="profile-connected-accounts"]') as HTMLElement;
+    const google = fixture.nativeElement.querySelector('[data-testid="profile-link-google"]') as HTMLButtonElement;
+    const github = fixture.nativeElement.querySelector('[data-testid="profile-link-github"]') as HTMLButtonElement;
+    expect(card.textContent || '').toContain('Connected accounts');
+    expect(google.disabled).toBeTrue();
+    expect(github.disabled).toBeFalse();
+
+    github.click();
+    expect(authStub.oauthStart).toHaveBeenCalledWith('github', 'link', '/profile?tab=security');
+  });
+
+  it('requests verification instead of sending email through generic profile update', () => {
+    userSig.update((user) => ({ ...user, emailVerified: false }));
+    fixture = createComponent();
+    fixture.componentInstance.tab.set('account');
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('[data-testid="profile-request-email-verification"]') as HTMLButtonElement;
+    button.click();
+    fixture.detectChanges();
+
+    expect(authStub.requestEmailVerification).toHaveBeenCalledWith('badge@example.com');
+    expect(authStub.updateProfile).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent || '').toContain('Check your inbox to verify your email.');
   });
 });

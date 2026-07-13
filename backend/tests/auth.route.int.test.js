@@ -2,6 +2,12 @@
 
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const { CookieAccessInfo } = require('cookiejar');
+
+const mockSendMail = jest.fn();
+jest.mock('nodemailer', () => ({
+  createTransport: jest.fn(() => ({ sendMail: mockSendMail })),
+}));
 
 jest.setTimeout(120000);
 
@@ -9,12 +15,17 @@ let app;
 let User;
 let AuthSession;
 let AuthAttemptReceipt;
+let EmailVerification;
+let OAuthIdentity;
 let OAuth2Client;
 let connectToMongo;
 let disconnectMongo;
 let mongoServer;
 
 const JWT_SECRET = 'test_jwt_secret_auth_route';
+const LEGACY_SIGNUP_RECEIPT_FIXTURE = 'dd9912f75fa93e65f6189cd979f77e0906d0a0ff96d897588e55f91e5f3de27c';
+const LEGACY_LOGIN_RECEIPT_FIXTURE = '0dbed3651c00098f7d7ad79872e0498fe813f2fc17de7a80c25622f23a24cc3e';
+const createRawAgent = request.agent.bind(request);
 
 function getSetCookies(res) {
   return Array.isArray(res.headers?.['set-cookie']) ? res.headers['set-cookie'] : [];
@@ -38,12 +49,42 @@ function refreshCookieValueFromResponse(res) {
   return cookieValueFromResponse(res, 'refresh_token');
 }
 
+function csrfCookieValueFromResponse(res) {
+  return cookieValueFromResponse(res, 'csrf_token');
+}
+
+function createBrowserAgent(targetApp) {
+  const agent = createRawAgent(targetApp);
+  for (const method of ['post', 'put', 'patch', 'delete']) {
+    const original = agent[method].bind(agent);
+    agent[method] = (url, ...args) => {
+      const test = original(url, ...args);
+      const pathname = new URL(url, 'http://127.0.0.1').pathname;
+      const cookies = agent.jar.getCookies(new CookieAccessInfo('127.0.0.1', pathname, false));
+      const csrf = cookies.find((cookie) => cookie.name === 'csrf_token');
+      if (csrf?.value) test.set('X-CSRF-Token', csrf.value);
+      return test;
+    };
+  }
+  return agent;
+}
+
+// Existing agent-based tests model the browser interceptor, which mirrors the
+// readable CSRF cookie into the request header for unsafe API methods.
+request.agent = createBrowserAgent;
+
 function expectAuthCookieSet(res) {
   expect(getSetCookies(res).some((cookie) => cookie.startsWith('access_token='))).toBe(true);
 }
 
 function expectRefreshCookieSet(res) {
   expect(getSetCookies(res).some((cookie) => cookie.startsWith('refresh_token='))).toBe(true);
+}
+
+function verificationTokenFromLastEmail() {
+  const message = mockSendMail.mock.calls.at(-1)?.[0];
+  const match = String(message?.text || '').match(/#token=([^\s]+)/);
+  return match ? decodeURIComponent(match[1]) : '';
 }
 
 beforeAll(async () => {
@@ -56,6 +97,13 @@ beforeAll(async () => {
   process.env.GITHUB_CLIENT_SECRET = 'test_gh_client_secret';
   process.env.SERVER_BASE = 'http://127.0.0.1:3001';
   process.env.FRONTEND_BASE = 'http://127.0.0.1:4200';
+  process.env.COOKIE_SAMESITE = 'lax';
+  process.env.COOKIE_SECURE = 'false';
+  process.env.RATE_LIMIT_STORE = 'memory';
+  process.env.API_RATE_LIMIT_MAX = '10000';
+  process.env.WEBHOOK_RATE_LIMIT_MAX = '10000';
+  process.env.SMTP_USER = 'noreply@example.com';
+  process.env.SMTP_PASS = 'test-password';
 
   jest.resetModules();
   app = require('../index');
@@ -63,6 +111,8 @@ beforeAll(async () => {
   User = require('../models/User');
   AuthSession = require('../models/AuthSession');
   AuthAttemptReceipt = require('../models/AuthAttemptReceipt');
+  EmailVerification = require('../models/EmailVerification');
+  OAuthIdentity = require('../models/OAuthIdentity');
   ({ OAuth2Client } = require('google-auth-library'));
 
   await connectToMongo(process.env.MONGO_URL_TEST);
@@ -74,10 +124,14 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  mockSendMail.mockReset();
+  mockSendMail.mockResolvedValue({ accepted: ['test@example.com'] });
   await Promise.all([
     User.deleteMany({}),
     AuthSession.deleteMany({}),
     AuthAttemptReceipt.deleteMany({}),
+    EmailVerification.deleteMany({}),
+    OAuthIdentity.deleteMany({}),
   ]);
 });
 
@@ -175,6 +229,9 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(await User.countDocuments({ email: 'dedupe-signup@example.com' })).toBe(1);
     expect(await AuthSession.countDocuments({})).toBe(1);
     expect(await AuthAttemptReceipt.countDocuments({ action: 'signup' })).toBe(1);
+    const receipt = await AuthAttemptReceipt.findOne({ action: 'signup' }).lean();
+    expect(receipt?.requestHash).toMatch(/^hmac-sha256-v1:[a-f0-9]{64}$/);
+    expect(receipt?.requestHash).not.toBe(LEGACY_SIGNUP_RECEIPT_FIXTURE);
     expect(refreshCookieValueFromResponse(first)).toBe(refreshCookieValueFromResponse(second));
   });
 
@@ -214,11 +271,81 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(signup.status).toBe(201);
     expectAuthCookieSet(signup);
     expectRefreshCookieSet(signup);
+    const csrfCookieLine = cookieLineFromResponse(signup, 'csrf_token');
+    expect(csrfCookieLine).toMatch(/;\s*SameSite=Lax/i);
+    expect(csrfCookieLine).not.toMatch(/;\s*HttpOnly/i);
 
     const me = await agent.get('/api/auth/me');
     expect(me.status).toBe(200);
     expect(me.body?.email).toBe('session@example.com');
     expect(me.body?.username).toBe('session_user');
+  });
+
+  test('cookie auth requires a timing-safe CSRF match while bearer auth remains header-only', async () => {
+    const signup = await request(app)
+      .post('/api/auth/signup')
+      .send({
+        email: 'csrf-policy@example.com',
+        username: 'csrf_policy_user',
+        password: 'secret123',
+      });
+    expect(signup.status).toBe(201);
+
+    const accessCookie = authCookieValueFromResponse(signup);
+    const csrfCookie = csrfCookieValueFromResponse(signup);
+    const cookieHeader = [`access_token=${accessCookie}`, `csrf_token=${csrfCookie}`];
+    const changePayload = {
+      currentPassword: 'wrongpass123',
+      currentPasswordConfirm: 'wrongpass123',
+      newPassword: 'newpass456',
+    };
+
+    const missing = await request(app)
+      .post('/api/auth/change-password')
+      .set('Cookie', cookieHeader)
+      .send(changePayload);
+    expect(missing.status).toBe(403);
+    expect(missing.body?.code).toBe('AUTH_CSRF_INVALID');
+
+    const mismatched = await request(app)
+      .post('/api/auth/change-password')
+      .set('Cookie', cookieHeader)
+      .set('X-CSRF-Token', `${csrfCookie}x`)
+      .send(changePayload);
+    expect(mismatched.status).toBe(403);
+    expect(mismatched.body?.code).toBe('AUTH_CSRF_INVALID');
+
+    const matched = await request(app)
+      .post('/api/auth/change-password')
+      .set('Cookie', cookieHeader)
+      .set('X-CSRF-Token', csrfCookie)
+      .send(changePayload);
+    expect(matched.status).toBe(401);
+    expect(matched.body?.error).toBe('Invalid current password');
+
+    const bearerOnly = await request(app)
+      .post('/api/auth/change-password')
+      .set('Authorization', `Bearer ${signup.body.token}`)
+      .send(changePayload);
+    expect(bearerOnly.status).toBe(401);
+    expect(bearerOnly.body?.error).toBe('Invalid current password');
+  });
+
+  test('an authenticated safe GET repairs a missing CSRF cookie for an old session', async () => {
+    const signup = await request(app)
+      .post('/api/auth/signup')
+      .send({
+        email: 'csrf-repair@example.com',
+        username: 'csrf_repair_user',
+        password: 'secret123',
+      });
+
+    const repaired = await request(app)
+      .get('/api/auth/me')
+      .set('Cookie', [`access_token=${authCookieValueFromResponse(signup)}`]);
+
+    expect(repaired.status).toBe(200);
+    expect(csrfCookieValueFromResponse(repaired)).toMatch(/^[a-f0-9]{64}$/);
   });
 
   test('signup omits cookie domain for IP-based frontend hosts', async () => {
@@ -251,11 +378,14 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
 
     expect(signup.status).toBe(201);
     const refreshCookie = refreshCookieValueFromResponse(signup);
+    const csrfCookie = csrfCookieValueFromResponse(signup);
     expect(refreshCookie).toBeTruthy();
+    expect(csrfCookie).toBeTruthy();
 
     const refresh = await request(app)
       .post('/api/auth/refresh')
-      .set('Cookie', [`refresh_token=${refreshCookie}`]);
+      .set('Cookie', [`refresh_token=${refreshCookie}`, `csrf_token=${csrfCookie}`])
+      .set('X-CSRF-Token', csrfCookie);
 
     expect(refresh.status).toBe(200);
     expect(refresh.body?.ok).toBe(true);
@@ -304,6 +434,28 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(await AuthSession.countDocuments({})).toBe(1);
     expect(await AuthAttemptReceipt.countDocuments({ action: 'login' })).toBe(1);
     expect(refreshCookieValueFromResponse(first)).toBe(refreshCookieValueFromResponse(second));
+
+    await AuthAttemptReceipt.updateOne(
+      { action: 'login' },
+      { $set: { requestHash: LEGACY_LOGIN_RECEIPT_FIXTURE } }
+    );
+    const rollingDeployReplay = await request(app).post('/api/auth/login').set(headers).send(payload);
+    expect(rollingDeployReplay.status).toBe(200);
+    expect(await AuthSession.countDocuments({})).toBe(1);
+
+    const conflictingPassword = await request(app).post('/api/auth/login').set(headers).send({
+      ...payload,
+      password: 'different-password-123',
+    });
+    expect(conflictingPassword.status).toBe(409);
+    expect(conflictingPassword.body?.code).toBe('AUTH_DUPLICATE_CONFLICT');
+
+    const invalidFreshAttempt = await request(app).post('/api/auth/login').set({
+      'x-auth-context-id': 'ctx-login-invalid',
+      'x-auth-request-id': 'req-login-invalid',
+    }).send({ ...payload, password: 'wrong-password-123' });
+    expect(invalidFreshAttempt.status).toBe(401);
+    expect(await AuthAttemptReceipt.countDocuments({ action: 'login' })).toBe(1);
   });
 
   test('logout clears cookie session and /me returns 401 afterwards', async () => {
@@ -372,10 +524,12 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(meOnOtherDevice.body?.code).toBe('AUTH_INVALID');
 
     const refreshCookie = refreshCookieValueFromResponse(secondLogin);
+    const csrfCookie = csrfCookieValueFromResponse(secondLogin);
     expect(refreshCookie).toBeTruthy();
     const refresh = await request(app)
       .post('/api/auth/refresh')
-      .set('Cookie', [`refresh_token=${refreshCookie}`]);
+      .set('Cookie', [`refresh_token=${refreshCookie}`, `csrf_token=${csrfCookie}`])
+      .set('X-CSRF-Token', csrfCookie);
     expect(refresh.status).toBe(401);
     expect(refresh.body?.code).toBe('REFRESH_INVALID');
   });
@@ -424,6 +578,7 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(typeof signup.body?.token).toBe('string');
     const oldToken = signup.body.token;
     const oldRefreshCookie = refreshCookieValueFromResponse(signup);
+    const oldCsrfCookie = csrfCookieValueFromResponse(signup);
     expect(oldRefreshCookie).toBeTruthy();
 
     const change = await agent
@@ -452,7 +607,8 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
 
     const staleRefresh = await request(app)
       .post('/api/auth/refresh')
-      .set('Cookie', [`refresh_token=${oldRefreshCookie}`]);
+      .set('Cookie', [`refresh_token=${oldRefreshCookie}`, `csrf_token=${oldCsrfCookie}`])
+      .set('X-CSRF-Token', oldCsrfCookie);
     expect(staleRefresh.status).toBe(401);
     expect(staleRefresh.body?.error).toBe('Invalid or expired refresh session');
     expect(staleRefresh.body?.code).toBe('REFRESH_INVALID');
@@ -512,8 +668,318 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
 
 });
 
+describe('email verification', () => {
+  test('stores only a token hash and accepts each token once for the authenticated user', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'verify-once@example.com',
+      username: 'verify_once',
+      password: 'secret123',
+    });
+    expect(signup.status).toBe(201);
+
+    const requested = await agent.post('/api/auth/email-verification/request').send({});
+    expect(requested.status).toBe(200);
+    expect(requested.body?.purpose).toBe('verify_email');
+    const token = verificationTokenFromLastEmail();
+    expect(token).toBeTruthy();
+
+    const record = await EmailVerification.findOne({ userId: signup.body.user._id }).lean();
+    expect(record?.tokenHash).toBe(require('crypto').createHash('sha256').update(token).digest('hex'));
+    expect(JSON.stringify(record)).not.toContain(token);
+
+    const confirmed = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body?.user?.emailVerified).toBe(true);
+
+    const replay = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    expect(replay.status).toBe(400);
+    expect(replay.body?.code).toBe('EMAIL_VERIFICATION_INVALID');
+  });
+
+  test('supersedes an older token and does not let another signed-in user claim it', async () => {
+    const owner = request.agent(app);
+    const other = request.agent(app);
+    await owner.post('/api/auth/signup').send({
+      email: 'owner@example.com', username: 'verification_owner', password: 'secret123',
+    });
+    await other.post('/api/auth/signup').send({
+      email: 'other@example.com', username: 'verification_other', password: 'secret123',
+    });
+
+    await owner.post('/api/auth/email-verification/request').send({});
+    const oldToken = verificationTokenFromLastEmail();
+    await owner.post('/api/auth/email-verification/request').send({});
+    const currentToken = verificationTokenFromLastEmail();
+
+    expect((await owner.post('/api/auth/email-verification/confirm').send({ token: oldToken })).status).toBe(400);
+    expect((await other.post('/api/auth/email-verification/confirm').send({ token: currentToken })).status).toBe(400);
+    expect((await owner.post('/api/auth/email-verification/confirm').send({ token: currentToken })).status).toBe(200);
+  });
+
+  test('rolls back the token claim when saving the verified user transiently fails', async () => {
+    const agent = request.agent(app);
+    await agent.post('/api/auth/signup').send({
+      email: 'retry-save@example.com', username: 'retry_save', password: 'secret123',
+    });
+    await agent.post('/api/auth/email-verification/request').send({});
+    const token = verificationTokenFromLastEmail();
+
+    const saveSpy = jest.spyOn(User.prototype, 'save').mockRejectedValueOnce(new Error('transient save failure'));
+    const failed = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    saveSpy.mockRestore();
+    expect(failed.status).toBe(500);
+
+    const retried = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    expect(retried.status).toBe(200);
+    expect(retried.body?.user?.emailVerified).toBe(true);
+  });
+
+  test('rejects an expired verification token', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'expired-token@example.com', username: 'expired_token', password: 'secret123',
+    });
+    await agent.post('/api/auth/email-verification/request').send({});
+    const token = verificationTokenFromLastEmail();
+    await EmailVerification.updateOne(
+      { userId: signup.body.user._id, consumedAt: null },
+      { $set: { expiresAt: new Date(Date.now() - 1000) } },
+    );
+
+    const expired = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    expect(expired.status).toBe(400);
+    expect(expired.body?.code).toBe('EMAIL_VERIFICATION_INVALID');
+  });
+
+  test('changes email only after confirmation and rotates the account sessions', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'old-email@example.com', username: 'change_email', password: 'secret123',
+    });
+    expect(signup.status).toBe(201);
+
+    const requested = await agent.post('/api/auth/email-verification/request').send({
+      email: 'new-email@example.com',
+    });
+    expect(requested.status).toBe(200);
+    expect(requested.body?.purpose).toBe('change_email');
+    expect((await User.findById(signup.body.user._id).lean())?.email).toBe('old-email@example.com');
+
+    const confirmed = await agent.post('/api/auth/email-verification/confirm').send({
+      token: verificationTokenFromLastEmail(),
+    });
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body?.user?.email).toBe('new-email@example.com');
+    expect(confirmed.body?.user?.pendingEmail).toBeNull();
+    expect(await AuthSession.countDocuments({ userId: signup.body.user._id, revokedAt: null })).toBe(1);
+  });
+
+  test('keeps the account/session usable when SMTP delivery fails and allows a later retry', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'smtp-failure@example.com', username: 'smtp_failure', password: 'secret123',
+    });
+    expect(signup.status).toBe(201);
+
+    mockSendMail.mockRejectedValueOnce(new Error('mock smtp unavailable'));
+    const failed = await agent.post('/api/auth/email-verification/request').send({});
+    expect(failed.status).toBe(503);
+    expect(failed.body?.code).toBe('EMAIL_DELIVERY_FAILED');
+    expect((await agent.get('/api/auth/me')).status).toBe(200);
+
+    mockSendMail.mockResolvedValueOnce({ accepted: ['smtp-failure@example.com'] });
+    const retried = await agent.post('/api/auth/email-verification/request').send({});
+    expect(retried.status).toBe(200);
+  });
+
+  test('fails old sessions closed and lets the same token finish after session revocation fails', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'revoke-old@example.com', username: 'revoke_old', password: 'secret123',
+    });
+    await agent.post('/api/auth/email-verification/request').send({ email: 'revoke-new@example.com' });
+    const token = verificationTokenFromLastEmail();
+
+    const revokeSpy = jest.spyOn(AuthSession, 'updateMany').mockRejectedValueOnce(new Error('mock revoke failure'));
+    const failed = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    revokeSpy.mockRestore();
+    expect(failed.status).toBe(500);
+    const replacementAccess = authCookieValueFromResponse(failed);
+    const replacementCsrf = csrfCookieValueFromResponse(failed);
+    expect(replacementAccess).toBeTruthy();
+    expect(replacementCsrf).toBeTruthy();
+
+    const changed = await User.findById(signup.body.user._id).lean();
+    expect(changed?.email).toBe('revoke-new@example.com');
+    expect(changed?.authInvalidatedAt).toBeTruthy();
+    const pending = await EmailVerification.findOne({ userId: signup.body.user._id }).lean();
+    expect(pending?.consumedAt).toBeTruthy();
+    expect(pending?.finalizedAt).toBeNull();
+
+    const oldSession = await request(app)
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${signup.body.token}`);
+    expect(oldSession.status).toBe(401);
+
+    const retried = await request(app)
+      .post('/api/auth/email-verification/confirm')
+      .set('Cookie', [`access_token=${replacementAccess}`, `csrf_token=${replacementCsrf}`])
+      .set('X-CSRF-Token', replacementCsrf)
+      .send({ token });
+    expect(retried.status).toBe(200);
+    expect((await EmailVerification.findOne({ userId: signup.body.user._id }).lean())?.finalizedAt).toBeTruthy();
+    expect(await AuthSession.countDocuments({ userId: signup.body.user._id, revokedAt: null })).toBe(1);
+  });
+
+  test('keeps finalization retryable when replacement session creation fails', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'issue-old@example.com', username: 'issue_old', password: 'secret123',
+    });
+    await agent.post('/api/auth/email-verification/request').send({ email: 'issue-new@example.com' });
+    const token = verificationTokenFromLastEmail();
+
+    const sessionSaveSpy = jest.spyOn(AuthSession.prototype, 'save')
+      .mockRejectedValueOnce(new Error('mock session issue failure'));
+    const failed = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    sessionSaveSpy.mockRestore();
+    expect(failed.status).toBe(500);
+    expect((await request(app).get('/api/auth/me').set('Authorization', `Bearer ${signup.body.token}`)).status).toBe(401);
+
+    const login = await agent.post('/api/auth/login').send({
+      emailOrUsername: 'issue-new@example.com', password: 'secret123',
+    });
+    expect(login.status).toBe(200);
+    const retried = await agent.post('/api/auth/email-verification/confirm').send({ token });
+    expect(retried.status).toBe(200);
+    expect((await EmailVerification.findOne({ userId: signup.body.user._id }).lean())?.finalizedAt).toBeTruthy();
+    expect(await AuthSession.countDocuments({ userId: signup.body.user._id, revokedAt: null })).toBe(1);
+  });
+
+  test('a new verification request supersedes an older consumed unfinished email change', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'supersede-old@example.com', username: 'supersede_old', password: 'secret123',
+    });
+    await agent.post('/api/auth/email-verification/request').send({ email: 'supersede-new@example.com' });
+    const unfinishedToken = verificationTokenFromLastEmail();
+
+    const sessionSaveSpy = jest.spyOn(AuthSession.prototype, 'save')
+      .mockRejectedValueOnce(new Error('mock unfinished finalization'));
+    expect((await agent.post('/api/auth/email-verification/confirm').send({ token: unfinishedToken })).status).toBe(500);
+    sessionSaveSpy.mockRestore();
+
+    expect((await agent.post('/api/auth/login').send({
+      emailOrUsername: 'supersede-new@example.com', password: 'secret123',
+    })).status).toBe(200);
+    const replacementRequest = await agent.post('/api/auth/email-verification/request').send({
+      email: 'supersede-old@example.com',
+    });
+    expect(replacementRequest.status).toBe(200);
+    const replacementToken = verificationTokenFromLastEmail();
+
+    const unfinishedHash = require('crypto').createHash('sha256').update(unfinishedToken).digest('hex');
+    const superseded = await EmailVerification.findOne({ tokenHash: unfinishedHash }).lean();
+    expect(superseded?.consumedAt).toBeTruthy();
+    expect(superseded?.finalizedAt).toBeTruthy();
+    expect(superseded?.supersededAt).toBeTruthy();
+    expect(superseded?.finalizationLeaseToken).toBeFalsy();
+    expect(superseded?.finalizationLeaseExpiresAt).toBeFalsy();
+
+    const staleRetry = await agent.post('/api/auth/email-verification/confirm').send({ token: unfinishedToken });
+    expect(staleRetry.status).toBe(400);
+    expect(staleRetry.body?.code).toBe('EMAIL_VERIFICATION_INVALID');
+    expect((await User.findById(signup.body.user._id).lean())?.email).toBe('supersede-new@example.com');
+
+    const replacementConfirm = await agent.post('/api/auth/email-verification/confirm').send({ token: replacementToken });
+    expect(replacementConfirm.status).toBe(200);
+    expect(replacementConfirm.body?.user?.email).toBe('supersede-old@example.com');
+  });
+});
+
 describe('OAuth callbacks', () => {
-  test('google oauth links to an existing verified-email account instead of creating a duplicate', async () => {
+  test('login mode ignores an existing auth cookie and never turns it into a link operation', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'cookie-owner@example.com', username: 'cookie_owner', password: 'secret123',
+    });
+    expect(signup.status).toBe(201);
+
+    const start = await agent.get('/api/auth/oauth/google/start').query({
+      redirect_uri: 'http://localhost:4200/auth/callback',
+      mode: 'login',
+    });
+    const state = new URL(start.headers.location).searchParams.get('state');
+    const getTokenSpy = jest.spyOn(OAuth2Client.prototype, 'getToken')
+      .mockResolvedValue({ tokens: { id_token: 'google-id-token' } });
+    const verifySpy = jest.spyOn(OAuth2Client.prototype, 'verifyIdToken').mockResolvedValue({
+      getPayload: () => ({
+        email: 'oauth-new@example.com',
+        email_verified: true,
+        name: 'OAuth New',
+        sub: 'google-new-provider',
+      }),
+    });
+
+    try {
+      const callback = await agent.get('/api/auth/oauth/google/callback').query({ code: 'oauth-code', state });
+      expect(callback.status).toBe(302);
+      expect(csrfCookieValueFromResponse(callback)).toMatch(/^[a-f0-9]{64}$/);
+      const original = await User.findById(signup.body.user._id).lean();
+      expect(original?.providers || []).toHaveLength(0);
+      expect(await User.countDocuments({})).toBe(2);
+      expect((await User.findOne({ email: 'oauth-new@example.com' }).lean())?.emailVerifiedAt).toBeTruthy();
+    } finally {
+      getTokenSpy.mockRestore();
+      verifySpy.mockRestore();
+    }
+  });
+
+  test('oauth failures expose only allowlisted JSON or redirect messages', async () => {
+    const agent = request.agent(app);
+    const start = await agent.get('/api/auth/oauth/google/start').query({
+      redirect_uri: 'http://localhost:4200/auth/callback',
+      state: 'client-state',
+      mode: 'login',
+    });
+    expect(start.status).toBe(302);
+    const state = new URL(start.headers.location).searchParams.get('state');
+    const secretFailure = '<img src=x onerror=alert(1)> at internal/oauth.js:42';
+    const getTokenSpy = jest.spyOn(OAuth2Client.prototype, 'getToken')
+      .mockRejectedValue(new Error(secretFailure));
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const redirected = await agent.get('/api/auth/oauth/google/callback').query({
+        code: 'oauth-code',
+        state,
+      });
+      expect(redirected.status).toBe(302);
+      const redirect = new URL(redirected.headers.location);
+      expect(redirect.searchParams.get('state')).toBe('client-state');
+      expect(redirect.searchParams.get('mode')).toBe('login');
+      expect(redirect.searchParams.get('code')).toBe('OAUTH_ERROR');
+      expect(redirect.searchParams.get('error')).toBe('We could not finish authentication. Please try again.');
+      expect(redirected.headers.location).not.toContain(encodeURIComponent(secretFailure));
+
+      const direct = await request(app)
+        .get('/api/auth/oauth/google/callback')
+        .query({ code: 'oauth-code', state: 'malformed-state' });
+      expect(direct.status).toBe(400);
+      expect(direct.headers['content-type']).toMatch(/^application\/json/);
+      expect(direct.body).toEqual({
+        code: 'OAUTH_ERROR',
+        error: 'We could not finish authentication. Please try again.',
+      });
+      expect(JSON.stringify(direct.body)).not.toContain('Bad state');
+    } finally {
+      getTokenSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  test('google oauth refuses to auto-link an existing account by verified email', async () => {
     const existing = await User.create({
       email: 'google-linked@example.com',
       username: 'google_linked_user',
@@ -538,6 +1004,7 @@ describe('OAuth callbacks', () => {
       .mockResolvedValue({
         getPayload: () => ({
           email: 'google-linked@example.com',
+          email_verified: true,
           name: 'Google Linked User',
           picture: 'https://avatars.test/google.png',
           sub: 'google-provider-123',
@@ -554,11 +1021,12 @@ describe('OAuth callbacks', () => {
 
       const linked = await User.findById(existing._id).lean();
       expect(linked).toBeTruthy();
-      expect(linked?.providers).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ provider: 'google', providerId: 'google-provider-123' }),
-        ])
+      const failure = new URL(callback.headers.location).searchParams;
+      expect(failure.get('code')).toBe('OAUTH_EMAIL_CONFLICT');
+      expect(failure.get('error')).toBe(
+        'An account already uses this email. Sign in with your password, then link the provider from Security.'
       );
+      expect(linked?.providers || []).toHaveLength(0);
       expect(await User.countDocuments({})).toBe(1);
     } finally {
       getTokenSpy.mockRestore();
@@ -674,20 +1142,14 @@ describe('OAuth callbacks', () => {
         .query({ code: 'oauth-code', state });
 
       expect(callback.status).toBe(302);
-      const created = await User.findOne({ email: '987654+public_match_user@users.noreply.github.com' }).lean();
-      expect(created).toBeTruthy();
-      expect(created?.providers).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ provider: 'github', providerId: '987654' }),
-        ])
-      );
-      expect(await User.countDocuments({})).toBe(2);
+      expect(new URL(callback.headers.location).searchParams.get('code')).toBe('OAUTH_EMAIL_UNVERIFIED');
+      expect(await User.countDocuments({})).toBe(1);
     } finally {
       global.fetch = originalFetch;
     }
   });
 
-  test('github oauth links to the currently signed-in account instead of creating a duplicate account', async () => {
+  test('github oauth links only through authenticated explicit link mode', async () => {
     const agent = request.agent(app);
     const signup = await agent
       .post('/api/auth/signup')
@@ -700,7 +1162,7 @@ describe('OAuth callbacks', () => {
 
     const start = await agent
       .get('/api/auth/oauth/github/start')
-      .query({ redirect_uri: 'http://localhost:4200/auth/callback' });
+      .query({ redirect_uri: 'http://localhost:4200/auth/callback', mode: 'link' });
     expect(start.status).toBe(302);
     const state = new URL(start.headers?.location).searchParams.get('state');
     expect(state).toBeTruthy();
@@ -712,7 +1174,9 @@ describe('OAuth callbacks', () => {
         return { json: async () => ({ access_token: 'test-gh-token' }) };
       }
       if (target.includes('api.github.com/user/emails')) {
-        return { json: async () => [] };
+        return { json: async () => ([
+          { email: 'different-email@example.com', primary: true, verified: true },
+        ]) };
       }
       if (target.includes('api.github.com/user')) {
         return {
@@ -742,6 +1206,214 @@ describe('OAuth callbacks', () => {
         ])
       );
       expect(await User.countDocuments({})).toBe(1);
+      expect(await AuthSession.countDocuments({ userId: signup.body.user._id, revokedAt: null })).toBe(1);
+      const me = await agent.get('/api/auth/me');
+      expect(me.body?.linkedProviders).toEqual(['github']);
+      expect(me.body?.providers).toBeUndefined();
+      expect(JSON.stringify(me.body)).not.toContain('24680');
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
+
+  test('explicit link refuses a provider identity already owned by another account', async () => {
+    const providerOwner = await User.create({
+      email: 'provider-owner@example.com',
+      username: 'provider_owner',
+      passwordHash: 'hash',
+      providers: [{ provider: 'github', providerId: 'already-owned-provider' }],
+    });
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'link-conflict@example.com', username: 'link_conflict', password: 'secret123',
+    });
+    const start = await agent.get('/api/auth/oauth/github/start').query({
+      redirect_uri: 'http://localhost:4200/auth/callback', mode: 'link',
+    });
+    const state = new URL(start.headers.location).searchParams.get('state');
+
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn(async (url) => {
+      const target = String(url || '');
+      if (target.includes('github.com/login/oauth/access_token')) {
+        return { json: async () => ({ access_token: 'test-gh-token' }) };
+      }
+      if (target.includes('api.github.com/user/emails')) {
+        return { json: async () => ([{ email: 'provider-owner@example.com', primary: true, verified: true }]) };
+      }
+      if (target.includes('api.github.com/user')) {
+        return { json: async () => ({ id: 'already-owned-provider', login: 'provider_owner' }) };
+      }
+      throw new Error(`Unexpected fetch url: ${target}`);
+    });
+
+    try {
+      const callback = await agent.get('/api/auth/oauth/github/callback').query({ code: 'oauth-code', state });
+      expect(callback.status).toBe(302);
+      expect(new URL(callback.headers.location).searchParams.get('code')).toBe('OAUTH_PROVIDER_LINK_CONFLICT');
+      const current = await User.findById(signup.body.user._id).lean();
+      expect(current?.providers || []).toHaveLength(0);
+      const claimedIdentity = await OAuthIdentity.findOne({
+        provider: 'github', providerId: 'already-owned-provider',
+      }).lean();
+      expect(String(claimedIdentity?.userId)).toBe(String(providerOwner._id));
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
+
+  test('ambiguous duplicate legacy provider owners fail closed without creating an identity claim', async () => {
+    await User.create([
+      {
+        email: 'legacy-duplicate-one@example.com',
+        username: 'legacy_duplicate_one',
+        passwordHash: 'hash',
+        providers: [{ provider: 'github', providerId: 'ambiguous-legacy-provider' }],
+      },
+      {
+        email: 'legacy-duplicate-two@example.com',
+        username: 'legacy_duplicate_two',
+        passwordHash: 'hash',
+        providers: [{ provider: 'github', providerId: 'ambiguous-legacy-provider' }],
+      },
+    ]);
+    const agent = request.agent(app);
+    const start = await agent.get('/api/auth/oauth/github/start').query({
+      redirect_uri: 'http://localhost:4200/auth/callback', mode: 'login',
+    });
+    const state = new URL(start.headers.location).searchParams.get('state');
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn(async (url) => {
+      const target = String(url || '');
+      if (target.includes('github.com/login/oauth/access_token')) {
+        return { json: async () => ({ access_token: 'ambiguous-token' }) };
+      }
+      if (target.includes('api.github.com/user/emails')) {
+        return { json: async () => ([{ email: 'legacy-duplicate-one@example.com', primary: true, verified: true }]) };
+      }
+      if (target.includes('api.github.com/user')) {
+        return { json: async () => ({ id: 'ambiguous-legacy-provider', login: 'ambiguous_legacy' }) };
+      }
+      throw new Error(`Unexpected fetch url: ${target}`);
+    });
+
+    try {
+      const callback = await agent.get('/api/auth/oauth/github/callback').query({ code: 'oauth-code', state });
+      expect(callback.status).toBe(302);
+      expect(new URL(callback.headers.location).searchParams.get('code'))
+        .toBe('OAUTH_PROVIDER_IDENTITY_AMBIGUOUS');
+      expect(await OAuthIdentity.countDocuments({
+        provider: 'github', providerId: 'ambiguous-legacy-provider',
+      })).toBe(0);
+      expect(await User.countDocuments({
+        providers: { $elemMatch: { provider: 'github', providerId: 'ambiguous-legacy-provider' } },
+      })).toBe(2);
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
+
+  test('parallel explicit links atomically assign one provider identity to only one account', async () => {
+    const firstAgent = request.agent(app);
+    const secondAgent = request.agent(app);
+    const [firstSignup, secondSignup] = await Promise.all([
+      firstAgent.post('/api/auth/signup').send({
+        email: 'parallel-one@example.com', username: 'parallel_one', password: 'secret123',
+      }),
+      secondAgent.post('/api/auth/signup').send({
+        email: 'parallel-two@example.com', username: 'parallel_two', password: 'secret123',
+      }),
+    ]);
+    const [firstStart, secondStart] = await Promise.all([
+      firstAgent.get('/api/auth/oauth/github/start').query({
+        redirect_uri: 'http://localhost:4200/auth/callback', mode: 'link',
+      }),
+      secondAgent.get('/api/auth/oauth/github/start').query({
+        redirect_uri: 'http://localhost:4200/auth/callback', mode: 'link',
+      }),
+    ]);
+    const firstState = new URL(firstStart.headers.location).searchParams.get('state');
+    const secondState = new URL(secondStart.headers.location).searchParams.get('state');
+
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn(async (url) => {
+      const target = String(url || '');
+      if (target.includes('github.com/login/oauth/access_token')) {
+        return { json: async () => ({ access_token: 'parallel-token' }) };
+      }
+      if (target.includes('api.github.com/user/emails')) {
+        return { json: async () => ([{ email: 'parallel-provider@example.com', primary: true, verified: true }]) };
+      }
+      if (target.includes('api.github.com/user')) {
+        return { json: async () => ({ id: 'parallel-provider-id', login: 'parallel_provider' }) };
+      }
+      throw new Error(`Unexpected fetch url: ${target}`);
+    });
+
+    try {
+      const [firstResult, secondResult] = await Promise.all([
+        firstAgent.get('/api/auth/oauth/github/callback').query({ code: 'first-code', state: firstState }),
+        secondAgent.get('/api/auth/oauth/github/callback').query({ code: 'second-code', state: secondState }),
+      ]);
+      const codes = [firstResult, secondResult]
+        .map((result) => new URL(result.headers.location).searchParams.get('code'));
+      expect(codes.filter((code) => code === 'OAUTH_PROVIDER_LINK_CONFLICT')).toHaveLength(1);
+      expect(codes.filter((code) => code === null)).toHaveLength(1);
+
+      const users = await User.find({ _id: { $in: [firstSignup.body.user._id, secondSignup.body.user._id] } }).lean();
+      const linkedUsers = users.filter((user) =>
+        (user.providers || []).some((entry) => entry.provider === 'github' && entry.providerId === 'parallel-provider-id')
+      );
+      expect(linkedUsers).toHaveLength(1);
+      const identity = await OAuthIdentity.findOne({ provider: 'github', providerId: 'parallel-provider-id' }).lean();
+      expect(String(identity?.userId)).toBe(String(linkedUsers[0]._id));
+      expect(await OAuthIdentity.countDocuments({ provider: 'github', providerId: 'parallel-provider-id' })).toBe(1);
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
+
+  test('same account retry completes the legacy provider marker after a post-claim save failure', async () => {
+    const agent = request.agent(app);
+    const signup = await agent.post('/api/auth/signup').send({
+      email: 'link-retry@example.com', username: 'link_retry', password: 'secret123',
+    });
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn(async (url) => {
+      const target = String(url || '');
+      if (target.includes('github.com/login/oauth/access_token')) {
+        return { json: async () => ({ access_token: 'retry-token' }) };
+      }
+      if (target.includes('api.github.com/user/emails')) {
+        return { json: async () => ([{ email: 'retry-provider@example.com', primary: true, verified: true }]) };
+      }
+      if (target.includes('api.github.com/user')) {
+        return { json: async () => ({ id: 'retry-provider-id', login: 'retry_provider' }) };
+      }
+      throw new Error(`Unexpected fetch url: ${target}`);
+    });
+
+    try {
+      const firstStart = await agent.get('/api/auth/oauth/github/start').query({
+        redirect_uri: 'http://localhost:4200/auth/callback', mode: 'link',
+      });
+      const firstState = new URL(firstStart.headers.location).searchParams.get('state');
+      const saveSpy = jest.spyOn(User.prototype, 'save').mockRejectedValueOnce(new Error('mock marker save failure'));
+      const firstCallback = await agent.get('/api/auth/oauth/github/callback').query({ code: 'first-code', state: firstState });
+      saveSpy.mockRestore();
+      expect(firstCallback.status).toBe(302);
+      expect(await OAuthIdentity.countDocuments({ providerId: 'retry-provider-id', userId: signup.body.user._id })).toBe(1);
+      expect((await User.findById(signup.body.user._id).lean())?.providers || []).toHaveLength(0);
+
+      const retryStart = await agent.get('/api/auth/oauth/github/start').query({
+        redirect_uri: 'http://localhost:4200/auth/callback', mode: 'link',
+      });
+      const retryState = new URL(retryStart.headers.location).searchParams.get('state');
+      const retried = await agent.get('/api/auth/oauth/github/callback').query({ code: 'retry-code', state: retryState });
+      expect(new URL(retried.headers.location).searchParams.get('code')).toBeNull();
+      expect((await User.findById(signup.body.user._id).lean())?.providers).toEqual(
+        expect.arrayContaining([expect.objectContaining({ provider: 'github', providerId: 'retry-provider-id' })])
+      );
     } finally {
       global.fetch = originalFetch;
     }

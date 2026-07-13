@@ -21,6 +21,7 @@ const {
   verifyLemonSqueezySignature,
 } = require('../services/billing/providers/lemonsqueezy');
 const { recordPendingEntitlement } = require('../services/billing/pending-entitlements');
+const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
 
 const router = express.Router();
 const { requireAuth } = require('../middleware/Auth');
@@ -54,15 +55,65 @@ const gumroadParsers = [
 ];
 
 const eventStore = createBillingEventStore(BillingEvent);
+const NONTERMINAL_ATTEMPT_STATUSES = ['created', 'webhook_received', 'pending_user_match', 'failed'];
 
-async function updateCheckoutAttempt(attemptId, updates = {}) {
+function respondToUnacquiredEvent(res, acquisition) {
+  if (acquisition?.busy) {
+    res.set('Retry-After', String(acquisition.retryAfterSeconds || 5));
+    return res.status(503).json({ error: 'Webhook event is already processing', retryable: true });
+  }
+  return res.status(200).json({ ok: true, duplicate: true });
+}
+
+function isGrantingEntitlement(normalized) {
+  return ['active', 'lifetime'].includes(String(normalized?.entitlement?.status || '').toLowerCase());
+}
+
+async function completeClaimedEvent(data) {
+  const result = await eventStore.completeEvent(data);
+  if (!result.completed) {
+    const error = new Error('Billing event lease was lost before completion');
+    error.code = 'BILLING_EVENT_LEASE_LOST';
+    throw error;
+  }
+}
+
+async function updateCheckoutAttempt(attemptId, updates = {}, conditions = {}) {
   const normalizedAttemptId = String(attemptId || '').trim();
   if (!normalizedAttemptId) return;
   const patch = Object.fromEntries(
     Object.entries({ ...updates }).filter(([, value]) => value !== undefined)
   );
   if (!patch.updatedAt) patch.updatedAt = new Date();
-  await CheckoutAttempt.updateOne({ attemptId: normalizedAttemptId }, { $set: patch });
+  return CheckoutAttempt.updateOne(
+    { attemptId: normalizedAttemptId, ...conditions },
+    { $set: patch }
+  );
+}
+
+async function failCheckoutAttemptForOwnedEvent(attemptId, eventId, error) {
+  const normalizedAttemptId = String(attemptId || '').trim();
+  if (!normalizedAttemptId) return;
+  const message = String(error?.message || 'Webhook processing failed').slice(0, 1000);
+  await CheckoutAttempt.updateOne(
+    {
+      attemptId: normalizedAttemptId,
+      status: { $in: NONTERMINAL_ATTEMPT_STATUSES },
+      $or: [
+        { billingEventId: eventId },
+        { billingEventId: null },
+        { billingEventId: { $exists: false } },
+      ],
+    },
+    {
+      $set: {
+        status: 'failed',
+        lastErrorCode: 'WEBHOOK_PROCESSING_FAILED',
+        lastErrorMessage: message,
+        updatedAt: new Date(),
+      },
+    }
+  );
 }
 
 function toAttemptPublicState(attempt) {
@@ -99,6 +150,8 @@ function serializeCheckoutAttemptStatus(attempt, user) {
 }
 
 async function handleGumroadWebhook(req, res) {
+  let acquisition = null;
+  let normalizedEventId = '';
   try {
     const debug =
       process.env.BILLING_WEBHOOK_DEBUG === 'true' || process.env.NODE_ENV !== 'production';
@@ -159,20 +212,24 @@ async function handleGumroadWebhook(req, res) {
       return res.status(400).json({ error: 'Missing email' });
     }
 
-    const { duplicate } = await eventStore.recordEvent({
+    normalizedEventId = normalized.eventId;
+    acquisition = await eventStore.acquireEvent({
       provider: 'gumroad',
       eventId: normalized.eventId,
       eventType: normalized.eventType,
       email: normalizedEmail,
       payload: req.body,
-      processingStatus: normalized.eventTypeKnown ? 'received' : 'received_unknown_type',
     });
 
-    if (duplicate) {
-      return res.status(200).json({ ok: true, duplicate: true });
+    if (!acquisition.acquired) {
+      return respondToUnacquiredEvent(res, acquisition);
     }
 
-    const user = await User.findOne({ email: normalizedEmail });
+    const userQuery = { email: normalizedEmail };
+    if (isGrantingEntitlement(normalized)) {
+      userQuery.emailVerifiedAt = { $type: 'date' };
+    }
+    let user = await User.findOne(userQuery);
     if (!user) {
       if (debug) {
         console.warn(`[gumroad] user not found for event ${normalized.eventId}`);
@@ -185,25 +242,45 @@ async function handleGumroadWebhook(req, res) {
         entitlement: normalized.entitlement,
         saleId: normalized.saleId,
         payload: req.body,
+        eventReceivedAt: acquisition.event.receivedAt,
+        eventOrderKey: acquisition.eventOrderKey,
       });
-      await BillingEvent.updateOne(
-        { provider: 'gumroad', eventId: normalized.eventId },
-        { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
-      );
+      await completeClaimedEvent({
+        provider: 'gumroad',
+        eventId: normalized.eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'pending_user',
+      });
       return res.status(200).json({ ok: true, userFound: false });
     }
 
-    applyNormalizedGumroadEventToUser(user, normalized, {
+    const orderedUpdate = await applyOrderedProviderEvent({
+      user,
+      provider: 'gumroad',
       eventId: normalized.eventId,
-      purchaserEmail: normalizedEmail,
+      eventOrderKey: acquisition.eventOrderKey,
+      mutate: (currentUser) => {
+        applyNormalizedGumroadEventToUser(currentUser, normalized, {
+          eventId: normalized.eventId,
+          purchaserEmail: normalizedEmail,
+          eventReceivedAt: acquisition.event.receivedAt,
+          eventOrderKey: acquisition.eventOrderKey,
+        });
+      },
     });
+    user = orderedUpdate.user;
+    let processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
+    if (orderedUpdate.outcome === 'stale') {
+      processedStatus = 'processed_stale';
+    }
 
-    await user.save();
-    const processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
-    await BillingEvent.updateOne(
-      { provider: 'gumroad', eventId: normalized.eventId },
-      { $set: { processingStatus: processedStatus, processedAt: new Date(), userId: user._id } }
-    );
+    await completeClaimedEvent({
+      provider: 'gumroad',
+      eventId: normalized.eventId,
+      leaseToken: acquisition.leaseToken,
+      processingStatus: processedStatus,
+      userId: user._id,
+    });
     if (debug) {
       console.log(`[gumroad] updated user ${user._id} -> ${user.entitlements.pro.status}`);
     }
@@ -211,12 +288,26 @@ async function handleGumroadWebhook(req, res) {
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('[gumroad] webhook error:', err);
+    if (acquisition?.acquired && normalizedEventId) {
+      try {
+        await eventStore.failEvent({
+          provider: 'gumroad',
+          eventId: normalizedEventId,
+          leaseToken: acquisition.leaseToken,
+          error: err,
+        });
+      } catch (failErr) {
+        console.error('[gumroad] failed to persist retryable event state:', failErr);
+      }
+    }
     return res.status(500).json({ error: 'Webhook processing failed' });
   }
 }
 
 async function handleLemonSqueezyWebhook(req, res) {
   let normalizedAttemptId = '';
+  let acquisition = null;
+  let acquiredEventId = '';
   try {
     const debug =
       process.env.BILLING_WEBHOOK_DEBUG === 'true' || process.env.NODE_ENV !== 'production';
@@ -344,17 +435,17 @@ async function handleLemonSqueezyWebhook(req, res) {
       return res.status(400).json({ error: 'Missing email' });
     }
 
-    const { duplicate } = await eventStore.recordEvent({
+    acquiredEventId = eventId;
+    acquisition = await eventStore.acquireEvent({
       provider: 'lemonsqueezy',
       eventId,
       eventType: normalized.eventType,
       email: normalizedEmail || purchaseEmail || undefined,
       payload: req.body,
-      processingStatus: normalized.eventTypeKnown ? 'received' : 'received_unknown_type',
     });
 
-    if (duplicate) {
-      return res.status(200).json({ ok: true, duplicate: true });
+    if (!acquisition.acquired) {
+      return respondToUnacquiredEvent(res, acquisition);
     }
 
     await updateCheckoutAttempt(normalizedAttemptId, {
@@ -362,13 +453,15 @@ async function handleLemonSqueezyWebhook(req, res) {
       billingEventId: eventId,
       providerOrderId: normalized.orderId || undefined,
       providerSubscriptionId: normalized.subscriptionId || undefined,
-    });
+    }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
 
     if (normalized.shouldApplyEntitlement === false) {
-      await BillingEvent.updateOne(
-        { provider: 'lemonsqueezy', eventId },
-        { $set: { processingStatus: 'processed_no_entitlement', processedAt: new Date() } }
-      );
+      await completeClaimedEvent({
+        provider: 'lemonsqueezy',
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'processed_no_entitlement',
+      });
       return res.status(200).json({ ok: true, ignored: true });
     }
 
@@ -396,11 +489,9 @@ async function handleLemonSqueezyWebhook(req, res) {
         customerId: normalized.customerId,
         manageUrl: normalized.manageUrl,
         payload: req.body,
+        eventReceivedAt: acquisition.event.receivedAt,
+        eventOrderKey: acquisition.eventOrderKey,
       });
-      await BillingEvent.updateOne(
-        { provider: 'lemonsqueezy', eventId },
-        { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
-      );
       await updateCheckoutAttempt(normalizedAttemptId, {
         status: 'pending_user_match',
         billingEventId: eventId,
@@ -408,6 +499,12 @@ async function handleLemonSqueezyWebhook(req, res) {
         providerSubscriptionId: normalized.subscriptionId || undefined,
         lastErrorCode: 'PENDING_USER_MATCH',
         lastErrorMessage: 'Payment received, but we could not safely match it to this account yet.',
+      }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+      await completeClaimedEvent({
+        provider: 'lemonsqueezy',
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'pending_user',
       });
       return res.status(200).json({ ok: true, userFound: false });
     }
@@ -416,7 +513,7 @@ async function handleLemonSqueezyWebhook(req, res) {
       if (debug) {
         console.warn(`[lemonsqueezy] user not found for event ${eventId}`);
       }
-      if (normalizedEmail) {
+      if (normalizedEmail || normalizedUserId) {
         await recordPendingEntitlement(PendingEntitlement, {
           provider: 'lemonsqueezy',
           eventId,
@@ -429,11 +526,9 @@ async function handleLemonSqueezyWebhook(req, res) {
           customerId: normalized.customerId,
           manageUrl: normalized.manageUrl,
           payload: req.body,
+          eventReceivedAt: acquisition.event.receivedAt,
+          eventOrderKey: acquisition.eventOrderKey,
         });
-        await BillingEvent.updateOne(
-          { provider: 'lemonsqueezy', eventId },
-          { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
-        );
         await updateCheckoutAttempt(normalizedAttemptId, {
           status: 'pending_user_match',
           billingEventId: eventId,
@@ -441,22 +536,36 @@ async function handleLemonSqueezyWebhook(req, res) {
           providerSubscriptionId: normalized.subscriptionId || undefined,
           lastErrorCode: 'PENDING_USER_MATCH',
           lastErrorMessage: 'Payment received, but the referenced account could not be found yet.',
-        });
+        }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
       }
+      await completeClaimedEvent({
+        provider: 'lemonsqueezy',
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'pending_user',
+      });
       return res.status(200).json({ ok: true, userFound: false });
     }
 
-    applyNormalizedLemonSqueezyEventToUser(user, normalized, {
+    const orderedUpdate = await applyOrderedProviderEvent({
+      user,
+      provider: 'lemonsqueezy',
       eventId,
-      purchaseEmail,
+      eventOrderKey: acquisition.eventOrderKey,
+      mutate: (currentUser) => {
+        applyNormalizedLemonSqueezyEventToUser(currentUser, normalized, {
+          eventId,
+          purchaseEmail,
+          eventReceivedAt: acquisition.event.receivedAt,
+          eventOrderKey: acquisition.eventOrderKey,
+        });
+      },
     });
-
-    await user.save();
-    const processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
-    await BillingEvent.updateOne(
-      { provider: 'lemonsqueezy', eventId },
-      { $set: { processingStatus: processedStatus, processedAt: new Date(), userId: user._id } }
-    );
+    user = orderedUpdate.user;
+    let processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
+    if (orderedUpdate.outcome === 'stale') {
+      processedStatus = 'processed_stale';
+    }
     await updateCheckoutAttempt(normalizedAttemptId, {
       status: 'applied',
       billingEventId: eventId,
@@ -467,6 +576,13 @@ async function handleLemonSqueezyWebhook(req, res) {
       customerUserId: String(user._id),
       lastErrorCode: null,
       lastErrorMessage: null,
+    }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+    await completeClaimedEvent({
+      provider: 'lemonsqueezy',
+      eventId,
+      leaseToken: acquisition.leaseToken,
+      processingStatus: processedStatus,
+      userId: user._id,
     });
     if (debug) {
       console.log(`[lemonsqueezy] updated user ${user._id} -> ${user.entitlements.pro.status}`);
@@ -475,12 +591,26 @@ async function handleLemonSqueezyWebhook(req, res) {
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('[lemonsqueezy] webhook error:', err);
-    if (normalizedAttemptId) {
-      await updateCheckoutAttempt(normalizedAttemptId, {
-        status: 'failed',
-        lastErrorCode: 'WEBHOOK_PROCESSING_FAILED',
-        lastErrorMessage: err?.message || 'Webhook processing failed',
-      });
+    let failureOwned = false;
+    if (acquisition?.acquired && acquiredEventId) {
+      try {
+        const failureResult = await eventStore.failEvent({
+          provider: 'lemonsqueezy',
+          eventId: acquiredEventId,
+          leaseToken: acquisition.leaseToken,
+          error: err,
+        });
+        failureOwned = failureResult.failed;
+      } catch (failErr) {
+        console.error('[lemonsqueezy] failed to persist retryable event state:', failErr);
+      }
+    }
+    if (normalizedAttemptId && failureOwned) {
+      try {
+        await failCheckoutAttemptForOwnedEvent(normalizedAttemptId, acquiredEventId, err);
+      } catch (attemptErr) {
+        console.error('[lemonsqueezy] failed to persist checkout attempt failure:', attemptErr);
+      }
     }
     return res.status(500).json({ error: 'Webhook processing failed' });
   }
@@ -554,7 +684,7 @@ router.get('/checkout/attempts/:attemptId/status', requireAuth, async (req, res)
         completedAt: attempt.completedAt || new Date(),
         customerEmail: normalizeEmail(user.email),
         customerUserId: String(user._id),
-      });
+      }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
       attempt = await CheckoutAttempt.findOne({ attemptId, userId: user._id });
     }
 

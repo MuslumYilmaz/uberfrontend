@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
 
 function resolveBaseUrl(baseURL: string | undefined): string {
   if (baseURL) return baseURL.replace(/\/+$/, '');
@@ -26,12 +26,19 @@ async function signUp(page: Page, email: string, username: string, password: str
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
 }
 
+async function csrfHeaders(context: BrowserContext): Promise<Record<string, string>> {
+  const cookies = await context.cookies();
+  const csrfCookie = cookies.find((cookie) => cookie.name === 'csrf_token');
+  expect(csrfCookie?.value).toBeTruthy();
+  return { 'X-CSRF-Token': csrfCookie!.value };
+}
+
 const runBackendSmoke = process.env.E2E_BILLING_BACKEND_SMOKE === '1';
 
 test.describe('lemonsqueezy backend smoke', () => {
   test.skip(!runBackendSmoke, 'Billing backend smoke is disabled (set E2E_BILLING_BACKEND_SMOKE=1).');
 
-  test('signup user can create a test-mode checkout attempt without opening hosted checkout', async ({ page, baseURL }) => {
+  test('signup user can create a test-mode checkout attempt without opening hosted checkout', async ({ page, context, baseURL }) => {
     test.setTimeout(120_000);
 
     const resolvedBaseUrl = resolveBaseUrl(baseURL);
@@ -55,6 +62,7 @@ test.describe('lemonsqueezy backend smoke', () => {
 
     const startRes = await page.request.post('/api/billing/checkout/start', {
       data: { planId: 'monthly' },
+      headers: await csrfHeaders(context),
     });
     expect(startRes.status()).toBe(200);
     const start = await startRes.json();
