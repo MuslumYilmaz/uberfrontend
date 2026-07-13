@@ -6,23 +6,14 @@ const {
     getCachedAuthValidation,
     setCachedAuthValidation,
 } = require('../services/auth-validation-cache');
+const { ACCESS_TOKEN_COOKIE } = require('../config/auth-cookies');
+const { isStateChanging, validateCookieCsrf } = require('./Csrf');
 
-const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
-const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
 const AUTH_CODES = {
     missing: 'AUTH_MISSING',
     invalid: 'AUTH_INVALID',
     csrf: 'AUTH_CSRF_INVALID',
 };
-
-function isStateChanging(method = '') {
-    const m = String(method).toUpperCase();
-    return m === 'POST' || m === 'PUT' || m === 'PATCH' || m === 'DELETE';
-}
-
-function shouldEnforceCsrf() {
-    return String(process.env.COOKIE_SAMESITE || 'lax').toLowerCase() === 'none';
-}
 
 function getBearerToken(req) {
     const h = req.headers.authorization || '';
@@ -78,14 +69,9 @@ async function requireAuth(req, res, next) {
         const { token, via } = getAuthToken(req);
         if (!token) return sendAuthError(res, 401, AUTH_CODES.missing, 'Missing token');
 
-        // Double-submit CSRF protection when SameSite=None and auth is cookie-based.
-        if (via === 'cookie' && shouldEnforceCsrf() && isStateChanging(req.method)) {
-            const csrfCookie = req?.cookies?.[CSRF_COOKIE];
-            const csrfHeader = req.headers['x-csrf-token'];
-            const csrf = Array.isArray(csrfHeader) ? csrfHeader[0] : csrfHeader;
-            if (!csrfCookie || !csrf || String(csrf) !== String(csrfCookie)) {
-                return sendAuthError(res, 403, AUTH_CODES.csrf, 'CSRF token missing or invalid');
-            }
+        // Keep defense in depth for routers that compose requireAuth directly.
+        if (via === 'cookie' && isStateChanging(req.method) && !validateCookieCsrf(req, res)) {
+            return undefined;
         }
 
         const payload = verifyAccessToken(token, getJwtVerifyOptions());

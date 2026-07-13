@@ -17,9 +17,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - Short-lived access tokens are stored in an `httpOnly` cookie (`access_token`) to reduce XSS token theft risk.
 - Long-lived refresh sessions are stored server-side and rotated through an `httpOnly` cookie (`refresh_token`).
 - Protected routes accept the cookie (primary) and `Authorization: Bearer <token>` (fallback).
-- If `COOKIE_SAMESITE=none`, the backend enables double-submit CSRF protection:
-  - Sets a non-`httpOnly` `csrf_token` cookie on login/signup/OAuth.
-  - Requires `X-CSRF-Token` header to match `csrf_token` on `POST/PUT/PATCH/DELETE` protected routes and refresh/logout requests.
+- The backend enables double-submit CSRF protection for cookie authentication in every `SameSite` mode:
+  - Sets a non-`httpOnly` `csrf_token` cookie on login/signup/OAuth/refresh and repairs it during authenticated safe GET requests.
+  - Requires a timing-safe `X-CSRF-Token` match on cookie-authenticated `POST/PUT/PATCH/DELETE` requests. Bearer-only requests and signed webhooks are unaffected.
 
 ### Required env vars
 
@@ -32,6 +32,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `COOKIE_SAMESITE`: `lax` (default), `strict`, or `none`.
 - `COOKIE_DOMAIN`: optional, e.g. `.frontendatlas.com` to share cookies across subdomains.
 - `COOKIE_SECURE`: `true` in production over HTTPS, `false` for local HTTP dev.
+- `API_RATE_LIMIT_MAX` / `API_RATE_LIMIT_WINDOW_MS`: general `/api/**` IP quota (defaults: `300` / `60000`).
+- `WEBHOOK_RATE_LIMIT_MAX` / `WEBHOOK_RATE_LIMIT_WINDOW_MS`: billing webhook IP quota (defaults: `1200` / `60000`).
+- `RATE_LIMIT_STORE`: `auto` (Upstash when configured), `redis`, or process-local `memory`.
 
 ### Billing (webhooks)
 

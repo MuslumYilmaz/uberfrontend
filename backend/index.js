@@ -5,6 +5,7 @@ const { initSentry, setupSentryErrorHandler } = require('./config/sentry');
 initSentry();
 
 const express = require('express');
+const { rateLimit: expressRateLimit } = require('express-rate-limit');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
@@ -12,7 +13,8 @@ const { requireAuth } = require('./middleware/Auth');
 const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
 const { requireAdmin } = require('./middleware/RequireAdmin');
-const { rateLimit, getClientIp } = require('./middleware/rateLimit');
+const { createExpressRateLimitStore, rateLimit, getClientIp } = require('./middleware/rateLimit');
+const { cookieCsrfProtection } = require('./middleware/Csrf');
 const { createRequestMetricsMiddleware } = require('./middleware/observability');
 const { createSecurityHeadersMiddleware } = require('./middleware/securityHeaders');
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
@@ -42,6 +44,10 @@ const BUG_REPORT_DUP_WINDOW_MS = Number(process.env.BUG_REPORT_DUP_WINDOW_MS || 
 const BUG_REPORT_MIN_NOTE_CHARS = Number(process.env.BUG_REPORT_MIN_NOTE_CHARS || 8);
 const BUG_REPORT_MAX_NOTE_CHARS = Number(process.env.BUG_REPORT_MAX_NOTE_CHARS || 4000);
 const BUG_REPORT_MAX_URL_CHARS = Number(process.env.BUG_REPORT_MAX_URL_CHARS || 2000);
+const API_RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.API_RATE_LIMIT_WINDOW_MS) || 60_000);
+const API_RATE_LIMIT_MAX = Math.max(1, Number(process.env.API_RATE_LIMIT_MAX) || 300);
+const WEBHOOK_RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.WEBHOOK_RATE_LIMIT_WINDOW_MS) || 60_000);
+const WEBHOOK_RATE_LIMIT_MAX = Math.max(1, Number(process.env.WEBHOOK_RATE_LIMIT_MAX) || 1200);
 
 // Validate critical secrets early (fail-fast in production)
 getJwtSecret();
@@ -110,6 +116,48 @@ app.use(express.urlencoded({
     },
 }));
 app.use(cookieParser());
+app.use(cookieCsrfProtection);
+
+const apiRateLimitHandler = (_req, res) => res.status(429).json({
+    code: 'API_RATE_LIMITED',
+    error: 'Too many requests. Please try again shortly.',
+});
+
+const webhookRateLimiter = expressRateLimit({
+    windowMs: WEBHOOK_RATE_LIMIT_WINDOW_MS,
+    limit: WEBHOOK_RATE_LIMIT_MAX,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    skip: (req) => req.method === 'OPTIONS',
+    handler: apiRateLimitHandler,
+    store: createExpressRateLimitStore({
+        name: 'billing-webhooks-global',
+        windowMs: WEBHOOK_RATE_LIMIT_WINDOW_MS,
+    }),
+});
+
+const apiRateLimiter = expressRateLimit({
+    windowMs: API_RATE_LIMIT_WINDOW_MS,
+    limit: API_RATE_LIMIT_MAX,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    skip: (req) => {
+        if (req.method === 'OPTIONS') return true;
+        const path = String(req.originalUrl || req.url || '').split('?')[0];
+        return path === '/api/hello' ||
+            path === '/api/health' ||
+            path === '/api/billing/webhooks' ||
+            path.startsWith('/api/billing/webhooks/');
+    },
+    handler: apiRateLimitHandler,
+    store: createExpressRateLimitStore({
+        name: 'api-global',
+        windowMs: API_RATE_LIMIT_WINDOW_MS,
+    }),
+});
+
+app.use('/api/billing/webhooks', webhookRateLimiter);
+app.use('/api', apiRateLimiter);
 
 // ---- DB (lazy for serverless, fail-fast for local server) ----
 const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/contact', '/api/bug-report', '/api/health']);

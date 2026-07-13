@@ -3,12 +3,7 @@ const crypto = require('crypto');
 const redisWarnings = new Set();
 
 function getClientIp(req) {
-    const trustProxy = String(process.env.TRUST_PROXY || '').toLowerCase() === 'true';
-    if (trustProxy) {
-        const xf = req.headers['x-forwarded-for'];
-        if (typeof xf === 'string' && xf.trim()) return xf.split(',')[0].trim();
-    }
-    return req.ip;
+    return req?.ip || req?.socket?.remoteAddress || 'unknown';
 }
 
 function normalizeStoreMode() {
@@ -89,6 +84,32 @@ async function incrementRedis(key, ttlSeconds) {
     };
 }
 
+async function runRedisCommand(command) {
+    if (typeof fetch !== 'function') {
+        throw new Error('global fetch is unavailable for Upstash Redis rate limiting');
+    }
+
+    const baseUrl = String(process.env.UPSTASH_REDIS_REST_URL || '').replace(/\/+$/, '');
+    const token = String(process.env.UPSTASH_REDIS_REST_TOKEN || '');
+    if (!baseUrl || !token) {
+        throw new Error('UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required for Redis rate limiting');
+    }
+
+    const response = await fetch(`${baseUrl}/pipeline`, {
+        method: 'POST',
+        headers: {
+            authorization: `Bearer ${token}`,
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify([command]),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Upstash Redis rate limit request failed with HTTP ${response.status}`);
+    }
+    return response.json();
+}
+
 function incrementMemory(hits, key, now, windowMsSafe) {
     const entry = hits.get(key);
 
@@ -108,6 +129,77 @@ function incrementMemory(hits, key, now, windowMsSafe) {
     }
 
     return entry;
+}
+
+function rateLimitStoreError(error) {
+    const wrapped = new Error('Rate limiter unavailable');
+    wrapped.status = 503;
+    wrapped.cause = error;
+    return wrapped;
+}
+
+function createExpressRateLimitStore({ name, windowMs }) {
+    const hits = new Map();
+    const windowMsSafe = Math.max(1000, Number(windowMs) || 60_000);
+    const ttlSeconds = Math.max(1, Math.ceil(windowMsSafe / 1000));
+    const namespace = String(process.env.RATE_LIMIT_NAMESPACE || 'frontendatlas').trim() || 'frontendatlas';
+    const limitName = safeLimiterName({ name, windowMs: windowMsSafe, max: 1 });
+
+    function storeKey(key) {
+        return `rl:${namespace}:${limitName}:${hashKey(key)}`;
+    }
+
+    function failClosed() {
+        return String(process.env.RATE_LIMIT_REDIS_FAIL_CLOSED || '').toLowerCase() === 'true';
+    }
+
+    async function withRedisFallback(operation, fallback) {
+        if (!shouldUseRedis()) return fallback();
+        try {
+            return await operation();
+        } catch (error) {
+            warnRedisLimiterOnce(
+                limitName,
+                `${limitName} Redis limiter unavailable; ${failClosed() ? 'failing closed' : 'falling back to in-memory limits'} (${error?.message || error})`
+            );
+            if (failClosed()) throw rateLimitStoreError(error);
+            return fallback();
+        }
+    }
+
+    return {
+        async increment(key) {
+            const now = Date.now();
+            const keyForStore = storeKey(key);
+            const entry = await withRedisFallback(
+                () => incrementRedis(keyForStore, ttlSeconds),
+                () => incrementMemory(hits, keyForStore, now, windowMsSafe)
+            );
+            return {
+                totalHits: entry.count,
+                resetTime: new Date(entry.resetAt),
+            };
+        },
+
+        async decrement(key) {
+            const keyForStore = storeKey(key);
+            await withRedisFallback(
+                () => runRedisCommand(['DECR', keyForStore]),
+                () => {
+                    const entry = hits.get(keyForStore);
+                    if (entry) entry.count = Math.max(0, entry.count - 1);
+                }
+            );
+        },
+
+        async resetKey(key) {
+            const keyForStore = storeKey(key);
+            await withRedisFallback(
+                () => runRedisCommand(['DEL', keyForStore]),
+                () => hits.delete(keyForStore)
+            );
+        },
+    };
 }
 
 function rateLimit({ name, windowMs, max, keyGenerator, message, code }) {
@@ -156,4 +248,4 @@ function rateLimit({ name, windowMs, max, keyGenerator, message, code }) {
     };
 }
 
-module.exports = { rateLimit, getClientIp };
+module.exports = { createExpressRateLimitStore, rateLimit, getClientIp };

@@ -2,6 +2,7 @@
 
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const { CookieAccessInfo } = require('cookiejar');
 
 const mockSendMail = jest.fn();
 jest.mock('nodemailer', () => ({
@@ -22,6 +23,9 @@ let disconnectMongo;
 let mongoServer;
 
 const JWT_SECRET = 'test_jwt_secret_auth_route';
+const LEGACY_SIGNUP_RECEIPT_FIXTURE = 'dd9912f75fa93e65f6189cd979f77e0906d0a0ff96d897588e55f91e5f3de27c';
+const LEGACY_LOGIN_RECEIPT_FIXTURE = '0dbed3651c00098f7d7ad79872e0498fe813f2fc17de7a80c25622f23a24cc3e';
+const createRawAgent = request.agent.bind(request);
 
 function getSetCookies(res) {
   return Array.isArray(res.headers?.['set-cookie']) ? res.headers['set-cookie'] : [];
@@ -44,6 +48,30 @@ function authCookieValueFromResponse(res) {
 function refreshCookieValueFromResponse(res) {
   return cookieValueFromResponse(res, 'refresh_token');
 }
+
+function csrfCookieValueFromResponse(res) {
+  return cookieValueFromResponse(res, 'csrf_token');
+}
+
+function createBrowserAgent(targetApp) {
+  const agent = createRawAgent(targetApp);
+  for (const method of ['post', 'put', 'patch', 'delete']) {
+    const original = agent[method].bind(agent);
+    agent[method] = (url, ...args) => {
+      const test = original(url, ...args);
+      const pathname = new URL(url, 'http://127.0.0.1').pathname;
+      const cookies = agent.jar.getCookies(new CookieAccessInfo('127.0.0.1', pathname, false));
+      const csrf = cookies.find((cookie) => cookie.name === 'csrf_token');
+      if (csrf?.value) test.set('X-CSRF-Token', csrf.value);
+      return test;
+    };
+  }
+  return agent;
+}
+
+// Existing agent-based tests model the browser interceptor, which mirrors the
+// readable CSRF cookie into the request header for unsafe API methods.
+request.agent = createBrowserAgent;
 
 function expectAuthCookieSet(res) {
   expect(getSetCookies(res).some((cookie) => cookie.startsWith('access_token='))).toBe(true);
@@ -69,6 +97,11 @@ beforeAll(async () => {
   process.env.GITHUB_CLIENT_SECRET = 'test_gh_client_secret';
   process.env.SERVER_BASE = 'http://127.0.0.1:3001';
   process.env.FRONTEND_BASE = 'http://127.0.0.1:4200';
+  process.env.COOKIE_SAMESITE = 'lax';
+  process.env.COOKIE_SECURE = 'false';
+  process.env.RATE_LIMIT_STORE = 'memory';
+  process.env.API_RATE_LIMIT_MAX = '10000';
+  process.env.WEBHOOK_RATE_LIMIT_MAX = '10000';
   process.env.SMTP_USER = 'noreply@example.com';
   process.env.SMTP_PASS = 'test-password';
 
@@ -198,11 +231,7 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(await AuthAttemptReceipt.countDocuments({ action: 'signup' })).toBe(1);
     const receipt = await AuthAttemptReceipt.findOne({ action: 'signup' }).lean();
     expect(receipt?.requestHash).toMatch(/^hmac-sha256-v1:[a-f0-9]{64}$/);
-    const legacyHash = require('crypto')
-      .createHash('sha256')
-      .update(['signup', payload.email, payload.username, payload.password].join('\n'))
-      .digest('hex');
-    expect(receipt?.requestHash).not.toBe(legacyHash);
+    expect(receipt?.requestHash).not.toBe(LEGACY_SIGNUP_RECEIPT_FIXTURE);
     expect(refreshCookieValueFromResponse(first)).toBe(refreshCookieValueFromResponse(second));
   });
 
@@ -242,11 +271,81 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(signup.status).toBe(201);
     expectAuthCookieSet(signup);
     expectRefreshCookieSet(signup);
+    const csrfCookieLine = cookieLineFromResponse(signup, 'csrf_token');
+    expect(csrfCookieLine).toMatch(/;\s*SameSite=Lax/i);
+    expect(csrfCookieLine).not.toMatch(/;\s*HttpOnly/i);
 
     const me = await agent.get('/api/auth/me');
     expect(me.status).toBe(200);
     expect(me.body?.email).toBe('session@example.com');
     expect(me.body?.username).toBe('session_user');
+  });
+
+  test('cookie auth requires a timing-safe CSRF match while bearer auth remains header-only', async () => {
+    const signup = await request(app)
+      .post('/api/auth/signup')
+      .send({
+        email: 'csrf-policy@example.com',
+        username: 'csrf_policy_user',
+        password: 'secret123',
+      });
+    expect(signup.status).toBe(201);
+
+    const accessCookie = authCookieValueFromResponse(signup);
+    const csrfCookie = csrfCookieValueFromResponse(signup);
+    const cookieHeader = [`access_token=${accessCookie}`, `csrf_token=${csrfCookie}`];
+    const changePayload = {
+      currentPassword: 'wrongpass123',
+      currentPasswordConfirm: 'wrongpass123',
+      newPassword: 'newpass456',
+    };
+
+    const missing = await request(app)
+      .post('/api/auth/change-password')
+      .set('Cookie', cookieHeader)
+      .send(changePayload);
+    expect(missing.status).toBe(403);
+    expect(missing.body?.code).toBe('AUTH_CSRF_INVALID');
+
+    const mismatched = await request(app)
+      .post('/api/auth/change-password')
+      .set('Cookie', cookieHeader)
+      .set('X-CSRF-Token', `${csrfCookie}x`)
+      .send(changePayload);
+    expect(mismatched.status).toBe(403);
+    expect(mismatched.body?.code).toBe('AUTH_CSRF_INVALID');
+
+    const matched = await request(app)
+      .post('/api/auth/change-password')
+      .set('Cookie', cookieHeader)
+      .set('X-CSRF-Token', csrfCookie)
+      .send(changePayload);
+    expect(matched.status).toBe(401);
+    expect(matched.body?.error).toBe('Invalid current password');
+
+    const bearerOnly = await request(app)
+      .post('/api/auth/change-password')
+      .set('Authorization', `Bearer ${signup.body.token}`)
+      .send(changePayload);
+    expect(bearerOnly.status).toBe(401);
+    expect(bearerOnly.body?.error).toBe('Invalid current password');
+  });
+
+  test('an authenticated safe GET repairs a missing CSRF cookie for an old session', async () => {
+    const signup = await request(app)
+      .post('/api/auth/signup')
+      .send({
+        email: 'csrf-repair@example.com',
+        username: 'csrf_repair_user',
+        password: 'secret123',
+      });
+
+    const repaired = await request(app)
+      .get('/api/auth/me')
+      .set('Cookie', [`access_token=${authCookieValueFromResponse(signup)}`]);
+
+    expect(repaired.status).toBe(200);
+    expect(csrfCookieValueFromResponse(repaired)).toMatch(/^[a-f0-9]{64}$/);
   });
 
   test('signup omits cookie domain for IP-based frontend hosts', async () => {
@@ -279,11 +378,14 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
 
     expect(signup.status).toBe(201);
     const refreshCookie = refreshCookieValueFromResponse(signup);
+    const csrfCookie = csrfCookieValueFromResponse(signup);
     expect(refreshCookie).toBeTruthy();
+    expect(csrfCookie).toBeTruthy();
 
     const refresh = await request(app)
       .post('/api/auth/refresh')
-      .set('Cookie', [`refresh_token=${refreshCookie}`]);
+      .set('Cookie', [`refresh_token=${refreshCookie}`, `csrf_token=${csrfCookie}`])
+      .set('X-CSRF-Token', csrfCookie);
 
     expect(refresh.status).toBe(200);
     expect(refresh.body?.ok).toBe(true);
@@ -333,11 +435,10 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(await AuthAttemptReceipt.countDocuments({ action: 'login' })).toBe(1);
     expect(refreshCookieValueFromResponse(first)).toBe(refreshCookieValueFromResponse(second));
 
-    const legacyHash = require('crypto')
-      .createHash('sha256')
-      .update(['login', payload.emailOrUsername, payload.password].join('\n'))
-      .digest('hex');
-    await AuthAttemptReceipt.updateOne({ action: 'login' }, { $set: { requestHash: legacyHash } });
+    await AuthAttemptReceipt.updateOne(
+      { action: 'login' },
+      { $set: { requestHash: LEGACY_LOGIN_RECEIPT_FIXTURE } }
+    );
     const rollingDeployReplay = await request(app).post('/api/auth/login').set(headers).send(payload);
     expect(rollingDeployReplay.status).toBe(200);
     expect(await AuthSession.countDocuments({})).toBe(1);
@@ -423,10 +524,12 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(meOnOtherDevice.body?.code).toBe('AUTH_INVALID');
 
     const refreshCookie = refreshCookieValueFromResponse(secondLogin);
+    const csrfCookie = csrfCookieValueFromResponse(secondLogin);
     expect(refreshCookie).toBeTruthy();
     const refresh = await request(app)
       .post('/api/auth/refresh')
-      .set('Cookie', [`refresh_token=${refreshCookie}`]);
+      .set('Cookie', [`refresh_token=${refreshCookie}`, `csrf_token=${csrfCookie}`])
+      .set('X-CSRF-Token', csrfCookie);
     expect(refresh.status).toBe(401);
     expect(refresh.body?.code).toBe('REFRESH_INVALID');
   });
@@ -475,6 +578,7 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(typeof signup.body?.token).toBe('string');
     const oldToken = signup.body.token;
     const oldRefreshCookie = refreshCookieValueFromResponse(signup);
+    const oldCsrfCookie = csrfCookieValueFromResponse(signup);
     expect(oldRefreshCookie).toBeTruthy();
 
     const change = await agent
@@ -503,7 +607,8 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
 
     const staleRefresh = await request(app)
       .post('/api/auth/refresh')
-      .set('Cookie', [`refresh_token=${oldRefreshCookie}`]);
+      .set('Cookie', [`refresh_token=${oldRefreshCookie}`, `csrf_token=${oldCsrfCookie}`])
+      .set('X-CSRF-Token', oldCsrfCookie);
     expect(staleRefresh.status).toBe(401);
     expect(staleRefresh.body?.error).toBe('Invalid or expired refresh session');
     expect(staleRefresh.body?.code).toBe('REFRESH_INVALID');
@@ -701,7 +806,9 @@ describe('email verification', () => {
     revokeSpy.mockRestore();
     expect(failed.status).toBe(500);
     const replacementAccess = authCookieValueFromResponse(failed);
+    const replacementCsrf = csrfCookieValueFromResponse(failed);
     expect(replacementAccess).toBeTruthy();
+    expect(replacementCsrf).toBeTruthy();
 
     const changed = await User.findById(signup.body.user._id).lean();
     expect(changed?.email).toBe('revoke-new@example.com');
@@ -717,7 +824,8 @@ describe('email verification', () => {
 
     const retried = await request(app)
       .post('/api/auth/email-verification/confirm')
-      .set('Cookie', [`access_token=${replacementAccess}`])
+      .set('Cookie', [`access_token=${replacementAccess}`, `csrf_token=${replacementCsrf}`])
+      .set('X-CSRF-Token', replacementCsrf)
       .send({ token });
     expect(retried.status).toBe(200);
     expect((await EmailVerification.findOne({ userId: signup.body.user._id }).lean())?.finalizedAt).toBeTruthy();
@@ -817,6 +925,7 @@ describe('OAuth callbacks', () => {
     try {
       const callback = await agent.get('/api/auth/oauth/google/callback').query({ code: 'oauth-code', state });
       expect(callback.status).toBe(302);
+      expect(csrfCookieValueFromResponse(callback)).toMatch(/^[a-f0-9]{64}$/);
       const original = await User.findById(signup.body.user._id).lean();
       expect(original?.providers || []).toHaveLength(0);
       expect(await User.countDocuments({})).toBe(2);

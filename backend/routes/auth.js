@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const net = require('net');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User.js');
 const AuthSession = require('../models/AuthSession');
@@ -10,10 +9,19 @@ const EmailVerification = require('../models/EmailVerification');
 const OAuthIdentity = require('../models/OAuthIdentity');
 const PendingEntitlement = require('../models/PendingEntitlement');
 const { applyPendingEntitlementsForUser } = require('../services/billing/pending-entitlements');
-const { AUTH_CODES, requireAuth } = require('../middleware/Auth.js');
+const { requireAuth } = require('../middleware/Auth.js');
 const { getJwtSecret, getJwtVerifyOptions, isProd } = require('../config/jwt');
 const { resolveAllowedFrontendOrigins, resolveFrontendBase, resolveServerBase } = require('../config/urls');
 const { rateLimit, getClientIp } = require('../middleware/rateLimit');
+const { validateCookieCsrf } = require('../middleware/Csrf');
+const {
+    ACCESS_TOKEN_COOKIE,
+    REFRESH_TOKEN_COOKIE,
+    CSRF_COOKIE,
+    accessCookieOptions,
+    refreshCookieOptions,
+    csrfCookieOptions,
+} = require('../config/auth-cookies');
 const {
     createAndSendVerification,
     hashVerificationToken,
@@ -24,9 +32,6 @@ const {
     createAuthSession,
     buildReplayableRefreshTokenForSession,
     findRefreshSession,
-    getAccessTokenExpiresIn,
-    getRefreshSessionTtlMs,
-    parseDurationToMs,
     revokeAllSessionsForUser,
     revokeOtherSessionsForUser,
     revokeSessionById,
@@ -38,9 +43,6 @@ const {
 const { clearAuthValidationCacheForUser } = require('../services/auth-validation-cache');
 const { claimOAuthIdentity, findOAuthIdentityUser } = require('../services/oauth-identities');
 
-const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
-const REFRESH_TOKEN_COOKIE = process.env.REFRESH_COOKIE_NAME || 'refresh_token';
-const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
 const REFRESH_CODES = {
     missing: 'REFRESH_MISSING',
     invalid: 'REFRESH_INVALID',
@@ -55,100 +57,22 @@ const AUTH_ATTEMPT_WAIT_MS = 50;
 const EMAIL_CHANGE_FINALIZATION_TTL_MS = 24 * 60 * 60 * 1000;
 const EMAIL_CHANGE_FINALIZATION_LEASE_MS = 2 * 60 * 1000;
 
-function getCookieSameSite() {
-    const raw = String(process.env.COOKIE_SAMESITE || 'lax').toLowerCase();
-    if (raw === 'lax' || raw === 'strict' || raw === 'none') return raw;
-    return 'lax';
-}
-
-function getCookieSecure() {
-    const v = String(process.env.COOKIE_SECURE || '').toLowerCase();
-    if (v === 'true') return true;
-    if (v === 'false') return false;
-    return isProd();
-}
-
-function getCookieDomain() {
-    const explicit = String(process.env.COOKIE_DOMAIN || '').trim();
-    if (explicit) return explicit;
-    try {
-        const host = new URL(FRONTEND_BASE || SERVER_BASE || '').hostname || '';
-        const normalizedHost = host.replace(/^\[|\]$/g, '').toLowerCase();
-        if (
-            !normalizedHost ||
-            normalizedHost === 'localhost' ||
-            normalizedHost.endsWith('.localhost') ||
-            net.isIP(normalizedHost)
-        ) {
-            return undefined;
-        }
-        const parts = normalizedHost.replace(/^www\./, '').split('.');
-        if (parts.length < 2) return undefined;
-        return `.${parts.slice(-2).join('.')}`;
-    } catch {
-        return undefined;
-    }
-}
-
-function cookieBaseOptions() {
-    const sameSite = getCookieSameSite();
-    const secure = getCookieSecure();
-    const domain = getCookieDomain();
-    return {
-        sameSite,
-        secure,
-        ...(domain ? { domain } : {}),
-    };
-}
-
-function accessCookieOptions() {
-    const base = cookieBaseOptions();
-    const maxAge = parseDurationToMs(getAccessTokenExpiresIn(), 15 * 60 * 1000);
-    return {
-        ...base,
-        path: '/',
-        maxAge,
-    };
-}
-
-function refreshCookieOptions() {
-    const base = cookieBaseOptions();
-    return {
-        ...base,
-        path: '/api/auth',
-        maxAge: getRefreshSessionTtlMs(),
-    };
-}
-
-function csrfCookieOptions() {
-    const base = cookieBaseOptions();
-    return {
-        ...base,
-        path: '/',
-        maxAge: getRefreshSessionTtlMs(),
-    };
-}
-
 function setAuthCookies(req, res, { accessToken, refreshToken }) {
     res.cookie(ACCESS_TOKEN_COOKIE, accessToken, { ...accessCookieOptions(), httpOnly: true });
     if (refreshToken) {
         res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, { ...refreshCookieOptions(), httpOnly: true });
     }
 
-    const sameSite = getCookieSameSite();
-    if (sameSite === 'none') {
-        const existingCsrf = String(req?.cookies?.[CSRF_COOKIE] || '').trim();
-        const csrf = existingCsrf || crypto.randomBytes(32).toString('hex');
-        res.cookie(CSRF_COOKIE, csrf, { ...csrfCookieOptions(), httpOnly: false });
-        return csrf;
-    }
-    return null;
+    const existingCsrf = String(req?.cookies?.[CSRF_COOKIE] || '').trim();
+    const csrf = existingCsrf || crypto.randomBytes(32).toString('hex');
+    res.cookie(CSRF_COOKIE, csrf, csrfCookieOptions());
+    return csrf;
 }
 
 function clearAuthCookies(res) {
     res.clearCookie(ACCESS_TOKEN_COOKIE, { ...accessCookieOptions(), httpOnly: true });
     res.clearCookie(REFRESH_TOKEN_COOKIE, { ...refreshCookieOptions(), httpOnly: true });
-    res.clearCookie(CSRF_COOKIE, { ...csrfCookieOptions(), httpOnly: false });
+    res.clearCookie(CSRF_COOKIE, csrfCookieOptions());
 }
 
 function getRefreshTokenFromRequest(req) {
@@ -156,20 +80,8 @@ function getRefreshTokenFromRequest(req) {
     return typeof raw === 'string' && raw ? raw : null;
 }
 
-function shouldEnforceCsrf() {
-    return getCookieSameSite() === 'none';
-}
-
 function enforceCookieCsrf(req, res) {
-    if (!shouldEnforceCsrf()) return true;
-    const csrfCookie = req?.cookies?.[CSRF_COOKIE];
-    const csrfHeader = req.headers['x-csrf-token'];
-    const csrf = Array.isArray(csrfHeader) ? csrfHeader[0] : csrfHeader;
-    if (!csrfCookie || !csrf || String(csrf) !== String(csrfCookie)) {
-        res.status(403).json({ code: AUTH_CODES.csrf, error: 'CSRF token missing or invalid' });
-        return false;
-    }
-    return true;
+    return validateCookieCsrf(req, res);
 }
 
 async function issueAuthSessionCookies(req, res, user, replayContext = null) {
