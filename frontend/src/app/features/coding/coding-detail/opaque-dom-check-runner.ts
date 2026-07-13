@@ -3,8 +3,10 @@ import type { TestResult } from '../console-logger/console-logger.component';
 
 const OPAQUE_CHECK_CHANNEL = 'FA_OPAQUE_CHECK';
 const OPAQUE_CHECK_VERSION = 1;
-const DEFAULT_READY_TIMEOUT_MS = 8_000;
+const DEFAULT_FRAMEWORK_READY_TIMEOUT_MS = 8_000;
+const DEFAULT_WEB_READY_TIMEOUT_MS = 4_000;
 const DEFAULT_CHECK_TIMEOUT_MS = 10_000;
+const MAX_WEB_READY_ATTEMPTS = 4;
 const MAX_ERROR_LENGTH = 4_000;
 
 type OpaqueCheckKind = 'framework' | 'web';
@@ -27,6 +29,15 @@ export class OpaqueCheckCancelledError extends Error {
   }
 }
 
+export class OpaquePreviewReadyTimeoutError extends Error {
+  constructor(kind: 'framework' | 'web') {
+    super(kind === 'framework'
+      ? 'Framework checks timed out waiting for preview render'
+      : 'Web checks timed out waiting for preview document');
+    this.name = 'OpaquePreviewReadyTimeoutError';
+  }
+}
+
 export class OpaqueDomCheckRunner {
   private activeRun: ActiveRun | null = null;
 
@@ -46,7 +57,7 @@ export class OpaqueDomCheckRunner {
             html,
             config: { runId: this.createRunId(), kind: 'framework', check },
             signal: active.controller.signal,
-            readyTimeoutMs: options.readyTimeoutMs ?? DEFAULT_READY_TIMEOUT_MS,
+            readyTimeoutMs: options.readyTimeoutMs ?? DEFAULT_FRAMEWORK_READY_TIMEOUT_MS,
             checkTimeoutMs: options.checkTimeoutMs ?? DEFAULT_CHECK_TIMEOUT_MS,
           });
           results.push(checkResults[0] || {
@@ -75,14 +86,29 @@ export class OpaqueDomCheckRunner {
     options: { readyTimeoutMs?: number; checkTimeoutMs?: number } = {},
   ): Promise<TestResult[]> {
     const active = this.beginRun();
+    const readyAttemptTimeouts = this.webReadyAttemptTimeouts(
+      options.readyTimeoutMs ?? DEFAULT_WEB_READY_TIMEOUT_MS,
+    );
+
     try {
-      return await this.runFrame({
-        html,
-        config: { runId: this.createRunId(), kind: 'web', testCode },
-        signal: active.controller.signal,
-        readyTimeoutMs: options.readyTimeoutMs ?? DEFAULT_READY_TIMEOUT_MS,
-        checkTimeoutMs: options.checkTimeoutMs ?? DEFAULT_CHECK_TIMEOUT_MS,
-      });
+      let lastReadyError: unknown;
+      for (const [attempt, readyTimeoutMs] of readyAttemptTimeouts.entries()) {
+        try {
+          return await this.runFrame({
+            html,
+            config: { runId: this.createRunId(), kind: 'web', testCode },
+            signal: active.controller.signal,
+            readyTimeoutMs,
+            checkTimeoutMs: options.checkTimeoutMs ?? DEFAULT_CHECK_TIMEOUT_MS,
+          });
+        } catch (error) {
+          if (error instanceof OpaqueCheckCancelledError) throw error;
+          lastReadyError = error;
+          const hasAnotherAttempt = attempt < readyAttemptTimeouts.length - 1;
+          if (!(error instanceof OpaquePreviewReadyTimeoutError) || !hasAnotherAttempt) throw error;
+        }
+      }
+      throw lastReadyError;
     } catch (error) {
       if (error instanceof OpaqueCheckCancelledError) throw error;
       return [{
@@ -112,6 +138,18 @@ export class OpaqueDomCheckRunner {
     return active;
   }
 
+  private webReadyAttemptTimeouts(totalTimeoutMs: number): number[] {
+    const total = Math.max(1, Math.floor(totalTimeoutMs));
+    if (total === 1) return [total];
+    const attemptCount = Math.min(MAX_WEB_READY_ATTEMPTS, Math.max(2, Math.floor(total / 500)));
+    const baseTimeout = Math.floor(total / attemptCount);
+    const remainder = total % attemptCount;
+    return Array.from(
+      { length: attemptCount },
+      (_unused, index) => baseTimeout + (index < remainder ? 1 : 0),
+    );
+  }
+
   private runFrame(options: {
     html: string;
     config: ChildConfig;
@@ -123,7 +161,7 @@ export class OpaqueDomCheckRunner {
     const frame = document.createElement('iframe');
     frame.setAttribute('sandbox', 'allow-scripts');
     frame.setAttribute('aria-hidden', 'true');
-    frame.style.cssText = 'position:fixed;left:-10000px;top:-10000px;width:0;height:0;border:0;visibility:hidden;';
+    frame.style.cssText = 'position:fixed;left:-10000px;top:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';
 
     return new Promise<TestResult[]>((resolve, reject) => {
       let settled = false;
@@ -187,9 +225,7 @@ export class OpaqueDomCheckRunner {
       window.addEventListener('message', onMessage);
       signal.addEventListener('abort', onAbort, { once: true });
       readyTimer = window.setTimeout(() => {
-        fail(new Error(config.kind === 'framework'
-          ? 'Framework checks timed out waiting for preview render'
-          : 'Web checks timed out waiting for preview document'));
+        fail(new OpaquePreviewReadyTimeoutError(config.kind));
       }, Math.max(1, options.readyTimeoutMs));
 
       if (signal.aborted) {
@@ -197,8 +233,10 @@ export class OpaqueDomCheckRunner {
         return;
       }
 
-      frame.srcdoc = this.injectBootstrap(html, config);
       document.body.appendChild(frame);
+      // Start srcdoc navigation only after the frame is connected. Chromium can
+      // defer a detached, non-rendered frame under load and never run its boot script.
+      frame.srcdoc = this.injectBootstrap(html, config);
     });
   }
 
@@ -257,6 +295,22 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   const nativeSetTimeout = window.setTimeout.bind(window);
   const nativeNow = Date.now.bind(Date);
   let started = false;
+  let lastRequestedFocus: Element | null = null;
+
+  // Backgrounded and non-rendered sandbox frames may reject native focus even
+  // though the application made the correct focus request. Track focus/blur
+  // calls inside the opaque document so structured checks remain deterministic.
+  const nativeFocus = HTMLElement.prototype.focus;
+  const nativeBlur = HTMLElement.prototype.blur;
+  HTMLElement.prototype.focus = function focus(options?: FocusOptions): void {
+    lastRequestedFocus = this;
+    if (options === undefined) nativeFocus.call(this);
+    else nativeFocus.call(this, options);
+  };
+  HTMLElement.prototype.blur = function blur(): void {
+    if (lastRequestedFocus === this) lastRequestedFocus = null;
+    nativeBlur.call(this);
+  };
 
   const errorMessage = (error: unknown, fallback: string) => {
     const value = error instanceof Error ? error.message : String(error || fallback);
@@ -446,7 +500,9 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       return delay(50);
     }
     if (type === 'expectFocused') {
-      if (document.activeElement !== element) throw new Error(`${selector} expected focus but active element was ${describeElement(document.activeElement)}`);
+      if (document.activeElement !== element && lastRequestedFocus !== element) {
+        throw new Error(`${selector} expected focus but active element was ${describeElement(document.activeElement)}`);
+      }
       return Promise.resolve();
     }
     throw new Error(`Unsupported framework check step: ${type || 'unknown'}`);

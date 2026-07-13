@@ -1,4 +1,8 @@
-import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from './opaque-dom-check-runner';
+import {
+  OpaqueCheckCancelledError,
+  OpaqueDomCheckRunner,
+  OpaquePreviewReadyTimeoutError,
+} from './opaque-dom-check-runner';
 
 describe('OpaqueDomCheckRunner', () => {
   let runner: OpaqueDomCheckRunner;
@@ -62,11 +66,31 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results[1].error?.length).toBe(4000);
   });
 
+  it('retries a web document that misses its first readiness handshake', async () => {
+    const runFrame = spyOn<any>(runner, 'runFrame').and.returnValues(
+      Promise.reject(new OpaquePreviewReadyTimeoutError('web')),
+      Promise.resolve([{ name: 'runs after retry', passed: true }]),
+    );
+
+    const results = await runner.runWeb(
+      '<!doctype html><html><body><div class="status">ready</div></body></html>',
+      `test('runs after retry', () => expect(q('.status').textContent).toBe('ready'));`,
+      { readyTimeoutMs: 4_000 },
+    );
+
+    const firstOptions = runFrame.calls.argsFor(0)[0] as { config: { runId: string } };
+    const secondOptions = runFrame.calls.argsFor(1)[0] as { config: { runId: string } };
+    expect(runFrame).toHaveBeenCalledTimes(2);
+    expect(firstOptions.config.runId).not.toBe(secondOptions.config.runId);
+    expect(results).toEqual([{ name: 'runs after retry', passed: true }]);
+  });
+
   it('ignores forged result messages with the wrong source or runId', async () => {
     const run = runner.runFramework(
       `<!doctype html><html><body>
         <div class="value">real</div>
         <div class="token-state"></div>
+        <input class="entry" />
         <script>
           document.querySelector('.token-state').textContent = typeof window.__FA_PREVIEW_READY_TOKEN;
           setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('test'), 30);
@@ -78,6 +102,8 @@ describe('OpaqueDomCheckRunner', () => {
         steps: [
           { type: 'expectText', selector: '.value', text: 'real' },
           { type: 'expectText', selector: '.token-state', text: 'undefined' },
+          { type: 'key', selector: '.entry', key: 'Enter' },
+          { type: 'expectFocused', selector: '.entry' },
         ],
       }],
     );
