@@ -162,6 +162,25 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
   });
 
+  test('anonymous users see the premium gate without rendering the full Google company route', async ({ page }) => {
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json; charset=utf-8',
+        body: JSON.stringify({ error: 'Unauthorized' }),
+      });
+    });
+
+    await page.goto('/companies/google');
+
+    await expect(page).toHaveURL(/\/(?:companies)?$/);
+    expect(new URL(page.url()).pathname).not.toBe('/companies/google');
+    await expect(page.getByRole('heading', { name: 'Premium company questions' })).toBeVisible();
+    await expect(page.locator('app-company-detail')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: /google front end interview guide/i })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: /how google evaluates front-end engineers/i })).toHaveCount(0);
+  });
+
   test('company preview route redirects premium users to full company detail', async ({ page }) => {
     await seedPremiumSession(page);
 

@@ -417,6 +417,17 @@ function assertOpenAiCompanyPreviewSitemapEntry(entries) {
   }
 }
 
+function assertGoogleCompanyPreviewSitemapEntry(entries) {
+  const loc = 'https://frontendatlas.com/companies/google/preview';
+  const matches = entries.filter((item) => item.loc === loc);
+  if (matches.length !== 1) {
+    throw new Error(`Sitemap must include exactly one Google company preview loc: ${loc}`);
+  }
+  if (matches[0].lastmod !== '2026-07-13') {
+    throw new Error(`Google company preview sitemap lastmod must be 2026-07-13, got ${matches[0].lastmod || '(missing)'}`);
+  }
+}
+
 function normalizeTitle(value) {
   return String(value || '')
     .trim()
@@ -616,6 +627,9 @@ function assertRobotsAllowsCodingQueryNoindex() {
   if (/^\s*Disallow:\s*\/coding\?/im.test(robots)) {
     throw new Error('robots.txt must not disallow /coding?; query variants need to be crawlable for noindex.');
   }
+  if (!/^\s*Allow:\s*\/companies\/\*\/preview\$\s*$/im.test(robots)) {
+    throw new Error('robots.txt must explicitly allow /companies/*/preview$ routes.');
+  }
 }
 
 function assertVercelCodingQueryNoindexHeaders() {
@@ -765,6 +779,7 @@ assertPreviewAndHubCoverage(paths);
 assertNoPrivateOrRedirectRoutes(paths);
 assertCssThemeVariablesSitemapEntry(entries);
 assertOpenAiCompanyPreviewSitemapEntry(entries);
+assertGoogleCompanyPreviewSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();

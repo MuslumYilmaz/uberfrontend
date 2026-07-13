@@ -13,6 +13,19 @@ import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
 } from '../../../shared/ui/question-row/fa-question-row.component';
+import {
+  GOOGLE_PRACTICE_PROMPTS,
+  GOOGLE_PREP_SEQUENCE,
+  GOOGLE_PREVIEW_CANONICAL_PATH,
+  GOOGLE_PREVIEW_DATE_MODIFIED,
+  GOOGLE_PREVIEW_DESCRIPTION,
+  GOOGLE_PREVIEW_FAQS,
+  GOOGLE_PREVIEW_H1,
+  GOOGLE_PREVIEW_TITLE,
+  GOOGLE_PREVIEW_TRUST_NOTE,
+  GOOGLE_PROCESS_NOTE,
+  GOOGLE_RESOURCE_LINKS,
+} from './google-preview-content';
 
 type CompanyPreviewQuestion = {
   id: string;
@@ -195,12 +208,20 @@ export class CompanyPreviewComponent implements OnInit {
   slug = '';
   label = '';
   isOpenAiPreview = false;
+  isGooglePreview = false;
   readonly openAiTitle = OPENAI_PREVIEW_TITLE;
   readonly openAiH1 = OPENAI_PREVIEW_H1;
   readonly openAiTrustNote = OPENAI_TRUST_NOTE;
   readonly openAiPracticePrompts = OPENAI_PRACTICE_PROMPTS;
   readonly openAiPrepSequence = OPENAI_PREP_SEQUENCE;
   readonly openAiResourceLinks = OPENAI_RESOURCE_LINKS;
+  readonly googleH1 = GOOGLE_PREVIEW_H1;
+  readonly googleTrustNote = GOOGLE_PREVIEW_TRUST_NOTE;
+  readonly googleProcessNote = GOOGLE_PROCESS_NOTE;
+  readonly googlePracticePrompts = GOOGLE_PRACTICE_PROMPTS;
+  readonly googlePrepSequence = GOOGLE_PREP_SEQUENCE;
+  readonly googleFaqs = GOOGLE_PREVIEW_FAQS;
+  readonly googleResourceLinks = GOOGLE_RESOURCE_LINKS;
   data$: Observable<CompanyPreviewData> = of({
     counts: { all: 0, coding: 0, trivia: 0, system: 0 },
     samples: [],
@@ -222,9 +243,15 @@ export class CompanyPreviewComponent implements OnInit {
 
     this.label = this.prettyCompany(this.slug);
     this.isOpenAiPreview = this.slug === 'openai';
+    this.isGooglePreview = this.slug === 'google';
 
     if (this.isOpenAiPreview) {
       this.publishOpenAiSeo();
+      return;
+    }
+
+    if (this.isGooglePreview) {
+      this.publishGoogleSeo();
       return;
     }
 
@@ -386,6 +413,80 @@ export class CompanyPreviewComponent implements OnInit {
       robots: 'index,follow',
       canonical: OPENAI_PREVIEW_CANONICAL_PATH,
       jsonLd: [collectionPage, breadcrumb],
+    });
+  }
+
+  private publishGoogleSeo(): void {
+    const canonicalUrl = this.seo.buildCanonicalUrl(GOOGLE_PREVIEW_CANONICAL_PATH);
+    const itemListId = `${canonicalUrl}#practice-prompts`;
+    const itemList = {
+      '@type': 'ItemList',
+      '@id': itemListId,
+      name: 'Seven Google frontend interview practice questions',
+      numberOfItems: GOOGLE_PRACTICE_PROMPTS.length,
+      itemListElement: GOOGLE_PRACTICE_PROMPTS.map((prompt, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: prompt.title,
+        url: `${canonicalUrl}#${prompt.id}`,
+      })),
+    };
+
+    const collectionPage = {
+      '@type': 'CollectionPage',
+      '@id': `${canonicalUrl}#collection`,
+      url: canonicalUrl,
+      name: GOOGLE_PREVIEW_TITLE,
+      headline: GOOGLE_PREVIEW_H1,
+      description: GOOGLE_PREVIEW_DESCRIPTION,
+      inLanguage: 'en',
+      dateModified: GOOGLE_PREVIEW_DATE_MODIFIED,
+      isAccessibleForFree: true,
+      about: [
+        { '@type': 'Thing', name: 'Google frontend interview preparation' },
+        { '@type': 'Thing', name: 'JavaScript and browser APIs' },
+        { '@type': 'Thing', name: 'Accessible UI implementation' },
+        { '@type': 'Thing', name: 'Frontend system design' },
+      ],
+      mentions: GOOGLE_RESOURCE_LINKS.map((link) => ({
+        '@type': 'WebPage',
+        name: link.label,
+        url: this.seo.buildCanonicalUrl(link.path),
+      })),
+      mainEntity: { '@id': itemListId },
+    };
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonicalUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Company Frontend Interview Questions',
+          item: this.seo.buildCanonicalUrl('/companies'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: GOOGLE_PREVIEW_H1,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: GOOGLE_PREVIEW_TITLE,
+      description: GOOGLE_PREVIEW_DESCRIPTION,
+      robots: 'index,follow',
+      canonical: GOOGLE_PREVIEW_CANONICAL_PATH,
+      jsonLd: [collectionPage, itemList, breadcrumb],
     });
   }
 
