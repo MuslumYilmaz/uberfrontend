@@ -67,6 +67,24 @@ describe('global API security middleware', () => {
     });
   });
 
+  test('charges invalid cookie-CSRF traffic to the API quota before rejecting it', async () => {
+    const app = loadApp({ API_RATE_LIMIT_MAX: '1' });
+    const authCookie = ['access_token=invalid-but-cookie-auth-shaped'];
+
+    const rejected = await request(app)
+      .post('/api/auth/logout')
+      .set('Cookie', authCookie);
+    expect(rejected.status).toBe(403);
+    expect(rejected.body?.code).toBe('AUTH_CSRF_INVALID');
+    expect(rejected.headers.ratelimit).toBeTruthy();
+
+    const limited = await request(app)
+      .post('/api/auth/logout')
+      .set('Cookie', authCookie);
+    expect(limited.status).toBe(429);
+    expect(limited.body?.code).toBe('API_RATE_LIMITED');
+  });
+
   test('exempts health and OPTIONS requests from the general quota', async () => {
     const app = loadApp({ API_RATE_LIMIT_MAX: '1' });
 

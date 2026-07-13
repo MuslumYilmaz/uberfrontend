@@ -132,6 +132,12 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 - `COOKIE_SECURE=true`
 - `TRUST_PROXY=true` (recommended on Vercel so `req.ip` and cookies behave correctly behind proxies)
 
+**Rate limiting on Vercel**
+- Configure `RATE_LIMIT_STORE=redis` with `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` so API and webhook quotas are shared across serverless instances.
+- `RATE_LIMIT_STORE=auto` falls back to process-local memory when Upstash is absent or unavailable. This preserves availability but does not provide a global quota across Vercel instances.
+- Keep `RATE_LIMIT_REDIS_FAIL_CLOSED=false` unless rejecting requests during a Redis outage is an explicit availability tradeoff.
+- Defaults are `API_RATE_LIMIT_MAX=300` per minute and `WEBHOOK_RATE_LIMIT_MAX=1200` per minute; both windows and limits are configurable with the corresponding `_WINDOW_MS` and `_MAX` variables.
+
 **Cookie/SameSite**
 - If your frontend + backend share the same site (recommended, e.g. `frontendatlas.com` and `api.frontendatlas.com`), keep `COOKIE_SAMESITE=lax` and consider `COOKIE_DOMAIN=.frontendatlas.com` if you set cookies from different subdomains.
 - If your frontend is on a different site (different eTLD+1), use `COOKIE_SAMESITE=none` (enables CSRF double-submit; the frontend already sends `X-CSRF-Token` when the `csrf_token` cookie exists).

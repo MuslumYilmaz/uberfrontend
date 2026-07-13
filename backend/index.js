@@ -116,7 +116,6 @@ app.use(express.urlencoded({
     },
 }));
 app.use(cookieParser());
-app.use(cookieCsrfProtection);
 
 const apiRateLimitHandler = (_req, res) => res.status(429).json({
     code: 'API_RATE_LIMITED',
@@ -158,6 +157,7 @@ const apiRateLimiter = expressRateLimit({
 
 app.use('/api/billing/webhooks', webhookRateLimiter);
 app.use('/api', apiRateLimiter);
+app.use('/api', cookieCsrfProtection);
 
 // ---- DB (lazy for serverless, fail-fast for local server) ----
 const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/contact', '/api/bug-report', '/api/health']);

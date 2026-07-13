@@ -936,6 +936,49 @@ describe('OAuth callbacks', () => {
     }
   });
 
+  test('oauth failures expose only allowlisted JSON or redirect messages', async () => {
+    const agent = request.agent(app);
+    const start = await agent.get('/api/auth/oauth/google/start').query({
+      redirect_uri: 'http://localhost:4200/auth/callback',
+      state: 'client-state',
+      mode: 'login',
+    });
+    expect(start.status).toBe(302);
+    const state = new URL(start.headers.location).searchParams.get('state');
+    const secretFailure = '<img src=x onerror=alert(1)> at internal/oauth.js:42';
+    const getTokenSpy = jest.spyOn(OAuth2Client.prototype, 'getToken')
+      .mockRejectedValue(new Error(secretFailure));
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const redirected = await agent.get('/api/auth/oauth/google/callback').query({
+        code: 'oauth-code',
+        state,
+      });
+      expect(redirected.status).toBe(302);
+      const redirect = new URL(redirected.headers.location);
+      expect(redirect.searchParams.get('state')).toBe('client-state');
+      expect(redirect.searchParams.get('mode')).toBe('login');
+      expect(redirect.searchParams.get('code')).toBe('OAUTH_ERROR');
+      expect(redirect.searchParams.get('error')).toBe('We could not finish authentication. Please try again.');
+      expect(redirected.headers.location).not.toContain(encodeURIComponent(secretFailure));
+
+      const direct = await request(app)
+        .get('/api/auth/oauth/google/callback')
+        .query({ code: 'oauth-code', state: 'malformed-state' });
+      expect(direct.status).toBe(400);
+      expect(direct.headers['content-type']).toMatch(/^application\/json/);
+      expect(direct.body).toEqual({
+        code: 'OAUTH_ERROR',
+        error: 'We could not finish authentication. Please try again.',
+      });
+      expect(JSON.stringify(direct.body)).not.toContain('Bad state');
+    } finally {
+      getTokenSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
   test('google oauth refuses to auto-link an existing account by verified email', async () => {
     const existing = await User.create({
       email: 'google-linked@example.com',
@@ -978,7 +1021,11 @@ describe('OAuth callbacks', () => {
 
       const linked = await User.findById(existing._id).lean();
       expect(linked).toBeTruthy();
-      expect(new URL(callback.headers.location).searchParams.get('code')).toBe('OAUTH_EMAIL_CONFLICT');
+      const failure = new URL(callback.headers.location).searchParams;
+      expect(failure.get('code')).toBe('OAUTH_EMAIL_CONFLICT');
+      expect(failure.get('error')).toBe(
+        'An account already uses this email. Sign in with your password, then link the provider from Security.'
+      );
       expect(linked?.providers || []).toHaveLength(0);
       expect(await User.countDocuments({})).toBe(1);
     } finally {

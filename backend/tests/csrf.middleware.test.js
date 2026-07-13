@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const { rateLimit: expressRateLimit } = require('express-rate-limit');
 const request = require('supertest');
 
 const ORIGINAL_ENV = { ...process.env };
@@ -12,6 +13,12 @@ function createApp(sameSite) {
   const { cookieCsrfProtection } = require('../middleware/Csrf');
   const app = express();
   app.use(require('cookie-parser')());
+  app.use(expressRateLimit({
+    windowMs: 60_000,
+    limit: 1_000,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+  }));
   app.use(cookieCsrfProtection);
   app.get('/protected', (_req, res) => res.json({ ok: true }));
   app.post('/protected', (_req, res) => res.json({ ok: true }));

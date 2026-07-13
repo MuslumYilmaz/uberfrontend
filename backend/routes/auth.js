@@ -219,6 +219,8 @@ const OAUTH_STATE_HMAC_CONTEXT = 'frontendatlas:oauth-state:v1';
 const OAUTH_STATE_MAX_AGE_MS = 10 * 60 * 1000;
 
 function deriveContextKey(context) {
+    // This derives a domain-separated MAC key from the JWT secret. It is not a
+    // password verifier and must remain deterministic across rolling deploys.
     return crypto.createHmac('sha256', getJwtSecret()).update(context).digest();
 }
 
@@ -230,6 +232,8 @@ function buildAuthAttemptHashes(parts) {
         .digest('hex');
     return {
         current: `${AUTH_ATTEMPT_HMAC_PREFIX}${digest}`,
+        // Read-only compatibility for 15-minute receipts written by the prior
+        // revision. New receipts always persist `current`, never this digest.
         legacy: crypto.createHash('sha256').update(parts.join('\n')).digest('hex'),
     };
 }
@@ -732,17 +736,36 @@ async function resolveOAuthUser({
     return user;
 }
 
+const OAUTH_PUBLIC_FAILURES = Object.freeze({
+    OAUTH_EMAIL_CONFLICT: 'An account already uses this email. Sign in with your password, then link the provider from Security.',
+    OAUTH_EMAIL_UNVERIFIED: 'Your OAuth provider did not return a verified email address.',
+    OAUTH_LINK_SESSION_MISMATCH: 'Your sign-in session changed. Start the account link again.',
+    OAUTH_PROVIDER_LINK_CONFLICT: 'This OAuth provider is already linked to another account.',
+    OAUTH_PROVIDER_IDENTITY_AMBIGUOUS: 'This OAuth provider requires support review before it can be used.',
+});
+const OAUTH_DEFAULT_FAILURE = Object.freeze({
+    code: 'OAUTH_ERROR',
+    error: 'We could not finish authentication. Please try again.',
+});
+
+function getPublicOAuthFailure(error) {
+    const requestedCode = typeof error?.code === 'string' ? error.code.trim() : '';
+    const publicMessage = OAUTH_PUBLIC_FAILURES[requestedCode];
+    if (!publicMessage) return OAUTH_DEFAULT_FAILURE;
+    return { code: requestedCode, error: publicMessage };
+}
+
 function redirectOAuthFailure(res, redirectUri, state, mode, error) {
-    const message = error?.message || String(error || 'OAuth error');
+    const failure = getPublicOAuthFailure(error);
     if (!redirectUri || !isAllowedRedirectUri(redirectUri)) {
-        return res.status(400).send(message || 'OAuth error');
+        return res.status(400).json(failure);
     }
 
     const dest = new URL(String(redirectUri));
     if (state) dest.searchParams.set('state', String(state));
     if (mode) dest.searchParams.set('mode', String(mode));
-    dest.searchParams.set('error', String(message || 'OAuth error'));
-    if (error?.code) dest.searchParams.set('code', String(error.code));
+    dest.searchParams.set('error', failure.error);
+    dest.searchParams.set('code', failure.code);
     return res.redirect(dest.toString());
 }
 
