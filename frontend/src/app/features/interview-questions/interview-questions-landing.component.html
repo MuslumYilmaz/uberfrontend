@@ -2290,6 +2290,10 @@
       and
       <a [routerLink]="['/companies']">Company Prep</a>
       only when you need them.
+      <ng-container *ngIf="isMasterHub()">
+        For a company-specific next step, use the
+        <a [routerLink]="['/companies', 'google', 'preview']">Google company preparation guide</a>.
+      </ng-container>
     </p>
   </section>
 

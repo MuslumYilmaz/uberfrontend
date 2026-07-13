@@ -1,11 +1,11 @@
 <section class="company-preview" data-testid="company-preview-page">
-  <nav class="preview-breadcrumb" aria-label="Company preview breadcrumb">
+  <nav class="preview-breadcrumb" aria-label="Company breadcrumb">
     <a [routerLink]="['/companies']">Companies</a>
     <span>/</span>
-    <span>{{ isOpenAiPreview ? openAiH1 : label + ' frontend interview questions preview' }}</span>
+    <span>{{ isOpenAiPreview ? openAiH1 : (isGooglePreview ? googleH1 : label + ' frontend interview questions preview') }}</span>
   </nav>
 
-  <ng-container *ngIf="isOpenAiPreview; else genericPreview">
+  <ng-container *ngIf="isOpenAiPreview; else nonOpenAiPreview">
     <header class="preview-hero openai-hero fa-card fa-card--elevated">
       <p class="preview-kicker">Public OpenAI prep guide</p>
       <h1>{{ openAiH1 }}</h1>
@@ -142,6 +142,198 @@
       </a>
     </section>
   </ng-container>
+
+  <ng-template #nonOpenAiPreview>
+  <ng-container *ngIf="isGooglePreview; else genericPreview">
+    <header class="preview-hero company-guide-hero fa-card fa-card--elevated">
+      <p class="preview-kicker">Public Google prep guide</p>
+      <h1>{{ googleH1 }}</h1>
+      <p class="preview-subtitle">
+        Effective preparation combines data structures and algorithms, idiomatic JavaScript, DOM and browser
+        fundamentals, accessible UI implementation, performance and security reasoning, and level-dependent frontend
+        system design.
+      </p>
+      <p class="preview-caveat">
+        The format can vary by role, level, team, location, and time, so use recruiter-provided material as the source
+        of truth for your specific interview loop.
+      </p>
+      <div class="preview-meta" aria-label="Google guide coverage">
+        <span class="preview-chip">7 representative prompts</span>
+        <span class="preview-chip">DSA, JavaScript, browser, UI, system design</span>
+        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+      </div>
+    </header>
+
+    <section class="company-guide-section company-guide-section--intro" aria-labelledby="google-study-first">
+      <div>
+        <p class="preview-kicker">Study priorities</p>
+        <h2 id="google-study-first">What to study first for a Google frontend interview</h2>
+        <p>
+          Do not treat this as a React-only interview. Data structures, algorithms, clean problem solving, and clear
+          complexity analysis remain important foundations. Idiomatic JavaScript, DOM and browser APIs, accessibility,
+          networking, performance, and security provide the frontend-specific layer on top.
+        </p>
+        <p>
+          System design scope can change with seniority, while an individual role may emphasize different product or
+          framework skills. Use this Google-tagged FrontendAtlas practice set to build transferable judgment, then let
+          the job description and recruiter-provided preparation material define the scope of a particular loop.
+        </p>
+      </div>
+      <aside class="company-guide-note company-guide-note--trust" aria-label="Trust note">
+        <strong>Trust note:</strong> {{ googleTrustNote }}
+      </aside>
+    </section>
+
+    <aside class="company-process-note" aria-labelledby="google-process-note">
+      <p class="preview-kicker">Time-sensitive context</p>
+      <h2 id="google-process-note">{{ googleProcessNote.title }}</h2>
+      <p>
+        A May 2026
+        <a [href]="googleProcessNote.reportUrl" target="_blank" rel="noopener noreferrer">Business Insider report</a>
+        describes an upcoming AI-assisted code-comprehension pilot for junior and mid-level roles on selected US
+        software-engineering teams. It must not be treated as the standard frontend interview format.
+      </p>
+      <p>
+        Check
+        <a [href]="googleProcessNote.guidanceUrl" target="_blank" rel="noopener noreferrer">current Google Careers interview guidance</a>
+        and the material supplied for your role.
+      </p>
+    </aside>
+
+    <section class="company-guide-section" aria-labelledby="google-practice-prompts">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Representative practice prompts</p>
+        <h2 id="google-practice-prompts">Seven Google frontend interview practice questions</h2>
+        <p>
+          Use each prompt to practice clarifying the contract, explaining trade-offs, implementing a focused slice, and
+          testing failure paths. The details below are public evaluation guidance, not paid solutions.
+        </p>
+      </div>
+
+      <div class="company-prompt-list">
+        <article
+          class="company-prompt"
+          *ngFor="let prompt of googlePracticePrompts; let i = index"
+          [attr.id]="prompt.id">
+          <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
+          <h3>{{ prompt.title }}</h3>
+          <p>{{ prompt.statement }}</p>
+
+          <div class="company-prompt__detail">
+            <h4>What this measures</h4>
+            <p>{{ prompt.whatThisMeasures }}</p>
+          </div>
+
+          <div class="company-prompt__detail">
+            <h4>Clarify first</h4>
+            <ul>
+              <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
+            </ul>
+          </div>
+
+          <div class="company-prompt__detail">
+            <h4>Strong answer should cover</h4>
+            <ul>
+              <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
+            </ul>
+          </div>
+
+          <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
+          <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">
+            {{ prompt.resourceLabel }}
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-walkthrough" aria-labelledby="google-autocomplete-walkthrough">
+      <p class="preview-kicker">Public mini walkthrough</p>
+      <h2 id="google-autocomplete-walkthrough">Walk through autocomplete request ordering before you code</h2>
+      <p>
+        Debounce controls how often a request starts; it does not control the order in which responses settle. Begin by
+        defining ownership of the active query. AbortController can cancel work supported by the transport, while a
+        monotonically increasing request id, token, or takeLatest guard prevents an older success, error, or cleanup
+        callback from writing over the newest state.
+      </p>
+      <p>
+        Keep loading, empty, error, cancelled, and stale outcomes distinct so the UI never reports the wrong query.
+        Keyboard navigation and screen-reader behavior belong in the state design: specify focus ownership, active
+        option semantics, Enter and Escape behavior, and useful announcements before wiring the request.
+      </p>
+      <p>
+        Tests should force out-of-order responses, rejected requests, cancellation, and rapid input. The valuable part
+        is proving that only the current request owns visible results and status—not reproducing a memorized component.
+      </p>
+    </section>
+
+    <section class="company-guide-section" aria-labelledby="google-prep-plan">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Actionable preparation</p>
+        <h2 id="google-prep-plan">A 7-day Google frontend interview preparation plan</h2>
+        <p>Make every study session produce code, tests, notes, or a design artifact you can explain under pressure.</p>
+      </div>
+      <ol class="company-prep-sequence">
+        <li *ngFor="let item of googlePrepSequence">
+          <strong>{{ item.day }}</strong>
+          <div>
+            <p>{{ item.focus }}</p>
+            <p class="company-prep-sequence__artifact"><strong>Deliverable:</strong> {{ item.artifact }}</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="company-guide-section" aria-labelledby="google-prep-faq">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Preparation FAQ</p>
+        <h2 id="google-prep-faq">Common Google frontend interview preparation questions</h2>
+      </div>
+      <div class="company-faq-list">
+        <article *ngFor="let item of googleFaqs">
+          <h3>{{ item.question }}</h3>
+          <p>{{ item.answer }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-links" aria-labelledby="google-free-practice">
+      <div>
+        <p class="preview-kicker">Free public practice</p>
+        <h2 id="google-free-practice">Free public practice</h2>
+        <p>
+          These free, indexable pages reinforce the same transferable skills. The React autocomplete exercise is an
+          optional framework-specific implementation drill; the preparation guide itself remains framework-neutral.
+        </p>
+      </div>
+      <div class="company-link-grid">
+        <a
+          *ngFor="let link of googleResourceLinks"
+          class="company-resource-link"
+          [routerLink]="link.path">
+          <strong>{{ link.label }}</strong>
+          <span>{{ link.description }}</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-cta" aria-labelledby="google-premium-route">
+      <div>
+        <p class="preview-kicker">Premium company route</p>
+        <h2 id="google-premium-route">Unlock the full Google practice set</h2>
+        <p>
+          This public guide stands on its own for planning and practice. Premium keeps the broader company-tagged route
+          gated, including deeper navigation across coding, concept questions, and system design.
+        </p>
+      </div>
+      <a
+        class="preview-btn preview-btn--primary"
+        [routerLink]="['/pricing']"
+        [queryParams]="{ src: 'company_preview_google' }">
+        Unlock the full Google practice set
+      </a>
+    </section>
+  </ng-container>
+  </ng-template>
 
   <ng-template #genericPreview>
   <header class="preview-hero fa-card fa-card--elevated">

@@ -77,7 +77,7 @@
 - [Amazon interview preview](https://frontendatlas.com/companies/amazon/preview): Amazon frontend interview practice preview.
 - [Apple interview preview](https://frontendatlas.com/companies/apple/preview): Apple frontend interview practice preview.
 - [ByteDance interview preview](https://frontendatlas.com/companies/bytedance/preview): ByteDance frontend interview practice preview.
-- [Google interview preview](https://frontendatlas.com/companies/google/preview): Google frontend interview practice preview.
+- [Google frontend interview questions](https://frontendatlas.com/companies/google/preview): Public Google prep guide with seven representative prompts and a framework-neutral preparation plan.
 - [Meta interview preview](https://frontendatlas.com/companies/meta/preview): Meta frontend interview practice preview.
 - [Microsoft interview preview](https://frontendatlas.com/companies/microsoft/preview): Microsoft frontend interview practice preview.
 - [Netflix interview preview](https://frontendatlas.com/companies/netflix/preview): Netflix frontend interview practice preview.

@@ -162,6 +162,43 @@ const RAW_HTML_CASES: Array<{
 
 const HOME_TITLE = 'Frontend Interview Prep Platform';
 
+const GOOGLE_PREVIEW_PATH = '/companies/google/preview';
+const GOOGLE_PREVIEW_TITLE = 'Google Frontend Interview Questions: 7 Prompts + Prep Guide';
+const GOOGLE_PREVIEW_DESCRIPTION =
+  'Prepare for a Google frontend interview with 7 representative questions covering DSA, JavaScript, browser APIs, UI coding, accessibility, and system design.';
+const GOOGLE_PREVIEW_H1 = 'Google Frontend Interview Questions';
+const GOOGLE_PREVIEW_PROMPTS = [
+  { id: 'nested-navigation-tree', title: 'Traverse and transform a nested navigation tree' },
+  { id: 'debounce-cancel-flush', title: 'Implement debounce with cancel and flush' },
+  { id: 'accessible-autocomplete', title: 'Build an accessible autocomplete' },
+  { id: 'take-latest-async-results', title: 'Keep only the latest async result' },
+  { id: 'dom-event-delegation', title: 'Handle delegated events in a dynamic list' },
+  {
+    id: 'frontend-performance-network-security',
+    title: 'Reason about frontend performance, networking, and security',
+  },
+  {
+    id: 'search-suggestions-large-list-design',
+    title: 'Design search suggestions for a large interactive list',
+  },
+] as const;
+const GOOGLE_PREVIEW_RESOURCES = [
+  '/javascript/coding/js-get-by-path-1',
+  '/javascript/coding/js-debounce',
+  '/react/coding/react-autocomplete-search-starter',
+  '/javascript/coding/js-take-latest',
+  '/javascript/trivia/js-event-delegation',
+  '/javascript/trivia/web-performance-optimize-load-time',
+  '/system-design/infinite-scroll-list',
+  '/javascript/trivia/js-compare-two-objects',
+] as const;
+const GOOGLE_PREVIEW_INBOUND_PAGES = [
+  { path: '/companies', anchor: 'Google frontend interview questions' },
+  { path: '/interview-questions', anchor: 'Google company preparation guide' },
+  { path: '/guides/framework-prep', anchor: 'framework-neutral Google frontend prep' },
+  { path: '/tracks', anchor: 'Google-focused frontend practice' },
+] as const;
+
 function expectedCanonical(path: string): string {
   if (path === '/') return `${CANONICAL_BASE}/`;
   return `${CANONICAL_BASE}${path}`;
@@ -291,24 +328,40 @@ function extractRawH1(html: string): string {
 
 function extractRawJsonLdTypes(html: string): string[] {
   const types: string[] = [];
-  for (const match of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
-    try {
-      const payload = JSON.parse(match[1]);
-      const graph = Array.isArray(payload?.['@graph']) ? payload['@graph'] : [payload];
-      for (const node of graph) {
-        const type = node?.['@type'];
-        if (Array.isArray(type)) types.push(...type.map((item) => String(item)));
-        else if (type) types.push(String(type));
-      }
-    } catch {
-      types.push('JSONLD_PARSE_ERROR');
-    }
+  for (const node of extractRawJsonLdNodes(html)) {
+    const type = node?.['@type'];
+    if (Array.isArray(type)) types.push(...type.map((item) => String(item)));
+    else if (type) types.push(String(type));
   }
   return types;
 }
 
+function extractRawJsonLdNodes(html: string): Array<Record<string, any>> {
+  const nodes: Array<Record<string, any>> = [];
+  for (const match of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const payload = JSON.parse(match[1]);
+      const roots = Array.isArray(payload) ? payload : [payload];
+      for (const root of roots) {
+        const graph = Array.isArray(root?.['@graph']) ? root['@graph'] : [root];
+        for (const node of graph) {
+          if (node && typeof node === 'object') nodes.push(node);
+        }
+      }
+    } catch (error) {
+      throw new Error(`Unable to parse raw JSON-LD: ${String(error)}`);
+    }
+  }
+  return nodes;
+}
+
 function extractRawMeta(html: string, name: string): string {
   const tag = html.match(new RegExp(`<meta\\s+[^>]*name=["']${name}["'][^>]*>`, 'i'))?.[0] || '';
+  return tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '';
+}
+
+function extractRawPropertyMeta(html: string, property: string): string {
+  const tag = html.match(new RegExp(`<meta\\s+[^>]*property=["']${property}["'][^>]*>`, 'i'))?.[0] || '';
   return tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '';
 }
 
@@ -323,6 +376,28 @@ function rawBodyMarkup(html: string): string {
 
 function hasLockedShellMarkup(html: string): boolean {
   return /\bclass=(["'])[^"']*\blocked-shell\b[^"']*\1/i.test(rawBodyMarkup(html));
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function expectCleanRawLink(html: string, target: string, source: string): void {
+  const escapedTarget = escapeRegExp(target);
+  expect(html, `${source} links directly to ${target}`).toMatch(
+    new RegExp(`<a\\b[^>]*href=["']${escapedTarget}["'][^>]*>`, 'i'),
+  );
+  expect(html, `${source} does not append query parameters to ${target}`).not.toMatch(
+    new RegExp(`href=["']${escapedTarget}\\?`, 'i'),
+  );
+}
+
+function extractRawLinkText(html: string, target: string): string {
+  const escapedTarget = escapeRegExp(target);
+  const anchorHtml = html.match(
+    new RegExp(`<a\\b[^>]*href=["']${escapedTarget}["'][^>]*>([\\s\\S]*?)<\\/a>`, 'i'),
+  )?.[1] || '';
+  return rawVisibleText(anchorHtml);
 }
 
 async function readRawHtml(request: any, path: string): Promise<string> {
@@ -564,6 +639,136 @@ test.describe('seo-ssr', () => {
     const companiesHtml = await readRawHtml(request, '/companies');
     expect(companiesHtml).toMatch(/<a\b[^>]*href=["']\/companies\/openai\/preview["'][^>]*>/i);
     expect(companiesHtml).not.toMatch(/href=["']\/companies\/openai\/preview\?/i);
+  });
+
+  test('raw Google company preview exposes the complete public guide, schema, and crawlable links', async ({ request }) => {
+    test.setTimeout(120_000);
+
+    const html = await readRawHtml(request, GOOGLE_PREVIEW_PATH);
+    const text = rawVisibleText(html);
+    const caseText = rawVisibleTextPreserveCase(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(GOOGLE_PREVIEW_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(GOOGLE_PREVIEW_DESCRIPTION);
+    expect(extractRawPropertyMeta(html, 'og:title')).toBe(GOOGLE_PREVIEW_TITLE);
+    expect(extractRawPropertyMeta(html, 'og:description')).toBe(GOOGLE_PREVIEW_DESCRIPTION);
+    expect(extractRawMeta(html, 'twitter:title')).toBe(GOOGLE_PREVIEW_TITLE);
+    expect(extractRawMeta(html, 'twitter:description')).toBe(GOOGLE_PREVIEW_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(GOOGLE_PREVIEW_H1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(GOOGLE_PREVIEW_PATH));
+    expect(robots).toBe('index,follow');
+
+    [
+      'Public Google prep guide',
+      '7 representative prompts',
+      'DSA, JavaScript, browser, UI, system design',
+      'Full route stays premium',
+      'What to study first for a Google frontend interview',
+      'Current process note — reviewed July 2026',
+      'Seven Google frontend interview practice questions',
+      'Walk through autocomplete request ordering before you code',
+      'A 7-day Google frontend interview preparation plan',
+      'Common Google frontend interview preparation questions',
+      'Free public practice',
+    ].forEach((expectedText) => {
+      expect(text, `Google preview includes ${expectedText}`).toContain(normalizeText(expectedText));
+    });
+
+    expect(caseText).toContain(
+      'These are representative FrontendAtlas practice prompts, not leaked or confirmed Google interview questions. Interview formats vary by role, level, team, location, and time.',
+    );
+    expect(caseText).toContain('Google-tagged FrontendAtlas practice set');
+    expect(caseText).not.toContain('47 known questions');
+    expect(caseText).not.toContain('Curry Function');
+    expect(caseText).not.toContain('Image Slider (Dots + Previous/Next)');
+
+    for (const prompt of GOOGLE_PREVIEW_PROMPTS) {
+      expect(text, `visible prompt ${prompt.title}`).toContain(normalizeText(prompt.title));
+      expect(html, `visible prompt anchor ${prompt.id}`).toMatch(
+        new RegExp(`\\bid=["']${escapeRegExp(prompt.id)}["']`, 'i'),
+      );
+    }
+
+    for (const resourcePath of GOOGLE_PREVIEW_RESOURCES) {
+      expectCleanRawLink(html, resourcePath, GOOGLE_PREVIEW_PATH);
+    }
+    expectCleanRawLink(
+      html,
+      'https://www.businessinsider.com/google-job-interview-software-engineers-ai-assistant-coding-2026-5',
+      GOOGLE_PREVIEW_PATH,
+    );
+    expectCleanRawLink(
+      html,
+      'https://www.google.com/about/careers/applications/interview-tips/',
+      GOOGLE_PREVIEW_PATH,
+    );
+
+    ['Organization', 'WebSite', 'CollectionPage', 'BreadcrumbList', 'ItemList'].forEach((type) => {
+      expect(schemaTypes, `JSON-LD includes ${type}`).toContain(type);
+    });
+
+    const collectionPage = schemaNodes.find((node) => node['@type'] === 'CollectionPage');
+    expect(collectionPage).toMatchObject({
+      '@id': `${expectedCanonical(GOOGLE_PREVIEW_PATH)}#collection`,
+      url: expectedCanonical(GOOGLE_PREVIEW_PATH),
+      name: GOOGLE_PREVIEW_TITLE,
+      headline: GOOGLE_PREVIEW_H1,
+      description: GOOGLE_PREVIEW_DESCRIPTION,
+      inLanguage: 'en',
+      dateModified: '2026-07-13T00:00:00.000Z',
+      isAccessibleForFree: true,
+      mainEntity: { '@id': `${expectedCanonical(GOOGLE_PREVIEW_PATH)}#practice-prompts` },
+    });
+
+    const breadcrumb = schemaNodes.find((node) => node['@type'] === 'BreadcrumbList');
+    expect(breadcrumb).toBeTruthy();
+    expect((breadcrumb?.['itemListElement'] || []).map((item: any) => item.name)).toEqual([
+      'FrontendAtlas',
+      'Company Frontend Interview Questions',
+      GOOGLE_PREVIEW_H1,
+    ]);
+
+    const itemList = schemaNodes.find((node) => node['@type'] === 'ItemList');
+    expect(itemList?.['@id']).toBe(`${expectedCanonical(GOOGLE_PREVIEW_PATH)}#practice-prompts`);
+    const itemListElements = itemList?.['itemListElement'];
+    expect(Array.isArray(itemListElements)).toBe(true);
+    expect(itemListElements).toHaveLength(7);
+
+    itemListElements.forEach((entry: any, index: number) => {
+      const expectedPrompt = GOOGLE_PREVIEW_PROMPTS[index];
+      const itemName = entry?.name ?? entry?.item?.name;
+      const itemUrl = entry?.url ?? entry?.item?.url;
+      expect(entry?.position).toBe(index + 1);
+      expect(itemName).toBe(expectedPrompt.title);
+      expect(itemUrl).toBe(`${expectedCanonical(GOOGLE_PREVIEW_PATH)}#${expectedPrompt.id}`);
+
+      const fragment = new URL(String(itemUrl)).hash.slice(1);
+      expect(fragment).toBe(expectedPrompt.id);
+      expect(html, `ItemList fragment #${fragment} maps to visible markup`).toMatch(
+        new RegExp(`\\bid=["']${escapeRegExp(fragment)}["']`, 'i'),
+      );
+    });
+
+    for (const resourcePath of GOOGLE_PREVIEW_RESOURCES) {
+      const resourceHtml = await readRawHtml(request, resourcePath);
+      const resourceRobots = normalizeText(extractRawMeta(resourceHtml, 'robots')).replace(/\s+/g, '');
+      expect(extractRawCanonical(resourceHtml), `self-canonical for ${resourcePath}`).toBe(
+        expectedCanonical(resourcePath),
+      );
+      expect(resourceRobots, `indexable robots for ${resourcePath}`).not.toContain('noindex');
+      expect(hasLockedShellMarkup(resourceHtml), `unlocked raw page for ${resourcePath}`).toBe(false);
+    }
+
+    for (const inbound of GOOGLE_PREVIEW_INBOUND_PAGES) {
+      const sourceHtml = await readRawHtml(request, inbound.path);
+      expectCleanRawLink(sourceHtml, GOOGLE_PREVIEW_PATH, inbound.path);
+      expect(extractRawLinkText(sourceHtml, GOOGLE_PREVIEW_PATH), `anchor text on ${inbound.path}`).toContain(
+        normalizeText(inbound.anchor),
+      );
+    }
   });
 
   test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {

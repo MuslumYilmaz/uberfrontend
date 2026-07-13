@@ -82,4 +82,13 @@ describe('CompanyIndexComponent', () => {
     expect(openAiPreview).toBeTruthy();
     expect(openAiPreview?.textContent).toContain('OpenAI interview preview');
   });
+
+  it('exposes a clean descriptive Google guide anchor in the SSR shell', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    const googleGuide = host.querySelector<HTMLAnchorElement>('a[href="/companies/google/preview"]');
+
+    expect(googleGuide).toBeTruthy();
+    expect(googleGuide?.textContent?.trim()).toBe('Google frontend interview questions');
+    expect(googleGuide?.getAttribute('href')).not.toContain('?');
+  });
 });

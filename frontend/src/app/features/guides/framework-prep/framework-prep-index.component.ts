@@ -860,6 +860,7 @@ export class FrameworkPrepIndexComponent implements OnInit {
     { label: 'Interview blueprint hub', route: ['/guides/interview-blueprint'] },
     { label: 'Study Plans', route: ['/tracks'] },
     { label: 'Frontend system design', route: ['/system-design'] },
+    { label: 'framework-neutral Google frontend prep', route: ['/companies', 'google', 'preview'] },
     { label: 'Company Prep', route: ['/companies'] },
     { label: 'Question Library', route: ['/coding'] },
   ];
