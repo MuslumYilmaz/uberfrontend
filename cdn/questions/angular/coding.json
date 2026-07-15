@@ -270,7 +270,7 @@
   },
   {
     "id": "angular-todo-list-starter",
-    "title": "Todo List (Standalone Component with ngFor)",
+    "title": "Todo List (Standalone Component with @for)",
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
@@ -279,16 +279,16 @@
       "components",
       "forms",
       "lists",
-      "ng-for",
+      "control-flow",
       "state"
     ],
     "description": {
-      "summary": "Build a small todo list using an Angular standalone component. Allow users to add tasks, mark them as completed, and remove them. Use `*ngFor` to render the list and simple component state to drive the UI.",
+      "summary": "Build a small todo list using an Angular standalone component. Add tasks, mark them complete, remove them, and render stable list identity with modern `@for (...; track ...)` control flow.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
           "Display a text input and an \"Add\" button for creating new todos.",
-          "Render the todo items in a list using `*ngFor`.",
+          "Render todo items with `@for (todo of todos; track todo.id)`.",
           "Each todo item should show a label and a checkbox to toggle completion.",
           "Allow removing a single todo item from the list.",
           "Optionally provide a \"Clear completed\" action to remove all completed todos."
@@ -304,26 +304,28 @@
         "implementationNotes": [
           "Keep everything in `AppComponent` (`src/app/app.component.ts` and `app.component.html`). No extra services or components are required.",
           "Use a simple array of objects (e.g. `{ id, text, done }`) to store todos.",
-          "Use `*ngFor` to loop over the todo array in the template.",
+          "Use `@for (todo of todos; track todo.id)` so item identity remains stable without a component `trackBy` method.",
           "Use `[(ngModel)]` for the input binding and checkbox bindings (remember to import `FormsModule`).",
           "Use click handlers like `(click)=\"addTask()\"` and `(click)=\"removeTask(task)\"` to modify the array."
         ],
         "techFocus": [
           "Standalone component setup with `standalone: true`",
           "Managing in-memory state in a component",
-          "Rendering lists with `*ngFor`",
+          "Rendering lists with `@for` and an explicit `track` expression",
           "Using `[(ngModel)]` for simple form input binding",
           "Basic UX for add / toggle / remove actions"
         ]
       }
     },
+    "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-todo-list-starter.v1.json",
     "solutionBlock": {
-      "overview": "This exercise models a classic todo list with a single standalone component. You keep all state inside the component: a `newTask` string for the input and a `todos` array (e.g. `{ id, text, done }`). The template binds `newTask` with `[(ngModel)]`, renders `todos` with `*ngFor`, and wires up click handlers to add, toggle, and remove items.\n\nTypical flow:\n- User types into the input; `newTask` is updated via `[(ngModel)]`.\n- Clicking **Add** (or pressing Enter, if you implement it) calls `addTask()`, which trims the text, ignores empties, pushes a new todo into the array, and resets `newTask`.\n- Each todo row shows a checkbox bound to `todo.done` and maybe styled with a `.done` CSS class when complete.\n- Clicking the remove button calls `removeTask(todo)`, which filters that item out.\n- Optionally, a \"Clear completed\" button calls `clearCompleted()` to remove all completed todos.\n\n**Test cases**\n- With an empty input, clicking **Add** does nothing.\n- Typing \"Buy milk\" and clicking **Add** shows a single todo row with that text.\n- Toggling the checkbox marks the item as completed and applies the completed styling.\n- Clicking the remove button deletes that specific row.\n- After completing multiple todos, clicking \"Clear completed\" (if implemented) removes only the completed ones.",
+      "overview": "This exercise models a classic todo list with a single standalone component. You keep all state inside the component: a `newTask` string for the input and a `todos` array (e.g. `{ id, text, done }`). The template binds `newTask` with `[(ngModel)]`, renders `todos` with `@for (todo of todos; track todo.id)`, and wires up click handlers to add, toggle, and remove items.\n\nTypical flow:\n- User types into the input; `newTask` is updated via `[(ngModel)]`.\n- Clicking **Add** (or pressing Enter, if you implement it) calls `addTask()`, which trims the text, ignores empties, pushes a new todo into the array, and resets `newTask`.\n- Each tracked todo row shows a checkbox bound to `todo.done` and maybe styled with a `.done` CSS class when complete.\n- Clicking the remove button calls `removeTask(todo)`, which filters that item out.\n- Optionally, a \"Clear completed\" button calls `clearCompleted()` to remove all completed todos.\n\n**Test cases**\n- With an empty input, clicking **Add** does nothing.\n- Typing \"Buy milk\" and clicking **Add** shows a single todo row with that text.\n- Toggling the checkbox marks the item as completed and applies the completed styling.\n- Clicking the remove button deletes that specific row.\n- After completing multiple todos, clicking \"Clear completed\" (if implemented) removes only the completed ones.",
       "approaches": [
         {
           "title": "Standalone component with a local array of todos",
-          "prose": "Represent todos as `{ id, text, done }` objects stored in a `todos` array property. Use a simple incremental `nextId` counter for unique ids. The input is bound via `[(ngModel)]=\"newTask\"`. In `addTask()`, trim `newTask`, ignore empties, then push a new object. In the template, use `*ngFor=\"let todo of todos; trackBy: trackById\"` to render each row with a checkbox bound to `todo.done` and a remove button.\n\n`toggleTask(todo)` can simply flip `todo.done = !todo.done`, or you can rely entirely on `[(ngModel)]` on the checkbox and only use handlers for extra behavior. `removeTask(todo)` filters `todos` to drop the item by id. `clearCompleted()` sets `todos` to `todos.filter(t => !t.done)`. This keeps all list and input logic colocated in the root standalone component.",
-          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  newTask = '';\n  todos: Todo[] = [];\n  private nextId = 1;\n\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  addTask(): void {\n    const text = this.newTask.trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos = [\n      ...this.todos,\n      { id: this.nextId++, text, done: false }\n    ];\n\n    this.newTask = '';\n  }\n\n  toggleTask(todo: Todo): void {\n    todo.done = !todo.done;\n  }\n\n  removeTask(todo: Todo): void {\n    this.todos = this.todos.filter(t => t.id !== todo.id);\n  }\n\n  clearCompleted(): void {\n    this.todos = this.todos.filter(t => !t.done);\n  }\n\n  trackById(_index: number, todo: Todo): number {\n    return todo.id;\n  }\n}\n"
+          "decisionGraphKey": "approach1",
+          "prose": "Represent todos as `{ id, text, done }` objects stored in a `todos` array property. Use a simple incremental `nextId` counter for unique ids. The input is bound via `[(ngModel)]=\"newTask\"`. In `addTask()`, trim `newTask`, ignore empties, then push a new object. In the template, use `@for (todo of todos; track todo.id)` to render each row with stable identity and no separate component tracking method. Each row contains a checkbox bound to `todo.done` and a remove button.\n\n`toggleTask(todo)` can simply flip `todo.done = !todo.done`, or you can rely entirely on `[(ngModel)]` on the checkbox and only use handlers for extra behavior. `removeTask(todo)` filters `todos` to drop the item by id. `clearCompleted()` sets `todos` to `todos.filter(t => !t.done)`. This keeps all list and input logic colocated in the root standalone component.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  newTask = '';\n  todos: Todo[] = [];\n  private nextId = 1;\n\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  addTask(): void {\n    const text = this.newTask.trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos = [\n      ...this.todos,\n      { id: this.nextId++, text, done: false }\n    ];\n\n    this.newTask = '';\n  }\n\n  toggleTask(todo: Todo): void {\n    todo.done = !todo.done;\n  }\n\n  removeTask(todo: Todo): void {\n    this.todos = this.todos.filter(t => t.id !== todo.id);\n  }\n\n  clearCompleted(): void {\n    this.todos = this.todos.filter(t => !t.done);\n  }\n}\n"
         }
       ],
       "notes": {
@@ -336,7 +338,7 @@
         "techniques": [
           "Modeling UI items as simple objects inside a component.",
           "Using `[(ngModel)]` for a controlled input and checkbox bindings.",
-          "Rendering lists with `*ngFor` and `trackBy` for better identity handling.",
+          "Rendering lists with `@for` and `track todo.id` for stable identity.",
           "Using pure functions (`filter`, `map`) to derive new arrays when removing or clearing items."
         ]
       }
@@ -349,7 +351,7 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build Angular Todo List (Add Toggle Remove)",
       "description": "Create a todo list interface that supports adding tasks, toggling completion, and removing items while keeping list state consistent."
@@ -2726,9 +2728,9 @@
           "Render a 14x14 grid board with snake body segments and food.",
           "Move one cell per game loop tick using keyboard controls.",
           "Support Arrow key movement and WASD controls without changing the base grid board rules.",
-          "Ignore immediate reverse direction, such as Right → Left, so the snake cannot reverse into itself.",
+          "Buffer at most one valid perpendicular turn per tick. Validate it against the committed movement direction; same/opposite inputs do not consume the buffer.",
           "Grow the snake body and increment the score when the next head cell reaches food.",
-          "Respawn food in an empty grid cell that is not occupied by the snake body.",
+          "Respawn food only in a free cell; when no free cell remains, store no food and end with a distinct win state.",
           "End the game on wall collision when the next head position leaves the grid board.",
           "End the game on self collision when the next head position is inside the snake body.",
           "Stop movement after game over so additional timer ticks cannot keep changing component state.",
@@ -2738,16 +2740,16 @@
         ],
         "expectedBehaviorIntro": "Example gameplay timeline:",
         "expectedBehavior": [
-          "t=0: the snake starts at row 7, col 7 and moves right on the fixed grid board.",
-          "t=150ms: the head moves to col 8 and the tail drops if no food was eaten.",
-          "t=300ms: the head reaches food at col 9, score increases by 1, and the snake grows.",
-          "t=450ms: new food appears in an empty cell, never on the snake body.",
-          "If the player presses ArrowLeft while moving right, the immediate reverse move is ignored.",
-          "If the next head position is outside the grid or inside the snake body, gameOver becomes true and movement stops."
+          "t=0: the head starts at zero-based coordinate (x=6, y=7), moving RIGHT; food is at (x=8, y=7).",
+          "t=140ms: the head moves to (x=7, y=7) and the tail drops.",
+          "t=280ms: the head reaches food at (x=8, y=7), score increases by 1, and the snake grows.",
+          "The first valid perpendicular key between ticks is buffered; later keys are ignored until movement commits it.",
+          "RIGHT → UP → LEFT during one tick commits UP, because LEFT is not allowed to replace the occupied buffer.",
+          "Eating the final free cell sets food to null, stops the timer, and shows a win instead of spawning food on the snake."
         ],
         "implementationNotes": [
           "Keep the snake body as an ordered list of grid cells with the head at index 0.",
-          "Track current direction and pending direction separately so keyboard event handling stays predictable between timer ticks.",
+          "Keep a nullable one-turn buffer separate from the committed direction; clear it immediately when the next tick commits.",
           "Compute the next head on each game loop tick before deciding whether to move, grow, or end the game.",
           "Use Angular component state for score, food, gameOver, and running status, then render the grid through the template.",
           "Use setInterval or an equivalent timer loop and clear it on pause, reset, wall collision, self collision, and ngOnDestroy.",
@@ -2763,25 +2765,25 @@
         ]
       }
     },
-    "starterCodeHint": "Implement TODOs in app.component.ts: keyboard direction updates, timer/game-loop movement, wall collision, self collision, food growth, score updates, reset, and timer cleanup.",
+    "starterCodeHint": "Implement TODOs in app.component.ts: one-turn keyboard buffering, timer/game-loop movement, wall and self collision, food growth, full-board win handling, reset, and timer cleanup.",
     "solutionBlock": {
-      "overview": "Interview answer: the base prompt is a grid-state problem plus a timer-driven game loop. Keep the snake body as an ordered list of cells, track the current direction, compute the next head on each tick, then decide whether to move, grow, or end the game. Keyboard input should update direction without allowing immediate reversal. Food placement, restart behavior, speed changes, pause/resume, mobile controls, and deterministic tests are follow-ups. In Angular, keep the board, snake body, food, score, running state, and gameOver flag in component state, render cells through the template, and clean up the timer when the component stops or is destroyed.",
+      "overview": "Interview answer: the base prompt is a grid-state problem plus a timer-driven game loop. Keep the snake body as an ordered list of cells, track the current direction, compute the next head on each tick, then decide whether to move, grow, or end the game. Keyboard input should update direction while accepting at most one valid perpendicular turn per tick. Food placement, restart behavior, speed changes, pause/resume, mobile controls, and deterministic tests are follow-ups. In Angular, keep the board, snake body, food, score, running state, and gameOver flag in component state, render cells through the template, and clean up the timer when the component stops or is destroyed. Treat a full board as a win: food becomes null, the loop stops, and no food cell renders.",
       "approaches": [
         {
           "title": "Single Angular component with predictable grid-state updates",
-          "prose": "Render the grid board from component state, keep the snake body as ordered coordinates, and run movement through one timer/game loop. On each tick, derive the next head from the pending direction, check wall collision and self collision before mutating state, then either grow on food or drop the tail. Keyboard handling updates only valid directions, and cleanup clears the timer on pause, reset, game over, and destroy."
+          "prose": "Render the grid board from component state, keep the snake body as ordered coordinates, and run movement through one timer/game loop. On each tick, derive the next head from the one buffered turn or the committed direction, clear the buffer, check collisions, then either grow on food or drop the tail. Keyboard handling accepts only the first valid perpendicular turn per tick, and cleanup clears the timer on pause, reset, game over, win, and destroy."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Allowing immediate reverse direction can create accidental self collision before the player sees a move.",
+          "Validating each key against the previous key allows RIGHT → UP → LEFT to reverse before the tick commits; keep only the first valid turn.",
           "Starting multiple timers creates duplicate game loops and inconsistent snake speed.",
-          "Spawning food without excluding snake body cells can hide food inside the snake.",
+          "Spawning food without excluding the snake—or inventing a fallback cell on a full board—can overlap the snake.",
           "Checking self collision against the wrong body slice can incorrectly block moves into the tail cell that is about to drop."
         ],
         "techniques": [
           "Use occupancy keys like `x,y` for constant-time snake body and food checks.",
-          "Buffer pendingDirection separately from direction so keyboard events between ticks stay deterministic.",
+          "Buffer at most one valid perpendicular turn separately from the committed direction, then clear it when the tick commits.",
           "Use fakeAsync/tick tests for timer-driven movement, growth, collision, restart, and cleanup behavior.",
           "Use trackBy or stable cell identity when rendering the fixed grid board in Angular templates."
         ]
@@ -2850,7 +2852,7 @@
       "microsoft"
     ],
     "access": "free",
-    "updatedAt": "2026-07-06",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build a Snake Game in Angular: Coding Challenge + Tests",
       "description": "Angular Snake game: grid board,keyboard controls,timer,food spawning,score updates,wall/body collision,starter code,tests,edge cases,interview follow-ups.",

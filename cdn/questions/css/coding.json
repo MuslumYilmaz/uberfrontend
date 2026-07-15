@@ -1083,19 +1083,19 @@
       "cascade"
     ],
     "description": {
-      "summary": "Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual html.theme-dark override after the media query so it wins by source order. The panel and button should consume theme tokens only for colors and shadow values.",
+      "summary": "Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual :root:where(.theme-dark) override after the media query. :where() adds no specificity, so the two root selectors tie and later source order decides the winner. The panel and button should consume theme tokens only for colors and shadow values.",
       "specs": {
         "practice": [
           "CSS custom properties as live theme tokens",
           "Semantic token naming for background, text, surface, border, accent, contrast, and shadow",
           "prefers-color-scheme for OS-level dark mode",
           "Cascade/source order for predictable theme overrides",
-          "Manual root-level theme overrides with html.theme-dark"
+          "Manual root-level theme overrides with :root:where(.theme-dark)"
         ],
         "requirements": [
           "Define light theme tokens on :root: --bg, --text, --surface, --accent, --border, --accent-contrast, and --panel-shadow.",
           "Define dark values for the same tokens inside @media (prefers-color-scheme: dark).",
-          "Define html.theme-dark after the media query and repeat the dark token values there.",
+          "Define :root:where(.theme-dark) after the media query and repeat the dark token values there.",
           "Use token references inside .panel and .btn; do not place literal color values in those component declarations.",
           "Use --accent-contrast for button text so the accent background has an explicit readable foreground token."
         ],
@@ -1109,26 +1109,26 @@
         "expectedBehavior": [
           "Render a light theme by default from :root tokens.",
           "Switch to dark values when the system prefers a dark color scheme.",
-          "Let html.theme-dark win because it is declared after the media query.",
+          "Let :root:where(.theme-dark) win because it has the same specificity as :root and is declared later.",
           "Keep component styles stable while only token values change between themes."
         ],
         "implementationNotes": [
-          "Keep the same variable names across :root, @media (prefers-color-scheme: dark), and html.theme-dark.",
-          "Put html.theme-dark after the media query; the point is cascade order, not higher specificity.",
+          "Keep the same variable names across :root, @media (prefers-color-scheme: dark), and :root:where(.theme-dark).",
+          "Put :root:where(.theme-dark) after the media query. :where(.theme-dark) contributes zero specificity, so both root selectors have equal specificity and source order breaks the tie.",
           "Treat --panel-shadow as part of the theme token set because shadows include color.",
           "Use rgb(... / alpha) or another color syntax inside token definitions, not inside constrained component declarations."
         ],
         "commonMistakes": [
-          "Placing html.theme-dark before the media query so the OS preference can override the manual class.",
+          "Placing :root:where(.theme-dark) before the media query, which lets the later equal-specificity OS rule win.",
           "Changing body colors while .panel or .btn keep hard-coded backgrounds, borders, text colors, or shadows.",
           "Forgetting --accent-contrast and making button text unreadable in one theme.",
-          "Increasing selector specificity instead of solving the override with source order."
+          "Using a higher-specificity selector and then incorrectly attributing the result to source order."
         ],
         "interviewExplanation": "This pattern matters because real UI systems need components that consume semantic tokens instead of owning theme colors directly. CSS custom properties let a design system swap values at runtime without recompiling styles or rewriting every component. prefers-color-scheme respects the user's OS preference, while a root class gives product UI a manual override. The interview signal is understanding cascade order, token completeness, and contrast instead of only toggling a body background.",
         "testingChecklist": [
           "Test with a light OS preference and confirm :root values are used.",
           "Test with a dark OS preference and confirm @media (prefers-color-scheme: dark) values are used.",
-          "Add html.theme-dark manually and confirm it wins over the OS preference.",
+          "Add the theme-dark class manually and confirm the later :root:where(.theme-dark) rule wins over the OS preference.",
           "Inspect computed styles for .panel and .btn to verify variables resolve to the final colors and shadow."
         ]
       },
@@ -1146,7 +1146,7 @@
         {
           "name": "Manual override wins by order",
           "type": "cascade",
-          "desc": "Add html.theme-dark AFTER the media query. It must set the dark values again, so it overrides OS settings."
+          "desc": "Add :root:where(.theme-dark) AFTER the media query. It has the same specificity as :root, so the later declaration overrides the OS settings."
         },
         {
           "name": "Components use ONLY variables",
@@ -1156,38 +1156,40 @@
       ],
       "returns": {
         "type": "markup+style",
-        "desc": "A panel and button fully themeable via variables, adapting to OS theme, and forceable to dark by adding html.theme-dark."
+        "desc": "A panel and button fully themeable via variables, adapting to OS theme, and forceable to dark by adding the theme-dark class to the root element."
       },
       "examples": [
         ":root { --bg:#fafafa; --text:#111; --surface:#fff; --accent:#3b82f6; --border:rgba(0,0,0,.12); --accent-contrast:#fff; --panel-shadow:0 1px 2px rgb(0 0 0 / 0.06); }",
         "@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,.14); --accent-contrast:#0b0b0c; --panel-shadow:0 1px 2px rgb(0 0 0 / 0.4); } }",
-        "html.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,.14); --accent-contrast:#0b0b0c; --panel-shadow:0 1px 2px rgb(0 0 0 / 0.4); }"
+        ":root:where(.theme-dark) { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,.14); --accent-contrast:#0b0b0c; --panel-shadow:0 1px 2px rgb(0 0 0 / 0.4); }"
       ]
     },
     "web": {
       "starterHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Theme Demo</title>\n</head>\n<body>\n  <!-- To test the manual override, change <html lang=\"en\"> to <html class=\"theme-dark\" lang=\"en\">. -->\n  <div class=\"panel\">\n    <h2>Theme Demo</h2>\n    <p>This panel and button read colors from CSS variables.</p>\n    <button class=\"btn\" type=\"button\" aria-label=\"Static themed button sample\">Tokenized button</button>\n  </div>\n</body>\n</html>",
-      "starterCss": "/* TASK\n  1) Define variables on :root (light defaults):\n     --bg, --text, --surface, --accent, --border, --accent-contrast, --panel-shadow\n\n  2) OS dark mode:\n     @media (prefers-color-scheme: dark) { :root { ...same vars, dark values... } }\n\n  3) Manual override:\n     html.theme-dark { ...same vars, dark values... }\n     IMPORTANT: place html.theme-dark AFTER the media query so it always wins.\n     Test it by editing the opening <html> tag in the HTML panel.\n\n  Constraint:\n    - .panel and .btn must use ONLY variables for colors and colored shadow values.\n*/\n\n/* Base page styles using variables (you will define them) */\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}"
+      "starterCss": "/* TASK\n  1) Define variables on :root (light defaults):\n     --bg, --text, --surface, --accent, --border, --accent-contrast, --panel-shadow\n\n  2) OS dark mode:\n     @media (prefers-color-scheme: dark) { :root { ...same vars, dark values... } }\n\n  3) Manual override:\n     :root:where(.theme-dark) { ...same vars, dark values... }\n     IMPORTANT: place :root:where(.theme-dark) AFTER the media query. :where() adds zero specificity, so source order breaks the tie.\n     Test it by editing the opening <html> tag in the HTML panel.\n\n  Constraint:\n    - .panel and .btn must use ONLY variables for colors and colored shadow values.\n*/\n\n/* Base page styles using variables (you will define them) */\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}"
     },
+    "decisionGraphAsset": "assets/questions/css/decision-graphs/css-theme-variables-dark-mode.v1.json",
     "solutionBlock": {
-      "overview": "A high-signal CSS theming setup is: tokens on :root, OS dark override via prefers-color-scheme, then an author-controlled override class declared later to win the cascade. The component must never hard-code colors or colored shadows; it consumes tokens so theme swaps are instant and consistent.",
+      "overview": "A high-signal CSS theming setup is tokens on :root, an OS dark override via prefers-color-scheme, then an equal-specificity :root:where(.theme-dark) rule declared later. Because :where() contributes zero specificity, source order decides between the two root selectors. Components consume tokens so theme swaps stay instant and consistent.",
       "approaches": [
         {
-          "title": "Approach — Tokens on :root + Dark Media + html.theme-dark Override",
-          "prose": "Define a minimal token set (bg/text/surface/accent/border/accent-contrast/panel-shadow). Redefine the same tokens in the dark media query for OS-level theming. Then repeat the dark token values in html.theme-dark after the media query so manual override always wins. The sample HTML includes class=\"theme-dark\" to demonstrate the manual override; remove it to test the OS-only branch.",
+          "title": "Approach — Tokens on :root + Dark Media + Equal-Specificity Manual Override",
+          "decisionGraphKey": "approach1",
+          "prose": "Define a minimal token set (bg/text/surface/accent/border/accent-contrast/panel-shadow). Redefine the same tokens in the dark media query for OS-level theming. Then repeat the dark token values in :root:where(.theme-dark) after the media query. Because :where() adds zero specificity, it ties :root and the later source order makes the manual override win. The sample HTML includes class=\"theme-dark\" to demonstrate the override; remove it to test the OS-only branch.",
           "codeHtml": "<!doctype html>\n<html class=\"theme-dark\" lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Theme Demo</title>\n</head>\n<body>\n  <div class=\"panel\">\n    <h2>Theme Demo</h2>\n    <p>This panel and button read colors from CSS variables.</p>\n    <button class=\"btn\" type=\"button\" aria-label=\"Static themed button sample\">Tokenized button</button>\n  </div>\n</body>\n</html>",
-          "codeCss": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.06);\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n  }\n}\n\n/* Manual override (declared AFTER media query so it always wins) */\nhtml.theme-dark {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n}\n\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}"
+          "codeCss": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.06);\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n  }\n}\n\n/* Equal-specificity manual override declared after the media query */\n:root:where(.theme-dark) {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n}\n\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Placing html.theme-dark before the media query can cause it to lose depending on order.",
+          "Placing :root:where(.theme-dark) before the media query makes the later equal-specificity OS rule win.",
           "Hard-coding a component color (e.g., button text) breaks themeability—add a token like --accent-contrast instead.",
           "Leaving a literal rgba() shadow inside .panel contradicts the component-token constraint; use --panel-shadow."
         ],
         "techniques": [
           "Keep the token set small but complete (include contrast and shadow tokens).",
           "Use the exact same variable names across all theme layers (:root, media query, manual override).",
-          "Rely on cascade order (manual override after media query) rather than increasing specificity."
+          "Use :where(.theme-dark) to keep specificity tied with :root, then let later source order decide."
         ]
       },
       "relatedLinks": [
@@ -1239,16 +1241,20 @@
         {
           "title": "MDN — prefers-color-scheme",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"
+        },
+        {
+          "title": "MDN — Specificity",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity"
         }
       ]
     },
     "webSolutionHtml": "<!doctype html>\n<html class=\"theme-dark\" lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Theme Demo</title>\n</head>\n<body>\n  <div class=\"panel\">\n    <h2>Theme Demo</h2>\n    <p>This panel and button read colors from CSS variables.</p>\n    <button class=\"btn\" type=\"button\" aria-label=\"Static themed button sample\">Tokenized button</button>\n  </div>\n</body>\n</html>",
-    "webSolutionCss": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.06);\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n  }\n}\n\nhtml.theme-dark {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n}\n\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}",
+    "webSolutionCss": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.06);\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n  }\n}\n\n:root:where(.theme-dark) {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n}\n\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "CSS Variables Dark Mode Challenge | FrontendAtlas",
-      "description": "Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.",
+      "description": "Practice CSS custom properties with prefers-color-scheme and an equal-specificity :root:where(.theme-dark) override whose later source order wins.",
       "h1IntentLabel": "Theming with CSS Variables"
     }
   }

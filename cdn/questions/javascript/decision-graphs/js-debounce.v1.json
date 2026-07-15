@@ -89,14 +89,14 @@
     },
     "approach3": {
       "language": "javascript",
-      "code": "export default function debounce(fn, delay, { leading = false } = {}) {\n  let timeoutId;\n  let lastArgs;\n  let lastThis;\n\n  return function (...args) {\n    lastArgs = args;\n    lastThis = this;\n    const shouldCallNow = leading && !timeoutId;\n\n    if (timeoutId) clearTimeout(timeoutId);\n\n    timeoutId = setTimeout(() => {\n      timeoutId = undefined;\n      if (!leading) fn.apply(lastThis, lastArgs);\n    }, delay);\n\n    if (shouldCallNow) fn.apply(lastThis, lastArgs);\n  };\n}\n",
+      "code": "export default function debounce(fn, delay, { leading = false } = {}) {\n  let timeoutId, lastArgs, lastThis;\n  return function (...args) {\n    lastArgs = args;\n    lastThis = this;\n    const shouldCallNow = leading && !timeoutId;\n\n    if (timeoutId) {\n      clearTimeout(timeoutId);\n    }\n\n    timeoutId = setTimeout(() => {\n      timeoutId = undefined;\n      if (!leading) {\n        fn.apply(lastThis, lastArgs);\n      }\n    }, delay);\n\n    if (shouldCallNow) {\n      fn.apply(lastThis, lastArgs);\n    }\n  };\n}\n",
       "nodes": [
         {
           "id": "d1-leading-gate",
           "title": "Gate immediate execution for leading mode",
           "anchor": {
-            "lineStart": 9,
-            "lineEnd": 9,
+            "lineStart": 6,
+            "lineEnd": 6,
             "snippet": "const shouldCallNow = leading && !timeoutId"
           },
           "why": "In leading mode, we want the first call to run immediately, then stay quiet until the cooldown ends. This guard enforces that.",
@@ -107,9 +107,9 @@
           "id": "d2-reset-window",
           "title": "Reset debounce window on every call",
           "anchor": {
-            "lineStart": 11,
-            "lineEnd": 11,
-            "snippet": "if (timeoutId) clearTimeout(timeoutId)"
+            "lineStart": 8,
+            "lineEnd": 10,
+            "snippet": "if (timeoutId) {\n      clearTimeout(timeoutId);\n    }"
           },
           "why": "Every new event extends the quiet window. Clearing and rescheduling ensures we react to the latest user intent.",
           "alternative": "Keep the original timer and ignore newer events until it fires.",
@@ -119,9 +119,9 @@
           "id": "d3-trailing-call",
           "title": "Invoke trailing call only when not in leading mode",
           "anchor": {
-            "lineStart": 15,
-            "lineEnd": 15,
-            "snippet": "if (!leading) fn.apply(lastThis, lastArgs)"
+            "lineStart": 14,
+            "lineEnd": 16,
+            "snippet": "if (!leading) {\n        fn.apply(lastThis, lastArgs);\n      }"
           },
           "why": "If we already fired on the leading edge, firing again on the trailing edge would duplicate work for the same burst.",
           "alternative": "Expose a `trailing` flag and allow both leading and trailing calls when desired.",

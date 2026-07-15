@@ -1,0 +1,85 @@
+{
+  "questionId": "react-use-effect-once",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\ntype Connection = {\n  connect(): void;\n  disconnect(): void;\n};\n\nconst activeConnections = new Set<symbol>();\n\nfunction createConnection(\n  roomId: string,\n  onStatus: (status: string) => void,\n  onActiveCount: (count: number) => void\n): Connection {\n  let token: symbol | null = null;\n\n  return {\n    connect() {\n      if (token !== null) return;\n      token = Symbol(roomId);\n      activeConnections.add(token);\n      onStatus('Connected to ' + roomId);\n      onActiveCount(activeConnections.size);\n    },\n    disconnect() {\n      if (token === null) return;\n      activeConnections.delete(token);\n      token = null;\n      onStatus('Disconnected');\n      onActiveCount(activeConnections.size);\n    }\n  };\n}\n\nfunction ConnectionPanel({\n  roomId,\n  onActiveCount\n}: {\n  roomId: string;\n  onActiveCount: (count: number) => void;\n}) {\n  const [status, setStatus] = useState('Disconnected');\n\n  useEffect(() => {\n    const connection = createConnection(roomId, setStatus, onActiveCount);\n    connection.connect();\n    return () => connection.disconnect();\n  }, [roomId, onActiveCount]);\n\n  return (\n    <div className=\"panel\">\n      <div className=\"label connection-status\">{status}</div>\n      <div className=\"hint\">\n        The effect may run setup → cleanup → setup in development. Each setup owns one matching cleanup.\n      </div>\n    </div>\n  );\n}\n\nexport default function App() {\n  const [mounted, setMounted] = useState(true);\n  const [roomId, setRoomId] = useState('general');\n  const [renderCount, setRenderCount] = useState(0);\n  const [activeCount, setActiveCount] = useState(0);\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">StrictMode-safe Effect Lifecycle</h1>\n        <p className=\"subtitle\">Implement repeatable setup with a symmetrical cleanup—without suppressing React’s checks.</p>\n\n        <div className=\"stats\">\n          <div className=\"stat\"><span className=\"k\">Room</span><span className=\"v room-value\">{roomId}</span></div>\n          <div className=\"stat\"><span className=\"k\">Active connections</span><span className=\"v active-count\">{activeCount}</span></div>\n          <div className=\"stat\"><span className=\"k\">Unrelated renders</span><span className=\"v render-count\">{renderCount}</span></div>\n        </div>\n\n        <div className=\"actions\">\n          <button className=\"btn rerender-button\" onClick={() => setRenderCount((count) => count + 1)}>Re-render</button>\n          <button className=\"btn ghost room-button\" onClick={() => setRoomId((room) => room === 'general' ? 'design' : 'general')}>Switch room</button>\n          <button className=\"btn ghost mount-button\" onClick={() => setMounted((value) => !value)}>Toggle panel</button>\n        </div>\n\n        {mounted\n          ? <ConnectionPanel roomId={roomId} onActiveCount={setActiveCount} />\n          : <div className=\"panel\"><div className=\"label connection-status\">Unmounted</div></div>}\n\n        <p className=\"foot\">Steady state: one active connection while mounted, zero after cleanup.</p>\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "d1-resource-owner",
+          "title": "Model active resources explicitly",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 16,
+            "snippet": "const activeConnections = new Set<symbol>();"
+          },
+          "why": "The demo needs observable resource ownership so tests can assert one active connection while mounted and zero after cleanup.",
+          "alternative": "Track only render counts or setup call counts.",
+          "tradeoff": "A resource set is test-oriented scaffolding, but it verifies the lifecycle behavior that matters."
+        },
+        {
+          "id": "d2-idempotent-connect",
+          "title": "Make each connection setup idempotent",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 24,
+            "snippet": "if (token !== null) return;"
+          },
+          "why": "A connection object should not register multiple active tokens if connect is accidentally called twice.",
+          "alternative": "Add a token every time connect runs.",
+          "tradeoff": "The guard adds local state to the connection object, but it prevents duplicate resource accounting."
+        },
+        {
+          "id": "d3-symmetrical-disconnect",
+          "title": "Disconnect the exact resource that connected",
+          "anchor": {
+            "lineStart": 26,
+            "lineEnd": 32,
+            "snippet": "activeConnections.delete(token);"
+          },
+          "why": "Cleanup must remove the token created by this connection and report the new active count.",
+          "alternative": "Clear all active connections or skip cleanup when StrictMode runs an extra cycle.",
+          "tradeoff": "Per-resource cleanup is more precise, and it keeps multiple mounted instances from interfering with each other."
+        },
+        {
+          "id": "d4-effect-owns-setup-and-cleanup",
+          "title": "Let the effect own one reversible process",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 48,
+            "snippet": "const connection = createConnection(roomId, setStatus, onActiveCount);"
+          },
+          "why": "Each effect setup creates and connects one resource, and the returned cleanup disconnects that same resource.",
+          "alternative": "Use a has-run ref to suppress the second StrictMode setup.",
+          "tradeoff": "React may do extra development work, but the mounted steady state remains correct without hiding lifecycle defects."
+        },
+        {
+          "id": "d5-dependency-list",
+          "title": "Depend on the reactive room and callback",
+          "anchor": {
+            "lineStart": 49,
+            "lineEnd": 49,
+            "snippet": "[roomId, onActiveCount]"
+          },
+          "why": "Changing rooms should clean up the old connection before creating a new one, while the stable state setter keeps the callback dependency safe.",
+          "alternative": "Use an empty dependency array or suppress the hooks lint rule.",
+          "tradeoff": "Correct dependencies can rerun the effect on real synchronization changes, but they avoid stale resources."
+        },
+        {
+          "id": "d6-unrelated-render-control",
+          "title": "Keep unrelated renders outside the effect inputs",
+          "anchor": {
+            "lineStart": 80,
+            "lineEnd": 80,
+            "snippet": "setRenderCount((count) => count + 1)"
+          },
+          "why": "The re-render button proves that state unrelated to the connection does not create another active resource.",
+          "alternative": "Tie every render counter or UI state value to the effect dependencies.",
+          "tradeoff": "Separating effect inputs from display-only state requires discipline, but it keeps synchronization scoped."
+        }
+      ]
+    }
+  }
+}

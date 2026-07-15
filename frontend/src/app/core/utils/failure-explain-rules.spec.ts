@@ -156,6 +156,46 @@ describe('failure-explain-rules', () => {
     expect(hint.title.toLowerCase()).toContain('prototype');
   });
 
+  it('explains eager instanceof right-hand-side validation', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-implement-instanceof',
+      errorLine: 'Expected TypeError for a callable with a non-object prototype',
+      firstFailName: 'throws when the callable has a non-object prototype',
+      passCount: 6,
+      totalCount: 8,
+      failCount: 2,
+      failedTests: [
+        {
+          name: 'validates the right-hand side before a primitive-left early return',
+          errorLine: 'Expected function to throw TypeError',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-implement-instanceof-prototype-walk');
+    expect(hint.actions.join(' ')).toContain('object/function prototype');
+  });
+
+  it('explains new.target constructor detection for the scoped bind helper', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-implement-bind',
+      errorLine: 'Expected the bound target receiver to be used',
+      firstFailName: 'does not mistake an inherited receiver for a constructor call',
+      passCount: 4,
+      totalCount: 6,
+      failCount: 2,
+      failedTests: [
+        {
+          name: 'does not mistake an inherited receiver for a constructor call',
+          errorLine: 'Expected normal-call but received undefined',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-implement-bind-constructor-semantics');
+    expect(hint.actions.join(' ')).toContain('new.target');
+  });
+
   it('returns question-specific hint for delegated hard options flow', () => {
     const hint = buildFailureHint({
       questionId: 'js-delegated-events-3',
@@ -320,6 +360,26 @@ describe('failure-explain-rules', () => {
     });
     expect(hint.ruleId).toBe('js-promise-any-aggregate-rejection');
     expect(hint.title.toLowerCase()).toContain('promiseany');
+    expect(hint.actions.join(' ')).toContain('sparse arrays');
+  });
+
+  it('returns Reflect.construct guidance for myNew class construction', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-implement-new',
+      errorLine: "Class constructor cannot be invoked without 'new'",
+      firstFailName: 'constructs ES classes',
+      passCount: 2,
+      totalCount: 8,
+      failCount: 6,
+      failedTests: [
+        {
+          name: 'constructs ES classes',
+          errorLine: "Class constructor cannot be invoked without 'new'",
+        },
+      ],
+    });
+    expect(hint.ruleId).toBe('js-implement-new-operator-rules');
+    expect(hint.actions.join(' ')).toContain('Reflect.construct');
   });
 
   it('returns question-specific hint for safeJsonParse fallback contract', () => {
@@ -498,6 +558,26 @@ describe('failure-explain-rules', () => {
     });
     expect(hint.ruleId).toBe('js-sanitize-href-url-allowlist-security');
     expect(hint.title.toLowerCase()).toContain('sanitizer');
+    expect(hint.actions.join(' ')).toContain('percent-encoded ASCII controls');
+  });
+
+  it('returns deadline guidance for a pollUntil check that never settles', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-poll-until',
+      errorLine: 'Expected Timeout rejection',
+      firstFailName: 'times out even when check never settles',
+      passCount: 1,
+      totalCount: 6,
+      failCount: 5,
+      failedTests: [
+        {
+          name: 'times out even when check never settles',
+          errorLine: 'Promise remained pending',
+        },
+      ],
+    });
+    expect(hint.ruleId).toBe('js-poll-until-timeout-abort-loop');
+    expect(hint.actions.join(' ')).toContain('separate retry and deadline timers');
   });
 
   it('returns shallowClone hint for invalid root guard failures', () => {
@@ -582,6 +662,66 @@ describe('failure-explain-rules', () => {
 
     expect(hint.ruleId).toBe('js-shallow-clone-own-enumerable-properties');
     expect(hint.actions.join(' ')).toContain('for...in');
+  });
+
+  it('returns shallowClone hint for sparse array custom-property failures', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-shallow-clone',
+      errorLine: 'Expected custom symbol value 9 but received undefined',
+      firstFailName: 'preserves sparse array shape and custom enumerable properties',
+      passCount: 13,
+      totalCount: 14,
+      failCount: 1,
+      failedTests: [
+        {
+          name: 'preserves sparse array shape and custom enumerable properties',
+          errorLine: 'Expected custom symbol value 9 but received undefined',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-shallow-clone-own-enumerable-properties');
+    expect(hint.actions.join(' ')).toContain('new Array(value.length)');
+  });
+
+  it('explains identity-guarded takeLatest controller cleanup', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-take-latest',
+      errorLine: 'Expected the newer signal to be aborted',
+      firstFailName: 'a stale finally cannot clear the newer in-flight controller',
+      passCount: 4,
+      totalCount: 5,
+      failCount: 1,
+      failedTests: [
+        {
+          name: 'a stale finally cannot clear the newer in-flight controller',
+          errorLine: 'Expected true but received false',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-take-latest-abort-sequencing');
+    expect(hint.actions.join(' ')).toContain('identical');
+  });
+
+  it('explains stream reader lock cleanup after decoder failure', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-stream-to-text',
+      errorLine: 'Expected releaseLock to be called once',
+      firstFailName: 'releases the reader lock when decoder construction fails',
+      passCount: 5,
+      totalCount: 6,
+      failCount: 1,
+      failedTests: [
+        {
+          name: 'releases the reader lock when decoder construction fails',
+          errorLine: 'Expected 1 but received 0',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('js-stream-to-text-decoder-flow');
+    expect(hint.actions.join(' ')).toContain('releaseLock');
   });
 
   it('returns css flexbox navbar hint for responsive layout failures', () => {

@@ -15,9 +15,21 @@
             "lineEnd": 25,
             "snippet": "if (signal) {"
           },
-          "why": "If callers cancel the request, this utility should stop immediately too.",
+          "why": "If callers cancel the request before or during the fetch, this utility should move its internal controller into the same aborted state.",
           "alternative": "Ignore external signal and only support timeout-based abort.",
           "tradeoff": "More robust and flexible, but adds listener setup/cleanup work."
+        },
+        {
+          "id": "d1-already-aborted-signal",
+          "title": "Respect signals already aborted before fetch starts",
+          "anchor": {
+            "lineStart": 21,
+            "lineEnd": 22,
+            "snippet": "controller.abort(toAbortError(signal.reason));"
+          },
+          "why": "A caller may pass a signal that was aborted before fetchJson ran, so the internal signal must be aborted before invoking fetch.",
+          "alternative": "Only attach a listener for future abort events.",
+          "tradeoff": "The eager branch adds one cancellation path, but it preserves AbortSignal semantics and avoids starting work after cancellation."
         },
         {
           "id": "d2-timeout-abort",

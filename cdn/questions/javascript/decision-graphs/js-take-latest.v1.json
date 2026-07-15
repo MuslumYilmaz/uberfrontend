@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default function takeLatest(fn) {\n  let currentId = 0;\n  let currentController = null;\n\n  return function (...args) {\n    currentId += 1;\n    const callId = currentId;\n\n    if (currentController && !currentController.signal.aborted) {\n      try {\n        currentController.abort(toAbortError(null, 'Cancelled'));\n      } catch {\n        // ignore\n      }\n    }\n\n    const controller = new AbortController();\n    currentController = controller;\n\n    return Promise.resolve()\n      .then(() => fn(controller.signal, ...args))\n      .then(\n        (value) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          return value;\n        },\n        (err) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          throw err;\n        }\n      );\n  };\n}\n",
+      "code": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default function takeLatest(fn) {\n  let currentId = 0;\n  let currentController = null;\n\n  return function (...args) {\n    currentId += 1;\n    const callId = currentId;\n\n    if (currentController && !currentController.signal.aborted) {\n      try {\n        currentController.abort(toAbortError(null, 'Cancelled'));\n      } catch {\n        // ignore\n      }\n    }\n\n    const controller = new AbortController();\n    currentController = controller;\n\n    return Promise.resolve()\n      .then(() => fn(controller.signal, ...args))\n      .then(\n        (value) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          return value;\n        },\n        (err) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          throw err;\n        }\n      )\n      .finally(() => {\n        if (currentController === controller) {\n          currentController = null;\n        }\n      });\n  };\n}\n",
       "nodes": [
         {
           "id": "d1-normalize-abort-errors",
@@ -90,6 +90,18 @@
           "why": "Even if older work resolves later, this check prevents stale values from updating state.",
           "alternative": "Trust abort alone.",
           "tradeoff": "Extra guard code, but it closes race conditions when abort is not fully honored."
+        },
+        {
+          "id": "d8-identity-guarded-cleanup",
+          "title": "Clear only this call's completed controller",
+          "anchor": {
+            "lineStart": 39,
+            "lineEnd": 43,
+            "snippet": "if (currentController === controller) {\n          currentController = null;\n        }"
+          },
+          "why": "Completed calls should not retain controllers, while a stale completion must not clear the controller belonging to newer in-flight work.",
+          "alternative": "Clear currentController unconditionally in finally, which lets stale completion erase a newer controller.",
+          "tradeoff": "One identity check keeps controller lifetime aligned with in-flight work and preserves later cancellation."
         }
       ]
     }

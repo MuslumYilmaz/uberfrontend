@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "export default function myBind(fn, thisArg, ...boundArgs) {\n  if (typeof fn !== 'function') {\n    throw new TypeError('myBind: fn must be a function');\n  }\n\n  function boundFn(...callArgs) {\n    const isConstructorCall = this instanceof boundFn;\n    const thisToUse = isConstructorCall ? this : thisArg;\n    return fn.apply(thisToUse, [...boundArgs, ...callArgs]);\n  }\n\n  // Preserve prototype chain so `new boundFn()` instances are also `instanceof fn`.\n  if (fn.prototype) {\n    boundFn.prototype = Object.create(fn.prototype);\n    // (Optional) keep constructor reference tidy\n    Object.defineProperty(boundFn.prototype, 'constructor', {\n      value: boundFn,\n      writable: true,\n      configurable: true\n    });\n  }\n\n  return boundFn;\n}\n",
+      "code": "export default function myBind(fn, thisArg, ...boundArgs) {\n  if (typeof fn !== 'function') {\n    throw new TypeError('myBind: fn must be a function');\n  }\n\n  function boundFn(...callArgs) {\n    const thisToUse = new.target ? this : thisArg;\n    return fn.apply(thisToUse, [...boundArgs, ...callArgs]);\n  }\n\n  // This prototype bridge supports the documented classic-constructor subset.\n  if (fn.prototype && (typeof fn.prototype === 'object' || typeof fn.prototype === 'function')) {\n    boundFn.prototype = Object.create(fn.prototype);\n    Object.defineProperty(boundFn.prototype, 'constructor', {\n      value: boundFn,\n      writable: true,\n      configurable: true\n    });\n  }\n\n  return boundFn;\n}\n",
       "nodes": [
         {
           "id": "d1-validate-target-function",
@@ -21,27 +21,27 @@
         },
         {
           "id": "d2-handle-new-vs-normal-call",
-          "title": "Choose this based on normal call vs new",
+          "title": "Detect wrapper construction with new.target",
           "anchor": {
             "lineStart": 7,
-            "lineEnd": 9,
-            "snippet": "const isConstructorCall = this instanceof boundFn;"
+            "lineEnd": 8,
+            "snippet": "const thisToUse = new.target ? this : thisArg;"
           },
-          "why": "When used with `new`, the fresh instance must be used as `this`, not the bound `thisArg`.",
-          "alternative": "Always use `thisArg` no matter how the function is called.",
-          "tradeoff": "Slightly more logic, but it matches real `bind` constructor behavior."
+          "why": "new.target distinguishes `new boundFn()` from an ordinary call even when a caller supplies an object inheriting from boundFn.prototype.",
+          "alternative": "Check `this instanceof boundFn`, which produces a false constructor classification for such ordinary receivers.",
+          "tradeoff": "Reliable detection for the documented classic-constructor subset without claiming full native bound-function semantics."
         },
         {
           "id": "d3-preserve-prototype-chain",
           "title": "Preserve prototype chain for instanceof",
           "anchor": {
-            "lineStart": 13,
-            "lineEnd": 21,
+            "lineStart": 11,
+            "lineEnd": 18,
             "snippet": "boundFn.prototype = Object.create(fn.prototype);"
           },
-          "why": "This keeps instances from `new boundFn()` linked to the original function’s prototype.",
+          "why": "For a classic constructor with an object prototype, this keeps instances from `new boundFn()` linked to the original function’s prototype.",
           "alternative": "Set `boundFn.prototype = fn.prototype` directly.",
-          "tradeoff": "Correct prototype behavior without aliasing the original prototype object."
+          "tradeoff": "Useful for the scoped exercise without reproducing native bind's exotic prototype and Symbol.hasInstance behavior."
         }
       ]
     }

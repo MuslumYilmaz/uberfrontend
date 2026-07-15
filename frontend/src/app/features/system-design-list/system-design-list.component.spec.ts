@@ -239,7 +239,7 @@ describe('SystemDesignListComponent', () => {
     expect(links.every((link) => link.getAttribute('href') === '/guides/system-design-blueprint/performance')).toBeTrue();
   });
 
-  it('renders keyword strategy sections and priority internal links', async () => {
+  it('renders learner-facing focus sections and priority practice links', async () => {
     const { fixture } = await createComponent();
     const host = fixture.nativeElement as HTMLElement;
     const pageText = text(fixture);
@@ -250,9 +250,9 @@ describe('SystemDesignListComponent', () => {
     expect(pageText).toContain('Frontend system design interview rubric');
     expect(pageText).toContain('Common mistakes');
     expect(pageText).toContain('Frontend system design interview questions FAQ');
-    expect(pageText).toContain('design infinite scroll frontend system design');
-    expect(pageText).toContain('design toast notification system');
-    expect(pageText).toContain('staff frontend engineer system design interview');
+    expect(pageText).toContain('Infinite lists');
+    expect(pageText).toContain('Notification systems');
+    expect(pageText).toContain('Staff-level dashboards');
 
     const mostAskedSection = host.querySelector('[data-testid="system-design-most-asked-section"]');
     expect(mostAskedSection?.querySelectorAll('a').length).toBe(8);

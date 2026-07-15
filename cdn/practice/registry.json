@@ -468,7 +468,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-06",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-snake-game"
   },
@@ -1301,7 +1301,7 @@
     "route": "/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Reactive forms scale better for large or dynamic Angular forms because the form model, validators, and state transitions live explicitly in TypeScript. Template-driven forms are still useful for small static forms, but…",
+    "summary": "Template-driven forms fit small static workflows, mature Reactive Forms remain a strong choice for complex or existing applications, and stable Signal Forms in Angular 22 are a production option for new signal-first for…",
     "tags": [
       "angular",
       "forms",
@@ -1311,7 +1311,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-04",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-template-driven-vs-reactive-forms-which-scales"
   },
@@ -1340,21 +1340,21 @@
   {
     "id": "angular-todo-list-starter",
     "family": "question",
-    "title": "Todo List (Standalone Component with ngFor)",
+    "title": "Todo List (Standalone Component with @for)",
     "route": "/angular/coding/angular-todo-list-starter",
     "tech": "angular",
     "difficulty": "easy",
-    "summary": "Build a small todo list using an Angular standalone component. Allow users to add tasks, mark them as completed, and remove them. Use `*ngFor` to render the list and simple component state to drive the UI.",
+    "summary": "Build a small todo list using an Angular standalone component. Add tasks, mark them complete, remove them, and render stable list identity with modern `@for (...; track ...)` control flow.",
     "tags": [
       "components",
       "forms",
       "lists",
-      "ng-for",
+      "control-flow",
       "state"
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-todo-list-starter"
   },
@@ -2103,7 +2103,7 @@
     "route": "/css/coding/css-theme-variables-dark-mode",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual html.theme-dark override after t…",
+    "summary": "Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual :root:where(.theme-dark) overrid…",
     "tags": [
       "css",
       "variables",
@@ -2114,7 +2114,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/coding.json#css-theme-variables-dark-mode"
   },
@@ -2157,7 +2157,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-custom-properties"
   },
@@ -2591,7 +2591,7 @@
     "route": "/html/trivia/html-clickable-image",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link. Good linked images need meaningful alt text, clear destination context, and safe new…",
+    "summary": "Make an image a hyperlink by wrapping it in an anchor with a real href attribute. An anchor without href is not a hyperlink. Good linked images also need meaningful alt text, clear destination context, and safe new-tab…",
     "tags": [
       "html",
       "images",
@@ -2601,7 +2601,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-clickable-image"
   },
@@ -2697,7 +2697,7 @@
     "route": "/html/coding/html-links-and-images",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "Create semantic links and images: use anchor elements with descriptive text, add target/rel when opening new tabs, and include alt text for images. This checks basic accessibility, security, and HTML best practices in o…",
+    "summary": "Create semantic links and images: use anchor elements with real href attributes and descriptive names, add target/rel when opening new tabs, and include alt text for images. An anchor without href is not a hyperlink. Th…",
     "tags": [
       "html",
       "links",
@@ -2707,7 +2707,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/coding.json#html-links-and-images"
   },
@@ -3779,7 +3779,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-06",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-create-deferred-promise"
   },
@@ -3968,7 +3968,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-06",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-debounce"
   },
@@ -4215,7 +4215,7 @@
     "route": "/javascript/coding/js-escape-html",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Implement escapeHtml(text) to convert &, <, >, \" and ' into HTML entities so user-provided text can be safely inserted into HTML text nodes or attributes. This is context-specific encoding for XSS prevention (text only).",
+    "summary": "Implement escapeHtml(text) to encode &, <, >, \" and ' when raw text must be interpolated into the HTML text-content portion of a constructed markup string. For live DOM text, assign `textContent` instead. This narrow en…",
     "tags": [
       "security",
       "strings",
@@ -4225,7 +4225,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-escape-html"
   },
@@ -4495,7 +4495,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-fetch-json-timeout"
   },
@@ -5015,7 +5015,7 @@
     "route": "/javascript/coding/js-implement-instanceof",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Recreate `instanceof` by walking the prototype chain and checking if it reaches `Constructor.prototype`. Handle null/primitive inputs safely and stop when the chain ends. This tests knowledge of prototypes and runtime i…",
+    "summary": "Implement the ordinary prototype-chain core of `instanceof`: first require a callable right-hand side with an object/function prototype, then return false for a null or primitive left-hand side, and otherwise walk towar…",
     "tags": [
       "prototypes",
       "objects",
@@ -5025,7 +5025,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-implement-instanceof"
   },
@@ -5118,7 +5118,7 @@
     "route": "/javascript/coding/js-implement-bind",
     "tech": "javascript",
     "difficulty": "hard",
-    "summary": "Implement `myBind(fn, thisArg, ...boundArgs)` that behaves like `Function.prototype.bind`. It must: 1) Bind `this` to `thisArg` for normal calls. 2) Support partial application (pre-filling arguments). 3) Work with `new…",
+    "summary": "Implement a deliberately scoped `myBind(fn, thisArg, ...boundArgs)` exercise. It must bind `this` for ordinary calls, support partial application, and support `new` for classic function constructors whose prototype is a…",
     "tags": [
       "this",
       "prototypes",
@@ -5129,7 +5129,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-implement-bind"
   },
@@ -5196,7 +5196,7 @@
     "route": "/javascript/coding/js-implement-new",
     "tech": "javascript",
     "difficulty": "hard",
-    "summary": "Implement a myNew helper that mimics the new operator. Create an object linked to the constructor prototype, call the constructor with this, and return the constructor’s object result if provided. This tests prototype l…",
+    "summary": "Implement myNew(Constructor, ...args) with the language's construction primitive. It must accept ECMAScript constructable targets, including classes and bound constructors, preserve new.target and native prototype fallb…",
     "tags": [
       "prototypes",
       "object-creation",
@@ -5205,7 +5205,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-implement-new"
   },
@@ -5609,7 +5609,7 @@
     "route": "/javascript/coding/js-poll-until",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Implement pollUntil(check, { interval, timeout, signal }) that repeatedly runs a check until it returns a truthy value. Wait interval milliseconds between attempts. Reject if the timeout is reached or the AbortSignal is…",
+    "summary": "Implement pollUntil(check, { interval, timeout, signal }) so a real deadline, cancellation, or the first truthy check settles the returned Promise exactly once. The deadline must remain active even while an asynchronous…",
     "tags": [
       "async",
       "cancellation",
@@ -5619,7 +5619,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-poll-until"
   },
@@ -5671,7 +5671,7 @@
     "route": "/javascript/coding/js-promise-any",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Implement promiseAny(promises) that behaves like Promise.any. It should resolve with the first fulfilled value, ignoring rejections until all inputs reject. If everything rejects (or the input is empty), it should rejec…",
+    "summary": "Implement promiseAny(iterable) for synchronous iterables of values and promises. Resolve with the first fulfillment, ignore rejections until every iterated input rejects, and reject empty or all-rejected input with a na…",
     "tags": [
       "promise",
       "async",
@@ -5681,7 +5681,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-promise-any"
   },
@@ -5925,7 +5925,7 @@
     "route": "/javascript/coding/js-sanitize-href-url",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Implement sanitizeHrefUrl(input) to safely use user-provided URLs in an <a href=\"...\">. Use an allowlist for safe schemes (http/https/mailto/tel) and safe relative URLs, and block dangerous schemes like javascript: or d…",
+    "summary": "Implement sanitizeHrefUrl(input) for an <a href=\"...\"> allowlist: explicit http, https, mailto, and tel URLs plus relative URLs that stay on a trusted origin. Return null for empty or malformed input, unknown schemes, p…",
     "tags": [
       "security",
       "validation",
@@ -5937,7 +5937,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-06",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-sanitize-href-url"
   },
@@ -6008,7 +6008,7 @@
     "route": "/javascript/coding/js-shallow-clone",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Implement shallowClone(value) in JavaScript. Your function should accept an object or array and return a new top-level container while preserving nested object and array references. Primitives, null, and unsupported roo…",
+    "summary": "Implement shallowClone(value) in JavaScript. Your function should accept an object or array and return a new top-level container while preserving nested object and array references. Array holes, length, custom own enume…",
     "tags": [
       "clone",
       "objects",
@@ -6018,7 +6018,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-07",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-shallow-clone"
   },
@@ -6204,7 +6204,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-stream-to-text"
   },
@@ -6293,7 +6293,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-take-latest"
   },
@@ -7461,7 +7461,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 40,
-    "updatedAt": "2026-07-09",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-autocomplete-search-starter"
   },
@@ -7696,7 +7696,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-progress-bar-thresholds"
   },
@@ -7740,7 +7740,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-snake-game"
   },
@@ -7829,6 +7829,27 @@
     "assetRef": "questions/react/coding.json#react-transfer-list"
   },
   {
+    "id": "react-use-effect-once",
+    "family": "question",
+    "title": "StrictMode-safe Effect Setup and Cleanup",
+    "route": "/react/coding/react-use-effect-once",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build an idempotent connection effect whose setup and symmetrical cleanup tolerate React StrictMode’s intentional development setup → cleanup → setup cycle. The goal is one active resource in steady state, not suppressi…",
+    "tags": [
+      "react",
+      "hooks",
+      "effects",
+      "lifecycle",
+      "components"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-07-14",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-use-effect-once"
+  },
+  {
     "id": "react-tictactoe",
     "family": "question",
     "title": "Tic-Tac-Toe (Component State + Winner Detection)",
@@ -7891,27 +7912,6 @@
     "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-useeffect-purpose"
-  },
-  {
-    "id": "react-use-effect-once",
-    "family": "question",
-    "title": "useEffectOnce: Run an Effect Only Once",
-    "route": "/react/coding/react-use-effect-once",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "This hook should run the effect only on mount and clean up on unmount, even under React StrictMode development behavior. Concepts: react, hooks, effects, lifecycle, components. Mention StrictMode double-invocation, clea…",
-    "tags": [
-      "react",
-      "hooks",
-      "effects",
-      "lifecycle",
-      "components"
-    ],
-    "access": "premium",
-    "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/coding.json#react-use-effect-once"
   },
   {
     "id": "react-portals",
@@ -8193,7 +8193,7 @@
     "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain the timing difference between useEffect and useLayoutEffect in the render/commit/paint pipeline, why useLayoutEffect blocks painting, and when it is required (DOM measurements, preventing visual flicker) versus…",
+    "summary": "Explain the timing guarantees of useEffect and useLayoutEffect, why useLayoutEffect blocks repainting, and when layout work needs a pre-paint guarantee. Passive effects generally run after paint for non-interaction upda…",
     "tags": [
       "react",
       "hooks",
@@ -8203,7 +8203,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-useeffect-vs-uselayouteffect"
   },
@@ -9659,7 +9659,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-snake-game"
   },
@@ -9733,7 +9733,7 @@
     "route": "/vue/trivia/vue-watch-vs-watcheffect-differences-infinite-loops",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Explain the difference between watch() and watchEffect() in Vue 3, when each one runs, how dependency tracking works (explicit vs automatic), and the common patterns that accidentally cause infinite update loops.",
+    "summary": "Explain the difference between watch() and watchEffect() in Vue 3, when each runs, how dependency tracking works, why a watch callback can recurse by mutating its own source, and how watchEffect suppresses a direct sync…",
     "tags": [
       "vue",
       "watch",
@@ -9743,7 +9743,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-watch-vs-watcheffect-differences-infinite-loops"
   },

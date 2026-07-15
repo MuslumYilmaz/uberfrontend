@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "export default function shallowClone(value) {\n  if (value === null || typeof value !== 'object') {\n    throw new TypeError('Expected object or array');\n  }\n\n  if (Array.isArray(value)) {\n    return value.slice();\n  }\n\n  return Object.assign({}, value);\n}\n",
+      "code": "export default function shallowClone(value) {\n  if (value === null || typeof value !== 'object') {\n    throw new TypeError('Expected object or array');\n  }\n\n  if (Array.isArray(value)) {\n    return Object.assign(new Array(value.length), value);\n  }\n\n  return Object.assign({}, value);\n}\n",
       "nodes": [
         {
           "id": "d1-reject-invalid-inputs",
@@ -20,16 +20,16 @@
           "tradeoff": "Strict validation makes caller mistakes obvious before any clone branch runs."
         },
         {
-          "id": "d2-array-branch-with-slice",
-          "title": "Clone arrays with `slice()`",
+          "id": "d2-array-branch-with-object-assign",
+          "title": "Clone arrays into a pre-sized target",
           "anchor": {
             "lineStart": 6,
             "lineEnd": 8,
-            "snippet": "if (Array.isArray(value)) {\n    return value.slice();\n  }"
+            "snippet": "if (Array.isArray(value)) {\n    return Object.assign(new Array(value.length), value);\n  }"
           },
-          "why": "`slice()` makes a new top-level array while keeping the function short and familiar.",
-          "alternative": "Use spread syntax like `[...value]`.",
-          "tradeoff": "Very readable for arrays, but it is still only a shallow copy."
+          "why": "Pre-sizing preserves length and trailing holes; Object.assign copies present indexes plus custom own enumerable string and symbol properties.",
+          "alternative": "Use `slice()` only if the contract explicitly excludes custom array properties.",
+          "tradeoff": "Slightly more explicit than slice, but it covers the full documented array contract while remaining shallow."
         },
         {
           "id": "d3-object-branch-with-object-assign",

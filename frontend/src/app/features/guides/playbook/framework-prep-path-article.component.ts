@@ -4142,9 +4142,9 @@ function onInput(value) {
         {
           title: 'Forms architecture, CVA, and validation flow',
           review:
-            'Review form-model structure, CVA contract behavior, and async validation lifecycle under typing pressure.',
+            'Review Angular\'s production form-model choices, CVA contract behavior, and async validation lifecycle under typing pressure.',
           microDrills: [
-            'Explain when Reactive Forms should be preferred and one case where template-driven is acceptable.',
+            'Compare template-driven, Reactive Forms, and stable Signal Forms, then choose one for a concrete Angular 22 form.',
             'List CVA responsibilities in order: writeValue, change callback, touched callback, disabled state.',
             'Name one anti-pattern that causes validation storms and how to prevent it.',
           ],

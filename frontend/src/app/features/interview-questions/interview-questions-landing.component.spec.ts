@@ -209,7 +209,7 @@ const VUE_COMPONENT_CONTRACT_QUESTIONS = [
 
 const VUE_SCENARIO_QUESTIONS = [
   'Why does this destructured value stop updating?',
-  'Why can this watcher loop forever?',
+  'Why can this watch callback recurse forever?',
   'Why can this list keep the wrong input value?',
   'Why is this prop mutation fragile?',
   'Why does this focus call miss the input?',
@@ -401,7 +401,7 @@ const HTML_MODERN_SCENARIO_QUESTIONS = [
   'How do template and slot support component markup?',
   'Why can invalid nesting change the page structure?',
   'Why is this input hard to use: <input placeholder="Email">?',
-  'Why is this image link weak: <a><img alt="arrow"></a>?',
+  'Why is this image link weak: <a href="/pricing"><img alt="arrow"></a>?',
   'Why is a table without headers hard to understand?',
   'Why is a clickable div a fragile button?',
 ];
@@ -767,6 +767,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Common React libraries interviewers may expect');
     expect(text).toContain('TanStack Query');
     expect(text).toContain('Testing Library');
+    expect(text).toContain('does not provide a pre-paint guarantee');
+    expect(text).not.toContain('useEffect runs after the browser has painted the committed UI');
     expect(text).not.toContain('Top JavaScript interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('Angular scenario and code interview questions');
@@ -1713,6 +1715,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     for (const question of HTML_CSS_CODE_SCENARIOS) {
       expect(text).toContain(question);
     }
+    expect(text).toContain('an anchor without href is not a hyperlink');
     for (const question of HTML_CSS_BROWSER_DEBUG_QUESTIONS) {
       expect(text).toContain(question);
     }
@@ -1941,6 +1944,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Does this page include Vue scenario and code interview questions?');
     expect(text).toContain('Does this page include Vue testing, security, and performance interview questions?');
     expect(text).toContain('Where should I practice Vue.js coding interview questions?');
+    expect(text).toContain('suppresses a direct synchronous self-trigger');
+    expect(text).toContain('Why can this watch callback recurse forever?');
+    expect(text).not.toContain('Why can this watcher loop forever?');
+    expect(text).not.toContain('A common failure is creating loops by writing to the same reactive state');
     expect(text).not.toContain('Popular React interview question clusters');
     expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
     expect(text).not.toContain('React interview questions for beginners and experienced developers');
@@ -2276,6 +2283,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     for (const question of HTML_MODERN_SCENARIO_QUESTIONS) {
       expect(text).toContain(question);
     }
+    expect(text).toContain('an anchor without href is not a hyperlink');
+    expect(text).not.toContain('<a><img alt="arrow"></a>');
 
     expect(fixture.nativeElement.querySelectorAll('.iq-section--html-short-answers .iq-short-answer').length).toBe(25);
     expect(fixture.nativeElement.querySelectorAll('.iq-section--html-audience .iq-audience-card').length).toBe(2);
@@ -2766,6 +2775,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Using mergeMap when latest search should win');
     expect(text).toContain('Modern Angular topics interviewers may ask about');
     expect(text).toContain('Signal Forms');
+    expect(text).toContain('stable and production-ready in Angular 22');
+    expect(text).toContain('@for (user of users; track user.id)');
+    expect(text).not.toContain('experimental modern forms direction');
+    expect(text).not.toContain('*ngFor="let user of users; trackBy: trackUser"');
     expect(text).toContain('Are these Angular interview questions for beginners and experienced developers?');
     expect(text).toContain('Does this page include Angular testing interview questions?');
     expect(text).toContain('Does this page cover Angular security, guards, resolvers, and performance?');

@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default async function streamToText(stream, options = {}) {\n  if (!stream || typeof stream.getReader !== 'function') {\n    throw new TypeError('stream must be a ReadableStream');\n  }\n\n  const { encoding = 'utf-8', signal } = options;\n  const reader = stream.getReader();\n  const decoder = new TextDecoder(encoding);\n  let output = '';\n  let aborted = false;\n\n  const onAbort = () => {\n    aborted = true;\n    if (reader.cancel) reader.cancel();\n  };\n\n  if (signal) {\n    if (signal.aborted) {\n      if (reader.cancel) reader.cancel();\n      throw toAbortError(signal.reason);\n    }\n    signal.addEventListener('abort', onAbort, { once: true });\n  }\n\n  try {\n    while (true) {\n      if (aborted) throw toAbortError(signal && signal.reason);\n      const { done, value } = await reader.read();\n      if (aborted) throw toAbortError(signal && signal.reason);\n      if (done) break;\n      if (value) output += decoder.decode(value, { stream: true });\n    }\n    output += decoder.decode();\n    return output;\n  } finally {\n    if (signal) signal.removeEventListener('abort', onAbort);\n  }\n}\n",
+      "code": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default async function streamToText(stream, options = {}) {\n  if (!stream || typeof stream.getReader !== 'function') {\n    throw new TypeError('stream must be a ReadableStream');\n  }\n\n  const { encoding = 'utf-8', signal } = options;\n  const reader = stream.getReader();\n  let output = '';\n  let aborted = false;\n\n  const cancelReader = () => {\n    if (!reader.cancel) return;\n    try {\n      const cancellation = reader.cancel();\n      if (cancellation && typeof cancellation.catch === 'function') {\n        cancellation.catch(() => {});\n      }\n    } catch {\n      // Cancellation is best effort; the AbortError still wins.\n    }\n  };\n\n  const onAbort = () => {\n    aborted = true;\n    cancelReader();\n  };\n\n  try {\n    const decoder = new TextDecoder(encoding);\n\n    if (signal) {\n      if (signal.aborted) {\n        aborted = true;\n        cancelReader();\n        throw toAbortError(signal.reason);\n      }\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n\n    while (true) {\n      if (aborted) throw toAbortError(signal && signal.reason);\n      const { done, value } = await reader.read();\n      if (aborted) throw toAbortError(signal && signal.reason);\n      if (done) break;\n      if (value) output += decoder.decode(value, { stream: true });\n    }\n    output += decoder.decode();\n    return output;\n  } finally {\n    if (signal) signal.removeEventListener('abort', onAbort);\n    if (typeof reader.releaseLock === 'function') reader.releaseLock();\n  }\n}\n",
       "nodes": [
         {
           "id": "d1-stream-input-guard",
@@ -21,46 +21,46 @@
         },
         {
           "id": "d2-decoder-with-encoding",
-          "title": "Create decoder with chosen encoding",
+          "title": "Create decoder inside the cleanup scope",
           "anchor": {
-            "lineStart": 13,
-            "lineEnd": 15,
+            "lineStart": 35,
+            "lineEnd": 36,
             "snippet": "const decoder = new TextDecoder(encoding);"
           },
-          "why": "This keeps decoding flexible while defaulting to utf-8 for common cases.",
-          "alternative": "Hardcode utf-8 and ignore options.",
-          "tradeoff": "More flexible API with almost no extra complexity."
+          "why": "TextDecoder construction can throw for an invalid encoding, so it must happen after entering try/finally to guarantee releaseLock still runs.",
+          "alternative": "Construct the decoder before try, which leaks the acquired reader lock if construction fails.",
+          "tradeoff": "The same flexible encoding API with complete post-acquisition cleanup."
         },
         {
           "id": "d3-abort-cancels-reader",
           "title": "Abort handler cancels the reader",
           "anchor": {
-            "lineStart": 19,
-            "lineEnd": 22,
-            "snippet": "if (reader.cancel) reader.cancel();"
+            "lineStart": 18,
+            "lineEnd": 28,
+            "snippet": "const cancellation = reader.cancel();"
           },
-          "why": "Canceling the reader stops further reads and releases resources faster.",
-          "alternative": "Only set an aborted flag and let read loop end naturally.",
-          "tradeoff": "Direct cancel is cleaner and faster, but needs cancel support checks."
+          "why": "Best-effort cancellation asks the source to stop work; asynchronous cancellation failures cannot replace the documented AbortError.",
+          "alternative": "Only set an aborted flag and let the current read end naturally.",
+          "tradeoff": "Faster cancellation with defensive handling for optional or rejecting cancel implementations."
         },
         {
           "id": "d4-handle-already-aborted-signal",
           "title": "Handle already-aborted signal immediately",
           "anchor": {
-            "lineStart": 25,
-            "lineEnd": 29,
+            "lineStart": 38,
+            "lineEnd": 43,
             "snippet": "if (signal.aborted)"
           },
           "why": "If cancellation already happened, we should stop before starting the read loop.",
           "alternative": "Always enter the loop and detect abort later.",
-          "tradeoff": "Immediate exit avoids unnecessary work and race conditions."
+          "tradeoff": "Immediate exit avoids unnecessary work while still passing through finally for listener and lock cleanup."
         },
         {
           "id": "d5-streaming-decode-loop",
           "title": "Decode chunks in streaming mode",
           "anchor": {
-            "lineStart": 33,
-            "lineEnd": 39,
+            "lineStart": 47,
+            "lineEnd": 53,
             "snippet": "decoder.decode(value, { stream: true })"
           },
           "why": "Streaming mode preserves multi-byte characters split across chunk boundaries.",
@@ -71,8 +71,8 @@
           "id": "d6-final-decoder-flush",
           "title": "Flush decoder after loop ends",
           "anchor": {
-            "lineStart": 40,
-            "lineEnd": 40,
+            "lineStart": 54,
+            "lineEnd": 54,
             "snippet": "output += decoder.decode();"
           },
           "why": "Final flush emits buffered trailing bytes that may not form a full char until the end.",
@@ -80,16 +80,16 @@
           "tradeoff": "One extra call, but correct output for edge-case byte boundaries."
         },
         {
-          "id": "d7-cleanup-listener",
-          "title": "Always remove abort listener",
+          "id": "d7-cleanup-listener-and-lock",
+          "title": "Always remove the listener and release the lock",
           "anchor": {
-            "lineStart": 42,
-            "lineEnd": 43,
-            "snippet": "signal.removeEventListener('abort', onAbort)"
+            "lineStart": 56,
+            "lineEnd": 58,
+            "snippet": "if (signal) signal.removeEventListener('abort', onAbort);\n    if (typeof reader.releaseLock === 'function') reader.releaseLock();"
           },
-          "why": "Cleanup avoids hanging listeners and subtle memory leaks.",
-          "alternative": "Rely on GC and skip explicit removal.",
-          "tradeoff": "A tiny cleanup step for safer long-lived apps."
+          "why": "The finally block runs after success, read failure, abort, and decoder-construction failure, removing listeners and relinquishing exclusive stream ownership.",
+          "alternative": "Clean up only on successful reads, which retains locks on exceptional paths.",
+          "tradeoff": "A small centralized cleanup block for correct reader lifecycle on every terminal path."
         }
       ]
     }

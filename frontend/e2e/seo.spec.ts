@@ -82,14 +82,15 @@ test('seo: css theme variables challenge is indexable with self canonical and cr
   await expect(page).toHaveTitle('CSS Variables Dark Mode Challenge | FrontendAtlas');
   await expect(page.locator('h1').first()).toContainText(/Theming with CSS Variables/i);
   await expect.poll(() => getMeta(page, 'description')).toBe(
-    'Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.'
+    'Practice CSS custom properties with prefers-color-scheme and an equal-specificity :root:where(.theme-dark) override whose later source order wins.'
   );
   await expect.poll(() => getCanonical(page)).toBe(`${base}/css/coding/css-theme-variables-dark-mode`);
   await expect.poll(async () => ((await getMeta(page, 'robots')) || '').toLowerCase()).not.toContain('noindex');
 
   await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/CSS custom properties/i);
   await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/prefers-color-scheme/i);
-  await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/html\.theme-dark/i);
+  await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/:root:where\(\.theme-dark\)/i);
+  await expect(page.locator('[data-testid="coding-description-panel"]')).toContainText(/equal specificity/i);
   await expect(page.locator('[data-testid="coding-breadcrumb"] a[href="/css/interview-questions"]')).toHaveCount(1);
   const starterCss = await getMonacoModelValue(page, 'q-css-theme-variables-dark-mode-css');
   expect(starterCss).toMatch(/box-shadow:\s*var\(--panel-shadow\)/i);

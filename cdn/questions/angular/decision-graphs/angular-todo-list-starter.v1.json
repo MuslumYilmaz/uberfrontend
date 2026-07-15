@@ -1,0 +1,97 @@
+{
+  "questionId": "angular-todo-list-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  newTask = '';\n  todos: Todo[] = [];\n  private nextId = 1;\n\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  addTask(): void {\n    const text = this.newTask.trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos = [\n      ...this.todos,\n      { id: this.nextId++, text, done: false }\n    ];\n\n    this.newTask = '';\n  }\n\n  toggleTask(todo: Todo): void {\n    todo.done = !todo.done;\n  }\n\n  removeTask(todo: Todo): void {\n    this.todos = this.todos.filter(t => t.id !== todo.id);\n  }\n\n  clearCompleted(): void {\n    this.todos = this.todos.filter(t => !t.done);\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-standalone-imports",
+          "title": "Import the template dependencies",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 16,
+            "snippet": "imports: [CommonModule, FormsModule]"
+          },
+          "why": "The standalone root component owns its imports, and FormsModule is required for the ngModel bindings used by the todo input and checkbox.",
+          "alternative": "Rely on an NgModule or omit FormsModule from the standalone component.",
+          "tradeoff": "Keeping imports local makes the exercise self-contained, but every template dependency must be listed explicitly."
+        },
+        {
+          "id": "d2-local-todo-state",
+          "title": "Keep todo state local and explicit",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 21,
+            "snippet": "todos: Todo[] = [];"
+          },
+          "why": "A local array plus an id counter is enough for add, toggle, remove, and clear-completed behavior in this component-sized exercise.",
+          "alternative": "Introduce a service, store, or DOM-derived state for a small local interaction.",
+          "tradeoff": "Local component state is easy to test and read, while larger apps may later move shared todo state elsewhere."
+        },
+        {
+          "id": "d3-trim-and-ignore-empty-input",
+          "title": "Reject empty todo text before mutation",
+          "anchor": {
+            "lineStart": 27,
+            "lineEnd": 31,
+            "snippet": "if (!text) {"
+          },
+          "why": "Trimming first prevents whitespace-only todos from entering the rendered list or persisted state.",
+          "alternative": "Push every input value and clean the list later.",
+          "tradeoff": "The early return adds a small branch, but it keeps downstream rendering and tests simpler."
+        },
+        {
+          "id": "d4-append-stable-id",
+          "title": "Append items with stable identity",
+          "anchor": {
+            "lineStart": 33,
+            "lineEnd": 36,
+            "snippet": "{ id: this.nextId++, text, done: false }"
+          },
+          "why": "The generated id gives Angular @for track todo.id a stable identity for each row as items are added and removed.",
+          "alternative": "Track by array index or reuse the text as an identity.",
+          "tradeoff": "An id counter is small bookkeeping, but it avoids row identity drift when duplicate text or removals occur."
+        },
+        {
+          "id": "d5-toggle-completion",
+          "title": "Toggle the selected todo only",
+          "anchor": {
+            "lineStart": 41,
+            "lineEnd": 43,
+            "snippet": "todo.done = !todo.done;"
+          },
+          "why": "The checkbox interaction should change completion for the row the user touched without rebuilding unrelated items.",
+          "alternative": "Infer completion from CSS classes or toggle every item through shared state.",
+          "tradeoff": "Directly mutating the item is concise for this local model; immutable updates can be preferred when state is shared."
+        },
+        {
+          "id": "d6-remove-by-id",
+          "title": "Remove by stable id",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 47,
+            "snippet": "this.todos = this.todos.filter(t => t.id !== todo.id);"
+          },
+          "why": "Filtering by id deletes the exact row even when multiple todos have the same text.",
+          "alternative": "Remove by visible label or by current array index.",
+          "tradeoff": "Id-based removal needs a generated id, but it remains correct after sorting, filtering, or duplicate entries."
+        },
+        {
+          "id": "d7-clear-completed",
+          "title": "Derive the remaining active list",
+          "anchor": {
+            "lineStart": 49,
+            "lineEnd": 51,
+            "snippet": "this.todos = this.todos.filter(t => !t.done);"
+          },
+          "why": "Clear completed should preserve active todos and remove only items already marked done.",
+          "alternative": "Reset the entire list or manually splice completed rows in place.",
+          "tradeoff": "A filter pass is simple and predictable for this list size, though very large lists might need a different data model."
+        }
+      ]
+    }
+  }
+}

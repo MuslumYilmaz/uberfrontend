@@ -597,6 +597,17 @@ test.describe('seo-ssr', () => {
     }
   });
 
+  test('raw premium progress-bar shell preserves literal threshold comparators without solution leakage', async ({ request }) => {
+    const html = await readRawHtml(request, '/react/coding/react-progress-bar-thresholds');
+
+    expect(html).toContain('&lt;34');
+    expect(html).toContain('&gt;66');
+    expect(html).toContain('orange 34–66');
+    expect(html).not.toContain('Functional state updates to avoid stale reads.');
+    expect(hasLockedShellMarkup(html)).toBe(true);
+    expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('noindex,follow');
+  });
+
   test('raw OpenAI company preview is indexable, crawlable, and free of premium leakage', async ({ request }) => {
     const html = await readRawHtml(request, '/companies/openai/preview');
     const text = rawVisibleText(html);

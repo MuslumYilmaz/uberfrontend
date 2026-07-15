@@ -1725,10 +1725,11 @@
           "Show a deterministic error state for a known failing query such as error.",
           "Use ArrowDown and ArrowUp with wrap-around navigation.",
           "Use Enter to select the active option and Escape to close the popup without changing the query.",
-          "Close the dropdown on outside pointer or click interaction.",
-          "Handle pointer option selection so blur or outside-click timing cannot swallow the selection.",
-          "Prevent stale slow responses from overwriting newer query results.",
-          "Clean up timers and document listeners when effects rerun or the component unmounts."
+          "Close the dropdown on outside pointer interaction.",
+          "Handle option selection with pointer events so mouse, pen, and touch activation occurs before blur or outside-close timing can swallow it.",
+          "Clear old options immediately when the query changes, prevent selection while loading, and prevent stale slow responses from overwriting newer results.",
+          "Clean up timers and document listeners when effects rerun or the component unmounts.",
+          "Give the combobox an explicit accessible name with a visible label associated through `for`/`id` (and `aria-labelledby` when used)."
         ],
         "acceptanceCriteria": [
           "The first screen explains the challenge goal, 35-45 minute timebox, assessed React skills, and Start coding action.",
@@ -1746,25 +1747,27 @@
           "ArrowDown from no active option selects the first option; ArrowUp selects the last option; both wrap around.",
           "Enter selects the active option, writes it to the input, and closes the popup.",
           "Escape closes the popup while preserving the current query.",
-          "Pointer selection on an option works even when the input would otherwise blur.",
-          "If san is slow and se is faster, the later se results remain visible when the old san response finishes."
+          "Pointer selection works for mouse, pen, and touch even when the input would otherwise blur.",
+          "If san is slow and se is faster, the later se results remain visible when the old san response finishes.",
+          "When a new non-empty query enters loading, old options disappear immediately and Arrow/Enter cannot select them."
         ],
         "implementationNotes": [
           "Use query, results, status, isOpen, activeIndex, and a request sequence ref as the core state model.",
           "Use setTimeout cleanup to cancel pending debounce work before it starts a request.",
-          "Use a request id or ignore flag to stop stale fake async responses from updating state after they resolve.",
-          "For real fetch calls, use AbortController in addition to a stale-response guard when the platform request can be cancelled.",
-          "Put role=\"combobox\", aria-expanded, aria-autocomplete=\"list\", aria-controls, and aria-activedescendant on the input.",
+          "Use both request identity and AbortController: abort cancellable work, and still guard every async continuation against stale request identity.",
+          "Clear results and activeIndex in the input-change transition as well as the effect, so passive-effect timing cannot leave stale options interactive.",
+          "Associate a visible label with the input, then put role=\"combobox\", aria-expanded, aria-autocomplete=\"list\", aria-controls, and aria-activedescendant on it.",
           "Put role=\"listbox\" on the popup and role=\"option\" with stable ids and aria-selected on every result.",
           "Keep DOM focus on the input while keyboard navigation changes activeIndex.",
-          "Keep mouse and pointer behavior as an alternative path, not the only accessible path."
+          "Use pointer events for option activation as an alternative path; keyboard interaction must remain complete and focus stays on the input."
         ],
         "commonMistakes": [
           "Saying that clearing the debounce timer cancels an already-started request.",
           "Using dangerouslySetInnerHTML or HTML strings for highlighting matched text.",
-          "Using onClick for option selection when blur or outside handlers can close the popup first.",
+          "Using mouse-only or click-only option selection instead of a pointer event that covers mouse, pen, and touch before blur/outside-close races.",
           "Moving DOM focus into list options instead of managing aria-activedescendant on the input.",
-          "Letting an older slow response overwrite results for a newer query."
+          "Letting an older slow response overwrite results for a newer query.",
+          "Leaving successful results mounted and selectable while a different query is loading."
         ],
         "interviewExplanation": "Interviewers evaluate visible correctness, async safety, keyboard and focus behavior, accessibility contracts, tests, and whether you can explain the trade-offs without over-engineering the first version.",
         "testingChecklist": [
@@ -1777,9 +1780,11 @@
           "Enter selects the active option.",
           "Escape closes without changing the query.",
           "Outside interaction closes the popup.",
-          "Pointer option selection survives blur and outside-click races.",
+          "Pointer option selection covers mouse, pen, and touch semantics and survives blur/outside-close races.",
           "aria-controls, aria-activedescendant, and option ids are connected.",
-          "Unmount leaves no pending debounce timer or document listener."
+          "Unmount leaves no pending debounce timer or document listener.",
+          "Changing the query clears old options synchronously; ArrowDown and Enter cannot select while loading.",
+          "The visible label provides the combobox accessible name."
         ],
         "techFocus": [
           "React state/effects",
@@ -1803,11 +1808,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "### State model\n- Source state: query, results, status, isOpen, activeIndex, and requestSeqRef.\n- Derived state: trimmedQuery, hasResults, active option id, and the visible status text.\n- status should be one of idle, loading, success, empty, or error so loading, no-results, and error cannot collapse into the same branch.\n\n### The tempting wrong solution\n- A common first pass starts search(query) after every debounce and sets results when the Promise resolves. Timeline: san starts slowly, se starts later but resolves first, then the old san response resolves and overwrites the se results.\n- Clearing the debounce timer only stops a request that has not started yet. Once fake async work has started, guard the resolution with a request id or ignore flag.\n\n### Request ID vs AbortController\n- Request ID or ignore flag: best for fake async work and any uncancellable Promise. It does not stop the work; it only prevents stale state updates.\n- AbortController: best for real fetch requests because it can cancel network work and free resources. You still keep a stale-response guard for defensive correctness.\n\n### Interviewer rubric\n- Visible correctness: controlled input, popup states, selection, and close behavior work.\n- Async safety: debounce cleanup and stale response handling are explained separately.\n- Keyboard/focus behavior: Arrow keys, Enter, Escape, wrap-around, and input focus are correct.\n- Accessibility: combobox/listbox roles, stable ids, aria-controls, aria-activedescendant, and aria-selected are wired.\n- Tests: checks cover loading, empty, error, no-results, stale responses, pointer behavior, and cleanup.\n- Trade-off explanation: first version stays in one component; extraction is a follow-up, not a blocker.\n\n### Senior follow-ups\n- Remote API contract, client cache, minimum query length, result limits, virtualization for very large lists, and analytics or observability. Keep this short in the coding interview and use the realtime search system design route for architecture depth.",
+      "overview": "### State model\n- Source state: query, results, status, isOpen, activeIndex, and requestSeqRef.\n- Derived state: trimmedQuery, hasResults, active option id, and the visible status text.\n- status should be one of idle, loading, success, empty, or error so loading, no-results, and error cannot collapse into the same branch.\n\n### The tempting wrong solution\n- A common first pass starts search(query) after every debounce and sets results when the Promise resolves. Timeline: san starts slowly, se starts later but resolves first, then the old san response resolves and overwrites the se results.\n- Clearing the debounce timer only stops a request that has not started yet. Once fake async work has started, guard the resolution with a request id or ignore flag.\n\n### Request ID vs AbortController\n- Request ID or ignore flag: best for fake async work and any uncancellable Promise. It does not stop the work; it only prevents stale state updates.\n- AbortController cancels the current fake delay or real fetch work, while request identity still guards every late continuation. Query change also clears old options immediately so loading never exposes stale selectable data.\n\n### Interviewer rubric\n- Visible correctness: controlled input, popup states, selection, and close behavior work.\n- Async safety: debounce cleanup and stale response handling are explained separately.\n- Keyboard/focus behavior: Arrow keys, Enter, Escape, wrap-around, and input focus are correct.\n- Accessibility: combobox/listbox roles, stable ids, aria-controls, aria-activedescendant, and aria-selected are wired.\n- Tests: checks cover loading, empty, error, no-results, stale responses, pointer behavior, and cleanup.\n- Trade-off explanation: first version stays in one component; extraction is a follow-up, not a blocker.\n\n### Senior follow-ups\n- Remote API contract, client cache, minimum query length, result limits, virtualization for very large lists, and analytics or observability. Keep this short in the coding interview and use the realtime search system design route for architecture depth.",
       "approaches": [
         {
           "title": "One component, debounced effect, request guard, accessible combobox",
-          "prose": "1. Store query, results, status, isOpen, activeIndex, and requestSeqRef.\n2. In the query effect, trim whitespace, close on empty input, set loading for valid input, and start a debounce timer.\n3. When the debounced fake search resolves, update state only if the request id still matches and the effect has not been cleaned up.\n4. Implement keyboard navigation with wrap-around and keep DOM focus on the input.\n5. Use document pointerdown cleanup for outside close and onMouseDown on options for pointer selection before blur.\n6. Render highlighted matches with React text nodes and mark elements."
+          "prose": "1. Store query, results, status, isOpen, activeIndex, and requestSeqRef.\n2. In the input transition, invalidate the old request and clear results/activeIndex immediately; the query effect then sets loading and starts a debounce timer.\n3. Give each effect an AbortController and request id; update only when it is neither aborted nor stale.\n4. Implement keyboard navigation with wrap-around and keep DOM focus on the input.\n5. Use document pointerdown cleanup for outside close and onPointerDown on options so mouse, pen, and touch select before blur.\n6. Render highlighted matches with React text nodes and mark elements."
         }
       ],
       "notes": {
@@ -1815,17 +1820,19 @@
           "Do not describe debounce cleanup as network cancellation.",
           "Do not use dangerouslySetInnerHTML for highlight markup.",
           "Do not let no-results and error share the same UI state.",
-          "Do not move focus from the input to list options during keyboard navigation."
+          "Do not move focus from the input to list options during keyboard navigation.",
+          "Do not expose previous-query options while a new query is loading."
         ],
         "edgeCases": [
           "Whitespace-only query",
           "Slow stale response after a newer query",
           "Pointer selection while the input would blur",
-          "Unmount with pending debounce and document listener"
+          "Unmount with pending debounce and document listener",
+          "A new query while old successful options are active"
         ],
         "techniques": [
           "Request sequence refs for uncancellable fake async work",
-          "AbortController for real fetch follow-ups",
+          "AbortController plus request identity for cancellation and stale-continuation safety",
           "aria-activedescendant for input-owned active option state",
           "Modulo arithmetic for wrap-around navigation"
         ]
@@ -1898,7 +1905,7 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-autocomplete-search-solution.v2.json",
     "access": "free",
-    "updatedAt": "2026-07-09",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "React Autocomplete Interview Question: Debounce + Tests",
       "description": "Build a React autocomplete in a live editor. Practice debounce, stale-response handling, keyboard navigation, ARIA, and tests for a frontend coding interview.",
@@ -2029,6 +2036,66 @@
             "selector": ".list",
             "text": "San Francisco",
             "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-pending-clears-stale-options",
+        "name": "New query cannot select stale options while pending",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "san"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 3,
+            "timeoutMs": 1200
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "se"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".option",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Loading suggestions for \"se\"",
+            "match": "contains"
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "selector": ".input",
+            "key": "Enter"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".input",
+            "value": "se"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".option",
+            "text": "Seattle",
+            "match": "contains",
+            "timeoutMs": 1000
           }
         ]
       },
@@ -2272,7 +2339,7 @@
             "timeoutMs": 1000
           },
           {
-            "type": "mouseDown",
+            "type": "pointerDown",
             "selector": ".option"
           },
           {
@@ -2292,6 +2359,17 @@
         "id": "autocomplete-aria-contract",
         "name": "ARIA combobox relationships are wired",
         "steps": [
+          {
+            "type": "expectText",
+            "selector": "label[for=\"autocomplete-query\"]",
+            "text": "Search cities"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".input",
+            "attribute": "aria-labelledby",
+            "expected": "autocomplete-label"
+          },
           {
             "type": "expectAttribute",
             "selector": ".input",
@@ -2590,7 +2668,7 @@
   },
   {
     "id": "react-use-effect-once",
-    "title": "useEffectOnce: Run an Effect Only Once",
+    "title": "StrictMode-safe Effect Setup and Cleanup",
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
@@ -2603,50 +2681,56 @@
       "components"
     ],
     "description": {
-      "summary": "This hook should run the effect only on mount and clean up on unmount, even under React StrictMode development behavior. Concepts: react, hooks, effects, lifecycle, components. Mention StrictMode double-invocation, cleanup idempotency, and tests for unexpected reruns or stale closures.",
+      "summary": "Build an idempotent connection effect whose setup and symmetrical cleanup tolerate React StrictMode’s intentional development setup → cleanup → setup cycle. The goal is one active resource in steady state, not suppressing lifecycle checks.",
       "specs": {
         "requirements": [
-          "Implement `useEffectOnce(effect)` in `useEffectOnce.ts`.",
-          "The effect callback must run only once for the lifetime of a mounted component.",
-          "If `effect` returns a cleanup function, it must run exactly once on unmount.",
-          "The hook should be safe under React 18 StrictMode (dev): no duplicate real side-effects after the initial mount."
+          "Create a connection inside `useEffect`, call `connect()`, and return a cleanup that calls `disconnect()` for that same connection.",
+          "Include every reactive value used by the effect in its dependency list; changing the room must clean up the old connection before creating the new one.",
+          "Under StrictMode development setup → cleanup → setup, the mounted steady state must contain one active connection.",
+          "Do not use a has-run ref, stored-cleanup ref, lint suppression, or module flag to skip React’s extra lifecycle check.",
+          "Unmounting must leave zero active connections, and an unrelated re-render must not create another connection."
         ],
         "expectedBehavior": [
-          "Mounting the demo triggers the effect exactly once (count increments from 0 to 1).",
-          "Re-rendering the component does NOT re-run the effect.",
-          "Unmounting runs cleanup exactly once (count increments by 100 in the demo)."
+          "After StrictMode settles, the mounted panel reports exactly one active connection.",
+          "An unrelated re-render leaves the active connection count at one.",
+          "Changing `roomId` disconnects the old room before connecting the new room, with one active connection after the transition.",
+          "Unmounting the panel runs cleanup and reports zero active connections; remounting returns to one."
         ],
         "implementationNotes": [
-          "Use `useEffect` internally.",
-          "Use `useRef` to persist flags/cleanup between renders.",
-          "Avoid `useMemo` for running effects. Effects belong in `useEffect`.",
-          "Do not require callers to pass dependency arrays."
+          "Write the effect as one reversible process: create/connect during setup and disconnect that exact resource during cleanup.",
+          "StrictMode’s extra development cycle is intentional and exposes missing or asymmetric cleanup; do not suppress it.",
+          "Use dependencies to model synchronization with `roomId`. Unrelated state is not a dependency and should not reconnect.",
+          "True application-lifetime initialization belongs outside component lifecycle, but its owner must be explicit: module state may be shared across SSR requests, multiple roots can initialize separately, hydration has server/client phases, and HMR can re-evaluate modules."
         ],
         "techFocus": [
-          "React hooks",
-          "Effect lifecycle (mount/unmount)",
-          "StrictMode considerations",
-          "useRef for stable mutable state"
+          "React effect setup and cleanup symmetry",
+          "StrictMode development lifecycle checks",
+          "Reactive dependency correctness",
+          "Resource ownership across mount, dependency change, and unmount"
         ]
       }
     },
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-use-effect-once.v1.json",
     "solutionBlock": {
-      "overview": "StrictMode can double-invoke effects in development, so the hook needs a ref guard to prevent accidental double side-effects while still allowing cleanup to run once. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
+      "overview": "Treat the effect as synchronization, not a one-time callback. Each setup creates and connects one resource; its returned cleanup disconnects that same resource. React may run setup → cleanup → setup in development StrictMode, and a correct reversible effect finishes with one active connection. An unrelated render does not rerun the effect, a room change performs cleanup before the next setup, and unmount leaves no active connection.",
       "approaches": [
         {
-          "title": "useEffect + useRef guard",
-          "prose": "Store a didRun ref and a cleanup ref. If didRun is true, return early. Otherwise, run the effect, store cleanup, and return a cleanup function that runs the stored cleanup once. This keeps behavior deterministic across dev and prod. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
+          "title": "Symmetric useEffect resource lifecycle",
+          "decisionGraphKey": "approach1",
+          "prose": "Inside `useEffect`, create the room connection, call `connect()`, and return `() => connection.disconnect()`. Depend on `roomId` and the stable callback used by the demo. Do not cache a has-run flag: skipping the second setup after StrictMode cleanup would leave the component mounted without its resource and would hide a real cleanup defect."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Running side effects in render (or useMemo) instead of useEffect.",
-          "Not handling cleanup correctly (cleanup called multiple times).",
-          "Not accounting for React 18 StrictMode double-invoke in dev."
+          "Using a ref or module flag to skip setup after StrictMode has just cleaned up the first resource.",
+          "Returning cleanup for a different resource or omitting cleanup on dependency changes.",
+          "Leaving a reactive room identifier out of the dependency list and keeping a stale connection.",
+          "Calling module initialization “once” without defining SSR, multiple-root, hydration, and HMR ownership."
         ],
         "techniques": [
-          "Persisting execution state using useRef.",
-          "Storing cleanup in a ref to call it once."
+          "One setup owns one symmetrical cleanup.",
+          "Dependency changes use cleanup-before-next-setup semantics.",
+          "Tests assert active-resource steady state instead of raw setup call count."
         ]
       }
     },
@@ -2660,11 +2744,97 @@
       "netflix"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "seo": {
-      "title": "Create useEffectOnce Hook in React",
-      "description": "Build a custom hook for one-time effect behavior with clear cleanup handling and predictable lifecycle semantics."
-    }
+      "title": "Build a StrictMode-safe React Effect Lifecycle",
+      "description": "Practice symmetrical React effect setup and cleanup that remains correct through StrictMode, dependency changes, rerenders, and unmounting."
+    },
+    "frameworkTests": [
+      {
+        "id": "effect-steady-state",
+        "name": "StrictMode steady state and unrelated render",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".active-count",
+            "text": "1"
+          },
+          {
+            "type": "click",
+            "selector": ".rerender-button"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".render-count",
+            "text": "1"
+          },
+          {
+            "type": "expectText",
+            "selector": ".active-count",
+            "text": "1"
+          }
+        ]
+      },
+      {
+        "id": "effect-dependency-change",
+        "name": "Dependency change cleans and reconnects",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".active-count",
+            "text": "1"
+          },
+          {
+            "type": "click",
+            "selector": ".room-button"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".room-value",
+            "text": "design"
+          },
+          {
+            "type": "expectText",
+            "selector": ".active-count",
+            "text": "1"
+          }
+        ]
+      },
+      {
+        "id": "effect-unmount-cleanup",
+        "name": "Unmount cleans and remount reconnects",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".active-count",
+            "text": "1"
+          },
+          {
+            "type": "click",
+            "selector": ".mount-button"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".active-count",
+            "text": "0"
+          },
+          {
+            "type": "expectText",
+            "selector": ".connection-status",
+            "text": "Unmounted"
+          },
+          {
+            "type": "click",
+            "selector": ".mount-button"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".active-count",
+            "text": "1"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-like-button",
@@ -2776,7 +2946,7 @@
           "Clicking \"+10%\" increases progress by 10 up to 100.",
           "Clicking \"-10%\" decreases progress by 10 down to 0.",
           "Progress never renders below 0% or above 100%.",
-          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
+          "Bar color changes by thresholds (example: &lt;34 red, 34–66 orange, &gt;66 green)."
         ],
         "implementationNotes": [
           "Use React state (`useState`) to store progress.",
@@ -2793,13 +2963,13 @@
         ]
       }
     },
-    "starterCodeHint": "Keep `progress` in `useState(0)`. Implement `inc/dec` with functional updates and clamping. Compute `barClass` from progress (<34 red, 34–66 orange, >66 green) and bind width via `style={{ width: progress + '%' }}`.",
+    "starterCodeHint": "Keep `progress` in `useState(0)`. Implement `inc/dec` with functional updates and clamping. Compute `barClass` from progress (&lt;34 red, 34–66 orange, &gt;66 green) and bind width via `style={{ width: progress + '%' }}`.",
     "solutionBlock": {
       "overview": "Use a single `progress` state value and derive the UI from it: the fill width is `progress%`, the text shows the percentage, and the color class is computed from threshold rules. Button handlers should use `Math.min/Math.max` to clamp the value so it never leaves [0, 100].",
       "approaches": [
         {
           "title": "Single component with clamped progress and threshold class",
-          "prose": "Store `progress` with `useState(0)`. Implement `inc()` and `dec()` as functional updates that clamp at 0 and 100. Derive `colorClass` based on the thresholds (for example: <34 red, 34–66 orange, >66 green). Render a track + fill where the fill width is `progress + '%'` and the class controls the color. This keeps all display logic derived from a single source of truth."
+          "prose": "Store `progress` with `useState(0)`. Implement `inc()` and `dec()` as functional updates that clamp at 0 and 100. Derive `colorClass` based on the thresholds (for example: &lt;34 red, 34–66 orange, &gt;66 green). Render a track + fill where the fill width is `progress + '%'` and the class controls the color. This keeps all display logic derived from a single source of truth."
         }
       ],
       "notes": {
@@ -2823,7 +2993,7 @@
     "solutionAsset": "assets/sb/react/solution/react-progress-bar-thresholds-solution.v1.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build React Progress Bar with Threshold Colors",
       "description": "Create a progress bar that updates from user actions, enforces valid range limits, and changes visual style by value thresholds."
@@ -3451,19 +3621,21 @@
           "Colliding with walls or snake body should end the game.",
           "Provide Start/Pause and Reset controls.",
           "Expose score and current snake length in the UI.",
-          "Keep keyboard interactions stable (no reverse-direction bug)."
+          "Buffer at most one valid perpendicular turn per tick. Validate it against the committed movement direction; same/opposite inputs do not consume the buffer.",
+          "When the snake fills the board, render “You win”, stop movement, and render no food cell."
         ],
         "expectedBehavior": [
           "Initial state shows a short snake, one food cell, and score 0.",
           "Press Start to begin movement; snake advances one cell per tick.",
           "When head reaches food, score increases and snake length grows by 1.",
-          "Pressing opposite direction immediately should be ignored for safety.",
+          "RIGHT → UP → LEFT during one tick commits UP; only the first valid perpendicular turn is buffered.",
           "Hitting boundary or own body stops the game and shows game-over state.",
-          "Reset returns to initial state with a new food position."
+          "Reset returns to initial state with a new food position.",
+          "Filling the last free cell stops the timer, renders “You win”, and leaves no food cell."
         ],
         "implementationNotes": [
           "Store snake as ordered coordinates, with index 0 as the head.",
-          "Track both current direction and pending direction to avoid race conditions.",
+          "Keep committed direction and the nullable one-turn buffer in synchronous refs. Key events can arrive before React commits state, so every handler must see an already-occupied buffer immediately; clear it when the tick commits.",
           "Use Set/string keys for fast cell occupancy checks.",
           "Generate food only on free cells that are not occupied by snake.",
           "Clear interval correctly on pause, game over, and unmount."
@@ -3476,24 +3648,24 @@
         ]
       }
     },
-    "starterCodeHint": "Implement TODOs in App.tsx: keyboard direction updates, game loop movement, collision checks, food growth, and reset flow.",
+    "starterCodeHint": "Implement TODOs in App.tsx: use synchronous refs for the committed direction and one-turn input buffer, then complete movement, collisions, growth, full-board win, reset, and cleanup.",
     "solutionBlock": {
-      "overview": "Keep snake coordinates, direction, pendingDirection, food, score, and run state in React state. Tick with setInterval, prepend next head, and pop tail unless food is eaten. End the game on wall/body collision.",
+      "overview": "Keep snake coordinates, food, score, and run state in React state, but keep committed direction and the nullable input buffer in synchronously updated refs. That makes a second keydown observe the first buffered turn even before React commits a render. Tick with setInterval, prepend the next head, and pop the tail unless food is eaten. Treat a full board as a win: food becomes null, the loop stops, and no food cell renders.",
       "approaches": [
         {
           "title": "Single-component game loop with immutable snake updates",
-          "prose": "On each tick, compute next head from current direction. Validate collisions before mutating state. If food is eaten, keep the tail (grow) and spawn new food on a free cell. Otherwise remove tail for standard movement. Use keyboard handlers to map arrows/WASD and ignore immediate reverse direction."
+          "prose": "On each keydown, synchronously update refs so later events in the same React batch see whether the one-turn buffer is occupied. On each tick, commit that buffered turn or keep the current direction, then clear the buffer before computing the next head. Validate collisions before mutating state. If food is eaten, keep the tail and choose a free cell; if none remains, stop with a win and no food."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Allowing immediate reverse direction can cause instant self-collision artifacts.",
+          "Validating each key against the previous key allows RIGHT → UP → LEFT to reverse before the tick commits; keep only the first valid turn.",
           "Forgetting interval cleanup leads to duplicate timers and speed glitches.",
-          "Spawning food without excluding snake cells can make unreachable food."
+          "Spawning food without excluding the snake—or inventing a fallback cell on a full board—can overlap the snake."
         ],
         "techniques": [
           "Occupancy keys like `x,y` for constant-time lookups.",
-          "Pending direction buffer to avoid same-tick race conditions.",
+          "Synchronous refs for committed direction and the one-turn input buffer.",
           "Deterministic state transitions inside interval callback."
         ]
       }
@@ -3509,7 +3681,7 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build Snake Game in React",
       "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."

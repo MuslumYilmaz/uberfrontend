@@ -101,6 +101,14 @@ describe('GuideShellComponent', () => {
 
     fixture = TestBed.createComponent(TestGuideShellHostComponent);
     fixture.detectChanges();
+
+    // Keep analytics assertions independent from history mutations leaked by
+    // unrelated specs in a randomized full-suite run.
+    const shell = shellInstance() as any;
+    shell.shellClickCleanup?.();
+    shell.shellClickCleanup = null;
+    shell.guidePath = { section: 'interview-blueprint', slug: 'test-guide' };
+    shell.attachGuideLinkTracking();
   });
 
   afterEach(() => {
@@ -108,6 +116,8 @@ describe('GuideShellComponent', () => {
     window.history.pushState({}, '', originalPath || '/');
     if (originalHiddenDescriptor) {
       Object.defineProperty(document, 'hidden', originalHiddenDescriptor);
+    } else {
+      delete (document as any).hidden;
     }
   });
 

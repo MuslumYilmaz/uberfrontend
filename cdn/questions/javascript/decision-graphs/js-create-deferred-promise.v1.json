@@ -13,7 +13,7 @@
           "anchor": {
             "lineStart": 2,
             "lineEnd": 3,
-            "snippet": "let resolve; let reject;"
+            "snippet": "let resolve;\n  let reject;"
           },
           "why": "These references are filled once inside the Promise constructor, then exposed as the createDeferred() controls.",
           "alternative": "Do not expose settle functions at all.",

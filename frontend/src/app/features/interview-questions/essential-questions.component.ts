@@ -48,7 +48,7 @@ const ESSENTIAL_EDITORIAL_SIGNAL: EssentialEditorialSignal = {
 };
 
 const ESSENTIAL_VALUE_PROP =
-  'Essential 60 is a compact ranked practice list, not the full question bank. It prioritizes prompts by interview leverage, repeated patterns, coverage balance, useful variants, and shipped FrontendAtlas practice routes.';
+  'Essential 60 is a compact ranked practice list, not the full question bank. It prioritizes prompts by interview leverage, repeated patterns, coverage balance, useful variants, and direct access to focused practice.';
 
 const ESSENTIAL_WHY_CARDS: EssentialInfoCard[] = [
   {
@@ -67,9 +67,9 @@ const ESSENTIAL_WHY_CARDS: EssentialInfoCard[] = [
       'React, Angular, and Vue variants appear when the same UI pattern changes meaningfully across frameworks, instead of duplicating every prompt mechanically.',
   },
   {
-    title: 'Mapped to practice routes with progress',
+    title: 'Connected to practice with progress',
     detail:
-      'Items point to shipped FrontendAtlas routes, so you can open a prompt, solve it, and keep progress attached to the ranked list.',
+      'Each item opens a focused prompt, so you can solve it and keep progress attached to the ranked list.',
   },
 ];
 
@@ -101,7 +101,7 @@ const ESSENTIAL_FAQ_ITEMS: EssentialFaqItem[] = [
   },
   {
     q: 'How were the Essential 60 questions selected?',
-    a: 'Questions were selected by interview leverage, repeated frontend interview patterns, coverage balance, useful framework variants, and availability as shipped FrontendAtlas practice routes. The ranking favors prompts that expose trade-offs, edge cases, or implementation skill quickly.',
+    a: 'Questions were selected by interview leverage, repeated frontend interview patterns, coverage balance, useful framework variants, and direct availability for focused practice. The ranking favors prompts that expose trade-offs, edge cases, or implementation skill quickly.',
   },
   {
     q: 'How should I use Essential 60 in 7, 14, or 30 days?',

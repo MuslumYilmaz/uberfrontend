@@ -401,8 +401,8 @@ function assertCssThemeVariablesSitemapEntry(entries) {
   if (!entry) {
     throw new Error(`Sitemap missing CSS theme variables challenge: ${loc}`);
   }
-  if (entry.lastmod !== '2026-01-30') {
-    throw new Error(`CSS theme variables sitemap lastmod must be 2026-01-30, got ${entry.lastmod || '(missing)'}`);
+  if (entry.lastmod !== '2026-07-14') {
+    throw new Error(`CSS theme variables sitemap lastmod must be 2026-07-14, got ${entry.lastmod || '(missing)'}`);
   }
 }
 

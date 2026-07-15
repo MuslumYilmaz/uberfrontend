@@ -819,7 +819,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use Essential 60 as the first compact practice route after the format is clear.',
       'Move into a framework prep path after repeated misses show a clear weak area.',
     ],
-    credibility: 'Questions are curated from FrontendAtlas metadata, editorial review checks, and shipped practice routes rather than scraped generic lists.',
+    credibility: 'Questions are selected through editorial review and organized around practical interview follow-ups rather than scraped generic lists.',
     relatedPrep: {
       label: 'Frontend interview preparation guide',
       route: ['/guides', 'interview-blueprint', 'intro'],
@@ -859,7 +859,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use concept questions to tighten explanations after you pass the basic UI behavior.',
       'Follow the React interview preparation path when hooks or rerender reasoning keeps repeating as the miss.',
     ],
-    credibility: 'React prompts are prioritized by FrontendAtlas importance signals and reviewed for concrete interview follow-ups.',
+    credibility: 'React prompts are selected for recurring interview patterns and reviewed for concrete follow-up questions.',
     relatedPrep: {
       label: 'React interview preparation path',
       route: ['/guides', 'framework-prep', 'react-prep-path'],
@@ -879,7 +879,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use the top concept questions to rehearse explanations before deeper framework drills.',
       'Open the prep path when RxJS, change detection, or architecture misses repeat.',
     ],
-    credibility: 'Angular prompts are curated from shipped FrontendAtlas practice routes and reviewed for interview-specific production pitfalls.',
+    credibility: 'Angular prompts are selected for common production pitfalls and reviewed for interview-specific follow-ups.',
     relatedPrep: {
       label: 'Angular interview prep path',
       route: ['/guides', 'framework-prep', 'angular-prep-path'],
@@ -899,7 +899,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use related concept questions to find weak reactivity or lifecycle assumptions.',
       'Follow the Vue prep path when the same rendering or state miss repeats.',
     ],
-    credibility: 'Vue prompts are grouped by FrontendAtlas importance signals and reviewed for framework-specific interview traps.',
+    credibility: 'Vue prompts are grouped by practical reactivity and component concerns and reviewed for framework-specific interview traps.',
     relatedPrep: {
       label: 'Vue interview prep path',
       route: ['/guides', 'framework-prep', 'vue-prep-path'],
@@ -1699,7 +1699,7 @@ const ANGULAR_SHORT_ANSWERS: AngularShortAnswerItem[] = [
     category: 'rxjs-forms',
     level: 'intermediate',
     q: 'What is the difference between template-driven and reactive forms?',
-    a: 'Template-driven forms keep more form behavior in the template and are fine for simple workflows. Reactive forms model controls in TypeScript, which makes dynamic fields, validation, async flows, and tests easier to control. For complex forms, reactive forms are usually the safer default because the state graph is explicit.',
+    a: 'Template-driven forms keep more behavior in the template and fit simple workflows. Mature Reactive Forms model controls explicitly in TypeScript and remain a strong choice for complex or existing applications. Angular 22 also makes Signal Forms a stable production option for new signal-first applications. Choose among them by validation complexity, dynamic fields, testing, library compatibility, migration cost, and team familiarity.',
     route: ['/angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'],
     cta: 'Compare form strategies',
   },
@@ -2043,10 +2043,10 @@ export class CartPanel {}`,
   {
     level: 'intermediate',
     q: 'Why does trackBy or track identity matter in Angular lists?',
-    code: `<li *ngFor="let user of users; trackBy: trackUser">
-  {{ user.name }}
-</li>`,
-    explanation: 'Stable identity lets Angular reuse DOM and component instances when a list changes. Without a useful trackBy or track expression, reordering or refreshing arrays can recreate more UI than necessary. The bug is not only performance; local row state and focus can also reset unexpectedly.',
+    code: `@for (user of users; track user.id) {
+  <li>{{ user.name }}</li>
+}`,
+    explanation: 'Stable identity lets Angular reuse DOM and component instances when a list changes. A modern @for block should track a stable item id; tracking an index or unstable expression can attach local row state and focus to the wrong item after reordering.',
     route: ['/angular', 'trivia', 'angular-ngfor-trackby'],
     cta: 'Review list identity',
   },
@@ -2603,7 +2603,7 @@ const REACT_RENDERING_INTERNALS_QUESTIONS: ReactFocusedQuestionItem[] = [
   {
     level: 'advanced',
     q: 'What is the difference between useLayoutEffect and useEffect?',
-    a: 'useEffect runs after the browser has painted the committed UI. useLayoutEffect runs after DOM mutations but before paint, so it can measure layout and synchronously adjust the UI before the user sees it. Overusing layout effects can block painting, so ordinary subscriptions and async work should stay in useEffect.',
+    a: 'Passive effects generally run after paint for non-interaction updates, but React may run an interaction-caused effect before paint. Unlike useLayoutEffect, useEffect does not provide a pre-paint guarantee. useLayoutEffect runs after DOM mutations and blocks repainting, so reserve it for layout measurements or corrections that must be invisible to the user.',
     route: ['/react', 'trivia', 'react-useeffect-vs-uselayouteffect'],
     cta: 'Compare effect timing',
   },
@@ -3001,7 +3001,7 @@ const VUE_SHORT_ANSWERS: VueShortAnswerItem[] = [
   },
   {
     q: 'What is watchEffect in Vue?',
-    a: 'watchEffect automatically tracks reactive values read during its callback and reruns when any of them change. It is useful when dependencies are natural to read inside the effect, but it can be less explicit than watch. A common failure is creating loops by writing to the same reactive state the effect reads.',
+    a: 'watchEffect runs immediately, tracks reactive values read during its synchronous callback, and reruns when an external change updates one of them. Vue suppresses a direct synchronous self-trigger such as watchEffect(() => count.value++), so that example runs once rather than looping forever. Mutating dependencies is still poor design because external writers, indirect cycles, and async work make the effect difficult to reason about.',
     route: ['/vue', 'trivia', 'vue-watch-vs-watcheffect-differences-infinite-loops'],
     cta: 'Review watchEffect traps',
     category: 'reactivity-rendering',
@@ -3290,13 +3290,15 @@ function increment() {
   },
   {
     level: 'advanced',
-    q: 'Why can this watcher loop forever?',
-    code: `watchEffect(() => {
-  total.value = items.value.length + total.value;
-});`,
-    explanation: 'The effect reads total and writes total, so the write can retrigger the same effect. Derived values should be computed, while effects should avoid writing to the same reactive values they depend on.',
+    q: 'Why can this watch callback recurse forever?',
+    code: `watch(total, () => {
+  total.value++;
+});
+
+total.value = 1;`,
+    explanation: 'watch tracks total as an explicit source, so writing total again in its callback schedules another watcher update. Use computed for derived values and keep writes in explicit actions instead of synchronizing a source back into itself.',
     route: ['/vue', 'trivia', 'vue-watch-vs-watcheffect-differences-infinite-loops'],
-    cta: 'Review watchEffect loops',
+    cta: 'Review watcher recursion',
   },
   {
     level: 'intermediate',
@@ -3614,7 +3616,7 @@ const ANGULAR_TOPIC_CARDS: AngularTopicCard[] = [
   },
   {
     title: 'Forms and validation',
-    answer: 'Angular forms questions usually test state ownership, validation timing, async validation, and reusable controls. Reactive Forms are the safer default once the workflow is dynamic, validation-heavy, or needs focused tests.',
+    answer: 'Angular forms questions usually test state ownership, validation timing, async validation, and reusable controls. Mature Reactive Forms remain a strong option for dynamic or established workflows, while stable Signal Forms in Angular 22 are a production option for new signal-first applications. The best answer states the interoperability and migration trade-offs instead of naming one universal winner.',
     link: {
       label: 'Compare Angular form strategies',
       route: ['/angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'],
@@ -3693,7 +3695,7 @@ const ANGULAR_MODERN_TOPICS: string[] = [
   'Standalone apps and route providers: know what moved out of AppModule and how provider scope changes during migration.',
   'Signals: explain where signal-based state helps and where RxJS still fits better for streams, cancellation, and multicasting.',
   'Zoneless change detection: describe how UI updates are scheduled when Zone.js is no longer the default notification path.',
-  'Signal Forms: mention as an experimental modern forms direction, not as a production replacement for every Reactive Forms workflow.',
+  'Signal Forms: stable and production-ready in Angular 22 for signal-first applications, but not a universal replacement for every mature Reactive Forms workflow.',
 ];
 
 const HTML_CSS_EDITORIAL_SIGNAL: HtmlCssEditorialSignal = {
@@ -4065,7 +4067,7 @@ const HTML_CSS_CODE_SCENARIOS: HtmlCssCodeQuestionItem[] = [
   {
     q: 'Why can this image link have a poor accessible name?',
     code: `<a href="/pricing">\n  <img src="arrow.png" alt="arrow">\n</a>`,
-    explanation: 'The link name becomes the image alt text, so "arrow" does not describe the destination or action. Use alt text such as "View pricing" or add visible text. The accessible name should match what the link does.',
+    explanation: 'The href makes this anchor a real hyperlink; an anchor without href is not a hyperlink. Its accessible name comes from the image alt text, so "arrow" still does not describe the destination or action. Use alt text such as "View pricing" or add visible text.',
     route: ['/html', 'coding', 'html-links-and-images'],
     cta: 'Practice links and images',
     level: 'beginner',
@@ -5309,8 +5311,8 @@ const HTML_MODERN_SCENARIO_QUESTIONS: HtmlScenarioQuestionItem[] = [
     level: 'beginner',
   },
   {
-    q: 'Why is this image link weak: <a><img alt="arrow"></a>?',
-    a: 'The linked image gives the link an accessible name of "arrow", which describes the icon rather than the action. The link name should explain the destination or action, such as "View pricing". Image alt text inside links often needs to describe behavior, not pixels.',
+    q: 'Why is this image link weak: <a href="/pricing"><img alt="arrow"></a>?',
+    a: 'The href makes the anchor a real hyperlink; an anchor without href is not a hyperlink. Its accessible name is still "arrow", which describes the icon rather than the destination. Use alt text such as "View pricing" so the link name explains what navigation will do.',
     route: ['/html', 'coding', 'html-links-and-images'],
     cta: 'Practice image links',
     level: 'beginner',

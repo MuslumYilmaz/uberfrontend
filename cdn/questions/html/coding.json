@@ -216,12 +216,12 @@
       "beginner"
     ],
     "description": {
-      "summary": "Create semantic links and images: use anchor elements with descriptive text, add target/rel when opening new tabs, and include alt text for images. This checks basic accessibility, security, and HTML best practices in one exercise, including proper link labeling.",
+      "summary": "Create semantic links and images: use anchor elements with real href attributes and descriptive names, add target/rel when opening new tabs, and include alt text for images. An anchor without href is not a hyperlink. This checks basic accessibility, security, and HTML best practices in one exercise.",
       "arguments": [
         {
           "name": "<a>",
           "type": "anchor element",
-          "desc": "Wraps content to make it clickable and navigates to another page or resource."
+          "desc": "With an href attribute, wraps content in a hyperlink that navigates to another page or resource."
         },
         {
           "name": "href",
@@ -257,23 +257,24 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  text-align: center;\\n}\\nimg {\\n  width: 150px;\\n  height: auto;\\n  border: 2px solid #ccc;\\n  border-radius: 6px;\\n  margin-top: 1rem;\\n}\\nh1 {\\n  font-size: 1.5rem;\\n  margin-bottom: .5rem;\\n}\\n.note {\\n  font-size: .9rem;\\n  opacity: .75;\\n  margin-top: 1rem;\\n}"
     },
     "solutionBlock": {
-      "overview": "Links and images are foundational for accessibility and SEO. Links should be descriptive and unique so screen readers can announce them meaningfully, and images should always include alt text that reflects purpose. If a link opens a new tab, rel=noopener noreferrer is required for security and performance best practices.",
+      "overview": "Links and images are foundational for accessibility and SEO. An anchor needs an href attribute to be a hyperlink. Links should be descriptive and unique so screen readers can announce them meaningfully, and images should include alt text that reflects purpose. If a link opens a new tab, use rel=noopener noreferrer for safe opener behavior.",
       "approaches": [
         {
           "title": "Approach 1 – Secure clickable image link",
-          "prose": "Add an anchor with clear, descriptive text and a valid href (avoid generic 'click here'). If target blank is required, include rel noopener noreferrer. Add an img with a valid src and descriptive alt that explains the image’s content or purpose. Keep markup simple and semantic so tests and accessibility checks pass, and ensure links remain understandable out of context.",
+          "prose": "Add an anchor with a real href and a clear accessible name (avoid generic 'click here'). An anchor without href is not a hyperlink. If target blank is required, include rel noopener noreferrer. Add an img with a valid src and descriptive alt that explains the link’s destination or purpose. Keep markup simple and semantic so links remain understandable out of context.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }"
         }
       ],
       "notes": {
         "pitfalls": [
+          "Wrapping an image in an anchor without href does not create a hyperlink.",
           "Forgetting rel='noopener noreferrer' is a security risk when using target='_blank'.",
           "Leaving alt empty makes the image inaccessible.",
           "In sandboxed iframes, clicks may not open a new tab even when the markup is correct."
         ],
         "techniques": [
-          "Wrap <img> directly inside <a> for a clickable image.",
+          "Wrap <img> directly inside <a href='...'> for an image hyperlink.",
           "Always combine target='_blank' with rel='noopener noreferrer' for external links.",
           "Validate structure and attributes instead of relying on real navigation in embedded previews."
         ]
@@ -296,7 +297,7 @@
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build Accessible HTML Links and Images",
       "description": "Create links and images with descriptive text, safe new-tab attributes, and meaningful alt text for accessibility and usability."

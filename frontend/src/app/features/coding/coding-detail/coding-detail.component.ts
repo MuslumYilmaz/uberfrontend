@@ -24,7 +24,11 @@ import { Subject, Subscription, filter, firstValueFrom, takeUntil } from 'rxjs';
 
 import type { Question, QuestionFaqItem, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
-import { buildLockedPreviewForCoding, LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import {
+  buildLockedPreviewForCoding,
+  LockedPreviewData,
+  normalizeEditorialPlainText,
+} from '../../../core/utils/locked-preview.util';
 import {
   isContentAccessibleForFree,
   robotsForContentAccess,
@@ -1042,7 +1046,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       ? q.description
       : (q.description as StructuredDescription)?.summary ?? '';
 
-    const plain = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const plain = normalizeEditorialPlainText(raw);
     if (plain) return plain;
 
     const tech = (q as any).tech ?? (q as any).technology ?? this.tech;
@@ -1050,12 +1054,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   private normalizePreviewText(text: string): string {
-    return String(text || '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/`+/g, '')
-      .replace(/\*\*/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    return normalizeEditorialPlainText(text);
   }
 
   private trimWords(text: string, maxWords: number): string {
@@ -1075,13 +1074,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   private sanitizeSeoText(input: string, maxLen: number): string {
-    const normalized = this.trimWordBoundary(
-      this.decodeHtmlEntities(String(input || ''))
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim(),
-      maxLen
-    );
+    const normalized = this.trimWordBoundary(normalizeEditorialPlainText(input), maxLen);
     return normalized;
   }
 

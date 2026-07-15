@@ -812,7 +812,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Return a new top-level container',
       why: buildProgressAwareWhy(snapshot, 'A shallow clone must be equal in contents but not the same array or object reference.'),
       actions: [
-        'For arrays, return `value.slice()` so the clone is a different array reference.',
+        'For arrays, return `Object.assign(new Array(value.length), value)` so the clone is new while holes, length, and custom enumerable properties are preserved.',
         'For objects, return `Object.assign({}, value)` so top-level writes to the clone do not mutate the original container.',
         'Do not return `value` directly and do not mutate the input while copying.',
       ],
@@ -848,14 +848,16 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     matches: (snapshot) =>
       anyFailingTestNameIncludes(snapshot, [
         'copies own enumerable symbol properties',
+        'preserves sparse array shape and custom enumerable properties',
         'does not copy prototype properties',
       ]),
     buildHint: (snapshot) => ({
       ruleId: 'js-shallow-clone-own-enumerable-properties',
       title: 'Copy own enumerable properties only',
-      why: buildProgressAwareWhy(snapshot, '`Object.assign({}, value)` copies own enumerable string and symbol properties while ignoring inherited prototype properties.'),
+      why: buildProgressAwareWhy(snapshot, '`Object.assign` copies own enumerable string and symbol properties while ignoring inherited prototype properties.'),
       actions: [
         'Use `Object.assign({}, value)` or object spread for the object branch.',
+        'For arrays, assign into `new Array(value.length)` so present indexes and custom enumerable string/symbol properties are copied without filling holes.',
         'Avoid `Object.keys(value)` alone if symbol keys need to be copied.',
         'Avoid `for...in` because it can include inherited prototype properties.',
       ],
@@ -875,7 +877,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       why: buildProgressAwareWhy(snapshot, 'Shallow clone means new top-level container, own enumerable properties copied, and nested references shared.'),
       actions: [
         'Guard invalid root values before cloning.',
-        'Use `value.slice()` for arrays and `Object.assign({}, value)` for objects.',
+        'Use `Object.assign(new Array(value.length), value)` for arrays and `Object.assign({}, value)` for objects.',
         'Do not recurse or use deep-clone helpers for this prompt.',
       ],
       confidence: 0.82,
@@ -1824,17 +1826,19 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'called with new',
         'instanceof original',
         'constructor return object',
+        'inherited receiver',
       ]) ||
       anyFailingErrorIncludes(snapshot, ['is not a function', 'prototype']) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'js-implement-bind-constructor-semantics',
       title: 'myBind must handle normal calls and constructor calls differently',
-      why: buildProgressAwareWhy(snapshot, 'Bound functions need both argument pre-binding and `new` semantics with prototype preservation.'),
+      why: buildProgressAwareWhy(snapshot, 'This scoped helper needs argument pre-binding plus reliable classic-constructor detection and prototype preservation.'),
       actions: [
         'Return a wrapper that applies `fn` with bound args plus call-time args.',
-        'When wrapper is called with `new`, ignore `thisArg` and use the new instance.',
-        'Set wrapper prototype to inherit from `fn.prototype` so `instanceof` works.',
+        'Use `new.target` inside the wrapper; do not infer construction from `this instanceof boundFn`.',
+        'When the wrapper is constructed, ignore `thisArg` and use the new instance.',
+        'Bridge an object-valued `fn.prototype` for the documented classic-constructor subset; classes and native bound-function exotic semantics are out of scope.',
       ],
       confidence: 0.93,
     }),
@@ -1850,8 +1854,8 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       why: buildProgressAwareWhy(snapshot, 'Most failures are from missing constructor behavior or partial-arg forwarding.'),
       actions: [
         'Capture `fn`, `thisArg`, and pre-bound args in closure.',
-        'Detect constructor calls with `this instanceof boundFn`.',
-        'Preserve prototype chain for instances created via `new`.',
+        'Detect wrapper construction with `new.target`.',
+        'Preserve the prototype chain only for the documented classic function-constructor subset.',
       ],
       confidence: 0.76,
     }),
@@ -1862,22 +1866,24 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     priority: 110,
     matches: (snapshot) =>
       anyFailingTestNameIncludes(snapshot, [
-        'correct prototype',
-        'runs constructor',
-        'override rule',
-        'ignores primitive',
-        'null return',
+        'classic functions',
+        'es classes',
+        'bound targets',
+        'new.target',
+        'non-object prototypes',
+        'object and function return overrides',
+        'nonconstructable targets',
       ]) ||
       anyFailingErrorIncludes(snapshot, ['constructor']) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'js-implement-new-operator-rules',
-      title: 'myNew is not applying constructor return override rules correctly',
-      why: buildProgressAwareWhy(snapshot, '`new` semantics require prototype creation plus conditional override by constructor return value.'),
+      title: 'myNew is not delegating complete construction semantics',
+      why: buildProgressAwareWhy(snapshot, 'Classes, bound targets, new.target, prototype fallback, and return overrides require the internal [[Construct]] operation.'),
       actions: [
-        'Create instance via `Object.create(Constructor.prototype)`.',
-        'Call constructor with `apply(instance, args)`.',
-        'Return constructor result only when it is non-null object/function; otherwise return instance.',
+        'Use `Reflect.construct(Constructor, args)` as the construction primitive.',
+        'Let Reflect validate constructability and handle classes, bound targets, and `new.target`.',
+        'Let native construction apply prototype fallback plus object/function return overrides.',
       ],
       confidence: 0.93,
     }),
@@ -1889,12 +1895,12 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     matches: () => true,
     buildHint: (snapshot) => ({
       ruleId: 'js-implement-new-default',
-      title: 'Model myNew in three steps: create, apply, resolve return',
-      why: buildProgressAwareWhy(snapshot, 'Most mistakes here come from skipping prototype setup or return override checks.'),
+      title: 'Implement myNew with Reflect.construct',
+      why: buildProgressAwareWhy(snapshot, 'Object.create plus apply is only a restricted classic-function approximation.'),
       actions: [
-        'Wire prototype chain before constructor call.',
-        'Invoke constructor with provided args on created instance.',
-        'Implement object/function override rule explicitly.',
+        'Pass the target and argument list to `Reflect.construct`.',
+        'Do not pre-filter with `typeof`; callable targets are not always constructable.',
+        'Allow the runtime to throw TypeError for nonconstructable targets.',
       ],
       confidence: 0.77,
     }),
@@ -1911,6 +1917,8 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'primitives and null/undefined',
         'object.create(null)',
         'constructor is not a function',
+        'primitive-left early return',
+        'non-object prototype',
       ]) ||
       anyFailingErrorIncludes(snapshot, ['typeerror', 'prototype']) ||
       snapshot.failCount >= 2,
@@ -1922,8 +1930,8 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Correct behavior depends on constructor validation and iterative prototype traversal.',
       ),
       actions: [
-        'Throw `TypeError` when constructor argument is not a function.',
-        'Return false early for primitives, `null`, and `undefined`.',
+        'Before inspecting the left value, throw `TypeError` unless the right-hand side is callable with an object/function prototype.',
+        'After that right-hand-side validation, return false for primitives, `null`, and `undefined`.',
         'Walk `Object.getPrototypeOf(obj)` chain and compare against `Constructor.prototype`.',
       ],
       confidence: 0.94,
@@ -1939,7 +1947,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Implement myInstanceOf with guarded prototype traversal',
       why: buildProgressAwareWhy(snapshot, 'This question is mostly about edge-case guards around standard prototype walking.'),
       actions: [
-        'Validate constructor input first.',
+        'Validate both the callable constructor and its object/function prototype first.',
         'Handle non-object values as immediate false.',
         'Traverse until `null` prototype or match is found.',
       ],
@@ -3231,17 +3239,20 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'latest call',
         'propagates errors',
         'aborts the previous controller',
+        'does not abort a controller after its call has completed',
+        'stale finally cannot clear',
       ]) ||
       anyFailingErrorIncludes(snapshot, ['aborterror', 'stale', 'cancelled']) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'js-take-latest-abort-sequencing',
       title: 'takeLatest cancellation sequencing is incorrect',
-      why: buildProgressAwareWhy(snapshot, 'Only the most recent invocation should resolve; older ones must be aborted/rejected.'),
+      why: buildProgressAwareWhy(snapshot, 'Only the most recent invocation should resolve, and only a previous call that is still in flight should be aborted.'),
       actions: [
         'Track active call id and `AbortController` for the latest invocation.',
         'Abort previous controller before starting a new call.',
         'Reject stale results/errors when call id no longer matches latest id.',
+        'In finally, clear the stored controller only when it is identical to this call’s controller.',
       ],
       confidence: 0.94,
     }),
@@ -3259,6 +3270,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Increment a call sequence id per invocation.',
         'Abort previous in-flight request.',
         'Resolve/reject only if call id is still current.',
+        'Use identity-guarded finally cleanup so completed controllers are not retained and stale completion cannot clear newer state.',
       ],
       confidence: 0.77,
     }),
@@ -3270,21 +3282,24 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     matches: (snapshot) =>
       anyFailingTestNameIncludes(snapshot, [
         'first fulfillment',
-        'non-promise values',
+        'array hole',
+        'sparse array',
         'aggregateerror',
         'empty input',
-        'not an array',
+        'iteration order',
+        'non-array synchronous iterables',
+        'non-iterable input',
       ]) ||
       anyFailingErrorIncludes(snapshot, ['aggregateerror', 'typeerror']) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'js-promise-any-aggregate-rejection',
       title: 'promiseAny fulfillment/rejection contract is incomplete',
-      why: buildProgressAwareWhy(snapshot, 'Promise.any should resolve on first success and aggregate all rejection reasons otherwise.'),
+      why: buildProgressAwareWhy(snapshot, 'Promise.any consumes an iterable, treats sparse holes as undefined, and preserves reason order.'),
       actions: [
-        'Validate input array and reject with `TypeError` for invalid input.',
-        'Resolve immediately on first fulfilled value (including plain values via `Promise.resolve`).',
-        'Collect rejection reasons by index and reject with `AggregateError` when all reject.',
+        'Consume the synchronous iterable with `for...of`; do not combine array length with `forEach`.',
+        'Use a sentinel remaining count so empty input and sparse arrays settle correctly.',
+        'Store rejection reasons by iteration index and reject with native `AggregateError` only when all reject.',
       ],
       confidence: 0.94,
     }),
@@ -3297,11 +3312,11 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     buildHint: (snapshot) => ({
       ruleId: 'js-promise-any-default',
       title: 'Model promiseAny as first-success wins',
-      why: buildProgressAwareWhy(snapshot, 'Most bugs are around all-rejected and empty-array edge handling.'),
+      why: buildProgressAwareWhy(snapshot, 'Most bugs are around sparse iteration, empty input, and stable rejection ordering.'),
       actions: [
         'Normalize each item with `Promise.resolve`.',
         'Short-circuit on first fulfillment.',
-        'Count rejections and aggregate errors on full failure.',
+        'Count iterated entries and aggregate indexed reasons on full failure.',
       ],
       confidence: 0.77,
     }),
@@ -3313,7 +3328,12 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     matches: (snapshot) =>
       anyFailingTestNameIncludes(snapshot, [
         'check becomes truthy',
-        'async checks',
+        'check never settles',
+        'full interval past the deadline',
+        'abort during an in-flight check',
+        'synchronous throws',
+        'asynchronous rejections',
+        'cleans timers',
         'timeout',
         'aborted',
       ]) ||
@@ -3322,11 +3342,11 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     buildHint: (snapshot) => ({
       ruleId: 'js-poll-until-timeout-abort-loop',
       title: 'pollUntil retry/timeout/abort flow is inconsistent',
-      why: buildProgressAwareWhy(snapshot, 'Polling must schedule retries until truthy result, timeout, or abort.'),
+      why: buildProgressAwareWhy(snapshot, 'Polling needs an independent deadline and one terminal path for success, check failure, timeout, or abort.'),
       actions: [
-        'Run `check` and resolve immediately when result is truthy.',
-        'Schedule next attempt with interval only when still pending.',
-        'Handle timeout and abort with cleanup of timer/listener and deterministic rejection.',
+        'Keep separate retry and deadline timers so timeout does not depend on `check()` settling.',
+        'Mark settled before clearing timers/listeners and resolving or rejecting.',
+        'Check settled state immediately after each await; schedule only while still pending.',
       ],
       confidence: 0.93,
     }),
@@ -3341,9 +3361,9 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Split pollUntil into attempt loop + cancellation guards',
       why: buildProgressAwareWhy(snapshot, 'Most misses are timer cleanup and abort listener lifecycle.'),
       actions: [
-        'Track done-state to avoid duplicate settle.',
-        'Reuse one attempt function for sync/async checks.',
-        'Clean timers and listeners on every terminal path.',
+        'Route success, check failure, timeout, and abort through one idempotent settle helper.',
+        'Start the deadline independently, then run the first check immediately.',
+        'Clear both timer handles and remove the abort listener on every terminal path.',
       ],
       confidence: 0.76,
     }),
@@ -3399,6 +3419,9 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'concatenates chunks',
         'multibyte characters',
         'rejects on abort',
+        'releases the reader lock',
+        'decoder construction fails',
+        'already-aborted signal',
         'invalid stream input',
       ]) ||
       anyFailingErrorIncludes(snapshot, ['readablestream', 'aborterror', 'typederror', 'typeerror']) ||
@@ -3406,11 +3429,12 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     buildHint: (snapshot) => ({
       ruleId: 'js-stream-to-text-decoder-flow',
       title: 'streamToText reader/decoder/abort handling is incomplete',
-      why: buildProgressAwareWhy(snapshot, 'Streaming decode must preserve multibyte boundaries and honor abort/invalid-input guards.'),
+      why: buildProgressAwareWhy(snapshot, 'Streaming decode must preserve multibyte boundaries while every post-getReader path releases the reader lock.'),
       actions: [
         'Validate stream has `getReader()` and throw `TypeError` otherwise.',
-        'Decode each chunk with `TextDecoder` in streaming mode and flush once at end.',
-        'Handle abort by cancelling reader and rejecting with `AbortError`.',
+        'Enter try/finally immediately after getReader, then construct TextDecoder inside that cleanup scope.',
+        'Decode each chunk in streaming mode, flush once at end, and handle abort by cancelling the reader.',
+        'Always remove the abort listener and call `reader.releaseLock()` in finally.',
       ],
       confidence: 0.94,
     }),
@@ -3427,7 +3451,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Loop reader until done.',
         'Decode chunks in stream mode.',
-        'Detach abort listeners in cleanup.',
+        'Detach abort listeners and release the reader lock in finally.',
       ],
       confidence: 0.77,
     }),
@@ -3493,6 +3517,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Convert input to string and replace ampersand, angle brackets, double quote, and apostrophe.',
         'Ensure ampersands are escaped before other substitutions, even in existing entity-like text.',
         'Leave text without escapable chars unchanged.',
+        'Use this encoder only for the documented HTML text-content context; live DOM text should use `textContent`.',
       ],
       confidence: 0.91,
     }),
@@ -3510,6 +3535,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Define a map for ampersand, angle brackets, double quote, and apostrophe.',
         'Use one regex replace over the stringified input.',
         'Return transformed string directly.',
+        'Do not reuse this output as URL, event-handler, style/CSS, or unquoted-attribute validation.',
       ],
       confidence: 0.74,
     }),
@@ -3949,22 +3975,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     priority: 110,
     matches: (snapshot) =>
       anyFailingTestNameIncludes(snapshot, [
-        'blocks javascript: and data: urls',
-        'blocks protocol-relative and backslash urls',
-        'allows relative urls and fragments',
-        'allows http(s), mailto, tel',
-        'returns null for empty input',
+        'dangerous schemes with mixed casing',
+        'raw, encoded, and embedded ascii controls',
+        'every literal backslash',
+        'same-origin relative urls',
+        'documented explicit schemes',
+        'empty or malformed input',
       ]) ||
       anyFailingErrorIncludes(snapshot, ['javascript:', 'data:', 'vbscript:']) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'js-sanitize-href-url-allowlist-security',
       title: 'href sanitizer is allowing unsafe protocols or blocking safe URLs',
-      why: buildProgressAwareWhy(snapshot, 'Use strict allowlist + normalization to avoid protocol-based XSS bypasses.'),
+      why: buildProgressAwareWhy(snapshot, 'Reject ambiguous bytes, then enforce scheme and origin policy on the browser-parsed URL.'),
       actions: [
-        'Trim input, strip control chars, and return null for empty values.',
-        'Reject protocol-relative/backslash URLs and non-allowlisted schemes.',
-        'Allow relative URLs and validate http/https via `new URL(...)` before returning.',
+        'Reject raw or percent-encoded ASCII controls and any backslash instead of repairing input.',
+        'Parse explicit URLs directly and relative input against the reserved trusted HTTPS base.',
+        'Allowlist the final parsed scheme and require relative input to retain the trusted origin.',
       ],
       confidence: 0.94,
     }),
@@ -3979,9 +4006,9 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Implement sanitizeHrefUrl as strict allowlist sanitizer',
       why: buildProgressAwareWhy(snapshot, 'Most bugs come from relying on string checks without normalization.'),
       actions: [
-        'Normalize first, then evaluate URL class (relative vs absolute).',
-        'Allow only `http`, `https`, `mailto`, and `tel` schemes.',
-        'Return `null` for unknown, malformed, or dangerous protocol inputs.',
+        'Reject controls and backslashes before ordinary outer-whitespace trimming.',
+        'Allow only parsed `http`, `https`, `mailto`, and `tel` schemes.',
+        'Return `null` for unknown, malformed, cross-origin relative, or ambiguous inputs.',
       ],
       confidence: 0.76,
     }),
