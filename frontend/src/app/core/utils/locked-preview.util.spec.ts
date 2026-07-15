@@ -1,7 +1,22 @@
-import { buildLockedPreviewForCoding, buildLockedPreviewForTrivia, buildLockedPreviewForSystemDesign } from './locked-preview.util';
+import {
+  buildLockedPreviewForCoding,
+  buildLockedPreviewForTrivia,
+  buildLockedPreviewForSystemDesign,
+  normalizeEditorialPlainText,
+} from './locked-preview.util';
 import { Question } from '../models/question.model';
 
 describe('locked preview builder', () => {
+  it('strips known editorial markup while preserving comparator, generic, and JSX-like text', () => {
+    expect(normalizeEditorialPlainText(
+      '<strong>Thresholds:</strong> &lt;34 red, 34–66 orange, &gt;66 green; Array<T>; <ProgressBar /> &amp; ready.'
+    )).toBe('Thresholds: <34 red, 34–66 orange, >66 green; Array<T>; <ProgressBar /> & ready.');
+
+    expect(normalizeEditorialPlainText(
+      '<p><em>Literal:</em> <34, >66, &#60;T&#62;, and &lt;Widget /&gt;.</p>'
+    )).toBe('Literal: <34, >66, <T>, and <Widget />.');
+  });
+
   it('builds a rich coding preview with required sections', () => {
     const q: Question = {
       id: 'js-sum-numbers',

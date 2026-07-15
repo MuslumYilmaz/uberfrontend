@@ -9,11 +9,11 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-snake-game</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-todo-list-starter</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/debug/ng-debug-counter-change-detection</loc>
@@ -152,7 +152,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales</loc>
-    <lastmod>2026-07-04</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/trivia/angular-vs-angularjs</loc>
@@ -272,7 +272,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/css/coding/css-theme-variables-dark-mode</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/css/coding/css-transitions-transforms-lift</loc>
@@ -311,7 +311,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/css/trivia/css-custom-properties</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/css/trivia/css-definition</loc>
@@ -546,7 +546,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/html/coding/html-links-and-images</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/html/coding/html-lists-and-navigation</loc>
@@ -585,7 +585,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/html/trivia/html-clickable-image</loc>
-    <lastmod>2026-07-02</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/html/trivia/html-data-attribute</loc>
@@ -730,7 +730,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-create-deferred-promise</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-create-lru-cache</loc>
@@ -742,15 +742,15 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-debounce</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-escape-html</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-fetch-json-timeout</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-flatten-once</loc>
@@ -766,15 +766,15 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-implement-bind</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-implement-instanceof</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-implement-new</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-is-object-empty</loc>
@@ -798,11 +798,11 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-poll-until</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-promise-any</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-querystring-parse-1</loc>
@@ -822,11 +822,11 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-sanitize-href-url</loc>
-    <lastmod>2026-02-06</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-shallow-clone</loc>
-    <lastmod>2026-07-07</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-sleep</loc>
@@ -838,7 +838,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-stream-to-text</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-sum-numbers</loc>
@@ -846,7 +846,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-take-latest</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-update-at-index</loc>
@@ -1241,7 +1241,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-autocomplete-search-starter</loc>
-    <lastmod>2026-07-09</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-counter</loc>
@@ -1384,7 +1384,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/react/trivia/react-useeffect-vs-uselayouteffect</loc>
-    <lastmod>2026-01-31</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/trivia/react-usememo-vs-usecallback</loc>
@@ -1628,7 +1628,7 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/trivia/vue-watch-vs-watcheffect-differences-infinite-loops</loc>
-    <lastmod>2026-01-30</lastmod>
+    <lastmod>2026-07-14</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/trivia/vue-why-declare-emits-type-safety-maintenance</loc>

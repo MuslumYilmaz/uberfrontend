@@ -2642,19 +2642,21 @@
           "Colliding with walls or snake body should end the game.",
           "Provide Start/Pause and Reset controls.",
           "Expose score and current snake length in the UI.",
-          "Keep keyboard interactions stable (no reverse-direction bug)."
+          "Buffer at most one valid perpendicular turn per tick. Validate it against the committed movement direction; same/opposite inputs do not consume the buffer.",
+          "When the snake fills the board, render “You win”, stop movement, and render no food cell."
         ],
         "expectedBehavior": [
           "Initial state shows a short snake, one food cell, and score 0.",
           "Press Start to begin movement; snake advances one cell per tick.",
           "When head reaches food, score increases and snake length grows by 1.",
-          "Pressing opposite direction immediately should be ignored for safety.",
+          "RIGHT → UP → LEFT during one tick commits UP; only the first valid perpendicular turn is buffered.",
           "Hitting boundary or own body stops the game and shows game-over state.",
-          "Reset returns to initial state with a new food position."
+          "Reset returns to initial state with a new food position.",
+          "Filling the last free cell stops the timer, renders “You win”, and leaves no food cell."
         ],
         "implementationNotes": [
           "Store snake as ordered coordinates, with index 0 as the head.",
-          "Track both current direction and pending direction to avoid race conditions.",
+          "Keep a nullable one-turn buffer separate from the committed direction; clear it immediately when the next tick commits.",
           "Use Set/string keys for fast cell occupancy checks.",
           "Generate food only on free cells that are not occupied by snake.",
           "Clear interval correctly on pause, game over, and unmount."
@@ -2669,22 +2671,22 @@
     },
     "starterCodeHint": "Implement TODOs in <script setup>: keyboard direction updates, game loop movement, collision checks, food growth, and reset flow.",
     "solutionBlock": {
-      "overview": "Keep snake coordinates, direction, pendingDirection, food, score, and run state in refs. Tick with setInterval, prepend next head, and pop tail unless food is eaten. End the game on wall/body collision.",
+      "overview": "Keep snake coordinates, direction, one nullable buffered turn, food, score, and run state in refs. Tick with setInterval, prepend next head, and pop tail unless food is eaten. End the game on wall/body collision. Treat a full board as a win: food becomes null, the loop stops, and no food cell renders.",
       "approaches": [
         {
           "title": "Single Vue component with deterministic game-loop state",
-          "prose": "On each tick, compute the next head from current direction. Validate collisions before mutating state. If food is eaten, keep the tail (grow) and spawn new food on a free cell. Otherwise remove tail for standard movement. Use key mapping and block immediate opposite-direction turns."
+          "prose": "On each keydown, accept only the first valid perpendicular turn into a nullable buffer and validate it against the committed direction. On the tick, commit and clear that buffer before computing the next head. If food is eaten, keep the tail and choose a free cell; when no cell remains, set food to null, stop the loop, and show a win. Otherwise remove the tail for standard movement."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Allowing immediate reverse direction can cause instant self-collision artifacts.",
+          "Validating each key against the previous key allows RIGHT → UP → LEFT to reverse before the tick commits; keep only the first valid turn.",
           "Forgetting interval cleanup leads to duplicate timers and speed glitches.",
-          "Spawning food without excluding snake cells can make unreachable food."
+          "Spawning food without excluding the snake—or inventing a fallback cell on a full board—can overlap the snake."
         ],
         "techniques": [
           "Occupancy keys like `x,y` for constant-time lookups.",
-          "Pending direction buffer to avoid same-tick race conditions.",
+          "One nullable buffered turn validated against committed direction.",
           "Deterministic tick flow with explicit collision branches."
         ]
       }
@@ -2700,7 +2702,7 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build Snake Game in Vue",
       "description": "Create a grid-based snake game with keyboard movement, timed updates, food spawning, score tracking, and game over on wall or self collisions."

@@ -2342,16 +2342,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link. Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed.",
+    "description": "Make an image a hyperlink by wrapping it in an anchor with a real href attribute. An anchor without href is not a hyperlink. Good linked images also need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed.",
     "seo": {
       "title": "Clickable images in HTML: anchor pattern, alt text, and new-tab pitfalls",
-      "description": "Wrap <img> in <a>, write alt text that communicates destination, and avoid common accessibility or target=\"_blank\" pitfalls."
+      "description": "Wrap an image in an anchor with href, write alt text that communicates the destination, and avoid common accessibility or target=\"_blank\" pitfalls."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>You can make an image clickable by placing it inside an <a> tag. The <a> tag defines a hyperlink, and any element inside it - including images - becomes clickable. The common mistake is treating this as \"just markup\" and forgetting link semantics, destination clarity, and accessible alt text."
+          "text": "<strong>Overview</strong><br><br>Make an image a hyperlink by placing it inside an anchor that has an <code>href</code> attribute. The <code>href</code> supplies the link destination; an anchor without href is not a hyperlink. The common mistake is treating this as \"just markup\" and forgetting link semantics, destination clarity, and accessible alt text."
         },
         {
           "type": "list",
@@ -2370,7 +2370,7 @@
             ],
             [
               "3",
-              "Optionally, use <code>target=\"_blank\"</code> to open the link in a new tab."
+              "If a new tab is required, use <code>target=\"_blank\"</code> with <code>rel=\"noopener noreferrer\"</code>."
             ]
           ],
           "caption": "Steps to make an image clickable"
@@ -2395,15 +2395,15 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<a href=\"https://www.example.com\" target=\"_blank\">\n  <img src=\"logo.png\" alt=\"Example Logo\">\n</a>"
+          "code": "<a href=\"https://www.example.com\" target=\"_blank\" rel=\"noopener noreferrer\">\n  <img src=\"logo.png\" alt=\"Example Logo\">\n</a>"
         },
         {
           "type": "text",
-          "text": "The <code>target=\"_blank\"</code> attribute opens the linked page in a new browser tab."
+          "text": "The <code>target=\"_blank\"</code> attribute requests a new browsing context, while <code>rel=\"noopener noreferrer\"</code> prevents the opened page from controlling the opener and avoids sending referrer information."
         },
         {
           "type": "text",
-          "text": "<strong>Example: Clickable Image as a Button</strong>"
+          "text": "<strong>Example: Styled Image Link</strong>"
         },
         {
           "type": "code",
@@ -2412,19 +2412,19 @@
         },
         {
           "type": "text",
-          "text": "This example uses CSS to make the image behave like a stylish clickable button with hover effects."
+          "text": "This remains a navigation link even when CSS gives the linked image a button-like appearance. Use a real <code>&lt;button&gt;</code> for an action that does not navigate."
         },
         {
           "type": "text",
-          "text": "<strong>Accessibility Tip</strong><br><ul><li>Always provide a clear <code>alt</code> attribute describing the image’s purpose.</li><li>If the image represents navigation (like a button), the <code>alt</code> text should describe the action, e.g., “Go to Home Page.”</li></ul>"
+          "text": "<strong>Accessibility Tip</strong><br><ul><li>Give the anchor a real <code>href</code>; without it, the anchor is not a hyperlink.</li><li>Provide clear <code>alt</code> text that gives the linked image an accessible name describing its destination or purpose, such as “Go to home page.”</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of wrapping the image inside an <a> tag as <em>placing a door on it</em> — the picture stays the same, but now it leads somewhere when clicked."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>The image supplies the link’s visible content and accessible name; the anchor’s <code>href</code> supplies the destination. Both parts are needed for an image hyperlink."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Wrap the &lt;img&gt; tag inside an <a> tag to make it clickable.</li><li>Use <code>target=\"_blank\"</code> to open in a new tab.</li><li>Style it with CSS for button-like interaction.</li><li>Always include descriptive <code>alt</code> text for accessibility.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Wrap the <code>&lt;img&gt;</code> inside an anchor with a real <code>href</code>; an anchor without href is not a hyperlink.</li><li>If a new tab is required, pair <code>target=\"_blank\"</code> with <code>rel=\"noopener noreferrer\"</code>.</li><li>Keep navigation as a link even when styling it to look button-like.</li><li>Use descriptive <code>alt</code> text for the link’s accessible name.</li></ul>"
         }
       ]
     },
@@ -2437,16 +2437,16 @@
       "anchor",
       "accessibility"
     ],
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-07-14",
     "incidentCard": {
       "title": "Linked Image Accessibility Check",
       "scenario": "A teammate says, \"We can make the image clickable by adding `href` to the `<img>` tag itself. The anchor is optional, and the `alt` text can just say `image` because users will see where it goes.\" Another teammate says, \"A clickable image should be an `<img>` wrapped inside an `<a>`. It still behaves like a link, so the destination belongs on `href`, the image needs meaningful `alt` text, and if it opens a new tab we should think about `rel` as well.\" Which explanation is better?",
       "options": [
         {
           "id": "clickable-image-needs-anchor-and-accessible-alt",
-          "label": "The second explanation is better. A clickable image is made by wrapping `<img>` inside `<a>`, and it should use meaningful `alt` text because the image is part of a link users need to understand.",
+          "label": "The second explanation is better. A clickable image link uses `<a href=\"…\">` around `<img>`, and meaningful `alt` text gives the link a name users can understand.",
           "isCorrect": true,
-          "explanation": "The link behavior comes from the anchor, not the image tag. Good `alt` text and safe new-tab handling are part of using linked images well."
+          "explanation": "The hyperlink comes from an anchor with `href`, not from the image tag. An anchor without href is not a hyperlink. Good `alt` text and safe new-tab handling are also part of using linked images well."
         },
         {
           "id": "img-tag-can-carry-href-directly",
@@ -2462,7 +2462,7 @@
         }
       ],
       "correctOptionId": "clickable-image-needs-anchor-and-accessible-alt",
-      "rereadPrompt": "Re-read the clickable image section. The image becomes clickable by placing `<img>` inside `<a>`, and accessibility still matters because users need useful `alt` text and predictable link behavior."
+      "rereadPrompt": "Re-read the clickable image section. Use `<a href=\"…\">` around `<img>` because an anchor without href is not a hyperlink, then provide useful `alt` text and predictable link behavior."
     }
   },
   {

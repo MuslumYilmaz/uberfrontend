@@ -2,7 +2,7 @@
   "contentId": "angular-template-driven-vs-reactive-forms-which-scales",
   "tech": "angular",
   "query": "Angular template-driven vs reactive forms scale interview question",
-  "reviewedAt": "2026-04-19",
+  "reviewedAt": "2026-07-14",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "manual",
@@ -21,17 +21,18 @@
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
-        "It is the official Angular comparison and directly states that reactive forms are more scalable, reusable, and testable."
+        "It is the official Angular comparison and directly states that reactive forms are more scalable, reusable, and testable.",
+        "Angular's v22 release announcement is the canonical companion source establishing Signal Forms as stable and production-ready."
       ],
       "theirGaps": [
         "It is overview-shaped and less interview-compressed on where template-driven forms stop scaling in real teams."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<strong>Same form tree, different source of truth</strong><br><br>Both approaches end up as a <code>FormGroup</code> tree. The real difference is <strong>where the form model lives</strong>: template-driven forms infer it from the template, while reactive forms declare it explicitly in TypeScript. The more dynamic, validated, or team-maintained the form becomes, the more valuable that explicit model becomes."
+          "Template-driven forms fit small static workflows, mature Reactive Forms remain a strong choice for complex or existing applications, and stable Signal Forms in Angular 22 are a production option for new signal-first form state."
         ],
         "followUpConfusion": [
-          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small, mostly static forms.</li><li>Use reactive forms when validation is complex, fields are dynamic, or testability matters.</li><li>The scaling question is about explicit state and composition, not about which API is more \"Angular\".</li></ul>"
+          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small static forms.</li><li>Use mature Reactive Forms for complex or existing workflows and established integrations.</li><li>Consider stable Signal Forms for new signal-first applications.</li><li>Do not present Signal Forms as a universal replacement; include interoperability, migration, and team constraints.</li></ul>"
         ]
       },
       "theirEvidence": {
@@ -52,7 +53,49 @@
         ],
         "followUpConfusion": []
       },
-      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+      "winReason": "The updated page adds a current three-option production decision model while the official docs remain authoritative on each API and Angular 22 stability."
+    },
+    {
+      "label": "Announcing Angular v22 — Signal Forms stable",
+      "url": "https://blog.angular.dev/announcing-angular-v22-c52bb83a4664",
+      "category": "canonical_docs",
+      "selectionReason": "Angular's official v22 release announcement is the primary source confirming that Signal Forms are stable and production-ready.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "It is authoritative on Signal Forms stability, API direction, validation schemas, and production readiness."
+      ],
+      "theirGaps": [
+        "A release announcement does not decide whether a mature Reactive Forms workflow should migrate or whether a component library supports the newer API."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Stable Signal Forms are a production option in Angular 22 for new signal-first applications, while Reactive Forms remain mature and widely integrated."
+        ],
+        "followUpConfusion": [
+          "Evaluate migration cost, control-library compatibility, async behavior, and team familiarity instead of treating Signal Forms as a universal replacement."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The announcement demonstrates production-ready Signal Forms behavior and official examples."
+        ],
+        "actionableExamples": [
+          "The official release examples are the strongest source for the current API shape."
+        ],
+        "followUpConfusion": [
+          "Our comparison adds the migration and interoperability decision that the release announcement is not intended to settle."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "The official announcement establishes stability; our page translates that fact into a three-option production decision without claiming Signal Forms replace every existing workflow."
     },
     {
       "label": "Angular Forms Guide: Template Driven and Reactive Forms",
@@ -72,10 +115,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<strong>Same form tree, different source of truth</strong><br><br>Both approaches end up as a <code>FormGroup</code> tree. The real difference is <strong>where the form model lives</strong>: template-driven forms infer it from the template, while reactive forms declare it explicitly in TypeScript. The more dynamic, validated, or team-maintained the form becomes, the more valuable that explicit model becomes."
+          "Template-driven forms fit small static workflows, mature Reactive Forms remain a strong choice for complex or existing applications, and stable Signal Forms in Angular 22 are a production option for new signal-first form state."
         ],
         "followUpConfusion": [
-          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small, mostly static forms.</li><li>Use reactive forms when validation is complex, fields are dynamic, or testability matters.</li><li>The scaling question is about explicit state and composition, not about which API is more \"Angular\".</li></ul>"
+          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small static forms.</li><li>Use mature Reactive Forms for complex or existing workflows and established integrations.</li><li>Consider stable Signal Forms for new signal-first applications.</li><li>Do not present Signal Forms as a universal replacement; include interoperability, migration, and team constraints.</li></ul>"
         ]
       },
       "theirEvidence": {
@@ -96,7 +139,7 @@
         ],
         "followUpConfusion": []
       },
-      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+      "winReason": "The updated page is more current because it preserves the mature Reactive Forms trade-off while adding stable Signal Forms as a production option rather than a universal replacement."
     },
     {
       "label": "Telerik Angular Forms Support",
@@ -116,10 +159,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<strong>Same form tree, different source of truth</strong><br><br>Both approaches end up as a <code>FormGroup</code> tree. The real difference is <strong>where the form model lives</strong>: template-driven forms infer it from the template, while reactive forms declare it explicitly in TypeScript. The more dynamic, validated, or team-maintained the form becomes, the more valuable that explicit model becomes."
+          "Template-driven forms fit small static workflows, mature Reactive Forms remain a strong choice for complex or existing applications, and stable Signal Forms in Angular 22 are a production option for new signal-first form state."
         ],
         "followUpConfusion": [
-          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small, mostly static forms.</li><li>Use reactive forms when validation is complex, fields are dynamic, or testability matters.</li><li>The scaling question is about explicit state and composition, not about which API is more \"Angular\".</li></ul>"
+          "<strong>Decision rule</strong><br><ul><li>Use template-driven forms for small static forms.</li><li>Use mature Reactive Forms for complex or existing workflows and established integrations.</li><li>Consider stable Signal Forms for new signal-first applications.</li><li>Do not present Signal Forms as a universal replacement; include interoperability, migration, and team constraints.</li></ul>"
         ]
       },
       "theirEvidence": {
@@ -140,7 +183,7 @@
         ],
         "followUpConfusion": []
       },
-      "winReason": "The updated page now wins on production framing and follow-up confusion while the competitor remains competitive on raw examples."
+      "winReason": "The updated page now covers the current three-option decision and keeps Signal Forms stability separate from product-library compatibility."
     }
   ]
 }

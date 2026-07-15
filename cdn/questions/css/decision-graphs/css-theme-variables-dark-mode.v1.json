@@ -1,0 +1,84 @@
+{
+  "questionId": "css-theme-variables-dark-mode",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "code": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.06);\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n  }\n}\n\n:root:where(.theme-dark) {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n}\n\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}",
+      "nodes": [
+        {
+          "id": "d1-light-token-defaults",
+          "title": "Define the complete light token set",
+          "anchor": {
+            "lineStart": 1,
+            "lineEnd": 9,
+            "snippet": "--accent-contrast: #ffffff;"
+          },
+          "why": "The light theme establishes every semantic token that components will consume later, including contrast and shadow values.",
+          "alternative": "Define only page background and text variables, then hard-code component colors.",
+          "tradeoff": "A fuller token set is more upfront CSS, but it prevents component rules from becoming theme-specific."
+        },
+        {
+          "id": "d2-os-dark-media",
+          "title": "Override the same tokens for OS dark mode",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 21,
+            "snippet": "@media (prefers-color-scheme: dark)"
+          },
+          "why": "Redefining the same custom properties lets the browser preference switch the whole surface without changing component selectors.",
+          "alternative": "Duplicate all component declarations inside the media query.",
+          "tradeoff": "Token overrides require discipline in naming, but they keep component styles stable across themes."
+        },
+        {
+          "id": "d3-manual-override-order",
+          "title": "Place the manual override after the media query",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 31,
+            "snippet": ":root:where(.theme-dark)"
+          },
+          "why": ":where(.theme-dark) adds no specificity, so this rule ties :root and wins by later source order.",
+          "alternative": "Use html.theme-dark with higher specificity or place the override before the media query.",
+          "tradeoff": "Equal specificity makes the cascade easy to explain, but the rule order becomes part of the contract."
+        },
+        {
+          "id": "d4-page-consumes-theme-tokens",
+          "title": "Read page colors from variables",
+          "anchor": {
+            "lineStart": 34,
+            "lineEnd": 43,
+            "snippet": "background: var(--bg);"
+          },
+          "why": "The page-level background and text should respond to whichever token layer wins.",
+          "alternative": "Keep body colors as literal values independent of the token system.",
+          "tradeoff": "Variable reads are slightly less direct than literals, but they make the theme swap live and centralized."
+        },
+        {
+          "id": "d5-panel-uses-shadow-token",
+          "title": "Keep panel colors and shadow tokenized",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 52,
+            "snippet": "box-shadow: var(--panel-shadow);"
+          },
+          "why": "The panel consumes surface, text, border, and shadow tokens so all colored presentation changes with the theme.",
+          "alternative": "Tokenize colors but leave a literal rgba shadow in the component rule.",
+          "tradeoff": "A shadow token adds one more variable, but shadows include color and need theme-specific values too."
+        },
+        {
+          "id": "d6-button-contrast-token",
+          "title": "Use an explicit accent contrast token",
+          "anchor": {
+            "lineStart": 55,
+            "lineEnd": 62,
+            "snippet": "color: var(--accent-contrast);"
+          },
+          "why": "The accent background needs a paired foreground token so button text remains readable in each theme.",
+          "alternative": "Assume white text is always readable on the accent color.",
+          "tradeoff": "A contrast token is extra naming, but it makes accessibility intent explicit and testable."
+        }
+      ]
+    }
+  }
+}

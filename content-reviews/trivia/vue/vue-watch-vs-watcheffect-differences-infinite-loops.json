@@ -2,7 +2,7 @@
   "contentId": "vue-watch-vs-watcheffect-differences-infinite-loops",
   "tech": "vue",
   "query": "When should you use watch vs watchEffect in Vue?",
-  "reviewedAt": "2026-04-10",
+  "reviewedAt": "2026-07-14",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "manual",
@@ -23,11 +23,11 @@
         "The official guide is authoritative on explicit versus automatic dependency tracking, cleanup APIs, and async caveats."
       ],
       "theirGaps": [
-        "It is less tightly framed around the most common interview footgun: accidental self-triggering loops and unexpected dependencies."
+        "It is less tightly framed around the contrast between watch recursion, watchEffect self-trigger suppression, and unexpected automatic dependencies."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Most bugs come from not realizing <em>what is being tracked</em> and from <em>mutating the same state you’re watching</em>."
+          "A <code>watch()</code> callback can recurse if it writes to its own source, while Vue suppresses a direct synchronous <code>watchEffect</code> self-trigger."
         ],
         "followUpConfusion": [
           "<strong>6. Subtle watchEffect trap: accidental dependencies</strong><br><br>Because <code>watchEffect</code> tracks everything you read, even a <code>console.log(someRef.value)</code> or a debug read can become a dependency and retrigger the effect."
@@ -35,7 +35,7 @@
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The docs use concrete data-fetching and stale-request cleanup scenarios, but they are less concentrated on the infinite-loop debugging angle."
+          "The docs use concrete data-fetching and stale-request cleanup scenarios; our page adds a focused watch-recursion example without mislabeling direct watchEffect self-mutation."
         ],
         "actionableExamples": [
           "They include direct watch, watchEffect, immediate, cleanup, and flush examples, so example quality stays very competitive."
@@ -51,7 +51,7 @@
         ],
         "followUpConfusion": []
       },
-      "winReason": "The official docs are canonical on watcher behavior, but our page is more effective as a compact interview answer because it centers the infinite-loop footgun, accidental dependencies, and the watch-versus-watchEffect decision rule."
+      "winReason": "The official docs are canonical on watcher behavior, while our page adds a compact interview comparison of real watch recursion, watchEffect self-trigger suppression, accidental dependencies, and the API decision rule."
     },
     {
       "label": "Vue Interview Questions",
@@ -67,11 +67,11 @@
         "It is a strong interview-prep hub with Vue fundamentals and interactive problem coverage."
       ],
       "theirGaps": [
-        "The landing page is broad and does not directly drill into watch-versus-watchEffect loop traps."
+        "The landing page is broad and does not directly drill into watch recursion versus watchEffect self-trigger suppression."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "If your watcher <strong>mutates the same reactive state that it depends on</strong>, you can easily create a self-triggering loop."
+          "A <code>watch()</code> callback that writes to its watched source can schedule itself again indefinitely."
         ],
         "followUpConfusion": [
           "<strong>8. Practical rule of thumb</strong><br><br>- If you can describe the dependency in one sentence: use <code>watch()</code>.<br>- If the dependency is “whatever I touch in here”: use <code>watchEffect()</code>.<br>- If you’re syncing state: ask yourself if this should be a <code>computed</code> instead."
@@ -79,7 +79,7 @@
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The hub covers Vue interview practice broadly, but it is not as explicit about the self-triggering watcher bug and cleanup scenarios on this page."
+          "The hub covers Vue interview practice broadly, but it is not as explicit about real watch recursion, watchEffect self-trigger suppression, and cleanup scenarios."
         ],
         "actionableExamples": [
           "Because GreatFrontEnd emphasizes worked solutions, the example bar remains competitive."
@@ -95,7 +95,7 @@
         ],
         "followUpConfusion": []
       },
-      "winReason": "GreatFrontEnd is useful as a general Vue interview resource, but our page is more focused on the exact decision rule and loop/debugging follow-ups this topic usually triggers."
+      "winReason": "GreatFrontEnd is useful as a general Vue interview resource, but our page is more focused on the exact API decision rule and the distinction between watch recursion and watchEffect self-trigger protection."
     },
     {
       "label": "Vue 3 Composition API - watch and watchEffect",
@@ -111,7 +111,7 @@
         "The article is directly on-topic and uses realistic save-to-backend and cancellation scenarios."
       ],
       "theirGaps": [
-        "It is lighter on the infinite-loop footgun and on the interview-style decision rule for when a computed should replace a watcher."
+        "It is lighter on real watch recursion, watchEffect self-trigger protection, and the interview-style decision rule for when computed should replace a watcher."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
@@ -123,7 +123,7 @@
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The article uses notes-saving and invalidation examples, but it is less explicit about self-triggering loops and accidental debug dependencies."
+          "The article uses notes-saving and invalidation examples, but it is less explicit about watch recursion, watchEffect self-trigger suppression, and accidental debug dependencies."
         ],
         "actionableExamples": [
           "Its code samples for automatic tracking, stop handles, and invalidation are strong, so the example criterion remains close."

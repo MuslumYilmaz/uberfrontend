@@ -2,7 +2,7 @@
   "contentId": "react-useeffect-vs-uselayouteffect",
   "tech": "react",
   "query": "useeffect vs uselayouteffect react interview question",
-  "reviewedAt": "2026-04-13",
+  "reviewedAt": "2026-07-14",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "manual",
@@ -33,12 +33,12 @@
           "useLayoutEffect runs synchronously after DOM mutations but before the browser paints"
         ],
         "followUpConfusion": [
-          "useEffect runs after the browser paints."
+          "Passive effects generally run after paint for non-interaction updates, but interaction-caused effects may run before paint."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "The docs are authoritative on timing, but our page is more explicit about the real bug pattern: reading or writing layout after paint and causing visible jump."
+          "The docs are authoritative on timing, and our page now makes the same interaction exception explicit while connecting the missing pre-paint guarantee to visible layout jumps."
         ],
         "actionableExamples": [
           "The official examples are strong enough that the example criterion stays tied."
@@ -75,10 +75,10 @@
           "The difference matters when you need to read or write layout and avoid visual flicker."
         ],
         "actionableExamples": [
-          "The browser will: • Paint the UI once • Then your effect runs • Then you update layout/state • Then it paints again"
+          "Because useEffect offers no pre-paint guarantee, the browser may show the initial layout before a later correction."
         ],
         "followUpConfusion": [
-          "useEffect is for everything else"
+          "useEffect is the default when synchronization does not require a pre-paint guarantee"
         ]
       },
       "theirEvidence": {

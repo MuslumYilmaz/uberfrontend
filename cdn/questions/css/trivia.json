@@ -3303,7 +3303,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-theme-variables-dark-mode\">Build a CSS variables dark mode challenge</a> to practice token naming, <code>prefers-color-scheme</code>, and a manual <code>html.theme-dark</code> override."
+          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-theme-variables-dark-mode\">Build a CSS variables dark mode challenge</a> to practice token naming, <code>prefers-color-scheme</code>, and an equal-specificity <code>:root:where(.theme-dark)</code> override whose later source order wins."
         },
         {
           "type": "text",
@@ -3325,7 +3325,7 @@
       "design-tokens",
       "var"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "What are CSS custom properties and how do you use them?",
       "description": "CSS custom properties are reusable variables declared with --name and read with var(), allowing scoped theming and consistent design tokens."

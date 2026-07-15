@@ -5,43 +5,43 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  err.name = 'AbortError';\n  return err;\n}\n\nexport default function pollUntil(check, options = {}) {\n  const { interval = 50, timeout, signal } = options;\n\n  return new Promise((resolve, reject) => {\n    let timerId;\n    let done = false;\n    const start = Date.now();\n\n    const cleanup = () => {\n      if (timerId) clearTimeout(timerId);\n      if (signal) signal.removeEventListener('abort', onAbort);\n    };\n\n    const onAbort = () => {\n      if (done) return;\n      done = true;\n      cleanup();\n      reject(toAbortError(signal && signal.reason));\n    };\n\n    if (signal) {\n      if (signal.aborted) {\n        reject(toAbortError(signal.reason));\n        return;\n      }\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n\n    const attempt = async () => {\n      try {\n        const result = await check();\n        if (result) {\n          done = true;\n          cleanup();\n          resolve(result);\n          return;\n        }\n      } catch (err) {\n        done = true;\n        cleanup();\n        reject(err);\n        return;\n      }\n\n      if (timeout != null && Date.now() - start >= timeout) {\n        done = true;\n        cleanup();\n        reject(new Error('Timeout'));\n        return;\n      }\n\n      timerId = setTimeout(attempt, interval);\n    };\n\n    attempt();\n  });\n}\n",
+      "code": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  err.name = 'AbortError';\n  return err;\n}\n\nexport default function pollUntil(check, options = {}) {\n  const { interval = 50, timeout, signal } = options;\n\n  return new Promise((resolve, reject) => {\n    let retryTimerId;\n    let deadlineTimerId;\n    let settled = false;\n\n    const cleanup = () => {\n      if (retryTimerId !== undefined) clearTimeout(retryTimerId);\n      if (deadlineTimerId !== undefined) clearTimeout(deadlineTimerId);\n      if (signal) signal.removeEventListener('abort', onAbort);\n    };\n\n    const settle = (callback, value) => {\n      if (settled) return false;\n      settled = true;\n      cleanup();\n      callback(value);\n      return true;\n    };\n\n    const onAbort = () => {\n      settle(reject, toAbortError(signal && signal.reason));\n    };\n\n    if (signal) {\n      if (signal.aborted) {\n        settle(reject, toAbortError(signal.reason));\n        return;\n      }\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n\n    if (timeout != null) {\n      deadlineTimerId = setTimeout(() => {\n        settle(reject, new Error('Timeout'));\n      }, Math.max(0, timeout));\n    }\n\n    const attempt = async () => {\n      if (settled) return;\n\n      try {\n        const result = await check();\n        if (settled) return;\n        if (result) {\n          settle(resolve, result);\n          return;\n        }\n      } catch (err) {\n        if (settled) return;\n        settle(reject, err);\n        return;\n      }\n\n      if (settled) return;\n      retryTimerId = setTimeout(attempt, interval);\n    };\n\n    attempt();\n  });\n}\n",
       "nodes": [
         {
-          "id": "d1-abort-path",
-          "title": "Stop polling immediately when aborted",
+          "id": "d1-idempotent-settlement",
+          "title": "Settle once and clean every terminal resource",
           "anchor": {
-            "lineStart": 21,
-            "lineEnd": 26,
-            "snippet": "const onAbort = () => {"
+            "lineStart": 22,
+            "lineEnd": 29,
+            "snippet": "const settle = (callback, value) => {"
           },
-          "why": "Abort should end the loop right away so we don't keep checking after cancellation.",
-          "alternative": "Ignore abort and keep polling until timeout.",
-          "tradeoff": "Better control and cleanup, but requires extra listener logic."
+          "why": "Success, abort, timeout, and check failure can race; one idempotent path prevents duplicate work and leaks.",
+          "alternative": "Repeat done-state and cleanup logic in every branch.",
+          "tradeoff": "A small helper makes terminal behavior explicit and consistent."
         },
         {
-          "id": "d2-success-on-truthy-result",
-          "title": "Resolve as soon as check returns truthy",
+          "id": "d2-independent-deadline",
+          "title": "Keep the deadline independent of check completion",
           "anchor": {
-            "lineStart": 39,
-            "lineEnd": 43,
-            "snippet": "if (result) {"
+            "lineStart": 43,
+            "lineEnd": 45,
+            "snippet": "deadlineTimerId = setTimeout(() => {"
           },
-          "why": "The goal is to wait only until the condition is ready, then stop.",
-          "alternative": "Require a strict boolean `true` only.",
-          "tradeoff": "Truthy check is flexible, but callers must avoid accidental truthy interim values."
+          "why": "A check Promise may never settle, so elapsed-time checks after await cannot implement a real deadline.",
+          "alternative": "Check Date.now() only between attempts.",
+          "tradeoff": "A second timer handle is required, but timeout no longer depends on check cooperation."
         },
         {
-          "id": "d3-timeout-and-reschedule",
-          "title": "Enforce timeout, otherwise schedule next attempt",
+          "id": "d3-post-await-guard",
+          "title": "Guard immediately after await before retrying",
           "anchor": {
             "lineStart": 52,
-            "lineEnd": 59,
-            "snippet": "if (timeout != null && Date.now() - start >= timeout) {"
+            "lineEnd": 54,
+            "snippet": "if (settled) return;"
           },
-          "why": "Timeout prevents endless polling; if not timed out, we queue the next check after `interval`.",
-          "alternative": "Use setInterval and clear it later.",
-          "tradeoff": "Recursive setTimeout gives tighter control, while setInterval is shorter but easier to misuse."
+          "why": "Abort or timeout may win while check is pending; the resumed attempt must observe that before resolving or scheduling.",
+          "alternative": "Let the in-flight attempt finish and enqueue one more timer.",
+          "tradeoff": "Repeated guards are deliberate protection against async races."
         }
       ]
     }

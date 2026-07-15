@@ -2,7 +2,7 @@
   "contentId": "html-clickable-image",
   "tech": "html",
   "query": "html clickable image interview question",
-  "reviewedAt": "2026-04-18",
+  "reviewedAt": "2026-07-14",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "manual",
@@ -23,11 +23,11 @@
         "MDN is authoritative on anchor semantics, linked content, target and rel behavior, and accessibility expectations for hyperlinks."
       ],
       "theirGaps": [
-        "The reference is less explicit about the specific production pitfall behind clickable images: forgetting that the image still behaves like a link with destination clarity and alt-text requirements."
+        "The reference is less explicit about the specific production pitfall behind clickable images: an anchor is only a hyperlink when it has an href, and the linked image still needs destination clarity and useful alt text."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link."
+          "Make an image a hyperlink by wrapping it in an anchor with a real href attribute. An anchor without href is not a hyperlink."
         ],
         "followUpConfusion": [
           "Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed."
@@ -71,7 +71,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link."
+          "Make an image a hyperlink by wrapping it in an anchor with a real href attribute. An anchor without href is not a hyperlink."
         ],
         "followUpConfusion": [
           "Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed."
@@ -115,7 +115,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "You can make an image clickable by wrapping it in an anchor tag, but the real pitfall is forgetting that it still behaves like a link."
+          "Make an image a hyperlink by wrapping it in an anchor with a real href attribute. An anchor without href is not a hyperlink."
         ],
         "followUpConfusion": [
           "Good linked images need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed."

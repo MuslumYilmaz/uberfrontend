@@ -5,14 +5,14 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "export default function App() {\n  const rootRef = useRef<HTMLDivElement | null>(null);\n  const inputRef = useRef<HTMLInputElement | null>(null);\n  const requestSeqRef = useRef(0);\n  const selectedQueryRef = useRef('');\n\n  const [query, setQuery] = useState('');\n  const [status, setStatus] = useState<Status>('idle');\n  const [isOpen, setIsOpen] = useState(false);\n  const [activeIndex, setActiveIndex] = useState(-1);\n  const [results, setResults] = useState<string[]>([]);\n\n  useEffect(() => {\n    const trimmed = query.trim();\n    if (!trimmed) {\n      setResults([]);\n      setStatus('idle');\n      setIsOpen(false);\n      setActiveIndex(-1);\n      return;\n    }\n\n    let ignore = false;\n    const requestId = ++requestSeqRef.current;\n    setStatus('loading');\n    setIsOpen(true);\n    setActiveIndex(-1);\n\n    const debounceId = window.setTimeout(async () => {\n      try {\n        const nextResults = await searchCities(trimmed);\n        if (ignore || requestSeqRef.current !== requestId) return;\n        setResults(nextResults);\n        setStatus(nextResults.length ? 'success' : 'empty');\n        setIsOpen(true);\n        setActiveIndex(-1);\n      } catch {\n        if (ignore || requestSeqRef.current !== requestId) return;\n        setResults([]);\n        setStatus('error');\n        setIsOpen(true);\n        setActiveIndex(-1);\n      }\n    }, 300);\n\n    return () => {\n      ignore = true;\n      window.clearTimeout(debounceId);\n    };\n  }, [query]);\n\n  useEffect(() => {\n    function onDocumentPointerDown(event: PointerEvent) {\n      const root = rootRef.current;\n      const target = event.target as Node | null;\n      if (!root || !target || root.contains(target)) return;\n      setIsOpen(false);\n      setActiveIndex(-1);\n    }\n\n    document.addEventListener('pointerdown', onDocumentPointerDown);\n    return () => document.removeEventListener('pointerdown', onDocumentPointerDown);\n  }, []);\n\n  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {\n    if (event.key === 'Escape') {\n      event.preventDefault();\n      setIsOpen(false);\n      setActiveIndex(-1);\n      return;\n    }\n\n    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {\n      event.preventDefault();\n      if (!isOpen && query.trim()) setIsOpen(true);\n      if (!results.length) return;\n      setActiveIndex((current) => {\n        if (event.key === 'ArrowDown') return current < 0 ? 0 : (current + 1) % results.length;\n        return current < 0 ? results.length - 1 : (current - 1 + results.length) % results.length;\n      });\n      return;\n    }\n\n    if (event.key === 'Enter') {\n      if (!isOpen || activeIndex < 0 || activeIndex >= results.length) return;\n      event.preventDefault();\n      selectOption(results[activeIndex]);\n    }\n  }\n\n  function selectOption(value: string) {\n    selectedQueryRef.current = value;\n    setQuery(value);\n    setResults([]);\n    setStatus('idle');\n    setIsOpen(false);\n    setActiveIndex(-1);\n    inputRef.current?.focus();\n  }\n\n  const activeId = activeIndex >= 0 && results[activeIndex] ? optionId(results[activeIndex]) : undefined;\n\n  return (\n    <input\n      role=\"combobox\"\n      aria-expanded={isOpen}\n      aria-autocomplete=\"list\"\n      aria-controls=\"autocomplete-listbox\"\n      aria-activedescendant={activeId}\n      value={query}\n      onChange={(event) => handleInputChange(event.target.value)}\n      onFocus={handleFocus}\n      onKeyDown={handleKeyDown}\n    />\n  );\n}\n",
+      "code": "export default function App() {\n  const requestSeqRef = useRef(0);\n  const [query, setQuery] = useState('');\n  const [status, setStatus] = useState<Status>('idle');\n  const [isOpen, setIsOpen] = useState(false);\n  const [activeIndex, setActiveIndex] = useState(-1);\n  const [results, setResults] = useState<string[]>([]);\n\n  function handleInputChange(value: string): void {\n    requestSeqRef.current += 1;\n    setQuery(value);\n    setResults([]);\n    setActiveIndex(-1);\n    setStatus(value.trim() ? 'loading' : 'idle');\n    setIsOpen(Boolean(value.trim()));\n  }\n\n  useEffect(() => {\n    const trimmed = query.trim();\n    if (!trimmed) return;\n    let ignore = false;\n    const controller = new AbortController();\n    const requestId = ++requestSeqRef.current;\n    setResults([]);\n    setStatus('loading');\n\n    const debounceId = window.setTimeout(async () => {\n      try {\n        const nextResults = await searchCities(trimmed, controller.signal);\n        if (ignore || controller.signal.aborted || requestSeqRef.current !== requestId) return;\n        setResults(nextResults);\n        setStatus(nextResults.length ? 'success' : 'empty');\n      } catch (error) {\n        if (ignore || controller.signal.aborted || requestSeqRef.current !== requestId) return;\n        setResults([]);\n        setStatus('error');\n      }\n    }, 300);\n\n    return () => {\n      ignore = true;\n      controller.abort();\n      window.clearTimeout(debounceId);\n    };\n  }, [query]);\n\n  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {\n    if (status === 'loading') return;\n    if (event.key === 'Enter' && status === 'success' && activeIndex >= 0) {\n      selectOption(results[activeIndex]);\n    }\n  }\n\n  return (\n    <>\n      <label id=\"autocomplete-label\" htmlFor=\"autocomplete-query\">Search cities</label>\n      <input\n        id=\"autocomplete-query\"\n        role=\"combobox\"\n        aria-labelledby=\"autocomplete-label\"\n        aria-expanded={isOpen}\n        aria-controls=\"autocomplete-listbox\"\n        value={query}\n        onChange={(event) => handleInputChange(event.target.value)}\n        onKeyDown={handleKeyDown}\n      />\n      {status === 'success' && results.map((item) => (\n        <div key={item} role=\"option\" onPointerDown={() => selectOption(item)}>{item}</div>\n      ))}\n    </>\n  );\n}\n",
       "nodes": [
         {
           "id": "a1-state-model",
           "title": "Separate query, popup, status, active option, and result state",
           "anchor": {
-            "lineStart": 7,
-            "lineEnd": 11,
+            "lineStart": 4,
+            "lineEnd": 4,
             "snippet": "const [status, setStatus] = useState<Status>('idle');"
           },
           "why": "Autocomplete has several independent UI states. Keeping status separate from results prevents loading, no-results, and error from collapsing into one ambiguous branch.",
@@ -21,25 +21,25 @@
         },
         {
           "id": "a2-empty-query-reset",
-          "title": "Close and reset on empty input before scheduling async work",
+          "title": "Clear old options in the input transition",
           "anchor": {
-            "lineStart": 14,
-            "lineEnd": 21,
-            "snippet": "if (!trimmed) {"
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "setResults([]);"
           },
-          "why": "Whitespace-only input should not leave stale suggestions or loading UI open. Returning early also avoids unnecessary timers.",
-          "alternative": "Let the search function return an empty list for blank queries.",
-          "tradeoff": "The early branch is more explicit and avoids flicker, but it duplicates a few reset calls."
+          "why": "Clearing results and the active option in the input event prevents previous-query options from remaining selectable until the passive effect runs.",
+          "alternative": "Wait for the query effect or the next response to replace old results.",
+          "tradeoff": "The input transition repeats a small reset also enforced by the effect, but it closes the interaction race immediately."
         },
         {
           "id": "a3-request-sequence-guard",
-          "title": "Guard async results with request identity",
+          "title": "Abort cancellable work and guard async results with request identity",
           "anchor": {
-            "lineStart": 24,
-            "lineEnd": 32,
+            "lineStart": 23,
+            "lineEnd": 23,
             "snippet": "const requestId = ++requestSeqRef.current;"
           },
-          "why": "Clearing a debounce timer stops work that has not started yet; it does not cancel an already-started Promise. The request id prevents an older slow response from overwriting newer results.",
+          "why": "AbortController stops the current delay or fetch, while request identity prevents any stale continuation from committing. Both protections remain useful.",
           "alternative": "Use AbortController for a real fetch request.",
           "tradeoff": "A request id works for fake async and uncancellable Promises, while AbortController can also save network work when fetch supports it."
         },
@@ -47,8 +47,8 @@
           "id": "a4-status-from-results",
           "title": "Map async success to success or empty explicitly",
           "anchor": {
-            "lineStart": 33,
-            "lineEnd": 36,
+            "lineStart": 32,
+            "lineEnd": 32,
             "snippet": "setStatus(nextResults.length ? 'success' : 'empty');"
           },
           "why": "No-results is a successful search with an empty payload, not an error. This distinction keeps user feedback and tests deterministic.",
@@ -57,25 +57,25 @@
         },
         {
           "id": "a5-effect-cleanup",
-          "title": "Clean debounce timer and mark the effect stale",
+          "title": "Abort, clear the timer, and mark the effect stale",
           "anchor": {
-            "lineStart": 46,
-            "lineEnd": 49,
-            "snippet": "window.clearTimeout(debounceId);"
+            "lineStart": 42,
+            "lineEnd": 42,
+            "snippet": "controller.abort();"
           },
-          "why": "Cleanup handles both rerenders and unmount. The timer cleanup removes pending debounce work, and the ignore flag stops late async continuations from updating state.",
+          "why": "Cleanup handles rerenders and unmount: abort cancels work that started, timer cleanup removes work that has not started, and request identity rejects late continuations.",
           "alternative": "Store every timer globally and clear them from outside the component.",
           "tradeoff": "Effect-local cleanup is scoped and easy to test, but each effect must own its own resources carefully."
         },
         {
           "id": "a6-outside-pointer-owner",
-          "title": "Own outside-close behavior at the component boundary",
+          "title": "Use pointer events for option activation",
           "anchor": {
-            "lineStart": 53,
-            "lineEnd": 62,
-            "snippet": "document.addEventListener('pointerdown', onDocumentPointerDown);"
+            "lineStart": 68,
+            "lineEnd": 68,
+            "snippet": "onPointerDown={() => selectOption(item)}"
           },
-          "why": "The component needs a document-level listener to close when the pointer starts outside the autocomplete root while keeping inside option interactions intact.",
+          "why": "Pointer events cover mouse, pen, and touch and run before blur/outside-close timing can swallow the selection.",
           "alternative": "Close on input blur only.",
           "tradeoff": "A document listener needs cleanup, but it avoids blur timing bugs and works for pointer interactions outside the input."
         },
@@ -83,35 +83,35 @@
           "id": "a7-keyboard-navigation",
           "title": "Keep focus on the input while activeIndex changes",
           "anchor": {
-            "lineStart": 73,
-            "lineEnd": 82,
-            "snippet": "setActiveIndex((current) => {"
+            "lineStart": 48,
+            "lineEnd": 48,
+            "snippet": "if (status === 'loading') return;"
           },
-          "why": "Combobox keyboard navigation should preserve input focus and expose the active option through aria-activedescendant.",
+          "why": "Loading has no current options, so Arrow and Enter must not activate values left over from a previous query.",
           "alternative": "Move DOM focus into listbox options.",
           "tradeoff": "Input-owned focus requires more ARIA wiring, but typing, Escape, and screen-reader context stay coherent."
         },
         {
           "id": "a8-selection-reset",
-          "title": "Selecting an option writes the value and closes the popup",
+          "title": "Gate selection to successful current results",
           "anchor": {
-            "lineStart": 94,
-            "lineEnd": 102,
-            "snippet": "selectedQueryRef.current = value;"
+            "lineStart": 49,
+            "lineEnd": 49,
+            "snippet": "status === 'success' && activeIndex >= 0"
           },
-          "why": "Selection is a distinct transition: the chosen label becomes the query, results are cleared, popup state resets, and focus returns to the input.",
-          "alternative": "Leave the results open after selection.",
-          "tradeoff": "Closing is the expected interview behavior here; keeping results open can be useful for multi-select variants."
+          "why": "Enter and pointer activation must not select while loading, because there are no current options until the new request succeeds.",
+          "alternative": "Allow the previous successful array to remain keyboard-selectable during loading.",
+          "tradeoff": "The status guard is explicit, and it prevents stale selection even if a future refactor accidentally retains an old array."
         },
         {
           "id": "a9-aria-contract",
           "title": "Wire the input as the combobox owner",
           "anchor": {
-            "lineStart": 108,
-            "lineEnd": 114,
-            "snippet": "aria-activedescendant={activeId}"
+            "lineStart": 60,
+            "lineEnd": 60,
+            "snippet": "aria-labelledby=\"autocomplete-label\""
           },
-          "why": "The input owns the editable value while listbox options provide suggestions. The ARIA attributes connect open state, listbox id, and active option id.",
+          "why": "A visible associated label gives the editable combobox an accessible name; ARIA then connects its open state and popup.",
           "alternative": "Render a plain input and unordered list with no relationship.",
           "tradeoff": "ARIA wiring adds attributes, but it makes keyboard navigation and assistive technology behavior testable."
         }

@@ -4455,12 +4455,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain the difference between watch() and watchEffect() in Vue 3, when each one runs, how dependency tracking works (explicit vs automatic), and the common patterns that accidentally cause infinite update loops.",
+    "description": "Explain the difference between watch() and watchEffect() in Vue 3, when each runs, how dependency tracking works, why a watch callback can recurse by mutating its own source, and how watchEffect suppresses a direct synchronous self-trigger.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>watch()</code> and <code>watchEffect()</code> both run side effects in response to reactive changes, but they work very differently: <strong>watch is explicit and lazy</strong> (you choose what to watch), while <strong>watchEffect is automatic and eager</strong> (Vue tracks everything you touch inside). Most bugs come from not realizing <em>what is being tracked</em> and from <em>mutating the same state you’re watching</em>."
+          "text": "<strong>Overview</strong><br><br><code>watch()</code> and <code>watchEffect()</code> both run side effects in response to reactive changes, but they work differently: <strong>watch is explicit and lazy</strong> (you choose the source), while <strong>watchEffect is automatic and eager</strong> (Vue tracks reactive values read during its synchronous execution). A <code>watch()</code> callback can recurse if it writes to its own source. Vue suppresses a direct synchronous self-trigger from <code>watchEffect</code>, but effects should still avoid mutating their dependencies because external writes, indirect cycles, and async work make the flow difficult to reason about."
         },
         {
           "type": "list",
@@ -4561,25 +4561,25 @@
         },
         {
           "type": "text",
-          "text": "<strong>4. The #1 footgun: creating an infinite loop</strong><br><br>If your watcher <strong>mutates the same reactive state that it depends on</strong>, you can easily create a self-triggering loop."
+          "text": "<strong>4. A real recursion footgun with watch()</strong><br><br>A <code>watch()</code> callback that mutates the source it watches can schedule itself again indefinitely. Because <code>watch()</code> tracks the explicit source separately from the callback, this write is treated as another source change."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { ref, watchEffect } from 'vue';\n\nconst count = ref(0);\n\n// ❌ Infinite loop\nwatchEffect(() => {\n  if (count.value < 10) {\n    count.value++; // This mutation retriggers the effect\n  }\n});"
+          "code": "import { ref, watch } from 'vue';\n\nconst count = ref(0);\n\nwatch(count, () => {\n  count.value++; // ❌ writes to the watched source again\n});\n\ncount.value = 1; // starts the recursive updates"
         },
         {
           "type": "text",
-          "text": "The same bug can happen with <code>watch()</code> if you write back to the watched source without guarding:"
+          "text": "A direct synchronous <code>watchEffect(() => count.value++)</code> is different: Vue recognizes that the effect itself caused the change and suppresses that self-trigger, so the example runs once rather than looping forever. That protection is not a design recommendation—mutating dependencies inside an effect still creates surprising behavior when another writer changes the value, when effects form an indirect cycle, or when async work is involved."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "watch(count, (v) => {\n  // ❌ This will loop forever\n  count.value = v + 1;\n});"
+          "code": "watchEffect(() => {\n  count.value++; // runs once; the direct self-caused rerun is suppressed\n});\n\n// Prefer computed() for derived values and event handlers for explicit writes."
         },
         {
           "type": "text",
-          "text": "<strong>5. How to avoid infinite loops</strong><br><br><ul><li>Don’t mutate the same source you are watching.</li><li>If you must, add guards (if conditions, equality checks).</li><li>Prefer deriving state with <code>computed</code> instead of syncing state with watchers.</li></ul>"
+          "text": "<strong>5. How to avoid recursion and hidden state flow</strong><br><br><ul><li>Do not write back to a source from its own <code>watch()</code> callback.</li><li>Prefer <code>computed</code> for derived state instead of synchronizing one ref into another.</li><li>Keep writes in explicit event or action paths, and use watcher cleanup for external side effects.</li><li>Treat watchEffect self-trigger protection as a safety detail, not permission to mutate dependencies.</li></ul>"
         },
         {
           "type": "text",
@@ -4605,11 +4605,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>watch is declarative (“watch this”)</strong>, <strong>watchEffect is reactive magic (“rerun when anything I use changes”)</strong>. Magic is convenient — and that’s why it’s easier to shoot yourself in the foot."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>watch means “run when this explicit source changes”</strong>, while <strong>watchEffect means “rerun when a reactive value read synchronously here changes.”</strong> Automatic tracking is convenient, but it can also collect dependencies you did not intend."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li><code>watch()</code> is explicit, lazy, and gives you old/new values.</li><li><code>watchEffect()</code> is automatic, eager, and tracks dependencies implicitly.</li><li>Infinite loops happen when the effect mutates the same state it depends on.</li><li>Prefer <code>computed</code> for derived state, and use guards when mutating inside watchers.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li><code>watch()</code> is explicit, lazy, and gives you old/new values.</li><li><code>watchEffect()</code> is automatic, eager, and tracks dependencies read synchronously.</li><li>A watch callback can recurse by writing to its watched source.</li><li>Vue suppresses a direct synchronous watchEffect self-trigger, but effects should still not mutate their dependencies.</li><li>Prefer <code>computed</code> for derived state and explicit actions for writes.</li></ul>"
         }
       ]
     },
@@ -4622,18 +4622,18 @@
       "reactivity",
       "performance"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "When should you use watch vs watchEffect in Vue?",
-      "description": "Use watch for explicit sources and watchEffect for automatic tracking. Infinite loops happen when an effect writes to the same reactive state it reads."
+      "description": "Use watch for explicit sources and watchEffect for automatic tracking. A watch callback can recurse on its source; direct watchEffect self-triggers are suppressed."
     },
     "incidentCard": {
       "title": "Effect Tracking Check",
-      "scenario": "A teammate swaps a targeted `watch()` for `watchEffect()` in a data-fetching flow, then adds a few extra reactive reads inside the effect and accidentally creates noisy reruns. They say, \"These APIs are basically interchangeable, so picking one is mostly style.\" Another teammate says, \"Not really. `watch()` is explicit and predictable, while `watchEffect()` automatically tracks everything it touches and runs immediately. That convenience also makes it easier to create accidental dependencies or self-triggering loops.\" Which explanation is better?",
+      "scenario": "A teammate swaps a targeted `watch()` for `watchEffect()` in a data-fetching flow, then adds extra reactive reads and gets noisy reruns. They also claim that `watchEffect(() => count.value++)` is an infinite loop. Another teammate says, \"The APIs are not interchangeable: watch tracks an explicit source and can recurse if its callback writes to that source; watchEffect tracks synchronous reads and suppresses a direct self-caused trigger, although mutating dependencies is still a poor design.\" Which explanation is better?",
       "options": [
         {
           "id": "watch-is-explicit-while-watcheffect-is-automatic-and-easier-to-misuse",
-          "label": "The second explanation is better. `watch()` is best when you know the exact source you care about, while `watchEffect()` is useful for broad automatic tracking but easier to over-trigger or loop if it reads and writes the wrong reactive state."
+          "label": "The second explanation is better. `watch()` is best for an explicit source and can recurse if it writes to that source. `watchEffect()` tracks synchronous reads and suppresses a direct self-trigger, but it can still collect accidental dependencies and should not own dependency mutations."
         },
         {
           "id": "watch-and-watcheffect-are-equivalent-so-choice-is-mostly-preference",
@@ -4641,7 +4641,7 @@
         },
         {
           "id": "watcheffect-is-safer-because-vue-prevents-loops-automatically",
-          "label": "The better explanation is that `watchEffect()` is usually the safer default because Vue automatically filters out accidental dependencies and prevents self-triggered loops for you."
+          "label": "The first explanation is correct: a direct synchronous `watchEffect(() => count.value++)` always retriggers itself forever, exactly like a watch callback that mutates its source."
         }
       ],
       "correctOptionId": "watch-is-explicit-while-watcheffect-is-automatic-and-easier-to-misuse",

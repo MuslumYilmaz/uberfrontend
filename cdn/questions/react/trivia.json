@@ -5744,16 +5744,16 @@
     ],
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain the timing difference between useEffect and useLayoutEffect in the render/commit/paint pipeline, why useLayoutEffect blocks painting, and when it is required (DOM measurements, preventing visual flicker) versus when useEffect is preferred.",
+    "description": "Explain the timing guarantees of useEffect and useLayoutEffect, why useLayoutEffect blocks repainting, and when layout work needs a pre-paint guarantee. Passive effects generally run after paint for non-interaction updates, but interaction-caused effects may run before paint.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br><code>useEffect</code> runs <strong>after the browser paints</strong>. <code>useLayoutEffect</code> runs <strong>synchronously after DOM mutations but before the browser paints</strong>. The difference matters when you need to <em>read or write layout</em> and avoid visual flicker."
+          "text": "<strong>Short answer</strong><br><br>Passive <code>useEffect</code> callbacks generally run after paint for non-interaction updates, but React may run an interaction-caused effect before paint. Unlike <code>useLayoutEffect</code>, <code>useEffect</code> does not provide a pre-paint guarantee. <code>useLayoutEffect</code> runs after DOM mutations and blocks repainting until its setup and synchronous state updates finish, which matters for layout measurement and visible corrections."
         },
         {
           "type": "text",
-          "text": "<strong>The render pipeline (mental model)</strong><br><br>Roughly, React does this:<br><br>1) Render (compute virtual tree)<br>2) Commit (apply DOM changes)<br>3) <strong>useLayoutEffect runs here (before paint)</strong><br>4) Browser paints to screen<br>5) <strong>useEffect runs here (after paint)</strong>"
+          "text": "<strong>The render pipeline (mental model)</strong><br><br>For a typical non-interaction update, a useful model is:<br><br>1) Render (compute the next tree)<br>2) Commit (apply DOM changes)<br>3) <strong>useLayoutEffect runs and completes before repaint</strong><br>4) Browser may paint the screen<br>5) <strong>useEffect generally runs afterward</strong><br><br>This is not an absolute useEffect timeline: React may run an effect caused by an interaction before paint. The stable distinction is that useEffect offers no pre-paint guarantee, while useLayoutEffect does."
         },
         {
           "type": "list",
@@ -5770,15 +5770,15 @@
             ],
             [
               "useEffect",
-              "After paint",
-              "❌ No (non-blocking)"
+              "Generally after paint for non-interaction updates; may run before paint for interactions",
+              "No layout-style pre-paint guarantee"
             ]
           ],
           "caption": "The critical timing difference"
         },
         {
           "type": "text",
-          "text": "<strong>Why this difference exists</strong><br><br><code>useLayoutEffect</code> exists for code that must <em>synchronously</em> read or modify the DOM <strong>before the user sees anything</strong>. <code>useEffect</code> is for everything else (data fetching, subscriptions, logging, timers, etc.)."
+          "text": "<strong>Why this difference exists</strong><br><br><code>useLayoutEffect</code> exists for code that must synchronously read or modify layout before repaint. <code>useEffect</code> is the default for synchronization that does not require that guarantee, such as subscriptions, logging, timers, or network coordination. Its exact position relative to paint can vary with the cause of the update."
         },
         {
           "type": "code",
@@ -5787,7 +5787,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What happens if you use useEffect for layout work?</strong><br><br>The browser will:<br>• Paint the UI once<br>• Then your effect runs<br>• Then you update layout/state<br>• Then it paints again<br><br>The user sees a <strong>visual flicker / jump</strong>."
+          "text": "<strong>What happens if you use useEffect for layout work?</strong><br><br>Because <code>useEffect</code> provides no pre-paint guarantee, the browser may paint the initial layout before the effect measures and corrects it. A later state update can then cause another paint, producing a visible flicker or jump. Use <code>useLayoutEffect</code> only when that pre-paint correction is required."
         },
         {
           "type": "code",
@@ -5840,7 +5840,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>When you should use useEffect (almost always)</strong><br><br>• Data fetching<br>• Subscriptions / event listeners<br>• Logging / analytics<br>• Timers<br>• Syncing with external systems<br><br>These do not need to block paint and should not slow down rendering."
+          "text": "<strong>When you should use useEffect (almost always)</strong><br><br>• Data fetching<br>• Subscriptions / event listeners<br>• Logging / analytics<br>• Timers<br>• Syncing with external systems<br><br>These usually do not require a pre-paint layout guarantee. Their scheduling relative to paint can still vary, especially when an interaction causes the update."
         },
         {
           "type": "text",
@@ -5856,11 +5856,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"useLayoutEffect runs synchronously after DOM mutations but before paint and blocks rendering, so it’s for layout measurement and visual correctness. useEffect runs after paint and is non-blocking, so it’s for side effects like data fetching and subscriptions. You should prefer useEffect unless you need to prevent visual flicker.\"</em>"
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Passive effects generally run after paint for non-interaction updates, but React may run an interaction-caused effect before paint. Unlike useLayoutEffect, useEffect does not provide a pre-paint guarantee. useLayoutEffect blocks repainting, so reserve it for layout measurement or corrections that must be invisible to the user.\"</em>"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br><code>useLayoutEffect</code> runs before the browser paints and blocks rendering, making it suitable for DOM measurements and layout corrections. <code>useEffect</code> runs after paint and should be used for most side effects. Overusing <code>useLayoutEffect</code> hurts performance, so only use it when visual correctness requires it."
+          "text": "<strong>Summary</strong><br><br><code>useLayoutEffect</code> runs after DOM mutations and blocks repainting, making it suitable for layout work that needs a pre-paint guarantee. <code>useEffect</code> is preferred for most external synchronization, but it is not accurate to promise that it always runs after paint. Overusing <code>useLayoutEffect</code> hurts performance, so use it only when visual correctness requires that guarantee."
         }
       ]
     },
@@ -5873,10 +5873,10 @@
       "performance",
       "dom"
     ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-14",
     "seo": {
       "title": "useEffect vs useLayoutEffect: what is the difference?",
-      "description": "useLayoutEffect runs synchronously after DOM mutations but before paint, while useEffect runs after paint for non-blocking side effects."
+      "description": "useLayoutEffect guarantees layout work before repaint; useEffect generally follows paint for non-interaction updates but may run before paint for interactions."
     },
     "incidentCard": {
       "title": "Layout Flicker Timing Root Cause Check",
@@ -5884,7 +5884,7 @@
       "options": [
         {
           "id": "post-paint-layout-fix",
-          "label": "The layout measurement/update runs after paint in useEffect, so users see a frame before correction; this is a useLayoutEffect timing case."
+          "label": "useEffect gives this layout correction no pre-paint guarantee, so users can see a frame before it; this is a useLayoutEffect timing case."
         },
         {
           "id": "uselayouteffect-after-paint",
@@ -5896,7 +5896,7 @@
         }
       ],
       "correctOptionId": "post-paint-layout-fix",
-      "rereadPrompt": "Close. Re-read effect timing: useEffect runs after paint, while useLayoutEffect can run before paint for layout-critical updates."
+      "rereadPrompt": "Close. Re-read the guarantee: useEffect may run on either side of paint, while useLayoutEffect completes layout-critical work before repaint."
     }
   },
   {

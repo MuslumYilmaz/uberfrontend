@@ -66,13 +66,39 @@ type SystemDesignContext = BuildContext & {
 
 const DEFAULT_TECH = 'frontend';
 
-const normalizeText = (text: string): string =>
-  String(text || '')
-    .replace(/<[^>]+>/g, ' ')
+const EDITORIAL_HTML_TAG_PATTERN = /<\/?(?:a|b|blockquote|br|code|del|div|em|h[1-6]|hr|i|ins|kbd|li|mark|ol|p|pre|s|small|span|strong|sub|sup|table|tbody|td|th|thead|tr|u|ul)\b[^>]*\/?>/gi;
+
+const decodeEditorialEntitiesOnce = (text: string): string =>
+  text.replace(/&(#(?:x[\da-f]+|\d+)|[a-z]+);/gi, (match, entity: string) => {
+    const normalized = entity.toLowerCase();
+    const named: Record<string, string> = {
+      amp: '&',
+      apos: "'",
+      gt: '>',
+      lt: '<',
+      nbsp: ' ',
+      quot: '"',
+    };
+    if (named[normalized] !== undefined) return named[normalized];
+    if (!normalized.startsWith('#')) return match;
+
+    const isHex = normalized.startsWith('#x');
+    const value = Number.parseInt(normalized.slice(isHex ? 2 : 1), isHex ? 16 : 10);
+    if (!Number.isInteger(value) || value < 0 || value > 0x10ffff) return match;
+    return String.fromCodePoint(value);
+  });
+
+export const normalizeEditorialPlainText = (text: string): string => {
+  const withoutMarkup = String(text || '').replace(EDITORIAL_HTML_TAG_PATTERN, ' ');
+  const decoded = decodeEditorialEntitiesOnce(decodeEditorialEntitiesOnce(withoutMarkup));
+  return decoded
     .replace(/`+/g, '')
     .replace(/\*\*/g, '')
     .replace(/\s+/g, ' ')
     .trim();
+};
+
+const normalizeText = normalizeEditorialPlainText;
 
 const trimWords = (text: string, maxWords: number): string => {
   const clean = normalizeText(text);

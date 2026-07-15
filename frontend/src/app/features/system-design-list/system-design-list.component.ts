@@ -132,7 +132,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   readonly premiumSignals = [
     'Full RADIO breakdowns for premium prompts',
     'Tradeoff framing for state, APIs, caching, rendering, and performance',
-    'Preview pages stay indexable while full solutions stay protected',
+    'Free previews explain the prompt while full premium solutions stay protected',
   ];
 
   readonly relatedFocusLinks = [
@@ -192,49 +192,49 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   readonly priorityQuestions = [
     {
       title: 'Infinite Scroll List System Design',
-      keyword: 'design infinite scroll frontend system design',
+      keyword: 'Infinite lists',
       detail: 'Pagination, virtualization, loading states, and scroll performance.',
       route: ['/', 'system-design', 'infinite-scroll-list'],
     },
     {
       title: 'Design a Toast Notification System',
-      keyword: 'design toast notification system',
+      keyword: 'Notification systems',
       detail: 'Global toast APIs, timers, stacking, portals, cleanup, and accessible announcements.',
       route: ['/', 'system-design', 'notification-toast-system'],
     },
     {
       title: 'Real-time Search with Debounce & Caching',
-      keyword: 'design autocomplete frontend system design',
+      keyword: 'Autocomplete and search',
       detail: 'Debounce, cancellation, stale responses, caching, and perceived speed.',
       route: ['/', 'system-design', 'realtime-search-debounce-cache'],
     },
     {
       title: 'News Feed / Timeline Front-End System Design',
-      keyword: 'design news feed frontend system design',
+      keyword: 'Feeds and timelines',
       detail: 'Feed hydration, cursor pagination, media lazy loading, and realtime updates.',
       route: ['/', 'system-design', 'news-feed-timeline'],
     },
     {
       title: 'AI Chat Text Area',
-      keyword: 'design chat app frontend system design',
+      keyword: 'Streaming chat',
       detail: 'Streaming responses, persistence, cancellation, API contracts, and UX control.',
       route: ['/', 'system-design', 'ai-chat-textarea-design'],
     },
     {
       title: 'Component-driven Design System Architecture',
-      keyword: 'frontend system design UI component questions',
+      keyword: 'Design systems',
       detail: 'Tokens, component APIs, accessibility contracts, theming, and versioning.',
       route: ['/', 'system-design', 'component-design-system-architecture'],
     },
     {
       title: 'Live Comments for Global Streams',
-      keyword: 'frontend system design realtime UI',
+      keyword: 'Realtime collaboration',
       detail: 'WebSocket/SSE updates, buffering, moderation UI, and burst control.',
       route: ['/', 'system-design', 'live-comments-global-stream'],
     },
     {
       title: 'Dashboard with Draggable & Resizable Widgets',
-      keyword: 'staff frontend engineer system design interview',
+      keyword: 'Staff-level dashboards',
       detail: 'Layout persistence, drag/resize performance, constraints, and ownership boundaries.',
       route: ['/', 'system-design', 'dashboard-widgets-draggable-resizable'],
     },

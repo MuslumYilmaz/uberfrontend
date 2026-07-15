@@ -642,9 +642,9 @@ describe('CodingDetailComponent', () => {
     expect(descriptionText).toContain('Adopt another Promise when resolve(Promise.resolve(value)) is used');
     expect(descriptionText).toContain('Examples');
     expect(descriptionText).toContain('// At t=0');
-    expect(host.querySelector('pre.lite-code')?.textContent || '').toContain("await d.promise; // 'ok'");
+    expect(host.querySelector('pre.lite-code')?.textContent || '').toContain("await adopted.promise; // 'ok'");
     expect(component.combinedExamples()).toContain('// At t=0');
-    expect(component.combinedExamples()).toContain("await d.promise; // 'ok'");
+    expect(component.combinedExamples()).toContain("await adopted.promise; // 'ok'");
     expect(descriptionText).not.toContain('Common interview follow-ups');
     expect(descriptionText).not.toContain('Guides');
     expect(descriptionText).not.toContain('Preparing for interviews');
@@ -723,6 +723,30 @@ describe('CodingDetailComponent', () => {
     component.tech = 'css';
     expect(component.interviewQuestionsHubRoute()).toEqual(['/css/interview-questions']);
     expect(component.interviewQuestionsHubLabel()).toBe('CSS interview questions');
+  });
+
+  it('preserves threshold comparators and JSX-like tokens in locked editorial previews', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.question.set({
+      id: 'react-progress-bar-thresholds',
+      title: 'React Progress Bar',
+      type: 'coding',
+      technology: 'react',
+      access: 'premium',
+      tags: ['react', 'state'],
+      description: {
+        summary: '<strong>Thresholds:</strong> &lt;34 red, 34–66 orange, &gt;66 green with Array<T> and <ProgressBar />.',
+      },
+    } as any);
+
+    expect(component.lockedSummary()).toBe(
+      'Thresholds: <34 red, 34–66 orange, >66 green with Array<T> and <ProgressBar />.'
+    );
+    expect(component.lockedPreview()?.what).toContain('<34 red, 34–66 orange, >66 green');
+    expect(component.lockedPreview()?.what).toContain('Array<T>');
+    expect(component.lockedPreview()?.what).toContain('<ProgressBar />');
   });
 
   it('uses explicit related links for cross-bank coding page recommendations', () => {
@@ -923,7 +947,7 @@ describe('CodingDetailComponent', () => {
 
     expect(payload.title).toBe('CSS Variables Dark Mode Challenge | FrontendAtlas');
     expect(payload.description).toBe(
-      'Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.'
+      'Practice CSS custom properties with prefers-color-scheme and an equal-specificity :root:where(.theme-dark) override whose later source order wins.'
     );
     expect(payload.canonical).toBe('https://frontendatlas.com/css/coding/css-theme-variables-dark-mode');
     expect(payload.ogType).toBe('article');
@@ -1186,7 +1210,8 @@ describe('CodingDetailComponent', () => {
     expect(host.querySelector('[data-testid="question-title"]')?.textContent || '').toContain('Theming with CSS Variables');
     expect(pageText).toContain('CSS custom properties');
     expect(pageText).toContain('prefers-color-scheme');
-    expect(pageText).toContain('html.theme-dark');
+    expect(pageText).toContain(':root:where(.theme-dark)');
+    expect(pageText).toContain('equal specificity');
     expect(pageText).toContain('Acceptance criteria');
     expect(pageText).toContain('Common mistakes');
     expect(pageText).toContain('Interview explanation');
@@ -1242,7 +1267,7 @@ function makeDeferredPromiseQuestion() {
       },
       examples: [
         "// Example: timeline\n// At t=0\nconst d = createDeferred();\nconst result = d.promise.then((value) => `loaded:${value}`);\n\n// At t=50\n// d.promise is still pending because neither resolve nor reject has been called.\n\n// At t=100\nd.resolve('user');\n\n// After the next microtask\nawait result; // 'loaded:user'",
-        "// Promise adoption\nconst d = createDeferred();\nd.resolve(Promise.resolve('ok'));\nawait d.promise; // 'ok'",
+        "// Promise adoption\nconst adopted = createDeferred();\nadopted.resolve(Promise.resolve('ok'));\nawait adopted.promise; // 'ok'",
       ],
     },
     starterCode: "export default function createDeferred() {\n  throw new Error('Not implemented');\n}\n",
@@ -1287,17 +1312,17 @@ function makeCssThemeVariablesQuestion() {
     difficulty: 'intermediate',
     tags: ['css', 'variables', 'custom-properties', 'dark-mode', 'theming', 'cascade'],
     description: {
-      summary: 'Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual html.theme-dark override after the media query so it wins by source order.',
+      summary: 'Create a themeable panel using CSS custom properties. Define light defaults on :root, redefine the same tokens for OS dark mode via @media (prefers-color-scheme: dark), then add a manual :root:where(.theme-dark) override after the media query. Both root selectors have equal specificity, so later source order wins.',
       specs: {
         practice: [
           'CSS custom properties as live theme tokens',
           'prefers-color-scheme for OS-level dark mode',
-          'Manual root-level theme overrides with html.theme-dark',
+          'Manual root-level theme overrides with :root:where(.theme-dark)',
         ],
         requirements: [
           'Define light theme tokens on :root: --bg, --text, --surface, --accent, --border, --accent-contrast, and --panel-shadow.',
           'Define dark values for the same tokens inside @media (prefers-color-scheme: dark).',
-          'Define html.theme-dark after the media query and repeat the dark token values there.',
+          'Define :root:where(.theme-dark) after the media query and repeat the dark token values there.',
         ],
         acceptanceCriteria: [
           'No hard-coded component colors or colored shadows remain inside .panel or .btn.',
@@ -1306,18 +1331,18 @@ function makeCssThemeVariablesQuestion() {
         expectedBehaviorIntro: 'Your CSS theme should:',
         expectedBehavior: [
           'Render a light theme by default from :root tokens.',
-          'Let html.theme-dark win because it is declared after the media query.',
+          'Let :root:where(.theme-dark) win because it has equal specificity and is declared later.',
         ],
         implementationNotes: [
-          'Keep the same variable names across :root, @media (prefers-color-scheme: dark), and html.theme-dark.',
+          'Keep the same variable names across :root, @media (prefers-color-scheme: dark), and :root:where(.theme-dark).',
         ],
         commonMistakes: [
-          'Placing html.theme-dark before the media query so the OS preference can override the manual class.',
+          'Placing :root:where(.theme-dark) before the media query so the later equal-specificity OS rule wins.',
         ],
         interviewExplanation: 'CSS custom properties let a design system swap values at runtime without rewriting every component. prefers-color-scheme respects the user OS preference, while a root class gives product UI a manual override.',
         testingChecklist: [
           'Test with a light OS preference and confirm :root values are used.',
-          'Add html.theme-dark manually and confirm it wins over the OS preference.',
+          'Add the theme-dark class manually and confirm :root:where(.theme-dark) wins over the OS preference.',
         ],
       },
     },
@@ -1326,14 +1351,14 @@ function makeCssThemeVariablesQuestion() {
       starterCss: 'html, body { height: 100%; }\nbody { background: var(--bg); color: var(--text); }\n.panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: var(--panel-shadow); }\n.btn { background: var(--accent); color: var(--accent-contrast); border: 0; }',
     },
     solutionBlock: {
-      overview: 'A high-signal CSS theming setup is tokens on :root, OS dark override via prefers-color-scheme, then html.theme-dark declared later.',
+      overview: 'A high-signal CSS theming setup is tokens on :root, an OS dark override, then an equal-specificity :root:where(.theme-dark) rule declared later.',
       approaches: [],
     },
     access: 'free',
-    updatedAt: '2026-01-30',
+    updatedAt: '2026-07-14',
     seo: {
       title: 'CSS Variables Dark Mode Challenge | FrontendAtlas',
-      description: 'Practice CSS custom properties by building a light/dark theme with prefers-color-scheme and a manual html.theme-dark override.',
+      description: 'Practice CSS custom properties with prefers-color-scheme and an equal-specificity :root:where(.theme-dark) override whose later source order wins.',
       h1IntentLabel: 'Theming with CSS Variables',
     },
   };
