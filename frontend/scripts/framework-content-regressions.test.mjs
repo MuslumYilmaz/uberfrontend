@@ -23,10 +23,140 @@ function fileCode(asset, file) {
   return typeof value === 'string' ? value : value.code;
 }
 
-function assertMirror(relative) {
-  const cdn = read(`cdn/${relative}`);
-  const fallback = read(`frontend/src/assets/${relative}`);
-  assert.equal(fallback, cdn, `Frontend fallback drifted from CDN: ${relative}`);
+function assertMirror(relative, label = relative) {
+  const cdnPath = `cdn/${relative}`;
+  const fallbackPath = `frontend/src/assets/${relative}`;
+  assert.ok(fs.existsSync(path.join(repoRoot, cdnPath)), `${label}: missing canonical CDN asset ${cdnPath}`);
+  assert.ok(fs.existsSync(path.join(repoRoot, fallbackPath)), `${label}: missing frontend fallback asset ${fallbackPath}`);
+  const cdn = read(cdnPath);
+  const fallback = read(fallbackPath);
+  assert.equal(fallback, cdn, `${label}: frontend fallback drifted from CDN (${relative})`);
+}
+
+function normalizedAssetFiles(asset, label) {
+  const files = {};
+  for (const [pathRaw, value] of Object.entries(asset?.files ?? {})) {
+    const normalizedPath = String(pathRaw).replace(/^\/+/, '');
+    const source = typeof value === 'string' ? value : value?.code;
+    assert.equal(
+      typeof source,
+      'string',
+      `${label}: ${normalizedPath} must contain string source`
+    );
+    files[normalizedPath] = source;
+  }
+  return files;
+}
+
+const frameworkStarterTaskMarker =
+  /\b(?:TODO|FIXME|BUG)\b|\bImplement in the solution\b|\bNot implemented\b|throw new Error\s*\(/i;
+
+function assertFrameworkStarterCorpus() {
+  const assetOwners = new Map();
+
+  for (const technology of ['react', 'angular', 'vue']) {
+    const questions = json(`cdn/questions/${technology}/coding.json`);
+
+    for (const question of questions) {
+      const starterReference = question.sdk?.asset;
+      const solutionReference = question.solutionAsset;
+      const questionLabel = `${technology}:${question.id}`;
+
+      assert.equal(
+        typeof starterReference,
+        'string',
+        `${questionLabel}: missing sdk.asset starter reference`
+      );
+      assert.equal(
+        typeof solutionReference,
+        'string',
+        `${questionLabel}: missing solutionAsset reference`
+      );
+      assert.match(
+        starterReference,
+        new RegExp(`^assets/sb/${technology}/question/.+\\.json$`),
+        `${questionLabel}: starter must reference assets/sb/${technology}/question/*.json`
+      );
+      assert.match(
+        solutionReference,
+        new RegExp(`^assets/sb/${technology}/solution/.+\\.json$`),
+        `${questionLabel}: solution must reference assets/sb/${technology}/solution/*.json`
+      );
+      assert.notEqual(
+        starterReference,
+        solutionReference,
+        `${questionLabel}: starter and solution references must be distinct`
+      );
+
+      for (const [kind, reference] of [
+        ['starter', starterReference],
+        ['solution', solutionReference],
+      ]) {
+        const previousOwner = assetOwners.get(reference);
+        assert.equal(
+          previousOwner,
+          undefined,
+          `${questionLabel}: ${kind} asset ${reference} is already owned by ${previousOwner}`
+        );
+        assetOwners.set(reference, `${questionLabel}:${kind}`);
+      }
+
+      const starterRelative = starterReference.replace(/^assets\//, '');
+      const solutionRelative = solutionReference.replace(/^assets\//, '');
+      assertMirror(starterRelative, `${questionLabel}:starter`);
+      assertMirror(solutionRelative, `${questionLabel}:solution`);
+
+      const starterFiles = normalizedAssetFiles(
+        json(`cdn/${starterRelative}`),
+        `${questionLabel}:starter`
+      );
+      const solutionFiles = normalizedAssetFiles(
+        json(`cdn/${solutionRelative}`),
+        `${questionLabel}:solution`
+      );
+      const sourcePaths = [...new Set([
+        ...Object.keys(starterFiles),
+        ...Object.keys(solutionFiles),
+      ])]
+        .filter((file) => file.startsWith('src/'))
+        .sort();
+
+      assert.ok(
+        sourcePaths.length > 0,
+        `${questionLabel}: starter and solution assets must contain src/ files`
+      );
+
+      const differingSourcePaths = sourcePaths.filter(
+        (file) => starterFiles[file] !== solutionFiles[file]
+      );
+      assert.ok(
+        differingSourcePaths.length > 0,
+        `${questionLabel}: starter ${starterReference} exposes the canonical solution; at least one src/ file must differ`
+      );
+
+      const starterSource = Object.entries(starterFiles)
+        .filter(([file]) => file.startsWith('src/'))
+        .map(([file, source]) => `${file}\n${source}`)
+        .join('\n');
+      assert.match(
+        starterSource,
+        frameworkStarterTaskMarker,
+        `${questionLabel}: starter ${starterReference} must contain an explicit TODO/FIXME/BUG or equivalent task placeholder`
+      );
+    }
+  }
+
+  for (const relative of [
+    'sb/vue/question/vue-todo-list.v1.json',
+    'sb/vue/question/vue-todo-list.v2.json',
+  ]) {
+    assertMirror(relative, `vue:vue-todo-list:${relative}`);
+  }
+  assert.equal(
+    read('cdn/sb/vue/question/vue-todo-list.v1.json'),
+    read('cdn/sb/vue/question/vue-todo-list.v2.json'),
+    'vue:vue-todo-list: legacy v1 and current v2 starter copies must stay synchronized'
+  );
 }
 
 const deprecatedAngularControlFlow =
@@ -791,6 +921,7 @@ assert.match(strictEffectSolutionCode, /connection\.connect\(\)/);
 assert.match(strictEffectSolutionCode, /return \(\) => connection\.disconnect\(\)/);
 assert.match(strictEffectSolutionCode, /\[roomId, onActiveCount\]/);
 
+assertFrameworkStarterCorpus();
 assertModernAngularCodingCorpus();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');

@@ -157,6 +157,10 @@ describe('CodeStorageService framework save guards', () => {
   const qid = 'spec-framework-empty-guard';
   const tech = 'react';
   const path = 'src/App.tsx';
+  const starters = {
+    [path]: 'export default function App() { return <div>Starter</div>; }',
+    'src/App.css': '.starter { color: white; }',
+  };
 
   beforeEach(async () => {
     service = new CodeStorageService();
@@ -165,6 +169,35 @@ describe('CodeStorageService framework save guards', () => {
 
   afterEach(async () => {
     await service.clearFrameworkAsync(tech, qid);
+  });
+
+  it('initializes a fresh framework workspace from starter baselines only', async () => {
+    const initial = await service.initFrameworkAsync(qid, tech, starters, path);
+
+    expect(initial).toEqual({
+      files: starters,
+      entryFile: path,
+      restored: false,
+    });
+
+    const snapshot = await service.getFrameworkDraftSnapshotAsync(tech, qid);
+    expect(snapshot?.files[path]).toEqual({
+      code: '',
+      baseline: starters[path],
+    });
+  });
+
+  it('prefers saved framework user code over the starter baseline', async () => {
+    await service.initFrameworkAsync(qid, tech, starters, path);
+    const userCode = 'export default function App() { return <div>User draft</div>; }';
+    await service.saveFrameworkFileAsync(qid, tech, path, userCode, { force: true });
+
+    const restored = await service.initFrameworkAsync(qid, tech, starters, path);
+
+    expect(restored.files[path]).toBe(userCode);
+    expect(restored.files['src/App.css']).toBe(starters['src/App.css']);
+    expect(restored.entryFile).toBe(path);
+    expect(restored.restored).toBeTrue();
   });
 
   it('keeps existing non-empty framework code when an empty save is not explicitly allowed', async () => {

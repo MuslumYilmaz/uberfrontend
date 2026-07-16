@@ -340,14 +340,14 @@
       }
     },
     "sdk": {
-      "asset": "assets/sb/vue/question/vue-todo-list.v1.json",
+      "asset": "assets/sb/vue/question/vue-todo-list.v2.json",
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-todo-list"
     },
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-16",
     "seo": {
       "title": "Build Vue Todo List (Add Toggle Remove)",
       "description": "Create a todo list that supports adding tasks, toggling completion, removing items, and clearing completed entries."

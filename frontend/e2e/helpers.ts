@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export const JS_QUESTION = {
   tech: 'javascript',
@@ -45,152 +45,164 @@ export async function waitForIndexedDbContains(
   page: Page,
   opts: { dbName: string; storeName: string; key: string; substring: string }
 ) {
-  await page.waitForFunction(async ({ dbName, storeName, key, substring }) => {
-    try {
-      const openReq = indexedDB.open(dbName);
-      const db = await new Promise<IDBDatabase>((resolve, reject) => {
-        openReq.onsuccess = () => resolve(openReq.result);
-        openReq.onerror = () => reject(openReq.error);
-      });
-
+  await expect.poll(
+    () => page.evaluate(async ({ dbName, storeName, key, substring }) => {
       try {
-        let raw: unknown = null;
+        const openReq = indexedDB.open(dbName);
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          openReq.onsuccess = () => resolve(openReq.result);
+          openReq.onerror = () => reject(openReq.error);
+        });
+
         try {
-          const tx = db.transaction(storeName, 'readonly');
-          const store = tx.objectStore(storeName);
-          const getReq = store.get(key);
-          raw = await new Promise<unknown>((resolve) => {
-            getReq.onsuccess = () => resolve(getReq.result);
-            getReq.onerror = () => resolve(null);
-          });
-        } catch {
-          return false;
+          let raw: unknown = null;
+          try {
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const getReq = store.get(key);
+            raw = await new Promise<unknown>((resolve) => {
+              getReq.onsuccess = () => resolve(getReq.result);
+              getReq.onerror = () => resolve(null);
+            });
+          } catch {
+            return false;
+          }
+          return typeof raw === 'string' && raw.includes(substring);
+        } finally {
+          try { db.close(); } catch { /* ignore */ }
         }
-        return typeof raw === 'string' && raw.includes(substring);
-      } finally {
-        try { db.close(); } catch { /* ignore */ }
+      } catch {
+        return false;
       }
-    } catch {
-      return false;
-    }
-  }, opts);
+    }, opts),
+    { timeout: 15_000 },
+  ).toBe(true);
 }
 
 export async function waitForIndexedDbNotContains(
   page: Page,
   opts: { dbName: string; storeName: string; key: string; substring: string }
 ) {
-  await page.waitForFunction(async ({ dbName, storeName, key, substring }) => {
-    try {
-      const openReq = indexedDB.open(dbName);
-      const db = await new Promise<IDBDatabase>((resolve, reject) => {
-        openReq.onsuccess = () => resolve(openReq.result);
-        openReq.onerror = () => reject(openReq.error);
-      });
-
+  await expect.poll(
+    () => page.evaluate(async ({ dbName, storeName, key, substring }) => {
       try {
-        let raw: unknown = null;
+        const openReq = indexedDB.open(dbName);
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          openReq.onsuccess = () => resolve(openReq.result);
+          openReq.onerror = () => reject(openReq.error);
+        });
+
         try {
-          const tx = db.transaction(storeName, 'readonly');
-          const store = tx.objectStore(storeName);
-          const getReq = store.get(key);
-          raw = await new Promise<unknown>((resolve) => {
-            getReq.onsuccess = () => resolve(getReq.result);
-            getReq.onerror = () => resolve(null);
-          });
-        } catch {
-          return true;
+          let raw: unknown = null;
+          try {
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const getReq = store.get(key);
+            raw = await new Promise<unknown>((resolve) => {
+              getReq.onsuccess = () => resolve(getReq.result);
+              getReq.onerror = () => resolve(null);
+            });
+          } catch {
+            return true;
+          }
+          return typeof raw !== 'string' || !raw.includes(substring);
+        } finally {
+          try { db.close(); } catch { /* ignore */ }
         }
-        return typeof raw !== 'string' || !raw.includes(substring);
-      } finally {
-        try { db.close(); } catch { /* ignore */ }
+      } catch {
+        return true;
       }
-    } catch {
-      return true;
-    }
-  }, opts);
+    }, opts),
+    { timeout: 15_000 },
+  ).toBe(true);
 }
 
 export async function waitForIndexedDbKeyPrefixContains(
   page: Page,
   opts: { dbName: string; storeName: string; keyPrefix: string; substring: string }
 ) {
-  await page.waitForFunction(async ({ dbName, storeName, keyPrefix, substring }) => {
-    try {
-      const openReq = indexedDB.open(dbName);
-      const db = await new Promise<IDBDatabase>((resolve, reject) => {
-        openReq.onsuccess = () => resolve(openReq.result);
-        openReq.onerror = () => reject(openReq.error);
-      });
-
+  await expect.poll(
+    () => page.evaluate(async ({ dbName, storeName, keyPrefix, substring }) => {
       try {
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-
-        return await new Promise<boolean>((resolve) => {
-          const req = store.openCursor();
-          req.onsuccess = () => {
-            const cursor = req.result;
-            if (!cursor) return resolve(false);
-            const k = String(cursor.key ?? '');
-            if (k.startsWith(String(keyPrefix ?? ''))) {
-              const v = cursor.value;
-              if (typeof v === 'string' && v.includes(String(substring ?? ''))) {
-                return resolve(true);
-              }
-            }
-            cursor.continue();
-          };
-          req.onerror = () => resolve(false);
+        const openReq = indexedDB.open(dbName);
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          openReq.onsuccess = () => resolve(openReq.result);
+          openReq.onerror = () => reject(openReq.error);
         });
-      } finally {
-        try { db.close(); } catch { /* ignore */ }
+
+        try {
+          const tx = db.transaction(storeName, 'readonly');
+          const store = tx.objectStore(storeName);
+
+          return await new Promise<boolean>((resolve) => {
+            const req = store.openCursor();
+            req.onsuccess = () => {
+              const cursor = req.result;
+              if (!cursor) return resolve(false);
+              const k = String(cursor.key ?? '');
+              if (k.startsWith(String(keyPrefix ?? ''))) {
+                const v = cursor.value;
+                if (typeof v === 'string' && v.includes(String(substring ?? ''))) {
+                  return resolve(true);
+                }
+              }
+              cursor.continue();
+            };
+            req.onerror = () => resolve(false);
+          });
+        } finally {
+          try { db.close(); } catch { /* ignore */ }
+        }
+      } catch {
+        return false;
       }
-    } catch {
-      return false;
-    }
-  }, opts);
+    }, opts),
+    { timeout: 15_000 },
+  ).toBe(true);
 }
 
 export async function waitForIndexedDbKeyPrefixNotContains(
   page: Page,
   opts: { dbName: string; storeName: string; keyPrefix: string; substring: string }
 ) {
-  await page.waitForFunction(async ({ dbName, storeName, keyPrefix, substring }) => {
-    try {
-      const openReq = indexedDB.open(dbName);
-      const db = await new Promise<IDBDatabase>((resolve, reject) => {
-        openReq.onsuccess = () => resolve(openReq.result);
-        openReq.onerror = () => reject(openReq.error);
-      });
-
+  await expect.poll(
+    () => page.evaluate(async ({ dbName, storeName, keyPrefix, substring }) => {
       try {
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-
-        return await new Promise<boolean>((resolve) => {
-          const req = store.openCursor();
-          req.onsuccess = () => {
-            const cursor = req.result;
-            if (!cursor) return resolve(true);
-            const k = String(cursor.key ?? '');
-            if (k.startsWith(String(keyPrefix ?? ''))) {
-              const v = cursor.value;
-              if (typeof v === 'string' && v.includes(String(substring ?? ''))) {
-                return resolve(false);
-              }
-            }
-            cursor.continue();
-          };
-          req.onerror = () => resolve(true);
+        const openReq = indexedDB.open(dbName);
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          openReq.onsuccess = () => resolve(openReq.result);
+          openReq.onerror = () => reject(openReq.error);
         });
-      } finally {
-        try { db.close(); } catch { /* ignore */ }
+
+        try {
+          const tx = db.transaction(storeName, 'readonly');
+          const store = tx.objectStore(storeName);
+
+          return await new Promise<boolean>((resolve) => {
+            const req = store.openCursor();
+            req.onsuccess = () => {
+              const cursor = req.result;
+              if (!cursor) return resolve(true);
+              const k = String(cursor.key ?? '');
+              if (k.startsWith(String(keyPrefix ?? ''))) {
+                const v = cursor.value;
+                if (typeof v === 'string' && v.includes(String(substring ?? ''))) {
+                  return resolve(false);
+                }
+              }
+              cursor.continue();
+            };
+            req.onerror = () => resolve(true);
+          });
+        } finally {
+          try { db.close(); } catch { /* ignore */ }
+        }
+      } catch {
+        return true;
       }
-    } catch {
-      return true;
-    }
-  }, opts);
+    }, opts),
+    { timeout: 15_000 },
+  ).toBe(true);
 }
 
 export async function waitForIframeReady(page: Page, iframeTestId: string) {
