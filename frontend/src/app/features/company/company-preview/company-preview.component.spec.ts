@@ -70,6 +70,12 @@ describe('CompanyPreviewComponent', () => {
     expect(payload.canonical).toBe('/companies/openai/preview');
     expect(payload.robots).toBe('index,follow');
     expect(collection?.dateModified).toBe('2026-07-11T00:00:00.000Z');
+    expect(collection?.disambiguatingDescription).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
+    expect(collection?.mainEntity?.description).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
     expect(collection?.mainEntity?.itemListElement?.length).toBe(5);
     expect(collection?.mainEntity?.itemListElement?.[0]?.name).toBe('Streaming chat composer');
     expect(breadcrumb?.itemListElement?.[2]?.name).toBe('OpenAI Frontend Interview Questions');
@@ -93,6 +99,9 @@ describe('CompanyPreviewComponent', () => {
     expect(text).toContain('Day 7');
     expect(text).toContain('Bunlar leaked veya confirmed OpenAI questions değildir; role-relevant representative practice prompts’tur.');
     expect(text).toContain('Unlock the full OpenAI practice set');
+    expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
 
     expect(text).not.toContain('Openai');
     expect(text).not.toContain('Chat UI with Streaming Response');
@@ -141,12 +150,18 @@ describe('CompanyPreviewComponent', () => {
     expect(collection?.mainEntity?.['@id']).toBe(
       'https://frontendatlas.com/companies/google/preview#practice-prompts',
     );
+    expect(collection?.disambiguatingDescription).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
     expect(collection?.mentions?.length).toBe(8);
 
     expect(itemList?.['@id']).toBe(
       'https://frontendatlas.com/companies/google/preview#practice-prompts',
     );
     expect(itemList?.itemListElement?.length).toBe(7);
+    expect(itemList?.description).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
     expect(itemList?.itemListElement?.map((item: any) => item.name)).toEqual([
       'Traverse and transform a nested navigation tree',
       'Implement debounce with cancel and flush',
@@ -250,5 +265,21 @@ describe('CompanyPreviewComponent', () => {
     expect(host.textContent).toContain('optional framework-specific implementation drill');
     expect(hrefs).toContain('/companies');
     expect(hrefs).toContain('/pricing?src=company_preview_google');
+  });
+
+  it('frames generic company previews as editorial practice groupings', async () => {
+    const fixture = await createComponent('amazon');
+    const host: HTMLElement = fixture.nativeElement;
+    const text = host.textContent || '';
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+
+    expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
+    expect(text).toContain('editorial practice prompts');
+    expect(text).toContain('Sample FrontendAtlas practice prompts');
+    expect(text).not.toContain('known questions');
+    expect(payload.description).toContain('FrontendAtlas editorial Amazon practice grouping');
+    expect(payload.description).toContain('does not claim official question provenance or endorsement');
   });
 });

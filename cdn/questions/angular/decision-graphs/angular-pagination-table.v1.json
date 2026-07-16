@@ -1,0 +1,49 @@
+{
+  "questionId": "angular-pagination-table",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\n\ntype User = {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n};\n\nconst USERS: User[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },\n  { id: 3, name: 'Carla Perez', email: 'carla@example.com', role: 'Viewer' },\n  { id: 4, name: 'David Kim', email: 'david@example.com', role: 'Editor' },\n  { id: 5, name: 'Emma Brown', email: 'emma@example.com', role: 'Viewer' },\n  { id: 6, name: 'Frank Wu', email: 'frank@example.com', role: 'Admin' },\n  { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Viewer' },\n  { id: 8, name: 'Henry Ford', email: 'henry@example.com', role: 'Editor' },\n  { id: 9, name: 'Ivy Stone', email: 'ivy@example.com', role: 'Viewer' },\n  { id: 10, name: 'Jack Ryan', email: 'jack@example.com', role: 'Viewer' },\n  { id: 11, name: 'Karen Diaz', email: 'karen@example.com', role: 'Editor' },\n  { id: 12, name: 'Leo Walker', email: 'leo@example.com', role: 'Viewer' },\n  { id: 13, name: 'Mia Clark', email: 'mia@example.com', role: 'Admin' },\n  { id: 14, name: 'Noah Hall', email: 'noah@example.com', role: 'Viewer' },\n  { id: 15, name: 'Olivia King', email: 'olivia@example.com', role: 'Editor' },\n  { id: 16, name: 'Paul Green', email: 'paul@example.com', role: 'Viewer' },\n  { id: 17, name: 'Quinn Ross', email: 'quinn@example.com', role: 'Viewer' },\n  { id: 18, name: 'Rita Long', email: 'rita@example.com', role: 'Editor' },\n  { id: 19, name: 'Sam Young', email: 'sam@example.com', role: 'Viewer' },\n  { id: 20, name: 'Tina Fox', email: 'tina@example.com', role: 'Viewer' }\n];\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users = USERS;\n  readonly pageSize = 5;\n  currentPage = 0; // 0-based\n\n  get totalPages(): number {\n    return Math.ceil(this.users.length / this.pageSize) || 1;\n  }\n\n  get pagedUsers(): User[] {\n    const start = this.currentPage * this.pageSize;\n    const end = start + this.pageSize;\n    return this.users.slice(start, end);\n  }\n\n  get isFirstPage(): boolean {\n    return this.currentPage === 0;\n  }\n\n  get isLastPage(): boolean {\n    return this.currentPage >= this.totalPages - 1;\n  }\n\n  goToPrevious(): void {\n    if (!this.isFirstPage) {\n      this.currentPage--;\n    }\n  }\n\n  goToNext(): void {\n    if (!this.isLastPage) {\n      this.currentPage++;\n    }\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-derive-total-pages",
+          "title": "Derive total pages from data size",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 45,
+            "snippet": "return Math.ceil(this.users.length / this.pageSize) || 1;"
+          },
+          "why": "The page count follows the current collection and still provides one stable page for an empty dataset.",
+          "alternative": "Hard-code the number of pages independently from the rows.",
+          "tradeoff": "A minimum of one simplifies controls, though some products may prefer an explicit zero-page empty state."
+        },
+        {
+          "id": "d2-slice-current-page",
+          "title": "Derive only the visible rows",
+          "anchor": {
+            "lineStart": 51,
+            "lineEnd": 51,
+            "snippet": "return this.users.slice(start, end);"
+          },
+          "why": "A non-mutating slice keeps the source data intact while exposing exactly one page.",
+          "alternative": "Splice the canonical users array as navigation changes.",
+          "tradeoff": "The getter creates a small array per evaluation, but navigation remains reversible and predictable."
+        },
+        {
+          "id": "d3-guard-last-page",
+          "title": "Stop navigation at the last page",
+          "anchor": {
+            "lineStart": 69,
+            "lineEnd": 69,
+            "snippet": "if (!this.isLastPage) {"
+          },
+          "why": "The guard keeps currentPage inside the derived page range even if the method is called directly.",
+          "alternative": "Rely only on a disabled Next button in the template.",
+          "tradeoff": "Duplicating the boundary in component logic makes the method robust for keyboard and programmatic callers."
+        }
+      ]
+    }
+  }
+}

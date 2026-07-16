@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { throwError } from 'rxjs';
+import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
@@ -340,14 +341,15 @@ describe('PricingPlansSectionComponent', () => {
     const text = page.textContent || '';
     const items = Array.from(page.querySelectorAll('.weekly-changelog__item')) as HTMLAnchorElement[];
     const firstBullets = items[0]?.querySelectorAll('.weekly-changelog__bullets li') || [];
+    const latest = PUBLIC_CHANGELOG_ENTRIES[0];
 
     expect(text).toContain('Recent product updates');
     expect(text).not.toContain('What changed this week');
     expect(items.length).toBe(3);
-    expect(items[0].getAttribute('href') || '').toContain('/changelog#earned-badges-are-easier-to-see');
-    expect(items[0].textContent || '').toContain('New');
-    expect(items[0].textContent || '').toContain('Progress');
-    expect(items[0].textContent || '').toContain('Progress now feels more collectible');
+    expect(items[0].getAttribute('href') || '').toContain(`/changelog#${latest.id}`);
+    expect(items[0].textContent || '').toContain(latest.category);
+    expect(items[0].textContent || '').toContain(latest.area);
+    expect(items[0].textContent || '').toContain(latest.summary);
     expect(firstBullets.length).toBe(2);
   });
 });

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Observable, combineLatest, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { AccessLevel, Difficulty } from '../../../core/models/question.model';
+import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -205,6 +206,7 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
   styleUrls: ['./company-preview.component.css'],
 })
 export class CompanyPreviewComponent implements OnInit {
+  readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
   slug = '';
   label = '';
   isOpenAiPreview = false;
@@ -257,7 +259,7 @@ export class CompanyPreviewComponent implements OnInit {
 
     this.seo.updateTags({
       title: `${this.label} Frontend Interview Questions Preview`,
-      description: `Preview ${this.label} frontend interview question coverage across coding, concept prompts, and system design before unlocking premium.`,
+      description: `Preview the FrontendAtlas editorial ${this.label} practice grouping across coding, concept prompts, and system design. It does not claim official question provenance or endorsement.`,
       canonical: undefined,
     });
 
@@ -282,6 +284,10 @@ export class CompanyPreviewComponent implements OnInit {
 
   premiumCount(items: CompanyPreviewQuestion[]): number {
     return items.filter((item) => item.access === 'premium').length;
+  }
+
+  promptCountLabel(count: number): string {
+    return `${count} editorial practice ${count === 1 ? 'prompt' : 'prompts'}`;
   }
 
   displayKind(kind: CompanyPreviewQuestion['kind']): string {
@@ -360,6 +366,7 @@ export class CompanyPreviewComponent implements OnInit {
       name: OPENAI_PREVIEW_TITLE,
       headline: OPENAI_PREVIEW_H1,
       description: OPENAI_PREVIEW_DESCRIPTION,
+      disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
       inLanguage: 'en',
       dateModified: OPENAI_PREVIEW_DATE_MODIFIED,
       about: [
@@ -374,6 +381,7 @@ export class CompanyPreviewComponent implements OnInit {
       })),
       mainEntity: {
         '@type': 'ItemList',
+        description: COMPANY_PRACTICE_DISCLAIMER,
         itemListElement: OPENAI_PRACTICE_PROMPTS.map((prompt, index) => ({
           '@type': 'ListItem',
           position: index + 1,
@@ -423,6 +431,7 @@ export class CompanyPreviewComponent implements OnInit {
       '@type': 'ItemList',
       '@id': itemListId,
       name: 'Seven Google frontend interview practice questions',
+      description: COMPANY_PRACTICE_DISCLAIMER,
       numberOfItems: GOOGLE_PRACTICE_PROMPTS.length,
       itemListElement: GOOGLE_PRACTICE_PROMPTS.map((prompt, index) => ({
         '@type': 'ListItem',
@@ -439,6 +448,7 @@ export class CompanyPreviewComponent implements OnInit {
       name: GOOGLE_PREVIEW_TITLE,
       headline: GOOGLE_PREVIEW_H1,
       description: GOOGLE_PREVIEW_DESCRIPTION,
+      disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
       inLanguage: 'en',
       dateModified: GOOGLE_PREVIEW_DATE_MODIFIED,
       isAccessibleForFree: true,

@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -14,7 +15,7 @@ import { TradeoffBattleDetailResolved } from '../../../core/resolvers/tradeoff-b
 import { TradeoffBattleProgressService } from '../../../core/services/tradeoff-battle-progress.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
-import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import { buildLockedPreviewForTradeoff, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
@@ -31,80 +32,11 @@ type LockedPath = {
   queryParams?: Record<string, string>;
 };
 
-function normalizePreviewText(value: string): string {
-  return String(value || '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function trimWords(value: string, maxWords: number): string {
-  const normalized = normalizePreviewText(value);
-  if (!normalized) return '';
-  const words = normalized.split(/\s+/);
-  if (words.length <= maxWords) return normalized;
-  return `${words.slice(0, maxWords).join(' ')}…`;
-}
-
 function updatedLabel(value: string | null | undefined): string | null {
   if (!value) return null;
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return null;
   return parsed.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
-function buildTradeoffLockedPreview(
-  scenario: TradeoffBattleScenario,
-  candidates: TradeoffBattleListItem[],
-): LockedPreviewData {
-  const related = candidates
-    .filter((item) => item.id !== scenario.meta.id && item.tech === scenario.meta.tech)
-    .slice(0, 4)
-    .map((item) => ({
-      title: item.title,
-      to: ['/tradeoffs', item.id],
-      premium: item.access === 'premium',
-    }));
-
-  return {
-    what: `${scenario.meta.title}: commit to a direction, justify it with the prompt constraints, and explain when the alternative wins.`,
-    keyDecisions: [
-      'Pick a direction for this exact prompt, not the universal winner.',
-      'State the trade-off that matters most for this scenario.',
-      'Name when another option becomes the better answer.',
-      'Keep the explanation grounded in concrete constraints.',
-    ],
-    rubric: [
-      'Strong answers tie the recommendation to the prompt.',
-      'Good tradeoff reasoning explains downsides, not just upsides.',
-      'The answer should show when the recommendation stops being right.',
-      'Follow-up pressure should not break the argument.',
-    ],
-    unlockBullets: [
-      'Full option matrix with scenario-specific evaluation dimensions.',
-      'Example answer structure that defends tradeoffs under follow-up pressure.',
-      'Rubric for explaining when the alternative becomes stronger.',
-    ],
-    learningGoals: scenario.evaluationDimensions
-      .map((item) => trimWords(item.title, 10))
-      .filter(Boolean)
-      .slice(0, 4),
-    constraints: [
-      trimWords(scenario.prompt, 18),
-      ...scenario.options.slice(0, 3).map((item) => trimWords(item.summary, 16)),
-    ].filter(Boolean),
-    snippet: {
-      title: 'Options on the table',
-      lines: scenario.options.slice(0, 4).map((option) => `${option.label}: ${trimWords(option.summary, 14)}`),
-    },
-    pitfalls: [
-      'Arguing from preference instead of prompt constraints.',
-      'Pretending one option is always the winner.',
-      'Ignoring the main downside of the chosen direction.',
-      'Failing to explain when the alternative becomes stronger.',
-    ],
-    related,
-  };
 }
 
 @Component({
@@ -148,17 +80,10 @@ export class TradeoffDetailComponent {
   readonly lockedTitle = computed(() => this.battle()?.meta.title || 'Premium tradeoff battle');
   readonly lockedMemberCopy = computed(() => "You're on the free tier. Upgrade to access this premium tradeoff battle.");
   readonly lockedGuestCopy = computed(() => 'Upgrade to FrontendAtlas Premium to access this tradeoff battle. Already upgraded? Sign in to continue.');
-  readonly lockedSummary = computed(() => trimWords(this.battle()?.meta.summary || '', 45));
-  readonly lockedBullets = computed(() =>
-    (this.battle()?.options ?? [])
-      .map((item) => trimWords(item.label, 12))
-      .filter(Boolean)
-      .slice(0, 2),
-  );
   readonly lockedPreview = computed<LockedPreviewData | null>(() => {
     const scenario = this.battle();
     if (!scenario) return null;
-    return buildTradeoffLockedPreview(scenario, this.battleList());
+    return buildLockedPreviewForTradeoff(scenario.meta, this.battleList());
   });
   readonly lockedPaths = computed<LockedPath[]>(() => {
     const tech = this.battle()?.meta.tech || 'javascript';
@@ -369,7 +294,7 @@ export class TradeoffDetailComponent {
       isAccessibleForFree: accessibleForFree,
       keywords: meta.tags.join(', '),
       dateModified: `${meta.updatedAt}T00:00:00Z`,
-      author: { '@type': 'Organization', name: 'FrontendAtlas' },
+      author: publicEditorialAuthorSchema(),
       publisher: {
         '@type': 'Organization',
         name: 'FrontendAtlas',

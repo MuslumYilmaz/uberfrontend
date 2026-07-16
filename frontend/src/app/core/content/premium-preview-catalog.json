@@ -1,0 +1,595 @@
+{
+  "javascript/coding/js-reverse-string": {
+    "summary": "Reverse text without mutating the input, while preserving every character in the correct order.",
+    "learningOutcomes": [
+      "Traverse a string from its final character to its first.",
+      "Build a new result without relying on array reversal.",
+      "Handle empty text, punctuation, and repeated characters predictably."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-unique-array": {
+    "summary": "Remove duplicate values from an array while preserving the order of their first appearance.",
+    "learningOutcomes": [
+      "Preserve the original array and the order of retained values.",
+      "Distinguish primitive equality from object identity.",
+      "Handle empty arrays, mixed value types, and repeated special values."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-max-char": {
+    "summary": "Find the most frequent character in a string with deterministic tie handling.",
+    "learningOutcomes": [
+      "Count character occurrences in a single traversal.",
+      "Return the first character when multiple values share the highest count.",
+      "Handle an empty string without throwing an error."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-deep-clone": {
+    "summary": "Create an independent copy of nested JavaScript data while preserving supported value types and shared references.",
+    "learningOutcomes": [
+      "Clone nested objects and arrays without retaining mutable source references.",
+      "Preserve supported built-in value types such as dates and regular expressions.",
+      "Reason about repeated references, circular data, and unsupported values."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-deep-equal": {
+    "summary": "Compare JavaScript values recursively so structural equality is distinct from reference equality.",
+    "learningOutcomes": [
+      "Compare primitives, arrays, and plain objects using the correct equality rules.",
+      "Handle special values such as dates, regular expressions, and not-a-number values.",
+      "Reject mismatched keys, lengths, types, and nested values predictably."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-flatten-depth": {
+    "summary": "Flatten nested arrays only to a requested depth while preserving item order and the source array.",
+    "learningOutcomes": [
+      "Interpret zero, finite, and excessive depth values consistently.",
+      "Preserve the left-to-right order of every retained item.",
+      "Return a new array without mutating nested input arrays."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-curry-function": {
+    "summary": "Transform a multi-argument function into a sequence of partial applications that invoke only when enough input is available.",
+    "learningOutcomes": [
+      "Collect arguments across multiple function calls.",
+      "Support partial application with more than one argument at a time.",
+      "Invoke the original function with the intended context and argument order."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-memoize-function": {
+    "summary": "Cache results for repeated calls to a pure function while keeping argument identity and memory behavior explicit.",
+    "learningOutcomes": [
+      "Choose a stable cache key strategy for the supported arguments.",
+      "Return cached results without invoking the wrapped function again.",
+      "Explain memory growth, object identity, and purity constraints."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-compose": {
+    "summary": "Compose functions from right to left while preserving argument flow and predictable behavior for an empty chain.",
+    "learningOutcomes": [
+      "Pass multiple initial arguments to the rightmost function.",
+      "Feed each intermediate result into the next function in order.",
+      "Define a stable identity behavior when no functions are supplied."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-group-by": {
+    "summary": "Group array items by a derived key without changing the input collection or losing item order within each group.",
+    "learningOutcomes": [
+      "Derive a grouping key for every input item.",
+      "Preserve source order within each generated group.",
+      "Handle empty input and repeated keys with predictable output."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-event-emitter-mini": {
+    "summary": "Build a small event emitter that registers, removes, and invokes multiple listeners without cross-event interference.",
+    "learningOutcomes": [
+      "Store listeners independently for each event name.",
+      "Invoke listeners with the emitted arguments and stable ordering.",
+      "Remove only the requested listener while preserving other subscriptions."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-concurrency-map-limit": {
+    "summary": "Map asynchronous work over an input collection while enforcing a strict concurrency limit and preserving result order.",
+    "learningOutcomes": [
+      "Keep the number of active tasks within the configured limit.",
+      "Preserve input order even when tasks finish out of order.",
+      "Propagate failures without starting unnecessary additional work."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-abortable-helpers": {
+    "summary": "Coordinate timeouts and abort signals so asynchronous work stops promptly and cleans up its listeners and timers.",
+    "learningOutcomes": [
+      "Reject timed-out work with a clear reason and clear its timer.",
+      "Handle signals that are already aborted before work begins.",
+      "Compose multiple signals while preserving the first abort reason."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-streaming-ndjson-parser": {
+    "summary": "Parse newline-delimited JSON from streamed text while handling chunk boundaries and malformed records safely.",
+    "learningOutcomes": [
+      "Decode binary chunks without corrupting multi-byte text.",
+      "Carry incomplete lines across chunk boundaries.",
+      "Report malformed lines while continuing to parse later valid records."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-array-prototype-map": {
+    "summary": "Recreate JavaScript array mapping with native-style callback context, sparse-array behavior, and length semantics.",
+    "learningOutcomes": [
+      "Invoke the callback only for array indexes that exist.",
+      "Preserve source length and holes in the returned array.",
+      "Ignore elements appended after iteration begins."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-array-prototype-reduce": {
+    "summary": "Recreate JavaScript array reduction with correct accumulator initialization, callback arguments, and sparse-array behavior.",
+    "learningOutcomes": [
+      "Distinguish calls with and without an explicit initial accumulator.",
+      "Skip missing indexes while preserving callback order.",
+      "Handle empty arrays according to the documented reduction contract."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-array-prototype-filter": {
+    "summary": "Recreate JavaScript array filtering with native-style callback context, sparse-array behavior, and stable output order.",
+    "learningOutcomes": [
+      "Invoke the predicate only for array indexes that exist.",
+      "Collect values whose predicate result is truthy in source order.",
+      "Ignore elements appended after iteration begins."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-array-sort": {
+    "summary": "Sort numeric values in either direction while leaving the source array unchanged.",
+    "learningOutcomes": [
+      "Use numeric comparison rather than default string ordering.",
+      "Support both ascending and descending order explicitly.",
+      "Return a new array without mutating the input."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-add-two-promises": {
+    "summary": "Resolve two asynchronous numeric inputs and combine their values while preserving rejection behavior.",
+    "learningOutcomes": [
+      "Wait for both asynchronous values before producing a result.",
+      "Return a promise that resolves to the numeric sum.",
+      "Propagate a rejection from either input without masking its reason."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-delegated-events-1": {
+    "summary": "Handle matching descendant events through one listener attached to a stable container.",
+    "learningOutcomes": [
+      "Use event bubbling to avoid one listener per descendant.",
+      "Find the nearest matching target without crossing the container boundary.",
+      "Return an idempotent cleanup operation for the delegated listener."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-delegated-events-2": {
+    "summary": "Extend delegated event handling with configurable capture behavior and strict root-boundary checks.",
+    "learningOutcomes": [
+      "Attach one listener using the requested event phase.",
+      "Match the closest valid descendant inside the root container.",
+      "Remove the exact registered listener during cleanup."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-delegated-events-3": {
+    "summary": "Build a reusable delegated-event utility with selector matching, context preservation, and safe cleanup.",
+    "learningOutcomes": [
+      "Call the handler with the matched element and original event.",
+      "Reject matches that fall outside the delegated root.",
+      "Make repeated cleanup calls safe and predictable."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-dom-walk-text-content-1": {
+    "summary": "Traverse a DOM-like tree and concatenate descendant text in document order.",
+    "learningOutcomes": [
+      "Distinguish text nodes from container nodes.",
+      "Visit child nodes in their original order.",
+      "Handle missing children and nullish roots safely."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-dom-walk-text-content-2": {
+    "summary": "Collect text from a DOM-like subtree while supporting nested elements and sparse node shapes.",
+    "learningOutcomes": [
+      "Accumulate text without inserting unrequested separators.",
+      "Traverse nested child collections in document order.",
+      "Ignore unsupported nodes without losing valid descendant text."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-dom-walk-text-content-3": {
+    "summary": "Walk a deeply nested DOM-like structure without sacrificing output order or traversal safety.",
+    "learningOutcomes": [
+      "Preserve document order across deeply nested branches.",
+      "Avoid recursion limits when the input tree is very deep.",
+      "Return a stable empty result for absent or unsupported roots."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-selector-polyfill-matches-1": {
+    "summary": "Match a DOM-like element against a focused subset of tag, identifier, and class selectors.",
+    "learningOutcomes": [
+      "Parse the supported selector forms without accepting unsupported syntax.",
+      "Compare tag names, identifiers, and class membership correctly.",
+      "Return a predictable false result for invalid nodes or selectors."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-recover-bst-swapped-nodes": {
+    "summary": "Restore ordering in a binary search tree when exactly two node values have been exchanged.",
+    "learningOutcomes": [
+      "Use in-order traversal to identify ordering inversions.",
+      "Handle both adjacent and separated swapped nodes.",
+      "Repair values in place while preserving the original tree structure."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-selector-polyfill-closest-2": {
+    "summary": "Find the nearest ancestor that matches a supported selector without crossing the allowed root boundary.",
+    "learningOutcomes": [
+      "Test the starting node before walking its ancestors.",
+      "Reuse focused tag, identifier, and class matching rules.",
+      "Return a stable empty result when no valid ancestor matches."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-selector-polyfill-qsa-3": {
+    "summary": "Search a DOM-like subtree for every element matching a supported selector in document order.",
+    "learningOutcomes": [
+      "Traverse descendants without escaping the requested root.",
+      "Apply the selector matcher consistently to each element node.",
+      "Return matches in stable document order without duplicates."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-set-by-path-2": {
+    "summary": "Assign a nested value from a path while creating missing containers and defending against unsafe keys.",
+    "learningOutcomes": [
+      "Parse dot and bracket path segments consistently.",
+      "Create arrays or objects according to the next path segment.",
+      "Block prototype-pollution keys without partially mutating the target."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-deep-clone-cycles-3": {
+    "summary": "Deeply clone cyclic JavaScript data while preserving repeated-reference relationships inside the copy.",
+    "learningOutcomes": [
+      "Detect previously visited objects before descending recursively.",
+      "Preserve cycles and shared references in the cloned graph.",
+      "Copy supported nested values without mutating the source."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-querystring-stringify-2": {
+    "summary": "Serialize flat query parameters with stable encoding rules for primitives, arrays, and absent values.",
+    "learningOutcomes": [
+      "Encode keys and values safely for use in a URL query.",
+      "Represent repeated array values in a predictable order.",
+      "Define how null and undefined values affect the result."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-querystring-parse-3": {
+    "summary": "Parse nested query parameters into arrays and objects while preserving repeated values and resolving shape conflicts.",
+    "learningOutcomes": [
+      "Decode nested bracket notation into ordered path segments.",
+      "Accumulate repeated keys without discarding earlier values.",
+      "Handle conflicting primitive and container shapes predictably."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-add-strings": {
+    "summary": "Add non-negative integers represented as decimal strings without relying on unsafe numeric conversion.",
+    "learningOutcomes": [
+      "Process digits from right to left with an explicit carry.",
+      "Support inputs larger than JavaScript's safe integer range.",
+      "Normalize leading zeros while preserving a zero result."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-lodash-get": {
+    "summary": "Read a deeply nested value from dot or bracket path notation and return a documented fallback when it is absent.",
+    "learningOutcomes": [
+      "Normalize string and array path representations.",
+      "Distinguish a missing path from an existing undefined value according to the contract.",
+      "Traverse nullish intermediate values without throwing an error."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-three-sum": {
+    "summary": "Find every unique triplet whose values total zero while preventing duplicate result combinations.",
+    "learningOutcomes": [
+      "Sort a working copy without mutating the input array.",
+      "Use two-pointer movement to reduce unnecessary comparisons.",
+      "Skip duplicate values while returning each triplet in stable order."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-merge-sorted-arrays": {
+    "summary": "Merge two sorted arrays into one sorted result without sorting the combined output.",
+    "learningOutcomes": [
+      "Compare the current values from both source arrays.",
+      "Append remaining values after either source is exhausted.",
+      "Preserve duplicates and leave both inputs unchanged."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-valid-anagram": {
+    "summary": "Determine whether two strings contain the same characters with the same frequencies after documented normalization.",
+    "learningOutcomes": [
+      "Normalize casing and supported characters consistently.",
+      "Compare character counts without relying on incidental ordering.",
+      "Reject length or frequency mismatches efficiently."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-median-of-array": {
+    "summary": "Calculate the median of numeric input while preserving the source collection.",
+    "learningOutcomes": [
+      "Sort a copy of the values using numeric ordering.",
+      "Return the center value for an odd-length collection.",
+      "Average the two center values for an even-length collection."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-dom-renderer": {
+    "summary": "Render a nested DOM description into real element and text nodes without using raw HTML injection.",
+    "learningOutcomes": [
+      "Create the correct node type for text and element descriptions.",
+      "Apply supported properties and append children in source order.",
+      "Skip nullish children while preserving valid nested content."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-timer-manager": {
+    "summary": "Track scheduled timeouts so all outstanding callbacks can be cancelled without affecting later timers.",
+    "learningOutcomes": [
+      "Register timeout identifiers as work is scheduled.",
+      "Remove identifiers when callbacks finish or are cancelled.",
+      "Clear every active timeout with an idempotent operation."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-timer-manager-and-dom-renderer": {
+    "summary": "Implement independent timer-management and DOM-rendering utilities while keeping their state and responsibilities separate.",
+    "learningOutcomes": [
+      "Cancel tracked timeouts without coupling them to rendering state.",
+      "Render nested element and text descriptions safely.",
+      "Expose both utilities through the documented public contract."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-dom-find-node": {
+    "summary": "Find a target node inside a DOM-like tree while respecting identity and traversal order.",
+    "learningOutcomes": [
+      "Compare nodes by identity rather than by copied content.",
+      "Traverse nested descendants in a deterministic order.",
+      "Return a stable empty result when the target is absent."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-dom-twin-node": {
+    "summary": "Locate the corresponding node in a mirrored DOM-like tree by following the source node's structural path.",
+    "learningOutcomes": [
+      "Derive the target node's child-index path from the source tree.",
+      "Replay that path against a structurally equivalent twin tree.",
+      "Handle missing roots, targets, and mismatched structures safely."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-stack-queue-implementation": {
+    "summary": "Implement stack and queue data structures with predictable constant-time core operations.",
+    "learningOutcomes": [
+      "Preserve last-in-first-out behavior for stack operations.",
+      "Preserve first-in-first-out behavior for queue operations.",
+      "Handle empty reads and repeated queue removals without costly array shifts."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-palindrome-check": {
+    "summary": "Determine whether normalized text reads identically in both directions using a two-pointer comparison.",
+    "learningOutcomes": [
+      "Normalize casing and remove unsupported characters consistently.",
+      "Compare mirrored characters without reversing the full result.",
+      "Handle empty text and mixed alphanumeric input predictably."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "javascript/coding/js-maze-path": {
+    "summary": "Find a valid route through a grid maze while respecting blocked cells and bounded movement.",
+    "learningOutcomes": [
+      "Represent visited cells so the search cannot loop indefinitely.",
+      "Explore only valid neighboring cells within the grid.",
+      "Return a complete route or a stable no-route result."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "angular/coding/angular-multi-step-form-starter": {
+    "summary": "Build an Angular signup flow that validates each step, preserves entered values, and presents a final review before submission.",
+    "learningOutcomes": [
+      "Model each form step with typed reactive controls.",
+      "Prevent forward navigation until the current step is valid.",
+      "Preserve values when users move backward and forward.",
+      "Render the active step with modern Angular control flow."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "system-design/endless-short-video-feed": {
+    "summary": "Design an endless short-video feed that starts playback quickly, scrolls smoothly, and controls network and memory use over long sessions.",
+    "learningOutcomes": [
+      "Define ownership for feed position, playback state, and prefetched media.",
+      "Balance preload distance against bandwidth and memory limits.",
+      "Handle rapid swipes, slow networks, and mobile autoplay restrictions.",
+      "Choose measurable playback and interaction performance budgets."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/scalable-notifications-feed": {
+    "summary": "Design a real-time notifications feed that remains responsive during event bursts and keeps read state consistent across reconnects.",
+    "learningOutcomes": [
+      "Choose a transport and reconnection strategy for live updates.",
+      "Batch incoming events to prevent rendering storms.",
+      "Bound list memory and DOM size with trimming or virtualization.",
+      "Reconcile read, unread, and unseen counts predictably."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/live-comments-global-stream": {
+    "summary": "Design a global live-comments experience that preserves useful ordering and moderation behavior under high update volume.",
+    "learningOutcomes": [
+      "Buffer and batch comments without making the interface feel stale.",
+      "Keep rendering and memory bounded during traffic bursts.",
+      "Support reconnects, moderation removals, and user-controlled scrolling.",
+      "Define latency, frame-rate, and dropped-update measurements."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/netflix-scale-expansion": {
+    "summary": "Scale a personalized media carousel across regions and device classes while preserving layout stability and interaction speed.",
+    "learningOutcomes": [
+      "Define the path from edge data to client cache and rendered view model.",
+      "Adapt payloads and rendering work to different devices and regions.",
+      "Protect the interface from content shifts and update bursts.",
+      "Plan feature-flagged rollout, observability, and fast rollback."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/realtime-search-debounce-cache": {
+    "summary": "Design a responsive search experience with debounced requests, cached results, and protection from stale asynchronous responses.",
+    "learningOutcomes": [
+      "Model raw input, active query, request, and result state separately.",
+      "Choose a debounce interval and explain its interaction trade-offs.",
+      "Ignore obsolete responses without hiding current loading state.",
+      "Define cache keys, expiration, and empty-query behavior."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/live-chart-high-frequency-updates": {
+    "summary": "Design a live chart that absorbs frequent data updates while keeping rendering smooth and memory bounded.",
+    "learningOutcomes": [
+      "Separate data ingestion cadence from visual rendering cadence.",
+      "Choose between incremental drawing and full redraws.",
+      "Bound retained history with windowing or aggregation.",
+      "Plan backpressure, frame dropping, and off-main-thread work."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/component-design-system-architecture": {
+    "summary": "Design a component system that gives product teams consistent, accessible building blocks without blocking safe evolution.",
+    "learningOutcomes": [
+      "Separate semantic design tokens from raw theme values.",
+      "Design component contracts that encourage accessible behavior.",
+      "Organize packages for selective consumption and bounded bundle cost.",
+      "Plan versioning, deprecation, and migration across many applications."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/image-upload-preview": {
+    "summary": "Design an image selection, preview, and upload pipeline with validation, progress, cancellation, retry, and bounded memory use.",
+    "learningOutcomes": [
+      "Model the states from local selection through completed upload.",
+      "Validate type, size, and dimensions before expensive processing.",
+      "Generate previews without blocking the main thread or retaining large data strings.",
+      "Handle cancellation, retry, replacement, and failed uploads."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/flashcard-language-trainer": {
+    "summary": "Design a cross-device flashcard trainer with low-latency study sessions, durable progress, and accessible card interactions.",
+    "learningOutcomes": [
+      "Model decks, cards, study progress, and repetition scheduling.",
+      "Preload upcoming cards while keeping local storage bounded.",
+      "Support offline study and reliable progress synchronization.",
+      "Design keyboard, touch, animation, and multilingual text behavior."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/cross-device-preferences-sync": {
+    "summary": "Design local-first preference synchronization across devices with offline updates, retries, and explicit conflict handling.",
+    "learningOutcomes": [
+      "Model optimistic local state and a durable pending-update queue.",
+      "Choose between whole-record and per-field conflict resolution.",
+      "Use revisions to prevent silent overwrites from stale devices.",
+      "Expose clear saving, offline, synced, and conflict states."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/ai-chat-textarea-design": {
+    "summary": "Design a streaming conversational interface with responsive composition, cancellable output, and durable conversation history.",
+    "learningOutcomes": [
+      "Model message identity, status, partial content, and errors.",
+      "Choose a streaming transport and cancellation contract.",
+      "Prevent stale stream updates from changing the active conversation.",
+      "Paginate and restore persisted conversation history."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/ai-image-generation-mvp": {
+    "summary": "Design a focused image-generation product flow that can ship quickly while handling long-running jobs and failures honestly.",
+    "learningOutcomes": [
+      "Define the smallest useful prompt-to-result experience.",
+      "Model queued, running, completed, cancelled, and failed jobs.",
+      "Choose polling or streaming updates for generation status.",
+      "Separate generated media storage from job metadata."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/model-training-progress-dashboard": {
+    "summary": "Design a real-time training dashboard that renders metrics, logs, and run state without becoming unresponsive during update bursts.",
+    "learningOutcomes": [
+      "Model metric series, logs, progress, and connection health separately.",
+      "Buffer and throttle streamed updates before rendering.",
+      "Virtualize long logs and bound retained chart history.",
+      "Handle reconnects, stale data, and backpressure visibly."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/ai-ux-considerations": {
+    "summary": "Design AI response states that keep users informed and in control during streaming, delays, limits, and failures.",
+    "learningOutcomes": [
+      "Distinguish queued, streaming, completed, cancelled, and failed output states.",
+      "Design stop and retry actions with predictable state transitions.",
+      "Explain rate limits and recovery without losing user input.",
+      "Prevent stale output from replacing a newer request."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/news-feed-timeline": {
+    "summary": "Design a media-rich news feed with stable pagination, optimistic interactions, real-time updates, and bounded rendering cost.",
+    "learningOutcomes": [
+      "Define cursor pagination, deduplication, and ordering rules.",
+      "Preserve scroll position while merging refreshed or live items.",
+      "Virtualize content and lazy-load media without layout shifts.",
+      "Reconcile optimistic actions with failed or conflicting server updates."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "system-design/ui-component-state-from-mock": {
+    "summary": "Translate a visual mock into reusable component boundaries, explicit state ownership, and a maintainable data-flow model.",
+    "learningOutcomes": [
+      "Separate reusable presentation from feature-specific orchestration.",
+      "Place local, shared, remote, and derived state deliberately.",
+      "Define event and data flow between parent and child components.",
+      "Plan fetching, caching, and rendering performance as requirements evolve."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  }
+}

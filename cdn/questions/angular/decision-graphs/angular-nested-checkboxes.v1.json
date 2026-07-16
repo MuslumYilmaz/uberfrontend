@@ -1,0 +1,49 @@
+{
+  "questionId": "angular-nested-checkboxes",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component, ViewChild, ElementRef } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Child checkbox states\n  children = [false, false, false];\n\n  @ViewChild('parentBox', { static: true }) parentBox!: ElementRef<HTMLInputElement>;\n\n  // --- Parent toggle ---\n  toggleParent(event: Event): void {\n    const checked = (event.target as HTMLInputElement).checked;\n    this.children = this.children.map(() => checked);\n    this.updateParentState();\n  }\n\n  // --- Child toggle ---\n  toggleChild(index: number): void {\n    this.children[index] = !this.children[index];\n    this.updateParentState();\n  }\n\n  // --- Derive parent state ---\n  private updateParentState(): void {\n    const total = this.children.length;\n    const checkedCount = this.children.filter(x => x).length;\n\n    const parent = this.parentBox.nativeElement;\n\n    if (checkedCount === total) {\n      parent.checked = true;\n      parent.indeterminate = false;\n    } else if (checkedCount === 0) {\n      parent.checked = false;\n      parent.indeterminate = false;\n    } else {\n      parent.checked = false;\n      parent.indeterminate = true;\n    }\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-own-parent-native-state",
+          "title": "Access the parent checkbox for indeterminate state",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 13,
+            "snippet": "@ViewChild('parentBox', { static: true }) parentBox!: ElementRef<HTMLInputElement>;"
+          },
+          "why": "The indeterminate property is a live DOM property rather than a normal HTML attribute.",
+          "alternative": "Represent partial selection with an indeterminate attribute in the template.",
+          "tradeoff": "ViewChild introduces direct element access, but it is appropriate for this native checkbox property."
+        },
+        {
+          "id": "d2-propagate-parent-selection",
+          "title": "Apply parent selection to every child",
+          "anchor": {
+            "lineStart": 18,
+            "lineEnd": 18,
+            "snippet": "this.children = this.children.map(() => checked);"
+          },
+          "why": "Replacing the child-state array makes the parent toggle deterministic for both select-all and clear-all.",
+          "alternative": "Update only the first child or derive child state from the parent element later.",
+          "tradeoff": "The map allocates a small array, but Angular receives a clear state update."
+        },
+        {
+          "id": "d3-represent-partial-selection",
+          "title": "Set the mixed parent state",
+          "anchor": {
+            "lineStart": 43,
+            "lineEnd": 43,
+            "snippet": "parent.indeterminate = true;"
+          },
+          "why": "A partially selected child set must clear checked and expose the native indeterminate visual state.",
+          "alternative": "Treat any selected child as a fully checked parent.",
+          "tradeoff": "The parent now has three visual states, which accurately communicates the child aggregate."
+        }
+      ]
+    }
+  }
+}

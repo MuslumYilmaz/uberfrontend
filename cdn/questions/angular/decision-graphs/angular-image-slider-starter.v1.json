@@ -1,0 +1,49 @@
+{
+  "questionId": "angular-image-slider-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\n\ninterface Slide {\n  id: number;\n  title: string;\n  imageUrl: string;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Image Slider</h1>\n\n        @if (currentSlide; as slide) {\n          <figure class=\"frame\">\n            <img class=\"image\" [src]=\"slide.imageUrl\" [alt]=\"slide.title\" />\n            <figcaption class=\"caption\">{{ slide.title }}</figcaption>\n          </figure>\n        }\n\n        <div class=\"meta\">\n          Slide {{ currentIndex + 1 }} of {{ totalSlides }}\n        </div>\n\n        <div class=\"actions\">\n          <button (click)=\"prev()\" [disabled]=\"!canGoPrev\">Previous</button>\n          <button (click)=\"next()\" [disabled]=\"!canGoNext\">Next</button>\n        </div>\n\n        <div class=\"dots\">\n          @for (slide of slides; track slide.id; let i = $index) {\n            <button\n            type=\"button\"\n            class=\"dot\"\n            [class.active]=\"i === currentIndex\"\n            (click)=\"goTo(i)\"\n            aria-label=\"Go to slide {{ i + 1 }}\"\n            ></button>\n          }\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#0a0a0a;color:#e5e7eb;}`,\n    `.card{width:100%;max-width:520px;padding:16px 20px;background:#0b1020;border-radius:12px;border:1px solid #1f2937;display:grid;gap:12px;}`,\n    `.frame{margin:0;border-radius:12px;overflow:hidden;border:1px solid #1f2937;background:#020617;}`,\n    `.image{display:block;width:100%;height:240px;object-fit:cover;}`,\n    `.caption{padding:8px 12px;font-size:14px;color:#e5e7eb;background:rgba(15,23,42,.9);}`,\n    `.meta{font-size:12px;color:#9ca3af;text-align:center;}`,\n    `.actions{display:flex;gap:8px;justify-content:center;}`,\n    `button{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:#a3e635;color:#111;}`,\n    `button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.dots{display:flex;justify-content:center;gap:6px;margin-top:4px;}`,\n    `.dot{width:8px;height:8px;border-radius:999px;border:none;background:#374151;cursor:pointer;}`,\n    `.dot.active{background:#a3e635;}`\n  ]\n})\nexport class AppComponent {\n  readonly slides: Slide[] = [\n    {\n      id: 1,\n      title: 'Snowflakes glowing under city lights',\n      imageUrl: 'https://images.pexels.com/photos/46253/pexels-photo-46253.jpeg'\n    },\n    {\n      id: 2,\n      title: 'Forest trail in the morning',\n      imageUrl: 'https://images.pexels.com/photos/1563604/pexels-photo-1563604.jpeg'\n    },\n    {\n      id: 3,\n      title: 'City lights at night',\n      imageUrl: 'https://images.pexels.com/photos/220067/pexels-photo-220067.jpeg'\n    }\n  ];\n\n  currentIndex = 0;\n\n  get totalSlides(): number {\n    return this.slides.length;\n  }\n\n  get currentSlide(): Slide | null {\n    return this.slides[this.currentIndex] ?? null;\n  }\n\n  get canGoPrev(): boolean {\n    return this.currentIndex > 0;\n  }\n\n  get canGoNext(): boolean {\n    return this.currentIndex < this.totalSlides - 1;\n  }\n\n  goTo(index: number): void {\n    if (index < 0 || index >= this.totalSlides) return;\n    this.currentIndex = index;\n  }\n\n  prev(): void {\n    if (this.canGoPrev) {\n      this.currentIndex--;\n    }\n  }\n\n  next(): void {\n    if (this.canGoNext) {\n      this.currentIndex++;\n    }\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-render-current-slide",
+          "title": "Render only when a current slide exists",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 17,
+            "snippet": "@if (currentSlide; as slide) {"
+          },
+          "why": "The @if alias keeps image bindings inside the non-null branch and avoids repeated getter reads in the template.",
+          "alternative": "Render the figure unconditionally and use non-null assertions for every slide property.",
+          "tradeoff": "The explicit branch adds template structure, but it keeps empty-data behavior safe."
+        },
+        {
+          "id": "d2-track-slide-identity",
+          "title": "Track indicator buttons by slide id",
+          "anchor": {
+            "lineStart": 34,
+            "lineEnd": 34,
+            "snippet": "@for (slide of slides; track slide.id; let i = $index) {"
+          },
+          "why": "Stable ids let Angular retain the correct indicator DOM as slides are reordered or replaced.",
+          "alternative": "Track every indicator by its current array index.",
+          "tradeoff": "Stable tracking needs an id on each slide, but it avoids identity drift when the collection changes."
+        },
+        {
+          "id": "d3-guard-navigation-bounds",
+          "title": "Reject out-of-range navigation",
+          "anchor": {
+            "lineStart": 100,
+            "lineEnd": 100,
+            "snippet": "if (index < 0 || index >= this.totalSlides) return;"
+          },
+          "why": "The same boundary contract protects dot navigation and keeps currentSlide valid.",
+          "alternative": "Assign any requested index and rely on disabled previous or next buttons.",
+          "tradeoff": "A guard is a small extra branch, but it makes the method safe for all callers."
+        }
+      ]
+    }
+  }
+}

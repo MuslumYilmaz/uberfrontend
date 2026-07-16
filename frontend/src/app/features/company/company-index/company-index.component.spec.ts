@@ -91,4 +91,23 @@ describe('CompanyIndexComponent', () => {
     expect(googleGuide?.textContent?.trim()).toBe('Google frontend interview questions');
     expect(googleGuide?.getAttribute('href')).not.toContain('?');
   });
+
+  it('labels company cards and schema as editorial groupings without provenance claims', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
+    expect(host.textContent || '').toContain('editorial practice prompts');
+    expect(host.textContent || '').not.toContain('known questions');
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    expect(collection?.disambiguatingDescription).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
+    expect(collection?.mainEntity?.description).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
+  });
 });

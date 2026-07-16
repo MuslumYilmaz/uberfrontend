@@ -1,4 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
+import { premiumPreviewForSystemDesign } from '../../../core/content/premium-preview-catalog';
 import {
   AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID,
   QueryList, ViewChild, ViewChildren, WritableSignal, computed, inject, signal
@@ -13,7 +15,7 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
-import { isQuestionLockedForTier } from '../../../core/models/question.model';
+import { isQuestionLockedForTier, PremiumPreviewContent } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import {
   isContentAccessibleForFree,
@@ -125,6 +127,7 @@ type SDQuestion = {
   author?: string;
   updatedAt?: string;
   difficulty?: string;
+  premiumPreview?: PremiumPreviewContent;
   guideSlug?: string;
   guide?: string;
   guidePath?: string;
@@ -269,6 +272,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       description: this.sdDescription(q),
       tags: q.tags || [],
       sectionTitles: this.sections().map((s) => s.title),
+      premiumPreview: q.premiumPreview ?? premiumPreviewForSystemDesign(q.id),
     }, {
       candidates: this.all as any,
     });
@@ -755,7 +759,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       educationalLevel: question.difficulty || 'intermediate',
       teaches,
       isAccessibleForFree: isContentAccessibleForFree(question.access),
-      author: { '@type': 'Organization', name: this.resolveAuthor(question) },
+      author: publicEditorialAuthorSchema(),
     };
   }
 
@@ -786,8 +790,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     };
   }
 
-  private resolveAuthor(q: SDQuestion): string {
-    return String((q as any).author || 'FrontendAtlas Team').trim() || 'FrontendAtlas Team';
+  private resolveAuthor(_q: SDQuestion): string {
+    return PUBLIC_EDITORIAL_FACTS.author.name;
   }
 
   private resolveUpdatedIso(q: SDQuestion): string | null {
@@ -807,7 +811,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   authorLabel(q?: SDQuestion | null): string {
-    if (!q) return 'FrontendAtlas Team';
+    if (!q) return PUBLIC_EDITORIAL_FACTS.author.name;
     return this.resolveAuthor(q);
   }
 
@@ -824,7 +828,6 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const seoTitle = this.seoTitle(question);
     const description = this.seoDescription(question);
     const keywords = this.sdKeywords(question);
-    const authorName = this.resolveAuthor(question);
     const dateModified = this.resolveUpdatedIso(question);
     const datePublished = this.resolvePublishedIso(dateModified);
     const imageUrl = this.structuredDataImageUrl();
@@ -865,7 +868,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       datePublished,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
-      author: { '@type': 'Organization', name: authorName },
+      author: publicEditorialAuthorSchema(),
       publisher: {
         '@type': 'Organization',
         name: 'FrontendAtlas',

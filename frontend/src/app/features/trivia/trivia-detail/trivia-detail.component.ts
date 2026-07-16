@@ -7,6 +7,8 @@ import { CardModule } from 'primeng/card';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.js';
 import { Subscription, combineLatest, firstValueFrom, map, of, switchMap, tap } from 'rxjs';
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
+import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
+import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
 import {
   Question,
   QuestionInterviewFocus,
@@ -704,7 +706,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   lockedPreview = computed<LockedPreviewData | null>(() => {
     const q = this.question();
     if (!q) return null;
-    return buildLockedPreviewForTrivia(q, {
+    return buildLockedPreviewForTrivia({
+      ...q,
+      premiumPreview: q.premiumPreview ?? premiumPreviewForQuestion(this.tech, 'trivia', q.id),
+    }, {
       candidates: this.questionsList as any,
       tech: this.tech,
       kind: 'trivia',
@@ -1212,16 +1217,15 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private questionKeywords(q: Question): string[] {
     const tags = Array.isArray(q.tags) ? q.tags : [];
-    const companies: string[] = (q as any).companies ?? (q as any).companyTags ?? [];
     const base = ['front end interview concepts', `${this.tech} interview concepts`];
 
     return Array.from(
-      new Set([...base, ...tags, ...companies].map(k => String(k || '').trim()).filter(Boolean))
+      new Set([...base, ...tags].map(k => String(k || '').trim()).filter(Boolean))
     );
   }
 
-  private resolveAuthor(q: Question): string {
-    return String((q as any).author || 'FrontendAtlas Team').trim() || 'FrontendAtlas Team';
+  private resolveAuthor(_q: Question): string {
+    return PUBLIC_EDITORIAL_FACTS.author.name;
   }
 
   private resolveUpdatedIso(q: Question): string | null {
@@ -1262,7 +1266,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   authorLabel(q?: Question | null): string {
-    if (!q) return 'FrontendAtlas Team';
+    if (!q) return PUBLIC_EDITORIAL_FACTS.author.name;
     return this.resolveAuthor(q);
   }
 
@@ -1287,7 +1291,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const seoTitle = this.seoTitle(q);
     const description = this.seoDescription(q);
     const keywords = this.questionKeywords(q);
-    const authorName = this.resolveAuthor(q);
     const dateModified = this.resolveUpdatedIso(q);
     const datePublished = this.resolvePublishedIso(q, dateModified);
     const imageUrl = this.structuredDataImageUrl();
@@ -1333,7 +1336,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       datePublished,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
-      author: { '@type': 'Organization', name: authorName },
+      author: publicEditorialAuthorSchema(),
       publisher: {
         '@type': 'Organization',
         name: 'FrontendAtlas',
@@ -1385,7 +1388,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         articleSection: 'Angular forms',
         educationalLevel: 'Intermediate',
         learningResourceType: 'Interview answer',
-        reviewedBy: { '@type': 'Organization', name: 'FrontendAtlas' },
         about: [
           { '@type': 'Thing', name: 'Angular forms' },
           { '@type': 'Thing', name: 'Template-driven forms' },
@@ -1563,7 +1565,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         articleSection: 'Angular state management',
         educationalLevel: 'Intermediate',
         learningResourceType: 'Interview answer',
-        reviewedBy: { '@type': 'Organization', name: 'FrontendAtlas' },
         about: [
           { '@type': 'Thing', name: 'NgRx data flow' },
           { '@type': 'Thing', name: 'Angular state management' },
@@ -1739,7 +1740,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         articleSection: 'JavaScript async concurrency',
         educationalLevel: 'Intermediate',
         learningResourceType: 'Interview answer',
-        reviewedBy: { '@type': 'Organization', name: 'FrontendAtlas' },
         about: [
           { '@type': 'Thing', name: 'Async race conditions' },
           { '@type': 'Thing', name: 'Stale UI updates' },

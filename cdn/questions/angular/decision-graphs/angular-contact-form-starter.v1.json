@@ -1,0 +1,49 @@
+{
+  "questionId": "angular-contact-form-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component, inject } from '@angular/core';\nimport { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { HttpClient, HttpClientModule } from '@angular/common/http';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [ReactiveFormsModule, HttpClientModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport default class AppComponent {\n  // Function-based DI to match the SDK environment\n  private fb = inject(FormBuilder);\n  private http = inject(HttpClient);\n\n  // Reactive contact form with basic validation\n  contactForm = this.fb.group({\n    name: ['', [Validators.required]],\n    email: ['', [Validators.required, Validators.email]],\n    message: ['', [Validators.required, Validators.minLength(10)]],\n  });\n\n  isSubmitting = false;\n  successMessage = '';\n  errorMessage = '';\n\n  get f() {\n    return this.contactForm.controls;\n  }\n\n  submit(): void {\n    // Clear previous messages\n    this.successMessage = '';\n    this.errorMessage = '';\n\n    // Show validation errors if form is invalid\n    this.contactForm.markAllAsTouched();\n    if (this.contactForm.invalid) {\n      return;\n    }\n\n    this.isSubmitting = true;\n\n    // Fake JSON API endpoint for this exercise\n    this.http.post('https://jsonplaceholder.typicode.com/posts', this.contactForm.value).subscribe({\n      next: () => {\n        this.isSubmitting = false;\n        this.successMessage = 'Your message has been sent. Thank you!';\n        this.contactForm.reset();\n      },\n      error: () => {\n        this.isSubmitting = false;\n        this.errorMessage = 'Something went wrong. Please try again.';\n      },\n    });\n  }\n}\n\n// Also export a named AppComponent so the bootstrap import always works\nexport { AppComponent };\n",
+      "nodes": [
+        {
+          "id": "d1-standalone-form-imports",
+          "title": "Import only the template dependencies",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "imports: [ReactiveFormsModule, HttpClientModule],"
+          },
+          "why": "The standalone component needs reactive-form directives and HttpClient, while Angular built-in control flow does not require CommonModule.",
+          "alternative": "Keep CommonModule in every standalone component even when the template does not use its directives or pipes.",
+          "tradeoff": "Minimal imports make dependencies explicit, but a later template pipe or directive must be added intentionally."
+        },
+        {
+          "id": "d2-touch-before-validation",
+          "title": "Expose validation before returning",
+          "anchor": {
+            "lineStart": 38,
+            "lineEnd": 38,
+            "snippet": "this.contactForm.markAllAsTouched();"
+          },
+          "why": "Marking controls touched ensures invalid fields reveal feedback before submission exits early.",
+          "alternative": "Return immediately on an invalid form and leave untouched fields without visible guidance.",
+          "tradeoff": "Showing every current error is clearer on submit, though quieter validation can be preferable while the user is still typing."
+        },
+        {
+          "id": "d3-own-request-lifecycle",
+          "title": "Own success and error state around the request",
+          "anchor": {
+            "lineStart": 46,
+            "lineEnd": 46,
+            "snippet": "this.http.post('https://jsonplaceholder.typicode.com/posts', this.contactForm.value).subscribe({"
+          },
+          "why": "The component must reset loading state in both request outcomes and only clear the form after success.",
+          "alternative": "Set a success message before the request resolves or leave isSubmitting true after an error.",
+          "tradeoff": "Explicit handlers duplicate a small amount of cleanup, but they keep the UI state deterministic."
+        }
+      ]
+    }
+  }
+}

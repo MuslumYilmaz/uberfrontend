@@ -50,7 +50,7 @@ describe('JsProblemsArticle', () => {
     expect(h1?.textContent || '').toContain('JavaScript Coding Interview Questions');
     expect(hostText).toContain('frontend JavaScript coding interview questions');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
     expect(hostText).toContain('Custom JavaScript guide promise.');
   });
 

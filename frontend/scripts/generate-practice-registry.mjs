@@ -9,10 +9,18 @@ import {
   cdnTradeoffBattlesDir as TRADEOFF_BATTLES_DIR,
   generatedAppDir,
   relFromFrontend,
+  srcDir,
 } from './content-paths.mjs';
 
 const CHECK = process.argv.includes('--check');
 const CODING_HUB_DISCOVERY_PATH = path.join(generatedAppDir, 'coding-hub-discovery.ts');
+const PREMIUM_PREVIEW_CATALOG_PATH = path.join(
+  srcDir,
+  'app',
+  'core',
+  'content',
+  'premium-preview-catalog.json',
+);
 
 const QUESTION_KINDS = ['coding', 'trivia', 'debug'];
 const QUESTION_DEFAULT_MINUTES = {
@@ -58,7 +66,23 @@ function extractSummary(value) {
 function shortSummary(value) {
   const summary = extractSummary(value);
   if (!summary) return '';
-  return summary.length > 220 ? `${summary.slice(0, 219).trimEnd()}…` : summary;
+  if (summary.length <= 220) return summary;
+
+  const sentences = summary.match(/[^.!?]+[.!?]+(?=\s|$)/g) || [];
+  let selected = '';
+  for (const sentence of sentences) {
+    const candidate = [selected, sentence.trim()].filter(Boolean).join(' ');
+    if (candidate.length > 220) break;
+    selected = candidate;
+  }
+  return selected || sentences[0]?.trim() || summary;
+}
+
+const premiumPreviewCatalog = readJson(PREMIUM_PREVIEW_CATALOG_PATH);
+
+function catalogPreview(key) {
+  const preview = premiumPreviewCatalog?.[key];
+  return preview && typeof preview === 'object' ? preview : null;
 }
 
 function toDateOnly(value, fallbackDate) {
@@ -100,6 +124,8 @@ function buildQuestionEntries() {
       const questions = safeArray(readJson(filePath));
       questions.forEach((question) => {
         if (!question?.id || !question?.title) return;
+        const premiumPreview = question.premiumPreview
+          || catalogPreview(`${tech}/${kind}/${question.id}`);
         entries.push({
           id: String(question.id),
           family: 'question',
@@ -107,7 +133,7 @@ function buildQuestionEntries() {
           route: `/${tech}/${kind}/${question.id}`,
           tech,
           difficulty: normalizeDifficulty(question.difficulty),
-          summary: shortSummary(question.description),
+          summary: shortSummary(premiumPreview?.summary || question.description),
           tags: safeArray(question.tags).filter((tag) => typeof tag === 'string'),
           access: normalizeAccess(question.access),
           estimatedMinutes:
@@ -133,6 +159,8 @@ function buildQuestionEntries() {
     const items = safeArray(readJson(systemDesignIndex));
     items.forEach((item) => {
       if (!item?.id || !item?.title) return;
+      const premiumPreview = item.premiumPreview
+        || catalogPreview(`system-design/${item.id}`);
       entries.push({
         id: String(item.id),
         family: 'question',
@@ -140,7 +168,7 @@ function buildQuestionEntries() {
         route: `/system-design/${item.id}`,
         tech: 'system-design',
         difficulty: normalizeDifficulty(item.difficulty, 'intermediate'),
-        summary: shortSummary(item.description),
+        summary: shortSummary(premiumPreview?.summary || item.description),
         tags: safeArray(item.tags).filter((tag) => typeof tag === 'string'),
         access: normalizeAccess(item.access),
         estimatedMinutes:

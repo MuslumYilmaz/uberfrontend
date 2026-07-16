@@ -15,6 +15,9 @@ Load this for Angular UI, styling, shared-ui, and design-system work.
 - Do not introduce new raw PrimeNG usage or new `::ng-deep` outside approved bridge layers.
 - Reuse `frontend/src/styles/tokens.scss` and existing shared-ui typography/spacing patterns instead of one-off colors or font styles.
 - Keep layout classes local to features and keep reusable visual treatment in primitives/tokens.
+- Treat spacing and text wrapping as user-trust requirements. Verify user-facing changes at 360/390px mobile, 834px tablet, and 1366/1440px desktop widths.
+- Give grid and flex children `min-width: 0` where content must shrink. Prefer responsive reflow and readable line lengths over squeezing content into a fixed row.
+- Let prose wrap at normal word boundaries. Keep short labels and CTAs intact as flex/grid items; do not use `word-break: break-all` or `overflow-wrap: anywhere` to conceal layout problems.
 
 ## Path triggers
 - `frontend/src/app/shared/ui/**`

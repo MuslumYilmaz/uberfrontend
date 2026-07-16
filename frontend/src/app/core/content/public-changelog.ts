@@ -15,6 +15,24 @@ export type PublicChangelogEntry = {
 
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
+    id: 'react-check-reliability-and-content-accuracy',
+    weekOf: '2026-07-15',
+    title: 'React checks are reliable and Premium previews are clearer',
+    summary: 'Practice checks, framework guidance, and public product information are now more reliable and easier to evaluate.',
+    category: 'Fixed',
+    area: 'Practice and content',
+    changes: [
+      'React checks now use a commit-based preview handshake, report bounded failure categories, and reset cleanly across rebuilds and repeated runs.',
+      'Premium previews now use complete summaries and concrete practice outcomes without rendering or automatically requesting solution content while locked.',
+      'Angular exercises now use modern template control flow, and refund, editorial, authorship, traction, score, and company-attribution copy reflects verifiable evidence.',
+    ],
+    cta: {
+      label: 'Try React Counter',
+      route: '/react/coding/react-counter',
+      queryParams: { src: 'changelog' },
+    },
+  },
+  {
     id: 'earned-badges-are-easier-to-see',
     weekOf: '2026-05-04',
     title: 'Earned badges are easier to see',

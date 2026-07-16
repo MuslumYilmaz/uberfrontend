@@ -21,6 +21,13 @@ export interface TestResult {
   name: string;
   passed: boolean;
   error?: string;
+  failureKind?:
+    | 'assertion'
+    | 'compilation'
+    | 'preview-boot'
+    | 'preview-runtime'
+    | 'infrastructure-timeout'
+    | 'assertion-timeout';
 }
 
 @Component({

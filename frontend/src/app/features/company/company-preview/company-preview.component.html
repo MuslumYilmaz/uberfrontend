@@ -5,6 +5,10 @@
     <span>{{ isOpenAiPreview ? openAiH1 : (isGooglePreview ? googleH1 : label + ' frontend interview questions preview') }}</span>
   </nav>
 
+  <p class="preview-caveat" data-testid="company-practice-disclaimer">
+    {{ companyPracticeDisclaimer }}
+  </p>
+
   <ng-container *ngIf="isOpenAiPreview; else nonOpenAiPreview">
     <header class="preview-hero openai-hero fa-card fa-card--elevated">
       <p class="preview-kicker">Public OpenAI prep guide</p>
@@ -322,7 +326,7 @@
         <h2 id="google-premium-route">Unlock the full Google practice set</h2>
         <p>
           This public guide stands on its own for planning and practice. Premium keeps the broader company-tagged route
-          gated, including deeper navigation across coding, concept questions, and system design.
+          gated as a FrontendAtlas editorial grouping, including deeper navigation across coding, concept questions, and system design.
         </p>
       </div>
       <a
@@ -340,12 +344,12 @@
     <p class="preview-kicker">Public preview</p>
     <h1>{{ label }} Frontend Interview Questions Preview</h1>
     <p class="preview-subtitle">
-      Review sample frontend interview prompts and coverage across coding, concept questions, and system design before unlocking the full premium company guide.
+      Review a FrontendAtlas editorial practice grouping across coding, concept questions, and system design before unlocking the full premium route.
     </p>
 
     <ng-container *ngIf="data$ | async as data">
       <div class="preview-meta">
-        <span class="preview-chip">{{ data.counts.all }} known questions</span>
+        <span class="preview-chip">{{ promptCountLabel(data.counts.all) }}</span>
         <span class="preview-chip">Coding {{ data.counts.coding }} · Concepts {{ data.counts.trivia }} · System {{ data.counts.system }}</span>
         <span class="preview-chip preview-chip--lock">Full route stays premium</span>
       </div>
@@ -357,7 +361,7 @@
       <article class="proof-card">
         <h2>What you can do now for free</h2>
         <ul>
-          <li>Inspect company-specific frontend interview coverage before paying.</li>
+          <li>Inspect how FrontendAtlas groups coding, concept, and system design practice before paying.</li>
           <li>Open free coding and concept challenges from the public Question Library.</li>
           <li>Evaluate whether this company set matches your target frontend interviews.</li>
         </ul>
@@ -367,15 +371,15 @@
         <h2>What unlocks with premium</h2>
         <ul>
           <li>Full guided route at <code>/companies/{{ slug }}</code>.</li>
-          <li>All premium company questions across coding, concept questions, and system design.</li>
+          <li>The full editorial practice grouping across coding, concept questions, and system design.</li>
           <li>Depth-focused question navigation for interview-specific preparation.</li>
         </ul>
       </article>
     </section>
 
-    <section class="sample-card fa-card" aria-label="Sample company questions">
+    <section class="sample-card fa-card" aria-label="Sample editorial practice prompts">
       <div class="sample-head">
-        <h2>Sample frontend interview questions</h2>
+        <h2>Sample FrontendAtlas practice prompts</h2>
         <p class="sample-summary">
           Free in sample: <strong>{{ freeCount(data.samples) }}</strong> · Locked in full set:
           <strong>{{ premiumCount(data.samples) }}</strong>

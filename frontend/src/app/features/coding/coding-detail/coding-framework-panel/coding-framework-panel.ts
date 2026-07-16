@@ -48,6 +48,11 @@ type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
   | { type: 'file'; name: string; path: string; crumb?: string };
 
+type PreviewFailure = {
+  kind: 'compilation' | 'preview-boot' | 'preview-runtime' | 'infrastructure-timeout';
+  message: string;
+};
+
 export type FrameworkCheckRunEvent = {
   questionId: string;
   passed: boolean;
@@ -114,6 +119,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   previewUrl = () => this._previewUrl();
   private previewObjectUrl: string | null = null;
   private previewNavId = 0;
+  private previewBuildGeneration = 0;
   private expectedPreviewReadyToken: string | null = null;
   private previewReadyFallbackTimer?: number;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -122,6 +128,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   monacoLoadFailed = signal(false);
   editorReady = signal(false);
   previewReady = signal(false);
+  previewFailure = signal<PreviewFailure | null>(null);
 
   // preview loading
   loadingPreview = signal(true);
@@ -243,6 +250,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
     if (changes['question'] || changes['tech']) {
       this.cancelFrameworkCheckRun();
+      this.invalidatePreviewBuilds();
     }
     if ((changes['question'] || changes['tech']) && this.question && this.tech && this.isFrameworkTech()) {
       this.initFromQuestion();
@@ -262,6 +270,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.destroy = true;
     this.initSeq += 1;
     this.frameworkCheckRunSeq += 1;
+    this.invalidatePreviewBuilds();
     this.opaqueCheckRunner.destroy();
     this.flushPendingPersist();
     if (this.persistTimer) clearTimeout(this.persistTimer);
@@ -325,6 +334,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   /** Called by parent after question changes (also auto-called on input changes). */
   initFromQuestion(): void {
     const initToken = ++this.initSeq;
+    this.invalidatePreviewBuilds();
     this.flushPendingPersist();
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
@@ -437,14 +447,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const initToken = this.initSeq;
     if (!q || !this.isFrameworkTech() || !Object.keys(sol).length) return;
     this.ensurePreviewReady();
+    const buildGeneration = this.beginPreviewBuild();
+    const activeTech = this.tech;
 
     try {
       const html = await this.previewBuilder.build(this.tech as 'react' | 'angular' | 'vue', sol);
+      if (!this.isCurrentPreviewBuild(buildGeneration, q, activeTech)) return;
       if (!this.isActiveInit(initToken, q)) return;
 
       if (!html) return;
 
-      this.setPreviewHtml(html);
+      this.setPreviewHtml(html, null, buildGeneration);
       this.showingFrameworkSolutionPreview.set(true);
     } catch (e) {
     }
@@ -476,6 +489,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
     const initToken = ++this.initSeq;
+    this.invalidatePreviewBuilds();
     this.ensurePreviewReady();
 
     this.cancelPendingPersist();
@@ -514,6 +528,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (!q || !version || !this.isFrameworkTech()) return;
     if (this.disablePersistence) return;
     const initToken = ++this.initSeq;
+    this.invalidatePreviewBuilds();
     this.ensurePreviewReady();
 
     const baseKey = this.baseDraftKey() || this.baseStorageKey(q);
@@ -840,9 +855,13 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   private scheduleRebuild() {
+    // Edits and workspace swaps must invalidate an already-running build now,
+    // rather than waiting for the debounced replacement build to start.
+    this.invalidatePreviewBuilds();
     if (!this.shouldBuildPreview()) return;
     if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
     this.rebuildTimer = setTimeout(() => {
+      this.rebuildTimer = null;
       this.rebuildFrameworkPreview().catch(err => {
         this.setPreviewHtml(null);
       });
@@ -850,23 +869,42 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   async rebuildFrameworkPreview(initToken?: number, q?: Question): Promise<void> {
+    if (this.destroy) return;
     this.ensurePreviewReady();
+    if (this.rebuildTimer) {
+      clearTimeout(this.rebuildTimer);
+      this.rebuildTimer = null;
+    }
+    // Initialization owns its cancellation through initSeq. User-initiated and
+    // edit-scheduled rebuilds explicitly invalidate any active check run.
+    if (initToken === undefined || !q) this.clearFrameworkCheckResults();
+    this.previewFailure.set(null);
     this.loadingPreview.set(true);
+    const activeQuestion = q ?? this.question;
+    const activeTech = this.tech;
+    const buildGeneration = this.beginPreviewBuild();
     try {
       const files = this.filesMap();
 
       const html = await this.previewBuilder.build(this.tech as 'react' | 'angular' | 'vue', files);
+      if (!this.isCurrentPreviewBuild(buildGeneration, activeQuestion, activeTech)) return;
       if (initToken !== undefined && q && !this.isActiveInit(initToken, q)) return;
-      this.setPreviewHtml(html || null);
+      this.setPreviewHtml(html || null, null, buildGeneration);
     } catch (e) {
+      if (!this.isCurrentPreviewBuild(buildGeneration, activeQuestion, activeTech)) return;
       if (initToken !== undefined && q && !this.isActiveInit(initToken, q)) return;
-      this.setPreviewHtml(null);
+      const message = e instanceof Error ? e.message : String(e || 'Preview build failed');
+      this.setPreviewHtml(null, {
+        kind: 'compilation',
+        message: `Preview compilation failed: ${message.split(/\r?\n/, 1)[0].slice(0, 500)}`,
+      }, buildGeneration);
       this.loadingPreview.set(false);
     }
   }
 
   async runFrameworkChecks(options?: { emitCompletion?: boolean }): Promise<TestResult[]> {
     const q = this.question;
+    const activeTech = this.tech;
     const checks = this.frameworkChecks();
     if (!q || !this.isBrowser || !this.isFrameworkTech() || !checks.length) {
       return [];
@@ -874,6 +912,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
     this.ensurePreviewReady();
     this.flushPendingPersist();
+    if (this.rebuildTimer) {
+      clearTimeout(this.rebuildTimer);
+      this.rebuildTimer = null;
+    }
     this.frameworkChecksRunning.set(true);
     this.frameworkChecksRan.set(true);
     this.frameworkCheckResults.set([]);
@@ -884,6 +926,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     try {
       const files = this.filesMap();
       const html = await this.previewBuilder.build(this.tech as 'react' | 'angular' | 'vue', files);
+      // The builder may be asynchronous. Re-check cancellation and input
+      // identity before creating any scratch iframe for this invocation.
+      if (!this.isCurrentFrameworkCheckRun(runSeq, q, activeTech)) return [];
       if (!html) {
         throw new Error('Preview build returned empty HTML');
       }
@@ -894,15 +939,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       });
     } catch (error) {
       if (error instanceof OpaqueCheckCancelledError) return [];
+      if (!this.isCurrentFrameworkCheckRun(runSeq, q, activeTech)) return [];
       const message = error instanceof Error ? error.message : String(error || 'Framework checks failed');
       results = [{
         name: 'Framework checks',
         passed: false,
         error: message || 'Framework checks failed',
+        failureKind: 'compilation',
       }];
     }
 
-    if (runSeq !== this.frameworkCheckRunSeq || this.destroy || this.question?.id !== q.id) return results;
+    if (!this.isCurrentFrameworkCheckRun(runSeq, q, activeTech)) return results;
     this.frameworkChecksRunning.set(false);
     this.frameworkCheckResults.set(results);
     this.recordFrameworkAttempt(q, results);
@@ -921,6 +968,29 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.frameworkCheckRunSeq += 1;
     this.opaqueCheckRunner.cancel();
     this.frameworkChecksRunning.set(false);
+  }
+
+  private isCurrentFrameworkCheckRun(runSeq: number, q: Question, tech: Tech): boolean {
+    return !this.destroy
+      && runSeq === this.frameworkCheckRunSeq
+      && this.question === q
+      && this.question?.id === q.id
+      && this.tech === tech;
+  }
+
+  private beginPreviewBuild(): number {
+    return ++this.previewBuildGeneration;
+  }
+
+  private invalidatePreviewBuilds(): void {
+    this.previewBuildGeneration += 1;
+  }
+
+  private isCurrentPreviewBuild(generation: number, q: Question | undefined, tech: Tech): boolean {
+    return !this.destroy
+      && generation === this.previewBuildGeneration
+      && this.question === q
+      && this.tech === tech;
   }
 
   private recordFrameworkAttempt(question: Question, results: TestResult[]): void {
@@ -966,13 +1036,19 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       .join('\n---FILE---\n');
   }
 
-  private setPreviewHtml(html: string | null) {
+  private setPreviewHtml(
+    html: string | null,
+    failure: PreviewFailure | null = null,
+    buildGeneration?: number,
+  ) {
+    if (this.destroy) return;
+    if (buildGeneration !== undefined && buildGeneration !== this.previewBuildGeneration) return;
     const frameEl = this.previewFrame?.nativeElement;
     if (!frameEl) {
       // iframe not ready yet; retry once
       requestAnimationFrame(() => {
         if (this.previewFrame?.nativeElement) {
-          this.setPreviewHtml(html);
+          this.setPreviewHtml(html, failure, buildGeneration);
         }
       });
       return;
@@ -992,6 +1068,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       this._previewUrl.set(null);
       this.previewObjectUrl = null;
       this.expectedPreviewReadyToken = null;
+      this.previewFailure.set(failure);
       this.loadingPreview.set(false);
       if (prevUrl) {
         try { URL.revokeObjectURL(prevUrl); } catch { }
@@ -1000,6 +1077,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }
 
     this.loadingPreview.set(true);
+    this.previewFailure.set(null);
     const bridged = this.injectPreviewReadyBridge(html, navId);
     this.expectedPreviewReadyToken = bridged.token;
 
@@ -1013,13 +1091,23 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       if (this.destroy) return;
       if (navId !== this.previewNavId) return;
       if (this.loadingPreview()) {
-        this.armPreviewReadyFallback(navId);
+        try {
+          frameEl.contentWindow?.postMessage({
+            type: 'FA_PREVIEW_STATUS_REQUEST',
+            version: 2,
+            token: this.expectedPreviewReadyToken,
+          }, '*');
+        } catch { }
       }
       if (prevUrl && prevUrl !== url) {
         try { URL.revokeObjectURL(prevUrl); } catch { }
       }
     };
 
+    // Bound the navigation itself as well as the lifecycle handshake. Some
+    // iframe failures never dispatch `load`, so waiting until onload to arm
+    // this timer could leave the visible preview loading forever.
+    this.armPreviewReadyFallback(navId);
     try {
       // Use replace() so live preview updates don't pollute session history.
       frameEl.contentWindow?.location.replace(url);
@@ -1041,21 +1129,27 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       if (this.destroy) return;
       if (navId !== this.previewNavId) return;
       if (!this.loadingPreview()) return;
-      this.finishPreviewLoading(navId);
+      this.finishPreviewLoading(navId, {
+        kind: 'infrastructure-timeout',
+        message: 'Preview did not report a ready or error state before the infrastructure timeout.',
+      });
     }, 30000);
   }
 
-  private finishPreviewLoading(navId: number) {
+  private finishPreviewLoading(navId: number, failure: PreviewFailure | null = null) {
     if (this.destroy) return;
     if (navId !== this.previewNavId) return;
     this.clearPreviewReadyFallback();
     this.expectedPreviewReadyToken = null;
-    this.zone.run(() => this.loadingPreview.set(false));
+    this.zone.run(() => {
+      this.previewFailure.set(failure);
+      this.loadingPreview.set(false);
+    });
   }
 
   private injectPreviewReadyBridge(html: string, navId: number): { html: string; token: string } {
     const token = `fa-preview-${navId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const bridge = `<script>(function(){var token=${JSON.stringify(token)};var sent=false;window.__FA_PREVIEW_READY_TOKEN=token;window.__FA_NOTIFY_PREVIEW_READY=function(reason){if(sent) return; sent=true; try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_READY',token:token,reason:String(reason||'render')},'*');}}catch(_e){}};})();</script>`;
+    const bridge = `<script>(function(){var token=${JSON.stringify(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
 
     if (/<head[^>]*>/i.test(html)) {
       return { html: html.replace(/<head[^>]*>/i, `$&\n${bridge}`), token };
@@ -1071,11 +1165,39 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (!this.loadingPreview()) return;
     const frameWindow = this.previewFrame?.nativeElement?.contentWindow;
     if (!frameWindow || ev.source !== frameWindow) return;
-    const payload = ev.data as { type?: unknown; token?: unknown } | null;
-    if (!payload || payload.type !== 'FA_PREVIEW_READY') return;
+    const payload = ev.data as {
+      type?: unknown;
+      version?: unknown;
+      token?: unknown;
+      state?: unknown;
+      error?: unknown;
+    } | null;
+    if (!payload || payload.type !== 'FA_PREVIEW_LIFECYCLE' || payload.version !== 2) return;
     const token = typeof payload.token === 'string' ? payload.token : '';
-    if (this.expectedPreviewReadyToken && token !== this.expectedPreviewReadyToken) return;
-    this.finishPreviewLoading(this.previewNavId);
+    if (!this.expectedPreviewReadyToken || token !== this.expectedPreviewReadyToken) return;
+    const state = typeof payload.state === 'string' ? payload.state : '';
+    if (state === 'render-ready') {
+      this.finishPreviewLoading(this.previewNavId);
+      return;
+    }
+    const kind = state === 'compile-error'
+      ? 'compilation'
+      : state === 'boot-error'
+        ? 'preview-boot'
+        : state === 'runtime-error'
+          ? 'preview-runtime'
+          : null;
+    if (!kind) return;
+    const detail = String(payload.error || '').split(/\r?\n/, 1)[0].replace(/[<>]/g, '').slice(0, 500);
+    const prefix = kind === 'compilation'
+      ? 'Preview compilation failed'
+      : kind === 'preview-boot'
+        ? 'Preview failed to boot'
+        : 'Preview failed during render';
+    this.finishPreviewLoading(this.previewNavId, {
+      kind,
+      message: `${prefix}${detail ? `: ${detail}` : ''}`,
+    });
   };
 
   // ---------- helpers ----------
@@ -1104,6 +1226,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   private clearFrameworkCheckResults(): void {
+    this.cancelFrameworkCheckRun();
     this.frameworkChecksRunning.set(false);
     this.frameworkCheckResults.set([]);
     this.frameworkChecksRan.set(false);

@@ -1,0 +1,61 @@
+{
+  "questionId": "angular-filterable-user-list",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface User {\n  id: number;\n  name: string;\n  role: Role;\n  active: boolean;\n}\n\ntype Role = 'admin' | 'editor' | 'viewer';\n\ntype RoleFilter = 'all' | Role;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  searchTerm = '';\n  selectedRole: RoleFilter = 'all';\n  showOnlyActive = false;\n\n  readonly users: User[] = [\n    { id: 1, name: 'Alice Johnson', role: 'admin', active: true },\n    { id: 2, name: 'Bob Smith', role: 'editor', active: false },\n    { id: 3, name: 'Charlie Kim', role: 'viewer', active: true },\n    { id: 4, name: 'Dana Patel', role: 'editor', active: true },\n    { id: 5, name: 'Elliot Brown', role: 'viewer', active: false }\n  ];\n\n  get filteredUsers(): User[] {\n    const term = this.searchTerm.trim().toLowerCase();\n\n    return this.users.filter(user => {\n      if (term && !user.name.toLowerCase().includes(term)) {\n        return false;\n      }\n\n      if (this.selectedRole !== 'all' && user.role !== this.selectedRole) {\n        return false;\n      }\n\n      if (this.showOnlyActive && !user.active) {\n        return false;\n      }\n\n      return true;\n    });\n  }\n\n}\n",
+      "nodes": [
+        {
+          "id": "d1-import-template-features",
+          "title": "Import forms and the pipe dependency",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "imports: [CommonModule, FormsModule],"
+          },
+          "why": "FormsModule supports ngModel and CommonModule remains necessary for the TitleCasePipe used by the external template.",
+          "alternative": "Remove CommonModule because modern @for no longer needs it, without checking remaining pipe usage.",
+          "tradeoff": "Keeping only verified imports avoids dead dependencies while preserving template compilation."
+        },
+        {
+          "id": "d2-normalize-search-once",
+          "title": "Normalize the search term once",
+          "anchor": {
+            "lineStart": 37,
+            "lineEnd": 37,
+            "snippet": "const term = this.searchTerm.trim().toLowerCase();"
+          },
+          "why": "One normalized value makes name matching case-insensitive and avoids repeated cleanup inside the filter.",
+          "alternative": "Compare raw input separately for every user row.",
+          "tradeoff": "Normalization allocates a small string per getter run, but the filtering rules stay readable."
+        },
+        {
+          "id": "d3-apply-role-filter-explicitly",
+          "title": "Treat all as the role wildcard",
+          "anchor": {
+            "lineStart": 44,
+            "lineEnd": 44,
+            "snippet": "if (this.selectedRole !== 'all' && user.role !== this.selectedRole) {"
+          },
+          "why": "The wildcard must bypass role rejection while concrete roles match exactly.",
+          "alternative": "Compare every user role directly to the selected value, including all.",
+          "tradeoff": "The explicit branch is slightly longer, but it makes the filter contract unambiguous."
+        },
+        {
+          "id": "d4-compose-active-filter",
+          "title": "Compose the active-only constraint",
+          "anchor": {
+            "lineStart": 48,
+            "lineEnd": 48,
+            "snippet": "if (this.showOnlyActive && !user.active) {"
+          },
+          "why": "Inactive users are rejected only when the toggle is enabled, preserving the original collection.",
+          "alternative": "Mutate the source users array whenever the toggle changes.",
+          "tradeoff": "Derived filtering reruns with state changes, but the canonical data remains intact."
+        }
+      ]
+    }
+  }
+}

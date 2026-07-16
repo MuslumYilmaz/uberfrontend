@@ -1,6 +1,28 @@
 import { buildFailureHint } from './failure-explain-rules';
 
 describe('failure-explain-rules', () => {
+  it('prioritizes Angular template compilation guidance before framework assertions', () => {
+    const hint = buildFailureHint({
+      questionId: 'angular-tabs-switcher',
+      category: 'syntax-error',
+      errorLine: 'NG5002: Incomplete block "if"',
+      firstFailName: 'Preview compilation',
+      passCount: 0,
+      totalCount: 3,
+      failCount: 3,
+      failedTests: [
+        {
+          name: 'Preview compilation',
+          errorLine: 'NG5002: Incomplete block "if"',
+        },
+      ],
+    });
+
+    expect(hint.ruleId).toBe('angular-modern-template-compile');
+    expect(hint.title.toLowerCase()).toContain('template compilation');
+    expect(hint.actions.join(' ')).toContain('@for');
+  });
+
   it('returns question-specific hint for sleep promise contract failures', () => {
     const hint = buildFailureHint({
       questionId: 'js-sleep',

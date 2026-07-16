@@ -235,7 +235,7 @@ describe('SystemDesignListComponent', () => {
     expect(labels).toContain('toast timer cleanup tradeoffs');
     expect(labels).toContain('dashboard performance system design');
     expect(labels).toContain('live chart performance system design');
-    expect(labels).toContain('form interaction latency frontend interview');
+    expect(labels).toContain('Performance and interaction latency');
     expect(links.every((link) => link.getAttribute('href') === '/guides/system-design-blueprint/performance')).toBeTrue();
   });
 

@@ -48,8 +48,8 @@ describe('FeSystemDesignFastFrameworkArticle', () => {
 
     expect(h1?.textContent?.trim()).toBe('Frontend System Design Interview Framework: 45-Minute Answer Template');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
-    expect(freshness?.textContent || '').toContain('Reviewed by FrontendAtlas');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
+    expect(freshness?.textContent || '').not.toContain('Reviewed by');
     expect(hostText).toContain('Custom system design framework promise.');
   });
 

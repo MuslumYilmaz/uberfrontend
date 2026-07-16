@@ -5,6 +5,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
+import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 type ApiSurfaceTradeoff = 'prop-heavy' | 'composed' | 'controlled';
 
@@ -353,7 +354,7 @@ interface ApiSurfaceTradeoffExample {
     [readerPromise]="readerPromise || undefined"
   >
     <div class="freshness" data-testid="api-guide-freshness">
-      Last updated: June 2026 | Author: FrontendAtlas Team | Reviewed by FrontendAtlas
+      Last updated: June 2026 | Author: {{ editorialAuthor }}
     </div>
 
     <p>
@@ -995,6 +996,7 @@ type SelectEvent&lt;T&gt; = &#123;
   `
 })
 export class ComponentApiDesignArticle {
+  readonly editorialAuthor = PUBLIC_EDITORIAL_FACTS.author.name;
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;

@@ -48,8 +48,8 @@ describe('FundamentalsCheckArticle', () => {
 
     expect(h1?.textContent?.trim()).toBe('Frontend Interview Fundamentals Quiz: Browser, CSS, JavaScript, HTTP');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
-    expect(freshness?.textContent || '').toContain('Reviewed by FrontendAtlas');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
+    expect(freshness?.textContent || '').not.toContain('Reviewed by');
     expect(hostText).toContain('Custom fundamentals diagnostic promise.');
     expect(hostText).toContain('answer 12 questions');
     expect(hostText).toContain('give yourself one point');

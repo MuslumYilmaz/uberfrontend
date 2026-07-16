@@ -1,5 +1,6 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
@@ -23,6 +24,7 @@ describe('CodingDetailComponent', () => {
   let activity: jasmine.SpyObj<ActivityService>;
   let progress: jasmine.SpyObj<UserProgressService>;
   let auth: jasmine.SpyObj<AuthService>;
+  let authUser: ReturnType<typeof signal<any>>;
 
   beforeEach(async () => {
     sessionStorage.clear();
@@ -42,7 +44,8 @@ describe('CodingDetailComponent', () => {
     progress.isSolved.and.returnValue(false);
     progress.setSolvedIds.and.stub();
     progress.markSolvedLocal.and.stub();
-    auth.user.and.returnValue(null);
+    authUser = signal<any>(null);
+    (auth.user as any).and.callFake(() => authUser());
     auth.isLoggedIn.and.returnValue(false);
     auth.ensureMe.and.returnValue(of(null));
     auth.headers.and.returnValue({} as any);
@@ -76,6 +79,7 @@ describe('CodingDetailComponent', () => {
         { provide: BugReportService, useValue: bugReport },
       ],
     }).compileComponents();
+
   });
 
   afterEach(() => {
@@ -712,6 +716,151 @@ describe('CodingDetailComponent', () => {
     expect(component.solutionOpenPath()).toBe('src/App.tsx');
   });
 
+  it('does not read or resolve solution fields for a locked Premium visitor', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    let solutionAssetReads = 0;
+    let solutionBlockReads = 0;
+    const question: any = {
+      id: 'react-locked-solution',
+      title: 'Locked React Solution',
+      type: 'coding',
+      technology: 'react',
+      access: 'premium',
+      difficulty: 'intermediate',
+      tags: ['react', 'state'],
+      importance: 3,
+      description: {
+        summary: 'Build a React interaction with predictable state updates.',
+        specs: {
+          requirements: [
+            'Render the current state after each interaction.',
+            'Keep updates predictable for repeated interactions.',
+            'Preserve accessible controls throughout the flow.',
+          ],
+        },
+      },
+      starterCode: 'export default function App() { return null; }',
+    };
+    Object.defineProperties(question, {
+      solutionAsset: {
+        enumerable: true,
+        get: () => {
+          solutionAssetReads += 1;
+          return 'https://assets.example/locked-solution.json';
+        },
+      },
+      solutionBlock: {
+        enumerable: true,
+        get: () => {
+          solutionBlockReads += 1;
+          return { overview: 'Protected solution.' };
+        },
+      },
+    });
+    const resolveSpy = spyOn(component as any, 'resolveSolutionAsset').and.callThrough();
+    const httpGetSpy = spyOn((component as any).http, 'get').and.callThrough();
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    (component as any).dataLoaded = true;
+    component.allQuestions = [question];
+
+    await (component as any).loadQuestion(question.id);
+
+    expect(component.locked()).toBeTrue();
+    component.lockedPreview();
+    component.solutionInfo();
+    component.structuredSolution();
+
+    expect(resolveSpy).not.toHaveBeenCalled();
+    expect(solutionAssetReads).toBe(0);
+    expect(solutionBlockReads).toBe(0);
+    expect(component.solutionFilesMap()).toEqual({});
+    expect(httpGetSpy).not.toHaveBeenCalled();
+  });
+
+  it('fetches a solution asset for a free question', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'react-free-solution',
+      title: 'Free React Solution',
+      type: 'coding',
+      technology: 'react',
+      access: 'free',
+      difficulty: 'easy',
+      tags: ['react'],
+      importance: 3,
+      description: 'Build a small React interaction.',
+      solutionAsset: 'https://assets.example/free-solution.json',
+    } as any;
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    (component as any).dataLoaded = true;
+    component.allQuestions = [question];
+    const resolveSpy = spyOn(component as any, 'resolveSolutionAsset').and.callThrough();
+    const httpGetSpy = spyOn((component as any).http, 'get').and.returnValue(of({
+      files: { 'src/App.tsx': 'export default function App() { return <div>Free</div>; }' },
+      openFile: 'src/App.tsx',
+    }));
+
+    await (component as any).loadQuestion(question.id);
+    expect(resolveSpy).toHaveBeenCalledTimes(1);
+    expect(httpGetSpy).toHaveBeenCalledOnceWith('https://assets.example/free-solution.json');
+
+    expect(component.solutionFilesMap()['src/App.tsx']).toContain('Free');
+    expect(component.solutionOpenPath()).toBe('src/App.tsx');
+  });
+
+  it('loads a Premium solution only after entitlement arrives and clears it on revocation', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'react-premium-solution',
+      title: 'Premium React Solution',
+      type: 'coding',
+      technology: 'react',
+      access: 'premium',
+      difficulty: 'intermediate',
+      tags: ['react'],
+      importance: 3,
+      description: 'Build a Premium React interaction.',
+      solutionAsset: 'https://assets.example/premium-solution.json',
+    } as any;
+
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    questionService.loadQuestions.and.returnValue(of([question]));
+    const resolveSpy = spyOn(component as any, 'resolveSolutionAsset').and.callThrough();
+    const httpGetSpy = spyOn((component as any).http, 'get').and.returnValue(of({
+      files: { 'src/App.tsx': 'export default function App() { return <div>Premium</div>; }' },
+      openFile: 'src/App.tsx',
+    }));
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(httpGetSpy).not.toHaveBeenCalled();
+    expect(component.solutionFilesMap()).toEqual({});
+
+    authUser.set({ accessTier: 'premium' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(resolveSpy).toHaveBeenCalledTimes(1);
+    expect(httpGetSpy).toHaveBeenCalledOnceWith('https://assets.example/premium-solution.json');
+
+    expect(component.locked()).toBeFalse();
+    expect(component.solutionFilesMap()['src/App.tsx']).toContain('Premium');
+
+    authUser.set(null);
+    fixture.detectChanges();
+
+    expect(component.locked()).toBeTrue();
+    expect(component.solutionFilesMap()).toEqual({});
+    expect(component.solutionOpenPath()).toBe('');
+  });
+
   it('maps coding detail tech to interview hub routes', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -725,7 +874,7 @@ describe('CodingDetailComponent', () => {
     expect(component.interviewQuestionsHubLabel()).toBe('CSS interview questions');
   });
 
-  it('preserves threshold comparators and JSX-like tokens in locked editorial previews', () => {
+  it('keeps editorial source readable but rejects unsafe code tokens from the rich locked preview', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
 
@@ -744,9 +893,7 @@ describe('CodingDetailComponent', () => {
     expect(component.lockedSummary()).toBe(
       'Thresholds: <34 red, 34–66 orange, >66 green with Array<T> and <ProgressBar />.'
     );
-    expect(component.lockedPreview()?.what).toContain('<34 red, 34–66 orange, >66 green');
-    expect(component.lockedPreview()?.what).toContain('Array<T>');
-    expect(component.lockedPreview()?.what).toContain('<ProgressBar />');
+    expect(component.lockedPreview()).toBeNull();
   });
 
   it('uses explicit related links for cross-bank coding page recommendations', () => {
@@ -859,6 +1006,34 @@ describe('CodingDetailComponent', () => {
     expect(payload.description.length).toBeLessThanOrEqual(240);
   });
 
+  it('keeps internal company tags out of question metadata and structured-data keywords', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'javascript';
+    component.kind = 'coding';
+
+    (component as any).updateSeoForQuestion({
+      id: 'js-company-tagged',
+      title: 'Tagged internal practice prompt',
+      access: 'free',
+      difficulty: 'easy',
+      description: 'Practice a transferable JavaScript implementation skill.',
+      tags: ['closures'],
+      companies: ['google'],
+      companyTags: ['meta'],
+    } as any);
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((entry: any) => entry?.['@type'] === 'TechArticle');
+
+    expect(payload.keywords).toContain('closures');
+    expect(payload.keywords).not.toContain('google');
+    expect(payload.keywords).not.toContain('meta');
+    expect(String(article?.keywords || '')).not.toContain('google');
+    expect(String(article?.keywords || '')).not.toContain('meta');
+  });
+
   it('preserves exact explicit SEO titles up to the title length limit', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -925,6 +1100,7 @@ describe('CodingDetailComponent', () => {
     expect(payload.robots).toBe('noindex,follow');
     expect(payload.canonical).toBe('https://frontendatlas.com/css/coding/css-flexbox-navbar');
     expect(article?.isAccessibleForFree).toBeFalse();
+    expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
     expect(typeNames).toContain('BreadcrumbList');
     expect(typeNames).toContain('TechArticle');
     expect(typeNames).not.toContain('HowTo');
@@ -953,6 +1129,7 @@ describe('CodingDetailComponent', () => {
     expect(payload.ogType).toBe('article');
 
     expect(article?.isAccessibleForFree).toBeTrue();
+    expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
     expect(article?.url).toBe('https://frontendatlas.com/css/coding/css-theme-variables-dark-mode');
     expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
       'Home',

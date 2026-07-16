@@ -52,7 +52,7 @@ describe('ComponentApiDesignArticle', () => {
 
     expect(h1?.textContent?.trim()).toBe('Component API Design for Frontend Interviews: Props, Events, and Trade-offs');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
     expect(hostText).toContain('Custom API guide promise.');
     expect(hostText).toContain('Component API design is the contract');
     expect(hostText).toContain('frontend component API design interview practice map');

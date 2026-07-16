@@ -23,9 +23,12 @@ import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/ro
 import { Subject, Subscription, filter, firstValueFrom, takeUntil } from 'rxjs';
 
 import type { Question, QuestionFaqItem, StructuredDescription } from '../../../core/models/question.model';
+import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
+import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import {
   buildLockedPreviewForCoding,
+  CodingLockedPreviewQuestion,
   LockedPreviewData,
   normalizeEditorialPlainText,
 } from '../../../core/utils/locked-preview.util';
@@ -341,8 +344,29 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   lockedPreview = computed<LockedPreviewData | null>(() => {
     const q = this.question();
     if (!q) return null;
-    return buildLockedPreviewForCoding(q, {
-      candidates: this.allQuestions as any,
+    const publicQuestion: CodingLockedPreviewQuestion = {
+      id: q.id,
+      title: q.title,
+      description: q.description,
+      tags: q.tags,
+      difficulty: q.difficulty,
+      premiumPreview: q.premiumPreview ?? premiumPreviewForQuestion(this.tech, 'coding', q.id),
+      starterCode: q.starterCode,
+      code: q.code,
+      starterCodeTs: (q as Question & { starterCodeTs?: string }).starterCodeTs,
+    };
+    const publicCandidates = this.allQuestions.map((candidate) => ({
+      id: candidate.id,
+      title: candidate.title,
+      access: candidate.access,
+      technology: candidate.technology,
+      type: candidate.type,
+      tags: candidate.tags,
+      importance: candidate.importance,
+    }));
+
+    return buildLockedPreviewForCoding(publicQuestion, {
+      candidates: publicCandidates,
       tech: this.tech,
       kind: 'coding',
     });
@@ -378,6 +402,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // --- Solution files (read-only, GreatFrontEnd-style) ---
   solutionFilesMap = signal<Record<string, string>>({});
   solutionOpenPath = signal<string>('');
+  private loadedSolutionAssetKey: string | null = null;
+  private readonly solutionAssetLoads = new Map<string, Promise<void>>();
 
   // sorted list of solution file paths
   solutionFileList = computed(() => {
@@ -699,6 +725,22 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       const solvedIds = this.progress.solvedIds();
       if (q) {
         this.solved.set(solvedIds.includes(q.id));
+      }
+    }, { allowSignalWrites: true });
+
+    effect(() => {
+      const q = this.question();
+      const canAccessSolution = q ? this.canAccessQuestionSolution(q) : false;
+
+      if (!q || !canAccessSolution) {
+        this.loadedSolutionAssetKey = null;
+        this.solutionFilesMap.set({});
+        this.solutionOpenPath.set('');
+        return;
+      }
+
+      if (this.isBrowser) {
+        void this.loadAuthorizedSolutionAsset(q, this.loadQuestionSeq);
       }
     }, { allowSignalWrites: true });
   }
@@ -1107,7 +1149,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   private questionKeywords(q: Question): string[] {
     const tags = Array.isArray(q.tags) ? q.tags : [];
-    const companies: string[] = (q as any).companies ?? (q as any).companyTags ?? [];
     const base = [
       'front end interview',
       `${this.tech} interview question`,
@@ -1115,7 +1156,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     ];
 
     return Array.from(
-      new Set([...base, ...tags, ...companies, ...this.frameworkSeoKeywords()].map(k => String(k || '').trim()).filter(Boolean))
+      new Set([...base, ...tags, ...this.frameworkSeoKeywords()].map(k => String(k || '').trim()).filter(Boolean))
     );
   }
 
@@ -1145,8 +1186,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
   }
 
-  private resolveAuthor(q: Question): string {
-    return String((q as any).author || 'FrontendAtlas Team').trim() || 'FrontendAtlas Team';
+  private resolveAuthor(_q: Question): string {
+    return PUBLIC_EDITORIAL_FACTS.author.name;
   }
 
   private resolveUpdatedIso(q: Question): string | null {
@@ -1181,7 +1222,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   authorLabel(q?: Question | null): string {
-    if (!q) return 'FrontendAtlas Team';
+    if (!q) return PUBLIC_EDITORIAL_FACTS.author.name;
     return this.resolveAuthor(q);
   }
 
@@ -1203,7 +1244,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const seoTitle = this.seoTitle(q);
     const description = this.seoDescription(q);
     const keywords = this.questionKeywords(q);
-    const authorName = this.resolveAuthor(q);
     const dateModified = this.resolveUpdatedIso(q);
     const datePublished = this.resolvePublishedIso(dateModified);
     const imageUrl = this.structuredDataImageUrl();
@@ -1260,7 +1300,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       datePublished,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
-      author: { '@type': 'Organization', name: authorName },
+      author: publicEditorialAuthorSchema(),
       publisher: {
         '@type': 'Organization',
         name: 'FrontendAtlas',
@@ -1471,13 +1511,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     // reset solution files for new question before loading
     this.solutionFilesMap.set({});
     this.solutionOpenPath.set('');
+    this.loadedSolutionAssetKey = null;
 
     if (!this.isBrowser) return;
 
-    const solutionAsset = await this.resolveSolutionAsset(q);
+    await this.loadAuthorizedSolutionAsset(q, loadSeq);
     if (!this.isActiveQuestionLoad(loadSeq, q)) return;
-    this.solutionFilesMap.set(solutionAsset.files);
-    this.solutionOpenPath.set(solutionAsset.initialPath);
 
     // common flags
     this.solved.set(this.progress.isSolved(q.id));
@@ -1553,7 +1592,50 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return this.isActiveLoad(seq) && this.question()?.id === q.id;
   }
 
+  private canAccessQuestionSolution(q: Question): boolean {
+    return !isQuestionLockedForTier(q, this.auth.user());
+  }
+
+  private async loadAuthorizedSolutionAsset(q: Question, loadSeq: number): Promise<void> {
+    if (!this.isBrowser || !this.isActiveQuestionLoad(loadSeq, q) || !this.canAccessQuestionSolution(q)) {
+      return;
+    }
+
+    const loadKey = `${loadSeq}:${q.id}`;
+    if (this.loadedSolutionAssetKey === loadKey) return;
+
+    const existing = this.solutionAssetLoads.get(loadKey);
+    if (existing) {
+      await existing;
+      return;
+    }
+
+    const load = (async () => {
+      const solutionAsset = await this.resolveSolutionAsset(q);
+      if (!this.isActiveQuestionLoad(loadSeq, q) || !this.canAccessQuestionSolution(q)) return;
+
+      this.solutionFilesMap.set(solutionAsset.files);
+      this.solutionOpenPath.set(solutionAsset.initialPath);
+      this.loadedSolutionAssetKey = loadKey;
+    })();
+
+    this.solutionAssetLoads.set(loadKey, load);
+    try {
+      await load;
+    } finally {
+      if (this.solutionAssetLoads.get(loadKey) === load) {
+        this.solutionAssetLoads.delete(loadKey);
+      }
+    }
+  }
+
   private async resolveSolutionAsset(q: Question): Promise<{ files: Record<string, string>; initialPath: string }> {
+    // Check entitlement before reading solutionAsset. This ordering matters for locked
+    // records backed by lazy/protected solution properties.
+    if (!this.canAccessQuestionSolution(q)) {
+      return { files: {}, initialPath: '' };
+    }
+
     const assetPath = (q as any).solutionAsset as string | undefined;
 
     if (!assetPath) {
@@ -2949,7 +3031,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---- Solution normalizer ----
   solutionInfo = computed(() => {
-    const q = this.question(); if (!q) return { explanation: '', codeJs: '', codeTs: '' };
+    const q = this.question();
+    if (!q || !this.canAccessQuestionSolution(q)) {
+      return { explanation: '', codeJs: '', codeTs: '' };
+    }
     const block = (q as any).solutionBlock as { explanation?: string; codeJs?: string; codeTs?: string } | undefined;
 
     // preferred: solutionBlock
@@ -2972,6 +3057,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // NORMALIZED access to the *new* structured solution (keeps legacy fallback)
   structuredSolution = computed<FASolutionBlock>(() => {
     const q = this.question();
+    if (!q || !this.canAccessQuestionSolution(q)) return {};
     const block = (q as any)?.solutionBlock as FASolutionBlock | undefined;
     if (block) return block;
     const legacy = this.solutionInfo();

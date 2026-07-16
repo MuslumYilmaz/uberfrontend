@@ -12,6 +12,7 @@ import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subs
 import { catchError, distinctUntilChanged, map, shareReplay, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { Difficulty, Question, QuestionKind, Technology, isQuestionLockedForTier } from '../../../core/models/question.model';
+import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
 import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestionListItem, QuestionListItem, QuestionService } from '../../../core/services/question.service';
@@ -273,6 +274,7 @@ function inferCategory(q: any): CategoryKey {
   styleUrls: ['./coding-list.component.scss']
 })
 export class CodingListComponent implements OnInit, OnDestroy {
+  readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
@@ -302,14 +304,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
     {
       key: 'default',
       label: 'Difficulty: Easy to Hard',
-      hint: 'Easy → Hard, then Importance High → Low'
+      hint: 'Easy → Hard, then practice priority High → Low'
     },
     { key: 'title-asc', label: 'Title: A to Z' },
     { key: 'title-desc', label: 'Title: Z to A' },
     { key: 'difficulty-asc', label: 'Difficulty: Easy to Hard' },
     { key: 'difficulty-desc', label: 'Difficulty: Hard to Easy' },
-    { key: 'importance-desc', label: 'Importance: High to Low' },
-    { key: 'importance-asc', label: 'Importance: Low to High' },
+    { key: 'importance-desc', label: 'Practice priority: High to Low' },
+    { key: 'importance-asc', label: 'Practice priority: Low to High' },
     { key: 'created-desc', label: 'Created: Newest to Oldest' },
     { key: 'created-asc', label: 'Created: Oldest to Newest' },
   ];
@@ -956,7 +958,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
 
     if (this.source === 'company') {
-      return 'Filter company-tagged practice prompts and open the next question with your current list preserved.';
+      return 'Filter this FrontendAtlas editorial practice grouping and open the next prompt with your current list preserved.';
     }
 
       return 'Filter by difficulty and focus area, then start one prompt immediately.';
@@ -977,7 +979,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       return 'Start first question';
     }
 
-    if (this.source === 'company') return 'Start company prompt';
+    if (this.source === 'company') return 'Start practice prompt';
     return this.kind === 'trivia' ? 'Start concept question' : 'Start coding question';
   }
 
@@ -1623,8 +1625,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
         tone: 'difficulty',
       },
       {
-        label: this.capitalize(this.impLabel(q)),
-        ariaLabel: `Importance: ${this.capitalize(this.impLabel(q))}`,
+        label: `Priority: ${this.capitalize(this.impLabel(q))}`,
+        ariaLabel: `Practice priority: ${this.capitalize(this.impLabel(q))}`,
         tone: 'importance',
       },
     ];

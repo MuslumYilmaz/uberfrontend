@@ -58,6 +58,10 @@ import { RouterModule } from '@angular/router';
           </li>
           <li>There is no evidence of fraud, refund abuse, or policy violations.</li>
         </ul>
+        <p>
+          By limited usage, we mean the paid library has not been substantially consumed. We assess this case by
+          case based on request timing and available account records.
+        </p>
         <p class="muted small">
           This policy does not limit mandatory consumer rights for services that are not as described, faulty,
           or not fit for purpose.
@@ -81,10 +85,8 @@ import { RouterModule } from '@angular/router';
       <section>
         <h2>5. How to request a refund</h2>
         <p>
-          Contact: <a href="mailto:support@frontendatlas.com"><strong>support&#64;frontendatlas.com</strong></a>
-        </p>
-        <p class="muted small">
-          (Add a support phone number here if you provide phone support.)
+          Refund requests:
+          <a href="mailto:support@frontendatlas.com"><strong>support&#64;frontendatlas.com</strong></a>
         </p>
         <p>Please include:</p>
         <ul>

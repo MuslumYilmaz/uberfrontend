@@ -225,6 +225,13 @@
   gap: 8px;
 }
 
+.distribution-note {
+  margin: -6px 0 0;
+  color: var(--uf-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .distribution-card {
   min-width: 0;
   border: 1px solid var(--uf-border-subtle);

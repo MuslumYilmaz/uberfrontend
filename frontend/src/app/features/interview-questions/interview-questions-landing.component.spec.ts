@@ -689,8 +689,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('React Interview Questions and Answers');
-    expect(text).toContain('Reviewed May 20, 2026');
-    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('65 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance');
     expect(text).toContain('On this page');
     expect(text).toContain('Popular React interview question clusters');
@@ -1029,7 +1029,7 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('Common React libraries')
     )).toBeTrue();
     expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
     expect(faqPage?.name).toBe('Top React interview questions and short answers, beginner to advanced');
     expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
@@ -1075,8 +1075,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('JavaScript Interview Questions and Answers');
-    expect(text).toContain('Reviewed May 19, 2026');
-    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('Updated May 19, 2026');
+    expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('25 answers, 8 output questions, and 8 browser/DOM/security questions');
     expect(text).toContain('On this page');
     expect(text).toContain('Top JavaScript interview questions and short answers, beginner to advanced');
@@ -1250,7 +1250,7 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('JavaScript event bubbling and capturing')
     )).toBeTrue();
     expect(collection?.dateModified).toBe('2026-05-19T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
     expect(faqPage?.name).toBe('Top JavaScript interview questions and short answers, beginner to advanced');
     expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
@@ -1501,7 +1501,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(reactCoding).toBeNull();
     expect(reactTrivia).toBeNull();
     const text = fixture.nativeElement.textContent || '';
-    expect(text).toContain('Reviewed May 21, 2026');
+    expect(text).toContain('Updated May 21, 2026');
     expect(text).toContain('30 essential frontend answers plus Essential 60, coding, concepts, frameworks, debugging, and system design paths');
     expect(text).toContain('Frontend interview question clusters');
     expect(text).toContain('Essential frontend interview questions and answers');
@@ -1571,7 +1571,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
     expect(collection?.dateModified).toBe('2026-05-21T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     const schemaNames = [
       ...(collection?.about || []),
       ...(collection?.mentions || []),
@@ -1687,8 +1687,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     const thirdItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]') as HTMLAnchorElement;
 
     expect(text).toContain('HTML and CSS Interview Questions and Answers');
-    expect(text).toContain('Reviewed May 20, 2026');
-    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('65 visible HTML and CSS questions across semantics, forms, accessibility, layout, cascade, responsive UI, code scenarios, and browser debugging');
     expect(text).toContain('On this page');
     expect(text).toContain('Popular HTML and CSS interview question clusters');
@@ -1810,7 +1810,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML CSS interview questions')
     )).toBeTrue();
@@ -1888,8 +1888,8 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     expect(text).toContain('Vue.js Interview Questions and Answers');
     expect(text).toContain('Vue.js interview questions and Vue JS answers for Vue 3 rounds');
-    expect(text).toContain('Reviewed May 20, 2026');
-    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance');
     expect(text).toContain('On this page');
     expect(text).toContain('Popular Vue.js interview question clusters');
@@ -2051,7 +2051,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('Vue.js interview questions')
     )).toBeTrue();
@@ -2156,7 +2156,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('HTML Interview Questions and Answers');
-    expect(text).toContain('Reviewed May 21, 2026');
+    expect(text).toContain('Updated May 21, 2026');
     expect(text).toContain('65 visible HTML questions across semantics, forms, accessibility, metadata, DOM, native browser behavior, modern HTML, and markup scenarios');
     expect(text).toContain('Popular HTML interview question clusters');
     expect(text).toContain('Top HTML interview questions and short answers, beginner to advanced');
@@ -2337,7 +2337,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(collection?.dateModified).toBe('2026-05-21T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML interview questions and answers')
     )).toBeTrue();
@@ -2438,7 +2438,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('CSS Interview Questions and Answers');
-    expect(text).toContain('Reviewed May 20, 2026');
+    expect(text).toContain('Updated May 20, 2026');
     expect(text).toContain('65 visible CSS questions across cascade, specificity, box model, layout, responsive design, debugging, performance, and maintainable CSS');
     expect(text).toContain('Popular CSS interview question clusters');
     expect(text).toContain('Top CSS interview questions and short answers, beginner to advanced');
@@ -2625,7 +2625,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('CSS interview questions and answers')
     )).toBeTrue();
@@ -2722,8 +2722,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('Angular Interview Questions and Answers');
-    expect(text).toContain('Reviewed May 20, 2026');
-    expect(text).toContain('FrontendAtlas Editor');
+    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('65 visible Angular questions across answers, scenarios, modern Angular, testing, security, routing, and performance');
     expect(text).toContain('On this page');
     expect(text).toContain('Popular Angular interview question clusters');
@@ -2992,7 +2992,7 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('Modern Angular interview topics')
     )).toBeTrue();
     expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
-    expect(collection?.reviewedBy?.name).toBe('FrontendAtlas Editor');
+    expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
     expect(faqPage?.name).toBe('Top Angular interview questions and short answers, beginner to advanced');
     expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();

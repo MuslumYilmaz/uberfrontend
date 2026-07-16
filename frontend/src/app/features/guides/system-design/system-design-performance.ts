@@ -295,9 +295,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         and discuss coalescing, downsampling, and moving heavy work off the main thread.
       </p>
 
-      <h3>Form Interaction Latency Frontend Interview</h3>
+      <h3>Performance and Interaction Latency</h3>
       <p>
-        In a <a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">form interaction latency frontend interview</a>
+        In a <a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">performance and interaction latency exercise</a>
         or checkout flow, optimize input responsiveness, validation timing, autosave reliability,
         and recovery after failures. Avoid blocking the main thread with synchronous validation,
         keep optimistic states reversible, and protect trust with clear save and error states.
@@ -673,7 +673,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'system-design', 'notification-toast-system']">Toast timer cleanup tradeoffs</a></li>
         <li><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard performance system design with draggable panels</a></li>
         <li><a [routerLink]="['/', 'system-design', 'live-chart-high-frequency-updates']">Live chart performance system design</a></li>
-        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Form interaction latency frontend interview prompt</a></li>
+        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Performance and interaction latency</a></li>
       </ul>
 
       <h2>Next</h2>

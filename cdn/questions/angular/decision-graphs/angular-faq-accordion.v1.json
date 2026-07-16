@@ -1,0 +1,61 @@
+{
+  "questionId": "angular-faq-accordion",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component, EventEmitter, Input, Output } from '@angular/core';\n\ninterface FaqItem {\n  question: string;\n  answer: string;\n}\n\n@Component({\n  selector: 'app-faq-item',\n  standalone: true,\n  template: `\n    <article class=\"faq-item\" [class.open]=\"isOpen\">\n      <button class=\"faq-header\" type=\"button\" (click)=\"toggle.emit()\" aria-expanded=\"{{ isOpen }}\">\n        <span class=\"question\">{{ question }}</span>\n        <span class=\"indicator\">{{ isOpen ? '-' : '+' }}</span>\n      </button>\n      @if (isOpen) {\n        <div class=\"faq-body\">\n          <p>{{ answer }}</p>\n        </div>\n      }\n    </article>\n  `,\n  styles: [\n    `.faq-item{border-radius:12px;background:#0b1020;border:1px solid #1f2937;overflow:hidden;}`,\n    `.faq-item + .faq-item{margin-top:8px;}`,\n    `.faq-header{width:100%;padding:12px 14px;background:transparent;border:none;display:flex;justify-content:space-between;align-items:center;color:#e5e7eb;cursor:pointer;font-size:14px;}`,\n    `.indicator{font-weight:700;}`,\n    `.faq-body{padding:0 14px 12px;font-size:13px;color:#9ca3af;}`\n  ]\n})\nexport class FaqItemComponent {\n  @Input() question = '';\n  @Input() answer = '';\n  @Input() isOpen = false;\n  @Output() toggle = new EventEmitter<void>();\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [FaqItemComponent],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <header class=\"header\">\n          <h1>FAQ</h1>\n          <label class=\"switch\">\n            <input type=\"checkbox\" [checked]=\"allowMultiple\" (change)=\"onToggleAllowMultiple()\" />\n            <span>Allow multiple open</span>\n          </label>\n        </header>\n\n        <div class=\"list\">\n          @for (item of faqItems; track item.question; let i = $index) {\n            <app-faq-item\n            [question]=\"item.question\"\n            [answer]=\"item.answer\"\n            [isOpen]=\"isItemOpen(i)\"\n            (toggle)=\"onItemToggle(i)\">\n            </app-faq-item>\n          }\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px;}`,\n    `.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}`,\n    `.header h1{font-size:20px;margin:0;}`,\n    `.switch{display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  faqItems: FaqItem[] = [\n    {\n      question: 'Lorem ipsum dolor sit amet?',\n      answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus euismod, posuere justo ut, pulvinar neque.'\n    },\n    {\n      question: 'Curabitur blandit tempus porttitor?',\n      answer: 'Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.'\n    },\n    {\n      question: 'Aenean lacinia bibendum nulla sed consectetur?',\n      answer: 'Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam.'\n    },\n    {\n      question: 'Vivamus sagittis lacus vel augue laoreet rutrum?',\n      answer: 'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas faucibus mollis interdum.'\n    }\n  ];\n\n  allowMultiple = false;\n  openIndexes: number[] = [];\n\n  isItemOpen(index: number): boolean {\n    return this.openIndexes.includes(index);\n  }\n\n  onItemToggle(index: number): void {\n    const currentlyOpen = this.isItemOpen(index);\n\n    if (this.allowMultiple) {\n      // Treat as a set\n      this.openIndexes = currentlyOpen\n        ? this.openIndexes.filter(i => i !== index)\n        : [...this.openIndexes, index];\n      return;\n    }\n\n    // Single-open mode\n    if (currentlyOpen) {\n      this.openIndexes = [];\n    } else {\n      this.openIndexes = [index];\n    }\n  }\n\n  onToggleAllowMultiple(): void {\n    this.allowMultiple = !this.allowMultiple;\n    if (!this.allowMultiple && this.openIndexes.length > 1) {\n      // Keep only the first open item in single-open mode\n      this.openIndexes = this.openIndexes.length ? [this.openIndexes[0]] : [];\n    }\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-render-open-answer",
+          "title": "Render an answer only while open",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 17,
+            "snippet": "@if (isOpen) {"
+          },
+          "why": "The child receives controlled state and uses built-in @if to keep closed answers out of the DOM.",
+          "alternative": "Keep every answer mounted and toggle visibility with CSS alone.",
+          "tradeoff": "Conditional rendering recreates answer DOM, but it keeps the visible and accessibility state aligned."
+        },
+        {
+          "id": "d2-track-faq-rows",
+          "title": "Track FAQ rows by stable question text",
+          "anchor": {
+            "lineStart": 55,
+            "lineEnd": 55,
+            "snippet": "@for (item of faqItems; track item.question; let i = $index) {"
+          },
+          "why": "The question is stable in this static collection and preserves child identity across parent updates.",
+          "alternative": "Track by the current index regardless of item identity.",
+          "tradeoff": "Question text must remain unique; a dedicated id would be better if content becomes editable."
+        },
+        {
+          "id": "d3-support-multiple-open-mode",
+          "title": "Treat open indexes like a set",
+          "anchor": {
+            "lineStart": 105,
+            "lineEnd": 105,
+            "snippet": "if (this.allowMultiple) {"
+          },
+          "why": "Multiple-open mode adds or removes only the selected index without disturbing other open items.",
+          "alternative": "Replace the full open list on every toggle in both modes.",
+          "tradeoff": "Two state branches add logic, but they preserve the distinct accordion modes."
+        },
+        {
+          "id": "d4-enforce-single-open-mode",
+          "title": "Keep one index in single-open mode",
+          "anchor": {
+            "lineStart": 117,
+            "lineEnd": 117,
+            "snippet": "this.openIndexes = [index];"
+          },
+          "why": "Replacing the array with the selected index guarantees that only one answer stays open.",
+          "alternative": "Append the index and clean up extra open rows later.",
+          "tradeoff": "The mode closes any previously open answer immediately, which is the expected accordion behavior."
+        }
+      ]
+    }
+  }
+}

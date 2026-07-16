@@ -194,6 +194,16 @@
         ]
       }
     },
+    "premiumPreview": {
+      "summary": "Build a React contact form that keeps fields controlled, validates input, and communicates each submission state. The challenge focuses on dependable form behavior before, during, and after an asynchronous request.",
+      "learningOutcomes": [
+        "Manage name, email, and message as controlled React fields.",
+        "Show validation feedback while keeping invalid submissions disabled.",
+        "Prevent duplicate submissions while an asynchronous request is pending.",
+        "Represent loading, success, and error states clearly."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
     "solutionBlock": {
       "overview": "This exercise uses a single React component (`App`) with controlled inputs and a simple HTTP POST using `fetch`. You only change `src/App.tsx`; the HTML shell and CSS already match the design used in the Angular version.\n\nThe component holds state for the three fields (`name`, `email`, `message`), three `touched` flags (so you know when to show errors), an `isSubmitting` flag to disable the button during the request, and two strings: `successMessage` and `errorMessage`.\n\nOn submit, you prevent the default form event, mark all fields as touched, clear previous messages, and compute whether the form is valid (all fields non-empty, email passes a basic pattern, message at least 10 characters). If invalid, you bail out. If valid, you set `isSubmitting = true`, call `fetch('https://jsonplaceholder.typicode.com/posts', ...)` with a JSON body and `Content-Type: application/json`, then handle success and error:\n- On success, set `successMessage` to `\"Your message has been sent. Thank you!\"`, reset the field values, and clear the touched flags.\n- On error, set `errorMessage` to `\"Something went wrong. Please try again.\"`.\nIn both cases you must set `isSubmitting` back to `false` when the request is finished.\n\n**Test cases**\n- With all fields empty, the submit button is disabled.\n- Typing an invalid email keeps the form invalid and the button disabled.\n- Submitting with invalid fields marks them as touched and shows inline error text.\n- With valid inputs, clicking submit sends a POST request to `https://jsonplaceholder.typicode.com/posts` and disables the button while `isSubmitting` is true.\n- On success, `\"Your message has been sent. Thank you!\"` appears and the form resets.\n- On error, `\"Something went wrong. Please try again.\"` appears and the user can resubmit.",
       "approaches": [
@@ -228,7 +238,7 @@
       "netflix"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-15",
     "seo": {
       "title": "Build React Contact Form with Validation and Submit",
       "description": "Create a contact form that captures user input, validates required fields, submits data, and shows loading, success, and error states."
@@ -2016,7 +2026,7 @@
           },
           {
             "type": "waitForText",
-            "selector": ".option",
+            "selector": "#autocomplete-option-seattle",
             "text": "Seattle",
             "match": "contains",
             "timeoutMs": 1000
@@ -2027,7 +2037,7 @@
           },
           {
             "type": "expectText",
-            "selector": ".option",
+            "selector": "#autocomplete-option-seattle",
             "text": "Seattle",
             "match": "contains"
           },
@@ -2092,7 +2102,7 @@
           },
           {
             "type": "waitForText",
-            "selector": ".option",
+            "selector": "#autocomplete-option-seattle",
             "text": "Seattle",
             "match": "contains",
             "timeoutMs": 1000
@@ -2710,6 +2720,17 @@
         ]
       }
     },
+    "premiumPreview": {
+      "summary": "Build a React effect with symmetrical setup and cleanup through StrictMode checks, dependency changes, rerenders, and unmounting. Treat the effect as a reversible synchronization process with clear resource ownership.",
+      "learningOutcomes": [
+        "Pair every effect setup with cleanup for the same resource.",
+        "Declare every reactive dependency used by the effect.",
+        "Remain correct through the StrictMode setup, cleanup, and setup sequence.",
+        "Replace the resource safely when its room dependency changes.",
+        "Leave no active resource after the component unmounts."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-use-effect-once.v1.json",
     "solutionBlock": {
       "overview": "Treat the effect as synchronization, not a one-time callback. Each setup creates and connects one resource; its returned cleanup disconnects that same resource. React may run setup → cleanup → setup in development StrictMode, and a correct reversible effect finishes with one active connection. An unrelated render does not rerun the effect, a room change performs cleanup before the next setup, and unmount leaves no active connection.",
@@ -2744,7 +2765,7 @@
       "netflix"
     ],
     "access": "premium",
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-07-15",
     "seo": {
       "title": "Build a StrictMode-safe React Effect Lifecycle",
       "description": "Practice symmetrical React effect setup and cleanup that remains correct through StrictMode, dependency changes, rerenders, and unmounting."

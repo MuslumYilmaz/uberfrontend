@@ -90,8 +90,8 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     expect(article).toBeTruthy();
     expect(article.author).toEqual({
-      '@type': 'Person',
-      name: 'M. Yilmaz',
+      '@type': 'Organization',
+      name: 'FrontendAtlas Editorial',
     });
     expect(article.datePublished).toBe('2025-02-10T00:00:00.000Z');
     expect(article.dateModified).toBe('2025-03-15T00:00:00.000Z');
@@ -129,7 +129,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(faqPage?.name).toBe('Frontend interview preparation guide FAQ');
     expect(faqPage?.mainEntity?.length).toBe(6);
@@ -191,7 +191,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('Frontend behavioral interview questions to practice');
     expect(itemList?.itemListElement?.length).toBe(12);
@@ -271,7 +271,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('Frontend behavioral interview process stages');
     expect(itemList?.itemListElement?.length).toBe(5);
@@ -350,7 +350,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('Frontend behavioral interview scorecard signals');
     expect(itemList?.itemListElement?.length).toBe(6);
@@ -425,7 +425,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('7-day frontend behavioral interview prep plan');
     expect(itemList?.itemListElement?.length).toBe(7);
@@ -507,7 +507,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-24T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('Frontend interview fundamentals diagnostic practice map');
     expect(itemList?.itemListElement?.length).toBe(12);
@@ -582,7 +582,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-25T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('Frontend resume bullet rewrite topics');
     expect(itemList?.itemListElement?.length).toBe(12);
@@ -642,7 +642,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('25 frontend coding interview questions to practice');
     expect(itemList?.itemListElement?.length).toBe(25);
@@ -704,7 +704,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('Frontend system design practice map');
     expect(itemList?.itemListElement?.length).toBe(10);
@@ -765,7 +765,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('25 JavaScript coding interview questions to practice');
     expect(itemList?.itemListElement?.length).toBe(25);
@@ -824,7 +824,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('20 frontend DSA questions to practice');
     expect(itemList?.itemListElement?.length).toBe(20);
@@ -885,7 +885,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-21T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('12 frontend UI interview questions and component prompts to practice');
     expect(itemList?.itemListElement?.length).toBe(12);
@@ -958,7 +958,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-24T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(itemList?.name).toBe('10 component API design interview prompts to practice');
     expect(itemList?.itemListElement?.length).toBe(10);
@@ -1362,7 +1362,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-07-15T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design performance optimization');
     expect(article?.keywords).toContain('frontend performance budget interview');
     expect(article?.keywords).toContain('Core Web Vitals interview');
@@ -1417,7 +1417,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-07-15T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview rubric');
     expect(article?.keywords).toContain('frontend system design interview scorecard');
     expect(faqPage?.name).toBe('Frontend system design interview rubric FAQ');
@@ -1465,7 +1465,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-07-15T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview pitfalls');
     expect(article?.keywords).toContain('frontend system design red flags');
     expect(faqPage?.name).toBe('Frontend system design interview pitfalls FAQ');
@@ -1715,7 +1715,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(article?.keywords).toContain('javascript coding interview preparation');
     expect(itemList?.name).toBe('12 JavaScript interview prep patterns to practice');
@@ -1807,7 +1807,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(article?.keywords).toContain('react interview preparation 7 days');
     expect(article?.keywords).toContain('react interview preparation 14 days');
@@ -1908,7 +1908,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(article?.keywords).toContain('angular interview preparation');
     expect(article?.keywords).toContain('angular coding interview questions');
@@ -2014,7 +2014,7 @@ describe('guide-seo.util', () => {
     expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
-      name: 'FrontendAtlas Team',
+      name: 'FrontendAtlas Editorial',
     });
     expect(article?.keywords).toContain('vue interview preparation');
     expect(article?.keywords).toContain('vue coding interview questions');

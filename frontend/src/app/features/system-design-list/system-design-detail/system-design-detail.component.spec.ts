@@ -134,7 +134,9 @@ describe('SystemDesignDetailComponent', () => {
     expect(payload.robots).toBe('noindex,follow');
     expect(payload.canonical).toBe('/system-design/endless-short-video-feed');
     expect(article?.isAccessibleForFree).toBeFalse();
+    expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
     expect(learningResource?.isAccessibleForFree).toBeFalse();
+    expect(learningResource?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
     expect(typeNames).not.toContain('FAQPage');
     expect(component.locked()).toBeFalse();
   });

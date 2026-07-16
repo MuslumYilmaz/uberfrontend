@@ -93,6 +93,7 @@
                         {{ frameworkChecksRunning() ? 'Running checks' : 'Run checks' }}
                     </button>
                     <button type="button" class="text-xs px-3 py-1.5 rounded border border-white/20 hover:bg-white/5"
+                        data-testid="framework-rebuild-preview"
                         (click)="rebuildFrameworkPreview()">
                         Rebuild preview
                     </button>
@@ -161,6 +162,11 @@
                     </div>
                 </div>
 
+                <div *ngIf="previewFailure() as failure" class="absolute inset-0 z-10 grid place-items-center px-6 text-center bg-neutral-950/95"
+                    data-testid="framework-preview-error" [attr.data-failure-kind]="failure.kind" role="alert">
+                    <div class="max-w-md text-sm text-red-200">{{ failure.message }}</div>
+                </div>
+
                 <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center px-6 text-center text-xs text-gray-400">
                     Starter preview loads when the editor is ready. Use Rebuild preview after editing.
                 </div>
@@ -172,7 +178,7 @@
             </div>
 
             <section *ngIf="frameworkChecksRunning() || frameworkCheckResults().length"
-                class="framework-check-results" aria-live="polite">
+                class="framework-check-results" data-testid="framework-results-panel" aria-live="polite">
                 <div class="framework-check-results__head">
                     <span>Checks</span>
                     <span *ngIf="frameworkCheckResults().length" class="framework-check-results__summary">
@@ -184,6 +190,8 @@
                     <span>Running structured checks…</span>
                 </div>
                 <div *ngFor="let result of frameworkCheckResults()" class="framework-check-result"
+                    data-testid="framework-check-result"
+                    [attr.data-failure-kind]="result.failureKind || (!result.passed ? 'assertion' : null)"
                     [class.is-pass]="result.passed" [class.is-fail]="!result.passed">
                     <span class="framework-check-dot" [class.is-pass]="result.passed" [class.is-fail]="!result.passed"></span>
                     <div class="framework-check-result__body">

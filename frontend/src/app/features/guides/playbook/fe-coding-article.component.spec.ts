@@ -48,7 +48,7 @@ describe('FeCodingArticle', () => {
 
     expect(h1?.textContent?.trim()).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
     expect(hostText).toContain('Custom coding guide promise.');
   });
 

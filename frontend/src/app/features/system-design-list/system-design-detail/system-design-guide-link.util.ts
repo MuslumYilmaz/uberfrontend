@@ -114,7 +114,7 @@ const PERFORMANCE_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'infinite-scroll-list': 'infinite scroll virtualization performance',
   'dashboard-widgets-draggable-resizable': 'dashboard performance system design',
   'live-chart-high-frequency-updates': 'live chart performance system design',
-  'multi-step-form-autosave': 'form interaction latency frontend interview',
+  'multi-step-form-autosave': 'Performance and interaction latency',
   'notification-toast-system': 'toast timer cleanup tradeoffs',
 };
 
@@ -123,7 +123,7 @@ const EVALUATION_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'infinite-scroll-list': 'infinite scroll system design evaluation',
   'dashboard-widgets-draggable-resizable': 'dashboard frontend system design scorecard',
   'live-chart-high-frequency-updates': 'live chart system design interview evaluation',
-  'multi-step-form-autosave': 'multi-step form frontend system design rubric',
+  'multi-step-form-autosave': 'Evaluation rubric',
   'component-design-system-architecture': 'design system architecture interview rubric',
   'notification-toast-system': 'toast notification system interview rubric',
 };
@@ -133,7 +133,7 @@ const PITFALLS_GUIDE_ANCHORS_BY_ID: Record<string, string> = {
   'infinite-scroll-list': 'infinite scroll frontend system design mistakes',
   'dashboard-widgets-draggable-resizable': 'dashboard frontend system design pitfalls',
   'live-chart-high-frequency-updates': 'live chart system design pitfalls',
-  'multi-step-form-autosave': 'multi step form autosave system design mistakes',
+  'multi-step-form-autosave': 'Common autosave failure modes',
   'component-design-system-architecture': 'design system architecture interview mistakes',
   'notification-toast-system': 'toast notification system design pitfalls',
 };

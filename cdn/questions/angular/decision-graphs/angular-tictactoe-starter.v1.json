@@ -1,0 +1,61 @@
+{
+  "questionId": "angular-tictactoe-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\n\ntype Cell = 'X' | 'O' | null;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  template: `\n    <main class=\"page\">\n      <section class=\"card\">\n        <h1 class=\"title\">Tic-Tac-Toe</h1>\n        <p class=\"subtitle\">Two players take turns. First to 3 in a row wins.</p>\n\n        <div class=\"status\" aria-live=\"polite\">{{ status }}</div>\n\n        <div class=\"board\" role=\"grid\" aria-label=\"tic tac toe board\">\n          @for (cell of board; track $index; let i = $index) {\n            <button\n            class=\"cell\"\n            type=\"button\"\n            (click)=\"play(i)\"\n            [disabled]=\"isGameOver || cell !== null\"\n            [attr.aria-label]=\"'cell ' + i\"\n          >\n            {{ cell ?? '' }}\n            </button>\n          }\n        </div>\n\n        <div class=\"actions\">\n          <button class=\"ghost\" type=\"button\" (click)=\"reset()\">Reset</button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `:host{display:block}`,\n    `.page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}`,\n    `.card{width:100%;max-width:520px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}`,\n    `.title{margin:0;font-size:18px;font-weight:800;}`,\n    `.subtitle{margin:0;color:#9ca3af;font-size:12px;}`,\n    `.status{padding:10px 12px;border:1px solid #1f2937;border-radius:12px;background:#0a0f1e;font-weight:700;}`,\n    `.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}`,\n    `.cell{aspect-ratio:1/1;border-radius:14px;border:1px solid rgba(31,41,55,.7);background:#0a0f1e;color:#e5e7eb;font-size:34px;font-weight:900;cursor:pointer;display:grid;place-items:center;}`,\n    `.cell:disabled{opacity:.55;cursor:not-allowed;}`,\n    `.actions{display:flex;justify-content:flex-end;}`,\n    `.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;}`\n  ]\n})\nexport class AppComponent {\n  board: Cell[] = Array.from({ length: 9 }, () => null);\n  currentPlayer: 'X' | 'O' = 'X';\n  winner: 'X' | 'O' | null = null;\n\n  get isDraw(): boolean {\n    return !this.winner && this.board.every((c) => c !== null);\n  }\n\n  get isGameOver(): boolean {\n    return !!this.winner || this.isDraw;\n  }\n\n  get status(): string {\n    if (this.winner) return `Winner: ${this.winner}`;\n    if (this.isDraw) return 'Draw';\n    return `Next: ${this.currentPlayer}`;\n  }\n\n  play(i: number): void {\n    if (this.isGameOver) return;\n    if (this.board[i] !== null) return;\n\n    const next = this.board.slice();\n    next[i] = this.currentPlayer;\n    this.board = next;\n\n    const w = this.calculateWinner(this.board);\n    if (w) {\n      this.winner = w;\n      return;\n    }\n\n    if (!this.isDraw) {\n      this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';\n    }\n  }\n\n  reset(): void {\n    this.board = Array.from({ length: 9 }, () => null);\n    this.currentPlayer = 'X';\n    this.winner = null;\n  }\n\n  private calculateWinner(b: Cell[]): 'X' | 'O' | null {\n    const lines: number[][] = [\n      [0, 1, 2],\n      [3, 4, 5],\n      [6, 7, 8],\n      [0, 3, 6],\n      [1, 4, 7],\n      [2, 5, 8],\n      [0, 4, 8],\n      [2, 4, 6]\n    ];\n\n    for (const [a, c, d] of lines) {\n      const v = b[a];\n      if (v && v === b[c] && v === b[d]) return v;\n    }\n\n    return null;\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-render-board-with-index-identity",
+          "title": "Render the fixed board with cell identity",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 17,
+            "snippet": "@for (cell of board; track $index; let i = $index) {"
+          },
+          "why": "The nine board positions are fixed, so their index is the stable identity used for clicks and labels.",
+          "alternative": "Recreate untracked buttons with no connection to board positions.",
+          "tradeoff": "Index tracking is correct for this fixed grid, but movable collections should use domain ids."
+        },
+        {
+          "id": "d2-block-invalid-moves",
+          "title": "Stop moves after game completion",
+          "anchor": {
+            "lineStart": 70,
+            "lineEnd": 70,
+            "snippet": "if (this.isGameOver) return;"
+          },
+          "why": "The component rejects further state changes after a win or draw even if play is called programmatically.",
+          "alternative": "Depend only on disabled cell buttons in the template.",
+          "tradeoff": "The guard duplicates UI protection, but it preserves the game invariant for every caller."
+        },
+        {
+          "id": "d3-update-board-immutably",
+          "title": "Create the next board state",
+          "anchor": {
+            "lineStart": 73,
+            "lineEnd": 73,
+            "snippet": "const next = this.board.slice();"
+          },
+          "why": "A copied board makes each move a clear state transition before winner detection.",
+          "alternative": "Mutate the existing board array in place and rely on incidental change detection.",
+          "tradeoff": "Copying nine cells is negligible and makes state transitions easier to inspect."
+        },
+        {
+          "id": "d4-check-winning-lines",
+          "title": "Compare every winning triplet",
+          "anchor": {
+            "lineStart": 108,
+            "lineEnd": 108,
+            "snippet": "if (v && v === b[c] && v === b[d]) return v;"
+          },
+          "why": "A non-null mark that matches both remaining positions identifies the winner for that line.",
+          "alternative": "Hard-code winner checks in the play method for each possible move.",
+          "tradeoff": "Iterating a line table is compact and testable, while custom board sizes would need generated combinations."
+        }
+      ]
+    }
+  }
+}

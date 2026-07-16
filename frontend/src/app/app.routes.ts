@@ -283,7 +283,7 @@ export const routes: Routes = [
       seo: {
         title: 'Company Frontend Interview Questions Hub',
         description:
-          'Use company-specific frontend interview questions to compare coding, concept, and system design coverage before final interview prep.',
+          'Explore FrontendAtlas editorial practice groupings by company label. These groupings do not claim official question provenance or endorsement.',
         robots: 'index,follow',
       },
     },
@@ -299,7 +299,7 @@ export const routes: Routes = [
           seo: {
             title: 'Company Frontend Interview Questions',
             description:
-              'Explore frontend interview questions grouped by company, then compare coding, concept, and system design coverage for target teams.',
+              'Explore FrontendAtlas editorial practice groupings by company label across coding, concepts, and system design.',
             robots: 'index,follow',
           },
         },
@@ -315,7 +315,7 @@ export const routes: Routes = [
           seo: {
             title: 'Company Frontend Interview Questions Preview',
             description:
-              'Preview company-specific frontend interview question coverage, sample coding prompts, concept questions, and system design signals before unlocking premium.',
+              'Preview a FrontendAtlas editorial practice grouping. It does not claim official question provenance or company endorsement.',
             robots: 'index,follow',
           },
         },
@@ -331,7 +331,7 @@ export const routes: Routes = [
           premiumGate: 'company',
           seo: {
             title: 'Company front-end interview questions',
-            description: 'Focused coding, concept questions, and system design practice for a specific company.',
+            description: 'A FrontendAtlas editorial grouping for focused coding, concept, and system design practice.',
             robots: 'noindex,nofollow',
           },
         },
@@ -348,7 +348,7 @@ export const routes: Routes = [
               kind: 'all',
               seo: {
                 title: 'Company interview questions',
-                description: 'Browse all front-end interview questions for this company.',
+                description: 'Browse all prompts in this FrontendAtlas editorial practice grouping.',
                 robots: 'noindex,nofollow',
               },
             },
@@ -364,7 +364,7 @@ export const routes: Routes = [
               kind: 'coding',
               seo: {
                 title: 'Company coding interview questions',
-                description: 'Solve coding and debugging questions used in this company’s interviews.',
+                description: 'Solve coding and debugging prompts in this FrontendAtlas editorial practice grouping.',
                 robots: 'noindex,nofollow',
               },
             },
@@ -380,7 +380,7 @@ export const routes: Routes = [
               kind: 'trivia',
               seo: {
                 title: 'Company concept questions',
-                description: 'Quick front-end concept questions to mirror this company’s interview screens.',
+                description: 'Practice frontend concepts in this FrontendAtlas editorial grouping.',
                 robots: 'noindex,nofollow',
               },
             },
@@ -396,7 +396,7 @@ export const routes: Routes = [
               kind: 'system-design',
               seo: {
                 title: 'Company system design prompts',
-                description: 'Front-end system design prompts tailored to this company.',
+                description: 'Practice frontend system design in this FrontendAtlas editorial grouping.',
                 robots: 'noindex,nofollow',
               },
             },
@@ -1155,7 +1155,7 @@ export const routes: Routes = [
       seo: {
         title: 'FrontendAtlas Essential 60 Interview Questions',
         description:
-          'A ranked shortlist of must-know frontend interview questions in FrontendAtlas Essential 60, covering JavaScript utilities, UI coding, system design, frontend concepts, and a compact practice path.',
+          'A curated, grouped shortlist of frontend interview questions in FrontendAtlas Essential 60, covering JavaScript utilities, UI coding, system design, frontend concepts, and a compact practice path.',
       },
     },
   },

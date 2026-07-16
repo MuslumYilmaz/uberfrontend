@@ -1,0 +1,73 @@
+{
+  "questionId": "angular-autocomplete-search-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { CommonModule } from '@angular/common';\nimport { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { Subject, of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  readonly queryControl = new FormControl<string>('');\n\n  isOpen = false;\n  activeIndex = -1;\n\n  private readonly searchTerm$ = new Subject<string>();\n\n  readonly results$ = this.searchTerm$.pipe(\n    startWith(this.queryControl.value ?? ''),\n    map((v: string) => String(v ?? '').trim()),\n    debounceTime(300),\n    distinctUntilChanged(),\n    tap((q: string) => {\n      if (!q) {\n        this.isOpen = false;\n        this.activeIndex = -1;\n      } else {\n        this.isOpen = true;\n        this.activeIndex = -1;\n      }\n    }),\n    switchMap((q: string) => (q ? this.search(q) : of([] as string[])))\n  );\n\n  onInput(value: string): void {\n    this.queryControl.setValue(value);\n    this.searchTerm$.next(value);\n  }\n\n  onFocus(): void {\n    const q = String(this.queryControl.value ?? '').trim();\n    if (q) this.isOpen = true;\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    if (ev.key === 'Escape') {\n      this.isOpen = false;\n      this.activeIndex = -1;\n      return;\n    }\n\n    if (!this.isOpen && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {\n      const q = String(this.queryControl.value ?? '').trim();\n      this.isOpen = !!q;\n    }\n\n    const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');\n    const len = options.length;\n    if (!this.isOpen || len === 0) return;\n\n    if (ev.key === 'ArrowDown') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? 0 : (this.activeIndex + 1) % len;\n      return;\n    }\n\n    if (ev.key === 'ArrowUp') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? len - 1 : (this.activeIndex - 1 + len) % len;\n      return;\n    }\n\n    if (ev.key === 'Enter') {\n      if (this.activeIndex >= 0 && this.activeIndex < len) {\n        ev.preventDefault();\n        const el = options[this.activeIndex] as HTMLElement;\n        const text = el.textContent ?? '';\n        this.select(text);\n      }\n      return;\n    }\n  }\n\n  select(value: string): void {\n    this.queryControl.setValue(value);\n    this.isOpen = false;\n    this.activeIndex = -1;\n    this.searchTerm$.next(value);\n  }\n\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    const q = String(queryRaw ?? '').trim();\n    if (!q) return this.escapeHtml(item);\n\n    const idx = item.toLowerCase().indexOf(q.toLowerCase());\n    if (idx < 0) return this.escapeHtml(item);\n\n    const before = this.escapeHtml(item.slice(0, idx));\n    const mid = this.escapeHtml(item.slice(idx, idx + q.length));\n    const after = this.escapeHtml(item.slice(idx + q.length));\n    return `${before}<mark>${mid}</mark>${after}`;\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(ev: MouseEvent): void {\n    const target = ev.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen = false;\n      this.activeIndex = -1;\n    }\n  }\n\n  private search(q: string) {\n    const needle = q.toLowerCase();\n    const filtered = this.cities\n      .filter(c => c.toLowerCase().includes(needle))\n      .slice(0, 8);\n\n    return of(filtered).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\\\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-debounce-query-input",
+          "title": "Debounce search work",
+          "anchor": {
+            "lineStart": 50,
+            "lineEnd": 50,
+            "snippet": "debounceTime(300),"
+          },
+          "why": "The stream waits for a short pause so rapid keystrokes do not trigger a search for every input event.",
+          "alternative": "Run the filter and delayed result pipeline immediately for every keypress.",
+          "tradeoff": "Debouncing reduces churn but intentionally delays visible suggestions."
+        },
+        {
+          "id": "d2-switch-to-latest-query",
+          "title": "Keep only the latest query stream",
+          "anchor": {
+            "lineStart": 61,
+            "lineEnd": 61,
+            "snippet": "switchMap((q: string) => (q ? this.search(q) : of([] as string[])))"
+          },
+          "why": "switchMap discards stale delayed searches when a newer query arrives.",
+          "alternative": "Merge every pending search and allow older results to arrive after newer input.",
+          "tradeoff": "Previous work is abandoned, which is correct for autocomplete but not for operations that must all complete."
+        },
+        {
+          "id": "d3-read-rendered-options",
+          "title": "Navigate the currently rendered options",
+          "anchor": {
+            "lineStart": 86,
+            "lineEnd": 86,
+            "snippet": "const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');"
+          },
+          "why": "Keyboard movement uses the actual option count after filtering and empty-state changes.",
+          "alternative": "Navigate against the full city dataset regardless of what is rendered.",
+          "tradeoff": "DOM lookup couples navigation to rendered roles, but it keeps activeIndex inside the visible list."
+        },
+        {
+          "id": "d4-close-on-outside-pointer",
+          "title": "Close when interaction leaves the component",
+          "anchor": {
+            "lineStart": 142,
+            "lineEnd": 142,
+            "snippet": "if (!this.host.nativeElement.contains(target)) {"
+          },
+          "why": "The document listener dismisses suggestions without closing when the click remains inside the autocomplete.",
+          "alternative": "Close on every document mousedown, including option selection.",
+          "tradeoff": "Containment checking adds DOM awareness, but it preserves mouse selection behavior."
+        },
+        {
+          "id": "d5-escape-highlighted-content",
+          "title": "Escape text before adding highlight markup",
+          "anchor": {
+            "lineStart": 157,
+            "lineEnd": 157,
+            "snippet": "private escapeHtml(s: string): string {"
+          },
+          "why": "Suggestion text is escaped before a mark element is introduced, preventing source strings from becoming executable HTML.",
+          "alternative": "Interpolate raw suggestion text into an innerHTML highlight string.",
+          "tradeoff": "Manual escaping adds code, but it keeps highlighted output safe."
+        }
+      ]
+    }
+  }
+}

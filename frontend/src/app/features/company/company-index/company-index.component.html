@@ -2,7 +2,10 @@
     <p class="fa-page-kicker">Company prep</p>
     <h1 class="fa-page-title">Company Frontend Interview Questions</h1>
     <p class="fa-page-subtitle">
-        Use company-specific frontend interview questions after your baseline prep is stable, then compare coding, concept, and system design coverage before deeper premium drills.
+        Explore FrontendAtlas editorial practice groupings by company label after your baseline prep is stable, then compare coding, concept, and system design coverage for targeted rehearsal.
+    </p>
+    <p class="fa-page-subtitle" data-testid="company-practice-disclaimer">
+        {{ companyPracticeDisclaimer }}
     </p>
 </header>
 
@@ -43,7 +46,7 @@
     <details class="company-more-routes">
         <summary>More routes and prep links</summary>
         <p>
-            Company pages focus on realistic coding, concept questions, and system design patterns used in interviews at top product teams.
+            Company pages organize coding, concept, and system design practice into FrontendAtlas editorial groupings for targeted rehearsal.
         </p>
         <p>
             Use them after the Question Library and one study plan so the final week of prep mirrors the frontend interview style of the companies you are targeting.
@@ -89,7 +92,7 @@
                     <app-company-logo-mark class="company-card__logo" [company]="c.slug" [decorative]="true"></app-company-logo-mark>
                     <div>
                         <div class="company-card__title">{{ c.label }}</div>
-                        <div class="company-card__meta">{{ c.count }} questions</div>
+                        <div class="company-card__meta">{{ promptCountLabel(c.count) }}</div>
                     </div>
                 </div>
                 <div class="company-card__chevron">→</div>

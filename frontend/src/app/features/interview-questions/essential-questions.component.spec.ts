@@ -24,7 +24,23 @@ describe('EssentialQuestionsComponent', () => {
                     description: 'Curated shortlist.',
                     updatedAt: '2026-04-23',
                     benchmarkSources: [
-                      { label: 'GFE 75', url: 'https://example.com/gfe75' },
+                      { label: 'GreatFrontEnd GFE 75', url: 'https://www.greatfrontend.com/interviews/gfe75' },
+                      {
+                        label: 'Front End Interview Handbook: JavaScript coding',
+                        url: 'https://www.frontendinterviewhandbook.com/coding/javascript-utility-function',
+                      },
+                      {
+                        label: 'Front End Interview Handbook: UI machine coding',
+                        url: 'https://www.frontendinterviewhandbook.com/coding/build-front-end-user-interfaces',
+                      },
+                      {
+                        label: 'Front End Interview Handbook: frontend system design',
+                        url: 'https://www.frontendinterviewhandbook.com/front-end-system-design',
+                      },
+                      {
+                        label: 'BFE JavaScript questions',
+                        url: 'https://bigfrontend.dev/problem?sort=oldest&tags=JavaScript',
+                      },
                     ],
                     items: [],
                   },
@@ -146,7 +162,7 @@ describe('EssentialQuestionsComponent', () => {
                 seo: {
                   title: 'FrontendAtlas Essential 60 Interview Questions',
                   description:
-                    'A ranked shortlist of must-know frontend interview questions in FrontendAtlas Essential 60, covering JavaScript utilities, UI coding, system design, frontend concepts, and a compact practice path.',
+                    'A curated, grouped shortlist of frontend interview questions in FrontendAtlas Essential 60, covering JavaScript utilities, UI coding, system design, frontend concepts, and a compact practice path.',
                 },
               },
             },
@@ -175,59 +191,80 @@ describe('EssentialQuestionsComponent', () => {
     }).compileComponents();
   });
 
-  it('renders the curated list, solved state, and framework variants', async () => {
+  it('renders a grouped evidence-backed shortlist without public scores, ranks, or company badges', async () => {
     const fixture = TestBed.createComponent(EssentialQuestionsComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
+    const text = host.textContent || '';
     expect(host.querySelectorAll('[data-testid^="essential-row-"]').length).toBe(3);
-    expect(host.textContent || '').toContain('FrontendAtlas Essential 60');
-    expect(host.textContent || '').toContain('Reviewed May 21, 2026');
-    expect(host.textContent || '').toContain('60 ranked frontend interview prompts');
-    expect(host.textContent || '').toContain('compact ranked practice list');
-    expect(host.textContent || '').toContain('Why these 60?');
-    expect(host.textContent || '').toContain('How to use Essential 60');
-    expect(host.textContent || '').toContain('Coverage benchmark');
-    expect(host.textContent || '').toContain('7-day refresh');
-    expect(host.textContent || '').toContain('14-day practice loop');
-    expect(host.textContent || '').toContain('30-day baseline');
-    expect(host.textContent || '').toContain('reference surfaces checked');
-    expect(host.textContent || '').toContain('Essential 60 FAQ');
-    expect((host.textContent || '').indexOf('Why these 60?')).toBeLessThan(
-      (host.textContent || '').indexOf('Sections'),
+    expect(text).toContain('FrontendAtlas Essential 60');
+    expect(text).toContain('Updated April 23, 2026');
+    expect(text).toContain('60 curated frontend interview prompts');
+    expect(text).toContain('compact, curated practice list');
+    expect(text).toContain('Why these 60?');
+    expect(text).toContain('How to use Essential 60');
+    expect(text).toContain('Coverage references (5)');
+    expect(text).toContain(
+      'These references informed topic coverage; they do not verify company provenance or a numeric score.',
     );
-    expect((host.textContent || '').indexOf('How to use Essential 60')).toBeLessThan(
-      (host.textContent || '').indexOf('Sections'),
-    );
-    expect((host.textContent || '').indexOf('Coverage benchmark')).toBeLessThan(
-      (host.textContent || '').indexOf('Sections'),
-    );
+    expect(text).toContain('7-day refresh');
+    expect(text).toContain('14-day practice loop');
+    expect(text).toContain('30-day baseline');
+    expect(text).toContain('Essential 60 FAQ');
+    expect(text.indexOf('Why these 60?')).toBeLessThan(text.indexOf('Sections'));
+    expect(text.indexOf('How to use Essential 60')).toBeLessThan(text.indexOf('Sections'));
+    expect(text.indexOf('Coverage references (5)')).toBeLessThan(text.indexOf('Sections'));
+
+    const groups = Array.from(host.querySelectorAll('[data-testid^="essential-group-"]')) as HTMLElement[];
+    expect(groups.map((group) => group.getAttribute('data-testid'))).toEqual([
+      'essential-group-javascript-functions',
+      'essential-group-ui-coding',
+      'essential-group-system-design',
+    ]);
+
+    const referenceLinks = Array.from(
+      host.querySelectorAll('[data-testid="essential-coverage-references"] a'),
+    ) as HTMLAnchorElement[];
+    expect(referenceLinks.length).toBe(5);
+    expect(referenceLinks.map((link) => link.getAttribute('href'))).toEqual([
+      'https://www.greatfrontend.com/interviews/gfe75',
+      'https://www.frontendinterviewhandbook.com/coding/javascript-utility-function',
+      'https://www.frontendinterviewhandbook.com/coding/build-front-end-user-interfaces',
+      'https://www.frontendinterviewhandbook.com/front-end-system-design',
+      'https://bigfrontend.dev/problem?sort=oldest&tags=JavaScript',
+    ]);
+    for (const link of referenceLinks) {
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    }
+
     const freeRow = host.querySelector('[data-testid="essential-row-js-debounce"]') as HTMLElement;
+    const premiumRow = host.querySelector('[data-testid="essential-row-ui-debounced-search"]') as HTMLElement;
     expect(freeRow?.textContent || '').toContain('Debounce Function');
+    expect(freeRow?.textContent || '').toContain('Timing primitive.');
     expect(host.querySelector('[title="Solved"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="question-row-variant-react-debounced-search"]')?.textContent?.trim()).toBe('React');
     expect(host.querySelector('[data-testid="question-row-variant-angular-debounced-search"]')?.textContent?.trim()).toBe('Angular');
-    const premiumRow = host.querySelector('[data-testid="essential-row-ui-debounced-search"]') as HTMLElement;
-    const scoreBadge = freeRow.querySelector(
-      '.fa-question-row__meta-chip[aria-label="Importance score 93 out of 100"]',
-    ) as HTMLElement;
-    const companySignal = premiumRow.querySelector('[data-testid="company-signal-google"]') as HTMLElement;
-
-    expect(scoreBadge?.textContent || '').toContain('93/100');
-    expect(freeRow.querySelector('.fa-question-row__meta-chip[aria-label="Tier: Must know"]')).toBeNull();
-    expect(freeRow.querySelector('.fa-question-row__meta-chip[aria-label="Technology: JavaScript"]')).toBeNull();
-    expect(freeRow.querySelector('.fa-question-row__sr-meta')?.textContent || '').toContain('Tier: Must know');
-    expect(freeRow.querySelector('.fa-question-row__sr-meta')?.textContent || '').toContain('Technology: JavaScript');
+    expect(freeRow.querySelector('.fa-question-row__meta-chip[aria-label="Tier: Must know"]')).not.toBeNull();
+    expect(freeRow.querySelector('.fa-question-row__meta-chip[aria-label="Difficulty: Intermediate"]')).not.toBeNull();
+    expect(freeRow.querySelector('.fa-question-row__meta-chip[aria-label="Technology: JavaScript"]')).not.toBeNull();
     expect(premiumRow.textContent || '').toContain('Premium');
     expect(premiumRow.textContent || '').not.toContain('Locked');
     expect(premiumRow.querySelector('[aria-label="Premium question"]')).not.toBeNull();
-    expect(companySignal?.getAttribute('aria-label')).toBe('Company prep signal: Google and 1 more');
-    expect(companySignal?.querySelector('[data-testid="company-signal-logo"]')).not.toBeNull();
-    expect(companySignal?.querySelector('[data-testid="company-signal-overflow"]')?.textContent?.trim()).toBe('+1');
-    expect(host.textContent || '').not.toContain('Benchmark topics');
-    expect(host.textContent || '').not.toContain('GFE 75');
+
+    expect(host.querySelector('[data-testid^="company-signal-"]')).toBeNull();
+    expect(text).not.toMatch(/\b\d{1,3}\s*\/\s*100\b/);
+    expect(text).not.toMatch(/#\s*\d+/);
+    expect(text).not.toContain('importance score');
+    expect(text).not.toContain('reference surfaces checked');
+    expect(text).not.toContain('Updated May 21, 2026');
+    expect(text).not.toContain('FrontendAtlas Team');
+    expect(text).not.toContain('reviewer');
+    expect(text).not.toContain('internal review');
+    expect(text).not.toContain('Benchmark topics');
   });
 
   it('emits Essential 60 CollectionPage, ItemList, and FAQPage schema', async () => {
@@ -243,7 +280,7 @@ describe('EssentialQuestionsComponent', () => {
     };
     const collectionPage = payload.jsonLd.find((entry) => entry['@type'] === 'CollectionPage') as {
       dateModified: string;
-      reviewedBy: { name: string };
+      author: { '@type': string; name: string };
       about: Array<{ name: string }>;
       mentions: Array<{ name: string }>;
       mainEntity: { '@type': string };
@@ -255,16 +292,19 @@ describe('EssentialQuestionsComponent', () => {
       mainEntity: Array<{ name: string; acceptedAnswer: { text: string } }>;
     };
 
-    expect(payload.description).toContain('ranked shortlist');
-    expect(payload.description).toContain('must-know frontend interview questions');
+    expect(payload.description).toContain('curated, grouped shortlist');
+    expect(payload.description).toContain('frontend interview questions');
     expect(collectionPage.dateModified).toBe('2026-04-23T00:00:00.000Z');
-    expect(collectionPage.reviewedBy.name).toBe('FrontendAtlas Editor');
+    expect(collectionPage.author).toEqual({
+      '@type': 'Organization',
+      name: 'FrontendAtlas Editorial',
+    });
     expect(collectionPage.mainEntity['@type']).toBe('ItemList');
     expect(itemList.itemListElement.length).toBe(3);
     expect(collectionPage.about.map((entity) => entity.name)).toEqual(jasmine.arrayContaining([
       'FrontendAtlas Essential 60',
       'must-know frontend interview questions',
-      'ranked frontend interview questions',
+      'curated frontend interview questions',
       'frontend interview practice shortlist',
       'JavaScript utility interview questions',
       'UI coding interview questions',
@@ -275,9 +315,9 @@ describe('EssentialQuestionsComponent', () => {
     ]));
     expect(collectionPage.mentions.map((entity) => entity.name)).toEqual(jasmine.arrayContaining([
       'practice routes',
-      'importance score',
       'framework variants',
     ]));
+    expect(collectionPage.mentions.map((entity) => entity.name)).not.toContain('importance score');
     expect(faqPage.mainEntity.length).toBe(5);
     expect(faqPage.mainEntity.map((entry) => entry.name)).toEqual(jasmine.arrayContaining([
       'What is FrontendAtlas Essential 60?',
@@ -286,7 +326,15 @@ describe('EssentialQuestionsComponent', () => {
       'Is Essential 60 different from the full frontend interview questions hub?',
       'Does Essential 60 include UI coding, JavaScript utilities, concepts, and system design?',
     ]));
-    expect(faqPage.mainEntity[0].acceptedAnswer.text).toContain('ranked shortlist');
+    expect(faqPage.mainEntity[0].acceptedAnswer.text).toContain('curated shortlist');
+
+    const schemaText = JSON.stringify(payload.jsonLd);
+    expect(schemaText).not.toContain('FrontendAtlas Team');
+    expect(schemaText).not.toContain('reviewer');
+    expect(schemaText).not.toContain('internal review');
+    expect(schemaText).not.toContain('importance score');
+    expect(schemaText).not.toContain('Google');
+    expect(schemaText).not.toContain('Netflix');
   });
 
   it('filters by section and tier', async () => {

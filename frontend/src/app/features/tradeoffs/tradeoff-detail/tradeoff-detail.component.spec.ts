@@ -198,6 +198,7 @@ describe('TradeoffDetailComponent', () => {
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+    expect(resource?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
 
     expect(payload.robots).toBeUndefined();
     expect(breadcrumb).toBeTruthy();
@@ -285,12 +286,14 @@ describe('TradeoffDetailComponent', () => {
 
     expect(fixture.nativeElement.textContent || '').toContain('Premium');
     expect(fixture.nativeElement.textContent || '').toContain('View pricing');
-    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview-rich"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeNull();
     expect(fixture.nativeElement.textContent || '').not.toContain('Reveal analysis');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+    expect(resource?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
     expect(payload.robots).toBe('noindex,follow');
     expect(payload.canonical).toBe('/tradeoffs/context-vs-zustand-vs-redux');
     expect(resource?.isAccessibleForFree).toBeFalse();
