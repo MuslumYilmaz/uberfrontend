@@ -146,58 +146,51 @@ describe('CodingListComponent', () => {
     expect(solvedCard?.textContent || '').not.toContain('Solved');
   });
 
-  it('renders a company logo signal for company-tagged question rows', async () => {
+  it('does not render question-level company attribution badges from internal company tags', async () => {
     const fixture = await createComponent({
-      items: [question({ companies: ['google'] })],
+      items: [question({ companies: ['google', 'meta'] })],
     });
     const host = fixture.nativeElement as HTMLElement;
-    const signal = host.querySelector('[data-testid="company-signal-google"]') as HTMLElement | null;
-    const logo = signal?.querySelector('[data-testid="company-signal-logo"]') as HTMLImageElement | null;
 
-    expect(signal).not.toBeNull();
-    expect(signal?.textContent || '').toContain('Google');
-    expect(signal?.getAttribute('aria-label')).toBe('Company prep signal: Google');
-    expect(logo?.getAttribute('src')).toBe('/assets/images/company-logos/google.svg');
-    expect(logo?.getAttribute('alt')).toBe('');
+    expect(host.querySelector('[data-testid^="company-signal-"]')).toBeNull();
+    expect(host.textContent || '').not.toContain('Google +1');
   });
 
-  it('shows one primary company logo and a compact overflow count', async () => {
-    const fixture = await createComponent({
-      items: [question({ companies: ['amazon', 'google', 'meta'] })],
-    });
-    const host = fixture.nativeElement as HTMLElement;
-    const signal = host.querySelector('[data-testid="company-signal-amazon"]') as HTMLElement | null;
-
-    expect(signal).not.toBeNull();
-    expect(signal?.textContent || '').toContain('Amazon');
-    expect(signal?.querySelector('[data-testid="company-signal-overflow"]')?.textContent?.trim()).toBe('+2');
-    expect(signal?.getAttribute('aria-label')).toBe('Company prep signal: Amazon and 2 more');
-  });
-
-  it('prioritizes the active company route when a question has multiple companies', async () => {
+  it('keeps canonical company tags for route filtering while explaining the editorial grouping', async () => {
     const fixture = await createComponent({
       source: 'company',
       kind: 'coding',
       companySlug: 'google',
       queryParams: {},
-      items: [question({ companies: ['amazon', 'google', 'meta'] })],
+      items: [
+        question({ id: 'google-grouped', title: 'Grouped for Google practice', companies: ['google'] }),
+        question({ id: 'amazon-grouped', title: 'Grouped for Amazon practice', companies: ['amazon'] }),
+      ],
     });
     const host = fixture.nativeElement as HTMLElement;
-    const signal = host.querySelector('[data-testid="company-signal-google"]') as HTMLElement | null;
 
-    expect(signal).not.toBeNull();
-    expect(signal?.textContent || '').toContain('Google');
-    expect(signal?.querySelector('[data-testid="company-signal-overflow"]')?.textContent?.trim()).toBe('+2');
-    expect(signal?.getAttribute('aria-label')).toBe('Company prep signal: Google and 2 more');
+    expect(host.querySelector('[data-testid="question-card-google-grouped"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="question-card-amazon-grouped"]')).toBeNull();
+    expect(host.querySelector('[data-testid^="company-signal-"]')).toBeNull();
+    expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
   });
 
-  it('does not render a company signal for rows without companies', async () => {
+  it('labels importance-derived ordering as editorial practice priority', async () => {
     const fixture = await createComponent({
-      items: [question({ companies: [] })],
+      items: [question({ importance: 5 })],
     });
     const host = fixture.nativeElement as HTMLElement;
+    const text = host.textContent || '';
 
-    expect(host.querySelector('[data-testid^="company-signal-"]')).toBeNull();
+    expect(host.querySelector('.fa-filter-section__title')?.textContent).toContain('Difficulty');
+    expect(text).toContain('Practice priority');
+    expect(text).toContain(
+      'Practice priority is relative FrontendAtlas editorial ordering—not measured interview frequency.',
+    );
+    expect(host.querySelector('[aria-label="Practice priority: High"]')?.textContent).toContain('Priority: High');
+    expect(text).not.toContain('Importance: High to Low');
   });
 
   it('frames the default global coding route as a frontend coding challenge hub', async () => {

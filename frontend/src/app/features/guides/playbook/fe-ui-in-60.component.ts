@@ -6,6 +6,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
+import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 @Component({
   standalone: true,
@@ -244,7 +245,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     [readerPromise]="readerPromise || undefined"
   >
     <div class="freshness" data-testid="ui-guide-freshness">
-      Last updated: June 2026 | Author: FrontendAtlas Team | Reviewed by FrontendAtlas
+      Last updated: June 2026 | Author: {{ editorialAuthor }}
     </div>
 
     <p>
@@ -666,6 +667,7 @@ document.addEventListener('keydown', (event) =&gt; &#123;
   `
 })
 export class FeUiIn60Article {
+  readonly editorialAuthor = PUBLIC_EDITORIAL_FACTS.author.name;
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;

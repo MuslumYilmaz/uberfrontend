@@ -1,5 +1,6 @@
 import { SeoMeta } from '../services/seo.service';
 import { IncidentScenario } from '../models/incident.model';
+import { publicEditorialAuthorSchema } from '../content/public-editorial-facts';
 import {
   isContentAccessibleForFree,
   robotsForContentAccess,
@@ -80,7 +81,7 @@ export function buildIncidentSeoMeta(
     isAccessibleForFree: accessibleForFree,
     keywords: meta.tags.join(', '),
     dateModified: `${meta.updatedAt}T00:00:00Z`,
-    author: { '@type': 'Organization', name: 'FrontendAtlas' },
+    author: publicEditorialAuthorSchema(),
     publisher: {
       '@type': 'Organization',
       name: 'FrontendAtlas',

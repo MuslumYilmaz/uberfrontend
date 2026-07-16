@@ -10,19 +10,24 @@ import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked
   template: `
     <div class="locked-preview-rich" data-testid="premium-preview-rich">
       <section class="locked-preview-rich__section">
-        <h2 class="locked-preview-rich__title">Challenge preview</h2>
-        <p class="locked-preview-rich__text">{{ data.what }}</p>
+        <h2 class="locked-preview-rich__title">Challenge summary</h2>
+        <p class="locked-preview-rich__text" data-testid="premium-preview-summary">{{ data.what }}</p>
       </section>
 
-      <section class="locked-preview-rich__section" *ngIf="unlockBullets().length">
-        <h2 class="locked-preview-rich__title">Premium unlocks</h2>
-        <ul class="locked-preview-rich__list">
-          <li *ngFor="let item of unlockBullets()">{{ item }}</li>
+      <section class="locked-preview-rich__section" *ngIf="learningOutcomes().length">
+        <h2 class="locked-preview-rich__title">What you'll practice</h2>
+        <ul class="locked-preview-rich__list" data-testid="premium-preview-outcomes">
+          <li *ngFor="let item of learningOutcomes()">{{ item }}</li>
         </ul>
       </section>
 
+      <section class="locked-preview-rich__section">
+        <h2 class="locked-preview-rich__title">What Premium unlocks</h2>
+        <p class="locked-preview-rich__text" data-testid="premium-preview-unlock">{{ data.unlockDescription }}</p>
+      </section>
+
       <section class="locked-preview-rich__section locked-preview-rich__section--secondary" *ngIf="freeRelated().length">
-        <h2 class="locked-preview-rich__title">Free warm-up options</h2>
+        <h2 class="locked-preview-rich__title">Free related practice</h2>
         <ul class="locked-preview-rich__links">
           <li *ngFor="let item of freeRelated()">
             <a [routerLink]="item.to">
@@ -39,11 +44,8 @@ import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked
 export class LockedPreviewComponent {
   @Input({ required: true }) data!: LockedPreviewData;
 
-  unlockBullets(): string[] {
-    const bullets = this.data?.unlockBullets?.length
-      ? this.data.unlockBullets
-      : this.data?.learningGoals || [];
-    return bullets.slice(0, 3);
+  learningOutcomes(): string[] {
+    return (this.data?.learningGoals || []).slice(0, 5);
   }
 
   freeRelated(): LockedPreviewLink[] {

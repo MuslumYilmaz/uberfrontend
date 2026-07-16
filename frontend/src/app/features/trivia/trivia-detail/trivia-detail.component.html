@@ -388,7 +388,7 @@
                     </div>
 
                     <div class="async-race-proof-strip angular-forms-flow__proof-strip" aria-label="Angular forms comparator proof signals">
-                        <span>Reviewed by FrontendAtlas</span>
+                        <span>Maintained by {{ authorLabel(q) }}</span>
                         <span>Cross-checked with Angular forms docs</span>
                         <span>State transitions mapped to testable assertions</span>
                     </div>
@@ -576,7 +576,7 @@
                         </div>
 
                         <div class="async-race-proof-strip" aria-label="Async race proof signals">
-                            <span>Reviewed by FrontendAtlas</span>
+                            <span>Maintained by {{ authorLabel(q) }}</span>
                             <span>Cross-checked with MDN/React/RxJS pages</span>
                             <span>Race verified by deterministic test</span>
                         </div>
@@ -725,12 +725,6 @@
                     <div class="locked-meta">
                         By {{ authorLabel(question()) }}
                         <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
-                    </div>
-                    <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
-                        <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
-                        <ul class="locked-preview__list" *ngIf="lockedBullets().length">
-                            <li *ngFor="let item of lockedBullets(); trackBy: trackByStringValue">{{ item }}</li>
-                        </ul>
                     </div>
                     <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
                     <p class="locked-persona" *ngIf="lockedPersonalizationLine">{{ lockedPersonalizationLine }}</p>

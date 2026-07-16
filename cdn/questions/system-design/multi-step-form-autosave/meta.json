@@ -1,7 +1,18 @@
 {
   "id": "multi-step-form-autosave",
-  "title": "Multi-step Form",
+  "title": "Multi-step Form with Autosave",
   "description": "Design a 4-step form with validation, step transitions, a progress bar, and automatic autosave to localStorage. Users should be able to refresh or leave the page and continue where they left off. Focus on form architecture, autosave timing, validation strategy, and a resilient resume flow.\n\nFunctional requirements:\n- Render a multi-step form with Next/Back navigation and a progress indicator.\n- Validate fields per step (inline or on submit) and prevent invalid progression.\n- Autosave form state to localStorage on a throttled/debounced cadence.\n- Restore the last saved step and field values on reload.\n- Allow users to discard a draft and start fresh.\n- Submit the full form and clear the saved draft on success.\n\nNon-functional:\n- Autosave must not block typing or cause UI jank.\n- Step transitions should be smooth and preserve in-progress input.\n- Draft restore must handle schema changes or invalid saved data gracefully.\n- Accessible keyboard and screen reader behavior across steps.\n- Clear UX states for validation errors and save status.\n\nData constraints:\n- Store a compact JSON draft plus current step index.\n- Draft versioning may be needed to handle schema updates.\n- LocalStorage size is limited; avoid large, nested blobs.\n",
+  "premiumPreview": {
+    "summary": "Design a multi-step form that preserves progress without interrupting input or losing draft state. The challenge focuses on validation boundaries, autosave cadence, safe restoration, and clear completion behavior.",
+    "learningOutcomes": [
+      "Define ownership for step state, field values, and validation status.",
+      "Choose a save cadence that avoids blocking user interaction.",
+      "Restore versioned drafts while handling invalid or outdated data.",
+      "Keep validation behavior predictable across step transitions.",
+      "Define how discard and successful submission clear saved state."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
   "tags": [
     "forms",
     "autosave",
@@ -36,5 +47,5 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-01-30"
+  "updatedAt": "2026-07-15"
 }

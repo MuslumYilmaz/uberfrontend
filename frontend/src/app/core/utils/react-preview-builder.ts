@@ -241,45 +241,40 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
       const overlay = document.getElementById('_fa_overlay');
       const overlayMsg = document.getElementById('_fa_overlay_msg');
       const overlayMeta = document.getElementById('_fa_overlay_meta');
-      function notifyReady(reason){
+      function lifecycleDetail(error, fallback){
+        try{
+          const value = error && error.message ? error.message : String(error || fallback || 'Preview failed');
+          return value.split(/\\r?\\n/, 1)[0].slice(0, 500);
+        }catch(_e){
+          return String(fallback || 'Preview failed');
+        }
+      }
+      function notifyReady(reason, detail){
         try{
           if (typeof window.__FA_NOTIFY_PREVIEW_READY === 'function') {
-            window.__FA_NOTIFY_PREVIEW_READY(reason || 'render');
+            window.__FA_NOTIFY_PREVIEW_READY(reason || 'render-ready', detail || '');
             return;
           }
         }catch(_e){}
         try{
           if (window.parent) {
-            window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render') }, '*');
+            window.parent.postMessage({
+              type: 'FA_PREVIEW_LIFECYCLE',
+              version: 2,
+              state: String(reason || 'render-ready'),
+              error: String(detail || '')
+            }, '*');
           }
         }catch(_e){}
       }
-      function waitForHostPaint(selector, timeoutMs){
-        const deadline = Date.now() + (timeoutMs || 10000);
-        const tick = () => {
-          try{
-            const host = document.querySelector(selector);
-            const painted = !!(host && host.childNodes && host.childNodes.length > 0);
-            if (painted || Date.now() >= deadline) {
-              notifyReady('render');
-              return;
-            }
-          }catch(_e){
-            notifyReady('render');
-            return;
-          }
-          requestAnimationFrame(tick);
-        };
-        tick();
-      }
 
-      function showOverlay(msg, meta){
+      function showOverlay(msg, meta, lifecycleState){
         try{
           overlayMsg.textContent = msg || 'Unknown error';
           overlayMeta.textContent = meta || '';
           overlay.style.display = 'block';
         }catch{}
-        notifyReady('error');
+        notifyReady(lifecycleState || 'runtime-error', lifecycleDetail(msg, 'Preview failed'));
       }
       function hideOverlay(){
         try{
@@ -295,13 +290,13 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         const basic = String(e && (e.message || e.error || 'Error'));
         const where = (e && e.filename) ? (e.filename + (e.lineno ? (':' + e.lineno + (e.colno ? ':' + e.colno : '')) : '')) : '';
         const stack = e && e.error && e.error.stack ? '\\n\\n' + e.error.stack : '';
-        showOverlay(basic + stack, where);
+        showOverlay(basic + stack, where, 'runtime-error');
       });
 
       window.addEventListener('unhandledrejection', (e) => {
         const r = e && (e.reason || e.message) || 'Unhandled promise rejection';
         const stack = r && r.stack ? '\\n\\n' + r.stack : '';
-        showOverlay(String(r) + stack, '');
+        showOverlay(String(r) + stack, '', 'runtime-error');
       });
 
       // Tiny error boundary to catch render errors
@@ -310,18 +305,17 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         static getDerivedStateFromError(error){ return { error }; }
         componentDidCatch(error){ 
           const stack = error && error.stack ? '\\n\\n' + error.stack : '';
-          showOverlay(String(error) + stack, '');
+          showOverlay(String(error) + stack, '', 'runtime-error');
         }
         render(){ return this.state.error ? null : this.props.children; }
       }
 
-      function stripTypesLite(src){
-        return String(src||'')
-          .replace(/:\\s*[^=;,)]+(?=[=;,)])/g, '')
-          .replace(/\\s+as\\s+[A-Za-z_$][\\w$.<>,\\s]*/g, '')
-          .replace(/\\binterface\\b[\\s\\S]*?\\{[\\s\\S]*?\\}\\s*/g, '')
-          .replace(/\\btype\\s+[A-Za-z_$][\\w$]*\\s*=\\s*[\\s\\S]*?;/g, '')
-          .replace(/\\benum\\s+[A-Za-z_$][\\w$]*\\s*\\{[\\s\\S]*?\\}\\s*/g, '');
+      // React 18's createRoot().render() commits concurrently. Readiness must be
+      // tied to the commit itself: requestAnimationFrame is not guaranteed to run
+      // in the offscreen opaque iframe used by structured checks.
+      class FACommitSentinel extends React.Component {
+        componentDidMount(){ notifyReady('render-ready'); }
+        render(){ return this.props.children; }
       }
 
       function formatBabelError(err){
@@ -342,7 +336,10 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
 
         // 1) Compile TS/TSX -> JS with inline sourcemap + stable filename
         try{
-          if (!self.Babel || !Babel.transform) throw new Error('Babel missing');
+          if (!self.Babel || !Babel.transform) {
+            showOverlay('The preview compiler could not start.', 'Babel', 'boot-error');
+            return;
+          }
           const res = Babel.transform(src, {
             filename: 'App.tsx',
             sourceType: 'script',
@@ -357,14 +354,9 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           });
           compiled = (res && res.code) ? (res.code + '\\n//# sourceURL=App.tsx') : '';
         }catch(e){
-          try{
-            const fallback = stripTypesLite(src);
-            compiled = fallback + '\\n//# sourceURL=App.tsx';
-          }catch(inner){
-            const { msg, meta } = formatBabelError(e);
-            showOverlay(msg, meta);
-            return;
-          }
+          const { msg, meta } = formatBabelError(e);
+          showOverlay(msg, meta, 'compile-error');
+          return;
         }
 
         // 2) Execute compiled JS with React globals in scope
@@ -417,18 +409,23 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         };
         if (typeof AppRef === 'function') {
           root.render(
-            React.createElement(FAErrorBoundary, null, React.createElement(AppRef))
+            React.createElement(
+              FAErrorBoundary,
+              null,
+              React.createElement(FACommitSentinel, null, React.createElement(AppRef))
+            )
           );
         } else {
-          root.render(React.createElement('div', null, 'No App component exported'));
+          root.render(
+            React.createElement(FACommitSentinel, null, React.createElement('div', null, 'No App component exported'))
+          );
         }
-        waitForHostPaint('#root', 10000);
       } catch (e) {
         const stack = e && e.stack ? '\\n' + e.stack : '';
         const where = (e && e.fileName)
           ? (e.fileName + (e.lineNumber ? (':' + e.lineNumber + (e.columnNumber ? ':' + e.columnNumber : '')) : ''))
           : '';
-        showOverlay(String(e) + stack, where || 'App.tsx');
+        showOverlay(String(e) + stack, where || 'App.tsx', 'runtime-error');
       }
     }
 

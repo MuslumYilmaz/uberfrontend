@@ -75,6 +75,16 @@ jobs:
         env:
           CI: true
 
+      - name: Run production React framework checks
+        run: npm run test:e2e:react:prod
+        env:
+          CI: true
+
+      - name: Run production public remediation smoke
+        run: npm run test:e2e:public:prod
+        env:
+          CI: true
+
       - name: Upload Playwright artifacts (on failure)
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

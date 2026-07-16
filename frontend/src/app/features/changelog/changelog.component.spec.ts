@@ -51,9 +51,9 @@ describe('ChangelogComponent', () => {
     expect(latest?.textContent || '').toContain(latestEntry.category);
     expect(latest?.textContent || '').toContain(latestEntry.area);
     expect(time?.getAttribute('datetime')).toBe(latestEntry.weekOf);
-    expect(time?.textContent?.trim()).toBe('May 4, 2026');
-    expect(cta?.getAttribute('href') || '').toContain('/profile');
-    expect(cta?.getAttribute('href') || '').toContain('tab=activity');
+    expect(time?.textContent?.trim()).toBe('Jul 15, 2026');
+    expect(cta?.getAttribute('href') || '').toContain('/react/coding/react-counter');
+    expect(cta?.getAttribute('href') || '').toContain('src=changelog');
   });
 
   it('renders a dated anchored timeline with categories, areas, summaries, and entry CTAs', () => {
@@ -76,5 +76,20 @@ describe('ChangelogComponent', () => {
     expect(anchor?.getAttribute('href')).toBe(`#${firstEntry.id}`);
     expect(anchor?.getAttribute('aria-label')).toBe(`Link to ${firstEntry.title}`);
     expect(cta?.textContent?.trim()).toBe(firstEntry.cta?.label);
+  });
+
+  it('keeps the validated remediation entry first and the public timeline newest-first', () => {
+    const latest = PUBLIC_CHANGELOG_ENTRIES[0];
+    const dates = PUBLIC_CHANGELOG_ENTRIES.map((entry) => entry.weekOf);
+    const sortedDates = [...dates].sort((left, right) => right.localeCompare(left));
+    const remediationText = [latest.title, latest.summary, ...latest.changes].join(' ');
+
+    expect(latest.weekOf).toBe('2026-07-15');
+    expect(dates).toEqual(sortedDates);
+    expect(remediationText).toMatch(/React checks/i);
+    expect(remediationText).toMatch(/Premium previews/i);
+    expect(remediationText).toMatch(/Angular/i);
+    expect(remediationText).toMatch(/refund/i);
+    expect(remediationText).toMatch(/editorial/i);
   });
 });

@@ -276,6 +276,127 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(component.showRestoreBanner()).toBeTrue();
   });
 
+  it('does not launch a scratch check iframe when an edit cancels a delayed preview build', async () => {
+    const component = createComponent();
+    const delayedBuild = deferred<string>();
+    const question = {
+      id: 'react-delayed-check',
+      tags: ['react'],
+      frameworkTests: [{
+        id: 'delayed-check',
+        name: 'Delayed check',
+        steps: [{ type: 'expectText', selector: '.value', text: '0' }],
+      }],
+    } as any;
+    component.question = question;
+    component.frameworkChecks.set(question.frameworkTests);
+    previewBuilder.build.and.returnValue(delayedBuild.promise);
+    const runFramework = spyOn<any>((component as any).opaqueCheckRunner, 'runFramework')
+      .and.resolveTo([]);
+
+    const pendingRun = component.runFrameworkChecks();
+    await flushMicrotasks();
+
+    component.onFrameworkCodeChange('export default function App() { return <div>Edited</div>; }');
+    delayedBuild.resolve('<!doctype html><html><body><div class="value">0</div></body></html>');
+
+    expect(await pendingRun).toEqual([]);
+    expect(runFramework).not.toHaveBeenCalled();
+    expect(component.frameworkChecksRunning()).toBeFalse();
+    component.ngOnDestroy();
+  });
+
+  it('keeps the newest visible preview when an older build resolves last', async () => {
+    const component = createComponent();
+    const olderBuild = deferred<string>();
+    const newerBuild = deferred<string>();
+    let buildCall = 0;
+    previewBuilder.build.and.callFake(() => {
+      buildCall += 1;
+      return buildCall === 1 ? olderBuild.promise : newerBuild.promise;
+    });
+    const setPreviewHtml = spyOn<any>(component as any, 'setPreviewHtml').and.stub();
+
+    const olderPreview = component.rebuildFrameworkPreview();
+    await flushMicrotasks();
+    const newerPreview = component.rebuildFrameworkPreview();
+    await flushMicrotasks();
+
+    newerBuild.resolve('<!doctype html><html><body>newest</body></html>');
+    await newerPreview;
+    olderBuild.resolve('<!doctype html><html><body>stale</body></html>');
+    await olderPreview;
+
+    expect(setPreviewHtml).toHaveBeenCalledTimes(1);
+    expect(setPreviewHtml.calls.mostRecent().args[0]).toBe(
+      '<!doctype html><html><body>newest</body></html>',
+    );
+    component.ngOnDestroy();
+  });
+
+  it('does not let an older visible-preview build error clear a newer preview', async () => {
+    const component = createComponent();
+    const olderBuild = deferred<string>();
+    const newerBuild = deferred<string>();
+    let buildCall = 0;
+    previewBuilder.build.and.callFake(() => {
+      buildCall += 1;
+      return buildCall === 1 ? olderBuild.promise : newerBuild.promise;
+    });
+    const setPreviewHtml = spyOn<any>(component as any, 'setPreviewHtml').and.stub();
+
+    const olderPreview = component.rebuildFrameworkPreview();
+    await flushMicrotasks();
+    const newerPreview = component.rebuildFrameworkPreview();
+    await flushMicrotasks();
+
+    newerBuild.resolve('<!doctype html><html><body>newest</body></html>');
+    await newerPreview;
+    olderBuild.reject(new Error('stale compilation error'));
+    await olderPreview;
+
+    expect(setPreviewHtml).toHaveBeenCalledTimes(1);
+    expect(setPreviewHtml.calls.mostRecent().args[0]).toBe(
+      '<!doctype html><html><body>newest</body></html>',
+    );
+    component.ngOnDestroy();
+  });
+
+  it('reports a bounded infrastructure timeout when visible preview navigation never loads', fakeAsync(() => {
+    const component = createComponent();
+    const replace = jasmine.createSpy('replace');
+    const postMessage = jasmine.createSpy('postMessage');
+    const frame = {
+      contentWindow: {
+        location: { replace },
+        postMessage,
+      },
+      onload: null,
+      src: '',
+    } as unknown as HTMLIFrameElement;
+    component.previewFrame = { nativeElement: frame } as any;
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:preview-never-loads');
+    spyOn(URL, 'revokeObjectURL').and.stub();
+
+    (component as any).setPreviewHtml('<!doctype html><html><body>preview</body></html>');
+
+    expect(replace).toHaveBeenCalledWith('blob:preview-never-loads');
+    expect(postMessage).not.toHaveBeenCalled();
+    expect(component.loadingPreview()).toBeTrue();
+    expect(component.previewFailure()).toBeNull();
+
+    tick(29_999);
+    expect(component.loadingPreview()).toBeTrue();
+
+    tick(1);
+    expect(component.loadingPreview()).toBeFalse();
+    expect(component.previewFailure()).toEqual({
+      kind: 'infrastructure-timeout',
+      message: 'Preview did not report a ready or error state before the infrastructure timeout.',
+    });
+    component.ngOnDestroy();
+  }));
+
   it('runs pilot framework checks and records bounded framework telemetry', async () => {
     const component = createComponent();
     setCounterCheck(component);
@@ -459,10 +580,12 @@ describe('CodingFrameworkPanelComponent', () => {
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((res) => {
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
     resolve = res;
+    reject = rej;
   });
-  return { promise, resolve };
+  return { promise, resolve, reject };
 }
 
 async function flushMicrotasks(count = 10): Promise<void> {

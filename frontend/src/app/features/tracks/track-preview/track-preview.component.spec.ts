@@ -153,13 +153,13 @@ describe('TrackPreviewComponent', () => {
 
     expect(h1?.textContent?.trim()).toBe('Foundations Track: 30-Day Frontend Interview Preparation Roadmap');
     expect(text).toContain('113');
-    expect(text).toContain('questions');
+    expect(text).toContain('unique prompts');
     expect(text).toContain('5');
     expect(text).toContain('system design prompts');
     expect(text).toContain('30-45 min/day');
     expect(text).toContain('Day 1');
     expect(text).toContain('ready');
-    expect(text).toContain('May 2026');
+    expect(text).toContain('July 2026');
     expect(primary?.getAttribute('href')).toBe('/javascript/coding/js-number-clamp');
     expect(library?.getAttribute('href')).toBe('/coding');
   });
@@ -213,6 +213,7 @@ describe('TrackPreviewComponent', () => {
     expect(text).toContain('concept questions');
     expect(text).toContain('5');
     expect(text).toContain('system design');
+    expect(text).toContain('Category counts overlap because one prompt can cover multiple skills.');
     expect(text).toContain('Framework starter completion');
     expect(text).toContain('HTML/CSS implementation basics');
     expect(text).toContain('Final review and company targeting');

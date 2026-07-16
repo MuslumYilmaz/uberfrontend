@@ -47,6 +47,7 @@ describe('incident-seo.util', () => {
     const graph = Array.isArray(seo.jsonLd) ? seo.jsonLd : [];
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+    expect(resource?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
 
     expect(breadcrumb).toBeTruthy();
     expect(resource?.url).toBe('https://frontendatlas.com/incidents/search-typing-lag');

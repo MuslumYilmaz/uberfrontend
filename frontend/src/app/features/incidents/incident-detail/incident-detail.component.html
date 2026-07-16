@@ -376,12 +376,6 @@
           Guided debug scenario
           <ng-container *ngIf="updatedLabel(scenario.meta.updatedAt) as updated"> · Updated {{ updated }}</ng-container>
         </div>
-        <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
-          <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
-          <ul class="locked-preview__list" *ngIf="lockedBullets().length">
-            <li *ngFor="let item of lockedBullets(); trackBy: trackByString">{{ item }}</li>
-          </ul>
-        </div>
         <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
         <div class="locked-paths" *ngIf="lockedPaths().length">
           <a

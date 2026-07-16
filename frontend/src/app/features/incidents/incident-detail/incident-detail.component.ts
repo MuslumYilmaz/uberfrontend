@@ -27,7 +27,7 @@ import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { buildIncidentSeoMeta, incidentTechLabel } from '../../../core/utils/incident-seo.util';
-import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import { buildLockedPreviewForIncident, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
@@ -40,88 +40,11 @@ type LockedPath = {
   queryParams?: Record<string, string>;
 };
 
-function normalizePreviewText(value: string): string {
-  return String(value || '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function trimWords(value: string, maxWords: number): string {
-  const normalized = normalizePreviewText(value);
-  if (!normalized) return '';
-  const words = normalized.split(/\s+/);
-  if (words.length <= maxWords) return normalized;
-  return `${words.slice(0, maxWords).join(' ')}…`;
-}
-
 function updatedLabel(value: string | null | undefined): string | null {
   if (!value) return null;
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return null;
   return parsed.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
-function buildIncidentLockedPreview(
-  scenario: IncidentScenario,
-  candidates: IncidentListItem[],
-): LockedPreviewData {
-  const techLabel = incidentTechLabel(scenario.meta.tech);
-  const evidenceSnippet = scenario.context.evidence.find((item) => item.type === 'snippet');
-  const related = candidates
-    .filter((item) => item.id !== scenario.meta.id && item.tech === scenario.meta.tech)
-    .slice(0, 4)
-    .map((item) => ({
-      title: item.title,
-      to: ['/incidents', item.id],
-      premium: item.access === 'premium',
-    }));
-
-  return {
-    what: `${scenario.meta.title}: read the ${techLabel} failure signals, choose the highest-signal debug order, and defend the fix plus regression guard.`,
-    keyDecisions: [
-      'Separate symptom from root cause before touching code.',
-      'Choose the smallest debug step that removes the most ambiguity.',
-      'Prefer a durable fix over a UI-only patch.',
-      'Define the regression guard you would add after the fix.',
-    ],
-    rubric: [
-      'Strong answers prioritize evidence instead of guessing.',
-      'Good debug order reduces search space quickly.',
-      'The final fix should match the actual failure mode.',
-      'A senior answer closes with a guardrail or test plan.',
-    ],
-    unlockBullets: [
-      'Full staged debug workflow with evidence, hypotheses, and scoring.',
-      'Root-cause explanation, durable fix, and regression guard.',
-      'Senior-level rubric for prioritizing investigation steps.',
-    ],
-    learningGoals: scenario.stages
-      .map((stage) => trimWords(stage.prompt || stage.title, 14))
-      .filter(Boolean)
-      .slice(0, 4),
-    constraints: [
-      trimWords(scenario.context.environment, 16),
-      ...scenario.meta.signals.slice(0, 3).map((signal) => trimWords(signal, 16)),
-    ].filter(Boolean),
-    snippet: evidenceSnippet
-      ? {
-          title: evidenceSnippet.title,
-          language: evidenceSnippet.language,
-          lines: String(evidenceSnippet.body || '').split('\n').slice(0, 8),
-        }
-      : {
-          title: 'Failure signals',
-          lines: scenario.meta.signals.slice(0, 4).map((signal) => `- ${signal}`),
-        },
-    pitfalls: [
-      'Jumping to the fix before proving the root cause.',
-      'Treating every symptom as equally important.',
-      'Stopping at the first plausible explanation.',
-      'Skipping the regression guard after the fix.',
-    ],
-    related,
-  };
 }
 
 @Component({
@@ -184,17 +107,10 @@ export class IncidentDetailComponent {
   readonly lockedTitle = computed(() => this.incident()?.meta.title || 'Premium debug scenario');
   readonly lockedMemberCopy = computed(() => "You're on the free tier. Upgrade to access this premium debug scenario.");
   readonly lockedGuestCopy = computed(() => 'Upgrade to FrontendAtlas Premium to access this debug scenario. Already upgraded? Sign in to continue.');
-  readonly lockedSummary = computed(() => trimWords(this.incident()?.meta.summary || '', 45));
-  readonly lockedBullets = computed(() =>
-    (this.incident()?.meta.signals ?? [])
-      .map((signal) => trimWords(signal, 12))
-      .filter(Boolean)
-      .slice(0, 2),
-  );
   readonly lockedPreview = computed<LockedPreviewData | null>(() => {
     const scenario = this.incident();
     if (!scenario) return null;
-    return buildIncidentLockedPreview(scenario, this.incidentList());
+    return buildLockedPreviewForIncident(scenario.meta, this.incidentList());
   });
   readonly lockedPaths = computed<LockedPath[]>(() => {
     const tech = this.incident()?.meta.tech || 'javascript';

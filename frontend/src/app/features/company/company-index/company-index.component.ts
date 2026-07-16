@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
 import { collectCompanyCounts } from '../../../shared/company-counts.util';
 import { CompanyLogoMarkComponent } from '../../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
@@ -28,7 +29,7 @@ const SEED: ReadonlyArray<Pick<CompanyCard, 'slug' | 'label'>> = [
 
 const COMPANY_INDEX_TITLE = 'Company Frontend Interview Questions';
 const COMPANY_INDEX_DESCRIPTION =
-  'Use company-specific frontend interview questions after your baseline prep is stable, then compare coding, concept, and system design coverage before final interviews.';
+  'Explore FrontendAtlas editorial practice groupings by company label. These groupings support targeted rehearsal and do not claim official question provenance or endorsement.';
 
 @Component({
   standalone: true,
@@ -38,6 +39,7 @@ const COMPANY_INDEX_DESCRIPTION =
   styleUrls: ['./company-index.component.css']
 })
 export class CompanyIndexComponent implements OnInit {
+  readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
   companies: CompanyCard[] = [];
   loading = true;
   private qs = inject(QuestionService);
@@ -71,6 +73,10 @@ export class CompanyIndexComponent implements OnInit {
     { label: 'Frontend machine coding questions', route: ['/machine-coding'], path: '/machine-coding' },
     { label: 'Frontend system design interview questions', route: ['/system-design'], path: '/system-design' },
   ];
+
+  promptCountLabel(count: number): string {
+    return `${count} editorial practice ${count === 1 ? 'prompt' : 'prompts'}`;
+  }
 
   ngOnInit() {
     this.loading = true;
@@ -121,6 +127,7 @@ export class CompanyIndexComponent implements OnInit {
       url: canonicalUrl,
       name: COMPANY_INDEX_TITLE,
       description: COMPANY_INDEX_DESCRIPTION,
+      disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
       inLanguage: 'en',
       about: [
         { '@type': 'Thing', name: 'Company frontend interview questions' },
@@ -141,6 +148,7 @@ export class CompanyIndexComponent implements OnInit {
     if (companies.length) {
       collectionPage['mainEntity'] = {
         '@type': 'ItemList',
+        description: COMPANY_PRACTICE_DISCLAIMER,
         itemListElement: companies.slice(0, 24).map((company, index) => ({
           '@type': 'ListItem',
           position: index + 1,

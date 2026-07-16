@@ -307,6 +307,23 @@ describe('TriviaDetailComponent', () => {
     expect(questionSchema).toBeUndefined();
   });
 
+  it('keeps internal company tags out of trivia metadata and structured-data keywords', async () => {
+    await createLoadedFixture('free', {
+      companies: ['google'],
+      companyTags: ['meta'],
+    });
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+
+    expect(payload.keywords).toContain('closures');
+    expect(payload.keywords).not.toContain('google');
+    expect(payload.keywords).not.toContain('meta');
+    expect(String(article?.keywords || '')).not.toContain('google');
+    expect(String(article?.keywords || '')).not.toContain('meta');
+  });
+
   it('uses question-level SEO H1 intent label for visible H1 and article headline', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
@@ -688,7 +705,7 @@ describe('TriviaDetailComponent', () => {
     expect(simulator?.textContent || '').toContain('UI write allowed');
     expect(simulator?.textContent || '').toContain('stale write');
     expect(simulator?.textContent || '').toContain("Stale UI: results for 'rea' overwrite the newer 'react' results.");
-    expect(simulator?.textContent || '').toContain('Reviewed by FrontendAtlas');
+    expect(simulator?.textContent || '').toContain('Maintained by FrontendAtlas Editorial');
     expect(simulator?.textContent || '').toContain('Cross-checked with MDN/React/RxJS pages');
     expect(simulator?.textContent || '').toContain('Race verified by deterministic test');
 
@@ -883,7 +900,8 @@ describe('TriviaDetailComponent', () => {
     expect(article?.articleSection).toBe('JavaScript async concurrency');
     expect(article?.educationalLevel).toBe('Intermediate');
     expect(article?.learningResourceType).toBe('Interview answer');
-    expect(article?.reviewedBy).toEqual({ '@type': 'Organization', name: 'FrontendAtlas' });
+    expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
+    expect(article?.reviewedBy).toBeUndefined();
     expect(article?.datePublished).toBe('2026-04-10T00:00:00.000Z');
     expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
     expect((article?.about || []).map((item: any) => item.name)).toEqual([
@@ -1429,7 +1447,8 @@ describe('TriviaDetailComponent', () => {
     expect(article?.articleSection).toBe('Angular state management');
     expect(article?.educationalLevel).toBe('Intermediate');
     expect(article?.learningResourceType).toBe('Interview answer');
-    expect(article?.reviewedBy?.name).toBe('FrontendAtlas');
+    expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
+    expect(article?.reviewedBy).toBeUndefined();
     expect((article?.about || []).map((item: any) => item.name)).toEqual([
       'NgRx data flow',
       'Angular state management',
@@ -1898,7 +1917,8 @@ describe('TriviaDetailComponent', () => {
     expect(article?.articleSection).toBe('Angular forms');
     expect(article?.educationalLevel).toBe('Intermediate');
     expect(article?.learningResourceType).toBe('Interview answer');
-    expect(article?.reviewedBy).toEqual({ '@type': 'Organization', name: 'FrontendAtlas' });
+    expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
+    expect(article?.reviewedBy).toBeUndefined();
     expect((article?.about || []).map((item: any) => item.name)).toEqual([
       'Angular forms',
       'Template-driven forms',
@@ -2013,7 +2033,7 @@ describe('TriviaDetailComponent', () => {
     expect(comparator?.textContent || '').toContain('Angular form flow comparator');
     expect(comparator?.textContent || '').toContain('valueChanges');
     expect(comparator?.textContent || '').toContain('test assertion');
-    expect(comparator?.textContent || '').toContain('Reviewed by FrontendAtlas');
+    expect(comparator?.textContent || '').toContain('Maintained by FrontendAtlas Editorial');
     expect(comparator?.textContent || '').toContain('Cross-checked with Angular forms docs');
     expect(comparator?.textContent || '').toContain('State transitions mapped to testable assertions');
 

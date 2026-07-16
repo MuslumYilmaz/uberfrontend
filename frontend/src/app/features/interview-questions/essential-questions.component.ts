@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../core/content/public-editorial-facts';
 import { EssentialQuestionsResolved, EssentialResolvedItem, EssentialSection, EssentialTier } from '../../core/models/essential-questions.model';
 import { isQuestionLockedForTier } from '../../core/models/question.model';
 import { AuthService } from '../../core/services/auth.service';
@@ -23,10 +24,14 @@ type TierOption = {
 };
 
 type EssentialEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  author: string;
   coverage: string;
-  dateModified: string;
+};
+
+type EssentialSectionGroup = {
+  section: EssentialSection;
+  label: string;
+  items: EssentialResolvedItem[];
 };
 
 type EssentialInfoCard = {
@@ -41,20 +46,18 @@ type EssentialFaqItem = {
 };
 
 const ESSENTIAL_EDITORIAL_SIGNAL: EssentialEditorialSignal = {
-  reviewedLabel: 'Reviewed May 21, 2026',
-  reviewer: 'FrontendAtlas Editor',
-  coverage: '60 ranked frontend interview prompts across JavaScript utilities, UI coding, system design, and concepts',
-  dateModified: '2026-05-21T00:00:00.000Z',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
+  coverage: '60 curated frontend interview prompts across JavaScript utilities, UI coding, system design, and concepts',
 };
 
 const ESSENTIAL_VALUE_PROP =
-  'Essential 60 is a compact ranked practice list, not the full question bank. It prioritizes prompts by interview leverage, repeated patterns, coverage balance, useful variants, and direct access to focused practice.';
+  'Essential 60 is a compact, curated practice list, not the full question bank. Prompts are grouped by round format, paired with a selection rationale, and linked directly to focused practice.';
 
 const ESSENTIAL_WHY_CARDS: EssentialInfoCard[] = [
   {
-    title: 'Ranked by interview leverage',
+    title: 'A transparent selection rationale',
     detail:
-      'Each prompt gets an importance score based on how often the pattern appears, how many follow-ups it unlocks, and how much signal it gives in a short round.',
+      'Each prompt includes a concise editorial rationale explaining the skill, behavior, or trade-off it is meant to exercise.',
   },
   {
     title: 'Balanced by round format',
@@ -69,7 +72,7 @@ const ESSENTIAL_WHY_CARDS: EssentialInfoCard[] = [
   {
     title: 'Connected to practice with progress',
     detail:
-      'Each item opens a focused prompt, so you can solve it and keep progress attached to the ranked list.',
+      'Each item opens a focused prompt, so you can solve it and keep progress attached to the curated list.',
   },
 ];
 
@@ -97,11 +100,11 @@ const ESSENTIAL_USAGE_PLANS: EssentialInfoCard[] = [
 const ESSENTIAL_FAQ_ITEMS: EssentialFaqItem[] = [
   {
     q: 'What is FrontendAtlas Essential 60?',
-    a: 'FrontendAtlas Essential 60 is a ranked shortlist of must-know frontend interview prompts. It is designed for focused practice across JavaScript utilities, UI coding, frontend system design, and core concepts rather than browsing a full question bank.',
+    a: 'FrontendAtlas Essential 60 is a curated shortlist of frontend interview prompts. It is designed for focused practice across JavaScript utilities, UI coding, frontend system design, and core concepts rather than browsing a full question bank.',
   },
   {
     q: 'How were the Essential 60 questions selected?',
-    a: 'Questions were selected by interview leverage, repeated frontend interview patterns, coverage balance, useful framework variants, and direct availability for focused practice. The ranking favors prompts that expose trade-offs, edge cases, or implementation skill quickly.',
+    a: 'Questions were selected to balance JavaScript utilities, UI coding, system design, and concepts while keeping useful framework variants together. Each row shows the editorial rationale for including that prompt, and the coverage references describe topic coverage only.',
   },
   {
     q: 'How should I use Essential 60 in 7, 14, or 30 days?',
@@ -120,7 +123,7 @@ const ESSENTIAL_FAQ_ITEMS: EssentialFaqItem[] = [
 const ESSENTIAL_SCHEMA_ENTITIES = [
   'FrontendAtlas Essential 60',
   'must-know frontend interview questions',
-  'ranked frontend interview questions',
+  'curated frontend interview questions',
   'frontend interview practice shortlist',
   'JavaScript utility interview questions',
   'UI coding interview questions',
@@ -179,6 +182,18 @@ export class EssentialQuestionsComponent implements OnInit {
     });
   });
 
+  readonly filteredGroups = computed<EssentialSectionGroup[]>(() => {
+    const items = this.filteredItems();
+    return this.sectionOptions
+      .filter((option): option is SectionOption & { key: EssentialSection } => option.key !== 'all')
+      .map((option) => ({
+        section: option.key,
+        label: option.label,
+        items: items.filter((item) => item.section === option.key),
+      }))
+      .filter((group) => group.items.length > 0);
+  });
+
   readonly mustKnowCount = computed(() => this.data.items.filter((item) => item.tier === 'must-know').length);
   readonly premiumCount = computed(() => this.data.items.filter((item) => item.access === 'premium').length);
 
@@ -225,27 +240,23 @@ export class EssentialQuestionsComponent implements OnInit {
     return item.tier === 'must-know' ? 'Must know' : 'High leverage';
   }
 
-  sectionLabel(section: EssentialSection): string {
-    switch (section) {
-      case 'javascript-functions':
-        return 'JavaScript functions';
-      case 'ui-coding':
-        return 'UI coding';
-      case 'system-design':
-        return 'System design';
-      case 'concepts':
-        return 'Concepts';
-      default:
-        return 'Frontend';
-    }
-  }
-
-  sectionMetaLabel(section: EssentialSection): string {
-    return section === 'javascript-functions' ? 'JS functions' : this.sectionLabel(section);
-  }
-
   editorialSignal(): EssentialEditorialSignal {
     return ESSENTIAL_EDITORIAL_SIGNAL;
+  }
+
+  collectionUpdatedLabel(): string {
+    const updatedAt = this.data.collection.updatedAt;
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(updatedAt);
+    if (!match) return '';
+
+    const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+    const formatted = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC',
+    }).format(date);
+    return `Updated ${formatted}`;
   }
 
   valuePropCopy(): string {
@@ -264,10 +275,6 @@ export class EssentialQuestionsComponent implements OnInit {
     return ESSENTIAL_FAQ_ITEMS;
   }
 
-  benchmarkSurfaceCount(): number {
-    return this.data.collection.benchmarkSources.length || 5;
-  }
-
   difficultyLabel(item: EssentialResolvedItem): string {
     return item.difficulty === 'easy'
       ? 'Easy'
@@ -276,44 +283,18 @@ export class EssentialQuestionsComponent implements OnInit {
         : 'Intermediate';
   }
 
-  scoreLabel(item: EssentialResolvedItem): string {
-    return `${item.score}/100`;
-  }
-
-  importanceTooltip(_item: EssentialResolvedItem): string {
-    return 'Importance score: how strongly this question is prioritized in the Essential 60 list.';
-  }
-
-  importanceAriaLabel(item: EssentialResolvedItem): string {
-    return `Importance score ${item.score} out of 100`;
-  }
-
   descriptionTooltip(item: EssentialResolvedItem): string {
     return item.rationale;
   }
 
   rowMetaChips(item: EssentialResolvedItem): FaQuestionRowMetaChip[] {
-    const sectionLabel = this.sectionLabel(item.section);
-    const sectionMetaLabel = this.sectionMetaLabel(item.section);
     const techLabel = this.techSummary(item);
     const techAriaLabel = this.techAriaSummary(item);
     const chips: FaQuestionRowMetaChip[] = [
       {
-        label: sectionMetaLabel,
-        ariaLabel: `Section: ${sectionLabel}`,
-        tone: 'neutral',
-        priority: 'secondary',
-      },
-      {
         label: this.tierLabel(item),
         ariaLabel: `Tier: ${this.tierLabel(item)}`,
         tone: 'tier',
-        priority: 'secondary',
-      },
-      {
-        label: this.scoreLabel(item),
-        ariaLabel: this.importanceAriaLabel(item),
-        tone: 'score',
       },
       {
         label: this.difficultyLabel(item),
@@ -324,7 +305,6 @@ export class EssentialQuestionsComponent implements OnInit {
         label: techLabel,
         ariaLabel: `Technology: ${techAriaLabel}`,
         tone: 'tech',
-        priority: 'secondary',
       },
     ];
 
@@ -407,14 +387,10 @@ export class EssentialQuestionsComponent implements OnInit {
           name: this.data.collection.title,
           description: this.data.collection.description,
           dateModified: this.collectionDateModified(),
-          reviewedBy: {
-            '@type': 'Organization',
-            name: ESSENTIAL_EDITORIAL_SIGNAL.reviewer,
-          },
+          author: publicEditorialAuthorSchema(),
           about: schemaEntities,
           mentions: [
             ...schemaEntities,
-            { '@type': 'Thing', name: 'importance score' },
             { '@type': 'Thing', name: 'framework variants' },
             { '@type': 'Thing', name: 'practice routes' },
           ],
@@ -426,11 +402,11 @@ export class EssentialQuestionsComponent implements OnInit {
     });
   }
 
-  private collectionDateModified(): string {
+  private collectionDateModified(): string | undefined {
     const updatedAt = this.data.collection.updatedAt;
     if (/^\d{4}-\d{2}-\d{2}$/.test(updatedAt)) {
       return `${updatedAt}T00:00:00.000Z`;
     }
-    return ESSENTIAL_EDITORIAL_SIGNAL.dateModified;
+    return undefined;
   }
 }

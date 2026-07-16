@@ -29,6 +29,125 @@ function assertMirror(relative) {
   assert.equal(fallback, cdn, `Frontend fallback drifted from CDN: ${relative}`);
 }
 
+const deprecatedAngularControlFlow =
+  /\*ng(?:If|For|SwitchCase|SwitchDefault)\b|\[(?:ngIf|ngForOf|ngSwitch)\]|\bng(?:If|For(?:Of)?|Switch(?:Case|Default)?)\b|\bNgIf\b|\bNgFor(?:Of)?\b|\bNgSwitch(?:Case|Default)?\b|\bng-(?:if|for|switch)\b/;
+const malformedAngularControlFlow = /[A-Za-z]@(?:if|for|switch)/;
+const angularLegacyMigrationAllowlist = new Set();
+const angularIndexTrackAllowlist = new Set([
+  'sb/angular/question/angular-nested-checkboxes.v1.json',
+  'sb/angular/question/angular-tictactoe.v1.json',
+  'sb/angular/solution/angular-tictactoe-solution.v1.json'
+]);
+
+function referencedAngularAsset(question, assetReference) {
+  assert.match(
+    assetReference,
+    /^assets\/sb\/angular\/(?:question|solution)\/.+\.json$/,
+    `${question.id}: invalid Angular sandbox asset reference`
+  );
+  return assetReference.replace(/^assets\//, '');
+}
+
+function parseAngularTemplate(template, label) {
+  const parsed = parseTemplate(template, label);
+  assert.deepEqual(
+    parsed.errors,
+    null,
+    `${label}: Angular template must parse (${parsed.errors?.map((error) => error.msg).join('; ')})`
+  );
+}
+
+function inlineAngularTemplates(source) {
+  const templates = [];
+  const pattern = /\btemplate\s*:\s*`([\s\S]*?)`/g;
+  let match;
+  while ((match = pattern.exec(source)) !== null) templates.push(match[1]);
+  return templates;
+}
+
+function assertModernAngularCodingCorpus() {
+  assert.equal(
+    angularLegacyMigrationAllowlist.size,
+    0,
+    'The modern Angular corpus must start with an empty legacy-migration allowlist'
+  );
+
+  const questions = json('cdn/questions/angular/coding.json');
+  const referencedAssets = new Set();
+
+  for (const question of questions) {
+    const legacyAllowed =
+      question.legacyMigration === true && angularLegacyMigrationAllowlist.has(question.id);
+    if (!legacyAllowed) {
+      assert.doesNotMatch(
+        JSON.stringify(question),
+        deprecatedAngularControlFlow,
+        `${question.id}: modern Angular prompt content must not teach deprecated structural directives`
+      );
+      assert.doesNotMatch(
+        JSON.stringify(question),
+        malformedAngularControlFlow,
+        `${question.id}: control-flow migration must not corrupt surrounding prose`
+      );
+    }
+
+    for (const [approachIndex, approach] of (question.solutionBlock?.approaches ?? []).entries()) {
+      if (!approach.codeTs) continue;
+      for (const [templateIndex, template] of inlineAngularTemplates(approach.codeTs).entries()) {
+        parseAngularTemplate(
+          template,
+          `cdn/questions/angular/coding.json#${question.id}.approaches[${approachIndex}].template[${templateIndex}]`
+        );
+      }
+    }
+
+    for (const reference of [question.sdk?.asset, question.solutionAsset].filter(Boolean)) {
+      const relative = referencedAngularAsset(question, reference);
+      referencedAssets.add(relative);
+      assertMirror(relative);
+      const asset = json(`cdn/${relative}`);
+      const serialized = JSON.stringify(asset);
+
+      if (!legacyAllowed) {
+        assert.doesNotMatch(
+          serialized,
+          deprecatedAngularControlFlow,
+          `${relative}: modern Angular asset must not use deprecated structural directives`
+        );
+        assert.doesNotMatch(
+          serialized,
+          malformedAngularControlFlow,
+          `${relative}: control-flow migration must not corrupt surrounding text`
+        );
+      }
+      if (serialized.includes('track $index')) {
+        assert.ok(
+          angularIndexTrackAllowlist.has(relative),
+          `${relative}: $index tracking is reserved for fixed primitive collections`
+        );
+      }
+
+      for (const [file, value] of Object.entries(asset.files ?? {})) {
+        const source = typeof value === 'string' ? value : value.code;
+        if (file.endsWith('.html') && file !== '/src/index.html') {
+          parseAngularTemplate(source, `${relative}${file}`);
+        }
+        if (file.endsWith('.ts')) {
+          for (const [templateIndex, template] of inlineAngularTemplates(source).entries()) {
+            parseAngularTemplate(template, `${relative}${file}#template-${templateIndex}`);
+          }
+        }
+      }
+    }
+  }
+
+  assert.equal(
+    referencedAssets.size,
+    questions.length * 2,
+    'Every Angular coding prompt must own distinct starter and solution assets'
+  );
+}
+
 async function drainMicrotasks() {
   for (let index = 0; index < 8; index += 1) await Promise.resolve();
 }
@@ -603,7 +722,7 @@ for (const [technology, id] of [
 ]) {
   const question = json(`cdn/questions/${technology}/coding.json`).find((entry) => entry.id === id);
   assert.ok(question, `Missing ${id}`);
-  assert.equal(question.updatedAt, '2026-07-14');
+  assert.equal(question.updatedAt, technology === 'angular' ? '2026-07-15' : '2026-07-14');
   const renderedContract = JSON.stringify(question);
   assert.match(renderedContract, /at most one valid perpendicular turn per tick/);
   assert.match(renderedContract, /full board|final free cell/);
@@ -641,7 +760,7 @@ assert.ok(strictEffectQuestion);
 assert.equal(strictEffectQuestion.access, 'premium');
 assert.equal(strictEffectQuestion.sdk.asset, 'assets/sb/react/question/react-use-effect-once.v1.json');
 assert.equal(strictEffectQuestion.solutionAsset, 'assets/sb/react/solution/react-use-effect-once-solution.v1.json');
-assert.equal(strictEffectQuestion.updatedAt, '2026-07-14');
+assert.equal(strictEffectQuestion.updatedAt, '2026-07-15');
 const strictEffectContract = JSON.stringify(strictEffectQuestion);
 assert.match(strictEffectContract, /setup → cleanup → setup/);
 assert.match(strictEffectContract, /one active connection/);
@@ -672,33 +791,132 @@ assert.match(strictEffectSolutionCode, /connection\.connect\(\)/);
 assert.match(strictEffectSolutionCode, /return \(\) => connection\.disconnect\(\)/);
 assert.match(strictEffectSolutionCode, /\[roomId, onActiveCount\]/);
 
+assertModernAngularCodingCorpus();
+
+const angularCodingQuestions = json('cdn/questions/angular/coding.json');
+const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');
+const nestedCheckboxTemplate = fileCode(nestedCheckboxStarter, '/src/app/app.component.html');
+assert.match(
+  nestedCheckboxTemplate,
+  /@for \(child of children; track \$index; let i = \$index\)/,
+  'angular-nested-checkboxes: the fixed boolean collection must declare the index used by its controls'
+);
+assert.doesNotMatch(
+  nestedCheckboxTemplate,
+  /track child\.label/,
+  'angular-nested-checkboxes: boolean children do not have a label identity'
+);
+const modernizedAngularIds = [
+  'angular-contact-form-starter',
+  'angular-todo-list-starter',
+  'angular-image-slider-starter',
+  'angular-tabs-switcher',
+  'angular-filterable-user-list',
+  'angular-faq-accordion',
+  'angular-pagination-table',
+  'angular-multi-step-form-starter',
+  'angular-shopping-cart-mini',
+  'angular-debounced-search',
+  'angular-star-rating',
+  'angular-dynamic-table-starter',
+  'angular-nested-checkboxes',
+  'angular-autocomplete-search-starter',
+  'angular-transfer-list',
+  'angular-tictactoe-starter',
+  'angular-nested-comments',
+  'angular-dynamic-counter-buttons',
+  'angular-chips-input-autocomplete',
+  'angular-chessboard-click-highlight',
+  'angular-snake-game'
+];
+for (const id of modernizedAngularIds) {
+  const question = angularCodingQuestions.find((entry) => entry.id === id);
+  assert.ok(question, `Missing modernized Angular question ${id}`);
+  assert.equal(question.updatedAt, '2026-07-15', `${id}: stale Angular update date`);
+}
+for (const id of [
+  'angular-image-slider-starter',
+  'angular-tabs-switcher',
+  'angular-filterable-user-list',
+  'angular-faq-accordion',
+  'angular-pagination-table',
+  'angular-multi-step-form-starter',
+  'angular-shopping-cart-mini',
+  'angular-star-rating',
+  'angular-dynamic-table-starter',
+  'angular-transfer-list',
+  'angular-tictactoe-starter',
+  'angular-dynamic-counter-buttons',
+  'angular-chessboard-click-highlight'
+]) {
+  assert.ok(
+    angularCodingQuestions.find((entry) => entry.id === id)?.tags.includes('control-flow'),
+    `${id}: modern control-flow content must carry the control-flow tag`
+  );
+}
+
 for (const relative of [
   'sb/angular/question/angular-todo-list.v2.json',
   'sb/angular/solution/angular-todo-list-solution.v2.json'
 ]) {
-  assertMirror(relative);
   const asset = json(`cdn/${relative}`);
   const template = fileCode(asset, '/src/app/app.component.html');
   const component = fileCode(asset, '/src/app/app.component.ts');
   assert.match(template, /@for \(todo of todos; track todo\.id\)/);
-  assert.match(template, /\*ngIf="hasTodos/);
-  assert.doesNotMatch(template, /\*ngFor/);
-  assert.doesNotMatch(component, /trackById/);
-  const parsed = parseTemplate(template, relative);
-  assert.deepEqual(parsed.errors, null, `${relative}: Angular template must parse`);
+  assert.match(template, /@if \(hasTodos\)/);
+  assert.doesNotMatch(template, deprecatedAngularControlFlow);
+  assert.doesNotMatch(component, /CommonModule|trackById/);
 }
 
-const todoQuestion = json('cdn/questions/angular/coding.json').find(
+const todoQuestion = angularCodingQuestions.find(
   (entry) => entry.id === 'angular-todo-list-starter'
 );
 assert.ok(todoQuestion);
 assert.equal(todoQuestion.access, 'free');
 assert.equal(todoQuestion.sdk.asset, 'assets/sb/angular/question/angular-todo-list.v2.json');
 assert.equal(todoQuestion.solutionAsset, 'assets/sb/angular/solution/angular-todo-list-solution.v2.json');
-assert.equal(todoQuestion.updatedAt, '2026-07-14');
+assert.equal(todoQuestion.updatedAt, '2026-07-15');
 const todoContract = JSON.stringify(todoQuestion);
 assert.match(todoContract, /@for \(todo of todos; track todo\.id\)/);
-assert.doesNotMatch(todoContract, /\*ngFor|trackById/);
+assert.doesNotMatch(todoContract, deprecatedAngularControlFlow);
+const foundationsTrackPreview = read(
+  'frontend/src/app/features/tracks/track-preview/track-preview.component.ts'
+);
+assert.match(foundationsTrackPreview, /Todo List \(Standalone Component with @for\)/);
+assert.doesNotMatch(foundationsTrackPreview, /Todo List \(Standalone Component with ngFor\)/);
+
+const tabsQuestion = angularCodingQuestions.find((entry) => entry.id === 'angular-tabs-switcher');
+assert.ok(tabsQuestion);
+assert.equal(tabsQuestion.sdk.storageKey, 'v2:ui:angular:angular-tabs-starter');
+assert.equal(tabsQuestion.access, 'premium');
+assert.ok(tabsQuestion.tags.includes('control-flow'));
+assert.deepEqual(tabsQuestion.premiumPreview, {
+  summary: 'Build an accessible Angular tab switcher driven by a single active-tab state. Use modern template control flow so exactly one panel is rendered as the selection changes.',
+  learningOutcomes: [
+    'Model the selected tab with one typed active-state value.',
+    'Render the active panel with Angular @if control flow.',
+    'Keep exactly one content panel visible after every tab change.',
+    'Connect accessible tab controls to active styling and labelled panels.'
+  ],
+  unlockDescription: 'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.'
+});
+const tabsPanelCounts = tabsQuestion.frameworkTests[0].steps.filter(
+  (step) => step.type === 'expectCount' && step.selector === '.panel' && step.count === 1
+);
+assert.equal(tabsPanelCounts.length, 3, 'Tabs must assert exactly one panel initially and after both tab changes');
+for (const relative of [
+  'sb/angular/question/angular-tabs.v2.json',
+  'sb/angular/solution/angular-tabs-solution.v2.json'
+]) {
+  const asset = json(`cdn/${relative}`);
+  const component = fileCode(asset, '/src/app/app.component.ts');
+  const template = fileCode(asset, '/src/app/app.component.html');
+  assert.doesNotMatch(component, /CommonModule/);
+  assert.match(template, /@if \(isActive\('overview'\)\)/);
+  assert.match(template, /role="tablist"/);
+  assert.match(template, /role="tabpanel"/);
+  assert.doesNotMatch(template, /placeholders/i);
+}
 
 for (const relative of [
   'sb/react/question/react-autocomplete-search.v2.json',
@@ -801,10 +1019,22 @@ assert.ok(
 const staleAutocompleteTest = autocompleteTests.get('autocomplete-stale-response-ignored');
 assert.ok(staleAutocompleteTest);
 assert.ok(
+  staleAutocompleteTest.steps
+    .filter((step) => step.text === 'Seattle')
+    .every((step) => step.selector === '#autocomplete-option-seattle'),
+  'Stale-response checks must target the stable Seattle option instead of the first matching option'
+);
+assert.ok(
   staleAutocompleteTest.steps.some(
     (step) => step.type === 'expectNoText' && step.text === 'San Francisco'
   ),
   'The slower stale request must be proved unable to overwrite the current results'
+);
+assert.ok(
+  pendingSteps.some(
+    (step) => step.text === 'Seattle' && step.selector === '#autocomplete-option-seattle'
+  ),
+  'Pending-query checks must wait for the stable Seattle option'
 );
 
 for (const id of ['autocomplete-outside-pointer-closes', 'autocomplete-pointer-selects-option']) {

@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { IncidentService } from '../../core/services/incident.service';
+import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
@@ -169,7 +170,37 @@ describe('ShowcasePageComponent', () => {
     expect(comesBefore(demoTitle, roadmap)).toBeTrue();
   });
 
-  it('renders the focus grid and interviewer-informed trust section after the roadmap without profile links', () => {
+  it('labels homepage company cards as editorial practice groupings', () => {
+    const page: HTMLElement = fixture.nativeElement;
+    const lead = page.querySelector('.company-lede') as HTMLElement;
+    const disclaimer = page.querySelector('[data-testid="company-practice-disclaimer"]') as HTMLElement;
+
+    expect(lead.textContent?.trim()).toBe(
+      'A few FrontendAtlas editorial practice groupings across UI, JavaScript, and system design.',
+    );
+    expect(disclaimer.textContent?.trim()).toBe(
+      'Editorial practice groupings, not verified official interview questions or endorsements.',
+    );
+    expect(lead.contains(disclaimer)).toBeFalse();
+    expect(page.textContent || '').not.toContain('known questions');
+  });
+
+  it('keeps company preview links aligned when prompt counts are unavailable', () => {
+    fixture.componentInstance.companyCounts = {};
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const cards = Array.from(page.querySelectorAll<HTMLElement>('[data-testid="showcase-company-card"]'));
+
+    expect(cards.length).toBe(4);
+    for (const card of cards) {
+      expect(card.querySelector('.company-count')).toBeNull();
+      expect(card.querySelector('.company-card__footer')).toBeTruthy();
+      expect(card.querySelector<HTMLAnchorElement>('.company-link')?.getAttribute('href')).toContain('/companies/');
+    }
+  });
+
+  it('renders product proof, the secondary account milestone, and canonical editorial facts after the roadmap', () => {
     const page: HTMLElement = fixture.nativeElement;
     const heroTitle = page.querySelector('[data-testid="showcase-hero-title"]') as HTMLElement;
     const trustSection = page.querySelector('[data-testid="showcase-trust-section"]') as HTMLElement;
@@ -178,6 +209,10 @@ describe('ShowcasePageComponent', () => {
     const focusSection = page.querySelector('[data-testid="showcase-focus-section"]') as HTMLElement;
     const proofRow = page.querySelector('.proof-row') as HTMLElement;
     const trustText = trustSection.textContent || '';
+    const workflowItems = Array.from(
+      trustSection.querySelectorAll<HTMLElement>('[data-testid="trust-proof-item"]'),
+      (item) => item.textContent?.trim(),
+    );
     const comesBefore = (left: HTMLElement, right: HTMLElement) =>
       Boolean(left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING);
 
@@ -187,21 +222,49 @@ describe('ShowcasePageComponent', () => {
     expect(focusSection.querySelector('a[href="/machine-coding"]')).toBeTruthy();
     expect(focusSection.querySelector('a[href="/system-design"]')).toBeTruthy();
     expect(trustSection.querySelector('a')).toBeNull();
-    expect(proofRow.textContent).toContain('Interviewer-informed');
-    expect(trustText).toContain('Interview prep shaped around what interviewers can actually evaluate.');
-    expect(trustText).toContain('senior frontend engineer');
-    expect(trustText).toContain('8+ years building production frontend');
-    expect(trustText).toContain('interviewer-side experience');
-    expect(trustText).toContain('Early-stage and transparent: no inflated user counts, invented customer logos, or anonymous praise.');
-    expect(trustText).toContain('Interviewer-informed prompts');
-    expect(trustText).toContain('Practice questions selected for observable interview signals, not trivia volume.');
-    expect(trustText).toContain('Code, preview, test, and review in the same loop you use when building real UI.');
-    expect(trustText).toContain('Train edge cases, accessibility, performance, and tradeoffs so you can defend your choices clearly.');
-    expect(trustText).toContain('Independent, interviewer-informed frontend interview prep.');
+    expect(proofRow.textContent).toContain('Official-source checks');
+    expect(trustText).toContain('Built for credible practice');
+    expect(trustText).toContain('Frontend interview practice that shows its work.');
+    expect(trustText).toContain(
+      'Hands-on coding, runnable examples, regression tests, and transparent editorial updates—inside one focused workflow.',
+    );
+    expect(trustSection.querySelector('[data-testid="trust-milestone-value"]')?.textContent?.trim()).toBe('100');
+    expect(trustText).toContain('FrontendAtlas accounts created');
+    expect(trustText).toContain('Early milestone · July 2026');
+    expect(trustText).toContain('FrontendAtlas Editorial');
+    expect(trustText).toContain('Built and maintained as an independent frontend interview-prep project');
+    expect(workflowItems).toEqual([...PUBLIC_EDITORIAL_FACTS.workflow]);
+    for (const prohibited of [
+      'trusted by 100 developers',
+      '100 active learners',
+      'loved by developers',
+      'helping 100 developers land jobs',
+      'a community of 100 developers',
+      'and counting',
+      'inflated user counts',
+      'invented customer logos',
+      'anonymous praise',
+      'senior frontend engineer',
+      'interviewer-side experience',
+    ]) {
+      expect(trustText.toLowerCase()).not.toContain(prohibited.toLowerCase());
+    }
     expect(comesBefore(heroTitle, demoTitle)).toBeTrue();
     expect(comesBefore(demoTitle, roadmap)).toBeTrue();
     expect(comesBefore(roadmap, focusSection)).toBeTrue();
     expect(comesBefore(focusSection, trustSection)).toBeTrue();
+  });
+
+  it('renders Foundations homepage totals from the canonical unique track refs', () => {
+    const page = fixture.nativeElement as HTMLElement;
+    const foundationsCard = Array.from(page.querySelectorAll<HTMLElement>('.track-card'))
+      .find((card) => (card.textContent || '').includes('Foundations Track (30 days)'));
+    const text = foundationsCard?.textContent || '';
+
+    expect(foundationsCard).toBeTruthy();
+    expect(text).toContain('113 unique prompts');
+    expect(text).toContain('5 frontend system design scenarios');
+    expect(text).not.toContain('113-question progression');
   });
 
   it('renders the recommended preparation roadmap with the intended first route and links', () => {

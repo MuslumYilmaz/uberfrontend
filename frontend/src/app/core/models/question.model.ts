@@ -41,6 +41,12 @@ export type StructuredReturn = {
   desc?: string;
 };
 
+export interface PremiumPreviewContent {
+  summary: string;
+  learningOutcomes: string[]; // 3–5 complete bullets
+  unlockDescription: string;
+}
+
 export type StructuredSolution = {
   explanation?: string;
   codeJs?: string;
@@ -135,6 +141,7 @@ export interface Question {
   solutionBlock?: StructuredSolution;
   seo?: QuestionSeo;
   interviewFocus?: QuestionInterviewFocus;
+  premiumPreview?: PremiumPreviewContent;
   type: QuestionType;
   technology: Technology;
   access: AccessLevel;

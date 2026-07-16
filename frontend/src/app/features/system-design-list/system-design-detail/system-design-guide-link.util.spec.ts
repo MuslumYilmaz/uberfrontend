@@ -61,7 +61,7 @@ describe('system-design-guide-link.util', () => {
     expect(performanceGuideAnchorForQuestion({ id: 'live-chart-high-frequency-updates' }))
       .toBe('live chart performance system design');
     expect(performanceGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
-      .toBe('form interaction latency frontend interview');
+      .toBe('Performance and interaction latency');
     expect(performanceGuideAnchorForQuestion({ id: 'notification-toast-system' }))
       .toBe('toast timer cleanup tradeoffs');
   });
@@ -76,7 +76,7 @@ describe('system-design-guide-link.util', () => {
     expect(evaluationGuideAnchorForQuestion({ id: 'live-chart-high-frequency-updates' }))
       .toBe('live chart system design interview evaluation');
     expect(evaluationGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
-      .toBe('multi-step form frontend system design rubric');
+      .toBe('Evaluation rubric');
     expect(evaluationGuideAnchorForQuestion({ id: 'component-design-system-architecture' }))
       .toBe('design system architecture interview rubric');
     expect(evaluationGuideAnchorForQuestion({ id: 'notification-toast-system' }))
@@ -93,7 +93,7 @@ describe('system-design-guide-link.util', () => {
     expect(pitfallsGuideAnchorForQuestion({ id: 'live-chart-high-frequency-updates' }))
       .toBe('live chart system design pitfalls');
     expect(pitfallsGuideAnchorForQuestion({ id: 'multi-step-form-autosave' }))
-      .toBe('multi step form autosave system design mistakes');
+      .toBe('Common autosave failure modes');
     expect(pitfallsGuideAnchorForQuestion({ id: 'component-design-system-architecture' }))
       .toBe('design system architecture interview mistakes');
     expect(pitfallsGuideAnchorForQuestion({ id: 'notification-toast-system' }))

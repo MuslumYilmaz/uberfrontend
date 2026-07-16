@@ -8,7 +8,7 @@ import { AccessLevel, Difficulty } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
-import { TRACK_LOOKUP, TrackConfig, TrackQuestionRef } from '../track.data';
+import { TRACK_LOOKUP, TrackConfig, TrackQuestionRef, deriveTrackMetrics } from '../track.data';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 
 type PreviewQuestion = {
@@ -265,7 +265,7 @@ const CRASH_7D_FALLBACKS: Record<string, Omit<PreviewQuestion, 'kind' | 'tech'>>
   },
   'angular-todo-list-starter': {
     id: 'angular-todo-list-starter',
-    title: 'Todo List (Standalone Component with ngFor)',
+    title: 'Todo List (Standalone Component with @for)',
     difficulty: 'easy',
     access: 'free',
   },
@@ -682,13 +682,6 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
     purpose: 'This Foundations Track 30-day frontend interview preparation roadmap gives you a week-by-week roadmap for JavaScript fundamentals and browser basics, UI coding, framework Q&A, system design, mock rounds and company prep.',
     heroTitle: 'Foundations Track: 30-Day Frontend Interview Preparation Roadmap',
     heroKicker: '30-day roadmap',
-    heroMetrics: [
-      { value: '113', label: 'questions' },
-      { value: '5', label: 'system design prompts' },
-      { value: '30-45 min/day', label: 'daily pace' },
-      { value: 'Day 1', label: 'ready' },
-      { value: 'May 2026', label: 'updated' },
-    ],
     seoTitle: '30-Day Frontend Interview Preparation Roadmap',
     seoDescription:
       'Preview a 30-day frontend interview preparation roadmap with weekly JavaScript, UI coding, framework Q&A, system design, company prep, and sample questions.',
@@ -842,13 +835,6 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
         detail: 'Re-run misses, write tradeoff notes, then use Company Prep to match the teams and interview loops you are targeting.',
       },
     ],
-    distribution: [
-      { value: '51', label: 'JavaScript' },
-      { value: '27', label: 'framework coding' },
-      { value: '30', label: 'HTML/CSS' },
-      { value: '39', label: 'concept questions' },
-      { value: '5', label: 'system design' },
-    ],
     comparison: [
       {
         title: 'Choose 30-day if',
@@ -914,7 +900,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
       },
       {
         question: 'What does premium unlock?',
-        answer: 'The public preview shows the roadmap shape and free starter prompts. Premium unlocks the full guided route and the premium prompts in the 113-question month.',
+        answer: 'The public preview shows the roadmap shape and free starter prompts. Premium unlocks the full guided route and the premium prompts across the month.',
       },
     ],
     primaryCta: { label: 'Start Day 1', route: ['/javascript', 'coding', 'js-number-clamp'], path: '/javascript/coding/js-number-clamp' },
@@ -1020,6 +1006,16 @@ export class TrackPreviewComponent implements OnInit {
   }
 
   heroMetrics(track: TrackConfig): PreviewMetric[] {
+    if (track.slug === 'foundations-30d') {
+      const metrics = deriveTrackMetrics(track);
+      return [
+        { value: String(metrics.uniquePrompts), label: 'unique prompts' },
+        { value: String(metrics.systemDesign), label: 'system design prompts' },
+        { value: '30-45 min/day', label: 'daily pace' },
+        { value: 'Day 1', label: 'ready' },
+        { value: 'July 2026', label: 'updated' },
+      ];
+    }
     return this.narrative?.heroMetrics || [
       { value: track.durationLabel, label: 'Timeline' },
       { value: String(track.featured.length), label: 'curated questions' },
@@ -1044,7 +1040,21 @@ export class TrackPreviewComponent implements OnInit {
   }
 
   distributionMetrics(): PreviewMetric[] {
+    if (this.track?.slug === 'foundations-30d') {
+      const metrics = deriveTrackMetrics(this.track);
+      return [
+        { value: String(metrics.javascript), label: 'JavaScript' },
+        { value: String(metrics.frameworkCoding), label: 'framework coding' },
+        { value: String(metrics.htmlCss), label: 'HTML/CSS' },
+        { value: String(metrics.conceptQuestions), label: 'concept questions' },
+        { value: String(metrics.systemDesign), label: 'system design' },
+      ];
+    }
     return this.narrative?.distribution || [];
+  }
+
+  categoriesOverlap(): boolean {
+    return !!this.track && deriveTrackMetrics(this.track).categoriesOverlap;
   }
 
   dayTasks(day: PreviewPlanDay, questions: PreviewQuestion[]): PreviewQuestion[] {

@@ -52,7 +52,7 @@ describe('FeUiIn60Article', () => {
 
     expect(h1?.textContent?.trim()).toBe('Frontend UI Interview Questions: Build Accessible Components Under Time');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
     expect(hostText).toContain('Custom UI guide promise.');
     expect(hostText).toContain('Short answer for this page');
     expect(hostText).toContain('Most common UI prompts: modal, autocomplete, tabs, form validation, accordion, and data table.');

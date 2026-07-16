@@ -189,6 +189,8 @@ describe('EssentialQuestionsService', () => {
     const jsItem = resolved?.items[0];
     expect(jsItem?.title).toBe('Debounce Function');
     expect(jsItem?.path).toBe('/javascript/coding/js-debounce');
+    expect(jsItem?.companies).toEqual(['google']);
+    expect(jsItem?.tags).toEqual(['async']);
 
     const uiItem = resolved?.items[1];
     expect(uiItem?.title).toBe('Debounced Search with Fake API');
@@ -198,6 +200,7 @@ describe('EssentialQuestionsService', () => {
     const systemItem = resolved?.items[2];
     expect(systemItem?.isSystemDesign).toBeTrue();
     expect(systemItem?.path).toBe('/system-design/notification-toast-system');
+    expect(systemItem?.companies).toEqual(['google']);
   });
 
   it('drops entries whose primary reference cannot be resolved', async () => {

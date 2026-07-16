@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import {
+  PUBLIC_EDITORIAL_FACTS,
+  PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
+} from '../../../core/content/public-editorial-facts';
 
 @Component({
   standalone: true,
@@ -29,7 +33,7 @@ import { RouterModule } from '@angular/router';
           <li><a [routerLink]="[]" fragment="scope">Scope</a></li>
           <li><a [routerLink]="[]" fragment="sources">Sources &amp; research</a></li>
           <li><a [routerLink]="[]" fragment="workflow">Creation workflow</a></li>
-          <li><a [routerLink]="[]" fragment="review">Review &amp; updates</a></li>
+          <li><a [routerLink]="[]" fragment="review">Checks &amp; updates</a></li>
           <li><a [routerLink]="[]" fragment="corrections">Corrections</a></li>
           <li><a [routerLink]="[]" fragment="ownership">Authorship &amp; accountability</a></li>
           <li><a [routerLink]="[]" fragment="contact">Contact</a></li>
@@ -48,7 +52,7 @@ import { RouterModule } from '@angular/router';
       <section id="sources">
         <h2>2. Sources &amp; research</h2>
         <p>
-          We use a mix of official documentation, specifications, and field experience to author content.
+          We use official documentation, specifications, and runnable repository examples to author content.
           Where a topic is evolving, we aim to describe stable, widely-accepted practices rather than
           short-lived trends.
         </p>
@@ -61,25 +65,25 @@ import { RouterModule } from '@angular/router';
 
       <section id="workflow">
         <h2>3. Creation workflow</h2>
-        <p>Each item follows a consistent authoring flow designed for clarity and interview relevance:</p>
+        <p>{{ workflowDescription }}</p>
         <ul>
-          <li>Define the learning objective and expected interview signal.</li>
-          <li>Draft the prompt and a reference answer/solution outline.</li>
-          <li>Validate with real usage scenarios and common pitfalls.</li>
-          <li>Ensure consistency across similar topics and frameworks.</li>
+          <li>Runnable examples verify behavior where a page includes executable code.</li>
+          <li>Regression tests protect runner, content, routing, access, and rendering contracts.</li>
+          <li>Official-source checks are used where framework or platform guidance can change.</li>
+          <li>Correction reports and dated updates make substantive fixes visible.</li>
         </ul>
       </section>
 
       <section id="review">
-        <h2>4. Review &amp; updates</h2>
+        <h2>4. Checks &amp; updates</h2>
         <p>
-          We periodically review content for accuracy, clarity, and relevance. When we make meaningful
-          changes, we update the page metadata and publish the new "Last updated" date.
+          Content maintenance uses repository checks and official sources where relevant. When we make
+          meaningful changes, we update page metadata and publish a new "Last updated" date.
         </p>
         <ul>
-          <li>High-impact topics (core JS, HTML, CSS) are reviewed more frequently.</li>
-          <li>Framework-specific content is updated when APIs or best practices shift.</li>
-          <li>Premium previews are curated to prevent solution leakage while still teaching effectively.</li>
+          <li>Core JavaScript, HTML, and CSS changes use the same regression and dated-update checks.</li>
+          <li>Framework-specific guidance is checked against official documentation when APIs or recommendations shift.</li>
+          <li>Premium previews are checked for solution leakage while retaining a useful public summary.</li>
         </ul>
       </section>
 
@@ -91,16 +95,16 @@ import { RouterModule } from '@angular/router';
         </p>
         <ul>
           <li>Report errors with a short description and the page URL.</li>
-          <li>We acknowledge critical issues and aim to correct them promptly.</li>
-          <li>Minor wording improvements are bundled into regular content updates.</li>
+          <li>Reports affecting technical accuracy, access, or learner safety are prioritized.</li>
+          <li>Substantive corrections are reflected in dated content updates.</li>
         </ul>
       </section>
 
       <section id="ownership">
         <h2>6. Authorship &amp; accountability</h2>
         <p>
-          Content is produced and maintained by the <strong>FrontendAtlas Team</strong>. We own the
-          editorial decisions, and we use internal review to keep the material consistent and reliable.
+          Content is attributed to <strong>{{ editorialFacts.author.name }}</strong>.
+          {{ editorialFacts.descriptor }}.
         </p>
       </section>
 
@@ -217,5 +221,7 @@ import { RouterModule } from '@angular/router';
   `]
 })
 export class EditorialPolicyComponent {
-  readonly lastUpdated = '2026-01-30';
+  readonly lastUpdated = '2026-07-15';
+  readonly editorialFacts = PUBLIC_EDITORIAL_FACTS;
+  readonly workflowDescription = PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION;
 }

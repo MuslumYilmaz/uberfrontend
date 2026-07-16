@@ -30,9 +30,14 @@ import { PricingPlansSectionComponent } from '../pricing/components/pricing-plan
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
+import {
+  COMPANY_PRACTICE_DISCLAIMER,
+  PUBLIC_EDITORIAL_FACTS,
+} from '../../core/content/public-editorial-facts';
 import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
+import { TRACK_LOOKUP, deriveTrackMetrics } from '../tracks/track.data';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
@@ -58,6 +63,13 @@ type ReasoningPreviewCard = {
 };
 
 const SHOWCASE_STATIC_STATS = SHOWCASE_STATS as ShowcaseStatsPayload;
+const FOUNDATIONS_TRACK = TRACK_LOOKUP.get('foundations-30d');
+
+if (!FOUNDATIONS_TRACK) {
+  throw new Error('Missing canonical foundations-30d track');
+}
+
+const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
   standalone: true,
@@ -330,11 +342,10 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   systemDesignDetailComponent?: Type<unknown>;
   systemInjector!: Injector;
 
-  trustSignals: Array<{ icon: ShowcaseIconName; title: string; copy: string }> = [
-    { icon: 'review', title: 'Interviewer-informed prompts', copy: 'Practice questions selected for observable interview signals, not trivia volume.' },
-    { icon: 'editor', title: 'Production-style workflow', copy: 'Code, preview, test, and review in the same loop you use when building real UI.' },
-    { icon: 'depth', title: 'Senior-level calibration', copy: 'Train edge cases, accessibility, performance, and tradeoffs so you can defend your choices clearly.' },
-  ];
+  readonly editorialAuthor = PUBLIC_EDITORIAL_FACTS.author.name;
+  readonly editorialDescriptor = PUBLIC_EDITORIAL_FACTS.descriptor;
+  readonly editorialWorkflow = PUBLIC_EDITORIAL_FACTS.workflow;
+  readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
 
   capabilities: Array<{ icon: ShowcaseIconName; title: string; copy: string }> = [
     { icon: 'stack', title: 'Framework-aware questions', copy: 'Angular, React, Vue, JS, HTML/CSS: prompts and starters tailored to each tech.' },
@@ -357,9 +368,9 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     {
       name: 'Foundations Track (30 days)',
       bullets: [
-        '113-question progression from fundamentals to medium-level concepts.',
+        `${FOUNDATIONS_TRACK_METRICS.uniquePrompts} unique prompts progressing from fundamentals to medium-level concepts.`,
         'Framework coding drills in React/Angular/Vue with framework-agnostic concept questions.',
-        'Includes 5 frontend system design scenarios for architecture tradeoffs.',
+        `Includes ${FOUNDATIONS_TRACK_METRICS.systemDesign} frontend system design scenarios for architecture tradeoffs.`,
       ],
     },
   ];

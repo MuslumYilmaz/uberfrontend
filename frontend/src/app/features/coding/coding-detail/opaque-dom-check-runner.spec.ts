@@ -3,6 +3,7 @@ import {
   OpaqueDomCheckRunner,
   OpaquePreviewReadyTimeoutError,
 } from './opaque-dom-check-runner';
+import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
 
 describe('OpaqueDomCheckRunner', () => {
   let runner: OpaqueDomCheckRunner;
@@ -78,14 +79,24 @@ describe('OpaqueDomCheckRunner', () => {
       { readyTimeoutMs: 4_000 },
     );
 
-    const firstOptions = runFrame.calls.argsFor(0)[0] as { config: { runId: string } };
-    const secondOptions = runFrame.calls.argsFor(1)[0] as { config: { runId: string } };
+    const firstOptions = runFrame.calls.argsFor(0)[0] as {
+      config: { invocationId: string; frameId: string };
+      readyTimeoutMs: number;
+    };
+    const secondOptions = runFrame.calls.argsFor(1)[0] as {
+      config: { invocationId: string; frameId: string };
+      readyTimeoutMs: number;
+    };
     expect(runFrame).toHaveBeenCalledTimes(2);
-    expect(firstOptions.config.runId).not.toBe(secondOptions.config.runId);
+    expect(firstOptions.config.invocationId).toBe(secondOptions.config.invocationId);
+    expect(firstOptions.config.frameId).not.toBe(secondOptions.config.frameId);
+    expect(firstOptions.readyTimeoutMs).toBe(2_000);
+    expect(secondOptions.readyTimeoutMs).toBe(2_000);
     expect(results).toEqual([{ name: 'runs after retry', passed: true }]);
   });
 
-  it('ignores forged result messages with the wrong source or runId', async () => {
+  it('ignores forged result messages with the wrong source, invocation, or frame ID', async () => {
+    spyOn<any>(runner, 'createId').and.returnValues('active-invocation', 'active-frame');
     const run = runner.runFramework(
       `<!doctype html><html><body>
         <div class="value">real</div>
@@ -110,8 +121,9 @@ describe('OpaqueDomCheckRunner', () => {
     const frame = document.querySelector('iframe[aria-hidden="true"]') as HTMLIFrameElement;
     const forged = {
       channel: 'FA_OPAQUE_CHECK',
-      version: 1,
-      runId: 'forged-run-id',
+      version: 2,
+      invocationId: 'active-invocation',
+      frameId: 'forged-frame',
       kind: 'framework',
       results: [{ name: 'Forged check', passed: true }],
     };
@@ -120,6 +132,133 @@ describe('OpaqueDomCheckRunner', () => {
     window.dispatchEvent(new MessageEvent('message', { source: frame.contentWindow, data: forged }));
 
     await expectAsync(run).toBeResolvedTo([{ name: 'Real check', passed: true }]);
+  });
+
+  it('short-circuits a fatal compilation failure and classifies every named check', async () => {
+    const createElement = spyOn(document, 'createElement').and.callThrough();
+    const checks = [
+      { id: 'one', name: 'First assertion', steps: [{ type: 'expectExists', selector: '.one' }] },
+      { id: 'two', name: 'Second assertion', steps: [{ type: 'expectExists', selector: '.two' }] },
+      { id: 'three', name: 'Third assertion', steps: [{ type: 'expectExists', selector: '.three' }] },
+    ] as any;
+
+    const results = await runner.runFramework(
+      `<!doctype html><html><body><script>
+        window.__FA_NOTIFY_PREVIEW_READY('compile-error', 'Unexpected token <private-source>\\nconst secret = 1');
+      <\/script></body></html>`,
+      checks,
+    );
+
+    expect(results.map(result => result.name)).toEqual([
+      'First assertion',
+      'Second assertion',
+      'Third assertion',
+    ]);
+    expect(results.every(result => result.failureKind === 'compilation')).toBeTrue();
+    expect(results[0].error).toContain('Preview compilation failed: Unexpected token private-source');
+    expect(results[0].error).not.toContain('const secret');
+    expect(createElement.calls.allArgs().filter(([tag]) => tag === 'iframe').length).toBe(1);
+    expect(document.querySelector('iframe[aria-hidden="true"]')).toBeNull();
+  });
+
+  it('distinguishes boot, runtime, readiness, and assertion-execution failures', async () => {
+    const check = [{
+      id: 'bounded-failure',
+      name: 'Bounded failure',
+      steps: [{ type: 'wait', durationMs: 100 }],
+    }] as any;
+
+    const boot = await runner.runFramework(
+      `<!doctype html><html><body><script>
+        window.__FA_NOTIFY_PREVIEW_READY('boot-error', 'React vendor failed <private>\\nconst secret = 1');
+      <\/script></body></html>`,
+      check,
+    );
+    const runtime = await runner.runFramework(
+      `<!doctype html><html><body><script>
+        window.__FA_NOTIFY_PREVIEW_READY('runtime-error', 'Render crashed <private>\\nconst secret = 1');
+      <\/script></body></html>`,
+      check,
+    );
+    const readinessTimeout = await runner.runFramework(
+      '<!doctype html><html><body><div>Never reports readiness</div></body></html>',
+      check,
+      { readyTimeoutMs: 20 },
+    );
+    const assertionTimeout = await runner.runFramework(
+      `<!doctype html><html><body><script>
+        window.__FA_NOTIFY_PREVIEW_READY('render-ready');
+      <\/script></body></html>`,
+      check,
+      { checkTimeoutMs: 20 },
+    );
+
+    expect(boot[0].failureKind).toBe('preview-boot');
+    expect(boot[0].error).toContain('Preview failed to boot: React vendor failed private');
+    expect(boot[0].error).not.toContain('const secret');
+    expect(runtime[0].failureKind).toBe('preview-runtime');
+    expect(runtime[0].error).toContain('Preview failed during render: Render crashed private');
+    expect(readinessTimeout[0].failureKind).toBe('infrastructure-timeout');
+    expect(readinessTimeout[0].error).toContain('timed out waiting for preview render readiness');
+    expect(assertionTimeout[0].failureKind).toBe('assertion-timeout');
+    expect(assertionTimeout[0].error).toContain('assertion execution timed out');
+    expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
+  });
+
+  it('continues with a fresh frame after one assertion-execution timeout', async () => {
+    const createElement = spyOn(document, 'createElement').and.callThrough();
+    const html = `<!doctype html><html><body><div class="ready">Ready</div><script>
+      window.__FA_NOTIFY_PREVIEW_READY('render-ready');
+    <\/script></body></html>`;
+    const results = await runner.runFramework(
+      html,
+      [
+        { id: 'slow', name: 'Slow assertion', steps: [{ type: 'wait', durationMs: 100 }] },
+        { id: 'fast', name: 'Fast assertion', steps: [{ type: 'expectExists', selector: '.ready' }] },
+      ] as any,
+      { checkTimeoutMs: 20 },
+    );
+
+    expect(results[0].passed).toBeFalse();
+    expect(results[0].failureKind).toBe('assertion-timeout');
+    expect(results[1]).toEqual({ name: 'Fast assertion', passed: true });
+    expect(createElement.calls.allArgs().filter(([tag]) => tag === 'iframe').length).toBe(2);
+    expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
+  });
+
+  it('runs the real React builder with production vendor assets at the assertion layer', async () => {
+    const [starterResponse, solutionResponse] = await Promise.all([
+      fetch('/assets/sb/react/question/react-counter.v1.json'),
+      fetch('/assets/sb/react/solution/react-counter-solution.v1.json'),
+    ]);
+    expect(starterResponse.ok).toBeTrue();
+    expect(solutionResponse.ok).toBeTrue();
+    const starter = await starterResponse.json() as { files: Record<string, string> };
+    const solution = await solutionResponse.json() as { files: Record<string, string> };
+    const check = {
+      id: 'counter-increments',
+      name: 'Counter increments',
+      steps: [
+        { type: 'expectText', selector: '.value', text: '0' },
+        { type: 'click', selector: '.actions button', index: 1 },
+        { type: 'waitForText', selector: '.value', text: '1', timeoutMs: 500 },
+      ],
+    } as any;
+
+    const starterResults = await runner.runFramework(
+      makeReactPreviewHtml(starter.files, window.location.origin),
+      [check],
+    );
+    const solutionResults = await runner.runFramework(
+      makeReactPreviewHtml(solution.files, window.location.origin),
+      [check],
+    );
+
+    expect(starterResults[0].passed).toBeFalse();
+    expect(starterResults[0].failureKind).toBe('assertion');
+    expect(starterResults[0].error).toContain('did not reach text "1"');
+    expect(solutionResults).toEqual([{ name: 'Counter increments', passed: true }]);
+    expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
   });
 
   it('removes the frame and rejects promptly when a run is cancelled', async () => {

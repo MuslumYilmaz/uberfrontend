@@ -1,0 +1,61 @@
+{
+  "questionId": "angular-tabs-switcher",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\n\ntype TabId = 'overview' | 'details' | 'settings';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  template: `\n    <main class=\"shell\">\n      <section class=\"card\">\n        <h1>Tabs / Multi-View Switcher</h1>\n\n        <nav class=\"tabs\" role=\"tablist\" aria-label=\"Example tabs\">\n          <button\n            id=\"tab-overview\"\n            class=\"tab\"\n            role=\"tab\"\n            [class.active]=\"isActive('overview')\"\n            [attr.aria-selected]=\"isActive('overview')\"\n            aria-controls=\"panel-overview\"\n            (click)=\"selectTab('overview')\">Overview</button>\n          <button\n            id=\"tab-details\"\n            class=\"tab\"\n            role=\"tab\"\n            [class.active]=\"isActive('details')\"\n            [attr.aria-selected]=\"isActive('details')\"\n            aria-controls=\"panel-details\"\n            (click)=\"selectTab('details')\">Details</button>\n          <button\n            id=\"tab-settings\"\n            class=\"tab\"\n            role=\"tab\"\n            [class.active]=\"isActive('settings')\"\n            [attr.aria-selected]=\"isActive('settings')\"\n            aria-controls=\"panel-settings\"\n            (click)=\"selectTab('settings')\">Settings</button>\n        </nav>\n\n        @if (isActive('overview')) {\n          <section id=\"panel-overview\" class=\"panel\" role=\"tabpanel\" aria-labelledby=\"tab-overview\">\n            <h2>Overview</h2>\n            <p>Show a short summary or welcome message here.</p>\n          </section>\n        }\n\n        @if (isActive('details')) {\n          <section id=\"panel-details\" class=\"panel\" role=\"tabpanel\" aria-labelledby=\"tab-details\">\n            <h2>Details</h2>\n            <p>Display more detailed information in this panel.</p>\n          </section>\n        }\n\n        @if (isActive('settings')) {\n          <section id=\"panel-settings\" class=\"panel\" role=\"tabpanel\" aria-labelledby=\"tab-settings\">\n            <h2>Settings</h2>\n            <p>Display account preferences in this panel.</p>\n          </section>\n        }\n      </section>\n    </main>\n  `,\n  styles: [\n    `.shell{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:560px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 24px;box-shadow:0 18px 45px rgba(15,23,42,0.8);display:grid;gap:16px;}`,\n    `.card h1{margin:0 0 4px;font-size:20px;font-weight:700;}`,\n    `.tabs{display:flex;gap:8px;padding:4px;background:#020617;border-radius:999px;border:1px solid #1f2937;}`,\n    `.tab{flex:1;padding:8px 10px;border-radius:999px;border:none;background:transparent;color:#9ca3af;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s, color .15s;}`,\n    `.tab.active{background:#e5e7eb;color:#020617;}`,\n    `.panel{margin-top:4px;border-radius:12px;border:1px solid #111827;background:radial-gradient(circle at top left,#111827,#020617);padding:14px 16px;display:grid;gap:4px;}`,\n    `.panel h2{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.panel p{margin:0;font-size:13px;color:#d1d5db;line-height:1.5;}`\n  ]\n})\nexport class AppComponent {\n  activeTab: TabId = 'overview';\n\n  isActive(tab: TabId): boolean {\n    return this.activeTab === tab;\n  }\n\n  selectTab(tab: TabId): void {\n    this.activeTab = tab;\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-model-tablist-semantics",
+          "title": "Declare the tablist relationship",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 13,
+            "snippet": "<nav class=\"tabs\" role=\"tablist\" aria-label=\"Example tabs\">"
+          },
+          "why": "The tablist role gives assistive technology the correct grouping for the interactive tab controls.",
+          "alternative": "Use visually styled buttons with no shared navigation semantics.",
+          "tradeoff": "ARIA relationships add attributes to maintain, but they expose the component structure beyond visual styling."
+        },
+        {
+          "id": "d2-publish-selected-state",
+          "title": "Publish selected state on each tab",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "[attr.aria-selected]=\"isActive('overview')\""
+          },
+          "why": "The accessible selected state must update from the same activeTab source that drives styling and panels.",
+          "alternative": "Change only the active CSS class and leave screen readers with stale state.",
+          "tradeoff": "The binding repeats per button, but it keeps visual and semantic state synchronized."
+        },
+        {
+          "id": "d3-render-one-active-panel",
+          "title": "Render panels from active state",
+          "anchor": {
+            "lineStart": 40,
+            "lineEnd": 40,
+            "snippet": "@if (isActive('overview')) {"
+          },
+          "why": "Built-in @if ensures inactive panels leave the DOM so exactly one tabpanel is exposed.",
+          "alternative": "Render every panel and hide inactive content only with CSS.",
+          "tradeoff": "Conditional rendering recreates panel DOM on selection, but it produces a simpler accessibility tree."
+        },
+        {
+          "id": "d4-use-one-state-source",
+          "title": "Use one typed active-tab source",
+          "anchor": {
+            "lineStart": 83,
+            "lineEnd": 83,
+            "snippet": "this.activeTab = tab;"
+          },
+          "why": "A single TabId value drives active classes, aria-selected, and panel visibility without duplicated booleans.",
+          "alternative": "Maintain a separate boolean for each tab and panel.",
+          "tradeoff": "A union type is slightly more formal, but it prevents impossible multi-active states."
+        }
+      ]
+    }
+  }
+}

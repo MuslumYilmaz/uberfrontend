@@ -1,0 +1,61 @@
+{
+  "questionId": "angular-multi-step-form-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\nimport { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [ReactiveFormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\" [formGroup]=\"form\">\n        <header class=\"header\">\n          <h1>Multi-step Signup</h1>\n          <p class=\"subtitle\">Step {{ currentStep + 1 }} of 3</p>\n        </header>\n\n        <section class=\"steps\">\n          @switch (currentStep) {\n          <!-- Step 1: Basic info -->\n            @case (0) {\n              <div formGroupName=\"basic\" class=\"step\">\n            <h2 class=\"step-title\">Basic info</h2>\n            <label class=\"field\">\n              <span>Name</span>\n              <input type=\"text\" formControlName=\"name\" placeholder=\"Jane Doe\" />\n              @if (basicGroup.get('name')?.touched && basicGroup.get('name')?.invalid) {\n                <small class=\"error\">\n                Name is required.\n                </small>\n              }\n            </label>\n\n            <label class=\"field\">\n              <span>Email</span>\n              <input type=\"email\" formControlName=\"email\" placeholder=\"jane@example.com\" />\n              @if (basicGroup.get('email')?.touched && basicGroup.get('email')?.invalid) {\n                <small class=\"error\">\n                Please enter a valid email.\n                </small>\n              }\n            </label>\n              </div>\n            }\n\n          <!-- Step 2: Address info -->\n            @case (1) {\n              <div formGroupName=\"address\" class=\"step\">\n            <h2 class=\"step-title\">Address</h2>\n            <label class=\"field\">\n              <span>Street</span>\n              <input type=\"text\" formControlName=\"street\" placeholder=\"123 Main St\" />\n              @if (addressGroup.get('street')?.touched && addressGroup.get('street')?.invalid) {\n                <small class=\"error\">\n                Street is required.\n                </small>\n              }\n            </label>\n\n            <label class=\"field\">\n              <span>City</span>\n              <input type=\"text\" formControlName=\"city\" placeholder=\"Istanbul\" />\n              @if (addressGroup.get('city')?.touched && addressGroup.get('city')?.invalid) {\n                <small class=\"error\">\n                City is required.\n                </small>\n              }\n            </label>\n\n            <label class=\"field\">\n              <span>Country</span>\n              <input type=\"text\" formControlName=\"country\" placeholder=\"Türkiye\" />\n              @if (addressGroup.get('country')?.touched && addressGroup.get('country')?.invalid) {\n                <small class=\"error\">\n                Country is required.\n                </small>\n              }\n            </label>\n\n            <label class=\"field\">\n              <span>Postal code (optional)</span>\n              <input type=\"text\" formControlName=\"postalCode\" placeholder=\"34000\" />\n            </label>\n              </div>\n            }\n\n          <!-- Step 3: Summary -->\n            @case (2) {\n              <div class=\"step\">\n            <h2 class=\"step-title\">Summary</h2>\n            <div class=\"summary\">\n              <h3>Basic info</h3>\n              <p><strong>Name:</strong> {{ basicGroup.get('name')?.value }}</p>\n              <p><strong>Email:</strong> {{ basicGroup.get('email')?.value }}</p>\n\n              <h3>Address</h3>\n              <p><strong>Street:</strong> {{ addressGroup.get('street')?.value }}</p>\n              <p><strong>City:</strong> {{ addressGroup.get('city')?.value }}</p>\n              <p><strong>Country:</strong> {{ addressGroup.get('country')?.value }}</p>\n              <p><strong>Postal code:</strong> {{ addressGroup.get('postalCode')?.value || '—' }}</p>\n            </div>\n              </div>\n            }\n          }\n        </section>\n\n        <footer class=\"actions\">\n          <button type=\"button\" class=\"ghost\" (click)=\"prev()\" [disabled]=\"isFirstStep\">\n            Back\n          </button>\n\n          @if (!isLastStep) {\n            <button\n            type=\"button\"\n            (click)=\"next()\"\n            [disabled]=\"!canGoNext\"\n          >\n            Next\n            </button>\n          }\n\n          @if (isLastStep) {\n            <button\n            type=\"button\"\n            class=\"primary\"\n            (click)=\"submit()\"\n          >\n            Submit\n            </button>\n          }\n        </footer>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 16px;display:grid;gap:16px;}`,\n    `.header h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}`,\n    `.steps{min-height:260px;}`,\n    `.step{display:grid;gap:12px;}`,\n    `.step-title{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.field{display:grid;gap:4px;font-size:13px;}`,\n    `.field span{color:#e5e7eb;}`,\n    `.field input{border-radius:10px;border:1px solid #374151;background:#020617;padding:8px 10px;color:#e5e7eb;font-size:14px;}`,\n    `.field input:focus{outline:none;border-color:#a3e635;}`,\n    `.error{font-size:11px;color:#f97316;}`,\n    `.summary{display:grid;gap:4px;font-size:14px;}`,\n    `.summary h3{margin:8px 0 2px;font-size:14px;font-weight:600;color:#e5e7eb;}`,\n    `.actions{display:flex;justify-content:space-between;gap:8px;margin-top:4px;}`,\n    `.actions button{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer;}`,\n    `.actions button.primary{background:#a3e635;color:#020617;border-color:#a3e635;}`,\n    `.actions button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.actions button.ghost{background:transparent;}`\n  ]\n})\nexport class AppComponent {\n  readonly lastStepIndex = 2;\n  currentStep = 0;\n\n  constructor(private fb: FormBuilder) {}\n\n  form: FormGroup = this.fb.group({\n    basic: this.fb.group({\n      name: ['', Validators.required],\n      email: ['', [Validators.required, Validators.email]]\n    }),\n    address: this.fb.group({\n      street: ['', Validators.required],\n      city: ['', Validators.required],\n      country: ['', Validators.required],\n      postalCode: ['']\n    })\n  });\n\n  get basicGroup(): FormGroup {\n    return this.form.get('basic') as FormGroup;\n  }\n\n  get addressGroup(): FormGroup {\n    return this.form.get('address') as FormGroup;\n  }\n\n  get isFirstStep(): boolean {\n    return this.currentStep === 0;\n  }\n\n  get isLastStep(): boolean {\n    return this.currentStep === this.lastStepIndex;\n  }\n\n  get canGoNext(): boolean {\n    if (this.currentStep === 0) {\n      return this.basicGroup.valid;\n    }\n    if (this.currentStep === 1) {\n      return this.addressGroup.valid;\n    }\n    return false;\n  }\n\n  private currentGroup(): FormGroup {\n    if (this.currentStep === 0) return this.basicGroup;\n    if (this.currentStep === 1) return this.addressGroup;\n    return this.form;\n  }\n\n  next(): void {\n    const group = this.currentGroup();\n    group.markAllAsTouched();\n    if (group.invalid) {\n      return;\n    }\n    if (!this.isLastStep) {\n      this.currentStep++;\n    }\n  }\n\n  prev(): void {\n    if (!this.isFirstStep) {\n      this.currentStep--;\n    }\n  }\n\n  submit(): void {\n    this.form.markAllAsTouched();\n    if (this.form.invalid) {\n      return;\n    }\n    console.log('Signup submitted', this.form.value);\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-switch-step-content",
+          "title": "Render one step from the current index",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 17,
+            "snippet": "@switch (currentStep) {"
+          },
+          "why": "Built-in @switch keeps the form in one component while exposing only the active step content.",
+          "alternative": "Mount every step at once and hide inactive sections with CSS.",
+          "tradeoff": "Step DOM is recreated during navigation, but the template state is explicit and easier to test."
+        },
+        {
+          "id": "d2-gate-next-by-current-group",
+          "title": "Validate the current group before advancing",
+          "anchor": {
+            "lineStart": 208,
+            "lineEnd": 208,
+            "snippet": "group.markAllAsTouched();"
+          },
+          "why": "Only the active step is surfaced and validated before currentStep can move forward.",
+          "alternative": "Advance first and reveal validation errors on the next screen.",
+          "tradeoff": "Users must resolve current-step errors before continuing, which protects final form completeness."
+        },
+        {
+          "id": "d3-bind-next-disabled-state",
+          "title": "Expose the same next-step contract in the UI",
+          "anchor": {
+            "lineStart": 114,
+            "lineEnd": 114,
+            "snippet": "[disabled]=\"!canGoNext\""
+          },
+          "why": "The button state reflects the derived validity rule while the method guard remains the final protection.",
+          "alternative": "Enable Next unconditionally and depend only on click-time validation.",
+          "tradeoff": "Disabled controls communicate readiness early, though inline errors are still needed to explain why."
+        },
+        {
+          "id": "d4-validate-before-submit",
+          "title": "Validate the full form at submission",
+          "anchor": {
+            "lineStart": 224,
+            "lineEnd": 224,
+            "snippet": "this.form.markAllAsTouched();"
+          },
+          "why": "Final submission rechecks every nested group and exposes any invalid field before reading the form value.",
+          "alternative": "Assume step navigation guarantees validity forever.",
+          "tradeoff": "The final validation is redundant in the happy path, but protects against programmatic state changes."
+        }
+      ]
+    }
+  }
+}

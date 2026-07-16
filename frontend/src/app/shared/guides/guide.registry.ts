@@ -1,8 +1,9 @@
 // shared/guides/guide.registry.ts
 import { Type } from '@angular/core';
+import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 
 export type GuideAuthor = {
-    type: 'Organization' | 'Person';
+    type: 'Organization';
     name: string;
 };
 
@@ -34,7 +35,11 @@ export type GuideSeo = {
     readerPromise?: string;
     uniqueAngle?: string;
     factCheckedAt?: string;
-    reviewedBy?: string;
+};
+
+const PUBLIC_GUIDE_AUTHOR: GuideAuthor = {
+    type: PUBLIC_EDITORIAL_FACTS.author.schemaType,
+    name: PUBLIC_EDITORIAL_FACTS.author.name,
 };
 
 /** A single article entry */
@@ -134,12 +139,8 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Use this frontend interview preparation guide to understand the 2026 interview loop, pick the right practice roadmap, and move into coding, UI, system design, and behavioral drills with clear next steps.',
             publishedAt: '2025-08-30',
             updatedAt: '2026-06-18',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             factCheckedAt: '2026-06-18',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fe-intro-article.component')
@@ -227,12 +228,8 @@ export const PLAYBOOK: GuideEntry[] = [
             readerPromise: 'Use this frontend coding interview questions and prep guide to map likely coding prompts, understand the scoring rubric, practice a 45/60-minute strategy, and move into hands-on FrontendAtlas drills.',
             publishedAt: '2025-08-30',
             updatedAt: '2026-06-06',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             factCheckedAt: '2026-06-06',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fe-coding-article.component')
@@ -340,13 +337,9 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2025-09-27',
             updatedAt: '2026-06-05',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             readerPromise: 'Use this JavaScript coding interview map to choose high-frequency async, closure, promise, DOM, and utility-function drills, then move into direct FrontendAtlas practice links.',
             factCheckedAt: '2026-06-05',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/js-problems-article.component')
@@ -451,13 +444,9 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2025-09-27',
             updatedAt: '2026-06-06',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             readerPromise: 'Use this DSA for frontend interviews practice map to prioritize arrays, hash maps, stacks, queues, recursion, cache, Big-O, and frontend algorithm interview questions, then move into direct JavaScript practice.',
             factCheckedAt: '2026-06-06',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fe-dsa-article.component')
@@ -537,13 +526,9 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2025-09-27',
             updatedAt: '2026-06-21',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             readerPromise: 'Use this frontend UI interview questions practice map to prioritize common component prompts, model strong answers, score your solution with a rubric, and drill accessibility, keyboard support, and React/HTML/CSS execution under time pressure.',
             factCheckedAt: '2026-06-21',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fe-ui-in-60.component')
@@ -638,13 +623,9 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2025-09-28',
             updatedAt: '2026-06-24',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             readerPromise: 'Use this component API design interview practice map to define React props, events, a decision matrix, interactive API surface trade-offs, TypeScript guardrails, library patterns, accessibility contracts, styling surfaces, and drill-reviewed follow-ups.',
             factCheckedAt: '2026-06-24',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/component-api-design-article.component')
@@ -748,15 +729,11 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2026-02-12',
             updatedAt: '2026-06-13',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             searchIntent: 'Find a JavaScript interview preparation path that turns async, closures, event loop output, this binding, promises, stale state, and utility prompts into a repeatable 7/14/30-day study plan.',
             readerPromise: 'Use this JavaScript interview preparation path to move from runtime topics to trivia, coding drills, mastery checkpoints, and a 7/14/30-day study plan for frontend interviews.',
             uniqueAngle: 'Framework-specific bug families and direct drill mapping, not a generic topic list.',
             factCheckedAt: '2026-06-07',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/javascript-prep-path-article.component')
@@ -899,15 +876,11 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2026-02-12',
             updatedAt: '2026-06-13',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             searchIntent: 'Find how to prepare for a React interview with a practical study plan for hooks, state, rendering, coding drills, testing, and performance.',
             readerPromise: 'Use this React interview preparation path to turn hooks, rendering, coding, testing, and performance practice into a 7/14/30-day study plan.',
             uniqueAngle: 'React-specific render and state-design failure patterns tied directly to trivia and coding drills.',
             factCheckedAt: '2026-06-07',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/react-prep-path-article.component')
@@ -1024,15 +997,11 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2026-02-12',
             updatedAt: '2026-06-13',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             searchIntent: 'Find an Angular interview preparation path with a practical study plan for RxJS, change detection, signals, DI, forms, testing, and coding drills.',
             readerPromise: 'Use this Angular interview preparation path to turn RxJS, change detection, signals, DI, forms, testing, and coding drills into a 7/14/30-day study plan.',
             uniqueAngle: 'Angular-specific debugging and architecture decisions connected directly to operator choice, change detection, provider scope, forms, tests, and direct drills.',
             factCheckedAt: '2026-06-07',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/angular-prep-path-article.component')
@@ -1154,15 +1123,11 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             publishedAt: '2026-02-12',
             updatedAt: '2026-06-13',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             searchIntent: 'Find a Vue interview preparation path with a practical study plan for reactivity, Composition API, Pinia, Router, nextTick, and coding drills.',
             readerPromise: 'Use this Vue interview preparation path to turn reactivity, Composition API, Pinia, Router, nextTick, and coding drills into a 7/14/30-day study plan.',
             uniqueAngle: 'Vue-specific reactivity, component contract, router, and store-boundary pitfalls tied directly to trivia and coding drills.',
             factCheckedAt: '2026-06-07',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/vue-prep-path-article.component')
@@ -1239,12 +1204,8 @@ export const PLAYBOOK: GuideEntry[] = [
             uniqueAngle: 'Frontend-specific answer template with autocomplete API/state walkthrough, stale response handling, accessibility states, rubric, and direct practice map.',
             publishedAt: '2025-09-28',
             updatedAt: '2026-06-19',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             factCheckedAt: '2026-06-19',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fe-system-design-fast-framework-article.component')
@@ -1339,12 +1300,8 @@ export const PLAYBOOK: GuideEntry[] = [
             uniqueAngle: 'A 15-minute frontend fundamentals diagnostic with score bands, spoken answer examples, an optional advanced add-on, review methodology, official references, and direct practice links instead of a generic question list.',
             publishedAt: '2025-09-28',
             updatedAt: '2026-06-24',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             factCheckedAt: '2026-06-24',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/fundamentals-check-article.component')
@@ -1445,12 +1402,8 @@ export const PLAYBOOK: GuideEntry[] = [
             uniqueAngle: 'A frontend-specific resume playbook reviewed against FrontendAtlas interview-round alignment across coding, UI, system design, framework, and behavioral prep.',
             publishedAt: '2025-09-28',
             updatedAt: '2026-06-25',
-            author: {
-                type: 'Organization',
-                name: 'FrontendAtlas Team',
-            },
+            author: PUBLIC_GUIDE_AUTHOR,
             factCheckedAt: '2026-06-25',
-            reviewedBy: 'FrontendAtlas',
         },
         load: () =>
             import('../../features/guides/playbook/resume-article.component')
@@ -2045,7 +1998,7 @@ export const SYSTEM: GuideEntry[] = [
             searchIntent: 'Find an interview-focused frontend system design performance optimization guide that explains budgets, Core Web Vitals, bottleneck diagnosis, scenario trade-offs, rollout, and validation.',
             readerPromise: 'Use this performance optimization guide to explain Core Web Vitals, bottleneck diagnosis, top-two prioritization, trade-offs, observability, rollout, and interview-ready scripts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-19',
+            updatedAt: '2026-07-15',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-performance')
@@ -2111,7 +2064,7 @@ export const SYSTEM: GuideEntry[] = [
             readerPromise: 'Use this scorecard to grade frontend system design answers across requirements, architecture, state, interfaces, performance, accessibility, trade-offs, and communication.',
             uniqueAngle: 'RADIO-mapped rubric with weak, solid, and strong-hire signals plus a self-review loop tied to FrontendAtlas practice prompts.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-02',
+            updatedAt: '2026-07-15',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-evaluation')
@@ -2172,7 +2125,7 @@ export const SYSTEM: GuideEntry[] = [
             readerPromise: 'Use this pitfalls guide to catch weak signals, recover messy answers, and connect fixes to RADIO, rubric scoring, checklist review, and practice prompts.',
             uniqueAngle: 'Frontend-specific red flags with repair scripts, RADIO mapping, and scenario prompts instead of a generic system design mistake list.',
             publishedAt: '2025-09-28',
-            updatedAt: '2026-06-02',
+            updatedAt: '2026-07-15',
         },
         load: () =>
             import('../../features/guides/system-design/system-design-pitfalls')

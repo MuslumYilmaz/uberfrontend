@@ -25,7 +25,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-async-race",
     "tech": "javascript",
     "difficulty": "hard",
-    "summary": "A teammate built a shared fetch helper to avoid duplicate network work, but real traffic exposed two nasty bugs. Concurrent callers with the same key still fan out into multiple requests, and a failed request can leave…",
+    "summary": "A teammate built a shared fetch helper to avoid duplicate network work, but real traffic exposed two nasty bugs.",
     "access": "free"
   },
   {
@@ -34,7 +34,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-lost-this-binding",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "A teammate passes an object method straight into a callback API, assuming it will still remember its owner later. Direct calls like `tracker.recordClick()` work, but the same method breaks once another function invokes…",
+    "summary": "A teammate passes an object method straight into a callback API, assuming it will still remember its owner later.",
     "access": "free"
   },
   {
@@ -43,7 +43,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-missing-return-map-filter",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "A teammate refactored a simple array pipeline to use block-bodied arrow functions because it looked more readable. The shape still looks right, but now the result comes back empty or full of `undefined`. Fix the missing…",
+    "summary": "A teammate refactored a simple array pipeline to use block-bodied arrow functions because it looked more readable. The shape still looks right, but now the result comes back empty or full of `undefined`.",
     "access": "free"
   },
   {
@@ -52,7 +52,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-numeric-sort",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "A teammate wrote a tiny leaderboard helper with plain `sort()`. It looked fine in a quick demo with single-digit values, then broke the moment scores like `10` and `100` showed up. Fix the bug so numbers sort numericall…",
+    "summary": "A teammate wrote a tiny leaderboard helper with plain `sort()`. It looked fine in a quick demo with single-digit values, then broke the moment scores like `10` and `100` showed up.",
     "access": "free"
   },
   {
@@ -61,7 +61,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-off-by-one",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "A teammate wrote `chunk(arr, size)` to split rows into smaller batches. It looks fine at first glance, but the loop boundary is slightly off: exact divisions can produce an extra empty chunk, and an empty input can come…",
+    "summary": "A teammate wrote `chunk(arr, size)` to split rows into smaller batches.",
     "access": "free"
   },
   {
@@ -70,7 +70,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-stale-closure-autosave",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "A teammate tried to make autosave \"predictable\" by capturing the current draft when wiring a delayed callback. That feels reasonable until the user keeps typing: the callback keeps saving the old draft it closed over in…",
+    "summary": "A teammate tried to make autosave \"predictable\" by capturing the current draft when wiring a delayed callback.",
     "access": "free"
   },
   {
@@ -79,7 +79,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-nullish-defaults",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "A teammate used `||` while hydrating UI settings, and the bug stayed invisible until real saved values showed up. Now `0`, an intentionally blank subtitle, and `false` keep getting overwritten by defaults. Fix the helpe…",
+    "summary": "A teammate used `||` while hydrating UI settings, and the bug stayed invisible until real saved values showed up. Now `0`, an intentionally blank subtitle, and `false` keep getting overwritten by defaults.",
     "access": "free"
   },
   {
@@ -88,7 +88,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/javascript/debug/js-debug-mutating-input",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "A teammate tried to make `unique(arr)` look clever with a one-liner. The returned values seem close, but two subtle bugs slipped in: it reorders the data and it mutates the caller's array in place. Fix it so the helper…",
+    "summary": "A teammate tried to make `unique(arr)` look clever with a one-liner. The returned values seem close, but two subtle bugs slipped in: it reorders the data and it mutates the caller's array in place.",
     "access": "free"
   }
 ] as const satisfies readonly CodingHubGeneratedDiscoveryItem[];

@@ -57,7 +57,7 @@ test('content: react-counter solution avoids React.useState', async () => {
   expect(raw).not.toContain('React.useState');
 });
 
-test('showcase: hero experiment keeps Essential 60 as the primary CTA', async ({ browser }) => {
+test('showcase: hero experiment keeps the guided plan as the primary CTA', async ({ browser }) => {
   const controlContext = await browser.newContext();
   const controlPage = await controlContext.newPage();
   await seedHeroVariant(controlPage, 'control');
@@ -65,7 +65,9 @@ test('showcase: hero experiment keeps Essential 60 as the primary CTA', async ({
 
   const controlH1 = (await controlPage.getByTestId('showcase-hero-title').textContent())?.trim() || '';
   const controlLede = (await controlPage.locator('.showcase-hero .lede').first().textContent())?.trim() || '';
-  const controlCta = (await controlPage.locator('.hero-actions .sk-btn-primary').first().textContent())?.trim() || '';
+  const controlCta = controlPage.locator('.hero-actions .sk-btn-primary').first();
+  const controlCtaLabel = (await controlCta.textContent())?.trim() || '';
+  const controlCtaHref = await controlCta.getAttribute('href');
 
   const outcomeContext = await browser.newContext();
   const outcomePage = await outcomeContext.newPage();
@@ -74,12 +76,16 @@ test('showcase: hero experiment keeps Essential 60 as the primary CTA', async ({
 
   const outcomeH1 = (await outcomePage.getByTestId('showcase-hero-title').textContent())?.trim() || '';
   const outcomeLede = (await outcomePage.locator('.showcase-hero .lede').first().textContent())?.trim() || '';
-  const outcomeCta = (await outcomePage.locator('.hero-actions .sk-btn-primary').first().textContent())?.trim() || '';
+  const outcomeCta = outcomePage.locator('.hero-actions .sk-btn-primary').first();
+  const outcomeCtaLabel = (await outcomeCta.textContent())?.trim() || '';
+  const outcomeCtaHref = await outcomeCta.getAttribute('href');
 
   expect(outcomeH1).toBe(controlH1);
   expect(outcomeLede).toBe(controlLede);
-  expect(controlCta).toBe('Open Essential 60');
-  expect(outcomeCta).toBe('Open Essential 60');
+  expect(controlCtaLabel).toBe('Start 30-day plan');
+  expect(outcomeCtaLabel).toBe('Start 30-day plan');
+  expect(controlCtaHref).toBe('/tracks/foundations-30d/preview');
+  expect(outcomeCtaHref).toBe('/tracks/foundations-30d/preview');
 
   await controlContext.close();
   await outcomeContext.close();

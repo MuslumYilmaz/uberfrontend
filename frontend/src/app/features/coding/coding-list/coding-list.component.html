@@ -32,6 +32,14 @@
     </div>
   </header>
 
+  <p
+    *ngIf="source === 'company'"
+    class="fa-page-access-note fa-meta-text"
+    data-testid="company-practice-disclaimer"
+  >
+    {{ companyPracticeDisclaimer }}
+  </p>
+
   <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
     [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
     [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"
@@ -75,7 +83,10 @@
         </div>
 
         <div class="fa-filter-section">
-          <div class="fa-filter-section__title fa-meta-label">Importance</div>
+          <div class="fa-filter-section__title fa-meta-label">Practice priority</div>
+          <p class="fa-meta-text" data-testid="coding-list-priority-methodology">
+            Practice priority is relative FrontendAtlas editorial ordering—not measured interview frequency.
+          </p>
           <div class="fa-filter-options">
             <label class="fa-filter-option" data-testid="filter-importance-low">
               <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('low')"
@@ -209,8 +220,6 @@
             [descriptionTooltip]="descriptionText(q)"
             [solved]="isSolved(q.id)"
             [lockedLabel]="isLocked(q) ? 'Locked' : ''"
-            [companies]="q.companies || []"
-            [preferredCompanySlug]="currentCompanySlug"
             [metaChips]="questionRowMetaChips(q)"
             [variants]="questionRowVariants(q)"
             [routerLink]="linkTo(q)"

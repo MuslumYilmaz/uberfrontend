@@ -1,4 +1,9 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  PUBLIC_EDITORIAL_FACTS,
+  PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
+  publicEditorialAuthorSchema,
+} from '../../core/content/public-editorial-facts';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -70,8 +75,8 @@ type JavaScriptBrowserQuestionItem = {
   cta?: string;
 };
 type JavaScriptEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
@@ -117,8 +122,8 @@ type ReactFocusedQuestionItem = {
   cta?: string;
 };
 type ReactEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
@@ -161,8 +166,8 @@ type VueModernQuestionItem = {
   cta?: string;
 };
 type VueEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
@@ -203,8 +208,8 @@ type AngularFocusedQuestionItem = {
   cta?: string;
 };
 type AngularEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
@@ -243,8 +248,8 @@ type HtmlFocusedQuestionItem = {
 };
 type HtmlScenarioQuestionItem = HtmlFocusedQuestionItem;
 type HtmlEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
@@ -280,8 +285,8 @@ type HtmlCssCodeQuestionItem = {
   cta?: string;
 };
 type HtmlCssEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
@@ -310,14 +315,14 @@ type CssFocusedQuestionItem = {
 };
 type CssScenarioQuestionItem = CssFocusedQuestionItem;
 type CssEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
 type MasterEditorialSignal = {
-  reviewedLabel: string;
-  reviewer: string;
+  updatedLabel: string;
+  author: string;
   coverage: string;
   dateModified: string;
 };
@@ -441,8 +446,8 @@ const PREP_PLAN_LINKS: PrepPlanLink[] = [
 ];
 
 const MASTER_EDITORIAL_SIGNAL: MasterEditorialSignal = {
-  reviewedLabel: 'Reviewed May 21, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 21, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '30 essential frontend answers plus Essential 60, coding, concepts, frameworks, debugging, and system design paths',
   dateModified: '2026-05-21T00:00:00.000Z',
 };
@@ -819,7 +824,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use Essential 60 as the first compact practice route after the format is clear.',
       'Move into a framework prep path after repeated misses show a clear weak area.',
     ],
-    credibility: 'Questions are selected through editorial review and organized around practical interview follow-ups rather than scraped generic lists.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'Frontend interview preparation guide',
       route: ['/guides', 'interview-blueprint', 'intro'],
@@ -839,7 +844,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use the prep path when misses repeat around async, closures, or utility design.',
       'Return to this hub to pick the next small rep instead of browsing the full library.',
     ],
-    credibility: 'This hub is assembled from high-priority FrontendAtlas JavaScript prompts and reviewed for interview-specific trade-off language.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'JavaScript interview prep path',
       route: ['/guides', 'framework-prep', 'javascript-prep-path'],
@@ -859,7 +864,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use concept questions to tighten explanations after you pass the basic UI behavior.',
       'Follow the React interview preparation path when hooks or rerender reasoning keeps repeating as the miss.',
     ],
-    credibility: 'React prompts are selected for recurring interview patterns and reviewed for concrete follow-up questions.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'React interview preparation path',
       route: ['/guides', 'framework-prep', 'react-prep-path'],
@@ -879,7 +884,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use the top concept questions to rehearse explanations before deeper framework drills.',
       'Open the prep path when RxJS, change detection, or architecture misses repeat.',
     ],
-    credibility: 'Angular prompts are selected for common production pitfalls and reviewed for interview-specific follow-ups.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'Angular interview prep path',
       route: ['/guides', 'framework-prep', 'angular-prep-path'],
@@ -899,7 +904,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use related concept questions to find weak reactivity or lifecycle assumptions.',
       'Follow the Vue prep path when the same rendering or state miss repeats.',
     ],
-    credibility: 'Vue prompts are grouped by practical reactivity and component concerns and reviewed for framework-specific interview traps.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'Vue interview prep path',
       route: ['/guides', 'framework-prep', 'vue-prep-path'],
@@ -919,7 +924,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use coding prompts when your explanation is clear but the implementation still breaks under constraints.',
       'Move into the UI interviews guide when accessibility, layout, or browser behavior keeps repeating as the weak area.',
     ],
-    credibility: 'HTML and CSS prompts are reviewed for practical browser behavior, accessible UI decisions, and interview-ready debugging language.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'Frontend UI interviews guide',
       route: ['/guides', 'interview-blueprint', 'ui-interviews'],
@@ -939,7 +944,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use HTML questions as a quick fundamentals check before UI coding prompts.',
       'Move into the frontend fundamentals guide when browser basics feel inconsistent.',
     ],
-    credibility: 'HTML questions are reviewed for practical browser behavior and interview-ready explanation quality.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'Frontend fundamentals quiz guide',
       route: ['/guides', 'interview-blueprint', 'quiz'],
@@ -959,7 +964,7 @@ const HUB_INTENT_PROFILES: Record<string, HubIntentProfile> = {
       'Use the fundamentals guide when cascade or layout vocabulary is shaky.',
       'Return to each CSS interview question after the layout fix and explain the failure mode out loud.',
     ],
-    credibility: 'CSS questions are reviewed for practical UI debugging and interview-ready trade-off language.',
+    credibility: PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
     relatedPrep: {
       label: 'Frontend UI interviews guide',
       route: ['/guides', 'interview-blueprint', 'ui-interviews'],
@@ -1373,8 +1378,8 @@ const JAVASCRIPT_ANCHOR_ITEMS: JavaScriptAnchorItem[] = [
 ];
 
 const JAVASCRIPT_EDITORIAL_SIGNAL: JavaScriptEditorialSignal = {
-  reviewedLabel: 'Reviewed May 19, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 19, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '25 answers, 8 output questions, and 8 browser/DOM/security questions',
   dateModified: '2026-05-19T00:00:00.000Z',
 };
@@ -1751,8 +1756,8 @@ const ANGULAR_ANCHOR_ITEMS: AngularAnchorItem[] = [
 ];
 
 const ANGULAR_EDITORIAL_SIGNAL: AngularEditorialSignal = {
-  reviewedLabel: 'Reviewed May 20, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 20, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible Angular questions across answers, scenarios, modern Angular, testing, security, routing, and performance',
   dateModified: '2026-05-20T00:00:00.000Z',
 };
@@ -2275,8 +2280,8 @@ const JAVASCRIPT_RESOURCE_LINKS: JavaScriptResourceLink[] = [
 ];
 
 const REACT_EDITORIAL_SIGNAL: ReactEditorialSignal = {
-  reviewedLabel: 'Reviewed May 20, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 20, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance',
   dateModified: '2026-05-20T00:00:00.000Z',
 };
@@ -2890,8 +2895,8 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
 ];
 
 const VUE_EDITORIAL_SIGNAL: VueEditorialSignal = {
-  reviewedLabel: 'Reviewed May 20, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 20, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance',
   dateModified: '2026-05-20T00:00:00.000Z',
 };
@@ -3699,8 +3704,8 @@ const ANGULAR_MODERN_TOPICS: string[] = [
 ];
 
 const HTML_CSS_EDITORIAL_SIGNAL: HtmlCssEditorialSignal = {
-  reviewedLabel: 'Reviewed May 20, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 20, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible HTML and CSS questions across semantics, forms, accessibility, layout, cascade, responsive UI, code scenarios, and browser debugging',
   dateModified: '2026-05-20T00:00:00.000Z',
 };
@@ -4225,8 +4230,8 @@ const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
 ];
 
 const CSS_EDITORIAL_SIGNAL: CssEditorialSignal = {
-  reviewedLabel: 'Reviewed May 20, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 20, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible CSS questions across cascade, specificity, box model, layout, responsive design, debugging, performance, and maintainable CSS',
   dateModified: '2026-05-20T00:00:00.000Z',
 };
@@ -4768,8 +4773,8 @@ const CSS_DEBUGGING_PERFORMANCE_QUESTIONS: CssScenarioQuestionItem[] = [
 ];
 
 const HTML_EDITORIAL_SIGNAL: HtmlEditorialSignal = {
-  reviewedLabel: 'Reviewed May 21, 2026',
-  reviewer: 'FrontendAtlas Editor',
+  updatedLabel: 'Updated May 21, 2026',
+  author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible HTML questions across semantics, forms, accessibility, metadata, DOM, native browser behavior, modern HTML, and markup scenarios',
   dateModified: '2026-05-21T00:00:00.000Z',
 };
@@ -6622,10 +6627,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       ];
     } else {
       collectionPage['dateModified'] = MASTER_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: MASTER_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['hasPart'] = this.masterTechHubLinks().map((hub) => ({
         '@type': 'WebPage',
         name: hub.label,
@@ -6680,10 +6682,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     if (this.isReactHub()) {
       collectionPage['dateModified'] = REACT_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: REACT_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'React interview questions and answers' },
@@ -6750,10 +6749,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     if (this.isVueHub()) {
       collectionPage['dateModified'] = VUE_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: VUE_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'Vue.js interview questions' },
@@ -6793,10 +6789,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     if (this.isJavaScriptHub()) {
       collectionPage['dateModified'] = JAVASCRIPT_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: JAVASCRIPT_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'Beginner to advanced JavaScript interview questions' },
@@ -6827,10 +6820,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     if (this.isAngularHub()) {
       collectionPage['dateModified'] = ANGULAR_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: ANGULAR_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'Beginner to advanced Angular interview questions' },
@@ -6885,10 +6875,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     if (this.isHtmlCssHub()) {
       collectionPage['dateModified'] = HTML_CSS_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: HTML_CSS_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'HTML CSS interview questions' },
@@ -6917,10 +6904,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     if (this.isCssHub()) {
       collectionPage['dateModified'] = CSS_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: CSS_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'CSS interview questions and answers' },
@@ -6961,10 +6945,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     if (this.isHtmlHub()) {
       collectionPage['dateModified'] = HTML_EDITORIAL_SIGNAL.dateModified;
-      collectionPage['reviewedBy'] = {
-        '@type': 'Organization',
-        name: HTML_EDITORIAL_SIGNAL.reviewer,
-      };
+      collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
         { '@type': 'Thing', name: 'HTML interview questions and answers' },

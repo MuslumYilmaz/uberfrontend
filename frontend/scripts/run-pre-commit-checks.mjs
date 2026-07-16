@@ -14,6 +14,7 @@ const CONTENT_PIPELINE_SCRIPTS = new Set([
   'frontend/scripts/gen-content-metadata.mjs',
   'frontend/scripts/gen-data-version.mjs',
   'frontend/scripts/gen-showcase-stats.mjs',
+  'frontend/scripts/generate-angular-decision-graphs.mjs',
   'frontend/scripts/generate-practice-registry.mjs',
   'frontend/scripts/lint-practice-registry.mjs',
   'frontend/scripts/lint-questions.mjs',

@@ -1,4 +1,5 @@
 import { SeoMeta, SeoService } from '../../core/services/seo.service';
+import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 import { GuideAuthor, GuideEntry, GuideSeo } from '../../shared/guides/guide.registry';
 
 const DESCRIPTION_MAX_LEN = 158;
@@ -7,8 +8,8 @@ const TITLE_MAX_LEN = 74;
 const INTERVIEW_INTENT_RX = /\b(interviews?|prep|preparation|roadmap|hiring|onsite|screen)\b/i;
 const DEFAULT_GUIDE_PUBLISHED_AT = '2025-01-01T00:00:00.000Z';
 const DEFAULT_GUIDE_AUTHOR: GuideAuthor = {
-  type: 'Organization',
-  name: 'FrontendAtlas Team',
+  type: PUBLIC_EDITORIAL_FACTS.author.schemaType,
+  name: PUBLIC_EDITORIAL_FACTS.author.name,
 };
 
 function normalizeText(input: string): string {
@@ -136,12 +137,10 @@ function normalizeItemUrl(canonical: string, input: string | undefined): string 
   return `${canonical}#${raw.replace(/[^a-z0-9_-]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}`;
 }
 
-function buildAuthorSchema(author: GuideAuthor | undefined): Record<string, any> {
-  const type = author?.type === 'Person' ? 'Person' : DEFAULT_GUIDE_AUTHOR.type;
-  const name = normalizeText(author?.name || DEFAULT_GUIDE_AUTHOR.name);
+function buildAuthorSchema(): Record<string, any> {
   return {
-    '@type': type,
-    name,
+    '@type': DEFAULT_GUIDE_AUTHOR.type,
+    name: DEFAULT_GUIDE_AUTHOR.name,
   };
 }
 
@@ -187,7 +186,7 @@ export function buildGuideDetailSeo(
   const datePublished = normalizeIsoDate(entry.seo?.publishedAt) || DEFAULT_GUIDE_PUBLISHED_AT;
   const requestedDateModified = normalizeIsoDate(entry.seo?.updatedAt) || datePublished;
   const dateModified = requestedDateModified < datePublished ? datePublished : requestedDateModified;
-  const author = buildAuthorSchema(entry.seo?.author);
+  const author = buildAuthorSchema();
 
   const breadcrumb = {
     '@type': 'BreadcrumbList',

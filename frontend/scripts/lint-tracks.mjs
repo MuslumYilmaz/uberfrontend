@@ -188,6 +188,7 @@ async function loadTrackRefs() {
       continue;
     }
 
+    const featuredKeys = new Map();
     for (let refIndex = 0; refIndex < featured.length; refIndex += 1) {
       const ref = featured[refIndex];
       const refPtr = `${trackPtr}/featured[${refIndex}]`;
@@ -221,6 +222,18 @@ async function loadTrackRefs() {
         });
         continue;
       }
+
+      const refKey = `${tech ?? "none"}::${kind}::${id}`;
+      const firstRefIndex = featuredKeys.get(refKey);
+      if (firstRefIndex !== undefined) {
+        issues.push({
+          loc: formatLoc(refPtr),
+          track: trackLabel,
+          message: `Duplicate featured ref "${refKey}" (first declared at featured[${firstRefIndex}])`,
+        });
+        continue;
+      }
+      featuredKeys.set(refKey, refIndex);
 
       refs.push({
         track: slug ?? trackLabel,

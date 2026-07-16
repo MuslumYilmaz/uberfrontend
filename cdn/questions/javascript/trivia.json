@@ -29,6 +29,7 @@
         },
         {
           "type": "list",
+          "stackOnMobile": true,
           "columns": [
             "Component",
             "Purpose",

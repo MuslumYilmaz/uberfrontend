@@ -1,4 +1,6 @@
-import { Question } from '../models/question.model';
+import { PremiumPreviewContent, Question } from '../models/question.model';
+import type { IncidentListItem } from '../models/incident.model';
+import type { TradeoffBattleListItem } from '../models/tradeoff-battle.model';
 
 export type LockedPreviewType = 'coding' | 'trivia' | 'system-design';
 
@@ -16,6 +18,7 @@ export type LockedPreviewLink = {
 
 export type LockedPreviewData = {
   what: string;
+  unlockDescription: string;
   keyDecisions?: string[];
   rubric?: string[];
   unlockBullets?: string[];
@@ -40,9 +43,11 @@ type BuildContext = {
   type: LockedPreviewType;
   title: string;
   description: string;
+  rawDescription?: string;
   tags: string[];
   difficulty?: string;
   technology?: string;
+  premiumPreview?: PremiumPreviewContent;
 };
 
 type CodingContext = BuildContext & {
@@ -51,10 +56,16 @@ type CodingContext = BuildContext & {
   descSpecs?: {
     requirements?: string[];
     expectedBehavior?: string[];
-    implementationNotes?: string[];
   } | null;
   descriptionArgs?: string[];
 };
+
+export type CodingLockedPreviewQuestion = Pick<
+  Question,
+  'id' | 'title' | 'description' | 'tags' | 'difficulty' | 'premiumPreview' | 'starterCode' | 'code'
+> & {
+  starterCodeTs?: string;
+} & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance'>>;
 
 type TriviaContext = BuildContext & {
   technology?: string;
@@ -65,6 +76,25 @@ type SystemDesignContext = BuildContext & {
 };
 
 const DEFAULT_TECH = 'frontend';
+
+export const CODING_PREMIUM_UNLOCK_DESCRIPTION =
+  'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.';
+
+export const SYSTEM_DESIGN_PREMIUM_UNLOCK_DESCRIPTION =
+  'Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis.';
+
+const TRIVIA_PREMIUM_UNLOCK_DESCRIPTION =
+  'Premium unlocks the complete explanation, worked examples, follow-up questions, and common-mistake discussion.';
+
+const TECHNOLOGY_CAPITALIZATION: ReadonlyArray<readonly [RegExp, string]> = [
+  [/\breact\b/gi, 'React'],
+  [/\bangular\b/gi, 'Angular'],
+  [/\bvue\b/gi, 'Vue'],
+  [/\bjavascript\b/gi, 'JavaScript'],
+  [/\btypescript\b/gi, 'TypeScript'],
+  [/\bhtml\b/gi, 'HTML'],
+  [/\bcss\b/gi, 'CSS'],
+];
 
 const EDITORIAL_HTML_TAG_PATTERN = /<\/?(?:a|b|blockquote|br|code|del|div|em|h[1-6]|hr|i|ins|kbd|li|mark|ol|p|pre|s|small|span|strong|sub|sup|table|tbody|td|th|thead|tr|u|ul)\b[^>]*\/?>/gi;
 
@@ -100,18 +130,71 @@ export const normalizeEditorialPlainText = (text: string): string => {
 
 const normalizeText = normalizeEditorialPlainText;
 
-const trimWords = (text: string, maxWords: number): string => {
-  const clean = normalizeText(text);
-  if (!clean) return '';
-  const words = clean.split(/\s+/);
-  if (words.length <= maxWords) return clean;
-  return `${words.slice(0, maxWords).join(' ')}…`;
+const capitalizeTechnologies = (text: string): string => {
+  return TECHNOLOGY_CAPITALIZATION.reduce(
+    (value, [pattern, replacement]) => value.replace(pattern, replacement),
+    text,
+  );
 };
 
-const toSentence = (text: string): string => {
-  const clean = normalizeText(text);
-  if (!clean) return '';
-  return /[.!?]$/.test(clean) ? clean : `${clean}.`;
+const sentenceBoundaryParts = (text: string): string[] => {
+  const normalized = capitalizeTechnologies(normalizeText(text));
+  if (!normalized) return [];
+  return (normalized.match(/[^.!?]+[.!?]+(?=\s|$)/g) || [])
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+};
+
+const COMPLETE_SENTENCE_VERB_PATTERN = /\b(?:is|are|be|being|been|has|have|do|does|must|should|can|will|accept|account|allow|apply|avoid|build|call|cancel|choose|clear|collect|compare|compose|connect|consider|copy|create|decide|define|derive|design|disable|discuss|display|emit|enable|ensure|execute|explain|expose|fetch|find|flatten|focus|handle|highlight|highlights|ignore|implement|include|invoke|keep|limit|load|maintain|make|match|matches|merge|mirror|mirrors|model|persist|plan|point|points|practice|preserve|provide|read|receive|recognize|reject|remove|render|resolve|return|returns|restore|run|set|show|simulate|sort|store|submit|support|supports|surface|take|test|tests|track|understand|update|use|validate|visit|write)\b/i;
+
+const hasCompleteSentenceShape = (text: string): boolean => {
+  const words = text.match(/[A-Za-z][A-Za-z'-]*/g) || [];
+  if (words.length < 3 || !COMPLETE_SENTENCE_VERB_PATTERN.test(text)) return false;
+  if (/^[a-z]|^[,.;:)]/.test(text)) return false;
+  return !/^(?:concepts?|complexity|constraints?|functional requirements?|non-functional|key considerations?)\s*:/i.test(text);
+};
+
+const hasUnsafePreviewSyntax = (raw: string): boolean => {
+  const value = decodeEditorialEntitiesOnce(decodeEditorialEntitiesOnce(String(raw || '')));
+  return /(?:…|\.{2,}|`|\*\*|__|<\/?[a-z][^>]*>|\[[^\]]+\]\([^)]*\)|(?:^|\s)(?:src|public|app|assets)\/|\b[\w-]+\.(?:html?|tsx?|jsx?|css|scss|json)\b|\{[^}]*\}|=>)/i.test(value);
+};
+
+const cleanCompleteSentence = (raw: string, requireCompleteShape = true): string => {
+  if (!raw || hasUnsafePreviewSyntax(raw)) return '';
+  const clean = capitalizeTechnologies(normalizeText(raw))
+    .replace(/\.{2,}/g, '.')
+    .replace(/…+/g, '')
+    .trim();
+  if (!clean || /\bExpect\b.+\bdecisions\b.+\bconstraints\b/i.test(clean)) return '';
+  if (/^(?:and|or|but|because|while|which|that|where|when|with|without|using|including)\b/i.test(clean)) return '';
+  if (!/[.!?]$/.test(clean)) return '';
+  return !requireCompleteShape || hasCompleteSentenceShape(clean) ? clean : '';
+};
+
+const completePublicSentences = (raw: string): string[] => {
+  return String(raw || '')
+    .split(/\r?\n+/)
+    .flatMap((line) => line.match(/[^.!?]+[.!?]+(?=\s|$)/g) || [])
+    .map((sentence) => cleanCompleteSentence(sentence.replace(/^\s*[-*]\s+/, '')))
+    .filter(Boolean);
+};
+
+const authoredPreviewContent = (
+  preview: PremiumPreviewContent | null | undefined,
+): PremiumPreviewContent | null => {
+  if (!preview) return null;
+  if (hasUnsafePreviewSyntax(preview.summary)) return null;
+  const summary = sentenceBoundaryParts(preview.summary).slice(0, 2).join(' ')
+    || cleanCompleteSentence(preview.summary);
+  const learningOutcomes = uniq(
+    (preview.learningOutcomes || []).map((item) => cleanCompleteSentence(item, false)).filter(Boolean),
+  )
+    .slice(0, 5);
+  const unlockDescription = cleanCompleteSentence(preview.unlockDescription, false);
+  if (!summary || learningOutcomes.length < 3 || learningOutcomes.length > 5 || !unlockDescription) {
+    return null;
+  }
+  return { summary, learningOutcomes, unlockDescription };
 };
 
 const uniq = (items: string[]): string[] => {
@@ -133,16 +216,21 @@ const pickTags = (tags: string[], limit = 3): string[] => {
 };
 
 const buildWhatText = (ctx: BuildContext): string => {
-  const tech = ctx.technology || DEFAULT_TECH;
-  const tags = pickTags(ctx.tags, 2);
-  const tagPhrase = tags.length ? tags.join(' and ') : 'core front-end patterns';
-  const difficulty = ctx.difficulty ? `${ctx.difficulty} level` : 'interview-level';
-  const promptSummary = ctx.description
-    ? trimWords(ctx.description, 24)
-    : `${ctx.title} is a focused ${tech} interview prompt`;
-  const sentence1 = `${ctx.title}: ${promptSummary}`;
-  const sentence2 = `Expect ${tagPhrase} decisions under ${difficulty} constraints.`;
-  return [sentence1, sentence2].filter(Boolean).map(toSentence).join(' ');
+  const authored = authoredPreviewContent(ctx.premiumPreview);
+  if (authored) return authored.summary;
+
+  const title = normalizeText(ctx.title).toLowerCase();
+  const sentences = completePublicSentences(ctx.rawDescription || ctx.description)
+    .filter((sentence) => !sentence.toLowerCase().startsWith(`${title}:`))
+    .filter(Boolean);
+  return sentences.slice(0, 2).join(' ');
+};
+
+const repeatsTitlePrefix = (title: string, summary: string): boolean => {
+  const normalizedTitle = normalizeText(title).toLowerCase();
+  const normalizedSummary = normalizeText(summary).toLowerCase();
+  return normalizedSummary.startsWith(`${normalizedTitle}:`)
+    || normalizedSummary.startsWith(`${normalizedTitle}.`);
 };
 
 const buildUnlockBullets = (ctx: BuildContext): string[] => {
@@ -169,36 +257,21 @@ const buildUnlockBullets = (ctx: BuildContext): string[] => {
   ];
 };
 
-const buildLearningGoals = (ctx: BuildContext): string[] => {
-  const tech = ctx.technology || DEFAULT_TECH;
-  const tags = pickTags(ctx.tags, 3);
-  const goals: string[] = [];
+const buildLearningGoals = (ctx: BuildContext, publicCandidates: string[]): string[] => {
+  const authored = authoredPreviewContent(ctx.premiumPreview);
+  if (authored) return authored.learningOutcomes;
 
-  if (ctx.type === 'coding') {
-    goals.push(`Translate the prompt into a clear ${tech} API signature and return shape.`);
-    if (tags.length) {
-      goals.push(`Apply ${tags.join(', ')} techniques to implement ${ctx.title.toLowerCase()}.`);
-    }
-    if (ctx.difficulty) {
-      goals.push(`Handle ${ctx.difficulty} edge cases without sacrificing readability.`);
-    }
-    goals.push(`Reason about time/space complexity and trade-offs in ${tech}.`);
-  } else if (ctx.type === 'trivia') {
-    goals.push(`Define the core concept behind “${ctx.title}” in precise ${tech} terms.`);
-    if (tags.length) {
-      goals.push(`Connect ${tags.join(', ')} to a practical UI or styling outcome.`);
-    }
-    goals.push(`Identify the correct rule, behavior, or API without overgeneralizing.`);
-  } else {
-    goals.push(`Decompose ${ctx.title} into front-end components, state, and data flow.`);
-    if (tags.length) {
-      goals.push(`Apply ${tags.join(', ')} constraints to a real client architecture.`);
-    }
-    goals.push(`Define performance budgets and UX trade-offs for the interface.`);
-    goals.push(`Plan instrumentation and resilience for user-facing failures.`);
-  }
-
-  return uniq(goals).slice(0, 6);
+  const summarySentences = new Set(
+    completePublicSentences(ctx.rawDescription || ctx.description)
+      .slice(0, 2)
+      .map((sentence) => sentence.toLowerCase()),
+  );
+  return uniq([
+    ...publicCandidates.map((item) => cleanCompleteSentence(item)).filter(Boolean),
+    ...completePublicSentences(ctx.rawDescription || ctx.description),
+  ])
+    .filter((sentence) => !summarySentences.has(sentence.toLowerCase()))
+    .slice(0, 5);
 };
 
 const hasKeyword = (ctx: BuildContext, keywords: string[]): boolean => {
@@ -236,7 +309,7 @@ const inferConstraints = (ctx: BuildContext): string[] => {
 };
 
 const buildConstraints = (ctx: BuildContext, raw: string[]): string[] => {
-  const base = uniq(raw).map((item) => trimWords(item, 18)).filter(Boolean);
+  const base = uniq(raw.flatMap(completePublicSentences));
   const tags = pickTags(ctx.tags, 3);
   const extra: string[] = [];
 
@@ -511,13 +584,13 @@ const buildRelatedLinks = (
 };
 
 export const buildLockedPreviewForCoding = (
-  q: Question,
+  q: CodingLockedPreviewQuestion,
   opts: {
     candidates: RelatedCandidate[];
     tech: string;
     kind: 'coding';
   }
-): LockedPreviewData => {
+): LockedPreviewData | null => {
   const desc = q.description as any;
   const descSpecs = desc?.specs || null;
   const args = Array.isArray(desc?.arguments)
@@ -527,15 +600,16 @@ export const buildLockedPreviewForCoding = (
     type: 'coding',
     title: q.title,
     description: normalizeText(typeof q.description === 'string' ? q.description : desc?.summary || ''),
+    rawDescription: typeof q.description === 'string' ? q.description : desc?.summary || '',
     tags: q.tags || [],
     difficulty: q.difficulty,
     technology: opts.tech,
+    premiumPreview: q.premiumPreview,
     starterCode: q.starterCode || q.code || '',
-    starterCodeTs: (q as any).starterCodeTs || '',
+    starterCodeTs: q.starterCodeTs || '',
     descSpecs: descSpecs ? {
       requirements: descSpecs.requirements,
       expectedBehavior: descSpecs.expectedBehavior,
-      implementationNotes: descSpecs.implementationNotes,
     } : null,
     descriptionArgs: args,
   };
@@ -543,15 +617,27 @@ export const buildLockedPreviewForCoding = (
   const rawConstraints = [
     ...(ctx.descSpecs?.requirements || []),
     ...(ctx.descSpecs?.expectedBehavior || []),
-    ...(ctx.descSpecs?.implementationNotes || []),
   ];
+  const preview = authoredPreviewContent(ctx.premiumPreview);
+  if (ctx.premiumPreview && !preview) return null;
+
+  const publicOutcomeCandidates = [
+    ...(descSpecs?.requirements || []),
+    ...(descSpecs?.expectedBehavior || []),
+    ...(Array.isArray(desc?.arguments) ? desc.arguments.map((argument: any) => argument?.desc) : []),
+    desc?.returns?.desc,
+  ].filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+  const what = buildWhatText(ctx);
+  const learningGoals = buildLearningGoals(ctx, publicOutcomeCandidates);
+  if (!what || repeatsTitlePrefix(q.title, what) || learningGoals.length < 3) return null;
 
   return {
-    what: buildWhatText(ctx),
+    what,
+    unlockDescription: preview?.unlockDescription || CODING_PREMIUM_UNLOCK_DESCRIPTION,
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
     unlockBullets: buildUnlockBullets(ctx),
-    learningGoals: buildLearningGoals(ctx),
+    learningGoals,
     constraints: buildConstraints(ctx, rawConstraints),
     snippet: buildCodingSnippet(ctx),
     pitfalls: buildPitfalls(ctx),
@@ -566,22 +652,31 @@ export const buildLockedPreviewForTrivia = (
     tech: string;
     kind: 'trivia';
   }
-): LockedPreviewData => {
+): LockedPreviewData | null => {
   const ctx: TriviaContext = {
     type: 'trivia',
     title: q.title,
     description: normalizeText(typeof q.description === 'string' ? q.description : (q.description as any)?.summary || ''),
+    rawDescription: typeof q.description === 'string' ? q.description : (q.description as any)?.summary || '',
     tags: q.tags || [],
     difficulty: q.difficulty,
     technology: opts.tech,
+    premiumPreview: q.premiumPreview,
   };
 
+  const what = buildWhatText(ctx);
+  const learningGoals = buildLearningGoals(ctx, sentenceBoundaryParts(ctx.description).slice(2));
+  const preview = authoredPreviewContent(ctx.premiumPreview);
+  if (ctx.premiumPreview && !preview) return null;
+  if (!what || repeatsTitlePrefix(q.title, what) || learningGoals.length < 3) return null;
+
   return {
-    what: buildWhatText(ctx),
+    what,
+    unlockDescription: preview?.unlockDescription || TRIVIA_PREMIUM_UNLOCK_DESCRIPTION,
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
     unlockBullets: buildUnlockBullets(ctx),
-    learningGoals: buildLearningGoals(ctx),
+    learningGoals,
     constraints: buildConstraints(ctx, []),
     snippet: buildTriviaSnippet(ctx),
     pitfalls: buildPitfalls(ctx),
@@ -590,33 +685,167 @@ export const buildLockedPreviewForTrivia = (
 };
 
 export const buildLockedPreviewForSystemDesign = (
-  q: { id: string; title: string; description: string; tags: string[]; sectionTitles?: string[] },
+  q: {
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    sectionTitles?: string[];
+    premiumPreview?: PremiumPreviewContent;
+  },
   opts: {
     candidates: RelatedCandidate[];
   }
-): LockedPreviewData => {
+): LockedPreviewData | null => {
   const ctx: SystemDesignContext = {
     type: 'system-design',
     title: q.title,
     description: normalizeText(q.description || ''),
+    rawDescription: q.description || '',
     tags: q.tags || [],
     difficulty: 'intermediate',
     technology: 'front-end system design',
+    premiumPreview: q.premiumPreview,
   };
 
-  const sectionConstraints = uniq([q.description || '', ...(q.sectionTitles || [])])
-    .map((item) => trimWords(item, 16))
-    .filter(Boolean);
+  const sectionConstraints = uniq(
+    [q.description || '', ...(q.sectionTitles || [])].flatMap(completePublicSentences),
+  );
+  const what = buildWhatText(ctx);
+  const learningGoals = buildLearningGoals(ctx, q.sectionTitles || []);
+  const preview = authoredPreviewContent(ctx.premiumPreview);
+  if (ctx.premiumPreview && !preview) return null;
+  if (!what || repeatsTitlePrefix(q.title, what) || learningGoals.length < 3) return null;
 
   return {
-    what: buildWhatText(ctx),
+    what,
+    unlockDescription: preview?.unlockDescription || SYSTEM_DESIGN_PREMIUM_UNLOCK_DESCRIPTION,
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
     unlockBullets: buildUnlockBullets(ctx),
-    learningGoals: buildLearningGoals(ctx),
+    learningGoals,
     constraints: buildConstraints(ctx, sectionConstraints),
     snippet: buildSystemDesignSnippet(ctx),
     pitfalls: buildPitfalls(ctx),
     related: buildRelatedLinks(opts.candidates, ctx.tags, 'system-design', undefined, q.id, 6),
+  };
+};
+
+export const buildLockedPreviewForIncident = (
+  item: IncidentListItem,
+  candidates: IncidentListItem[],
+): LockedPreviewData => {
+  const summary = cleanCompleteSentence(item.summary)
+    || 'Investigate a frontend failure by following the available evidence from symptom to root cause.';
+  const related = candidates
+    .filter((candidate) => candidate.id !== item.id && candidate.tech === item.tech)
+    .slice(0, 4)
+    .map((candidate) => ({
+      title: candidate.title,
+      to: ['/incidents', candidate.id],
+      premium: candidate.access === 'premium',
+    }));
+  const signalSentences = (item.signals || [])
+    .map((signal) => capitalizeTechnologies(normalizeText(signal)).replace(/[.!?]+$/, ''))
+    .filter(Boolean)
+    .slice(0, 4)
+    .map((signal) => `Investigate this reported signal: ${signal}.`);
+
+  return {
+    what: summary,
+    unlockDescription: 'Premium unlocks the staged investigation, evidence-based scoring, root-cause walkthrough, and regression-guard discussion.',
+    keyDecisions: [
+      'Separate the visible symptom from the underlying cause before changing code.',
+      'Choose the smallest investigation step that removes the most ambiguity.',
+      'Prefer a durable fix over a patch that only hides the symptom.',
+      'Define the regression guard that should accompany the fix.',
+    ],
+    rubric: [
+      'Strong answers prioritize evidence instead of guessing.',
+      'A useful investigation order reduces the search space quickly.',
+      'The proposed fix should match the demonstrated failure mode.',
+      'A complete answer closes with a focused regression guard.',
+    ],
+    unlockBullets: [
+      'Full staged debug workflow with evidence, hypotheses, and scoring.',
+      'Root-cause explanation, durable fix, and regression guard.',
+      'Evaluation guidance for prioritizing investigation steps.',
+    ],
+    learningGoals: [
+      'Separate visible symptoms from the underlying cause.',
+      'Prioritize the highest-signal investigation before changing code.',
+      'Choose a durable fix and define a focused regression guard.',
+    ],
+    constraints: signalSentences,
+    snippet: {
+      title: 'Public failure signals',
+      lines: signalSentences.map((signal) => `- ${signal}`),
+    },
+    pitfalls: [
+      'Jumping to a fix before proving the root cause.',
+      'Treating every symptom as equally important.',
+      'Stopping at the first plausible explanation.',
+      'Skipping the regression guard after the fix.',
+    ],
+    related,
+  };
+};
+
+export const buildLockedPreviewForTradeoff = (
+  item: TradeoffBattleListItem,
+  candidates: TradeoffBattleListItem[],
+): LockedPreviewData => {
+  const summary = cleanCompleteSentence(item.summary)
+    || 'Compare frontend implementation options against a concrete product constraint and defend one direction.';
+  const related = candidates
+    .filter((candidate) => candidate.id !== item.id && candidate.tech === item.tech)
+    .slice(0, 4)
+    .map((candidate) => ({
+      title: candidate.title,
+      to: ['/tradeoffs', candidate.id],
+      premium: candidate.access === 'premium',
+    }));
+
+  return {
+    what: summary,
+    unlockDescription: 'Premium unlocks the option matrix, scenario-specific evaluation, answer walkthrough, and follow-up trade-off discussion.',
+    keyDecisions: [
+      'Pick a direction for the stated prompt instead of claiming a universal winner.',
+      'State the trade-off that matters most for this scenario.',
+      'Name the conditions that would make another option stronger.',
+      'Keep the recommendation grounded in concrete constraints.',
+    ],
+    rubric: [
+      'Strong answers connect the recommendation to the prompt.',
+      'Good trade-off reasoning explains downsides as well as benefits.',
+      'The answer should show when the recommendation stops being right.',
+      'Follow-up pressure should not break the central argument.',
+    ],
+    unlockBullets: [
+      'Full option matrix with scenario-specific evaluation dimensions.',
+      'Answer structure for defending trade-offs under follow-up pressure.',
+      'Evaluation guidance for explaining when an alternative becomes stronger.',
+    ],
+    learningGoals: [
+      'Compare the available options against the prompt constraints.',
+      'Defend one direction while acknowledging its main downside.',
+      'Explain when an alternative becomes the stronger choice.',
+    ],
+    constraints: [summary],
+    snippet: {
+      title: 'Decision frame',
+      lines: [
+        '- Identify the constraint that changes the decision.',
+        '- Compare benefits and costs for this scenario.',
+        '- State when the alternative becomes stronger.',
+      ],
+    },
+    pitfalls: [
+      'Arguing from preference instead of prompt constraints.',
+      'Pretending one option is always the winner.',
+      'Ignoring the main downside of the chosen direction.',
+      'Failing to explain when an alternative becomes stronger.',
+    ],
+    related,
   };
 };

@@ -52,7 +52,7 @@ describe('FeDsaArticle', () => {
 
     expect(h1?.textContent?.trim()).toBe('DSA for Frontend Interviews: Data Structures, Algorithms, and Practice Map (2026)');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
     expect(hostText).toContain('Custom DSA guide promise.');
     expect(hostText).toContain('frontend algorithm interview questions');
     expect(proofText).toContain('500+');

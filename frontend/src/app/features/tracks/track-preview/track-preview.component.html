@@ -66,6 +66,9 @@
         <span>{{ item.label }}</span>
       </article>
     </section>
+    <p class="distribution-note" *ngIf="categoriesOverlap()">
+      Category counts overlap because one prompt can cover multiple skills.
+    </p>
 
     <ng-container *ngIf="previewQuestions$ | async as questions">
       <section class="day-plan" *ngIf="hasPlanDays()" aria-label="Study plan task preview">

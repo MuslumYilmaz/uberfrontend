@@ -1637,6 +1637,16 @@
         "// With arguments (leading-only)\nconst greet = throttle(name => console.log(`Hi ${name}`), 800)\ngreet('Alice')\ngreet('Bob') // 'Hi Alice' logs immediately; 'Hi Bob' is ignored because it's inside the 800ms window\n// A call after 800ms (e.g. greet('Charlie')) would run again"
       ]
     },
+    "premiumPreview": {
+      "summary": "Implement a leading-only JavaScript throttle that limits a high-frequency callback to one execution per interval. The challenge makes the timing contract explicit so ignored calls and interval boundaries are predictable.",
+      "learningOutcomes": [
+        "Execute the first call in each interval immediately.",
+        "Ignore additional calls while the current interval remains active.",
+        "Preserve the original arguments and calling context.",
+        "Allow a new call once the interval boundary has passed."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
     "starterCode": "export default function throttle(fn, interval) {\n  // TODO: Execute fn at most once per interval (leading-only)\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function throttle<F extends (...a: any[]) => void>(fn: F, interval: number): F {\n  // TODO: Execute fn at most once per interval (leading-only)\n  throw new Error('Not implemented');\n}\n",
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-throttle.v1.json",
@@ -1689,7 +1699,7 @@
     "tests": "import throttle from './throttle';\n\nconst wait = (ms) => new Promise((r) => setTimeout(r, ms));\n\ndescribe('throttle', () => {\n  test('executes immediately and ignores rapid calls', async () => {\n    let calls = 0;\n    const throttled = throttle(() => { calls += 1; }, 200);\n\n    throttled(); // should run immediately\n    throttled(); // ignored\n    throttled(); // ignored\n\n    expect(calls).toBe(1);\n\n    await wait(220);\n    throttled(); // should run after interval\n    expect(calls).toBe(2);\n  });\n\n  test('maintains correct interval spacing', async () => {\n    let timestamps = [];\n    const throttled = throttle(() => { timestamps.push(Date.now()); }, 100);\n\n    throttled();\n    await wait(30);\n    throttled();\n    await wait(80);\n    throttled(); // should run after ~110ms total\n\n    await wait(120);\n    throttled(); // another valid call\n\n    expect(timestamps.length).toBe(3);\n  });\n\n  test('passes arguments correctly', async () => {\n    let last = '';\n    const throttled = throttle((msg) => { last = msg; }, 150);\n\n    throttled('Hello');\n    throttled('World'); // ignored\n\n    await wait(160);\n    throttled('Again');\n\n    expect(last).toBe('Again');\n  });\n});\n",
     "testsTs": "import throttle from './throttle';\n\nconst wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));\n\ndescribe('throttle (TypeScript)', () => {\n  it('executes immediately and ignores rapid calls', async () => {\n    let calls = 0;\n    const throttled = throttle(() => { calls += 1; }, 200);\n\n    throttled();\n    throttled();\n    throttled();\n\n    expect(calls).toBe(1);\n\n    await wait(220);\n    throttled();\n    expect(calls).toBe(2);\n  });\n\n  it('maintains proper intervals', async () => {\n    let times: number[] = [];\n    const throttled = throttle(() => { times.push(Date.now()); }, 100);\n\n    throttled();\n    await wait(30);\n    throttled();\n    await wait(80);\n    throttled();\n\n    await wait(120);\n    throttled();\n\n    expect(times.length).toBe(3);\n  });\n\n  it('passes arguments correctly', async () => {\n    let last = '';\n    const throttled = throttle((msg: string) => { last = msg; }, 150);\n\n    throttled('Hi');\n    throttled('Ignore');\n\n    await wait(160);\n    throttled('Final');\n\n    expect(last).toBe('Final');\n  });\n});\n",
     "access": "premium",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-15",
     "seo": {
       "title": "Throttle Function in JavaScript (Coding Problem)",
       "description": "Build a throttled wrapper that limits call frequency so repeated invocations are controlled within a time window."
@@ -3633,6 +3643,16 @@
         "// Empty array resolves immediately\npromiseAll([])\n  .then(result => {\n    // result => []\n  });"
       ]
     },
+    "premiumPreview": {
+      "summary": "Implement a JavaScript Promise.all equivalent that coordinates a collection of values and promises. The challenge covers ordering, empty input, normalization, and fail-fast rejection without revealing an implementation.",
+      "learningOutcomes": [
+        "Normalize plain values and promises through one asynchronous contract.",
+        "Preserve input order even when values settle in a different order.",
+        "Resolve an empty input collection with an empty result.",
+        "Reject as soon as any input rejects."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
     "starterCode": "export default function promiseAll(promises) {\n  // TODO: Return a Promise that resolves when all inputs resolve, or rejects on the first error\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function promiseAll<T>(promises: Array<T | Promise<T>>): Promise<T[]> {\n  // TODO: Return a Promise that resolves when all inputs resolve, or rejects on the first error\n  throw new Error('Not implemented');\n}\n",
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-promise-all.v1.json",
@@ -3688,7 +3708,7 @@
     "tests": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll', () => {\n  test('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3; // non-promise value\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  test('resolves immediately for empty array', async () => {\n    await expect(promiseAll([])).resolves.toEqual([]);\n  });\n\n  test('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  test('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null)).rejects.toThrow(TypeError);\n  });\n});\n",
     "testsTs": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll (TypeScript)', () => {\n  it('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3;\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  it('resolves immediately for empty array', async () => {\n    await expect(promiseAll<number>([])).resolves.toEqual([]);\n  });\n\n  it('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  it('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null as any)).rejects.toThrow(TypeError);\n  });\n});\n",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-15",
     "seo": {
       "title": "Implement Promise.all in JavaScript",
       "description": "Given multiple async inputs, return a single Promise that preserves result ordering and reflects failure behavior consistently."

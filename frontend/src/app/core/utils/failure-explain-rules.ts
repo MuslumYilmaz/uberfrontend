@@ -149,7 +149,61 @@ function buildProgressAwareWhy(snapshot: FailureSnapshot, base: string): string 
   return base;
 }
 
+const ANGULAR_MODERN_TEMPLATE_QUESTION_IDS = [
+  'angular-autocomplete-search-starter',
+  'angular-contact-form-starter',
+  'angular-dynamic-table-starter',
+  'angular-faq-accordion',
+  'angular-filterable-user-list',
+  'angular-image-slider-starter',
+  'angular-multi-step-form-starter',
+  'angular-nested-checkboxes',
+  'angular-pagination-table',
+  'angular-star-rating',
+  'angular-tabs-switcher',
+  'angular-tictactoe-starter',
+  'angular-todo-list-starter',
+] as const;
+
+const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
+  (questionId): QuestionHintRule => ({
+    ruleId: 'angular-modern-template-compile',
+    questionId,
+    priority: 130,
+    matches: (snapshot) =>
+      snapshot.category === 'syntax-error' ||
+      anyFailingTestNameIncludes(snapshot, ['compile', 'template', 'preview', '@if', '@for', '@switch']) ||
+      anyFailingErrorIncludes(snapshot, [
+        'ng5002',
+        'ng8001',
+        'ng8002',
+        'template parse',
+        'unexpected closing tag',
+        "can't bind to",
+        'incomplete block',
+        '@if',
+        '@for',
+        '@switch',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-modern-template-compile',
+      title: 'Fix the Angular template compilation contract first',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Framework assertions cannot be trusted until the standalone component and its modern control-flow template compile and boot.',
+      ),
+      actions: [
+        'Fix the first Angular compiler diagnostic, then check every `@if`, `@for`, or `@switch` block for balanced braces and a valid `track` expression.',
+        'Verify standalone `imports` includes the forms modules, directives, or pipes the template actually uses; built-in control flow alone does not require `CommonModule`.',
+        'Wait for the preview to boot successfully before debugging assertion mismatches, then re-run one behavior check at a time.',
+      ],
+      confidence: 0.92,
+    }),
+  }),
+);
+
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
+  ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
   {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',

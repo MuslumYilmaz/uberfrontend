@@ -320,7 +320,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'system-design', 'infinite-scroll-list']">Infinite scroll system design evaluation</a>: score pagination, virtualization, accessibility, and recovery.</li>
         <li><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard frontend system design scorecard</a>: score layout ownership, drag performance, persistence, and constraints.</li>
         <li><a [routerLink]="['/', 'system-design', 'live-chart-high-frequency-updates']">Live chart system design interview evaluation</a>: score memory, rendering loop, overload behavior, and observability.</li>
-        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Multi-step form frontend system design rubric</a>: score validation, draft state, interaction latency, and recovery.</li>
+        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Evaluation rubric</a>: score validation, draft state, interaction latency, and recovery.</li>
         <li><a [routerLink]="['/', 'system-design', 'component-design-system-architecture']">Design system architecture interview rubric</a>: score API design, theming, accessibility, versioning, and bundle cost.</li>
       </ul>
 

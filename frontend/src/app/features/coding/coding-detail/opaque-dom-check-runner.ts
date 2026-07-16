@@ -2,17 +2,21 @@ import type { FrameworkTest, FrameworkTestStep } from '../../../core/models/ques
 import type { TestResult } from '../console-logger/console-logger.component';
 
 const OPAQUE_CHECK_CHANNEL = 'FA_OPAQUE_CHECK';
-const OPAQUE_CHECK_VERSION = 1;
+const OPAQUE_CHECK_VERSION = 2;
 const DEFAULT_FRAMEWORK_READY_TIMEOUT_MS = 8_000;
 const DEFAULT_WEB_READY_TIMEOUT_MS = 4_000;
 const DEFAULT_CHECK_TIMEOUT_MS = 10_000;
 const MAX_WEB_READY_ATTEMPTS = 4;
+const MIN_WEB_READY_ATTEMPT_MS = 2_000;
 const MAX_ERROR_LENGTH = 4_000;
 
 type OpaqueCheckKind = 'framework' | 'web';
+type PreviewLifecycleState = 'render-ready' | 'compile-error' | 'boot-error' | 'runtime-error';
+type TestFailureKind = NonNullable<TestResult['failureKind']>;
 
 type ChildConfig = {
-  runId: string;
+  invocationId: string;
+  frameId: string;
   kind: OpaqueCheckKind;
   check?: FrameworkTest;
   testCode?: string;
@@ -20,6 +24,7 @@ type ChildConfig = {
 
 type ActiveRun = {
   controller: AbortController;
+  invocationId: string;
 };
 
 export class OpaqueCheckCancelledError extends Error {
@@ -30,11 +35,34 @@ export class OpaqueCheckCancelledError extends Error {
 }
 
 export class OpaquePreviewReadyTimeoutError extends Error {
+  readonly failureKind: TestFailureKind = 'infrastructure-timeout';
+
   constructor(kind: 'framework' | 'web') {
     super(kind === 'framework'
-      ? 'Framework checks timed out waiting for preview render'
-      : 'Web checks timed out waiting for preview document');
+      ? 'Framework check sandbox timed out waiting for preview render readiness'
+      : 'Web check sandbox timed out waiting for preview document readiness');
     this.name = 'OpaquePreviewReadyTimeoutError';
+  }
+}
+
+export class OpaquePreviewLifecycleError extends Error {
+  constructor(
+    readonly failureKind: Extract<TestFailureKind, 'compilation' | 'preview-boot' | 'preview-runtime'>,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'OpaquePreviewLifecycleError';
+  }
+}
+
+export class OpaqueCheckExecutionTimeoutError extends Error {
+  readonly failureKind: TestFailureKind = 'assertion-timeout';
+
+  constructor(kind: 'framework' | 'web') {
+    super(kind === 'framework'
+      ? 'Framework assertion execution timed out'
+      : 'Web assertion execution timed out');
+    this.name = 'OpaqueCheckExecutionTimeoutError';
   }
 }
 
@@ -50,12 +78,17 @@ export class OpaqueDomCheckRunner {
     const results: TestResult[] = [];
 
     try {
-      for (const check of checks) {
+      for (const [checkIndex, check] of checks.entries()) {
         if (active.controller.signal.aborted) throw new OpaqueCheckCancelledError();
         try {
           const checkResults = await this.runFrame({
             html,
-            config: { runId: this.createRunId(), kind: 'framework', check },
+            config: {
+              invocationId: active.invocationId,
+              frameId: this.createId(),
+              kind: 'framework',
+              check,
+            },
             signal: active.controller.signal,
             readyTimeoutMs: options.readyTimeoutMs ?? DEFAULT_FRAMEWORK_READY_TIMEOUT_MS,
             checkTimeoutMs: options.checkTimeoutMs ?? DEFAULT_CHECK_TIMEOUT_MS,
@@ -64,14 +97,22 @@ export class OpaqueDomCheckRunner {
             name: check.name || check.id || 'Framework check',
             passed: false,
             error: 'Framework check returned no result',
+            failureKind: 'preview-boot',
           });
         } catch (error) {
           if (error instanceof OpaqueCheckCancelledError) throw error;
-          results.push({
-            name: check.name || check.id || 'Framework check',
-            passed: false,
-            error: this.errorMessage(error, 'Check failed'),
-          });
+          if (error instanceof OpaqueCheckExecutionTimeoutError) {
+            // Assertion execution is isolated to this named check. A fresh
+            // iframe may still run the remaining checks successfully.
+            results.push(this.failureResult(check, error));
+            continue;
+          }
+          // Lifecycle and runner timeouts are preview-wide. Starting another
+          // identical frame would only repeat the same infrastructure failure.
+          for (const remaining of checks.slice(checkIndex)) {
+            results.push(this.failureResult(remaining, error));
+          }
+          break;
         }
       }
       return results;
@@ -96,7 +137,12 @@ export class OpaqueDomCheckRunner {
         try {
           return await this.runFrame({
             html,
-            config: { runId: this.createRunId(), kind: 'web', testCode },
+            config: {
+              invocationId: active.invocationId,
+              frameId: this.createId(),
+              kind: 'web',
+              testCode,
+            },
             signal: active.controller.signal,
             readyTimeoutMs,
             checkTimeoutMs: options.checkTimeoutMs ?? DEFAULT_CHECK_TIMEOUT_MS,
@@ -115,6 +161,7 @@ export class OpaqueDomCheckRunner {
         name: 'Failed to execute test file',
         passed: false,
         error: this.errorMessage(error, 'Web checks failed'),
+        failureKind: this.failureKind(error),
       }];
     } finally {
       if (this.activeRun === active) this.activeRun = null;
@@ -133,15 +180,18 @@ export class OpaqueDomCheckRunner {
 
   private beginRun(): ActiveRun {
     this.cancel();
-    const active = { controller: new AbortController() };
+    const active = { controller: new AbortController(), invocationId: this.createId() };
     this.activeRun = active;
     return active;
   }
 
   private webReadyAttemptTimeouts(totalTimeoutMs: number): number[] {
     const total = Math.max(1, Math.floor(totalTimeoutMs));
-    if (total === 1) return [total];
-    const attemptCount = Math.min(MAX_WEB_READY_ATTEMPTS, Math.max(2, Math.floor(total / 500)));
+    const attemptCount = Math.min(
+      MAX_WEB_READY_ATTEMPTS,
+      Math.max(1, Math.floor(total / MIN_WEB_READY_ATTEMPT_MS)),
+    );
+    if (attemptCount === 1) return [total];
     const baseTimeout = Math.floor(total / attemptCount);
     const remainder = total % attemptCount;
     return Array.from(
@@ -198,27 +248,37 @@ export class OpaqueDomCheckRunner {
         const payload = event.data as {
           channel?: unknown;
           version?: unknown;
-          runId?: unknown;
+          invocationId?: unknown;
+          frameId?: unknown;
           kind?: unknown;
+          state?: unknown;
+          error?: unknown;
           results?: unknown;
         } | null;
         if (!payload
           || payload.channel !== OPAQUE_CHECK_CHANNEL
           || payload.version !== OPAQUE_CHECK_VERSION
-          || payload.runId !== config.runId
-          || !Array.isArray(payload.results)) return;
+          || payload.invocationId !== config.invocationId
+          || payload.frameId !== config.frameId) return;
 
-        if (payload.kind === 'ready') {
-          if (ready) return;
-          ready = true;
-          if (readyTimer !== undefined) window.clearTimeout(readyTimer);
-          checkTimer = window.setTimeout(() => {
-            fail(new Error(`${config.kind === 'framework' ? 'Framework' : 'Web'} checks timed out`));
-          }, Math.max(1, options.checkTimeoutMs));
+        if (payload.kind === 'lifecycle') {
+          const state = payload.state as PreviewLifecycleState;
+          if (state === 'render-ready') {
+            if (ready) return;
+            ready = true;
+            if (readyTimer !== undefined) window.clearTimeout(readyTimer);
+            checkTimer = window.setTimeout(() => {
+              fail(new OpaqueCheckExecutionTimeoutError(config.kind));
+            }, Math.max(1, options.checkTimeoutMs));
+            return;
+          }
+          if (state === 'compile-error' || state === 'boot-error' || state === 'runtime-error') {
+            fail(this.lifecycleError(state, payload.error));
+          }
           return;
         }
 
-        if (payload.kind !== config.kind) return;
+        if (payload.kind !== config.kind || !Array.isArray(payload.results)) return;
         finish(this.normalizeResults(payload.results));
       };
 
@@ -250,6 +310,10 @@ export class OpaqueDomCheckRunner {
       if (result['error'] !== undefined && result['error'] !== null) {
         normalized.error = String(result['error']).slice(0, MAX_ERROR_LENGTH);
       }
+      const failureKind = result['failureKind'];
+      if (!normalized.passed && this.isFailureKind(failureKind)) {
+        normalized.failureKind = failureKind;
+      }
       return normalized;
     });
   }
@@ -261,8 +325,7 @@ export class OpaqueDomCheckRunner {
       .replace(/>/g, '\\u003e')
       .replace(/\u2028/g, '\\u2028')
       .replace(/\u2029/g, '\\u2029');
-    const errorGuard = `<script>(function(config){var handler=function(event){try{window.parent.postMessage({channel:'FA_OPAQUE_CHECK',version:1,runId:config.runId,kind:config.kind,results:[{name:config.kind==='framework'?(config.check&&config.check.name||config.check&&config.check.id||'Framework check'):'Failed to execute test file',passed:false,error:String(event&&event.message||'Check runner failed to start').slice(0,4000)}]},'*');}catch(_error){}};window.__FA_OPAQUE_BOOT_ERROR__=handler;window.addEventListener('error',handler);})(${serialized});<\/script>`;
-    const bootstrap = `${errorGuard}<script>(${opaqueChildBootstrap.toString()})(${serialized});<\/script>`;
+    const bootstrap = `<script>(${opaqueChildBootstrap.toString()})(${serialized});<\/script>`;
     const source = String(html || '');
     if (/<head[^>]*>/i.test(source)) {
       return source.replace(/<head[^>]*>/i, `$&\n${bootstrap}`);
@@ -273,7 +336,7 @@ export class OpaqueDomCheckRunner {
     return `${bootstrap}\n${source}`;
   }
 
-  private createRunId(): string {
+  private createId(): string {
     const values = new Uint32Array(4);
     globalThis.crypto.getRandomValues(values);
     return Array.from(values, (value) => value.toString(16).padStart(8, '0')).join('');
@@ -283,18 +346,62 @@ export class OpaqueDomCheckRunner {
     const message = error instanceof Error ? error.message : String(error || fallback);
     return (message || fallback).slice(0, MAX_ERROR_LENGTH);
   }
+
+  private failureResult(check: FrameworkTest, error: unknown): TestResult {
+    return {
+      name: check.name || check.id || 'Framework check',
+      passed: false,
+      error: this.errorMessage(error, 'Framework checks failed'),
+      failureKind: this.failureKind(error),
+    };
+  }
+
+  private failureKind(error: unknown): TestFailureKind {
+    if (error instanceof OpaquePreviewLifecycleError
+      || error instanceof OpaquePreviewReadyTimeoutError
+      || error instanceof OpaqueCheckExecutionTimeoutError) {
+      return error.failureKind;
+    }
+    return 'preview-boot';
+  }
+
+  private lifecycleError(state: Exclude<PreviewLifecycleState, 'render-ready'>, detail: unknown): OpaquePreviewLifecycleError {
+    const message = this.sanitizeLifecycleError(detail);
+    if (state === 'compile-error') {
+      return new OpaquePreviewLifecycleError('compilation', `Preview compilation failed${message ? `: ${message}` : ''}`);
+    }
+    if (state === 'boot-error') {
+      return new OpaquePreviewLifecycleError('preview-boot', `Preview failed to boot${message ? `: ${message}` : ''}`);
+    }
+    return new OpaquePreviewLifecycleError('preview-runtime', `Preview failed during render${message ? `: ${message}` : ''}`);
+  }
+
+  private sanitizeLifecycleError(value: unknown): string {
+    const firstLine = String(value || '').split(/\r?\n/, 1)[0].trim();
+    return firstLine.replace(/[<>]/g, '').slice(0, 500);
+  }
+
+  private isFailureKind(value: unknown): value is TestFailureKind {
+    return value === 'assertion'
+      || value === 'compilation'
+      || value === 'preview-boot'
+      || value === 'preview-runtime'
+      || value === 'infrastructure-timeout'
+      || value === 'assertion-timeout';
+  }
 }
 
 /** Runs inside a sandboxed opaque-origin iframe. Keep this function self-contained. */
 function opaqueChildBootstrap(config: ChildConfig): void {
   const channel = 'FA_OPAQUE_CHECK';
-  const version = 1;
+  const version = 2;
   const maxErrorLength = 4000;
   const parentWindow = window.parent;
   const parentPostMessage = parentWindow.postMessage.bind(parentWindow);
   const nativeSetTimeout = window.setTimeout.bind(window);
   const nativeNow = Date.now.bind(Date);
   let started = false;
+  let lifecycleFailed = false;
   let lastRequestedFocus: Element | null = null;
 
   // Backgrounded and non-rendered sandbox frames may reject native focus even
@@ -323,9 +430,32 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         passed: result?.passed === true,
       };
       if (result?.error != null) safeResult.error = String(result.error).slice(0, maxErrorLength);
+      if (result?.failureKind) safeResult.failureKind = result.failureKind;
       return safeResult;
     });
-    parentPostMessage({ channel, version, runId: config.runId, kind, results: safeResults }, '*');
+    parentPostMessage({
+      channel,
+      version,
+      invocationId: config.invocationId,
+      frameId: config.frameId,
+      kind,
+      results: safeResults,
+    }, '*');
+  };
+  const sanitizeLifecycleError = (value: unknown, fallback: string) => {
+    const message = value instanceof Error ? value.message : String(value || fallback);
+    return (message || fallback).split(/\r?\n/, 1)[0].replace(/[<>]/g, '').slice(0, 500);
+  };
+  const sendLifecycle = (state: PreviewLifecycleState, error?: unknown) => {
+    parentPostMessage({
+      channel,
+      version,
+      invocationId: config.invocationId,
+      frameId: config.frameId,
+      kind: 'lifecycle',
+      state,
+      error: error == null ? '' : sanitizeLifecycleError(error, 'Preview failed'),
+    }, '*');
   };
   const delay = (durationMs: number) => new Promise<void>((resolve) => {
     nativeSetTimeout(resolve, Math.max(0, durationMs));
@@ -518,7 +648,14 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     }
     return runSequentially(steps, executeStep).then(
       () => { send('framework', [{ name, passed: true }]); },
-      (error) => { send('framework', [{ name, passed: false, error: errorMessage(error, 'Check failed') }]); },
+      (error) => {
+        send('framework', [{
+          name,
+          passed: false,
+          error: errorMessage(error, 'Check failed'),
+          failureKind: 'assertion',
+        }]);
+      },
     );
   };
 
@@ -569,7 +706,12 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         (selector: string) => Array.from(document.querySelectorAll(selector)),
       );
     } catch (error) {
-      results.unshift({ name: 'Failed to execute test file', passed: false, error: errorMessage(error, 'Web checks failed') });
+      results.unshift({
+        name: 'Failed to execute test file',
+        passed: false,
+        error: errorMessage(error, 'Web checks failed'),
+        failureKind: 'assertion',
+      });
       send('web', results);
       return Promise.resolve();
     }
@@ -579,32 +721,68 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         .then(() => testCase.fn())
         .then(
           () => { results.push({ name: testCase.name, passed: true }); },
-          (error) => { results.push({ name: testCase.name, passed: false, error: errorMessage(error, 'Check failed') }); },
+          (error) => {
+            results.push({
+              name: testCase.name,
+              passed: false,
+              error: errorMessage(error, 'Check failed'),
+              failureKind: 'assertion',
+            });
+          },
         )),
       (error) => {
-        results.unshift({ name: 'Failed to execute test file', passed: false, error: errorMessage(error, 'Web checks failed') });
+        results.unshift({
+          name: 'Failed to execute test file',
+          passed: false,
+          error: errorMessage(error, 'Web checks failed'),
+          failureKind: 'assertion',
+        });
       },
     ).then(() => { send('web', results); });
   };
 
   const start = () => {
-    if (started) return;
+    if (started || lifecycleFailed) return;
     started = true;
-    send('ready', []);
+    sendLifecycle('render-ready');
     void (config.kind === 'framework' ? runFramework() : runWeb());
   };
 
   if (config.kind === 'framework') {
-    (window as Window & { __FA_NOTIFY_PREVIEW_READY?: (reason?: string) => void }).__FA_NOTIFY_PREVIEW_READY = () => start();
+    (window as Window & {
+      __FA_NOTIFY_PREVIEW_READY?: (reason?: string, detail?: string) => void;
+    }).__FA_NOTIFY_PREVIEW_READY = (reason = 'render-ready', detail = '') => {
+      const normalized = reason === 'error'
+        ? 'runtime-error'
+        : reason === 'compile-error' || reason === 'boot-error' || reason === 'runtime-error'
+          ? reason
+          : 'render-ready';
+      if (normalized === 'render-ready') {
+        start();
+        return;
+      }
+      if (normalized === 'compile-error' || normalized === 'boot-error' || normalized === 'runtime-error') {
+        if (lifecycleFailed) return;
+        lifecycleFailed = true;
+        sendLifecycle(normalized, detail);
+      }
+    };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
     queueMicrotask(start);
   }
 
-  const bootErrorHandler = (window as Window & { __FA_OPAQUE_BOOT_ERROR__?: EventListener }).__FA_OPAQUE_BOOT_ERROR__;
-  if (bootErrorHandler) {
-    window.removeEventListener('error', bootErrorHandler);
-    delete (window as Window & { __FA_OPAQUE_BOOT_ERROR__?: EventListener }).__FA_OPAQUE_BOOT_ERROR__;
-  }
+  const onUnhandledBootError = (event: ErrorEvent) => {
+    if (lifecycleFailed) return;
+    lifecycleFailed = true;
+    sendLifecycle(started ? 'runtime-error' : 'boot-error', event?.message || 'Preview script failed');
+  };
+  const onUnhandledRejection = (event: PromiseRejectionEvent) => {
+    if (lifecycleFailed) return;
+    lifecycleFailed = true;
+    sendLifecycle(started ? 'runtime-error' : 'boot-error', event?.reason || 'Preview promise rejected');
+  };
+  window.addEventListener('error', onUnhandledBootError);
+  window.addEventListener('unhandledrejection', onUnhandledRejection);
 }

@@ -50,8 +50,8 @@ describe('ResumeArticle', () => {
 
     expect(h1?.textContent?.trim()).toBe('Frontend Resume for Interviews: What Gets Calls and What Gets Rejected');
     expect(freshness?.textContent || '').toContain('Last updated: June 2026');
-    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Team');
-    expect(freshness?.textContent || '').toContain('Reviewed by FrontendAtlas');
+    expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
+    expect(freshness?.textContent || '').not.toContain('Reviewed by');
     expect(proof?.textContent || '').toContain('30 sec');
     expect(proof?.textContent || '').toContain('ATS');
     expect(proof?.textContent || '').toContain('12');

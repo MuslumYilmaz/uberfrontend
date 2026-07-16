@@ -66,6 +66,49 @@ for (const entry of publicCopyCases) {
   });
 }
 
+const legalRoutes = [
+  '/legal',
+  '/legal/editorial-policy',
+  '/legal/terms',
+  '/legal/privacy',
+  '/legal/refund',
+  '/legal/cookies',
+] as const;
+
+const forbiddenLegalPlaceholders = [
+  'Add a',
+  'TODO',
+  'TBD',
+  '[insert',
+  'placeholder',
+  'your company',
+  'your jurisdiction',
+] as const;
+
+for (const path of legalRoutes) {
+  test(`legal copy has no unfinished template language on ${path}`, async ({ page }) => {
+    await page.goto(path);
+    const body = page.locator('body');
+
+    for (const forbidden of forbiddenLegalPlaceholders) {
+      await expect(body).not.toContainText(forbidden, { ignoreCase: true });
+    }
+  });
+}
+
+test('refund policy states the support channel and limited-usage review clearly', async ({ page }) => {
+  await page.goto('/legal/refund');
+  const body = page.locator('body');
+
+  await expect(body).toContainText('Refund requests: support@frontendatlas.com');
+  await expect(body).toContainText(
+    'By limited usage, we mean the paid library has not been substantially consumed. ' +
+      'We assess this case by case based on request timing and available account records.',
+  );
+  await expect(body).toContainText('This policy does not limit mandatory consumer rights');
+  await expect(body).toContainText('Effective date: 2025-12-31');
+});
+
 const correctedRouteCases: ReadonlyArray<{
   path: string;
   expected: readonly string[];

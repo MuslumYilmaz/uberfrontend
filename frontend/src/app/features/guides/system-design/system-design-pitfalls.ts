@@ -203,7 +203,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'system-design', 'infinite-scroll-list']">Infinite scroll frontend system design mistakes</a>: skipping virtualization trade-offs, restoration, pagination state, and screen-reader access.</li>
         <li><a [routerLink]="['/', 'system-design', 'dashboard-widgets-draggable-resizable']">Dashboard frontend system design pitfalls</a>: ignoring layout persistence, drag performance, partial panel failure, and ownership boundaries.</li>
         <li><a [routerLink]="['/', 'system-design', 'live-chart-high-frequency-updates']">Live chart system design pitfalls</a>: treating every event as render-worthy and missing memory, sampling, and overload behavior.</li>
-        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Multi step form autosave system design mistakes</a>: skipping draft conflict handling, validation timing, interaction latency, and recovery after failed saves.</li>
+        <li><a [routerLink]="['/', 'system-design', 'multi-step-form-autosave']">Common autosave failure modes</a>: skipping draft conflict handling, validation timing, interaction latency, and recovery after failed saves.</li>
         <li><a [routerLink]="['/', 'system-design', 'component-design-system-architecture']">Design system architecture interview mistakes</a>: focusing on components but skipping token governance, accessibility contracts, versioning, and bundle cost.</li>
       </ul>
 

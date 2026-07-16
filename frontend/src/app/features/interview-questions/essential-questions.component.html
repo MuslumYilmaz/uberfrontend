@@ -6,9 +6,9 @@
       <p class="fa-page-subtitle">
         {{ data.collection.description }}
       </p>
-      <div class="essential-editorial-signal" aria-label="Editorial review details">
-        <span>{{ editorialSignal().reviewedLabel }}</span>
-        <span>{{ editorialSignal().reviewer }}</span>
+      <div class="essential-editorial-signal" aria-label="Editorial details">
+        <span *ngIf="collectionUpdatedLabel() as updatedLabel">{{ updatedLabel }}</span>
+        <span>{{ editorialSignal().author }}</span>
         <span>{{ editorialSignal().coverage }}</span>
       </div>
       <p class="essential-value-prop">
@@ -73,19 +73,19 @@
     </div>
   </section>
 
-  <section class="essential-section essential-section--benchmark" aria-labelledby="essential-benchmark-title">
+  <section class="essential-section essential-section--references" aria-labelledby="essential-references-title">
     <div class="essential-section__head">
-      <p class="essential-section__eyebrow">Coverage benchmark</p>
-      <h2 id="essential-benchmark-title">Coverage benchmark</h2>
-      <p>
-        Benchmarked against common frontend interview surfaces: JavaScript utilities, UI coding, frontend system
-        design, browser concepts, and framework variants.
-      </p>
+      <p class="essential-section__eyebrow">Source context</p>
+      <h2 id="essential-references-title">
+        Coverage references ({{ data.collection.benchmarkSources.length }})
+      </h2>
+      <p>These references informed topic coverage; they do not verify company provenance or a numeric score.</p>
     </div>
-    <div class="essential-benchmark-card">
-      <span class="essential-benchmark-card__value">{{ benchmarkSurfaceCount() }}</span>
-      <span class="essential-benchmark-card__label">reference surfaces checked</span>
-    </div>
+    <ul class="essential-reference-list" data-testid="essential-coverage-references">
+      <li *ngFor="let source of data.collection.benchmarkSources">
+        <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{ source.label }}</a>
+      </li>
+    </ul>
   </section>
 
   <section class="essential-section" aria-labelledby="essential-faq-title">
@@ -137,20 +137,29 @@
   </section>
 
   <section class="essential-list" aria-label="Essential question list">
-    <fa-question-row
-      *ngFor="let item of filteredItems()"
-      [testId]="'essential-row-' + item.id"
-      [kindLabel]="'#' + item.rank"
-      [title]="item.title"
-      [description]="item.shortDescription"
-      [descriptionTooltip]="descriptionTooltip(item)"
-      [routerLink]="item.route"
-      [solved]="isSolved(item)"
-      [companies]="item.companies"
-      [metaChips]="rowMetaChips(item)"
-      [variants]="rowVariants(item)"
-      (variantSelected)="openVariant($event, item)"
-    ></fa-question-row>
+    <section
+      *ngFor="let group of filteredGroups()"
+      class="essential-list-group"
+      [attr.aria-labelledby]="'essential-group-' + group.section"
+      [attr.data-testid]="'essential-group-' + group.section"
+    >
+      <div class="essential-list-group__head">
+        <h2 [id]="'essential-group-' + group.section">{{ group.label }}</h2>
+        <span>{{ group.items.length }} prompts</span>
+      </div>
+      <fa-question-row
+        *ngFor="let item of group.items"
+        [testId]="'essential-row-' + item.id"
+        [title]="item.title"
+        [description]="item.rationale"
+        [descriptionTooltip]="descriptionTooltip(item)"
+        [routerLink]="item.route"
+        [solved]="isSolved(item)"
+        [metaChips]="rowMetaChips(item)"
+        [variants]="rowVariants(item)"
+        (variantSelected)="openVariant($event, item)"
+      ></fa-question-row>
+    </section>
   </section>
 
 </div>

@@ -317,7 +317,8 @@ describe('IncidentDetailComponent', () => {
 
     expect(fixture.nativeElement.textContent || '').toContain('Premium');
     expect(fixture.nativeElement.textContent || '').toContain('View pricing');
-    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview-rich"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeNull();
     expect(fixture.nativeElement.textContent || '').not.toContain('Begin simulator');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;

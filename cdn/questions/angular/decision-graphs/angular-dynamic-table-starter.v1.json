@@ -1,0 +1,61 @@
+{
+  "questionId": "angular-dynamic-table-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [FormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Dynamic Table</h1>\n        <p class=\"hint\">Enter rows & columns, then generate a table grid.</p>\n\n        <div class=\"controls\">\n          <label>\n            <span>Rows</span>\n            <input type=\"number\" min=\"0\" [(ngModel)]=\"rowInput\" />\n          </label>\n          <label>\n            <span>Columns</span>\n            <input type=\"number\" min=\"0\" [(ngModel)]=\"colInput\" />\n          </label>\n          <button (click)=\"updateTable()\">Generate table</button>\n        </div>\n\n        @if (rows.length && cols.length) {\n          <div class=\"preview\">\n            <table class=\"grid\" aria-label=\"dynamic table\">\n              <tbody>\n                @for (row of rows; track row; let rowIndex = $index) {\n                  <tr>\n                    @for (column of cols; track column; let colIndex = $index) {\n                      <td>\n                        R{{ rowIndex + 1 }}C{{ colIndex + 1 }}\n                      </td>\n                    }\n                  </tr>\n                }\n              </tbody>\n            </table>\n          </div>\n        } @else {\n          <p class=\"empty\">Set rows & columns, then generate the table.</p>\n        }\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:640px;padding:20px 24px;background:#020617;border-radius:16px;border:1px solid #1f2937;display:grid;gap:16px;}`,\n    `h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.hint{margin:0;font-size:13px;color:#9ca3af;}`,\n    `.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}`,\n    `label{display:flex;flex-direction:column;gap:4px;font-size:13px;}`,\n    `input{background:#020617;border:1px solid #374151;border-radius:10px;padding:6px 10px;color:#e5e7eb;min-width:80px;}`,\n    `button{background:#a3e635;color:#0b1020;border:none;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;}`,\n    `button:hover{filter:brightness(1.05);}`,\n    `.preview{overflow:auto;border-radius:12px;border:1px solid #1f2937;padding:12px;background:#020617;}`,\n    `.grid{width:100%;border-collapse:collapse;}`,\n    `td{border:1px solid #1f2937;padding:6px 10px;font-size:13px;text-align:center;}`,\n    `.empty{margin:0;font-size:13px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  rowInput = 3;\n  colInput = 4;\n\n  rows: number[] = [];\n  cols: number[] = [];\n\n  constructor() {\n    this.updateTable();\n  }\n\n  private normalizeCount(raw: number): number {\n    if (!Number.isFinite(raw)) return 0;\n    const n = Math.floor(raw);\n    const clamped = Math.max(0, Math.min(n, 20));\n    return clamped;\n  }\n\n  updateTable(): void {\n    const rows = this.normalizeCount(this.rowInput);\n    const cols = this.normalizeCount(this.colInput);\n\n    this.rows = Array.from({ length: rows }, (_, i) => i);\n    this.cols = Array.from({ length: cols }, (_, i) => i);\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-import-form-binding",
+          "title": "Import ngModel for numeric controls",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "imports: [FormsModule],"
+          },
+          "why": "FormsModule is the only external template dependency; built-in @if and @for do not require CommonModule.",
+          "alternative": "Keep CommonModule for control flow that Angular now provides directly.",
+          "tradeoff": "Minimal imports stay clear, but any later CommonModule pipe must be added explicitly."
+        },
+        {
+          "id": "d2-render-grid-or-empty-state",
+          "title": "Render a grid only for positive dimensions",
+          "anchor": {
+            "lineStart": 26,
+            "lineEnd": 26,
+            "snippet": "@if (rows.length && cols.length) {"
+          },
+          "why": "The branch prevents an empty table shell and gives zero dimensions a clear fallback state.",
+          "alternative": "Always render table markup even when one dimension has no cells.",
+          "tradeoff": "The conditional adds a separate empty state, but the visible result is easier to understand."
+        },
+        {
+          "id": "d3-track-generated-rows",
+          "title": "Track generated rows by stable numeric value",
+          "anchor": {
+            "lineStart": 30,
+            "lineEnd": 30,
+            "snippet": "@for (row of rows; track row; let rowIndex = $index) {"
+          },
+          "why": "The generated row values are unique and let Angular preserve row identity across dimension changes.",
+          "alternative": "Track only by the current index without a stable row value.",
+          "tradeoff": "Numeric identity is simple for this generated range, while richer row data would benefit from explicit ids."
+        },
+        {
+          "id": "d4-bound-user-dimensions",
+          "title": "Clamp requested dimensions",
+          "anchor": {
+            "lineStart": 78,
+            "lineEnd": 78,
+            "snippet": "const clamped = Math.max(0, Math.min(n, 20));"
+          },
+          "why": "Bounding rows and columns prevents negative or unreasonably large grids from reaching the DOM.",
+          "alternative": "Trust any numeric input and allocate arrays directly from it.",
+          "tradeoff": "The cap limits the demo to twenty rows or columns, but it protects preview responsiveness."
+        }
+      ]
+    }
+  }
+}
