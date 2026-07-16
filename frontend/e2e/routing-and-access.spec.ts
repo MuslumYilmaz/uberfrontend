@@ -177,7 +177,9 @@ test.describe('routing and access critical paths', () => {
     expect(new URL(page.url()).pathname).not.toBe('/companies/google');
     await expect(page.getByRole('heading', { name: 'Premium company questions' })).toBeVisible();
     await expect(page.locator('app-company-detail')).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: /google front end interview guide/i })).toHaveCount(0);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Google Frontend Practice Group' }),
+    ).toHaveCount(0);
     await expect(page.getByRole('heading', { name: /how google evaluates front-end engineers/i })).toHaveCount(0);
   });
 
@@ -186,7 +188,10 @@ test.describe('routing and access critical paths', () => {
 
     await page.goto('/companies/google/preview');
     await expect(page).toHaveURL('/companies/google/all');
-    await expect(page.getByRole('heading', { name: /google front end interview guide/i })).toBeVisible();
+    await expect(page.locator('app-company-detail')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Google Frontend Practice Group' }),
+    ).toBeVisible();
   });
 
   test('interview questions master hub loads and renders question entries', async ({ page }) => {
