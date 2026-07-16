@@ -194,6 +194,18 @@ test.describe('routing and access critical paths', () => {
     ).toBeVisible();
   });
 
+  test('track preview route redirects premium users to full track detail', async ({ page }) => {
+    await seedPremiumSession(page);
+
+    await page.goto('/tracks/foundations-30d/preview');
+    await expect(page).toHaveURL('/tracks/foundations-30d');
+    await expect(page.getByTestId('track-detail-page')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Foundations Track (30 days)' }),
+    ).toBeVisible();
+    await expect(page.getByTestId('track-preview-page')).toHaveCount(0);
+  });
+
   test('interview questions master hub loads and renders question entries', async ({ page }) => {
     await page.goto('/interview-questions');
     await expect(page.getByRole('heading', { level: 1, name: 'Frontend Interview Questions and Answers' })).toBeVisible();

@@ -15,6 +15,8 @@ const COMPANY_PRACTICE_DISCLAIMER =
   'Editorial practice groupings, not verified official interview questions or endorsements.';
 const COVERAGE_REFERENCE_DISCLAIMER =
   'These references informed topic coverage; they do not verify company provenance or a numeric score.';
+const ANONYMOUS_ME_401_CONSOLE_PATTERN =
+  '^Failed to load resource: the server responded with a status of 401.*\\/api\\/auth\\/me';
 
 type PremiumPreviewCase = {
   path: string;
@@ -191,11 +193,61 @@ function assertNoQuestionScoreOrCompanyBadge(text: string, path: string): void {
   expect(text, `${path} has no compact company-count badge`).not.toMatch(/\bGoogle\s*\+\d+\b/i);
 }
 
+async function installAnonymousAuthStub(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    try {
+      localStorage.removeItem('fa:auth:session');
+    } catch {
+      // Storage can be unavailable in hardened browser contexts.
+    }
+  });
+
+  await page.route('**/api/auth/me', async (route) => {
+    const request = route.request();
+    const origin = request.headers()['origin'] || new URL(page.url()).origin;
+    const corsHeaders = {
+      'access-control-allow-origin': origin,
+      'access-control-allow-credentials': 'true',
+      vary: 'Origin',
+    };
+
+    if (request.method() === 'OPTIONS') {
+      await route.fulfill({
+        status: 204,
+        headers: {
+          ...corsHeaders,
+          'access-control-allow-methods': 'GET,OPTIONS',
+          'access-control-allow-headers':
+            request.headers()['access-control-request-headers'] || 'content-type',
+        },
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 401,
+      headers: {
+        ...corsHeaders,
+        'content-type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify({ error: 'Unauthorized' }),
+    });
+  });
+}
+
 test.describe('production/SSR public remediation smoke', () => {
+  test.use({
+    consoleErrorAllowlist: [ANONYMOUS_ME_401_CONSOLE_PATTERN],
+  });
+
   test.skip(
     !IS_PRODUCTION_SSR,
     'Run against the built SSR/prerender output with PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_SSR=1.',
   );
+
+  test.beforeEach(async ({ page }) => {
+    await installAnonymousAuthStub(page);
+  });
 
   test('homepage renders honest traction, counts, and canonical editorial attribution', async ({ page }) => {
     const bodyText = await openHydratedRoute(
