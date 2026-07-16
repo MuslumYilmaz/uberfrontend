@@ -2,24 +2,47 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from './fixtures';
-import { getMonacoModelValue, setMonacoModelValue } from './helpers';
+import {
+  getMonacoModelValue,
+  setMonacoModelValue,
+  waitForIndexedDbKeyPrefixContains,
+  waitForIndexedDbKeyPrefixNotContains,
+} from './helpers';
 
 type SolutionFile = string | { code?: unknown };
 
 const RUNNER_FAILURE =
   /framework checks timed out waiting for preview render|framework assertion execution timed out|preview readiness timed out|infrastructure timeout/i;
 
-const COUNTER_SOLUTION = readCanonicalSolution(
+const COUNTER_SOLUTION = readCanonicalFile(
   '../cdn/sb/react/solution/react-counter-solution.v1.json',
   'src/App.tsx',
 );
 
-const AUTOCOMPLETE_SOLUTION = readCanonicalSolution(
+const AUTOCOMPLETE_SOLUTION = readCanonicalFile(
   '../cdn/sb/react/solution/react-autocomplete-search-solution.v2.json',
   'src/App.tsx',
 );
 
-function readCanonicalSolution(assetPath: string, requestedPath: string): string {
+const VUE_TODO_STARTER = readCanonicalFile(
+  '../cdn/sb/vue/question/vue-todo-list.v2.json',
+  'src/App.vue',
+);
+
+const VUE_TODO_SOLUTION = readCanonicalFile(
+  '../cdn/sb/vue/solution/vue-todo-list-solution.v1.json',
+  'src/App.vue',
+);
+
+const VUE_TODO_DRAFT_KEY_PREFIX =
+  'v2:code:fw2:vue:vue-todo-list@';
+
+const FRAMEWORK_DIST_ASSET_ROOT = join(
+  process.cwd(),
+  'dist/frontendatlas/browser/assets/sb',
+);
+
+function readCanonicalFile(assetPath: string, requestedPath: string): string {
   const absolutePath = join(process.cwd(), assetPath);
   const asset = JSON.parse(readFileSync(absolutePath, 'utf8')) as {
     files?: Record<string, SolutionFile>;
@@ -30,13 +53,13 @@ function readCanonicalSolution(assetPath: string, requestedPath: string): string
   );
 
   if (!match) {
-    throw new Error(`Canonical solution file not found: ${assetPath}#${requestedPath}`);
+    throw new Error(`Canonical file not found: ${assetPath}#${requestedPath}`);
   }
 
   const value = match[1];
   const code = typeof value === 'string' ? value : value?.code;
   if (typeof code !== 'string' || !code.trim()) {
-    throw new Error(`Canonical solution file is empty: ${assetPath}#${requestedPath}`);
+    throw new Error(`Canonical file is empty: ${assetPath}#${requestedPath}`);
   }
   return code;
 }
@@ -53,16 +76,16 @@ function checkResults(page: Page): Locator {
   return checkRows(page).locator('.framework-check-result__name');
 }
 
-async function waitForReactPreview(page: Page, selector: string): Promise<void> {
+async function waitForFrameworkPreview(page: Page, selector: string): Promise<void> {
   await expect(page.locator('iframe[title="Framework live preview"]')).toBeVisible({ timeout: 30_000 });
   await expect(livePreview(page).locator(selector)).toBeVisible({ timeout: 30_000 });
   await expect(page.locator('.preview-loading')).toHaveCount(0, { timeout: 30_000 });
   await expect(page.getByTestId('framework-preview-error')).toHaveCount(0);
 }
 
-async function loadCanonicalAppSolution(page: Page, code: string): Promise<void> {
-  await setMonacoModelValue(page, 'src/App.tsx', code);
-  await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toBe(code);
+async function loadCanonicalFile(page: Page, path: string, code: string): Promise<void> {
+  await setMonacoModelValue(page, path, code);
+  await expect.poll(() => getMonacoModelValue(page, path)).toBe(code);
 }
 
 async function runChecks(page: Page, expectedCount: number): Promise<Locator> {
@@ -82,7 +105,7 @@ async function runChecks(page: Page, expectedCount: number): Promise<Locator> {
 
 async function rebuildPreview(page: Page, readySelector: string): Promise<void> {
   await page.getByTestId('framework-rebuild-preview').click();
-  await waitForReactPreview(page, readySelector);
+  await waitForFrameworkPreview(page, readySelector);
 }
 
 async function expectAssertionLayer(resultsPanel: Locator): Promise<void> {
@@ -104,13 +127,49 @@ async function dismissPostPassPrompt(page: Page): Promise<void> {
   }
 }
 
-test.describe('React framework checks against the production SSR build', () => {
+async function pinFrameworkAssetsToSameOrigin(page: Page): Promise<void> {
+  // Load a static same-origin document first so localStorage is set before
+  // Angular evaluates the production CDN preference.
+  await page.goto('/robots.txt');
+  await page.evaluate(() => localStorage.setItem('fa:cdn:enabled', '0'));
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('fa:cdn:enabled'))).toBe('0');
+}
+
+async function installLocalFrameworkAssetMirror(page: Page): Promise<void> {
+  await page.route(
+    /^https:\/\/frontendatlas\.vercel\.app\/assets\/sb\/.+\.json(?:\?.*)?$/,
+    async (route) => {
+      const pathname = decodeURIComponent(new URL(route.request().url()).pathname);
+      const relativePath = pathname.replace(/^\/assets\/sb\//, '');
+      if (!relativePath || relativePath.includes('..')) {
+        throw new Error(`Unsafe framework asset path: ${pathname}`);
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json; charset=utf-8',
+        headers: {
+          'access-control-allow-origin': '*',
+          'cache-control': 'no-store',
+        },
+        body: readFileSync(join(FRAMEWORK_DIST_ASSET_ROOT, relativePath)),
+      });
+    },
+  );
+}
+
+test.describe('Framework checks against the production SSR build', () => {
   test.describe.configure({ mode: 'serial', timeout: 120_000 });
+
+  test.beforeEach(async ({ page }) => {
+    await installLocalFrameworkAssetMirror(page);
+    await pinFrameworkAssetsToSameOrigin(page);
+  });
 
   test('Counter reaches assertions, passes its canonical solution, rebuilds, and repeats cleanly', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
-    await waitForReactPreview(page, '.value');
+    await waitForFrameworkPreview(page, '.value');
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
     const starterResults = await runChecks(page, 1);
@@ -120,7 +179,7 @@ test.describe('React framework checks against the production SSR build', () => {
     await expect(checkRows(page).locator('.framework-check-result__error')).toBeVisible();
     await expectAssertionLayer(starterResults);
 
-    await loadCanonicalAppSolution(page, COUNTER_SOLUTION);
+    await loadCanonicalFile(page, 'src/App.tsx', COUNTER_SOLUTION);
     await rebuildPreview(page, '.value');
 
     const counterButtons = livePreview(page).locator('.actions button');
@@ -147,7 +206,7 @@ test.describe('React framework checks against the production SSR build', () => {
   test('Autocomplete reports six starter assertions and passes all six with its canonical solution', async ({ page }) => {
     await page.goto('/react/coding/react-autocomplete-search-starter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
-    await waitForReactPreview(page, '.input');
+    await waitForFrameworkPreview(page, '.input');
 
     const starterResults = await runChecks(page, 6);
     await expect(checkResults(page)).toHaveText([
@@ -162,7 +221,7 @@ test.describe('React framework checks against the production SSR build', () => {
     await expect(starterResults.locator('[data-failure-kind="assertion"]')).not.toHaveCount(0);
     await expectAssertionLayer(starterResults);
 
-    await loadCanonicalAppSolution(page, AUTOCOMPLETE_SOLUTION);
+    await loadCanonicalFile(page, 'src/App.tsx', AUTOCOMPLETE_SOLUTION);
     await rebuildPreview(page, '.input');
 
     const input = livePreview(page).locator('.input');
@@ -185,7 +244,7 @@ test.describe('React framework checks against the production SSR build', () => {
     await openLive.scrollIntoViewIfNeeded();
     await expect(openLive).toHaveAttribute('href', '/react/coding/react-counter');
     await expect(page.locator('#demo-choice-active strong')).toHaveText('React');
-    await waitForReactPreview(page, '.value');
+    await waitForFrameworkPreview(page, '.value');
 
     const embeddedResults = await runChecks(page, 1);
     await expect(checkResults(page)).toHaveText(['Counter flow']);
@@ -194,7 +253,70 @@ test.describe('React framework checks against the production SSR build', () => {
     await openLive.click();
     await expect(page).toHaveURL(/\/react\/coding\/react-counter$/);
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
-    await waitForReactPreview(page, '.value');
+    await waitForFrameworkPreview(page, '.value');
+  });
+
+  test('Vue Todo starts from boilerplate, keeps solution transient, and restores only user edits', async ({ page }) => {
+    await page.goto('/vue/coding/vue-todo-list');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.empty');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toBe(VUE_TODO_STARTER);
+    expect(VUE_TODO_STARTER).toContain('TODO: Add a trimmed, non-empty task');
+    expect(VUE_TODO_STARTER).not.toBe(VUE_TODO_SOLUTION);
+
+    const starterResults = await runChecks(page, 1);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('0/1 passed');
+    await expect(checkResults(page)).toHaveText(['Todo add item']);
+    await expect(checkRows(page)).toHaveAttribute('data-failure-kind', 'assertion');
+    await expectAssertionLayer(starterResults);
+
+    await page.getByTestId('coding-solution-tab').click();
+    const warning = page.getByTestId('solution-warning');
+    if (await warning.isVisible().catch(() => false)) {
+      await page.getByTestId('solution-warning-view').click();
+      await expect(warning).toBeHidden();
+    }
+
+    const loadSolution = page.getByRole('button', { name: 'Load into editor', exact: true });
+    await expect(loadSolution).toHaveCount(1);
+    await loadSolution.click();
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toBe(VUE_TODO_SOLUTION);
+    await expect(page.getByTestId('restore-banner')).toBeVisible();
+    await waitForIndexedDbKeyPrefixNotContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: VUE_TODO_DRAFT_KEY_PREFIX,
+      substring: 'if (!newTask.value.trim())',
+    });
+
+    const solutionResults = await runChecks(page, 1);
+    await expect(solutionResults.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    await expect(solutionResults.locator('.framework-check-result__error')).toHaveCount(0);
+    await dismissPostPassPrompt(page);
+
+    await page.reload();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.empty');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toBe(VUE_TODO_STARTER);
+
+    const marker = `vue-todo-user-draft-${Date.now()}`;
+    const stagedDraft = `<!-- preparing-${marker} -->\n${VUE_TODO_STARTER}`;
+    const userDraft = `<!-- ${marker} -->\n${VUE_TODO_STARTER}`;
+    await setMonacoModelValue(page, 'src/App.vue', stagedDraft);
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toBe(stagedDraft);
+    await setMonacoModelValue(page, 'src/App.vue', userDraft);
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toBe(userDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: VUE_TODO_DRAFT_KEY_PREFIX,
+      substring: marker,
+    });
+    await waitForFrameworkPreview(page, '.empty');
+
+    await page.reload();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toContain(marker);
   });
 
   test('Angular, Vue, and vanilla JavaScript control runners still reach assertions', async ({ page }) => {
@@ -204,7 +326,7 @@ test.describe('React framework checks against the production SSR build', () => {
     ]) {
       await page.goto(path);
       await expect(page.getByTestId('coding-detail-page')).toBeVisible();
-      await waitForReactPreview(page, '.value');
+      await waitForFrameworkPreview(page, '.value');
 
       const results = await runChecks(page, 1);
       await expect(checkResults(page)).toHaveText(['Counter flow']);
