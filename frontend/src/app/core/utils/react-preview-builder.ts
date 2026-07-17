@@ -195,10 +195,13 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
       (function(){
         const originalSetTimeout = window.setTimeout.bind(window);
         const originalClearTimeout = window.clearTimeout.bind(window);
+        const originalSetInterval = window.setInterval.bind(window);
+        const originalClearInterval = window.clearInterval.bind(window);
         const originalAddEventListener = document.addEventListener.bind(document);
         const originalRemoveEventListener = document.removeEventListener.bind(document);
         const activeTimers = new Set();
         const documentListeners = new Set();
+        let timerBaseline = new Set();
 
         window.setTimeout = function(fn, delay){
           let id;
@@ -219,6 +222,17 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           return originalClearTimeout(id);
         };
 
+        window.setInterval = function(fn, delay){
+          const id = originalSetInterval(fn, delay);
+          activeTimers.add(id);
+          return id;
+        };
+
+        window.clearInterval = function(id){
+          activeTimers.delete(id);
+          return originalClearInterval(id);
+        };
+
         document.addEventListener = function(type, listener, options){
           if (listener) documentListeners.add(type + ':' + String(listener));
           return originalAddEventListener(type, listener, options);
@@ -234,6 +248,16 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
             timers: activeTimers.size,
             documentListeners: documentListeners.size
           };
+        };
+        window.__FA_MARK_PREVIEW_TIMER_BASELINE = function(){
+          timerBaseline = new Set(activeTimers);
+        };
+        window.__FA_GET_PREVIEW_TIMER_LEAKS = function(){
+          let count = 0;
+          activeTimers.forEach(function(id){
+            if (!timerBaseline.has(id)) count += 1;
+          });
+          return count;
         };
       })();
 

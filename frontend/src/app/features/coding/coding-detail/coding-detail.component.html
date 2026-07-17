@@ -21,8 +21,9 @@
 
         <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
           [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
-          (click)="onSolutionTabClick()" aria-label="Solution">
-          <app-fa-glyph class="fa-btn__icon" icon="pi pi-code"></app-fa-glyph>
+          [disabled]="pressureActive() && !pressureCompleted()"
+          (click)="onSolutionTabClick()" [attr.aria-label]="pressureActive() ? (pressureCompleted() ? 'Pressure debrief' : 'Solution locked until all rounds pass') : 'Solution'">
+          <app-fa-glyph class="fa-btn__icon" [icon]="pressureActive() && !pressureCompleted() ? 'pi pi-lock' : 'pi pi-code'"></app-fa-glyph>
         </button>
       </div>
       <div></div>
@@ -34,11 +35,14 @@
         <div class="flex-1 flex">
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
             [class.text-blue-400]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
-            (click)="activePanel.set(0)">Description</button>
+            (click)="activePanel.set(0)">{{ pressureActive() ? 'Interview' : 'Description' }}</button>
 
           <button class="px-4 py-2 flex-1 text-left font-medium" data-testid="coding-solution-tab" [class.border-b-2]="activePanel()===1"
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
-            (click)="onSolutionTabClick()">Solution</button>
+            [disabled]="pressureActive() && !pressureCompleted()"
+            (click)="onSolutionTabClick()">
+            {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : 'Solution' }}
+          </button>
         </div>
 
         <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" faButton variant="ghost" [iconOnly]="true"
@@ -50,6 +54,93 @@
       <div class="flex-1 overflow-auto p-6 font-sm">
         <!-- Description Panel -->
         <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0">
+          <ng-container *ngIf="pressureActive(); else normalDescriptionContent">
+            <div *ngIf="pressureScenario() as scenario" class="pressure-mode" data-testid="pressure-mode-panel">
+              <header class="pressure-mode__header">
+                <div class="pressure-mode__header-copy">
+                  <p class="pressure-mode__eyebrow">Interview Pressure Mode</p>
+                  <h1>{{ scenario.title }}</h1>
+                  <p>
+                    The interviewer adds a new constraint after every passing round.
+                    Earlier requirements stay active.
+                  </p>
+                </div>
+                <button type="button" faButton variant="ghost" class="pressure-mode__exit"
+                  data-testid="pressure-mode-exit" (click)="exitPressureMode()">
+                  Exit mode
+                </button>
+              </header>
+
+              <div class="pressure-mode__meta">
+                <span>{{ scenario.estimatedMinutes }} min</span>
+                <span>{{ scenario.access === 'free' ? 'Free pilot' : 'Premium' }}</span>
+                <span>{{ pressureClearedRounds() }}/{{ scenario.rounds.length }} rounds cleared</span>
+              </div>
+
+              <ol class="pressure-mode__timeline" aria-label="Pressure Mode rounds">
+                <li *ngFor="let round of scenario.rounds; let index = index"
+                  class="pressure-mode__step"
+                  [attr.data-status]="pressureRoundStatus(index)"
+                  [attr.aria-current]="index === pressureRoundIndex() ? 'step' : null">
+                  <span class="pressure-mode__step-marker" aria-hidden="true">
+                    <app-fa-glyph
+                      [icon]="pressureRoundStatus(index) === 'complete' ? 'pi pi-check' : pressureRoundStatus(index) === 'active' ? 'pi pi-bolt' : 'pi pi-lock'">
+                    </app-fa-glyph>
+                  </span>
+                  <span class="pressure-mode__step-copy">
+                    <span class="pressure-mode__step-label">Round {{ index + 1 }}</span>
+                    <strong>{{ round.title }}</strong>
+                  </span>
+                </li>
+              </ol>
+
+              <article *ngIf="pressureCurrentRound() as round" class="pressure-mode__constraint"
+                [attr.data-round-id]="round.id" data-testid="pressure-active-round">
+                <p class="pressure-mode__eyebrow">Interviewer constraint · Round {{ pressureRoundIndex() + 1 }}</p>
+                <h2>{{ round.title }}</h2>
+                <p class="pressure-mode__prompt">{{ round.interviewerPrompt }}</p>
+                <ul>
+                  <li *ngFor="let constraint of round.constraints">{{ constraint }}</li>
+                </ul>
+                <p class="pressure-mode__cumulative">
+                  Run checks when ready. This round includes every earlier constraint.
+                </p>
+              </article>
+
+              <div *ngIf="pressureReadyForNextRound()" class="pressure-mode__success" role="status"
+                data-testid="pressure-round-cleared">
+                <div>
+                  <strong>Constraint cleared.</strong>
+                  <p>Your code stays in place. Reveal the next interviewer requirement when ready.</p>
+                </div>
+                <button type="button" faButton variant="primary" data-testid="pressure-next-round"
+                  (click)="revealNextPressureRound()">
+                  Reveal next constraint
+                </button>
+              </div>
+
+              <div *ngIf="pressureCompletionError() as error" class="pressure-mode__error" role="alert">
+                {{ error }}
+              </div>
+
+              <div *ngIf="pressureCompleted()" class="pressure-mode__complete" role="status"
+                data-testid="pressure-mode-complete">
+                <div>
+                  <strong>Pressure Mode complete.</strong>
+                  <p>
+                    {{ auth.isLoggedIn()
+                      ? 'Your pressure progress and the underlying Counter completion are saved.'
+                      : 'Your checks passed locally. Sign in to save and claim completion.' }}
+                  </p>
+                </div>
+                <button type="button" faButton variant="primary" (click)="onSolutionTabClick()">
+                  Open debrief
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #normalDescriptionContent>
             <nav class="detail-breadcrumb" aria-label="Breadcrumb" data-testid="coding-breadcrumb">
               <a [routerLink]="['/']">Home</a>
               <span aria-hidden="true">&gt;</span>
@@ -74,6 +165,21 @@
               By {{ authorLabel(question()) }}
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
+
+            <section *ngIf="pressureSupported()" class="pressure-entry" data-testid="pressure-mode-entry">
+              <div>
+                <p class="pressure-entry__eyebrow">Optional interview simulation</p>
+                <h2>Keep coding as the requirements change</h2>
+                <p>
+                  Solve the same Counter through four cumulative rounds: correctness, configurable steps,
+                  keyboard accessibility, and lifecycle cleanup.
+                </p>
+              </div>
+              <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
+                (click)="startPressureMode()">
+                Start Interview Pressure Mode
+              </button>
+            </section>
 
             <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta()" data-testid="coding-interview-hero">
               <p class="detail-interview-hero__intent" *ngIf="interviewFocusSummary()">
@@ -312,6 +418,7 @@
 
               </div>
             </ng-container>
+          </ng-template>
 
         </section>
 
@@ -340,16 +447,75 @@
 
             <!-- İçerik -->
             <ng-template #solBody>
-              <h2 class="text-base font-semibold mb-2">Solution</h2>
+              <h2 class="text-base font-semibold mb-2">
+                {{ pressureActive() ? 'Pressure Mode debrief' : 'Solution' }}
+              </h2>
+
+              <section *ngIf="pressureActive() && pressureCompleted() && pressureScenario() as scenario"
+                class="pressure-debrief" data-testid="pressure-debrief">
+                <p class="pressure-mode__eyebrow">All constraints cleared</p>
+                <h3>{{ scenario.debrief.title }}</h3>
+                <p>{{ scenario.debrief.summary }}</p>
+                <ul>
+                  <li *ngFor="let takeaway of scenario.debrief.takeaways">{{ takeaway }}</li>
+                </ul>
+                <div class="pressure-debrief__framework-note">
+                  <strong>{{ tech | titlecase }} implementation note</strong>
+                  <p>{{ $any(scenario.debrief.frameworkNotes)[tech] }}</p>
+                </div>
+              </section>
+
+              <section *ngIf="pressureActive() && pressureCompleted()" class="pressure-solution-files">
+                <div class="flex items-center justify-between gap-3">
+                  <h3 class="text-sm font-semibold">Final pressure solution</h3>
+                  <button *ngIf="solutionFileList().length" type="button" faButton class="text-[10px]"
+                    (click)="loadSolutionIntoEditor()" title="Replace the pressure draft with the final solution">
+                    Load into editor
+                  </button>
+                </div>
+
+                <p *ngIf="!solutionFileList().length" class="pressure-solution-files__loading">
+                  The final solution asset could not be loaded. Your completed round state is still preserved.
+                </p>
+
+                <ng-container *ngIf="solutionFileList().length">
+                  <div class="solution-files-tabs">
+                    <button *ngFor="let p of solutionFileList()" type="button" class="sol-file-tab"
+                      [class.active]="solutionCurrentPath() === p" (click)="openSolutionFile(p)">
+                      {{ solutionShortName(p) }}
+                    </button>
+                  </div>
+
+                  <div class="code-wrap mt-2">
+                    <ng-container *ngIf="!liteEditors(); else pressureLiteSolutionBlock">
+                      <app-monaco-editor
+                        class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                        [code]="activeSolutionFilesMap()[solutionCurrentPath()] || ''"
+                        [language]="langFromPath(solutionCurrentPath())" [readOnly]="true"
+                        [options]="examplesMonacoOptions" [autoHeight]="true">
+                      </app-monaco-editor>
+                    </ng-container>
+                    <ng-template #pressureLiteSolutionBlock>
+                      <pre class="lite-code">{{ activeSolutionFilesMap()[solutionCurrentPath()] || '' }}</pre>
+                    </ng-template>
+
+                    <button class="copy-fab" [class.copied]="copiedSolutionFile()" aria-label="Copy file" title="Copy"
+                      (click)="copyText(activeSolutionFilesMap()[solutionCurrentPath()] || '')">
+                      <app-fa-glyph class="copy-fab__icon" [icon]="copiedSolutionFile() ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
+                    </button>
+                  </div>
+                </ng-container>
+              </section>
 
               <!-- Overview -->
-              <section class="space-y-2 mb-5" *ngIf="structuredSolution().overview">
+              <section class="space-y-2 mb-5" *ngIf="!pressureActive() && structuredSolution().overview">
                 <h3 class="text-sm font-semibold opacity-90">Overview</h3>
                 <div class="solution-prose prose prose-invert max-w-none"
                   [innerHTML]="md(structuredSolution().overview) | safeHtml"></div>
               </section>
 
               <!-- Approaches -->
+              <ng-container *ngIf="!pressureActive()">
               <div class="p-3" *ngFor="let ap of approaches(); let i = index">
                 <div class="ap-row">
                   <span class="ap-num">{{ i + 1 }}</span>
@@ -450,25 +616,26 @@
                     <ng-container *ngIf="!liteEditors(); else liteSolutionBlock">
                       <app-monaco-editor
                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                        [code]="solutionFilesMap()[solutionCurrentPath()] || ''"
+                        [code]="activeSolutionFilesMap()[solutionCurrentPath()] || ''"
                         [language]="langFromPath(solutionCurrentPath())" [readOnly]="true"
                         [options]="examplesMonacoOptions" [autoHeight]="true">
                       </app-monaco-editor>
                     </ng-container>
                     <ng-template #liteSolutionBlock>
-                      <pre class="lite-code">{{ solutionFilesMap()[solutionCurrentPath()] || '' }}</pre>
+                      <pre class="lite-code">{{ activeSolutionFilesMap()[solutionCurrentPath()] || '' }}</pre>
                     </ng-template>
 
                     <button class="copy-fab" [class.copied]="copiedSolutionFile()" aria-label="Copy file" title="Copy"
-                      (click)="copyText(solutionFilesMap()[solutionCurrentPath()] || '')">
+                      (click)="copyText(activeSolutionFilesMap()[solutionCurrentPath()] || '')">
                       <app-fa-glyph class="copy-fab__icon" [icon]="copiedSolutionFile() ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
                     </button>
                   </div>
                 </section>
               </div>
+              </ng-container>
 
               <!-- Notes / Pitfalls / Edge cases / Techniques -->
-              <section class="space-y-3 mb-6" *ngIf="hasAnyNotes()">
+              <section class="space-y-3 mb-6" *ngIf="!pressureActive() && hasAnyNotes()">
                 <h3 class="text-sm font-semibold opacity-90">Notes &amp; Pitfalls</h3>
 
                 <div class="grid md:grid-cols-3 gap-3">
@@ -498,7 +665,7 @@
               </section>
 
               <!-- Short solution follow-ups -->
-              <section class="space-y-2 mb-6" *ngIf="structuredSolution()?.followUp?.length">
+              <section class="space-y-2 mb-6" *ngIf="!pressureActive() && structuredSolution()?.followUp?.length">
                 <h3 class="text-sm font-semibold opacity-90">Common interview follow-ups:</h3>
                 <ul class="list-disc list-inside text-sm space-y-1">
                   <li class="font-sm" *ngFor="let f of structuredSolution()?.followUp">{{ f }}</li>
@@ -506,7 +673,7 @@
               </section>
 
               <!-- Resources -->
-              <section class="space-y-2" *ngIf="structuredSolution()?.resources?.length">
+              <section class="space-y-2" *ngIf="!pressureActive() && structuredSolution()?.resources?.length">
                 <h3 class="text-sm font-semibold opacity-90">Resources</h3>
                 <ul class="text-sm space-y-1">
                   <li class="font-sm" *ngFor="let r of structuredSolution()?.resources">
@@ -518,7 +685,7 @@
               </section>
 
               <!-- Similar questions -->
-              <section *ngIf="followUpItems().length" class="mt-6" data-nosnippet data-testid="coding-similar-questions">
+              <section *ngIf="!pressureActive() && followUpItems().length" class="mt-6" data-nosnippet data-testid="coding-similar-questions">
                   <div
                     class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
                     (click)="similarOpen.set(!similarOpen())">
@@ -536,7 +703,7 @@
               </section>
 
               <!-- Guide links -->
-              <section *ngIf="!curatedNextStepsOnly()" class="mt-6" data-nosnippet data-testid="coding-guide-links">
+              <section *ngIf="!pressureActive() && !curatedNextStepsOnly()" class="mt-6" data-nosnippet data-testid="coding-guide-links">
                   <div class="flex items-center justify-between px-3 py-2 border border-white/15 rounded">
                     <h3 class="text-sm font-semibold">Guides</h3>
                   </div>
@@ -564,7 +731,7 @@
                   </div>
               </section>
 
-              <section *ngIf="!curatedNextStepsOnly()" class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
+              <section *ngIf="!pressureActive() && !curatedNextStepsOnly()" class="detail-prep-bridge" data-nosnippet data-testid="coding-prep-entry">
                   <p class="detail-prep-bridge__text">
                     Preparing for interviews? Use Frontend Coding Challenges first, then move into a concrete Study Plan before targeted Company Prep.
                   </p>
@@ -613,13 +780,24 @@
 <main class="flex-1 min-h-0 flex flex-col overflow-hidden coding-detail__scroll" data-testid="coding-workspace-panel">
 
     <!-- FRAMEWORK PANEL -->
-    <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"
-      [tech]="tech" [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [deferPreview]="demoMode"
-      [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
-      [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="solutionFilesMap()"
-      (requestEditorUpgrade)="requestLiteUpgrade()"
-      (frameworkCheckRun)="onFrameworkCheckRun($event)">
-    </app-coding-framework-panel>
+    <ng-container *ngIf="frameworkWorkspaceReady(); else pressureWorkspaceLoading">
+      <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"
+        [tech]="tech" [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [deferPreview]="demoMode"
+        [storageKeyOverride]="frameworkStorageKey()"
+        [frameworkTestsOverride]="pressureActive() ? pressureFrameworkTests() : null"
+        [interviewMode]="pressureActive()"
+        [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="activeSolutionFilesMap()"
+        (requestEditorUpgrade)="requestLiteUpgrade()"
+        (frameworkCheckRun)="onFrameworkCheckRun($event)">
+      </app-coding-framework-panel>
+    </ng-container>
+    <ng-template #pressureWorkspaceLoading>
+      <div class="pressure-workspace-loading" data-testid="pressure-workspace-loading" role="status">
+        <div class="spinner" aria-hidden="true"></div>
+        <strong>Preparing Interview Pressure Mode…</strong>
+        <span>Loading the shared round contract without touching your normal Counter draft.</span>
+      </div>
+    </ng-template>
 
     <!-- NON-FRAMEWORK: WEB or JS -->
     <ng-container *ngIf="!isFrameworkTech()">
@@ -663,8 +841,10 @@
 <ng-container *ngIf="!hideFooterBar; else demoFooter">
   <app-footer data-nosnippet [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
-    [practiceLeftLabel]="!isCourseContext() ? 'Incidents hub' : null" [practiceLeftRoute]="!isCourseContext() ? ['/incidents'] : null"
-    [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
+    [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : 'Incidents hub') : null"
+    [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : ['/incidents']) : null"
+    [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : null"
+    [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
     [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && isCompletionPending()"
     (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"

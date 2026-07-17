@@ -72,7 +72,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() editorOptions: any;
   /** Normalized solution files from solutionAsset, provided by parent */
   @Input() solutionFilesMap: Record<string, string> = {};
+  @Input() frameworkTestsOverride: FrameworkTest[] | null = null;
   @Input() storageKeyOverride: string | null = null;
+  @Input() interviewMode = false;
   @Input() disablePersistence = false;
   @Input() liteMode = false;
   @Input() deferPreview = false;
@@ -248,12 +250,20 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   ngOnChanges(changes: SimpleChanges): void {
     if (this.destroy) return;
 
-    if (changes['question'] || changes['tech']) {
+    const workspaceIdentityChanged =
+      !!changes['question']
+      || !!changes['tech']
+      || !!changes['storageKeyOverride'];
+
+    if (workspaceIdentityChanged) {
       this.cancelFrameworkCheckRun();
       this.invalidatePreviewBuilds();
     }
-    if ((changes['question'] || changes['tech']) && this.question && this.tech && this.isFrameworkTech()) {
+    if (workspaceIdentityChanged && this.question && this.tech && this.isFrameworkTech()) {
       this.initFromQuestion();
+    } else if (changes['frameworkTestsOverride'] && this.question && this.isFrameworkTech()) {
+      this.frameworkChecks.set(this.normalizeFrameworkTests(this.activeFrameworkTests(this.question)));
+      this.clearFrameworkCheckResults();
     }
 
     // If solution files change while viewing solution/preview, keep behavior sane:
@@ -339,7 +349,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
     this.previewReady.set(!this.deferPreview);
-    this.frameworkChecks.set(this.normalizeFrameworkTests(q));
+    this.frameworkChecks.set(this.normalizeFrameworkTests(this.activeFrameworkTests(q)));
     this.clearFrameworkCheckResults();
 
     if (!this.isBrowser) {
@@ -1023,7 +1033,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       signature,
       codeHash,
       codeChanged: prevHash ? prevHash !== codeHash : true,
-      interviewMode: false,
+      interviewMode: this.interviewMode,
       errorCategory: category,
       tags: question.tags || [],
     });
@@ -1206,8 +1216,15 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     return this.tech === 'angular' || this.tech === 'react' || this.tech === 'vue';
   }
 
-  private normalizeFrameworkTests(q: Question): FrameworkTest[] {
-    const raw = Array.isArray(q?.frameworkTests) ? q.frameworkTests : [];
+  private activeFrameworkTests(q: Question): FrameworkTest[] {
+    return Array.isArray(this.frameworkTestsOverride)
+      ? this.frameworkTestsOverride
+      : Array.isArray(q.frameworkTests)
+        ? q.frameworkTests
+        : [];
+  }
+
+  private normalizeFrameworkTests(raw: FrameworkTest[]): FrameworkTest[] {
     return raw
       .map((item, index) => {
         const id = String(item?.id || `framework-check-${index + 1}`).trim();

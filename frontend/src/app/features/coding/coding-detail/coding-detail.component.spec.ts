@@ -12,6 +12,8 @@ import { DailyService } from '../../../core/services/daily.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
+import { PressureModeService } from '../../../core/services/pressure-mode.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { CodingDetailComponent } from './coding-detail.component';
 
@@ -24,7 +26,64 @@ describe('CodingDetailComponent', () => {
   let activity: jasmine.SpyObj<ActivityService>;
   let progress: jasmine.SpyObj<UserProgressService>;
   let auth: jasmine.SpyObj<AuthService>;
+  let pressureModes: jasmine.SpyObj<PressureModeService>;
+  let pressureProgress: jasmine.SpyObj<PressureModeProgressService>;
   let authUser: ReturnType<typeof signal<any>>;
+
+  const pressureScenario = {
+    schemaVersion: '1.0.0',
+    id: 'counter-pressure-v1',
+    family: 'counter',
+    title: 'Counter Interview Pressure Mode',
+    access: 'free',
+    estimatedMinutes: 35,
+    supportedQuestions: {
+      react: 'react-counter',
+      angular: 'angular-counter-starter',
+      vue: 'vue-counter',
+    },
+    rounds: [
+      {
+        id: 'base',
+        title: 'Base',
+        interviewerPrompt: 'Build the base counter.',
+        constraints: ['Start at zero.'],
+        frameworkTests: [{ id: 'base', name: 'Base', steps: [{ type: 'expectText', selector: '.value', text: '0' }] }],
+      },
+      {
+        id: 'step',
+        title: 'Step',
+        interviewerPrompt: 'Add step selection.',
+        constraints: ['Use a selected step.'],
+        frameworkTests: [{ id: 'step', name: 'Step', steps: [{ type: 'expectValue', selector: '#step-size', value: '1' }] }],
+      },
+      {
+        id: 'keyboard',
+        title: 'Keyboard',
+        interviewerPrompt: 'Add keyboard behavior.',
+        constraints: ['Support ArrowUp.'],
+        frameworkTests: [{ id: 'keyboard', name: 'Keyboard', steps: [{ type: 'key', selector: '.counter-control', key: 'ArrowUp' }] }],
+      },
+      {
+        id: 'lifecycle',
+        title: 'Lifecycle',
+        interviewerPrompt: 'Clean up timers.',
+        constraints: ['Clear the interval.'],
+        frameworkTests: [{ id: 'cleanup', name: 'Cleanup', steps: [{ type: 'unmountPreview' }] }],
+      },
+    ],
+    debrief: {
+      title: 'Complete',
+      summary: 'Summary',
+      takeaways: ['Keep invariants.'],
+      frameworkNotes: { react: 'React note', angular: 'Angular note', vue: 'Vue note' },
+    },
+    solutionAssets: {
+      react: 'assets/sb/react/solution/react-counter-pressure-solution.v1.json',
+      angular: 'assets/sb/angular/solution/angular-counter-pressure-solution.v1.json',
+      vue: 'assets/sb/vue/solution/vue-counter-pressure-solution.v1.json',
+    },
+  } as any;
 
   beforeEach(async () => {
     sessionStorage.clear();
@@ -34,8 +93,25 @@ describe('CodingDetailComponent', () => {
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     activity = jasmine.createSpyObj<ActivityService>('ActivityService', ['complete', 'uncomplete', 'isCompletionPending']);
-    progress = jasmine.createSpyObj<UserProgressService>('UserProgressService', ['solvedIds', 'isSolved', 'setSolvedIds', 'markSolvedLocal']);
+    progress = jasmine.createSpyObj<UserProgressService>(
+      'UserProgressService',
+      ['solvedIds', 'isSolved', 'setSolvedIds', 'markSolvedLocal', 'unmarkSolved'],
+    );
     auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'ensureMe', 'headers']);
+    pressureModes = jasmine.createSpyObj<PressureModeService>('PressureModeService', ['load']);
+    pressureProgress = jasmine.createSpyObj<PressureModeProgressService>(
+      'PressureModeProgressService',
+      [
+        'itemId',
+        'read',
+        'start',
+        'revealRound',
+        'markRoundCleared',
+        'markPendingCompletion',
+        'hasPendingCompletion',
+        'clearPendingCompletion',
+      ],
+    );
     seo.buildCanonicalUrl.and.callFake((value: string) => `https://frontendatlas.com${value}`);
     activity.complete.and.returnValue(of({ solvedQuestionIds: ['q1'], stats: {} } as any));
     activity.uncomplete.and.returnValue(of({ solvedQuestionIds: [], stats: {}, rollbackApplied: true } as any));
@@ -44,11 +120,20 @@ describe('CodingDetailComponent', () => {
     progress.isSolved.and.returnValue(false);
     progress.setSolvedIds.and.stub();
     progress.markSolvedLocal.and.stub();
+    progress.unmarkSolved.and.resolveTo();
     authUser = signal<any>(null);
     (auth.user as any).and.callFake(() => authUser());
     auth.isLoggedIn.and.returnValue(false);
     auth.ensureMe.and.returnValue(of(null));
     auth.headers.and.returnValue({} as any);
+    pressureModes.load.and.returnValue(of(pressureScenario));
+    pressureProgress.itemId.and.callFake((scenarioId, questionId) => `pressure:${scenarioId}:${questionId}`);
+    pressureProgress.read.and.returnValue({
+      activeRoundIndex: 0,
+      clearedRounds: 0,
+      completed: false,
+    });
+    pressureProgress.hasPendingCompletion.and.returnValue(false);
 
     await TestBed.configureTestingModule({
       imports: [CodingDetailComponent, RouterTestingModule, HttpClientTestingModule],
@@ -77,6 +162,8 @@ describe('CodingDetailComponent', () => {
         { provide: UserProgressService, useValue: progress },
         { provide: AuthService, useValue: auth },
         { provide: BugReportService, useValue: bugReport },
+        { provide: PressureModeService, useValue: pressureModes },
+        { provide: PressureModeProgressService, useValue: pressureProgress },
       ],
     }).compileComponents();
 
@@ -547,6 +634,193 @@ describe('CodingDetailComponent', () => {
     expect(component.loginPromptOpen).toBeTrue();
   });
 
+  it('clears an intermediate pressure round without completing the normal question', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      difficulty: 'easy',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any);
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+
+    await component.onFrameworkCheckRun({
+      questionId: 'react-counter',
+      passed: true,
+      results: [{ name: 'Base', passed: true }],
+    });
+
+    expect(component.pressureClearedRounds()).toBe(1);
+    expect(component.pressureReadyForNextRound()).toBeTrue();
+    expect(pressureProgress.markRoundCleared).toHaveBeenCalledWith(
+      pressureScenario.id,
+      'react-counter',
+      {
+        activeRoundIndex: 0,
+        clearedRounds: 1,
+        completed: false,
+      },
+    );
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(analytics.track).not.toHaveBeenCalledWith(
+      'all_tests_passed',
+      jasmine.anything(),
+    );
+  });
+
+  it('keeps pressure rounds locked until the user explicitly reveals the next constraint', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any);
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+
+    component.revealNextPressureRound();
+    expect(component.pressureRoundIndex()).toBe(0);
+    expect(pressureProgress.revealRound).not.toHaveBeenCalled();
+
+    component.pressureClearedRounds.set(1);
+    component.revealNextPressureRound();
+
+    expect(component.pressureRoundIndex()).toBe(1);
+    expect(component.pressureFrameworkTests().map((test) => test.id)).toEqual(['base', 'step']);
+    expect(pressureProgress.revealRound).toHaveBeenCalledWith(
+      pressureScenario.id,
+      'react-counter',
+      {
+        activeRoundIndex: 1,
+        clearedRounds: 1,
+        completed: false,
+      },
+    );
+  });
+
+  it('completes pressure progress and the normal coding activity only on the final round', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      difficulty: 'easy',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any);
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+    component.pressureRoundIndex.set(3);
+    component.pressureClearedRounds.set(3);
+
+    await component.onFrameworkCheckRun({
+      questionId: 'react-counter',
+      passed: true,
+      results: pressureScenario.rounds.map((round: { title: string }) => ({
+        name: round.title,
+        passed: true,
+      })),
+    });
+
+    expect(activity.complete).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+      kind: 'coding',
+      tech: 'react',
+      itemId: 'react-counter',
+    }));
+    expect(component.pressureCompleted()).toBeTrue();
+    expect(component.solved()).toBeTrue();
+    expect(component.activePanel()).toBe(1);
+    expect(pressureProgress.markRoundCleared.calls.mostRecent().args[2]).toEqual({
+      activeRoundIndex: 3,
+      clearedRounds: 4,
+      completed: true,
+    });
+    expect(pressureProgress.clearPendingCompletion).toHaveBeenCalledWith(
+      pressureScenario.id,
+      'react-counter',
+    );
+  });
+
+  it('lets a guest finish pressure checks locally and records a pending sign-in claim', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(false);
+    component.tech = 'vue';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'vue-counter',
+      access: 'free',
+      difficulty: 'easy',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any);
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+    component.pressureRoundIndex.set(3);
+    component.pressureClearedRounds.set(3);
+
+    await component.onFrameworkCheckRun({
+      questionId: 'vue-counter',
+      passed: true,
+      results: pressureScenario.rounds.map((round: { title: string }) => ({
+        name: round.title,
+        passed: true,
+      })),
+    });
+
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(component.pressureCompleted()).toBeTrue();
+    expect(component.loginPromptOpen).toBeTrue();
+    expect(pressureProgress.markPendingCompletion).toHaveBeenCalledWith(
+      pressureScenario.id,
+      'vue-counter',
+      {
+        activeRoundIndex: 3,
+        clearedRounds: 4,
+        completed: true,
+      },
+    );
+  });
+
+  it('resets only the pressure workspace without unmarking the normal Counter completion', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const resetToStarter = jasmine.createSpy('resetToStarter');
+
+    component.tech = 'angular';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'angular-counter-starter',
+      access: 'free',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any);
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+    component.solved.set(true);
+    component.frameworkPanel = { resetToStarter } as any;
+
+    await component.resetQuestion();
+
+    expect(resetToStarter).toHaveBeenCalled();
+    expect(progress.unmarkSolved).not.toHaveBeenCalled();
+    expect(component.solved()).toBeTrue();
+  });
+
   it('navigates back using returnToUrl when available', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -847,6 +1121,10 @@ describe('CodingDetailComponent', () => {
     authUser.set({ accessTier: 'premium' });
     fixture.detectChanges();
     await fixture.whenStable();
+    await (component as any).loadAuthorizedSolutionAsset(
+      question,
+      (component as any).loadQuestionSeq,
+    );
     expect(resolveSpy).toHaveBeenCalledTimes(1);
     expect(httpGetSpy).toHaveBeenCalledOnceWith('https://assets.example/premium-solution.json');
 

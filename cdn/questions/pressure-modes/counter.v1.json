@@ -1,0 +1,368 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "counter-pressure-v1",
+  "family": "counter",
+  "title": "Counter Interview Pressure Mode",
+  "access": "free",
+  "estimatedMinutes": 35,
+  "supportedQuestions": {
+    "react": "react-counter",
+    "angular": "angular-counter-starter",
+    "vue": "vue-counter"
+  },
+  "rounds": [
+    {
+      "id": "base-correctness",
+      "title": "Base correctness",
+      "interviewerPrompt": "Start with a reliable counter. Keep the behavior small, explicit, and state-driven.",
+      "constraints": [
+        "Start at 0 and display the current value.",
+        "Support increment, decrement, and reset.",
+        "Never allow a negative value.",
+        "Disable decrement while the value is 0."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-counter-base",
+          "name": "Round 1 · Base counter",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".value",
+              "text": "0"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "index": 0,
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "1"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "index": 0,
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "0"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 2
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "configurable-step",
+      "title": "Configurable step",
+      "interviewerPrompt": "The product team now needs larger jumps without duplicating counter logic.",
+      "constraints": [
+        "Add a labeled step selector with 1, 5, and 10.",
+        "Use 1 as the default step.",
+        "Apply the selected step to both increment and decrement.",
+        "Clamp decrement at 0 when the selected step is larger than the value."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-counter-step",
+          "name": "Round 2 · Configurable step",
+          "steps": [
+            {
+              "type": "expectValue",
+              "selector": "#step-size",
+              "value": "1"
+            },
+            {
+              "type": "setValue",
+              "selector": "#step-size",
+              "value": "5"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "5"
+            },
+            {
+              "type": "setValue",
+              "selector": "#step-size",
+              "value": "10"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "0"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "index": 0,
+              "disabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-accessibility",
+      "title": "Keyboard and accessibility",
+      "interviewerPrompt": "The counter must now work without a pointer and communicate value changes to assistive technology.",
+      "constraints": [
+        "Make the counter container focusable.",
+        "Use ArrowUp to increment, ArrowDown to decrement, and Home to reset.",
+        "Do not hijack the natural keyboard behavior of nested buttons or the step selector.",
+        "Expose the value as a polite live status and connect visible keyboard instructions with aria-describedby."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-counter-keyboard",
+          "name": "Round 3 · Keyboard and ARIA",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-control",
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-control",
+              "attribute": "aria-describedby",
+              "expected": "counter-shortcuts"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".value",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".value",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "setValue",
+              "selector": "#step-size",
+              "value": "5"
+            },
+            {
+              "type": "key",
+              "selector": ".counter-control",
+              "key": "ArrowUp"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "5"
+            },
+            {
+              "type": "key",
+              "selector": ".counter-control",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "0"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "key",
+              "selector": ".counter-control",
+              "key": "Home"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "0"
+            },
+            {
+              "type": "key",
+              "selector": "#step-size",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectText",
+              "selector": ".value",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "auto-lifecycle",
+      "title": "Auto mode and lifecycle",
+      "interviewerPrompt": "Add an auto-increment mode, then prove it cannot leave background work behind.",
+      "constraints": [
+        "Add a Start/Pause button with an accurate aria-pressed state.",
+        "Start increments immediately, then every 500 ms using the current step.",
+        "Pause freezes the value and Reset stops auto mode before returning to 0.",
+        "Clear the interval when the component unmounts or is destroyed."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-counter-auto",
+          "name": "Round 4 · Auto mode",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".auto-toggle",
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "setValue",
+              "selector": "#step-size",
+              "value": "5"
+            },
+            {
+              "type": "click",
+              "selector": ".auto-toggle"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".auto-toggle",
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "5"
+            },
+            {
+              "type": "wait",
+              "durationMs": 550
+            },
+            {
+              "type": "expectText",
+              "selector": ".value",
+              "text": "10"
+            },
+            {
+              "type": "click",
+              "selector": ".auto-toggle"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".auto-toggle",
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "wait",
+              "durationMs": 600
+            },
+            {
+              "type": "expectText",
+              "selector": ".value",
+              "text": "10"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 2
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "0"
+            }
+          ]
+        },
+        {
+          "id": "pressure-counter-cleanup",
+          "name": "Round 4 · Lifecycle cleanup",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".auto-toggle"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".value",
+              "text": "1"
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You handled a changing interview contract",
+    "summary": "The final implementation keeps one state model while layering configuration, keyboard behavior, accessibility, timing, and cleanup. The important interview signal is not the extra UI; it is preserving earlier guarantees as each constraint arrives.",
+    "takeaways": [
+      "Keep increment, decrement, reset, and timer behavior behind a small set of reusable actions.",
+      "Treat keyboard and pointer input as two paths into the same state transitions.",
+      "Use stable DOM and ARIA contracts so behavior remains testable without coupling tests to framework internals.",
+      "Own every interval at the component boundary and clear it during reset, pause, and teardown."
+    ],
+    "frameworkNotes": {
+      "react": "A ref keeps the interval handle and current step available without stale closures; the effect cleanup owns unmount teardown.",
+      "angular": "The component implements OnDestroy and clears the interval from one shared stop method.",
+      "vue": "A ref stores the interval handle and onUnmounted delegates to the same stop function used by Pause and Reset."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-counter-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-counter-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-counter-pressure-solution.v1.json"
+  }
+}

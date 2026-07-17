@@ -19,6 +19,18 @@ const COUNTER_SOLUTION = readCanonicalFile(
   'src/App.tsx',
 );
 
+const PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-counter-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-counter-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-counter-pressure-solution.v1.json',
+  ),
+} as const;
+
 const AUTOCOMPLETE_SOLUTION = readCanonicalFile(
   '../cdn/sb/react/solution/react-autocomplete-search-solution.v2.json',
   'src/App.tsx',
@@ -64,6 +76,28 @@ function readCanonicalFile(assetPath: string, requestedPath: string): string {
   return code;
 }
 
+function readCanonicalFiles(assetPath: string): Record<string, string> {
+  const absolutePath = join(process.cwd(), assetPath);
+  const asset = JSON.parse(readFileSync(absolutePath, 'utf8')) as {
+    files?: Record<string, SolutionFile>;
+  };
+  const files = Object.entries(asset.files || {}).reduce<Record<string, string>>(
+    (acc, [path, value]) => {
+      const normalizedPath = path.replace(/^\/+/, '');
+      const code = typeof value === 'string' ? value : value?.code;
+      if (typeof code === 'string' && code.trim()) {
+        acc[normalizedPath] = code;
+      }
+      return acc;
+    },
+    {},
+  );
+  if (!Object.keys(files).length) {
+    throw new Error(`Canonical bundle is empty: ${assetPath}`);
+  }
+  return files;
+}
+
 function livePreview(page: Page) {
   return page.frameLocator('iframe[title="Framework live preview"]');
 }
@@ -88,6 +122,26 @@ async function loadCanonicalFile(page: Page, path: string, code: string): Promis
   await expect.poll(() => getMonacoModelValue(page, path)).toBe(code);
 }
 
+async function openFrameworkFile(page: Page, path: string): Promise<void> {
+  await page.getByTitle('File tree', { exact: true }).click();
+  const file = page.locator(`.file-drawer .file-row[title="${path}"]`);
+  await expect(file).toBeVisible();
+  await file.click();
+  await expect(page.locator('.file-drawer')).not.toHaveClass(/open/);
+}
+
+async function loadCanonicalBundle(
+  page: Page,
+  files: Record<string, string>,
+): Promise<void> {
+  for (const [path, code] of Object.entries(files)) {
+    await openFrameworkFile(page, path);
+    await loadCanonicalFile(page, path, code);
+    // Let the panel persist each file before the next model becomes active.
+    await page.waitForTimeout(300);
+  }
+}
+
 async function runChecks(page: Page, expectedCount: number): Promise<Locator> {
   const frameCountBefore = await page.locator('iframe').count();
   const runButton = page.getByTestId('framework-run-checks');
@@ -101,6 +155,57 @@ async function runChecks(page: Page, expectedCount: number): Promise<Locator> {
   // Every assertion uses an opaque scratch iframe. None may survive the run.
   await expect(page.locator('iframe')).toHaveCount(frameCountBefore);
   return page.getByTestId('framework-results-panel');
+}
+
+async function completePressureRounds(page: Page): Promise<void> {
+  const checkCounts = [1, 2, 3, 5];
+  const roundIds = [
+    'base-correctness',
+    'configurable-step',
+    'keyboard-accessibility',
+    'auto-lifecycle',
+  ];
+
+  for (const [index, expectedCount] of checkCounts.entries()) {
+    await expect(page.getByTestId('pressure-active-round')).toHaveAttribute(
+      'data-round-id',
+      roundIds[index],
+    );
+    const results = await runChecks(page, expectedCount);
+    await expect(results.locator('.framework-check-results__summary')).toHaveText(
+      `${expectedCount}/${expectedCount} passed`,
+    );
+    await expect(results.locator('.framework-check-result__error')).toHaveCount(0);
+    await expect(
+      results.locator('[data-testid="framework-check-result"][data-failure-kind]'),
+    ).toHaveCount(0);
+
+    if (index < checkCounts.length - 1) {
+      const next = page.getByTestId('pressure-next-round');
+      await expect(next).toBeVisible();
+      await next.click();
+    }
+  }
+
+  await dismissPostPassPrompt(page);
+  await expect(page.getByTestId('pressure-debrief')).toBeVisible();
+  await expect(page.getByTestId('pressure-debrief')).toContainText(
+    'You handled a changing interview contract',
+  );
+}
+
+async function expectNoHorizontalOverflow(page: Page): Promise<void> {
+  await expect.poll(() => page.evaluate(() => ({
+    viewport: window.innerWidth,
+    documentWidth: document.documentElement.scrollWidth,
+  }))).toEqual(expect.objectContaining({
+    viewport: expect.any(Number),
+    documentWidth: expect.any(Number),
+  }));
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
 }
 
 async function rebuildPreview(page: Page, readySelector: string): Promise<void> {
@@ -201,6 +306,92 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(repeatedPassingRun.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
     await expect(repeatedPassingRun.locator('.framework-check-result__error')).toHaveCount(0);
     await expect(checkRows(page)).not.toHaveAttribute('data-failure-kind', /.+/);
+  });
+
+  test('React Counter keeps normal and pressure drafts isolated across all four rounds', async ({ page }) => {
+    await page.goto('/react/coding/react-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.value');
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+    await expect(page.getByTestId('coding-solution-tab').first()).toBeEnabled();
+
+    const normalMarker = `normal-counter-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-counter@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-counter\?mode=pressure$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-counter$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await expect(page.getByTestId('coding-solution-tab').first()).toBeDisabled();
+    await waitForFrameworkPreview(page, '.value');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+
+    await loadCanonicalBundle(page, PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.value');
+    await completePressureRounds(page);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-counter$/);
+    await waitForFrameworkPreview(page, '.value');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+    await expect(page.getByTestId('coding-solution-tab').first()).toBeEnabled();
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    const questionId = framework === 'angular'
+      ? 'angular-counter-starter'
+      : 'vue-counter';
+
+    test(`${framework} Counter passes the shared pressure contract and lifecycle cleanup`, async ({ page }) => {
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.value');
+
+      await loadCanonicalBundle(page, PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.value');
+      await completePressureRounds(page);
+    });
+  }
+
+  test('unsupported pressure URLs fall back to the normal canonical question flow', async ({ page }) => {
+    await page.goto('/react/coding/react-todo-list?mode=pressure');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page).toHaveURL(/\/react\/coding\/react-todo-list$/);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+    await expect(page.getByTestId('pressure-mode-entry')).toHaveCount(0);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-todo-list$/,
+    );
+  });
+
+  test('pressure routes keep the existing mobile workspace guard at 360 and 390px', async ({ page }) => {
+    for (const width of [360, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/react/coding/react-counter?mode=pressure');
+      await expect(page.getByTestId('coding-mobile-guard')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
   });
 
   test('Autocomplete reports six starter assertions and passes all six with its canonical solution', async ({ page }) => {

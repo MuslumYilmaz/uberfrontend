@@ -135,6 +135,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-counter-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/counter.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
     "access": "free",

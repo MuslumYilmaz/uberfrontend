@@ -22,7 +22,12 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { Subject, Subscription, filter, firstValueFrom, takeUntil } from 'rxjs';
 
-import type { Question, QuestionFaqItem, StructuredDescription } from '../../../core/models/question.model';
+import type { FrameworkTest, Question, QuestionFaqItem, StructuredDescription } from '../../../core/models/question.model';
+import type {
+  PressureModeProgressState,
+  PressureModeRound,
+  PressureModeScenario,
+} from '../../../core/models/pressure-mode.model';
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
@@ -65,6 +70,8 @@ import {
 } from '../../../core/utils/onboarding-personalization.util';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
 import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
+import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
+import { PressureModeService } from '../../../core/services/pressure-mode.service';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
@@ -310,6 +317,55 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private readonly prepAnalyticsSessionKey = 'fa:prep:session-id:v1';
   private readonly quickWinNextDismissedKey = 'fa:coding:quick-win-next-dismissed:v1';
 
+  // Interview Pressure Mode
+  pressureRequested = signal(false);
+  pressureLoading = signal(false);
+  pressureScenario = signal<PressureModeScenario | null>(null);
+  pressureRoundIndex = signal(0);
+  pressureClearedRounds = signal(0);
+  pressureCompleted = signal(false);
+  pressureCompletionError = signal<string | null>(null);
+  pressureSolutionFilesMap = signal<Record<string, string>>({});
+  pressureSolutionOpenPath = signal('');
+  pressureActive = computed(() => this.pressureRequested() && !!this.pressureScenario());
+  pressureSupported = computed(() => {
+    const q = this.question();
+    return !this.demoMode
+      && this.kind === 'coding'
+      && this.isFrameworkTech()
+      && typeof q?.pressureModeAsset === 'string'
+      && q.pressureModeAsset.trim().length > 0;
+  });
+  pressureRounds = computed(() => this.pressureScenario()?.rounds || []);
+  pressureCurrentRound = computed<PressureModeRound | null>(() => {
+    const rounds = this.pressureRounds();
+    return rounds[this.pressureRoundIndex()] || null;
+  });
+  pressureFrameworkTests = computed<FrameworkTest[]>(() =>
+    this.pressureRounds()
+      .slice(0, this.pressureRoundIndex() + 1)
+      .flatMap((round) => round.frameworkTests)
+      .slice(0, 6)
+  );
+  pressureReadyForNextRound = computed(() =>
+    this.pressureActive()
+    && !this.pressureCompleted()
+    && this.pressureRoundIndex() < this.pressureRounds().length - 1
+    && this.pressureClearedRounds() > this.pressureRoundIndex()
+  );
+  frameworkWorkspaceReady = computed(() => {
+    const q = this.question();
+    if (!this.isFrameworkTech() || !this.pressureRequested()) return true;
+    if (!q?.pressureModeAsset) return true;
+    return !this.pressureLoading() && this.pressureActive();
+  });
+  private pressureModeLoadSeq = 0;
+  private pressureStartedAt = Date.now();
+  private pressureStartTrackedKey: string | null = null;
+  private pressurePreviousCollapsed: boolean | null = null;
+  private pressurePreviousAsideRatio: number | null = null;
+  private pendingPressureExitReason: 'button' | 'navigation' | null = null;
+
   // Practice session
   private practice: PracticeSession = null;
 
@@ -404,10 +460,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   solutionOpenPath = signal<string>('');
   private loadedSolutionAssetKey: string | null = null;
   private readonly solutionAssetLoads = new Map<string, Promise<void>>();
+  activeSolutionFilesMap = computed(() =>
+    this.pressureActive() && this.pressureCompleted()
+      ? this.pressureSolutionFilesMap()
+      : this.pressureActive()
+        ? {}
+        : this.solutionFilesMap()
+  );
 
   // sorted list of solution file paths
   solutionFileList = computed(() => {
-    const files = this.solutionFilesMap();
+    const files = this.activeSolutionFilesMap();
     return Object.keys(files).sort((a, b) => {
       const da = a.split('/').length, db = b.split('/').length;
       if (da !== db) return da - db;
@@ -418,7 +481,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   solutionCurrentPath = computed(() => {
     const list = this.solutionFileList();
     if (!list.length) return '';
-    return this.solutionOpenPath() || list[0];
+    const preferred = this.pressureActive() && this.pressureCompleted()
+      ? this.pressureSolutionOpenPath()
+      : this.solutionOpenPath();
+    return preferred && list.includes(preferred) ? preferred : list[0];
   });
 
   solutionCurrentFileLabel = computed(() => this.solutionShortName(this.solutionCurrentPath()));
@@ -481,6 +547,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   hasAnyTests = computed(() => !!(this.testCode()?.trim()));
 
   submitLabel(): string {
+    if (this.pressureActive()) {
+      if (this.pressureCompleted()) return 'Run final checks again';
+      return `Run round ${this.pressureRoundIndex() + 1} checks`;
+    }
     if (this.isCompletionPending()) {
       return 'Syncing completion...';
     }
@@ -657,15 +727,45 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Footer helpers
   get progressText() {
+    if (this.pressureActive()) {
+      return `Round ${this.pressureRoundIndex() + 1} of ${this.pressureRounds().length}`;
+    }
     if (this.practice) return `${this.practice.index + 1} / ${this.practice.items.length}`;
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
   hasPrev(): boolean {
+    if (this.pressureActive()) return false;
     return this.practice ? this.practice.index > 0 : this.currentIndex > 0;
   }
   hasNext(): boolean {
+    if (this.pressureActive()) return false;
     return this.practice ? (this.practice.index + 1 < this.practice.items.length)
       : (this.currentIndex + 1 < this.allQuestions.length);
+  }
+
+  frameworkStorageKey(): string | null {
+    const q = this.question();
+    const scenario = this.pressureScenario();
+    if (this.pressureActive() && q && scenario) {
+      return this.pressureProgress.itemId(scenario.id, q.id);
+    }
+    return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
+  }
+
+  pressureRoundStatus(index: number): 'complete' | 'active' | 'locked' {
+    if (this.pressureCompleted() || index < this.pressureClearedRounds()) return 'complete';
+    if (index === this.pressureRoundIndex()) return 'active';
+    return 'locked';
+  }
+
+  pressureExitQueryParams(): Record<string, string> {
+    const params: Record<string, string> = {};
+    this.route.snapshot.queryParamMap.keys.forEach((key) => {
+      if (key === 'mode') return;
+      const value = this.route.snapshot.queryParamMap.get(key);
+      if (value !== null) params[key] = value;
+    });
+    return params;
   }
 
   descriptionText = computed(() => {
@@ -717,6 +817,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     private experiments: ExperimentService,
     private onboarding: OnboardingService,
     private lifecyclePrompts: LifecyclePromptService,
+    private pressureModes: PressureModeService,
+    private pressureProgress: PressureModeProgressService,
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
 
@@ -833,8 +935,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.quickWinNextDismissed.set(this.readQuickWinNextDismissed());
     this.route.queryParamMap
       .pipe(takeUntil(this.destroy$), filter(() => !this.questionId))
-      .subscribe(() => this.syncQuickWinContextFromRoute());
-    this.syncQuickWinContextFromRoute();
+      .subscribe(() => this.syncRouteContextsFromRoute());
+    this.syncRouteContextsFromRoute();
 
     this.signupPromptVariant = this.experiments.variant('signup_prompt_copy_v1', 'coding_detail');
     this.premiumGateVariant = this.experiments.variant('premium_gate_copy_v1', 'coding_detail');
@@ -956,6 +1058,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   ngOnDestroy() {
     this.loadQuestionSeq += 1;
+    this.pressureModeLoadSeq += 1;
+    if (this.pressureActive()) this.trackPressureExit('navigation');
     this.routeParamSub?.unsubscribe();
     this.routeDataSub?.unsubscribe();
     if (this.isBrowser) {
@@ -1478,6 +1582,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     this.currentIndex = idx;
     const q = this.allQuestions[idx];
+    const routeRequestsPressure = !this.questionId
+      && String(this.route.snapshot.queryParamMap.get('mode') || '').trim().toLowerCase() === 'pressure';
+    if (this.pressureActive()) this.trackPressureExit('navigation');
+    this.clearPressureModeState(true);
+    this.pressureRequested.set(routeRequestsPressure);
+    this.pressureLoading.set(routeRequestsPressure && !!q.pressureModeAsset);
     this.question.set(q);
     this.loadState.set('loaded');
     this.challengeSource = this.readChallengeSource();
@@ -1515,18 +1625,19 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (!this.isBrowser) return;
 
-    await this.loadAuthorizedSolutionAsset(q, loadSeq);
-    if (!this.isActiveQuestionLoad(loadSeq, q)) return;
-
-    // common flags
     this.solved.set(this.progress.isSolved(q.id));
     this.loadCollapsePref(q);
-    let shouldShowBanner = false;
+
+    await Promise.all([
+      this.loadAuthorizedSolutionAsset(q, loadSeq),
+      routeRequestsPressure ? this.activatePressureMode(q) : Promise.resolve(),
+    ]);
+    if (!this.isActiveQuestionLoad(loadSeq, q)) return;
 
     // ---------- Frameworks (Angular/React/Vue) ----------
     if (this.isFrameworkTech()) {
       // Reset shared UI bits
-      this.activePanel.set(0);
+      this.activePanel.set(this.pressureActive() && this.pressureCompleted() ? 1 : 0);
       this.subTab.set('tests');
       this.hasRunTests = false;
       this.testResults.set([]);
@@ -1823,6 +1934,16 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const q = this.question();
     if (!q) return;
+    if (this.pressureActive()) {
+      const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
+      const event: FrameworkCheckRunEvent = {
+        questionId: q.id,
+        passed: results.length > 0 && results.every((result) => result.passed),
+        results,
+      };
+      await this.handlePressureFrameworkCheckRun(event);
+      return;
+    }
     this.markQuickWinEngaged('submit');
 
     if (this.hasFrameworkStructuredChecks(q)) {
@@ -1896,8 +2017,127 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   async onFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
+    if (this.pressureActive()) {
+      await this.handlePressureFrameworkCheckRun(event);
+      return;
+    }
     this.trackFrameworkCheckAnalytics(event);
     await this.completeFrameworkCheckRun(event);
+  }
+
+  private async handlePressureFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
+    const q = this.question();
+    const scenario = this.pressureScenario();
+    const round = this.pressureCurrentRound();
+    if (!q || !scenario || !round || event.questionId !== q.id) return;
+
+    const results = Array.isArray(event.results) ? event.results : [];
+    const passCount = results.filter((result) => result.passed).length;
+    this.analytics.track('pressure_round_checks_run', {
+      scenario_id: scenario.id,
+      question_id: q.id,
+      tech: this.tech,
+      round_id: round.id,
+      round_number: this.pressureRoundIndex() + 1,
+      pass_count: passCount,
+      total_count: results.length,
+      passed: event.passed,
+    });
+
+    if (!event.passed || this.pressureCompleted()) return;
+
+    const roundNumber = this.pressureRoundIndex() + 1;
+    const newlyCleared = this.pressureClearedRounds() < roundNumber;
+    if (newlyCleared) {
+      this.pressureClearedRounds.set(roundNumber);
+      this.pressureCompletionError.set(null);
+      this.analytics.track('pressure_round_cleared', {
+        scenario_id: scenario.id,
+        question_id: q.id,
+        tech: this.tech,
+        round_id: round.id,
+        round_number: roundNumber,
+        total_rounds: scenario.rounds.length,
+        elapsed_sec: Math.max(0, Math.round((Date.now() - this.pressureStartedAt) / 1000)),
+      });
+    }
+
+    const isFinalRound = roundNumber === scenario.rounds.length;
+    if (!isFinalRound) {
+      if (newlyCleared) {
+        this.pressureProgress.markRoundCleared(
+          scenario.id,
+          q.id,
+          this.currentPressureProgressState(),
+        );
+      }
+      return;
+    }
+
+    if (!this.auth.isLoggedIn()) {
+      this.pressureCompleted.set(true);
+      this.pressureProgress.markRoundCleared(
+        scenario.id,
+        q.id,
+        this.currentPressureProgressState(),
+      );
+      this.pressureProgress.markPendingCompletion(
+        scenario.id,
+        q.id,
+        this.currentPressureProgressState(),
+      );
+      this.activePanel.set(1);
+      this.trackPressureCompleted(false);
+      this.loginPromptTitle = 'Sign in to save Pressure Mode';
+      this.loginPromptBody = 'Your final checks passed. Sign in to save all four rounds and claim the coding completion.';
+      this.loginPromptCta = 'Sign in and save';
+      this.ensureAuthenticated();
+      return;
+    }
+
+    if (newlyCleared) {
+      this.pressureProgress.markRoundCleared(
+        scenario.id,
+        q.id,
+        this.currentPressureProgressState(),
+      );
+    }
+
+    const completed = await this.recordCompletion('tests');
+    if (!completed) {
+      this.pressureCompletionError.set(
+        'Final checks passed, but completion could not be synced. Run the final checks again to retry.',
+      );
+      return;
+    }
+
+    this.pressureCompleted.set(true);
+    this.pressureProgress.markRoundCleared(
+      scenario.id,
+      q.id,
+      this.currentPressureProgressState(),
+    );
+    this.pressureProgress.clearPendingCompletion(scenario.id, q.id);
+    this.solved.set(true);
+    this.activePanel.set(1);
+    this.trackPressureCompleted(true);
+    this.maybePromptLifecycle('coding_submit', q.id);
+    this.creditDaily();
+    await this.celebrate('tests');
+  }
+
+  private trackPressureCompleted(saved: boolean): void {
+    const scenario = this.pressureScenario();
+    const q = this.question();
+    if (!scenario || !q) return;
+    this.analytics.track('pressure_mode_completed', {
+      scenario_id: scenario.id,
+      question_id: q.id,
+      tech: this.tech,
+      total_rounds: scenario.rounds.length,
+      saved,
+      elapsed_sec: Math.max(0, Math.round((Date.now() - this.pressureStartedAt) / 1000)),
+    });
   }
 
   private trackFrameworkCheckAnalytics(event: FrameworkCheckRunEvent): void {
@@ -2054,6 +2294,278 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.quickWinCompletedTracked = false;
       this.quickWinQuestionId = null;
     }
+  }
+
+  private syncRouteContextsFromRoute(): void {
+    this.syncQuickWinContextFromRoute();
+    const requested = String(
+      this.route.snapshot.queryParamMap.get('mode') || '',
+    ).trim().toLowerCase() === 'pressure';
+    const wasActive = this.pressureActive();
+    const wasRequested = this.pressureRequested();
+
+    this.pressureRequested.set(requested);
+    if (!requested) {
+      if (wasActive || wasRequested) {
+        this.trackPressureExit(this.pendingPressureExitReason || 'navigation');
+        this.clearPressureModeState(true);
+      }
+      this.pendingPressureExitReason = null;
+      return;
+    }
+
+    const q = this.question();
+    if (!q || this.demoMode) return;
+    if (
+      this.pressureActive()
+      && this.pressureScenario()?.supportedQuestions[this.tech as 'react' | 'angular' | 'vue'] === q.id
+    ) {
+      return;
+    }
+    if (q.pressureModeAsset) this.pressureLoading.set(true);
+    void this.activatePressureMode(q);
+  }
+
+  startPressureMode(): void {
+    if (!this.pressureSupported()) return;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: 'pressure' },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  exitPressureMode(): void {
+    if (!this.pressureRequested()) return;
+    this.pendingPressureExitReason = 'button';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  revealNextPressureRound(): void {
+    const scenario = this.pressureScenario();
+    const q = this.question();
+    if (!scenario || !q || !this.pressureReadyForNextRound()) return;
+
+    const nextIndex = Math.min(
+      this.pressureRoundIndex() + 1,
+      scenario.rounds.length - 1,
+    );
+    this.pressureRoundIndex.set(nextIndex);
+    this.pressureCompletionError.set(null);
+    this.pressureProgress.revealRound(
+      scenario.id,
+      q.id,
+      this.currentPressureProgressState(),
+    );
+    this.analytics.track('pressure_constraint_revealed', {
+      scenario_id: scenario.id,
+      question_id: q.id,
+      tech: this.tech,
+      round_id: scenario.rounds[nextIndex]?.id ?? null,
+      round_number: nextIndex + 1,
+      total_rounds: scenario.rounds.length,
+    });
+  }
+
+  private async activatePressureMode(q: Question): Promise<void> {
+    if (!this.pressureRequested()) return;
+    const assetPath = String(q.pressureModeAsset || '').trim();
+    if (!assetPath || !this.isFrameworkTech()) {
+      this.fallbackFromPressureMode();
+      return;
+    }
+
+    const loadSeq = ++this.pressureModeLoadSeq;
+    this.pressureLoading.set(true);
+    const scenario = await firstValueFrom(this.pressureModes.load(assetPath));
+    if (
+      loadSeq !== this.pressureModeLoadSeq
+      || !this.pressureRequested()
+      || this.question()?.id !== q.id
+    ) {
+      return;
+    }
+
+    const framework = this.tech as 'react' | 'angular' | 'vue';
+    if (!scenario || scenario.supportedQuestions[framework] !== q.id) {
+      this.fallbackFromPressureMode();
+      return;
+    }
+
+    const state = this.pressureProgress.read(
+      scenario.id,
+      q.id,
+      scenario.rounds.length,
+    );
+    this.pressureScenario.set(scenario);
+    this.pressureRoundIndex.set(state.activeRoundIndex);
+    this.pressureClearedRounds.set(state.clearedRounds);
+    this.pressureCompleted.set(state.completed);
+    this.pressureCompletionError.set(null);
+    this.pressureLoading.set(false);
+    this.pressureStartedAt = Date.now();
+    this.expandPressureDescription();
+    this.activePanel.set(state.completed ? 1 : 0);
+    this.pressureProgress.start(scenario.id, q.id, state);
+
+    const startKey = `${scenario.id}:${q.id}:${framework}`;
+    if (this.pressureStartTrackedKey !== startKey) {
+      this.pressureStartTrackedKey = startKey;
+      this.analytics.track('pressure_mode_started', {
+        scenario_id: scenario.id,
+        question_id: q.id,
+        tech: framework,
+        access: scenario.access,
+        total_rounds: scenario.rounds.length,
+      });
+    }
+
+    void this.loadPressureSolutionAsset(scenario, framework, loadSeq);
+    if (
+      state.completed
+      && this.auth.isLoggedIn()
+      && this.pressureProgress.hasPendingCompletion(scenario.id, q.id)
+    ) {
+      void this.claimPendingPressureCompletion(scenario, q, loadSeq);
+    }
+  }
+
+  private async claimPendingPressureCompletion(
+    scenario: PressureModeScenario,
+    q: Question,
+    loadSeq: number,
+  ): Promise<void> {
+    const completed = await this.recordCompletion('tests');
+    if (
+      loadSeq !== this.pressureModeLoadSeq
+      || !this.pressureActive()
+      || this.question()?.id !== q.id
+      || this.pressureScenario()?.id !== scenario.id
+    ) {
+      return;
+    }
+    if (!completed) {
+      this.pressureCompletionError.set(
+        'Your completed interview was restored, but completion could not be synced. Run the final checks again to retry.',
+      );
+      return;
+    }
+
+    this.pressureProgress.markRoundCleared(
+      scenario.id,
+      q.id,
+      this.currentPressureProgressState(),
+    );
+    this.pressureProgress.clearPendingCompletion(scenario.id, q.id);
+    this.solved.set(true);
+    this.trackPressureCompleted(true);
+    this.maybePromptLifecycle('coding_submit', q.id);
+    this.creditDaily();
+    await this.celebrate('tests');
+  }
+
+  private async loadPressureSolutionAsset(
+    scenario: PressureModeScenario,
+    framework: 'react' | 'angular' | 'vue',
+    loadSeq: number,
+  ): Promise<void> {
+    const assetPath = scenario.solutionAssets[framework];
+    try {
+      const raw = await fetchSdkAsset(this.http, assetPath);
+      const { files, initialPath } = resolveSolutionFiles(raw);
+      if (
+        loadSeq !== this.pressureModeLoadSeq
+        || !this.pressureActive()
+        || this.pressureScenario()?.id !== scenario.id
+      ) {
+        return;
+      }
+      this.pressureSolutionFilesMap.set(files);
+      this.pressureSolutionOpenPath.set(initialPath);
+    } catch {
+      if (loadSeq !== this.pressureModeLoadSeq) return;
+      this.pressureSolutionFilesMap.set({});
+      this.pressureSolutionOpenPath.set('');
+    }
+  }
+
+  private fallbackFromPressureMode(): void {
+    this.pressureRequested.set(false);
+    this.clearPressureModeState(true);
+    if (!this.isBrowser) return;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private clearPressureModeState(restoreLayout: boolean): void {
+    this.pressureModeLoadSeq += 1;
+    this.pressureLoading.set(false);
+    this.pressureScenario.set(null);
+    this.pressureRoundIndex.set(0);
+    this.pressureClearedRounds.set(0);
+    this.pressureCompleted.set(false);
+    this.pressureCompletionError.set(null);
+    this.pressureSolutionFilesMap.set({});
+    this.pressureSolutionOpenPath.set('');
+    this.pressureStartTrackedKey = null;
+    this.activePanel.set(0);
+    if (this.loginPromptTitle === 'Sign in to save Pressure Mode') {
+      this.applySignupPromptCopy();
+    }
+
+    if (restoreLayout) {
+      if (this.pressurePreviousCollapsed !== null) {
+        this.descCollapsed.set(this.pressurePreviousCollapsed);
+      }
+      if (this.pressurePreviousAsideRatio !== null) {
+        this.horizontalRatio.set(this.pressurePreviousAsideRatio);
+        this.lastAsideRatio = this.pressurePreviousAsideRatio;
+      }
+    }
+    this.pressurePreviousCollapsed = null;
+    this.pressurePreviousAsideRatio = null;
+  }
+
+  private expandPressureDescription(): void {
+    if (this.pressurePreviousCollapsed === null) {
+      this.pressurePreviousCollapsed = this.descCollapsed();
+      this.pressurePreviousAsideRatio = this.horizontalRatio();
+    }
+    this.descCollapsed.set(false);
+    this.horizontalRatio.set(Math.max(0.32, this.horizontalRatio()));
+  }
+
+  private currentPressureProgressState(): PressureModeProgressState {
+    return {
+      activeRoundIndex: this.pressureRoundIndex(),
+      clearedRounds: this.pressureClearedRounds(),
+      completed: this.pressureCompleted(),
+    };
+  }
+
+  private trackPressureExit(reason: 'button' | 'navigation'): void {
+    const scenario = this.pressureScenario();
+    const q = this.question();
+    if (!scenario || !q) return;
+    this.analytics.track('pressure_mode_exited', {
+      scenario_id: scenario.id,
+      question_id: q.id,
+      tech: this.tech,
+      round_number: this.pressureRoundIndex() + 1,
+      cleared_rounds: this.pressureClearedRounds(),
+      completed: this.pressureCompleted(),
+      reason,
+      elapsed_sec: Math.max(0, Math.round((Date.now() - this.pressureStartedAt) / 1000)),
+    });
   }
 
   dismissQuickWinNextStep(event?: Event): void {
@@ -2547,8 +3059,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.consoleEntries.set([]);
       this.testResults.set([]);
       this.hasRunTests = false;
-      this.solved.set(false);
-      try { await this.progress.unmarkSolved(q.id); } catch { }
+      if (!this.pressureActive()) {
+        this.solved.set(false);
+        try { await this.progress.unmarkSolved(q.id); } catch { }
+      }
     } finally {
       this.resetting.set(false);
     }
@@ -2588,7 +3102,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // --- Framework techs: use solutionAsset files, not inline snippets ---
     if (this.isFrameworkTech()) {
-      const sol = this.solutionFilesMap();
+      const sol = this.activeSolutionFilesMap();
       if (Object.keys(sol || {}).length) {
         this.frameworkPanel?.applySolutionFiles();
         return;
@@ -3153,7 +3667,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     // 2) Framework questions (Angular / React / Vue)
     if (this.isFrameworkTech()) {
       // Prefer solutionAsset files if present: hand off to framework panel
-      const sol = this.solutionFilesMap();
+      const sol = this.activeSolutionFilesMap();
       if (sol && Object.keys(sol).length) {
         this.frameworkPanel?.applySolutionFiles();
         return;
@@ -3242,6 +3756,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
 
   onSolutionTabClick() {
+    if (this.pressureActive()) {
+      if (!this.pressureCompleted()) return;
+      if (this.descCollapsed()) this.toggleDescription();
+      this.showSolutionWarning.set(false);
+      this.activePanel.set(1);
+      return;
+    }
     if (this.descCollapsed()) this.toggleDescription();
     this.activePanel.set(1);
     // Only warn when it makes sense (course context, etc.)
@@ -3278,7 +3799,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   loadSolutionIntoEditor() {
     // For frameworks: delegate to panel; for JS/TS keep existing behavior.
     if (this.isFrameworkTech()) {
-      this.frameworkPanel?.applySolutionFiles(this.solutionOpenPath());
+      this.frameworkPanel?.applySolutionFiles(this.solutionCurrentPath());
       return;
     }
     this.loadSolutionCode(); // JS/TS legacy
@@ -3636,8 +4157,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   openSolutionFile(path: string) {
-    const files = this.solutionFilesMap();
+    const files = this.activeSolutionFilesMap();
     if (!path || !(path in files)) return;
-    this.solutionOpenPath.set(path);
+    if (this.pressureActive() && this.pressureCompleted()) {
+      this.pressureSolutionOpenPath.set(path);
+    } else {
+      this.solutionOpenPath.set(path);
+    }
   }
 } 
