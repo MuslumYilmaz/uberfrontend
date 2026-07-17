@@ -144,6 +144,64 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
       }, true);
     })();
 
+    (function(){
+      const originalSetTimeout = window.setTimeout.bind(window);
+      const originalClearTimeout = window.clearTimeout.bind(window);
+      const originalSetInterval = window.setInterval.bind(window);
+      const originalClearInterval = window.clearInterval.bind(window);
+      const originalAddEventListener = document.addEventListener.bind(document);
+      const originalRemoveEventListener = document.removeEventListener.bind(document);
+      const activeTimers = new Set();
+      const documentListeners = new Set();
+      let timerBaseline = new Set();
+
+      window.setTimeout = function(fn, delay){
+        let id;
+        const wrapped = function(){
+          activeTimers.delete(id);
+          if (typeof fn === 'function') return fn.apply(this, arguments);
+          try { return (0, eval)(String(fn)); } catch (_e) { return undefined; }
+        };
+        id = originalSetTimeout(wrapped, delay);
+        activeTimers.add(id);
+        return id;
+      };
+      window.clearTimeout = function(id){
+        activeTimers.delete(id);
+        return originalClearTimeout(id);
+      };
+      window.setInterval = function(fn, delay){
+        const id = originalSetInterval(fn, delay);
+        activeTimers.add(id);
+        return id;
+      };
+      window.clearInterval = function(id){
+        activeTimers.delete(id);
+        return originalClearInterval(id);
+      };
+      document.addEventListener = function(type, listener, options){
+        if (listener) documentListeners.add(type + ':' + String(listener));
+        return originalAddEventListener(type, listener, options);
+      };
+      document.removeEventListener = function(type, listener, options){
+        if (listener) documentListeners.delete(type + ':' + String(listener));
+        return originalRemoveEventListener(type, listener, options);
+      };
+      window.__FA_GET_PREVIEW_LEAKS = function(){
+        return { timers: activeTimers.size, documentListeners: documentListeners.size };
+      };
+      window.__FA_MARK_PREVIEW_TIMER_BASELINE = function(){
+        timerBaseline = new Set(activeTimers);
+      };
+      window.__FA_GET_PREVIEW_TIMER_LEAKS = function(){
+        let count = 0;
+        activeTimers.forEach(function(id){
+          if (!timerBaseline.has(id)) count += 1;
+        });
+        return count;
+      };
+    })();
+
     const overlay = document.getElementById('_fa_overlay');
     const overlayMsg = document.getElementById('_fa_overlay_msg');
     const overlayMeta = document.getElementById('_fa_overlay_meta');
@@ -248,7 +306,11 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           );
           return;
         }
-        Vue.createApp(AppRef).mount('#app');
+        const app = Vue.createApp(AppRef);
+        window.__FA_UNMOUNT_PREVIEW = function(){
+          try { app.unmount(); } catch (_e) {}
+        };
+        app.mount('#app');
         waitForHostPaint('#app', 10000);
       }catch(e){
         const stack = e?.stack ? '\\n\\n'+e.stack : '';

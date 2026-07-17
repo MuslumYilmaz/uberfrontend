@@ -278,6 +278,113 @@ function assertModernAngularCodingCorpus() {
   );
 }
 
+function assertCounterPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-counter',
+      starter: 'assets/sb/react/question/react-counter.v1.json',
+      solution: 'assets/sb/react/solution/react-counter-solution.v1.json',
+    },
+    angular: {
+      id: 'angular-counter-starter',
+      starter: 'assets/sb/angular/question/angular-counter.v2.json',
+      solution: 'assets/sb/angular/solution/angular-counter-solution.v2.json',
+    },
+    vue: {
+      id: 'vue-counter',
+      starter: 'assets/sb/vue/question/vue-counter.v1.json',
+      solution: 'assets/sb/vue/solution/vue-counter-solution.v1.json',
+    },
+  };
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Counter question must exist`);
+    assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal Counter starter changed`);
+    assert.equal(question.solutionAsset, expected.solution, `${framework}: normal Counter solution changed`);
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((test) => test.id),
+      ['counter-basic-flow'],
+      `${framework}: normal Counter checks must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/counter.v1.json',
+      `${framework}: Counter must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(pressureRefs.size, 1, 'All Counter frameworks must share one pressure scenario');
+  const scenario = json('cdn/questions/pressure-modes/counter.v1.json');
+  assert.equal(scenario.id, 'counter-pressure-v1');
+  assert.equal(scenario.access, 'free');
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-counter',
+    angular: 'angular-counter-starter',
+    vue: 'vue-counter',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['base-correctness', 'configurable-step', 'keyboard-accessibility', 'auto-lifecycle']
+  );
+  const pressureCheckCount = scenario.rounds.reduce(
+    (total, round) => total + (round.frameworkTests?.length ?? 0),
+    0
+  );
+  assert.equal(pressureCheckCount, 5, 'Counter pressure mode must stay within the six-check runner budget');
+  assert.ok(
+    scenario.rounds
+      .flatMap((round) => round.frameworkTests ?? [])
+      .flatMap((test) => test.steps ?? [])
+      .some((step) => step.type === 'expectNoPreviewTimers'),
+    'Counter pressure lifecycle must assert that component teardown clears its interval'
+  );
+
+  const solutionMarkers = {
+    react: [/useEffect/, /clearInterval/, /aria-live/],
+    angular: [/implements OnDestroy/, /clearInterval/, /aria-live/],
+    vue: [/onUnmounted/, /clearInterval/, /aria-live/],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.match(
+      reference,
+      new RegExp(`^assets/sb/${framework}/solution/.+\\.json$`),
+      `${framework}: invalid pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:counter-pressure-solution`);
+    const files = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:counter-pressure-solution`
+    );
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of solutionMarkers[framework]) {
+      assert.match(source, marker, `${framework}: pressure solution is missing ${marker}`);
+    }
+  }
+
+  for (const builder of [
+    'frontend/src/app/core/utils/react-preview-builder.ts',
+    'frontend/src/app/core/utils/angular-preview-builder.ts',
+    'frontend/src/app/core/utils/vue-preview-builder.ts',
+  ]) {
+    const source = read(builder);
+    assert.match(source, /__FA_UNMOUNT_PREVIEW/, `${builder}: missing preview teardown hook`);
+    assert.match(source, /__FA_GET_PREVIEW_LEAKS/, `${builder}: missing preview leak instrumentation`);
+    assert.match(source, /__FA_MARK_PREVIEW_TIMER_BASELINE/, `${builder}: missing timer baseline hook`);
+    assert.match(source, /__FA_GET_PREVIEW_TIMER_LEAKS/, `${builder}: missing scoped timer leak hook`);
+    assert.match(source, /setInterval/, `${builder}: interval leaks must be instrumented`);
+  }
+}
+
 async function drainMicrotasks() {
   for (let index = 0; index < 8; index += 1) await Promise.resolve();
 }
@@ -923,6 +1030,7 @@ assert.match(strictEffectSolutionCode, /\[roomId, onActiveCount\]/);
 
 assertFrameworkStarterCorpus();
 assertModernAngularCodingCorpus();
+assertCounterPressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');
 const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');

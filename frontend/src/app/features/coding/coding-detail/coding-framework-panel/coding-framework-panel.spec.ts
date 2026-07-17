@@ -1,4 +1,4 @@
-import { PLATFORM_ID, NgZone } from '@angular/core';
+import { PLATFORM_ID, NgZone, SimpleChange } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
@@ -226,6 +226,50 @@ describe('CodingFrameworkPanelComponent', () => {
     component.initFromQuestion();
 
     expect(component.frameworkChecks()).toEqual([]);
+  });
+
+  it('switches pressure checks without reinitializing the framework workspace', () => {
+    const component = createComponent();
+    const initSpy = spyOn(component, 'initFromQuestion');
+    const pressureChecks = [{
+      id: 'pressure-round-2',
+      name: 'Pressure round 2',
+      steps: [{ type: 'expectValue', selector: '#step-size', value: '5' }],
+    }] as any;
+
+    component.frameworkTestsOverride = pressureChecks;
+    component.ngOnChanges({
+      frameworkTestsOverride: new SimpleChange(null, pressureChecks, false),
+    });
+
+    expect(initSpy).not.toHaveBeenCalled();
+    expect(component.frameworkChecks()).toEqual(pressureChecks);
+    expect(component.frameworkCheckResults()).toEqual([]);
+  });
+
+  it('flushes the old draft and reinitializes when the storage key changes', async () => {
+    const component = createComponent();
+    component.onFrameworkCodeChange('export default function App() { return <div>Normal draft</div>; }');
+    component.storageKeyOverride = 'pressure:counter-pressure-v1:react-case';
+
+    component.ngOnChanges({
+      storageKeyOverride: new SimpleChange(null, component.storageKeyOverride, false),
+    });
+    await flushMicrotasks();
+
+    expect(codeStore.saveFrameworkFileAsync).toHaveBeenCalledWith(
+      'react-case',
+      'react',
+      'src/App.tsx',
+      'export default function App() { return <div>Normal draft</div>; }',
+      { allowEmpty: true },
+    );
+    expect(codeStore.initFrameworkAsync).toHaveBeenCalledWith(
+      jasmine.stringMatching(/^pressure:counter-pressure-v1:react-case@/),
+      'react',
+      jasmine.any(Object),
+      jasmine.any(String),
+    );
   });
 
   it('ignores stale async framework init results from an older question', async () => {

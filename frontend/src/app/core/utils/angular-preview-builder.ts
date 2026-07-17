@@ -175,6 +175,13 @@ function compileTS(src, filename){
     var src = String(FA[path] || '');
     if (!src) throw new Error('File not found: ' + path);
 
+    if (path === 'src/main.ts') {
+      src = src.replace(
+        /bootstrapApplication\\s*\\(/,
+        'globalThis.__FA_BOOTSTRAP_PROMISE = bootstrapApplication('
+      );
+    }
+
     // Inline external resources BEFORE compiling
     src = inlineTemplateAndStyles(src, path);
 
@@ -339,6 +346,64 @@ function compileTS(src, filename){
       }, true);
     })();
 
+    (function(){
+      const originalSetTimeout = window.setTimeout.bind(window);
+      const originalClearTimeout = window.clearTimeout.bind(window);
+      const originalSetInterval = window.setInterval.bind(window);
+      const originalClearInterval = window.clearInterval.bind(window);
+      const originalAddEventListener = document.addEventListener.bind(document);
+      const originalRemoveEventListener = document.removeEventListener.bind(document);
+      const activeTimers = new Set();
+      const documentListeners = new Set();
+      let timerBaseline = new Set();
+
+      window.setTimeout = function(fn, delay){
+        let id;
+        const wrapped = function(){
+          activeTimers.delete(id);
+          if (typeof fn === 'function') return fn.apply(this, arguments);
+          try { return (0, eval)(String(fn)); } catch (_e) { return undefined; }
+        };
+        id = originalSetTimeout(wrapped, delay);
+        activeTimers.add(id);
+        return id;
+      };
+      window.clearTimeout = function(id){
+        activeTimers.delete(id);
+        return originalClearTimeout(id);
+      };
+      window.setInterval = function(fn, delay){
+        const id = originalSetInterval(fn, delay);
+        activeTimers.add(id);
+        return id;
+      };
+      window.clearInterval = function(id){
+        activeTimers.delete(id);
+        return originalClearInterval(id);
+      };
+      document.addEventListener = function(type, listener, options){
+        if (listener) documentListeners.add(type + ':' + String(listener));
+        return originalAddEventListener(type, listener, options);
+      };
+      document.removeEventListener = function(type, listener, options){
+        if (listener) documentListeners.delete(type + ':' + String(listener));
+        return originalRemoveEventListener(type, listener, options);
+      };
+      window.__FA_GET_PREVIEW_LEAKS = function(){
+        return { timers: activeTimers.size, documentListeners: documentListeners.size };
+      };
+      window.__FA_MARK_PREVIEW_TIMER_BASELINE = function(){
+        timerBaseline = new Set(activeTimers);
+      };
+      window.__FA_GET_PREVIEW_TIMER_LEAKS = function(){
+        let count = 0;
+        activeTimers.forEach(function(id){
+          if (!timerBaseline.has(id)) count += 1;
+        });
+        return count;
+      };
+    })();
+
     window.addEventListener('error', (e) => {
       const basic = String(e && (e.message || e.error) || 'Error');
       const where = (e && e.filename) ? (e.filename + (e.lineno? ':'+e.lineno+(e.colno? ':'+e.colno:'') : '')) : '';
@@ -365,6 +430,10 @@ function compileTS(src, filename){
       // Build & import your app entry via Blob URL (no percent-encoded data URLs)
       const mainURL = self.FA_emit('src/main.ts');
       await import(mainURL);
+      const appRef = await self.__FA_BOOTSTRAP_PROMISE;
+      window.__FA_UNMOUNT_PREVIEW = function(){
+        try { if (appRef && typeof appRef.destroy === 'function') appRef.destroy(); } catch (_e) {}
+      };
       await waitForHostPaint('app-root', 10000);
       notifyReady('render');
     }catch(e){

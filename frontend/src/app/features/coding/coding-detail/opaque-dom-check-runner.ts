@@ -547,6 +547,19 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       }
       return Promise.resolve();
     }
+    if (type === 'expectNoPreviewTimers') {
+      const target = window as Window & {
+        __FA_GET_PREVIEW_TIMER_LEAKS?: () => number;
+        __FA_GET_PREVIEW_LEAKS?: () => { timers?: number };
+      };
+      const timers = typeof target.__FA_GET_PREVIEW_TIMER_LEAKS === 'function'
+        ? Number(target.__FA_GET_PREVIEW_TIMER_LEAKS() || 0)
+        : Number(target.__FA_GET_PREVIEW_LEAKS?.()?.timers || 0);
+      if (timers) {
+        throw new Error(`Preview leaked ${timers} timer(s)`);
+      }
+      return Promise.resolve();
+    }
     if (!selector) throw new Error(`${type || 'step'} is missing a selector`);
     if (type === 'waitForText') return waitForText(step);
     if (type === 'waitForCount') return waitForCount(step);
@@ -645,6 +658,12 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (!steps.length) {
       send('framework', [{ name, passed: false, error: 'No check steps configured' }]);
       return Promise.resolve();
+    }
+    if (steps.some((step) => String(step?.type || step?.action || '') === 'expectNoPreviewTimers')) {
+      const markBaseline = (window as Window & {
+        __FA_MARK_PREVIEW_TIMER_BASELINE?: () => void;
+      }).__FA_MARK_PREVIEW_TIMER_BASELINE;
+      markBaseline?.();
     }
     return runSequentially(steps, executeStep).then(
       () => { send('framework', [{ name, passed: true }]); },

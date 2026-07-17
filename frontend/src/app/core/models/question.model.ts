@@ -84,6 +84,7 @@ export type FrameworkTestStepType =
   | 'expectClass'
   | 'key'
   | 'unmountPreview'
+  | 'expectNoPreviewTimers'
   | 'expectNoPreviewLeaks';
 
 export type FrameworkTestStep = {
@@ -156,6 +157,7 @@ export interface Question {
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
   decisionGraphAsset?: string;
   decisionGraphKey?: string;
+  pressureModeAsset?: string;
   incidentCard?: TriviaIncidentCard;
 }
 
