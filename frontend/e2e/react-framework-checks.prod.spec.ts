@@ -8,6 +8,7 @@ import {
   waitForIndexedDbKeyPrefixContains,
   waitForIndexedDbKeyPrefixNotContains,
 } from './helpers';
+import { buildMockUser, installAuthMock } from './auth-mocks';
 
 type SolutionFile = string | { code?: unknown };
 
@@ -19,7 +20,7 @@ const COUNTER_SOLUTION = readCanonicalFile(
   'src/App.tsx',
 );
 
-const PRESSURE_SOLUTIONS = {
+const COUNTER_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-counter-pressure-solution.v1.json',
   ),
@@ -30,6 +31,69 @@ const PRESSURE_SOLUTIONS = {
     '../cdn/sb/vue/solution/vue-counter-pressure-solution.v1.json',
   ),
 } as const;
+
+const DEBOUNCE_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-debounced-search-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-debounced-search-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-debounced-search-pressure-solution.v1.json',
+  ),
+} as const;
+
+const TODO_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-todo-list-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-todo-list-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-todo-list-pressure-solution.v1.json',
+  ),
+} as const;
+
+type PressureFlowContract = {
+  checkCounts: number[];
+  roundIds: string[];
+  debriefText: string;
+};
+
+const COUNTER_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'base-correctness',
+    'configurable-step',
+    'keyboard-accessibility',
+    'auto-lifecycle',
+  ],
+  debriefText: 'You handled a changing interview contract',
+};
+
+const DEBOUNCE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'base-debounce',
+    'state-recovery',
+    'latest-query-wins',
+    'accessible-lifecycle',
+  ],
+  debriefText: 'You kept async search correct under pressure',
+};
+
+const TODO_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-transitions',
+    'derived-filters',
+    'keyboard-editing',
+    'undo-lifecycle',
+  ],
+  debriefText: 'You kept task state predictable under pressure',
+};
 
 const AUTOCOMPLETE_SOLUTION = readCanonicalFile(
   '../cdn/sb/react/solution/react-autocomplete-search-solution.v2.json',
@@ -157,19 +221,14 @@ async function runChecks(page: Page, expectedCount: number): Promise<Locator> {
   return page.getByTestId('framework-results-panel');
 }
 
-async function completePressureRounds(page: Page): Promise<void> {
-  const checkCounts = [1, 2, 3, 5];
-  const roundIds = [
-    'base-correctness',
-    'configurable-step',
-    'keyboard-accessibility',
-    'auto-lifecycle',
-  ];
-
-  for (const [index, expectedCount] of checkCounts.entries()) {
+async function completePressureRounds(
+  page: Page,
+  contract: PressureFlowContract = COUNTER_PRESSURE_FLOW,
+): Promise<void> {
+  for (const [index, expectedCount] of contract.checkCounts.entries()) {
     await expect(page.getByTestId('pressure-active-round')).toHaveAttribute(
       'data-round-id',
-      roundIds[index],
+      contract.roundIds[index],
     );
     const results = await runChecks(page, expectedCount);
     await expect(results.locator('.framework-check-results__summary')).toHaveText(
@@ -180,7 +239,7 @@ async function completePressureRounds(page: Page): Promise<void> {
       results.locator('[data-testid="framework-check-result"][data-failure-kind]'),
     ).toHaveCount(0);
 
-    if (index < checkCounts.length - 1) {
+    if (index < contract.checkCounts.length - 1) {
       const next = page.getByTestId('pressure-next-round');
       await expect(next).toBeVisible();
       await next.click();
@@ -190,8 +249,41 @@ async function completePressureRounds(page: Page): Promise<void> {
   await dismissPostPassPrompt(page);
   await expect(page.getByTestId('pressure-debrief')).toBeVisible();
   await expect(page.getByTestId('pressure-debrief')).toContainText(
-    'You handled a changing interview contract',
+    contract.debriefText,
   );
+}
+
+async function seedPremiumSession(page: Page, baseURL: string): Promise<void> {
+  const token = `e2e-pressure-premium-${Date.now()}`;
+  const user = buildMockUser({
+    _id: 'e2e-pressure-premium-user',
+    username: 'pressure_premium_user',
+    email: 'pressure-premium@example.com',
+    accessTier: 'premium',
+  });
+
+  await installAuthMock(page, { token, user });
+  await page.context().addCookies([{
+    name: 'access_token',
+    value: encodeURIComponent(token),
+    url: baseURL,
+  }]);
+  const loginStatus = await page.evaluate(async () => {
+    const response = await fetch('https://api.frontendatlas.com/api/auth/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        emailOrUsername: 'pressure_premium_user',
+        password: 'e2e-password',
+      }),
+    });
+    return response.status;
+  });
+  if (loginStatus !== 200) {
+    throw new Error(`Premium auth mock login failed with ${loginStatus}`);
+  }
+  await page.evaluate(() => localStorage.setItem('fa:auth:session', '1'));
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
@@ -343,7 +435,7 @@ test.describe('Framework checks against the production SSR build', () => {
       await expectNoHorizontalOverflow(page);
     }
 
-    await loadCanonicalBundle(page, PRESSURE_SOLUTIONS.react);
+    await loadCanonicalBundle(page, COUNTER_PRESSURE_SOLUTIONS.react);
     await rebuildPreview(page, '.value');
     await completePressureRounds(page);
 
@@ -367,21 +459,146 @@ test.describe('Framework checks against the production SSR build', () => {
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.value');
 
-      await loadCanonicalBundle(page, PRESSURE_SOLUTIONS[framework]);
+      await loadCanonicalBundle(page, COUNTER_PRESSURE_SOLUTIONS[framework]);
       await rebuildPreview(page, '.value');
       await completePressureRounds(page);
     });
   }
 
-  test('unsupported pressure URLs fall back to the normal canonical question flow', async ({ page }) => {
-    await page.goto('/react/coding/react-todo-list?mode=pressure');
+  test('React Debounced Search keeps its premium pressure draft isolated and passes every round', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-debounced-search');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
-    await expect(page).toHaveURL(/\/react\/coding\/react-todo-list$/);
+    await waitForFrameworkPreview(page, '.input');
+
+    const entry = page.getByTestId('pressure-mode-entry');
+    await expect(entry).toBeVisible();
+    await expect(entry).toContainText('Continue the same challenge through cumulative rounds');
+    await expect(entry).not.toContainText('Counter');
+
+    const normalMarker = `normal-debounce-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-debounced-search@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-debounced-search\?mode=pressure$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-debounced-search$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, DEBOUNCE_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.input');
+    await completePressureRounds(page, DEBOUNCE_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await expect(page.getByTestId('pressure-mode-complete')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-complete')).not.toContainText('Counter');
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-debounced-search$/);
+    await waitForFrameworkPreview(page, '.input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    test(`${framework} Debounced Search passes async race, accessibility, and cleanup pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${framework}-debounced-search?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.input');
+
+      await loadCanonicalBundle(page, DEBOUNCE_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.input');
+      await completePressureRounds(page, DEBOUNCE_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Todo List keeps normal and pressure drafts isolated across all four rounds', async ({ page }) => {
+    await page.goto('/react/coding/react-todo-list');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.input-row input');
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
-    await expect(page.getByTestId('pressure-mode-entry')).toHaveCount(0);
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+
+    const normalMarker = `normal-todo-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-todo-list@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-todo-list\?mode=pressure$/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       /\/react\/coding\/react-todo-list$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.input-row input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, TODO_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '#new-task');
+    await completePressureRounds(page, TODO_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-todo-list$/);
+    await waitForFrameworkPreview(page, '.input-row input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    const questionId = framework === 'angular'
+      ? 'angular-todo-list-starter'
+      : 'vue-todo-list';
+
+    test(`${framework} Todo List passes state, editing, undo, and cleanup pressure rounds`, async ({ page }) => {
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.input-row input');
+
+      await loadCanonicalBundle(page, TODO_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '#new-task');
+      await completePressureRounds(page, TODO_PRESSURE_FLOW);
+    });
+  }
+
+  test('unsupported pressure URLs fall back to the normal canonical question flow', async ({ page }) => {
+    await page.goto('/react/coding/react-autocomplete-search-starter?mode=pressure');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toBeDisabled();
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveText('Coming soon');
+    await expect(page.getByTestId('pressure-mode-start')).toHaveCount(0);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-autocomplete-search-starter$/,
     );
   });
 

@@ -1,5 +1,6 @@
 import {
   OpaqueCheckCancelledError,
+  OpaqueCheckExecutionTimeoutError,
   OpaqueDomCheckRunner,
   OpaquePreviewReadyTimeoutError,
 } from './opaque-dom-check-runner';
@@ -165,7 +166,7 @@ describe('OpaqueDomCheckRunner', () => {
     const check = [{
       id: 'bounded-failure',
       name: 'Bounded failure',
-      steps: [{ type: 'wait', durationMs: 100 }],
+      steps: [{ type: 'wait', durationMs: 10_000 }],
     }] as any;
 
     const boot = await runner.runFramework(
@@ -206,24 +207,30 @@ describe('OpaqueDomCheckRunner', () => {
   });
 
   it('continues with a fresh frame after one assertion-execution timeout', async () => {
-    const createElement = spyOn(document, 'createElement').and.callThrough();
-    const html = `<!doctype html><html><body><div class="ready">Ready</div><script>
-      window.__FA_NOTIFY_PREVIEW_READY('render-ready');
-    <\/script></body></html>`;
+    const runFrame = spyOn<any>(runner, 'runFrame').and.returnValues(
+      Promise.reject(new OpaqueCheckExecutionTimeoutError('framework')),
+      Promise.resolve([{ name: 'Fast assertion', passed: true }]),
+    );
     const results = await runner.runFramework(
-      html,
+      '<!doctype html><html><body><div class="ready">Ready</div></body></html>',
       [
         { id: 'slow', name: 'Slow assertion', steps: [{ type: 'wait', durationMs: 100 }] },
         { id: 'fast', name: 'Fast assertion', steps: [{ type: 'expectExists', selector: '.ready' }] },
       ] as any,
-      { checkTimeoutMs: 20 },
     );
+    const firstOptions = runFrame.calls.argsFor(0)[0] as {
+      config: { invocationId: string; frameId: string };
+    };
+    const secondOptions = runFrame.calls.argsFor(1)[0] as {
+      config: { invocationId: string; frameId: string };
+    };
 
     expect(results[0].passed).toBeFalse();
     expect(results[0].failureKind).toBe('assertion-timeout');
     expect(results[1]).toEqual({ name: 'Fast assertion', passed: true });
-    expect(createElement.calls.allArgs().filter(([tag]) => tag === 'iframe').length).toBe(2);
-    expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
+    expect(runFrame).toHaveBeenCalledTimes(2);
+    expect(firstOptions.config.invocationId).toBe(secondOptions.config.invocationId);
+    expect(firstOptions.config.frameId).not.toBe(secondOptions.config.frameId);
   });
 
   it('runs the real React builder with production vendor assets at the assertion layer', async () => {

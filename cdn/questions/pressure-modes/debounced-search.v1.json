@@ -1,0 +1,361 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "debounced-search-pressure-v1",
+  "family": "debounced-search",
+  "title": "Debounced Search Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-debounced-search",
+    "angular": "angular-debounced-search",
+    "vue": "vue-debounced-search"
+  },
+  "rounds": [
+    {
+      "id": "base-debounce",
+      "title": "Base debounce",
+      "interviewerPrompt": "Start with a dependable search flow that waits for the final query before showing results.",
+      "constraints": [
+        "Treat the trimmed input as the search query.",
+        "Restart the 500 ms debounce window whenever the query changes.",
+        "Do not show results before the final query finishes its debounce and request.",
+        "Render matching users with the existing result-row contract."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-debounce-base",
+          "name": "Round 1 · Rapid input waits for the final query",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Bob"
+            },
+            {
+              "type": "wait",
+              "durationMs": 150
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Alice"
+            },
+            {
+              "type": "wait",
+              "durationMs": 900
+            },
+            {
+              "type": "expectCount",
+              "selector": ".result-row",
+              "count": 0
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".card",
+              "text": "Alice Johnson",
+              "match": "contains"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".result-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".result-row",
+              "text": "Alice",
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "state-recovery",
+      "title": "State recovery",
+      "interviewerPrompt": "The interviewer now wants every terminal state to recover cleanly when the user keeps typing.",
+      "constraints": [
+        "Show the fake API failure for the query error without leaving loading active.",
+        "Show an explicit no-results state for a completed search with no matches.",
+        "Clear stale errors and results when a new query starts.",
+        "Treat whitespace-only input as empty and return to the initial prompt."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-debounce-recovery",
+          "name": "Round 2 · Error, no-results, and whitespace recovery",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "error"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Fake API error",
+              "match": "contains",
+              "timeoutMs": 1800
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "zz"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No results found",
+              "match": "contains",
+              "timeoutMs": 1800
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".status-row",
+              "text": "Fake API error",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "   "
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--muted",
+              "text": "Start typing to search.",
+              "match": "contains"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".result-row",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".empty",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "latest-query-wins",
+      "title": "Latest query wins",
+      "interviewerPrompt": "Assume requests can overlap. Only the newest query may commit results or finish the loading state.",
+      "constraints": [
+        "Clear old result rows as soon as a newer non-empty query starts.",
+        "Cancel or ignore every response that no longer belongs to the current query.",
+        "A stale response must not change results, loading, or error state.",
+        "Keep loading active until the current request settles."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-debounce-latest-query",
+          "name": "Round 3 · Stale Alice cannot overwrite Bob",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Alice"
+            },
+            {
+              "type": "wait",
+              "durationMs": 850
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Bob"
+            },
+            {
+              "type": "wait",
+              "durationMs": 350
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".card",
+              "text": "Alice Johnson",
+              "match": "contains"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".result-row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Searching",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".result-row",
+              "text": "Bob",
+              "match": "contains",
+              "timeoutMs": 1000
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".card",
+              "text": "Alice Johnson",
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-lifecycle",
+      "title": "Accessible lifecycle",
+      "interviewerPrompt": "Finish by making state announcements explicit and proving that teardown leaves no search timer behind.",
+      "constraints": [
+        "Connect the input to stable search-status and search-results regions with aria-describedby and aria-controls.",
+        "Expose the status row as an atomic polite live region.",
+        "Expose request activity with aria-busy and errors with role alert.",
+        "Cancel both a pending debounce and an already-started fake request during teardown.",
+        "Do not update state after the component unmounts or is destroyed."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-debounce-aria",
+          "name": "Round 4 · Search status is announced",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "aria-describedby",
+              "expected": "search-status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "aria-controls",
+              "expected": "search-results"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".status-row",
+              "attribute": "id",
+              "expected": "search-status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".status-row",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".status-row",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".status-row",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#search-results",
+              "attribute": "aria-busy",
+              "expected": "false"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Alice"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#search-results",
+              "attribute": "aria-busy",
+              "expected": "true"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".result-row",
+              "count": 1,
+              "timeoutMs": 1800
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#search-results",
+              "attribute": "aria-busy",
+              "expected": "false"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "error"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Fake API error",
+              "match": "contains",
+              "timeoutMs": 1800
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".status--error",
+              "attribute": "role",
+              "expected": "alert"
+            }
+          ]
+        },
+        {
+          "id": "pressure-debounce-cleanup",
+          "name": "Round 4 · In-flight timer cleanup",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Alice"
+            },
+            {
+              "type": "wait",
+              "durationMs": 550
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Bob"
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept async search correct under pressure",
+    "summary": "The final implementation treats debounce, request ownership, UI recovery, accessibility, and teardown as one state machine. The interview signal is preserving the latest-query invariant while every visible state remains recoverable.",
+    "takeaways": [
+      "Normalize the query once and let every branch use the same empty-query rule.",
+      "Separate the debounce timer from request ownership so stale work cannot commit state.",
+      "Clear stale results and errors when a newer query starts, but let only that query finish loading.",
+      "Make status announcements stable and cancel all scheduled work at the component boundary."
+    ],
+    "frameworkNotes": {
+      "react": "An effect cleanup cancels its debounce and in-flight timer, while request ownership prevents stale closures from committing state.",
+      "angular": "debounceTime and switchMap enforce latest-query ownership, and the destroy signal unsubscribes from both debounce and delayed request timers.",
+      "vue": "The watcher cleanup invalidates each query, while onUnmounted delegates to the same cancellation path for any active request timer."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-debounced-search-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-debounced-search-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-debounced-search-pressure-solution.v1.json"
+  }
+}

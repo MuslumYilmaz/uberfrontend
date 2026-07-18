@@ -2,6 +2,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { ActivityService } from '../../../core/services/activity.service';
@@ -136,7 +137,12 @@ describe('CodingDetailComponent', () => {
     pressureProgress.hasPendingCompletion.and.returnValue(false);
 
     await TestBed.configureTestingModule({
-      imports: [CodingDetailComponent, RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        CodingDetailComponent,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        NoopAnimationsModule,
+      ],
       providers: [
         { provide: QuestionService, useValue: questionService },
         { provide: DailyService, useValue: dailyService },
@@ -477,15 +483,12 @@ describe('CodingDetailComponent', () => {
     expect(activity.complete).not.toHaveBeenCalled();
   });
 
-  it('exposes interview hero metadata and tracks Start coding', fakeAsync(() => {
+  it('exposes interview hero metadata without a redundant Start coding action', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
-    const focusEditor = jasmine.createSpy('focusEditor');
-
-    component.tech = 'react';
-    component.kind = 'coding';
-    component.question.set({
+    const question = {
       id: 'react-autocomplete-search-starter',
+      title: 'React Autocomplete Search',
       access: 'free',
       difficulty: 'intermediate',
       estimatedMinutes: 40,
@@ -499,22 +502,33 @@ describe('CodingDetailComponent', () => {
           techFocus: ['React state/effects', 'Debounce'],
         },
       },
-    } as any);
-    component.frameworkPanel = { focusEditor } as any;
+      sdk: {
+        asset: 'assets/sb/react/question/react-autocomplete-search.v2.json',
+        openFile: '/src/App.tsx',
+        storageKey: 'v2:ui:react:react-autocomplete-search-starter',
+      },
+      frameworkTests: [],
+    } as any;
+
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isPhoneViewport.set(false);
+    component.liteEditors.set(true);
+    fixture.detectChanges();
 
     expect(component.interviewFocusSummary()).toContain('Frontend machine coding interview question');
     expect(component.questionTimeboxLabel()).toBe('35-45 min');
     expect(component.assessedSkillChips()).toEqual(['React state/effects', 'Debounce']);
-
-    component.startCoding();
-    tick(0);
-
-    expect(analytics.track).toHaveBeenCalledWith('start_coding', jasmine.objectContaining({
-      question_id: 'react-autocomplete-search-starter',
-      tech: 'react',
-    }));
-    expect(focusEditor).toHaveBeenCalled();
-  }));
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-interview-hero"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-start-coding"]')).toBeNull();
+  });
 
   it('tracks solution reveal once when the solution body is shown', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
@@ -759,6 +773,10 @@ describe('CodingDetailComponent', () => {
   it('lets a guest finish pressure checks locally and records a pending sign-in claim', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
+    const threeRoundScenario = {
+      ...pressureScenario,
+      rounds: pressureScenario.rounds.slice(0, 3),
+    };
 
     auth.isLoggedIn.and.returnValue(false);
     component.tech = 'vue';
@@ -770,14 +788,14 @@ describe('CodingDetailComponent', () => {
       pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
     } as any);
     component.pressureRequested.set(true);
-    component.pressureScenario.set(pressureScenario);
-    component.pressureRoundIndex.set(3);
-    component.pressureClearedRounds.set(3);
+    component.pressureScenario.set(threeRoundScenario);
+    component.pressureRoundIndex.set(2);
+    component.pressureClearedRounds.set(2);
 
     await component.onFrameworkCheckRun({
       questionId: 'vue-counter',
       passed: true,
-      results: pressureScenario.rounds.map((round: { title: string }) => ({
+      results: threeRoundScenario.rounds.map((round: { title: string }) => ({
         name: round.title,
         passed: true,
       })),
@@ -786,15 +804,144 @@ describe('CodingDetailComponent', () => {
     expect(activity.complete).not.toHaveBeenCalled();
     expect(component.pressureCompleted()).toBeTrue();
     expect(component.loginPromptOpen).toBeTrue();
+    expect(component.loginPromptBody).toContain('save all 3 rounds');
     expect(pressureProgress.markPendingCompletion).toHaveBeenCalledWith(
       pressureScenario.id,
       'vue-counter',
       {
-        activeRoundIndex: 3,
-        clearedRounds: 4,
+        activeRoundIndex: 2,
+        clearedRounds: 3,
         completed: true,
       },
     );
+  });
+
+  it('keeps pressure entry, loading, and completion copy independent of the Counter family', async () => {
+    const question = {
+      id: 'react-debounced-search',
+      title: 'React Debounced Search',
+      access: 'premium',
+      difficulty: 'intermediate',
+      pressureModeAsset: 'assets/questions/pressure-modes/debounced-search.v1.json',
+      sdk: {
+        asset: 'assets/sb/react/question/react-debounced-search.v1.json',
+        openFile: '/src/App.tsx',
+        storageKey: 'v2:ui:react:react-debounced-search',
+      },
+      frameworkTests: [],
+    } as any;
+    const debouncedScenario = {
+      ...pressureScenario,
+      id: 'debounced-search-pressure-v1',
+      family: 'debounced-search',
+      title: 'Debounced Search Interview Pressure Mode',
+      access: 'premium',
+      supportedQuestions: { react: question.id },
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+    auth.isLoggedIn.and.returnValue(true);
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+
+    const entry = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-entry"]'
+    ) as HTMLElement;
+    expect(entry.textContent).toContain('Continue the same challenge through cumulative rounds');
+    expect(entry.textContent).not.toContain('Counter');
+    expect(entry.textContent).not.toContain('four rounds');
+    const startButton = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-start"]'
+    ) as HTMLButtonElement;
+    expect(startButton.disabled).toBeFalse();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pressure-mode-coming-soon"]')
+    ).toBeNull();
+
+    component.pressureRequested.set(true);
+    component.pressureLoading.set(true);
+    fixture.detectChanges();
+    const loading = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-workspace-loading"]'
+    ) as HTMLElement;
+    expect(loading.textContent).toContain('without touching your normal draft');
+    expect(loading.textContent).not.toContain('Counter');
+
+    component.pressureLoading.set(false);
+    component.pressureScenario.set(debouncedScenario);
+    component.pressureCompleted.set(true);
+    fixture.detectChanges();
+    const completion = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-complete"]'
+    ) as HTMLElement;
+    expect(completion.textContent).toContain('underlying coding challenge completion');
+    expect(completion.textContent).not.toContain('Counter');
+  });
+
+  it('shows a disabled Coming soon pressure entry for unsupported framework questions', async () => {
+    const question = {
+      id: 'react-autocomplete-search-starter',
+      title: 'React Autocomplete Search',
+      access: 'free',
+      difficulty: 'intermediate',
+      sdk: {
+        asset: 'assets/sb/react/question/react-autocomplete-search.v2.json',
+        openFile: '/src/App.tsx',
+        storageKey: 'v2:ui:react:react-autocomplete-search-starter',
+      },
+      frameworkTests: [],
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+
+    const entry = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-entry"]'
+    ) as HTMLElement;
+    const comingSoonButton = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-coming-soon"]'
+    ) as HTMLButtonElement;
+    expect(entry.textContent).toContain('tailored cumulative pressure mode');
+    expect(comingSoonButton.textContent?.trim()).toBe('Coming soon');
+    expect(comingSoonButton.disabled).toBeTrue();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
+    ).toBeNull();
+
+    const router = TestBed.inject(Router);
+    const navigateSpy = spyOn(router, 'navigate');
+    component.startPressureMode();
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 
   it('resets only the pressure workspace without unmarking the normal Counter completion', async () => {

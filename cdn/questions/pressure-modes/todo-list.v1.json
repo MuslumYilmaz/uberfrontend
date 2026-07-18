@@ -1,0 +1,655 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "todo-list-pressure-v1",
+  "family": "todo-list",
+  "title": "Todo List Interview Pressure Mode",
+  "access": "free",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-todo-list",
+    "angular": "angular-todo-list-starter",
+    "vue": "vue-todo-list"
+  },
+  "rounds": [
+    {
+      "id": "core-transitions",
+      "title": "Core transitions",
+      "interviewerPrompt": "Start with reliable task creation. Treat input normalization and identity as part of the state contract.",
+      "constraints": [
+        "Trim task text and reject empty or whitespace-only submissions.",
+        "Disable Add while the normalized input is empty.",
+        "Support both form submission with Enter and the Add button.",
+        "Clear the input after a successful add and assign every task a stable unique id."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-todo-core",
+          "name": "Round 1 · Normalized entry and stable rows",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".item",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": true
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "   "
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": true
+            },
+            {
+              "type": "expectCount",
+              "selector": ".item",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "  Buy milk  "
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": false
+            },
+            {
+              "type": "key",
+              "selector": ".input",
+              "key": "Enter"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "text": "Buy milk"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".input",
+              "value": ""
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "Walk dog"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "index": 0,
+              "text": "Buy milk"
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "index": 1,
+              "text": "Walk dog"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "derived-filters",
+      "title": "Derived filters",
+      "interviewerPrompt": "The list now needs trustworthy derived views. Filtering must never discard or rewrite source tasks.",
+      "constraints": [
+        "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
+        "Expose the selected filter with aria-pressed.",
+        "Announce the remaining active-task count with correct singular and plural copy.",
+        "Clear completed tasks without removing active tasks."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-todo-filters",
+          "name": "Round 2 · Filters preserve source state",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": "#new-task",
+              "value": "Alpha"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "setValue",
+              "selector": "#new-task",
+              "value": "Beta"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".todo-checkbox",
+              "index": 0
+            },
+            {
+              "type": "expectClass",
+              "selector": ".todo-text",
+              "index": 0,
+              "className": "done"
+            },
+            {
+              "type": "expectText",
+              "selector": ".items-left",
+              "text": "1 item left"
+            },
+            {
+              "type": "click",
+              "selector": ".filter-active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".filter-active",
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".item",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "text": "Beta"
+            },
+            {
+              "type": "click",
+              "selector": ".filter-completed"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".filter-completed",
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".item",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "text": "Alpha"
+            },
+            {
+              "type": "click",
+              "selector": ".filter-all"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".filter-all",
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".item",
+              "count": 2
+            },
+            {
+              "type": "click",
+              "selector": ".clear-completed"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".item",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "text": "Beta"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".card",
+              "text": "Alpha",
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-editing",
+      "title": "Keyboard editing",
+      "interviewerPrompt": "Add an edit flow that remains predictable for keyboard and assistive-technology users.",
+      "constraints": [
+        "Focus the edit input when editing starts.",
+        "Commit trimmed text with Enter and cancel changes with Escape.",
+        "Return focus to the same task's Edit button after commit or cancel.",
+        "Give the input, task controls, filter group, and status regions stable accessible names and relationships."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-todo-editing",
+          "name": "Round 3 · Editing preserves keyboard focus",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": "#new-task",
+              "value": "Draft title"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#new-task",
+              "attribute": "aria-label",
+              "expected": "New todo"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#new-task",
+              "attribute": "aria-controls",
+              "expected": "todo-items"
+            },
+            {
+              "type": "expectExists",
+              "selector": "#todo-items"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#new-task",
+              "attribute": "aria-describedby",
+              "expected": "todo-instructions items-left"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".filters",
+              "attribute": "role",
+              "expected": "group"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".filters",
+              "attribute": "aria-label",
+              "expected": "Filter tasks"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".todo-checkbox",
+              "attribute": "aria-label",
+              "expected": "Mark Draft title complete"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".edit-task",
+              "attribute": "aria-label",
+              "expected": "Edit Draft title"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".remove-task",
+              "attribute": "aria-label",
+              "expected": "Remove Draft title"
+            },
+            {
+              "type": "click",
+              "selector": ".edit-task"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".edit-input",
+              "count": 1
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".edit-input"
+            },
+            {
+              "type": "setValue",
+              "selector": ".edit-input",
+              "value": "  Updated title  "
+            },
+            {
+              "type": "key",
+              "selector": ".edit-input",
+              "key": "Enter"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".todo-text",
+              "text": "Updated title",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".edit-input",
+              "count": 0
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".edit-task"
+            },
+            {
+              "type": "click",
+              "selector": ".edit-task"
+            },
+            {
+              "type": "setValue",
+              "selector": ".edit-input",
+              "value": "Discard me"
+            },
+            {
+              "type": "key",
+              "selector": ".edit-input",
+              "key": "Escape"
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "text": "Updated title"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".edit-input",
+              "count": 0
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".edit-task"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "undo-lifecycle",
+      "title": "Undo lifecycle",
+      "interviewerPrompt": "Finish with a timed undo contract. The newest removal owns the recovery window, and teardown must own every timer.",
+      "constraints": [
+        "Offer a five-second undo action after a task is removed.",
+        "Restore the task at its original index when Undo is used.",
+        "Replace any earlier undo opportunity and timer when another task is removed.",
+        "Expose undo updates as an atomic polite status.",
+        "Clear the undo timer when the component unmounts or is destroyed."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-todo-undo",
+          "name": "Round 4 · Latest removal owns Undo",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": "#new-task",
+              "value": "One"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "setValue",
+              "selector": "#new-task",
+              "value": "Two"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".items-left",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".items-left",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".items-left",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-task",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".item",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".undo-bar",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".undo-bar",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".undo-bar",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".undo-bar",
+              "text": "One",
+              "match": "contains"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".undo-button",
+              "attribute": "aria-label",
+              "expected": "Undo removal of One"
+            },
+            {
+              "type": "click",
+              "selector": ".undo-button"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "index": 0,
+              "text": "One"
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "index": 1,
+              "text": "Two"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".undo-bar",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".remove-task",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".remove-task",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".undo-bar",
+              "text": "Two",
+              "match": "contains"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".card",
+              "text": "One",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".undo-button"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".todo-text",
+              "text": "Two"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".card",
+              "text": "One",
+              "match": "contains"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-task"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".undo-bar",
+              "count": 1
+            },
+            {
+              "type": "wait",
+              "durationMs": 5200
+            },
+            {
+              "type": "expectCount",
+              "selector": ".undo-bar",
+              "count": 0
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        },
+        {
+          "id": "pressure-todo-cleanup",
+          "name": "Round 4 · Undo timer is owned by the component",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": "#new-task",
+              "value": "Timer"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".item",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".remove-task"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".undo-bar",
+              "count": 1
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept task state predictable under pressure",
+    "summary": "The final implementation treats creation, derived views, keyboard editing, undo ownership, and teardown as one coherent state model. The interview signal is preserving task identity while every transition remains reversible and accessible.",
+    "takeaways": [
+      "Normalize task text at the form boundary and keep identity monotonic.",
+      "Derive filters and remaining counts instead of duplicating source state.",
+      "Make edit transitions explicit so commit, cancel, and focus restoration agree.",
+      "Give only the newest removal an undo window and clear its timer at the component boundary."
+    ],
+    "frameworkNotes": {
+      "react": "Refs own ids, edit focus, and the undo timer; effects synchronize focus and guarantee teardown cleanup.",
+      "angular": "Tracked rows preserve identity, microtasks restore focus after view updates, and OnDestroy clears the owned timer.",
+      "vue": "Computed state derives filters, nextTick aligns focus with DOM updates, and onUnmounted clears the owned timer."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-todo-list-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-todo-list-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-todo-list-pressure-solution.v1.json"
+  }
+}

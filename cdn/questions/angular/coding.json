@@ -351,6 +351,7 @@
       "storageKey": "v2:ui:angular:angular-todo-list-starter"
     },
     "companies": [],
+    "pressureModeAsset": "assets/questions/pressure-modes/todo-list.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
     "access": "free",
     "updatedAt": "2026-07-15",
@@ -1442,6 +1443,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v1:ui:angular:angular-debounced-search"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
     "access": "premium",

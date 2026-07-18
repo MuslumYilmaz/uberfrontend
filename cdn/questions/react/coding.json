@@ -353,6 +353,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-todo-list"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/todo-list.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-todo-list-solution.v1.json",
     "companies": [],
     "access": "free",
@@ -1398,6 +1399,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-debounced-search"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-debounced-search-solution.v1.json",
     "companies": [],
     "access": "premium",
