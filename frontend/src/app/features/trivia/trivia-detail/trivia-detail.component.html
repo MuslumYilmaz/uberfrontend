@@ -106,8 +106,17 @@
                 </div>
             </header>
 
+            <app-output-question-card
+                *ngIf="isOutputQuestion(q)"
+                data-testid="trivia-output-question"
+                [challenge]="q.outputChallenge!"
+                (shown)="onOutputQuestionShown($event)"
+                (answered)="onOutputQuestionAnswered($event)"
+                (deepDiveRequested)="openOutputDeepDive()">
+            </app-output-question-card>
+
             <!-- Interview quick answer -->
-            <section class="card">
+            <section class="card" *ngIf="!isOutputQuestion(q)">
                 <h2 class="card-head">Interview quick answer</h2>
                 <div class="card-body">
                     <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
@@ -161,8 +170,12 @@
             </section>
 
             <!-- Full interview answer -->
-            <section class="card">
-                <h2 class="card-head">{{ showAsyncRaceSimulator(q) ? 'How to prevent stale async UI' : 'Full interview answer' }}</h2>
+            <section
+                id="trivia-output-deep-dive"
+                class="card"
+                data-testid="trivia-full-answer"
+                [hidden]="isOutputQuestion(q) && !outputDeepDiveOpen()">
+                <h2 class="card-head">{{ isOutputQuestion(q) ? 'Deep dive' : (showAsyncRaceSimulator(q) ? 'How to prevent stale async UI' : 'Full interview answer') }}</h2>
                 <div class="card-body">
                     <ng-container *ngIf="answerIsRich(); else simpleAnswer">
                         <div class="blocks">
@@ -626,7 +639,7 @@
             </section>
 
             <!-- Still so complicated? -->
-            <section class="card" *ngIf="extraHelp()">
+            <section class="card" *ngIf="extraHelp() && (!isOutputQuestion(q) || outputDeepDiveOpen())">
                 <h2 class="card-head">Still so complicated?</h2>
                 <div class="card-body tip-body">
                     <div class="content" [innerHTML]="extraHelp() | safeHtml"></div>
@@ -634,7 +647,7 @@
             </section>
 
             <!-- Summary -->
-            <section class="card" *ngIf="summaryHelp()">
+            <section class="card" *ngIf="summaryHelp() && (!isOutputQuestion(q) || outputDeepDiveOpen())">
                 <h2 class="card-head">Summary</h2>
                 <div class="card-body">
                     <div class="content" [innerHTML]="summaryHelp() | safeHtml"></div>
@@ -857,6 +870,6 @@
 <!-- Footer -->
 <app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
     [practiceLeftLabel]="'Question Library'" [practiceLeftRoute]="['/coding']"
-    [showSubmit]="true" [submitLabel]="submitLabel()" [submitDisabled]="isCompletionPending()"
+    [showSubmit]="true" [submitLabel]="submitLabel()" [submitDisabled]="isCompletionDisabled()"
     (submit)="markComplete()" (prev)="prev()" (next)="next()" (back)="backToReturn()">
 </app-footer>

@@ -44,6 +44,11 @@ import { LoginRequiredDialogComponent } from '../../../shared/components/login-r
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
+import {
+  OutputQuestionAnsweredEvent,
+  OutputQuestionCardComponent,
+  OutputQuestionShownEvent,
+} from '../../../shared/components/output-question-card/output-question-card.component';
 import { seoDescriptionForQuestion, seoTitleForQuestion } from './trivia-seo.util';
 import {
   freeChallengeForFramework,
@@ -594,6 +599,7 @@ function buildTagRegex(tag: string): RegExp {
     PrismHighlightDirective,
     SafeHtmlPipe,
     FaGlyphComponent,
+    OutputQuestionCardComponent,
   ],
   templateUrl: './trivia-detail.component.html',
   styleUrls: ['./trivia-detail.component.css'],
@@ -621,6 +627,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   ngrxDataFlowTraceOptions = NGRX_DATA_FLOW_TRACE_OPTIONS;
   angularFormsFlowOptions = ANGULAR_FORMS_FLOW_OPTIONS;
   solved = signal(false);
+  outputAttempted = signal(false);
+  outputDeepDiveOpen = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
   lifecyclePromptOpen = false;
@@ -645,6 +653,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private incidentPromptLoading = false;
   private incidentPromptCache = new Map<string, IncidentCardModel | null>();
   private incidentPromptQuestionId: string | null = null;
+  private outputShownTracked = false;
+  private outputDeepDiveTracked = false;
 
   private sub?: Subscription;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
@@ -1120,6 +1130,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.question.set(found);
     this.ensureQuestionIconFonts(found);
     this.resetTriviaEngagementState();
+    this.resetOutputQuestionState();
     this.resetIncidentPrompt();
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
     this.refreshLockedPersonalization();
@@ -2224,6 +2235,48 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** ============== UI: interactions ============== */
+  isOutputQuestion(q?: Question | null): boolean {
+    return !!q
+      && q.type === 'trivia'
+      && q.technology === 'javascript'
+      && q.questionFormat === 'output'
+      && !!q.outputChallenge;
+  }
+
+  onOutputQuestionShown(event: OutputQuestionShownEvent): void {
+    const q = this.question();
+    if (!this.isOutputQuestion(q) || this.outputShownTracked) return;
+
+    this.outputShownTracked = true;
+    this.analytics.track('trivia_output_shown', {
+      runtime: event.runtime,
+      option_count: event.optionCount,
+    });
+  }
+
+  onOutputQuestionAnswered(event: OutputQuestionAnsweredEvent): void {
+    const q = this.question();
+    if (!this.isOutputQuestion(q) || this.outputAttempted()) return;
+
+    this.outputAttempted.set(true);
+    this.analytics.track('trivia_output_answered', {
+      correct: event.correct,
+      runtime: event.runtime,
+      option_count: event.optionCount,
+    });
+  }
+
+  openOutputDeepDive(): void {
+    const q = this.question();
+    if (!this.isOutputQuestion(q) || !this.outputAttempted()) return;
+
+    this.outputDeepDiveOpen.set(true);
+    if (this.outputDeepDiveTracked) return;
+
+    this.outputDeepDiveTracked = true;
+    this.analytics.track('trivia_output_deep_dive_opened');
+  }
+
   reportIssue() {
     const q = this.question();
     this.bugReport.open({
@@ -2252,9 +2305,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const q = this.question();
     if (!q) return;
     if (this.isCompletionPending()) return;
+    if (!this.solved() && this.isOutputQuestion(q) && !this.outputAttempted()) return;
     if (!this.solved()) {
-      const opened = await this.tryOpenIncidentPrompt(q);
-      if (opened) return;
+      if (!this.isOutputQuestion(q)) {
+        const opened = await this.tryOpenIncidentPrompt(q);
+        if (opened) return;
+      }
     }
     await this.applyCompletionState(q);
   }
@@ -2266,6 +2322,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isCompletionPending(): boolean {
     return this.activity.isCompletionPending('trivia', this.question()?.id ?? null);
+  }
+
+  isCompletionDisabled(): boolean {
+    if (this.isCompletionPending()) return true;
+    const q = this.question();
+    return !!q && !this.solved() && this.isOutputQuestion(q) && !this.outputAttempted();
   }
 
   incidentPromptTitle(): string {
@@ -2473,7 +2535,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         tech: this.tech,
         itemId: q.id,
         source: 'tech',
-        durationMin: 3,
+        durationMin: q.estimatedMinutes ?? 3,
         difficulty: q.difficulty,
       }));
       if (res?.pending) {
@@ -2857,6 +2919,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.trackedTriviaDepths = new Set<number>();
     this.triviaReadEngagedTracked = false;
     this.visibleTriviaMs = 0;
+  }
+
+  private resetOutputQuestionState(): void {
+    this.outputAttempted.set(false);
+    this.outputDeepDiveOpen.set(false);
+    this.outputShownTracked = false;
+    this.outputDeepDiveTracked = false;
   }
 
   private startTriviaVisibilityTimer() {

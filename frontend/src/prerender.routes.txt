@@ -329,6 +329,7 @@
 /javascript/trivia/content-delivery-caching-strategies-streaming
 /javascript/trivia/debounce-vs-throttle-search-input
 /javascript/trivia/http-caching-basics
+/javascript/trivia/js-argument-passing-object-mutation-output
 /javascript/trivia/js-array-sort-pitfalls
 /javascript/trivia/js-arrow-functions
 /javascript/trivia/js-arrow-vs-regular-functions
@@ -357,6 +358,7 @@
 /javascript/trivia/js-event-bubbling-capturing
 /javascript/trivia/js-event-delegation
 /javascript/trivia/js-event-loop
+/javascript/trivia/js-event-loop-nested-microtask-output
 /javascript/trivia/js-foreach-vs-map
 /javascript/trivia/js-garbage-collection-and-gc-pauses
 /javascript/trivia/js-higher-order-function
@@ -364,6 +366,7 @@
 /javascript/trivia/js-hoisting-tdz
 /javascript/trivia/js-intl-datetime-timezone
 /javascript/trivia/js-map-filter-reduce
+/javascript/trivia/js-map-parseint-callback-arity-output
 /javascript/trivia/js-map-set-get
 /javascript/trivia/js-map-vs-object
 /javascript/trivia/js-memoization
@@ -397,6 +400,7 @@
 /javascript/trivia/js-type-coercion
 /javascript/trivia/js-undefined-vs-not-defined
 /javascript/trivia/js-use-strict-describe
+/javascript/trivia/js-var-hoisting-shadowing-output
 /javascript/trivia/js-var-let-const-hoisting
 /javascript/trivia/js-web-workers-basics
 /javascript/trivia/js-why-eval-function-considered-dangerous

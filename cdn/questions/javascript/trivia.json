@@ -174,6 +174,419 @@
     }
   },
   {
+    "id": "js-event-loop-nested-microtask-output",
+    "title": "Predict the Output of a Nested Microtask",
+    "description": "Trace the browser execution order when synchronous logs, a Promise callback, a nested microtask, and a zero-delay timer are scheduled together.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "questionFormat": "output",
+    "estimatedMinutes": 3,
+    "tags": [
+      "event-loop",
+      "async",
+      "microtasks",
+      "promise",
+      "timers"
+    ],
+    "importance": 5,
+    "companies": [],
+    "outputChallenge": {
+      "language": "javascript",
+      "runtime": "browser",
+      "responseType": "single-choice",
+      "prompt": "What is logged, in order, when this code runs in a modern browser?",
+      "code": "console.log('A');\n\nsetTimeout(() => console.log('B'), 0);\n\nPromise.resolve().then(() => {\n  console.log('C');\n  queueMicrotask(() => console.log('D'));\n});\n\nconsole.log('E');",
+      "options": [
+        {
+          "id": "timer-before-nested-microtask",
+          "lines": [
+            "A",
+            "E",
+            "C",
+            "B",
+            "D"
+          ]
+        },
+        {
+          "id": "nested-microtask-before-timer",
+          "lines": [
+            "A",
+            "E",
+            "C",
+            "D",
+            "B"
+          ]
+        },
+        {
+          "id": "timer-before-promise-callback",
+          "lines": [
+            "A",
+            "E",
+            "B",
+            "C",
+            "D"
+          ]
+        }
+      ],
+      "correctOptionId": "nested-microtask-before-timer",
+      "explanation": "The synchronous logs A and E run first. The Promise callback logs C and queues D as another microtask, so D runs before the timer logs B because the microtask queue drains before the next task."
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-list-ol'></i> <strong>Result and execution phases</strong>\n\nThe output is <code>A</code>, <code>E</code>, <code>C</code>, <code>D</code>, then <code>B</code>. The browser starts by running the script as the current task. <code>console.log('A')</code> runs immediately, <code>setTimeout</code> makes its callback eligible for a later task, and <code>Promise.then</code> queues a microtask. The final synchronous statement logs <code>E</code>. Only after the script's call stack is empty does the browser begin the microtask checkpoint, so the Promise callback logs <code>C</code> before the timer can run."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Phase",
+            "What happens",
+            "Output added"
+          ],
+          "rows": [
+            [
+              "Current script task",
+              "Synchronous statements run; the timer and Promise callback are scheduled.",
+              "A, E"
+            ],
+            [
+              "Microtask checkpoint",
+              "The Promise callback runs and queues another microtask with queueMicrotask.",
+              "C, D"
+            ],
+            [
+              "Next task",
+              "The zero-delay timer callback can finally run.",
+              "B"
+            ]
+          ],
+          "caption": "The browser empties the microtask queue before taking the next task."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code-branch'></i> <strong>Why the nested microtask still wins</strong>\n\nWhile the Promise callback is running, <code>queueMicrotask</code> appends the callback that logs <code>D</code> to the same microtask queue. A microtask checkpoint continues until that queue is empty, including microtasks added by other microtasks. Therefore <code>D</code> runs before the browser selects the timer task that logs <code>B</code>.\n\nA common mistake is to read <code>setTimeout(..., 0)</code> as \"run immediately\" or to assume scheduling order decides everything. A zero delay only means the timer does not request an additional wait; it does not bypass the current task or pending microtasks. The same rule also explains why a chain that continually queues microtasks can delay timers and rendering."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "A\nE\nC\nD\nB"
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-07-17",
+    "seo": {
+      "title": "JavaScript output: nested microtasks before a zero-delay timer",
+      "description": "Trace JavaScript event loop output with synchronous logs, a Promise callback, queueMicrotask, and setTimeout in a modern browser."
+    }
+  },
+  {
+    "id": "js-argument-passing-object-mutation-output",
+    "title": "Predict Object Mutation Across Function Arguments",
+    "description": "Distinguish a local primitive update, a shared object's property mutation, and parameter reassignment when values cross a JavaScript function boundary.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "questionFormat": "output",
+    "estimatedMinutes": 3,
+    "tags": [
+      "pass-by-value",
+      "pass-by-reference",
+      "references",
+      "function-arguments",
+      "objects",
+      "primitives"
+    ],
+    "importance": 5,
+    "companies": [],
+    "outputChallenge": {
+      "language": "javascript",
+      "runtime": "browser",
+      "responseType": "single-choice",
+      "prompt": "What is logged, in order, after update is called?",
+      "code": "function update(score, state) {\n  score += 1;\n  state.count += 1;\n  state = { count: 99 };\n}\n\nlet score = 1;\nconst state = { count: 1 };\n\nupdate(score, state);\n\nconsole.log(score);\nconsole.log(state.count);",
+      "options": [
+        {
+          "id": "primitive-and-object-updated",
+          "lines": [
+            "2",
+            "2"
+          ]
+        },
+        {
+          "id": "primitive-unchanged-object-mutated",
+          "lines": [
+            "1",
+            "2"
+          ]
+        },
+        {
+          "id": "parameter-reassignment-replaces-caller",
+          "lines": [
+            "1",
+            "99"
+          ]
+        }
+      ],
+      "correctOptionId": "primitive-unchanged-object-mutated",
+      "explanation": "JavaScript passes both arguments by value. Changing the local score parameter does not change the caller's primitive, while state.count mutates the object referenced by both bindings; assigning state to a new object only replaces the local parameter binding."
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-list-ol'></i> <strong>Trace the two values separately</strong>\n\nThe output is <code>1</code>, then <code>2</code>. JavaScript passes every argument by value, but the kind of value matters. When <code>score</code> is passed, the parameter receives the primitive number <code>1</code>. The statement <code>score += 1</code> changes only that local parameter to <code>2</code>; it cannot rewrite the outer variable.\n\nFor <code>state</code>, the value being copied identifies an object. The outer variable and the parameter therefore identify the same object at first. <code>state.count += 1</code> changes that shared object's property from <code>1</code> to <code>2</code>, so the caller observes the mutation. The later assignment <code>state = { count: 99 }</code> points only the local parameter at a new object. It neither replaces the caller's binding nor undoes the earlier mutation. After the function returns, the local binding disappears, the original object still has <code>count: 2</code>, and the outer <code>score</code> is still <code>1</code>."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Operation",
+            "What changes",
+            "Visible to caller?"
+          ],
+          "rows": [
+            [
+              "score += 1",
+              "The local parameter receives a different primitive value.",
+              "No — outer score stays 1."
+            ],
+            [
+              "state.count += 1",
+              "A property on the object identified by both bindings is mutated.",
+              "Yes — outer state.count becomes 2."
+            ],
+            [
+              "state = { count: 99 }",
+              "The local parameter is reassigned to identify a new object.",
+              "No — outer state still identifies the first object."
+            ]
+          ],
+          "caption": "Object mutation and parameter reassignment affect different things, even though both statements use the state parameter."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function updateWithoutMutation(score, state) {\n  return {\n    score: score + 1,\n    state: { ...state, count: state.count + 1 }\n  };\n}\n\nconst result = updateWithoutMutation(score, state);\n\nconsole.log(result.score);       // 2\nconsole.log(result.state.count); // 2\nconsole.log(score);              // 1\nconsole.log(state.count);        // 1"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Prefer an explicit result when mutation is surprising</strong>\n\nThe non-mutating version returns both updated values and creates a new state object with object spread. Its caller can deliberately adopt the result, while the original <code>score</code> and <code>state</code> remain unchanged. This makes data flow easier to review in reducers, state stores, and component inputs.\n\nCalling JavaScript \"pass by reference\" is misleading because reassigning <code>state</code> inside the function would then be expected to replace the caller's variable. A more precise mental model is: arguments are passed by value, and an object value lets multiple bindings reach the same mutable object. Ask whether a line changes a binding or mutates the object it identifies; that distinction predicts the result without memorizing special cases."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-07-17",
+    "seo": {
+      "title": "JavaScript argument passing output: object mutation vs reassignment",
+      "description": "Predict JavaScript output by tracing primitive arguments, shared object mutation, and local parameter reassignment across a function call."
+    }
+  },
+  {
+    "id": "js-var-hoisting-shadowing-output",
+    "title": "Predict var Hoisting and Function Shadowing",
+    "description": "Trace which binding JavaScript reads when a hoisted function-scoped var shadows a global variable before its declaration is reached.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "questionFormat": "output",
+    "estimatedMinutes": 3,
+    "tags": [
+      "hoisting",
+      "scope",
+      "variables",
+      "functions"
+    ],
+    "importance": 5,
+    "companies": [],
+    "outputChallenge": {
+      "language": "javascript",
+      "runtime": "browser",
+      "responseType": "single-choice",
+      "prompt": "What is logged, in order, when show is called and the script finishes?",
+      "code": "var value = 10;\n\nfunction show() {\n  console.log(value);\n  var value = 20;\n  console.log(value);\n}\n\nshow();\nconsole.log(value);",
+      "options": [
+        {
+          "id": "global-value-before-local-declaration",
+          "lines": [
+            "10",
+            "20",
+            "10"
+          ]
+        },
+        {
+          "id": "local-binding-hoisted-as-undefined",
+          "lines": [
+            "undefined",
+            "20",
+            "10"
+          ]
+        },
+        {
+          "id": "local-assignment-replaces-global-value",
+          "lines": [
+            "undefined",
+            "20",
+            "20"
+          ]
+        }
+      ],
+      "correctOptionId": "local-binding-hoisted-as-undefined",
+      "explanation": "The local var declaration is hoisted to the top of show and shadows the global binding, but its assignment stays in place, so the first log is undefined and the second is 20. The local assignment never changes the global value, so the final log is 10."
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-route'></i> <strong>Trace the binding before the value</strong>\n\nThe output is <code>undefined</code>, <code>20</code>, then <code>10</code>. When <code>show</code> begins, JavaScript has already created a local <code>value</code> binding for the function because <code>var</code> declarations are function-scoped and hoisted. That local binding shadows the global <code>value</code> throughout the entire function body, including the lines above the written declaration.\n\nOnly the declaration is processed early; the assignment <code>value = 20</code> remains where it appears. The local binding therefore contains <code>undefined</code> at the first <code>console.log</code>. After the assignment runs, the second log reads <code>20</code> from the same local binding. Returning from <code>show</code> removes that function activation. Nothing in the function assigned to the global binding, so the final log outside the function still reads the global <code>10</code>. This is shadowing, not a temporary read of the global followed by its replacement."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// A useful mental model for the original function:\nfunction show() {\n  var value; // declaration is hoisted; initial value is undefined\n\n  console.log(value);\n  value = 20; // assignment stays in its original position\n  console.log(value);\n}\n\n// The global `value` is a different binding."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Execution point",
+            "Binding selected",
+            "Value logged"
+          ],
+          "rows": [
+            [
+              "First log inside show",
+              "Hoisted local value shadows the global, but has not been assigned 20 yet.",
+              "undefined"
+            ],
+            [
+              "Second log inside show",
+              "The same local value now contains the assigned number.",
+              "20"
+            ],
+            [
+              "Log after show returns",
+              "The script reads the untouched global value binding.",
+              "10"
+            ]
+          ],
+          "caption": "Name lookup selects the nearest binding first; execution order then determines the value currently stored in it."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Make shadowing visible or avoid it</strong>\n\nPrefer <code>const</code> by default and <code>let</code> when reassignment is required. Their declarations are also scoped before execution reaches them, but reading them early throws a <code>ReferenceError</code> because they remain in the temporal dead zone instead of quietly producing <code>undefined</code>. That failure is usually easier to diagnose than an accidental <code>var</code> read.\n\nDifferent names can make intent clearer as well: a local name such as <code>nextValue</code> shows that the function is not updating the global <code>value</code>. If shadowing is deliberate, keep the scope short and declare the local binding before its first use. The reliable debugging question is not merely \"where is this assignment?\" but \"which lexical binding does this identifier resolve to here, and has that binding received a value yet?\" That two-step check explains both the initial <code>undefined</code> and the unchanged global value."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-07-17",
+    "seo": {
+      "title": "JavaScript var hoisting output: local shadowing and undefined",
+      "description": "Predict JavaScript output when a hoisted function-scoped var shadows a global binding before its assignment executes."
+    }
+  },
+  {
+    "id": "js-map-parseint-callback-arity-output",
+    "title": "Predict map(parseInt) Callback Arguments",
+    "description": "Predict why passing parseInt directly to Array.map produces surprising values when each array index becomes the radix argument.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "questionFormat": "output",
+    "estimatedMinutes": 3,
+    "tags": [
+      "arrays",
+      "array-methods",
+      "callbacks",
+      "function-arguments",
+      "type-coercion"
+    ],
+    "importance": 5,
+    "companies": [],
+    "outputChallenge": {
+      "language": "javascript",
+      "runtime": "browser",
+      "responseType": "single-choice",
+      "prompt": "What array is logged when map passes each element and its index to parseInt?",
+      "code": "const values = ['1', '2', '3'];\n\nconsole.log(values.map(parseInt));",
+      "options": [
+        {
+          "id": "element-only-conversion",
+          "lines": [
+            "[1, 2, 3]"
+          ]
+        },
+        {
+          "id": "index-used-as-radix",
+          "lines": [
+            "[1, NaN, NaN]"
+          ]
+        },
+        {
+          "id": "only-binary-conversion-fails",
+          "lines": [
+            "[1, 2, NaN]"
+          ]
+        }
+      ],
+      "correctOptionId": "index-used-as-radix",
+      "explanation": "map calls its callback with (element, index, array), while parseInt consumes (string, radix). That produces parseInt('1', 0) = 1, parseInt('2', 1) = NaN, and parseInt('3', 2) = NaN."
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-route'></i> <strong>Follow the callback contract</strong>\n\nThe output is <code>[1, NaN, NaN]</code>. The surprising part is not how <code>map</code> iterates; it is the mismatch between the arguments <code>map</code> supplies and the arguments <code>parseInt</code> accepts. For every element, <code>map</code> invokes its callback with three values: the current element, its index, and the original array. Passing <code>parseInt</code> directly therefore behaves like calling <code>parseInt(element, index, values)</code>.\n\n<code>parseInt</code> uses its first argument as the string to parse and its second argument as the radix. It ignores the third array argument, but the index is significant. At index <code>0</code>, radix <code>0</code> lets JavaScript infer a valid base and <code>'1'</code> becomes <code>1</code>. At index <code>1</code>, radix <code>1</code> is invalid, so the result is <code>NaN</code>. At index <code>2</code>, binary is a valid radix, but <code>'3'</code> is not a valid binary digit, so that result is also <code>NaN</code>."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Callback call",
+            "Radix interpretation",
+            "Result"
+          ],
+          "rows": [
+            [
+              "parseInt('1', 0, values)",
+              "Radix 0 requests base inference; this input is read as decimal.",
+              "1"
+            ],
+            [
+              "parseInt('2', 1, values)",
+              "Radix 1 is outside the supported range of 2 through 36.",
+              "NaN"
+            ],
+            [
+              "parseInt('3', 2, values)",
+              "Radix 2 is valid, but the digit 3 is not valid in binary.",
+              "NaN"
+            ]
+          ],
+          "caption": "The array argument is ignored by parseInt, while each index is accidentally interpreted as a radix."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const values = ['1', '2', '3'];\n\n// Convert each complete string to a number.\nconst numbers = values.map(Number);\n\n// Or make the parseInt contract explicit and fix the radix.\nconst integers = values.map(value => Number.parseInt(value, 10));\n\nconsole.log(numbers);  // [1, 2, 3]\nconsole.log(integers); // [1, 2, 3]"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield-halved'></i> <strong>Choose the conversion rule, then adapt the callback</strong>\n\nUse <code>Number</code> when the entire input must represent a number. For example, <code>Number('12px')</code> is <code>NaN</code>, while <code>Number('')</code> is <code>0</code>. Use <code>parseInt</code> when reading an integer prefix is intentional: <code>parseInt('12px', 10)</code> returns <code>12</code>. Supplying radix <code>10</code> makes that intention explicit and avoids relying on inference. In either case, validate the result with <code>Number.isNaN</code> when invalid user input is possible.\n\nThe broader lesson is about callback compatibility. A function is not automatically a safe callback just because its first parameter matches the value being iterated. Array methods may pass an index and the source array as additional arguments, and a reused function may interpret those extra values as meaningful configuration. An arrow such as <code>value =&gt; parseInt(value, 10)</code> acts as an adapter: it deliberately forwards only the value and supplies the radix the conversion requires. Before passing any existing function directly to <code>map</code>, <code>filter</code>, or another higher-order API, compare both function contracts rather than relying on matching names or the first argument alone."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-07-17",
+    "seo": {
+      "title": "JavaScript map(parseInt) output: callback index becomes radix",
+      "description": "Predict the classic JavaScript map(parseInt) result by tracing callback arguments, array indexes used as radix values, and safe numeric conversion alternatives."
+    }
+  },
+  {
     "id": "js-closures",
     "title": "Explain Closures in JavaScript",
     "description": "Closures keep outer variables alive after the outer function returns. The real frontend debug value is explaining stale async callbacks, loop-capture bugs, and long-lived listeners that keep old objects alive in memory.",

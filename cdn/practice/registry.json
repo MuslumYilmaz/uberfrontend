@@ -5632,6 +5632,94 @@
     "assetRef": "questions/javascript/coding.json#js-poll-until"
   },
   {
+    "id": "js-map-parseint-callback-arity-output",
+    "family": "question",
+    "title": "Predict map(parseInt) Callback Arguments",
+    "route": "/javascript/trivia/js-map-parseint-callback-arity-output",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Predict why passing parseInt directly to Array.map produces surprising values when each array index becomes the radix argument.",
+    "tags": [
+      "arrays",
+      "array-methods",
+      "callbacks",
+      "function-arguments",
+      "type-coercion"
+    ],
+    "access": "free",
+    "estimatedMinutes": 3,
+    "questionFormat": "output",
+    "updatedAt": "2026-07-17",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-map-parseint-callback-arity-output"
+  },
+  {
+    "id": "js-argument-passing-object-mutation-output",
+    "family": "question",
+    "title": "Predict Object Mutation Across Function Arguments",
+    "route": "/javascript/trivia/js-argument-passing-object-mutation-output",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Distinguish a local primitive update, a shared object's property mutation, and parameter reassignment when values cross a JavaScript function boundary.",
+    "tags": [
+      "pass-by-value",
+      "pass-by-reference",
+      "references",
+      "function-arguments",
+      "objects",
+      "primitives"
+    ],
+    "access": "free",
+    "estimatedMinutes": 3,
+    "questionFormat": "output",
+    "updatedAt": "2026-07-17",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-argument-passing-object-mutation-output"
+  },
+  {
+    "id": "js-event-loop-nested-microtask-output",
+    "family": "question",
+    "title": "Predict the Output of a Nested Microtask",
+    "route": "/javascript/trivia/js-event-loop-nested-microtask-output",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Trace the browser execution order when synchronous logs, a Promise callback, a nested microtask, and a zero-delay timer are scheduled together.",
+    "tags": [
+      "event-loop",
+      "async",
+      "microtasks",
+      "promise",
+      "timers"
+    ],
+    "access": "free",
+    "estimatedMinutes": 3,
+    "questionFormat": "output",
+    "updatedAt": "2026-07-17",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-event-loop-nested-microtask-output"
+  },
+  {
+    "id": "js-var-hoisting-shadowing-output",
+    "family": "question",
+    "title": "Predict var Hoisting and Function Shadowing",
+    "route": "/javascript/trivia/js-var-hoisting-shadowing-output",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Trace which binding JavaScript reads when a hoisted function-scoped var shadows a global variable before its declaration is reached.",
+    "tags": [
+      "hoisting",
+      "scope",
+      "variables",
+      "functions"
+    ],
+    "access": "free",
+    "estimatedMinutes": 3,
+    "questionFormat": "output",
+    "updatedAt": "2026-07-17",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-var-hoisting-shadowing-output"
+  },
+  {
     "id": "js-promise-fundamental-understanding",
     "family": "question",
     "title": "Promise - Fundamental Understanding",

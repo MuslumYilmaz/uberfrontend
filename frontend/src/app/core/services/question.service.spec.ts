@@ -286,19 +286,35 @@ describe('QuestionService', () => {
 
   it('maps detail-grade questions into list-safe summaries', async () => {
     const resultPromise = firstValueFrom(
-      service.loadQuestionSummaries('javascript', 'coding', { transferState: false }),
+      service.loadQuestionSummaries('javascript', 'trivia', { transferState: false }),
     );
     flushDataVersion('bank-v1');
 
     const req = await waitForRequest(
-      (r) => r.url.includes('questions/javascript/coding.json'),
-      'coding summaries fetch',
+      (r) => r.url.includes('questions/javascript/trivia.json'),
+      'trivia summaries fetch',
     );
     req.flush([
       {
         ...makeCodingQuestion('summary-hit'),
+        type: 'trivia',
         tags: ['async'],
         description: { summary: 'Short description for list views.' },
+        questionFormat: 'output',
+        outputChallenge: {
+          language: 'javascript',
+          runtime: 'browser',
+          responseType: 'single-choice',
+          prompt: 'What is logged?',
+          code: "console.log('A')",
+          options: [
+            { id: 'a', lines: ['A'] },
+            { id: 'b', lines: ['B'] },
+            { id: 'c', lines: ['C'] },
+          ],
+          correctOptionId: 'a',
+          explanation: 'The synchronous log runs immediately.',
+        },
         solution: 'heavy payload that should not be returned by summaries',
       },
     ]);
@@ -306,6 +322,8 @@ describe('QuestionService', () => {
     const list = await resultPromise;
     expect(list[0]?.id).toBe('summary-hit');
     expect(list[0]?.shortDescription).toContain('Short description');
+    expect(list[0]?.questionFormat).toBe('output');
+    expect((list[0] as any).outputChallenge).toBeUndefined();
     expect((list[0] as any).solution).toBeUndefined();
   });
 

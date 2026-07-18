@@ -23,6 +23,21 @@ describe('triviaDetailResolver', () => {
     importance: 4,
     companies: ['Meta'],
     description: 'Escaping encodes output. Sanitizing filters allowed markup.',
+    questionFormat: 'output',
+    outputChallenge: {
+      language: 'javascript',
+      runtime: 'browser',
+      responseType: 'single-choice',
+      prompt: 'What is logged?',
+      code: "console.log('A')",
+      options: [
+        { id: 'a', lines: ['A'] },
+        { id: 'b', lines: ['B'] },
+        { id: 'c', lines: ['C'] },
+      ],
+      correctOptionId: 'a',
+      explanation: 'The synchronous log runs immediately.',
+    },
     answer: {
       blocks: [
         {
@@ -102,6 +117,7 @@ describe('triviaDetailResolver', () => {
         tags: fullQuestion.tags,
         importance: fullQuestion.importance,
         companies: fullQuestion.companies,
+        questionFormat: fullQuestion.questionFormat,
         description: undefined,
       }],
       question: fullQuestion,
@@ -112,8 +128,11 @@ describe('triviaDetailResolver', () => {
     expect(questionService.loadQuestions).not.toHaveBeenCalled();
     expect(resolved.list).toEqual([]);
     expect(resolved.listSummaries?.length).toBe(1);
+    expect(resolved.listSummaries?.[0]?.questionFormat).toBe('output');
     expect((resolved.listSummaries?.[0] as any).answer).toBeUndefined();
+    expect((resolved.listSummaries?.[0] as any).outputChallenge).toBeUndefined();
     expect(resolved.question?.answer).toBe(fullQuestion.answer);
+    expect(resolved.question?.outputChallenge).toBe(fullQuestion.outputChallenge);
     expect(transferState.hasKey(stateKey())).toBeFalse();
   });
 
@@ -127,7 +146,9 @@ describe('triviaDetailResolver', () => {
     expect(questionService.loadQuestions).toHaveBeenCalledOnceWith('javascript' as any, 'trivia', { transferState: false });
     expect(resolved.list).toEqual([]);
     expect(resolved.listSummaries?.map((q) => q.id)).toEqual([fullQuestion.id, otherQuestion.id]);
+    expect(resolved.listSummaries?.[0]?.questionFormat).toBe('output');
     expect((resolved.listSummaries?.[0] as any).answer).toBeUndefined();
+    expect((resolved.listSummaries?.[0] as any).outputChallenge).toBeUndefined();
     expect(resolved.question?.answer).toBe(fullQuestion.answer);
     expect(cached?.list).toEqual([]);
     expect(cached?.question?.id).toBe(fullQuestion.id);

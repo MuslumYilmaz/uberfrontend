@@ -5,6 +5,7 @@ import {
   cdnQuestionsDir as questionsRoot,
   frontendRoot as projectRoot,
 } from "./content-paths.mjs";
+import { validateOutputQuestion } from "./output-question-validator.mjs";
 
 const tagRegistryPath = path.join(questionsRoot, "tag-registry.json");
 
@@ -40,6 +41,7 @@ Errors (fail CI):
   - missing/invalid question id
   - non-kebab-case ids
   - duplicate ids across all question assets
+  - invalid output-question contracts
   - system-design index/meta mismatches
 
 Warnings (do not fail CI):
@@ -594,6 +596,10 @@ for (const file of questionFiles) {
         validateType({ file, id, type: q.type, severity, expected: info.kind, required: false });
         validateTechnology({ file, id, technology: q.technology, severity, expectedTech: info.tech, required: false });
         validateAccess({ file, id, access: q.access, severity, required: false });
+      }
+
+      for (const message of validateOutputQuestion(q, { tech: info.tech, kind: info.kind })) {
+        severity.addError(file, id, message);
       }
 
       validateRegistryDate({ file, id, updatedAt: q.updatedAt, createdAt: q.createdAt, severity });

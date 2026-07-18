@@ -7,6 +7,24 @@ export type Difficulty = 'easy' | 'intermediate' | 'hard';
 export type AccessLevel = 'free' | 'premium';
 
 export type QuestionKind = 'trivia' | 'coding';
+export type QuestionFormat = 'output';
+export type OutputRuntime = 'browser' | 'node';
+
+export interface OutputQuestionOption {
+  id: string;
+  lines: string[];
+}
+
+export interface OutputChallenge {
+  language: 'javascript';
+  runtime: OutputRuntime;
+  responseType: 'single-choice';
+  prompt: string;
+  code: string;
+  options: OutputQuestionOption[];
+  correctOptionId: string;
+  explanation: string;
+}
 
 export type StructuredDescription = {
   summary?: string;           // replaces plain text
@@ -149,6 +167,9 @@ export interface Question {
   difficulty: Difficulty;
   tags: string[];
   importance: number;
+  estimatedMinutes?: number;
+  questionFormat?: QuestionFormat;
+  outputChallenge?: OutputChallenge;
   code?: string;
   starterCode?: string;
   tests?: string;

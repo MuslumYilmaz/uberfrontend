@@ -50,6 +50,10 @@ if (!fs.existsSync(REGISTRY_PATH)) {
       assert(VALID_ACCESS.has(String(item.access)), `entry[${index}].access is invalid`);
       assert(Array.isArray(item.tags), `entry[${index}].tags must be an array`);
       assert(typeof item.estimatedMinutes === 'number', `entry[${index}].estimatedMinutes must be numeric`);
+      if ('questionFormat' in item) {
+        assert(item.family === 'question', `entry[${index}].questionFormat is only valid for questions`);
+        assert(item.questionFormat === 'output', `entry[${index}].questionFormat is invalid`);
+      }
       assert(isNonEmptyString(item.updatedAt), `entry[${index}].updatedAt is required`);
       assert(isNonEmptyString(item.schemaVersion), `entry[${index}].schemaVersion is required`);
       assert(isNonEmptyString(item.assetRef), `entry[${index}].assetRef is required`);

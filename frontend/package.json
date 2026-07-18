@@ -36,7 +36,7 @@
     "build": "npm run gen:data && ng build --configuration production",
     "build:analyze": "ng build --configuration production --stats-json --source-map && npx source-map-explorer dist/frontendatlas/browser/*.js --summary",
     "test:unit": "node scripts/gen-content-metadata.mjs && ng test --watch=false --browsers=ChromeHeadless",
-    "test:content-regressions": "node scripts/question-solution-regressions.test.mjs && node scripts/framework-content-regressions.test.mjs && node scripts/premium-preview-content.test.mjs && node scripts/public-trust-regressions.test.mjs && node scripts/essential-evidence.test.mjs",
+    "test:content-regressions": "node scripts/output-question-validator.test.mjs && node scripts/question-solution-regressions.test.mjs && node scripts/framework-content-regressions.test.mjs && node scripts/premium-preview-content.test.mjs && node scripts/public-trust-regressions.test.mjs && node scripts/essential-evidence.test.mjs",
     "test:content-drafts": "node scripts/lint-content-drafts.test.mjs",
     "test:guide-articles": "node scripts/lint-guide-articles.test.mjs",
     "test:guide-editorial-quality": "node scripts/lint-guide-editorial-quality.test.mjs",

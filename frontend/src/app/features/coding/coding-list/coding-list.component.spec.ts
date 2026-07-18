@@ -131,6 +131,19 @@ describe('CodingListComponent', () => {
     ...overrides,
   });
 
+  it('labels output-formatted trivia rows as Output while preserving standard kind labels', async () => {
+    const fixture = await createComponent();
+    const component = fixture.componentInstance;
+
+    expect(component.questionRowKindLabel(question({ __kind: 'trivia', type: 'trivia' }) as any)).toBe('Concept');
+    expect(component.questionRowKindLabel(question({
+      __kind: 'trivia',
+      type: 'trivia',
+      questionFormat: 'output',
+    }) as any)).toBe('Output');
+    expect(component.questionRowKindLabel(question({ __kind: 'coding' }) as any)).toBe('Coding');
+  });
+
   it('renders solved styling without visible solved text for solved questions in the list', async () => {
     const fixture = await createComponent({
       items: [question()],

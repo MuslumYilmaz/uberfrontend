@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-03-31T16:20:40.723Z",
+  "generatedAt": "2026-07-17T20:55:02.809Z",
   "entries": [
     {
       "tech": "angular",
@@ -1499,6 +1499,12 @@
     {
       "tech": "javascript",
       "kind": "trivia",
+      "id": "js-argument-passing-object-mutation-output",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
       "id": "js-array-sort-pitfalls",
       "file": "javascript/trivia.json"
     },
@@ -1667,6 +1673,12 @@
     {
       "tech": "javascript",
       "kind": "trivia",
+      "id": "js-event-loop-nested-microtask-output",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
       "id": "js-foreach-vs-map",
       "file": "javascript/trivia.json"
     },
@@ -1704,6 +1716,12 @@
       "tech": "javascript",
       "kind": "trivia",
       "id": "js-map-filter-reduce",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-map-parseint-callback-arity-output",
       "file": "javascript/trivia.json"
     },
     {
@@ -1902,6 +1920,12 @@
       "tech": "javascript",
       "kind": "trivia",
       "id": "js-use-strict-describe",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-var-hoisting-shadowing-output",
       "file": "javascript/trivia.json"
     },
     {

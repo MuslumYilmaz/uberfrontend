@@ -1610,6 +1610,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   // ---------- helpers used by template ----------
   questionRowKindLabel(q: Row): string {
     if (q.__sd) return 'System design';
+    if (q.questionFormat === 'output') return 'Output';
     return q.__kind === 'trivia' ? 'Concept' : 'Coding';
   }
 

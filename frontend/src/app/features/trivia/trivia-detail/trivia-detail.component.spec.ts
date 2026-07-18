@@ -51,6 +51,7 @@ describe('TriviaDetailComponent', () => {
       },
       importance: 3,
       difficulty: 'easy',
+      type: 'trivia',
       technology: 'javascript',
       access,
       tags: ['closures', 'functions'],
@@ -74,12 +75,45 @@ describe('TriviaDetailComponent', () => {
       },
       importance: 3,
       difficulty: 'easy',
+      type: 'trivia',
       technology: 'javascript',
       access,
       tags: ['closures', 'dom-events'],
       updatedAt: '2026-04-02',
     }],
     question: null,
+  });
+
+  const outputQuestionExtras = () => ({
+    id: 'js-event-loop-nested-microtask-output',
+    title: 'What does this nested microtask code output?',
+    questionFormat: 'output',
+    estimatedMinutes: 3,
+    outputChallenge: {
+      language: 'javascript',
+      runtime: 'browser',
+      responseType: 'single-choice',
+      prompt: 'Choose the exact console output order.',
+      code: [
+        "console.log('A');",
+        '',
+        "setTimeout(() => console.log('B'), 0);",
+        '',
+        'Promise.resolve().then(() => {',
+        "  console.log('C');",
+        "  queueMicrotask(() => console.log('D'));",
+        '});',
+        '',
+        "console.log('E');",
+      ].join('\n'),
+      options: [
+        { id: 'timer-before-nested', lines: ['A', 'E', 'C', 'B', 'D'] },
+        { id: 'nested-before-timer', lines: ['A', 'E', 'C', 'D', 'B'] },
+        { id: 'timer-before-promise', lines: ['A', 'E', 'B', 'C', 'D'] },
+      ],
+      correctOptionId: 'nested-before-timer',
+      explanation: 'Synchronous logs run first. The microtask queue drains before the timer task.',
+    },
   });
 
   function toSummary(q: any) {
@@ -2594,6 +2628,153 @@ describe('TriviaDetailComponent', () => {
       questionId: 'q1',
       questionTitle: 'What is closure?',
     }));
+  });
+
+  it('places the output challenge before the hidden deep dive without rendering the quick answer', async () => {
+    const fixture = await createLoadedFixture('free', outputQuestionExtras());
+
+    const outputCard = fixture.nativeElement.querySelector('[data-testid="trivia-output-question"]') as HTMLElement | null;
+    const fullAnswer = fixture.nativeElement.querySelector('[data-testid="trivia-full-answer"]') as HTMLElement | null;
+
+    expect(outputCard).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.card-head')?.textContent).not.toContain('Interview quick answer');
+    expect(fullAnswer).toBeTruthy();
+    expect(fullAnswer?.hidden).toBeTrue();
+    expect(outputCard!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(trackCalls('trivia_output_shown')).toEqual([
+      ['trivia_output_shown', { runtime: 'browser', option_count: 3 }],
+    ]);
+  });
+
+  it('keeps completion and spoilers blocked until either a correct or wrong output check', async () => {
+    const fixture = await createLoadedFixture('free', outputQuestionExtras());
+    const component = fixture.componentInstance;
+    const footerSubmit = () => fixture.nativeElement.querySelector('[data-testid="footer-submit"]') as HTMLButtonElement;
+    const fullAnswer = () => fixture.nativeElement.querySelector('[data-testid="trivia-full-answer"]') as HTMLElement;
+
+    expect(component.isCompletionDisabled()).toBeTrue();
+    expect(footerSubmit().disabled).toBeTrue();
+    expect(fullAnswer().hidden).toBeTrue();
+
+    component.onOutputQuestionAnswered({ correct: false, runtime: 'browser', optionCount: 3 });
+    fixture.detectChanges();
+
+    expect(component.outputAttempted()).toBeTrue();
+    expect(component.isCompletionDisabled()).toBeFalse();
+    expect(footerSubmit().disabled).toBeFalse();
+    expect(fullAnswer().hidden).toBeTrue();
+
+    component.openOutputDeepDive();
+    fixture.detectChanges();
+    expect(fullAnswer().hidden).toBeFalse();
+  });
+
+  it('skips the incident API and allows output completion after one wrong check', async () => {
+    auth.isLoggedIn.and.returnValue(true);
+    const fixture = await createLoadedFixture('free', outputQuestionExtras());
+    const component = fixture.componentInstance;
+
+    await component.markComplete();
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).not.toHaveBeenCalled();
+
+    component.onOutputQuestionAnswered({ correct: false, runtime: 'browser', optionCount: 3 });
+    await component.markComplete();
+
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'trivia',
+      tech: 'javascript',
+      itemId: 'js-event-loop-nested-microtask-output',
+      durationMin: 3,
+    }));
+    expect(component.solved()).toBeTrue();
+  });
+
+  it('preserves the guest login prompt after an output answer check', async () => {
+    const fixture = await createLoadedFixture('free', outputQuestionExtras());
+    const component = fixture.componentInstance;
+
+    component.onOutputQuestionAnswered({ correct: true, runtime: 'browser', optionCount: 3 });
+    await component.markComplete();
+
+    expect(component.loginPromptOpen).toBeTrue();
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('lets an already solved output question be marked incomplete without a fresh check', async () => {
+    progress.isSolved.and.returnValue(true);
+    progress.solvedIds.and.returnValue(['js-event-loop-nested-microtask-output']);
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    const fixture = await createLoadedFixture('free', outputQuestionExtras());
+    const component = fixture.componentInstance;
+
+    expect(component.solved()).toBeTrue();
+    expect(component.outputAttempted()).toBeFalse();
+    expect(component.isCompletionDisabled()).toBeFalse();
+
+    await component.markComplete();
+
+    expect(activity.uncomplete).toHaveBeenCalledWith({
+      kind: 'trivia',
+      tech: 'javascript',
+      itemId: 'js-event-loop-nested-microtask-output',
+    });
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+  });
+
+  it('tracks output events once without option identifiers, order, or output text', async () => {
+    const fixture = await createLoadedFixture('free', outputQuestionExtras());
+    const component = fixture.componentInstance;
+    analytics.track.calls.reset();
+    (component as any).outputShownTracked = false;
+
+    component.onOutputQuestionShown({ runtime: 'browser', optionCount: 3 });
+    component.onOutputQuestionShown({ runtime: 'browser', optionCount: 3 });
+    component.onOutputQuestionAnswered({ correct: true, runtime: 'browser', optionCount: 3 });
+    component.onOutputQuestionAnswered({ correct: false, runtime: 'browser', optionCount: 3 });
+    component.openOutputDeepDive();
+    component.openOutputDeepDive();
+
+    expect(trackCalls('trivia_output_shown')).toEqual([
+      ['trivia_output_shown', { runtime: 'browser', option_count: 3 }],
+    ]);
+    expect(trackCalls('trivia_output_answered')).toEqual([
+      ['trivia_output_answered', { correct: true, runtime: 'browser', option_count: 3 }],
+    ]);
+    expect(trackCalls('trivia_output_deep_dive_opened')).toEqual([
+      ['trivia_output_deep_dive_opened'],
+    ]);
+  });
+
+  it('resets output attempt and reveal state when navigation selects another question', async () => {
+    const fixture = await createLoadedFixture('free', outputQuestionExtras());
+    const component = fixture.componentInstance;
+    component.onOutputQuestionAnswered({ correct: true, runtime: 'browser', optionCount: 3 });
+    component.openOutputDeepDive();
+
+    const nextResolved = makeResolved('free', {
+      ...outputQuestionExtras(),
+      id: 'js-event-loop-second-output',
+    });
+    const nextQuestion = nextResolved.list[0];
+    routeData$.next({
+      questionDetail: {
+        ...nextResolved,
+        id: nextQuestion.id,
+        question: nextQuestion,
+      },
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.question()?.id).toBe('js-event-loop-second-output');
+    expect(component.outputAttempted()).toBeFalse();
+    expect(component.outputDeepDiveOpen()).toBeFalse();
+    expect(component.isCompletionDisabled()).toBeTrue();
   });
 
   it('opens incident prompt before completion when incident card exists', async () => {

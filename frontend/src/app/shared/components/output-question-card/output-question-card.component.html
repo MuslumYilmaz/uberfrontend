@@ -1,0 +1,133 @@
+<ng-template #serverPlaceholder>
+  <section
+    faCard
+    elevated
+    class="output-question-card output-question-card--placeholder"
+    aria-label="Output challenge loading"
+    data-testid="output-question-placeholder"
+  >
+    <span class="output-question-card__placeholder-label">Output challenge</span>
+    <p>The interactive answer choices load in your browser.</p>
+  </section>
+</ng-template>
+
+<ng-template #missingChallenge>
+  <section
+    faCard
+    class="output-question-card output-question-card--placeholder"
+    role="status"
+    data-testid="output-question-unavailable"
+  >
+    <p>This output challenge is unavailable.</p>
+  </section>
+</ng-template>
+
+<ng-container *ngIf="isBrowser; else serverPlaceholder">
+  <section
+    *ngIf="challengeState() as challenge; else missingChallenge"
+    faCard
+    elevated
+    class="output-question-card"
+    data-testid="output-question-card"
+  >
+    <header class="output-question-card__header">
+      <div class="output-question-card__heading">
+        <span class="output-question-card__eyebrow">Output challenge</span>
+        <h2>Predict the console output</h2>
+      </div>
+      <span class="output-question-card__runtime">
+        {{ runtimeLabel(challenge.runtime) }} · JavaScript
+      </span>
+    </header>
+
+    <pre class="output-question-card__code" aria-label="JavaScript code"><code
+      prism
+      lang="javascript"
+      [code]="challenge.code"
+    ></code></pre>
+
+    <form class="output-question-card__form" (submit)="checkAnswer($event)">
+      <fieldset class="output-question-card__fieldset" [disabled]="checked()">
+        <legend>{{ challenge.prompt }}</legend>
+
+        <div class="output-question-card__options" data-testid="output-question-options">
+          <label
+            *ngFor="let option of shuffledOptions(); trackBy: trackOption"
+            class="output-question-card__option"
+            [class.output-question-card__option--selected]="selectedOptionId() === option.id"
+            [class.output-question-card__option--correct]="optionIsCorrect(option)"
+            [class.output-question-card__option--wrong]="optionIsIncorrectSelection(option)"
+          >
+            <input
+              class="output-question-card__radio"
+              type="radio"
+              [name]="radioGroupName"
+              [value]="option.id"
+              [checked]="selectedOptionId() === option.id"
+              (change)="selectOption(option.id)"
+            />
+
+            <code class="output-question-card__option-output">
+              <span *ngFor="let line of option.lines">{{ line }}</span>
+            </code>
+
+            <span
+              *ngIf="optionIsCorrect(option)"
+              class="output-question-card__option-state output-question-card__option-state--correct"
+            >
+              Correct answer
+            </span>
+            <span
+              *ngIf="optionIsIncorrectSelection(option)"
+              class="output-question-card__option-state output-question-card__option-state--wrong"
+            >
+              Your answer
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="output-question-card__actions">
+        <button
+          faButton
+          variant="primary"
+          type="submit"
+          [disabled]="!selectedOptionId() || checked()"
+          data-testid="output-question-check"
+        >
+          Check answer
+        </button>
+      </div>
+    </form>
+
+    <div class="output-question-card__announcement" aria-live="polite" aria-atomic="true">
+      <section
+        *ngIf="outcome() as answerOutcome"
+        class="output-question-card__feedback"
+        [class.output-question-card__feedback--correct]="answerOutcome === 'correct'"
+        [class.output-question-card__feedback--wrong]="answerOutcome === 'wrong'"
+        data-testid="output-question-feedback"
+      >
+        <h3>{{ answerOutcome === 'correct' ? 'Correct' : 'Not quite' }}</h3>
+        <p class="output-question-card__feedback-intro">The console output is:</p>
+
+        <pre class="output-question-card__canonical-output" data-testid="output-question-canonical"><code><span
+          *ngFor="let line of correctOption()?.lines"
+        >{{ line }}</span></code></pre>
+
+        <p class="output-question-card__explanation">{{ challenge.explanation }}</p>
+
+        <button
+          *ngIf="showDeepDive"
+          faButton
+          variant="ghost"
+          type="button"
+          (click)="requestDeepDive()"
+          data-testid="output-question-deep-dive"
+        >
+          Deep dive
+        </button>
+      </section>
+    </div>
+  </section>
+</ng-container>
