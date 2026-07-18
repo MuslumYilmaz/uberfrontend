@@ -150,6 +150,7 @@ export class PracticeRegistryService {
         tags: Array.isArray(item['tags']) ? item['tags'].filter((tag): tag is string => typeof tag === 'string') : [],
         access: (String(item['access'] || 'free') === 'premium' ? 'premium' : 'free') as PracticeRegistryItem['access'],
         estimatedMinutes: typeof item['estimatedMinutes'] === 'number' ? item['estimatedMinutes'] : 10,
+        ...(item['questionFormat'] === 'output' ? { questionFormat: 'output' as const } : {}),
         updatedAt: String(item['updatedAt'] || ''),
         schemaVersion: String(item['schemaVersion'] || 'unknown'),
         assetRef: String(item['assetRef'] || '').trim(),

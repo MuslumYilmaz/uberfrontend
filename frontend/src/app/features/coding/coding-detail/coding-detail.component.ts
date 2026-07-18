@@ -601,27 +601,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
   }
 
-  startCoding() {
-    const q = this.question();
-    this.activePanel.set(0);
-    this.markQuickWinEngaged('start_coding');
-    this.analytics.track('start_coding', {
-      question_id: q?.id ?? null,
-      tech: this.tech,
-      kind: this.kind,
-      src: this.challengeSource,
-    });
-
-    if (!this.isBrowser) return;
-    window.setTimeout(() => {
-      const workspace = document.querySelector('[data-testid="coding-workspace-panel"]') as HTMLElement | null;
-      workspace?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-      if (this.isFrameworkTech()) {
-        this.frameworkPanel?.focusEditor();
-      }
-    }, 0);
-  }
-
   goToPricing() {
     const profile = this.onboarding.getProfile();
     this.analytics.track('premium_gate_path_clicked', {
@@ -2089,7 +2068,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.activePanel.set(1);
       this.trackPressureCompleted(false);
       this.loginPromptTitle = 'Sign in to save Pressure Mode';
-      this.loginPromptBody = 'Your final checks passed. Sign in to save all four rounds and claim the coding completion.';
+      this.loginPromptBody = `Your final checks passed. Sign in to save all ${scenario.rounds.length} rounds and claim the coding completion.`;
       this.loginPromptCta = 'Sign in and save';
       this.ensureAuthenticated();
       return;
@@ -2574,7 +2553,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.persistQuickWinNextDismissed(true);
   }
 
-  private markQuickWinEngaged(via: 'run_tests' | 'submit' | 'reveal_solution' | 'start_coding'): void {
+  private markQuickWinEngaged(via: 'run_tests' | 'submit' | 'reveal_solution'): void {
     if (!this.quickWinActive() || this.quickWinEngaged()) return;
     this.quickWinEngaged.set(true);
     this.analytics.track('quick_win_progressed', {

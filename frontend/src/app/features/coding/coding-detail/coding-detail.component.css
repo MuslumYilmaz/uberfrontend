@@ -453,10 +453,6 @@
   line-height: 1.45;
 }
 
-.detail-interview-hero__cta {
-  justify-self: start;
-}
-
 .report-issue-btn {
   display: inline-flex;
   align-items: center;

@@ -916,6 +916,10 @@
     <lastmod>2026-02-16</lastmod>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-argument-passing-object-mutation-output</loc>
+    <lastmod>2026-07-17</lastmod>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-array-sort-pitfalls</loc>
     <lastmod>2026-04-04</lastmod>
   </url>
@@ -1028,6 +1032,10 @@
     <lastmod>2026-04-08</lastmod>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-event-loop-nested-microtask-output</loc>
+    <lastmod>2026-07-17</lastmod>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-foreach-vs-map</loc>
     <lastmod>2026-01-30</lastmod>
   </url>
@@ -1054,6 +1062,10 @@
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-map-filter-reduce</loc>
     <lastmod>2026-01-30</lastmod>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-map-parseint-callback-arity-output</loc>
+    <lastmod>2026-07-17</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-map-set-get</loc>
@@ -1186,6 +1198,10 @@
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-use-strict-describe</loc>
     <lastmod>2026-04-10</lastmod>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-var-hoisting-shadowing-output</loc>
+    <lastmod>2026-07-17</lastmod>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-var-let-const-hoisting</loc>

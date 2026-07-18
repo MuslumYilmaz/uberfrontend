@@ -410,7 +410,7 @@ function parseSfc(src: string): {
     const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
 
     const script = `
-const { ref, reactive, computed, watch, watchEffect, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate, defineComponent, h } = Vue;
+const { ref, reactive, computed, watch, watchEffect, nextTick, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate, defineComponent, h } = Vue;
 
 const App = {
   template: \`${escTemplate}\`,
@@ -487,7 +487,7 @@ function rewriteVueModuleToUMD(src: string): string {
   // 6) If there *was* an import from 'vue', inject helpers from global Vue
   if (hadVueImport) {
     const helpers =
-      `const { ref, reactive, computed, watch, watchEffect, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate } = Vue;
+      `const { ref, reactive, computed, watch, watchEffect, nextTick, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate } = Vue;
 `;
     s = helpers + s;
   }

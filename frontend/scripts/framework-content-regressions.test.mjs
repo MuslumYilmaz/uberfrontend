@@ -385,6 +385,550 @@ function assertCounterPressureMode() {
   }
 }
 
+function assertDebouncedSearchPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-debounced-search',
+      starter: 'assets/sb/react/question/react-debounced-search.v1.json',
+      solution: 'assets/sb/react/solution/react-debounced-search-solution.v1.json',
+    },
+    angular: {
+      id: 'angular-debounced-search',
+      starter: 'assets/sb/angular/question/angular-debounced-search.v2.json',
+      solution: 'assets/sb/angular/solution/angular-debounced-search-solution.v2.json',
+    },
+    vue: {
+      id: 'vue-debounced-search',
+      starter: 'assets/sb/vue/question/vue-debounced-search.v1.json',
+      solution: 'assets/sb/vue/solution/vue-debounced-search-solution.v1.json',
+    },
+  };
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Debounced Search question must exist`);
+    assert.equal(
+      question.access,
+      'premium',
+      `${framework}: Debounced Search pressure entry must stay premium`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Debounced Search starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Debounced Search solution changed`
+    );
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((test) => test.id),
+      ['debounced-search-results'],
+      `${framework}: normal Debounced Search checks must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/debounced-search.v1.json',
+      `${framework}: Debounced Search must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Debounced Search frameworks must share one pressure scenario'
+  );
+  const scenario = json('cdn/questions/pressure-modes/debounced-search.v1.json');
+  assert.equal(scenario.id, 'debounced-search-pressure-v1');
+  assert.equal(scenario.family, 'debounced-search');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-debounced-search',
+    angular: 'angular-debounced-search',
+    vue: 'vue-debounced-search',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['base-debounce', 'state-recovery', 'latest-query-wins', 'accessible-lifecycle']
+  );
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Debounced Search pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.equal(checks.length, 5);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-debounce-base',
+      'pressure-debounce-recovery',
+      'pressure-debounce-latest-query',
+      'pressure-debounce-aria',
+      'pressure-debounce-cleanup',
+    ]
+  );
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+  const baseSteps = checksById['pressure-debounce-base'].steps;
+  assert.deepEqual(
+    baseSteps.filter((step) => step.type === 'setValue').map((step) => step.value),
+    ['Bob', 'Alice'],
+    'Base debounce must distinguish the stale and final result sets'
+  );
+  assert.deepEqual(
+    baseSteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [150, 900],
+    'Base debounce must sample after the stale response but before the final response'
+  );
+
+  const recoverySteps = checksById['pressure-debounce-recovery'].steps;
+  const whitespaceStepIndex = recoverySteps.findIndex(
+    (step) => step.type === 'setValue' && step.value.trim() === ''
+  );
+  assert.equal(
+    recoverySteps[whitespaceStepIndex + 1]?.type,
+    'expectText',
+    'Whitespace input must reset the status immediately without a debounce allowance'
+  );
+
+  const latestSteps = checksById['pressure-debounce-latest-query'].steps;
+  assert.deepEqual(
+    latestSteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [850, 350],
+    'Latest-query check must inspect the stale-response window before Bob starts'
+  );
+  const staleAliceAssertion = latestSteps.findIndex(
+    (step) => step.type === 'expectNoText' && step.text === 'Alice Johnson'
+  );
+  const bobResultAssertion = latestSteps.findIndex(
+    (step) => step.type === 'waitForText' && step.text === 'Bob'
+  );
+  assert.ok(
+    staleAliceAssertion > 0 && staleAliceAssertion < bobResultAssertion,
+    'Latest-query check must prove Alice never renders before waiting for Bob'
+  );
+
+  const cleanupSteps = checksById['pressure-debounce-cleanup'].steps;
+  assert.deepEqual(
+    cleanupSteps.map((step) => step.type),
+    ['setValue', 'wait', 'setValue', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must cover an active request and a pending replacement debounce together'
+  );
+  assert.deepEqual(
+    cleanupSteps.filter((step) => step.type === 'setValue').map((step) => step.value),
+    ['Alice', 'Bob']
+  );
+  const serializedChecks = JSON.stringify(checks);
+  for (const requiredSignal of [
+    'Alice',
+    'Bob',
+    'Fake API error',
+    'No results found',
+    'aria-describedby',
+    'aria-controls',
+    'aria-busy',
+    'aria-live',
+    'aria-atomic',
+    'alert',
+    'unmountPreview',
+    'expectNoPreviewTimers',
+  ]) {
+    assert.ok(
+      serializedChecks.includes(requiredSignal),
+      `Debounced Search pressure checks are missing ${requiredSignal}`
+    );
+  }
+
+  const solutionMarkers = {
+    react: [/useEffect/, /AbortController/, /clearTimeout/, /aria-controls/, /aria-busy/, /aria-live/, /aria-atomic/],
+    angular: [/implements OnDestroy/, /tap\(\(rawTerm\)/, /debounceTime/, /switchMap/, /takeUntil/, /aria-controls/, /aria-busy/, /aria-live/, /aria-atomic/],
+    vue: [/watch/, /onUnmounted/, /AbortController/, /clearTimeout/, /aria-controls/, /aria-busy/, /aria-live/, /aria-atomic/],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-debounced-search-pressure-solution.v1.json`,
+      `${framework}: invalid Debounced Search pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:debounced-search-pressure-solution`);
+    const files = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:debounced-search-pressure-solution`
+    );
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of solutionMarkers[framework]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Debounced Search pressure solution is missing ${marker}`
+      );
+    }
+  }
+
+  const angularPreviewBuilder = read(
+    'frontend/src/app/core/utils/angular-preview-builder.ts'
+  );
+  const pinnedRxjsBundle = 'https://cdn.jsdelivr.net/npm/rxjs@7.8.2/+esm';
+  assert.equal(
+    angularPreviewBuilder.split(pinnedRxjsBundle).length - 1,
+    2,
+    'Angular preview must share one pinned RxJS bundle across both import specifiers'
+  );
+  assert.doesNotMatch(
+    angularPreviewBuilder,
+    /esm\.sh\/rxjs/,
+    'Angular preview must not fan RxJS out through esm.sh submodule requests'
+  );
+}
+
+function assertTodoListPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-todo-list',
+      starter: 'assets/sb/react/question/react-todo-list.v1.json',
+      solution: 'assets/sb/react/solution/react-todo-list-solution.v1.json',
+    },
+    angular: {
+      id: 'angular-todo-list-starter',
+      starter: 'assets/sb/angular/question/angular-todo-list.v2.json',
+      solution: 'assets/sb/angular/solution/angular-todo-list-solution.v2.json',
+    },
+    vue: {
+      id: 'vue-todo-list',
+      starter: 'assets/sb/vue/question/vue-todo-list.v2.json',
+      solution: 'assets/sb/vue/solution/vue-todo-list-solution.v1.json',
+    },
+  };
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Todo List question must exist`);
+    assert.equal(
+      question.access,
+      'free',
+      `${framework}: Todo List pressure entry must stay free`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Todo List starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Todo List solution changed`
+    );
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((test) => test.id),
+      ['todo-add-item'],
+      `${framework}: normal Todo List checks must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/todo-list.v1.json',
+      `${framework}: Todo List must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Todo List frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/todo-list.v1.json');
+  assert.equal(scenario.id, 'todo-list-pressure-v1');
+  assert.equal(scenario.family, 'todo-list');
+  assert.equal(scenario.access, 'free');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-todo-list',
+    angular: 'angular-todo-list-starter',
+    vue: 'vue-todo-list',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['core-transitions', 'derived-filters', 'keyboard-editing', 'undo-lifecycle']
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Todo List pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.equal(checks.length, 5);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-todo-core',
+      'pressure-todo-filters',
+      'pressure-todo-editing',
+      'pressure-todo-undo',
+      'pressure-todo-cleanup',
+    ]
+  );
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  const coreSteps = checksById['pressure-todo-core'].steps;
+  assert.deepEqual(
+    coreSteps.filter((step) => step.type === 'setValue').map((step) => step.value),
+    ['   ', '  Buy milk  ', 'Walk dog'],
+    'Core Todo List flow must cover whitespace rejection and trimmed task creation'
+  );
+  assert.ok(
+    coreSteps.some(
+      (step) =>
+        step.type === 'key' && step.selector === '.input' && step.key === 'Enter'
+    ),
+    'Core Todo List flow must add through the form keyboard path'
+  );
+  assert.ok(
+    coreSteps.some(
+      (step) =>
+        step.type === 'expectDisabled' &&
+        step.selector === '.primary' &&
+        step.disabled === true
+    ),
+    'Core Todo List flow must keep Add disabled for invalid input'
+  );
+  assert.ok(
+    coreSteps.some(
+      (step) =>
+        step.type === 'expectValue' && step.selector === '.input' && step.value === ''
+    ),
+    'Core Todo List flow must clear the input after adding'
+  );
+
+  const filterSteps = checksById['pressure-todo-filters'].steps;
+  assert.deepEqual(
+    filterSteps
+      .filter((step) => step.type === 'click' && step.selector.startsWith('.filter-'))
+      .map((step) => step.selector),
+    ['.filter-active', '.filter-completed', '.filter-all'],
+    'Todo filters must exercise Active, Completed, and All in order'
+  );
+  assert.ok(
+    filterSteps.some(
+      (step) =>
+        step.type === 'expectAttribute' &&
+        step.selector === '.filter-active' &&
+        step.attribute === 'aria-pressed' &&
+        step.expected === 'true'
+    ),
+    'Active Todo filter must expose its pressed state'
+  );
+  assert.ok(
+    filterSteps.some(
+      (step) => step.type === 'click' && step.selector === '.clear-completed'
+    ),
+    'Todo filter flow must clear completed tasks without removing active tasks'
+  );
+
+  const editingSteps = checksById['pressure-todo-editing'].steps;
+  assert.deepEqual(
+    editingSteps.filter((step) => step.type === 'key').map((step) => step.key),
+    ['Enter', 'Escape'],
+    'Todo editing must commit with Enter and cancel with Escape'
+  );
+  assert.ok(
+    editingSteps.some(
+      (step) => step.type === 'expectFocused' && step.selector === '.edit-input'
+    ),
+    'Todo editing must focus the edit input when editing starts'
+  );
+  assert.ok(
+    editingSteps.filter(
+      (step) => step.type === 'expectFocused' && step.selector === '.edit-task'
+    ).length >= 2,
+    'Todo editing must restore focus after both commit and cancel'
+  );
+
+  const undoSteps = checksById['pressure-todo-undo'].steps;
+  assert.ok(
+    undoSteps.some(
+      (step) =>
+        step.type === 'expectText' &&
+        step.selector === '.todo-text' &&
+        step.index === 0 &&
+        step.text === 'One'
+    ),
+    'Todo undo must restore the removed task at its original index'
+  );
+  assert.ok(
+    undoSteps.some(
+      (step) =>
+        step.type === 'expectNoText' && step.selector === '.card' && step.text === 'One'
+    ),
+    'A newer removal must replace the prior undo opportunity'
+  );
+  assert.ok(
+    undoSteps.some(
+      (step) => step.type === 'wait' && step.durationMs === 5200
+    ),
+    'Todo undo must verify that the five-second recovery window expires'
+  );
+  const undoTimerAssertionIndexes = undoSteps
+    .map((step, index) => step.type === 'expectNoPreviewTimers' ? index : -1)
+    .filter((index) => index >= 0);
+  const expiryWaitIndex = undoSteps.findIndex(
+    (step) => step.type === 'wait' && step.durationMs === 5200
+  );
+  assert.equal(
+    undoTimerAssertionIndexes.length,
+    2,
+    'Todo undo must check timers after replacement cancellation and after expiry'
+  );
+  assert.ok(
+    undoTimerAssertionIndexes[0] < expiryWaitIndex,
+    'Todo replacement timer must be checked before the expiry case can mask a leak'
+  );
+  assert.equal(
+    undoSteps.at(-1)?.type,
+    'expectNoPreviewTimers',
+    'Todo replacement and expiry flow must finish with no retained timer'
+  );
+
+  const cleanupSteps = checksById['pressure-todo-cleanup'].steps;
+  assert.deepEqual(
+    cleanupSteps.slice(-2).map((step) => step.type),
+    ['unmountPreview', 'expectNoPreviewTimers'],
+    'Todo teardown must prove that the undo timer is cleared'
+  );
+
+  const serializedChecks = JSON.stringify(checks);
+  for (const requiredSignal of [
+    '#new-task',
+    '#todo-items',
+    '.todo-checkbox',
+    '.todo-text',
+    '.items-left',
+    '.filters',
+    '.filter-all',
+    '.filter-active',
+    '.filter-completed',
+    '.edit-task',
+    '.edit-input',
+    '.remove-task',
+    '.clear-completed',
+    '.undo-bar',
+    '.undo-button',
+    'aria-label',
+    'aria-controls',
+    'aria-describedby',
+    'aria-pressed',
+    'aria-live',
+    'aria-atomic',
+    'unmountPreview',
+    'expectNoPreviewTimers',
+  ]) {
+    assert.ok(
+      serializedChecks.includes(requiredSignal),
+      `Todo List pressure checks are missing ${requiredSignal}`
+    );
+  }
+
+  const solutionMarkers = {
+    react: [
+      /useEffect/,
+      /useRef/,
+      /clearTimeout/,
+      /pendingUndo/,
+      /aria-controls/,
+      /aria-describedby/,
+      /aria-live/,
+      /aria-atomic/,
+    ],
+    angular: [
+      /implements OnDestroy/,
+      /clearTimeout/,
+      /queueMicrotask/,
+      /@for\s*\([^;]+;\s*track todo\.id/,
+      /aria-controls/,
+      /aria-describedby/,
+      /aria-live/,
+      /aria-atomic/,
+    ],
+    vue: [
+      /computed/,
+      /nextTick/,
+      /import \{[^}]*nextTick[^}]*\} from 'vue'/,
+      /onUnmounted/,
+      /clearTimeout/,
+      /aria-controls/,
+      /aria-describedby/,
+      /aria-live/,
+      /aria-atomic/,
+    ],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-todo-list-pressure-solution.v1.json`,
+      `${framework}: invalid Todo List pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:todo-list-pressure-solution`);
+    const files = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:todo-list-pressure-solution`
+    );
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of solutionMarkers[framework]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Todo List pressure solution is missing ${marker}`
+      );
+    }
+    if (framework === 'vue') {
+      assert.doesNotMatch(
+        source,
+        /Vue\.nextTick/,
+        'Vue Todo List pressure solution must stay valid outside the custom preview runtime'
+      );
+    }
+  }
+
+  const vuePreviewBuilder = read('frontend/src/app/core/utils/vue-preview-builder.ts');
+  assert.equal(
+    (vuePreviewBuilder.match(/const \{[^}\n]*\bnextTick\b[^}\n]*\} = Vue;/g) ?? []).length,
+    2,
+    'Vue preview must expose nextTick for both script-setup and module-style imports'
+  );
+}
+
 async function drainMicrotasks() {
   for (let index = 0; index < 8; index += 1) await Promise.resolve();
 }
@@ -1031,6 +1575,8 @@ assert.match(strictEffectSolutionCode, /\[roomId, onActiveCount\]/);
 assertFrameworkStarterCorpus();
 assertModernAngularCodingCorpus();
 assertCounterPressureMode();
+assertDebouncedSearchPressureMode();
+assertTodoListPressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');
 const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');

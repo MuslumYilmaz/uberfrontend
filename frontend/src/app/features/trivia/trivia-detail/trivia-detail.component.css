@@ -1770,3 +1770,6 @@ pre[class*="language-"].line-numbers > code {
   padding-right: 0.8em;
   text-align: right;
 }
+.card[hidden] {
+  display: none !important;
+}

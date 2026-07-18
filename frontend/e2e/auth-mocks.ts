@@ -444,6 +444,30 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
       return jsonResponse(route, req, 200, []);
     }
 
+    if (req.method() === 'POST' && path.endsWith('/activity/complete')) {
+      const body = parseJsonBody(req) || {};
+      const itemId = String(body.itemId || '').trim();
+      const solvedQuestionIds = Array.from(new Set([
+        ...(currentUser.solvedQuestionIds || []),
+        ...(itemId ? [itemId] : []),
+      ]));
+      currentUser = { ...currentUser, solvedQuestionIds };
+      return jsonResponse(route, req, 200, {
+        stats: currentUser.stats || {},
+        solvedQuestionIds,
+        xpAwarded: 20,
+        logicalCompletionCreated: true,
+        credited: true,
+        pending: false,
+        weeklyGoal: {
+          completed: 1,
+          target: 10,
+          reached: false,
+          bonusGranted: false,
+        },
+      });
+    }
+
     if (req.method() === 'POST' && path.endsWith('/dashboard/prep-goal')) {
       const body = parseJsonBody(req) || {};
       const level = typeof body.level === 'string' ? body.level : 'intermediate';

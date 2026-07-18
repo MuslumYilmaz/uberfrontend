@@ -1,4 +1,4 @@
-import { AccessLevel, Difficulty } from './question.model';
+import { AccessLevel, Difficulty, QuestionFormat } from './question.model';
 import { Tech } from './user.model';
 
 export type PracticeFamily = 'question' | 'incident' | 'code-review' | 'tradeoff-battle';
@@ -17,6 +17,7 @@ export interface PracticeRegistryItem {
   tags: string[];
   access: PracticeAccess;
   estimatedMinutes: number;
+  questionFormat?: QuestionFormat;
   updatedAt: string;
   schemaVersion: string;
   assetRef: string;

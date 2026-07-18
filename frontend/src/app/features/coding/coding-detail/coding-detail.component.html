@@ -129,7 +129,7 @@
                   <strong>Pressure Mode complete.</strong>
                   <p>
                     {{ auth.isLoggedIn()
-                      ? 'Your pressure progress and the underlying Counter completion are saved.'
+                      ? 'Your pressure progress and the underlying coding challenge completion are saved.'
                       : 'Your checks passed locally. Sign in to save and claim completion.' }}
                   </p>
                 </div>
@@ -166,19 +166,42 @@
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
 
-            <section *ngIf="pressureSupported()" class="pressure-entry" data-testid="pressure-mode-entry">
+            <section
+              *ngIf="!demoMode && kind === 'coding' && isFrameworkTech()"
+              class="pressure-entry"
+              data-testid="pressure-mode-entry"
+            >
               <div>
                 <p class="pressure-entry__eyebrow">Optional interview simulation</p>
                 <h2>Keep coding as the requirements change</h2>
-                <p>
-                  Solve the same Counter through four cumulative rounds: correctness, configurable steps,
-                  keyboard accessibility, and lifecycle cleanup.
+                <p *ngIf="pressureSupported(); else pressureComingSoonCopy">
+                  Continue the same challenge through cumulative rounds. Each round adds a new behavioral,
+                  accessibility, or lifecycle constraint without resetting your draft.
                 </p>
+                <ng-template #pressureComingSoonCopy>
+                  <p>
+                    A tailored cumulative pressure mode for this challenge is coming soon.
+                  </p>
+                </ng-template>
               </div>
-              <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
-                (click)="startPressureMode()">
-                Start Interview Pressure Mode
-              </button>
+              <ng-container *ngIf="pressureSupported(); else pressureComingSoonButton">
+                <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
+                  (click)="startPressureMode()">
+                  Start Interview Pressure Mode
+                </button>
+              </ng-container>
+              <ng-template #pressureComingSoonButton>
+                <button
+                  type="button"
+                  faButton
+                  variant="primary"
+                  data-testid="pressure-mode-coming-soon"
+                  aria-label="Interview Pressure Mode coming soon for this challenge"
+                  disabled
+                >
+                  Coming soon
+                </button>
+              </ng-template>
             </section>
 
             <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta()" data-testid="coding-interview-hero">
@@ -201,15 +224,6 @@
               <ul *ngIf="interviewFocusItems().length" class="detail-interview-hero__checks">
                 <li *ngFor="let item of interviewFocusItems()">{{ item }}</li>
               </ul>
-              <button
-                type="button"
-                faButton
-                variant="primary"
-                class="detail-interview-hero__cta"
-                data-testid="coding-start-coding"
-                (click)="startCoding()">
-                Start coding
-              </button>
             </section>
 
             <section class="quick-win-strip" *ngIf="quickWinShowCompact()" data-testid="quick-win-step-strip">
@@ -795,7 +809,7 @@
       <div class="pressure-workspace-loading" data-testid="pressure-workspace-loading" role="status">
         <div class="spinner" aria-hidden="true"></div>
         <strong>Preparing Interview Pressure Mode…</strong>
-        <span>Loading the shared round contract without touching your normal Counter draft.</span>
+        <span>Loading the shared round contract without touching your normal draft.</span>
       </div>
     </ng-template>
 

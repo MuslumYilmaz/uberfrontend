@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TrackListComponent } from './track-list.component';
 import { SeoService } from '../../../core/services/seo.service';
+import { SHOWCASE_STATS } from '../../../generated/content-metadata';
 
 describe('TrackListComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
@@ -106,7 +107,7 @@ describe('TrackListComponent', () => {
     const text = native.textContent || '';
     const foundations = native.querySelector<HTMLElement>('[data-plan-slug="foundations-30d"]');
 
-    expect(text).toContain('506');
+    expect(text).toContain(String(SHOWCASE_STATS.totalQuestions));
     expect(text).toContain('Practice questions');
     expect(text).toContain('11');
     expect(text).toContain('Company prep sources');

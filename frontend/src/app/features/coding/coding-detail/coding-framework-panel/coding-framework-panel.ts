@@ -324,11 +324,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.editorReady.set(true);
   }
 
-  focusEditor(): void {
-    this.ensurePreviewReady();
-    this.frameworkEditor?.focusEditor();
-  }
-
   onEditorLoadFailed(): void {
     this.monacoLoadFailed.set(true);
     this.useMonaco.set(false);

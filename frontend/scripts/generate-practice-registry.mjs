@@ -140,6 +140,7 @@ function buildQuestionEntries() {
             typeof question.estimatedMinutes === 'number'
               ? question.estimatedMinutes
               : QUESTION_DEFAULT_MINUTES[kind],
+          ...(question.questionFormat === 'output' ? { questionFormat: 'output' } : {}),
           updatedAt: resolveRegistryDate({
             updatedAt: question.updatedAt,
             createdAt: question.createdAt,

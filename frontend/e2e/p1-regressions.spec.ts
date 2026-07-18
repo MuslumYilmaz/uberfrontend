@@ -6,6 +6,7 @@ import {
   setMonacoModelValue,
   waitForIframeReady,
   waitForIndexedDbKeyPrefixContains,
+  waitForMonacoModel,
 } from './helpers';
 
 test('storage migration: legacy (unversioned) bundle is preserved and mirrored to IndexedDB', async ({ page }) => {
@@ -55,6 +56,34 @@ test('invalid question id deep link renders a safe 404 (no crash)', async ({ pag
   await page.goto(`/${JS_QUESTION.tech}/coding/definitely-not-a-real-question-id`);
   await expect(page).toHaveURL(/\/404$/);
   await expect(page.getByTestId('not-found-page')).toBeVisible();
+});
+
+test('Monaco keyboard listener tolerates generic keydown after SPA navigation to login', async ({ page }) => {
+  const codingPath = `/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`;
+  const modelKey = `q-${JS_QUESTION.id}-code`;
+
+  await page.goto(codingPath);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  await waitForMonacoModel(page, modelKey);
+
+  await page.getByTestId('footer-submit').click();
+  await expect(page.getByTestId('login-required-title')).toBeVisible();
+  await page.locator('.login-dialog__footer .btn-primary').click();
+
+  await expect(page).toHaveURL((url) => (
+    url.pathname === '/auth/login'
+    && url.searchParams.get('redirectTo') === codingPath
+  ));
+
+  const email = page.getByTestId('login-email');
+  await email.focus();
+  await email.evaluate((input) => {
+    input.dispatchEvent(new Event('keydown', { bubbles: true }));
+  });
+
+  const typedEmail = 'monaco-keydown@example.com';
+  await email.pressSequentially(typedEmail);
+  await expect(email).toHaveValue(typedEmail);
 });
 
 test('filter empty state shows reset option and recovers', async ({ page }) => {

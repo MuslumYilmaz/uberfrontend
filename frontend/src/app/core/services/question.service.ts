@@ -21,7 +21,7 @@ type LoadSystemDesignOptions = {
 };
 export type QuestionListItem = Pick<
   Question,
-  'id' | 'title' | 'type' | 'technology' | 'access' | 'difficulty' | 'tags' | 'importance' | 'companies' | 'description'
+  'id' | 'title' | 'type' | 'technology' | 'access' | 'difficulty' | 'tags' | 'importance' | 'companies' | 'description' | 'questionFormat'
 > & {
   shortDescription?: string;
 };
@@ -404,6 +404,7 @@ export class QuestionService {
       tags: Array.isArray(q.tags) ? q.tags : [],
       importance: Number(q.importance ?? 0),
       companies: Array.isArray(q.companies) ? q.companies : [],
+      questionFormat: q.questionFormat,
       description: shortDescription || undefined,
       shortDescription: shortDescription || undefined,
     };

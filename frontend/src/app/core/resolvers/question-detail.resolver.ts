@@ -47,6 +47,7 @@ function toDetailListItem(q: Question): QuestionListItem {
     tags: Array.isArray(q.tags) ? q.tags : [],
     importance: Number(q.importance ?? 0),
     companies: Array.isArray(q.companies) ? q.companies : [],
+    questionFormat: q.questionFormat,
     description: undefined,
     shortDescription: undefined,
   };

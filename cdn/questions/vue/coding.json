@@ -346,6 +346,7 @@
       "storageKey": "v1:ui:vue:vue-todo-list"
     },
     "companies": [],
+    "pressureModeAsset": "assets/questions/pressure-modes/todo-list.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
     "access": "free",
     "updatedAt": "2026-07-16",
@@ -1396,6 +1397,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v2:ui:vue:vue-debounced-search"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",

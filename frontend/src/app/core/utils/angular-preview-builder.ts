@@ -45,8 +45,8 @@ export function makeAngularPreviewHtmlV1(files: Record<string, any>, assetBase?:
       '@angular/compiler': 'https://cdn.jsdelivr.net/npm/@angular/compiler@18.2.14/fesm2022/compiler.mjs',
       '@angular/router': 'https://cdn.jsdelivr.net/npm/@angular/router@18.2.14/fesm2022/router.mjs',
       'tslib': 'https://cdn.jsdelivr.net/npm/tslib@2.6.3/tslib.es6.js',
-      'rxjs': 'https://esm.sh/rxjs@7',
-      'rxjs/operators': 'https://esm.sh/rxjs@7/operators',
+      'rxjs': 'https://cdn.jsdelivr.net/npm/rxjs@7.8.2/+esm',
+      'rxjs/operators': 'https://cdn.jsdelivr.net/npm/rxjs@7.8.2/+esm',
       'zone.js': 'https://cdn.jsdelivr.net/npm/zone.js@0.14.10/fesm2015/zone.js'
     }
   };
