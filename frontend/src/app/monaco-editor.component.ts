@@ -124,6 +124,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         automaticLayout: !this.autoHeight,
         scrollBeyondLastLine: false,
         minimap: { enabled: false },
+        // Monaco 0.52.2 leaves an unhandled cancellation behind when its
+        // occurrence highlighter is pending during a dynamic model swap.
+        // Keep it disabled by default; callers can still opt back in through
+        // `options` once Monaco fixes the lifecycle regression.
+        occurrencesHighlight: 'off',
         ...langDefaults,
         ...this.options,
       };
@@ -1069,16 +1074,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   private createOrSwapModel(langNorm: string, code: string) {
     const rawId = this._modelId; // src/App.tsx, fa-1.ts, vs.
+    const previousModel = this.model;
 
     // Dosya path’ini düzgün bir file:// URI’sine çevir
     const normalizedPath = rawId.replace(/^file:\/\//, '').replace(/^\/+/, '');
     const uri = window.monaco.Uri.parse(`file:///${normalizedPath}`);
-
-    // Eğer eski model başka bir URI’ye aitse dispose et
-    if (this.model && this.model.uri.toString() !== uri.toString()) {
-      try { this.model.dispose(); } catch { }
-      this.model = undefined;
-    }
 
     let existing = window.monaco.editor.getModel(uri);
     if (existing) {
@@ -1094,6 +1094,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
     if (this.editor) {
       this.editor.setModel(this.model);
+    }
+
+    // Monaco 0.52 can surface worker cancellation errors if a model is
+    // disposed while an editor is still attached to it. Detach first by
+    // binding the replacement model, then release the previous one.
+    if (previousModel && previousModel !== this.model) {
+      try { previousModel.dispose(); } catch { }
     }
   }
 }

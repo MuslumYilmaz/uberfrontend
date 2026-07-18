@@ -72,7 +72,8 @@ describe('MonacoEditorComponent loader failure handling', () => {
   });
 
   it('emits ready after the AMD loader exposes a usable Monaco API', async () => {
-    (window as any).monaco = makeFakeMonaco();
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
     (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
       ok();
     });
@@ -92,6 +93,61 @@ describe('MonacoEditorComponent loader failure handling', () => {
     expect(failures).toEqual([]);
     expect(readyCount).toBe(1);
     expect((window as any).__faMonacoReady).toBeTrue();
+    expect(fakeMonaco.api.editor.create.calls.mostRecent().args[1]).toEqual(
+      jasmine.objectContaining({ occurrencesHighlight: 'off' }),
+    );
+  });
+
+  it('disposes the editor and model once when the fixture is destroyed', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+
+    const fixture = createComponent();
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    expect(fakeMonaco.api.editor.create).toHaveBeenCalledTimes(1);
+    expect(fakeMonaco.api.editor.createModel).toHaveBeenCalledTimes(1);
+
+    fixture.destroy();
+
+    expect(fakeMonaco.editor.dispose).toHaveBeenCalledTimes(1);
+    expect(fakeMonaco.model.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('attaches a replacement model before disposing the previous model', () => {
+    const fakeMonaco = makeFakeMonaco();
+    const order: string[] = [];
+    const previousModel = {
+      uri: { toString: () => 'file:///question.js' },
+      dispose: jasmine.createSpy('disposePrevious').and.callFake(() => order.push('dispose')),
+    };
+    const replacementModel = {
+      uri: { toString: () => 'file:///question.ts' },
+      getValue: () => 'next',
+      setValue: jasmine.createSpy('setValue'),
+      dispose: jasmine.createSpy('disposeReplacement'),
+    };
+    fakeMonaco.api.editor.createModel.and.returnValue(replacementModel);
+    fakeMonaco.editor.setModel.and.callFake(() => order.push('attach'));
+    (window as any).monaco = fakeMonaco.api;
+
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.modelKey = 'question';
+    component.language = 'typescript';
+    (component as any).editor = fakeMonaco.editor;
+    (component as any).model = previousModel;
+
+    (component as any).createOrSwapModel('typescript', 'next');
+
+    expect(fakeMonaco.editor.setModel).toHaveBeenCalledOnceWith(replacementModel);
+    expect(previousModel.dispose).toHaveBeenCalledTimes(1);
+    expect(order).toEqual(['attach', 'dispose']);
   });
 
   function createComponent(size: { width?: number; height?: number } = {}): ComponentFixture<MonacoEditorComponent> {
@@ -124,7 +180,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     (MonacoEditorComponent as any).webCompletionsInstalled = false;
   }
 
-  function makeFakeMonaco(): any {
+  function makeFakeMonaco(): { api: any; editor: any; model: any } {
     const model = {
       uri: { toString: () => 'file:///fa-1.js' },
       getValue: () => '',
@@ -146,7 +202,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     const typescriptDefaults = makeTypescriptDefaults();
     const javascriptDefaults = makeTypescriptDefaults();
 
-    return {
+    const api = {
       editor: {
         ContextKeyExpr: { has: () => ({}) },
         create: jasmine.createSpy('create').and.returnValue(editor),
@@ -190,6 +246,8 @@ describe('MonacoEditorComponent loader failure handling', () => {
         parse: (value: string) => ({ toString: () => value }),
       },
     };
+
+    return { api, editor, model };
   }
 
   function makeTypescriptDefaults(): any {
