@@ -611,7 +611,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>closure</strong> means a function remembers variables from the place where it was created, not from where it is called. That powers private state and factories, but the real production/debug value is knowing which bugs closures create: async callbacks reading stale values, loop handlers capturing one shared binding, and long-lived listeners keeping old objects alive longer than expected."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>closure</strong> means a function remembers variables from the place where it was created, not from where it is called. That powers private state and factories, but the real production/debug value is knowing which bugs closures create: async callbacks reading stale values, loop handlers capturing one shared binding, and long-lived listeners keeping old objects alive longer than expected. In React, a callback can retain bindings from an older component render; the <a href=\"/react/trivia/react-stale-state-closures\">React stale closure debugging guide</a> shows how to choose among dependencies, functional updates, refs, and intentional snapshots."
         },
         {
           "type": "code",

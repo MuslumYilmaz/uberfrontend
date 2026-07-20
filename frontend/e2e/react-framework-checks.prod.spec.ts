@@ -11,6 +11,13 @@ import {
 import { buildMockUser, installAuthMock } from './auth-mocks';
 
 type SolutionFile = string | { code?: unknown };
+type CachedRuntimeResponse = {
+  status: number;
+  headers: Record<string, string>;
+  body: string;
+};
+
+const FRAMEWORK_RUNTIME_RESPONSES = new Map<string, Promise<CachedRuntimeResponse>>();
 
 const RUNNER_FAILURE =
   /framework checks timed out waiting for preview render|framework assertion execution timed out|preview readiness timed out|infrastructure timeout/i;
@@ -56,6 +63,42 @@ const TODO_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const SHOPPING_CART_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-shopping-cart-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-shopping-cart-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-shopping-cart-pressure-solution.v1.json',
+  ),
+} as const;
+
+const CHIPS_INPUT_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-chips-input-autocomplete-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-chips-input-autocomplete-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-chips-input-autocomplete-pressure-solution.v1.json',
+  ),
+} as const;
+
+const PAGINATION_TABLE_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-pagination-table-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-pagination-table-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-pagination-table-pressure-solution.v1.json',
+  ),
+} as const;
+
 type PressureFlowContract = {
   checkCounts: number[];
   roundIds: string[];
@@ -93,6 +136,39 @@ const TODO_PRESSURE_FLOW: PressureFlowContract = {
     'undo-lifecycle',
   ],
   debriefText: 'You kept task state predictable under pressure',
+};
+
+const SHOPPING_CART_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-cart-transitions',
+    'quantity-boundaries',
+    'inventory-guard',
+    'promo-and-checkout',
+  ],
+  debriefText: 'You kept cart state correct under pressure',
+};
+
+const CHIPS_INPUT_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-suggestion-selection',
+    'token-normalization',
+    'keyboard-lifecycle',
+    'invite-limit-and-accessibility',
+  ],
+  debriefText: 'You kept invite input predictable under pressure',
+};
+
+const PAGINATION_TABLE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-page-window',
+    'filter-and-page-reset',
+    'sort-and-page-size',
+    'selection-and-accessibility',
+  ],
+  debriefText: 'You kept table state predictable under pressure',
 };
 
 const AUTOCOMPLETE_SOLUTION = readCanonicalFile(
@@ -221,6 +297,21 @@ async function runChecks(page: Page, expectedCount: number): Promise<Locator> {
   return page.getByTestId('framework-results-panel');
 }
 
+async function runPressureChecks(page: Page, expectedCount: number): Promise<Locator> {
+  let results = await runChecks(page, expectedCount);
+  const failureKinds = await results
+    .locator('[data-testid="framework-check-result"][data-failure-kind]')
+    .evaluateAll((rows) => rows.map((row) => row.getAttribute('data-failure-kind')));
+
+  // Angular preview dependencies are fetched in each opaque iframe. Retry one
+  // transient readiness miss, but never retry (or hide) an assertion failure.
+  if (failureKinds.length > 0 && failureKinds.every((kind) => kind === 'infrastructure-timeout')) {
+    results = await runChecks(page, expectedCount);
+  }
+
+  return results;
+}
+
 async function completePressureRounds(
   page: Page,
   contract: PressureFlowContract = COUNTER_PRESSURE_FLOW,
@@ -230,7 +321,7 @@ async function completePressureRounds(
       'data-round-id',
       contract.roundIds[index],
     );
-    const results = await runChecks(page, expectedCount);
+    const results = await runPressureChecks(page, expectedCount);
     await expect(results.locator('.framework-check-results__summary')).toHaveText(
       `${expectedCount}/${expectedCount} passed`,
     );
@@ -355,11 +446,38 @@ async function installLocalFrameworkAssetMirror(page: Page): Promise<void> {
   );
 }
 
+async function installFrameworkRuntimeResponseCache(page: Page): Promise<void> {
+  await page.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\//, async (route) => {
+    const url = route.request().url();
+    let pending = FRAMEWORK_RUNTIME_RESPONSES.get(url);
+    if (!pending) {
+      pending = route.fetch().then(async (response) => ({
+        status: response.status(),
+        headers: Object.fromEntries(
+          Object.entries(response.headers()).filter(([name]) =>
+            !['content-encoding', 'content-length', 'transfer-encoding'].includes(name.toLowerCase()),
+          ),
+        ),
+        body: await response.text(),
+      }));
+      FRAMEWORK_RUNTIME_RESPONSES.set(url, pending);
+    }
+
+    try {
+      await route.fulfill(await pending);
+    } catch {
+      FRAMEWORK_RUNTIME_RESPONSES.delete(url);
+      await route.continue();
+    }
+  });
+}
+
 test.describe('Framework checks against the production SSR build', () => {
   test.describe.configure({ mode: 'serial', timeout: 120_000 });
 
   test.beforeEach(async ({ page }) => {
     await installLocalFrameworkAssetMirror(page);
+    await installFrameworkRuntimeResponseCache(page);
     await pinFrameworkAssetsToSameOrigin(page);
   });
 
@@ -584,6 +702,215 @@ test.describe('Framework checks against the production SSR build', () => {
       await loadCanonicalBundle(page, TODO_PRESSURE_SOLUTIONS[framework]);
       await rebuildPreview(page, '#new-task');
       await completePressureRounds(page, TODO_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Shopping Cart keeps its premium pressure draft isolated and passes every round', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-shopping-cart');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.product-card:first-child');
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+
+    const normalMarker = `normal-shopping-cart-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-shopping-cart@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-shopping-cart\?mode=pressure$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-shopping-cart$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.product-card:first-child');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+
+    await loadCanonicalBundle(page, SHOPPING_CART_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.product-card:first-child');
+    await completePressureRounds(page, SHOPPING_CART_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-shopping-cart$/);
+    await waitForFrameworkPreview(page, '.product-card:first-child');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    const questionId = framework === 'angular'
+      ? 'angular-shopping-cart-mini'
+      : 'vue-shopping-cart';
+
+    test(`${framework} Shopping Cart passes cart, stock, promo, checkout, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.product-card:first-child');
+
+      await loadCanonicalBundle(page, SHOPPING_CART_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.product-card:first-child');
+      await completePressureRounds(page, SHOPPING_CART_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Chips Input keeps its premium pressure draft isolated and passes every round', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-chips-input-autocomplete');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.card');
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+
+    const normalMarker = `normal-chips-input-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-chips-input-autocomplete@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(
+      /\/react\/coding\/react-chips-input-autocomplete\?mode=pressure$/,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-chips-input-autocomplete$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.card');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+
+    await loadCanonicalBundle(page, CHIPS_INPUT_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.card');
+    await completePressureRounds(page, CHIPS_INPUT_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-chips-input-autocomplete$/);
+    await waitForFrameworkPreview(page, '.card');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    test(`${framework} Chips Input passes suggestion, token, keyboard, limit, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${framework}-chips-input-autocomplete?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.card');
+
+      await loadCanonicalBundle(page, CHIPS_INPUT_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.card');
+      await completePressureRounds(page, CHIPS_INPUT_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Pagination Table keeps its premium pressure draft isolated and passes every round', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-pagination-table');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.table');
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+
+    const normalMarker = `normal-pagination-table-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-pagination-table@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(
+      /\/react\/coding\/react-pagination-table\?mode=pressure$/,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-pagination-table$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.table');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+
+    await loadCanonicalBundle(page, PAGINATION_TABLE_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.table');
+    await completePressureRounds(page, PAGINATION_TABLE_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-pagination-table$/);
+    await waitForFrameworkPreview(page, '.table');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    test(`${framework} Pagination Table passes pagination, filtering, sorting, selection, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${framework}-pagination-table?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.table');
+
+      await loadCanonicalBundle(page, PAGINATION_TABLE_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.table');
+      await completePressureRounds(page, PAGINATION_TABLE_PRESSURE_FLOW);
     });
   }
 

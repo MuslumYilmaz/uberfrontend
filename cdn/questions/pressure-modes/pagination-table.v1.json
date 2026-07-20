@@ -1,0 +1,814 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "pagination-table-pressure-v1",
+  "family": "pagination-table",
+  "title": "Paginated Data Table Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-pagination-table",
+    "angular": "angular-pagination-table",
+    "vue": "vue-pagination-table"
+  },
+  "rounds": [
+    {
+      "id": "core-page-window",
+      "title": "Core page window",
+      "interviewerPrompt": "Start with pagination users can trust. Every page must expose the correct slice and guard both boundaries.",
+      "constraints": [
+        "Render 13 users in stable source order with a default page size of five.",
+        "Previous and Next must move one page at a time without leaving the valid page range.",
+        "The final page must render only users 11 through 13 and disable Next.",
+        "Keep the existing footer button order and page-info contract intact."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-table-pagination",
+          "name": "Round 1 · Pagination renders exact windows and guards boundaries",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": "tbody tr",
+              "count": 5
+            },
+            {
+              "type": "expectCount",
+              "selector": ".data-row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".page-info",
+              "text": "Page 1 of 3"
+            },
+            {
+              "type": "expectText",
+              "selector": ".result-summary",
+              "text": "13 users found."
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "index": 4,
+              "text": "5"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".previous"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".next",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".footer button",
+              "index": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page-info",
+              "text": "Page 2 of 3",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".data-row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "text": "6"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "index": 4,
+              "text": "10"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".previous",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page-info",
+              "text": "Page 3 of 3",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".data-row",
+              "count": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "text": "11"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "index": 2,
+              "text": "13"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".next"
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "expectText",
+              "selector": ".page-info",
+              "text": "Page 3 of 3"
+            },
+            {
+              "type": "click",
+              "selector": ".previous"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page-info",
+              "text": "Page 2 of 3",
+              "timeoutMs": 700
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filter-and-page-reset",
+      "title": "Filter and page reset",
+      "interviewerPrompt": "Now layer search onto pagination. Normalization, result counts, empty state, and the active page must stay synchronized.",
+      "constraints": [
+        "Trim the query and match name, email, or role case-insensitively.",
+        "Every query change must reset pagination to page one.",
+        "Derive page counts from the filtered collection and keep the page range valid.",
+        "Render a single empty-state row and disable both pagination controls when nothing matches."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-table-filtering",
+          "name": "Round 2 · Filtering normalizes input and resets pagination safely",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "expectText",
+              "selector": ".page-info",
+              "text": "Page 2 of 3"
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": "  VIEWER  "
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page-info",
+              "text": "Page 1 of 2",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".result-summary",
+              "text": "6 users found."
+            },
+            {
+              "type": "expectCount",
+              "selector": ".data-row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "text": "Carla Perez"
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".data-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "text": "Leo Walker"
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": "  LEO@EXAMPLE.COM  "
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page-info",
+              "text": "Page 1 of 1",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".result-summary",
+              "text": "1 user found."
+            },
+            {
+              "type": "expectCount",
+              "selector": ".data-row",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "text": "Leo Walker"
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": "nobody"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".data-row",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".empty-state",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".empty-state",
+              "text": "No users found."
+            },
+            {
+              "type": "expectText",
+              "selector": ".result-summary",
+              "text": "0 users found."
+            },
+            {
+              "type": "expectText",
+              "selector": ".page-info",
+              "text": "Page 1 of 1"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".previous"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".next"
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": ""
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".data-row",
+              "count": 5,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".result-summary",
+              "text": "13 users found."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sort-and-page-size",
+      "title": "Sort and page size",
+      "interviewerPrompt": "Add deterministic sorting and a second page size without letting derived state drift or compare numeric ids as strings.",
+      "constraints": [
+        "Sort ID numerically and Name or Role case-insensitively.",
+        "The first activation of a new column must sort ascending and the second descending.",
+        "Equal sort values must retain their original source order.",
+        "Changing sort or page size must reset to page one and recompute the page window."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-table-sorting",
+          "name": "Round 3 · Sorting stays stable while page size changes",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".name-header",
+              "attribute": "aria-sort",
+              "expected": false
+            },
+            {
+              "type": "click",
+              "selector": ".sort-name"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".name-header",
+              "attribute": "aria-sort",
+              "expected": "ascending"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "text": "Alice Johnson"
+            },
+            {
+              "type": "click",
+              "selector": ".sort-name"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".name-header",
+              "attribute": "aria-sort",
+              "expected": "descending"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "text": "Mia Clark"
+            },
+            {
+              "type": "click",
+              "selector": ".sort-role"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".name-header",
+              "attribute": "aria-sort",
+              "expected": false
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".role-header",
+              "attribute": "aria-sort",
+              "expected": "ascending"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "text": "Alice Johnson"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "index": 1,
+              "text": "Frank Wu"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "index": 2,
+              "text": "Mia Clark"
+            },
+            {
+              "type": "setValue",
+              "selector": ".page-size",
+              "value": "10"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".page-size",
+              "value": "10"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".data-row",
+              "count": 10,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".page-info",
+              "text": "Page 1 of 2"
+            },
+            {
+              "type": "click",
+              "selector": ".sort-id"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".id-header",
+              "attribute": "aria-sort",
+              "expected": "ascending"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": ".sort-id"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".id-header",
+              "attribute": "aria-sort",
+              "expected": "descending"
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-id",
+              "text": "13"
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": "viewer"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".data-row",
+              "count": 6,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".user-name",
+              "text": "Leo Walker"
+            },
+            {
+              "type": "expectText",
+              "selector": ".page-info",
+              "text": "Page 1 of 1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "selection-and-accessibility",
+      "title": "Selection and accessibility",
+      "interviewerPrompt": "Finish with identity-safe selection and an assistive-technology contract that survives every table transformation.",
+      "constraints": [
+        "Track selected user ids independently from the rendered page, filter, and sort order.",
+        "Select page must affect only visible rows and expose false, mixed, and true states.",
+        "Provide a global clear-selection control and deterministic selected-count feedback.",
+        "Expose a named table, scoped headers, sort state, labeled controls, keyboard recovery, and a stable polite live region."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-table-selection",
+          "name": "Round 4 · Selection persists by id and page selection stays scoped",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "0 users selected."
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".clear-selection"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-page",
+              "attribute": "aria-checked",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": ".row-select",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".row-select",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "2 users selected."
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row-select:checked",
+              "count": 2
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-page",
+              "attribute": "aria-checked",
+              "expected": "mixed"
+            },
+            {
+              "type": "click",
+              "selector": ".sort-name"
+            },
+            {
+              "type": "click",
+              "selector": ".sort-name"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "2 users selected."
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": "alice"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".data-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row-select:checked",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "2 users selected."
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": ""
+            },
+            {
+              "type": "click",
+              "selector": ".sort-id"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row-select:checked",
+              "count": 2
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row-select:checked",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-page",
+              "attribute": "aria-checked",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": ".select-page"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row-select:checked",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "7 users selected."
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-page",
+              "attribute": "aria-checked",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".previous"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row-select:checked",
+              "count": 2
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-page",
+              "attribute": "aria-checked",
+              "expected": "mixed"
+            },
+            {
+              "type": "click",
+              "selector": ".clear-selection"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "0 users selected."
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row-select:checked",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-page",
+              "attribute": "aria-checked",
+              "expected": "false"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".clear-selection"
+            }
+          ]
+        },
+        {
+          "id": "pressure-table-accessibility",
+          "name": "Round 4 · Table semantics, keyboard recovery, and announcements stay stable",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".table caption",
+              "text": "User directory"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".name-header",
+              "attribute": "scope",
+              "expected": "col"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".search-input",
+              "attribute": "aria-label",
+              "expected": "Search users"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".search-input",
+              "attribute": "aria-describedby",
+              "expected": "result-summary"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".page-size",
+              "attribute": "aria-label",
+              "expected": "Rows per page"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".sort-id",
+              "attribute": "aria-label",
+              "expected": "Sort by ID"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".sort-name",
+              "attribute": "aria-label",
+              "expected": "Sort by Name"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".sort-role",
+              "attribute": "aria-label",
+              "expected": "Sort by Role"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".row-select",
+              "attribute": "aria-label",
+              "expected": "Select Alice Johnson"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-page",
+              "attribute": "aria-label",
+              "expected": "Select all users on this page"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".clear-selection",
+              "attribute": "aria-label",
+              "expected": "Clear selected users"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".footer",
+              "attribute": "role",
+              "expected": "navigation"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".footer",
+              "attribute": "aria-label",
+              "expected": "Pagination"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".table-status",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".table-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".table-status",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".table-status",
+              "text": "Page 1 of 3. Showing 5 of 13 users."
+            },
+            {
+              "type": "setValue",
+              "selector": ".search-input",
+              "value": "viewer"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".result-summary",
+              "text": "6 users found.",
+              "timeoutMs": 700
+            },
+            {
+              "type": "key",
+              "selector": ".search-input",
+              "key": "Escape"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".search-input",
+              "value": ""
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".search-input"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".data-row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".table-status",
+              "text": "Search cleared. 13 users found."
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept table state predictable under pressure",
+    "summary": "You kept filtering, stable ordering, page windows, persistent selection, and assistive-technology feedback aligned as the table contract expanded.",
+    "takeaways": [
+      "Derive the visible page from one filter, sort, and pagination pipeline.",
+      "Reset or clamp page state whenever the result window changes.",
+      "Track selection by stable domain ids rather than rendered row positions.",
+      "Treat table semantics, sort state, labels, and live feedback as correctness requirements."
+    ],
+    "frameworkNotes": {
+      "react": "Use memoized derived collections, functional Set updates, and explicit indeterminate synchronization.",
+      "angular": "Use typed getters for the derived pipeline and replace collection state when bindings must refresh.",
+      "vue": "Use computed collections and replace Set refs so selection and header state stay reactive."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-pagination-table-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-pagination-table-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-pagination-table-pressure-solution.v1.json"
+  }
+}

@@ -1,0 +1,810 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "shopping-cart-pressure-v1",
+  "family": "shopping-cart",
+  "title": "Shopping Cart Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-shopping-cart",
+    "angular": "angular-shopping-cart-mini",
+    "vue": "vue-shopping-cart"
+  },
+  "rounds": [
+    {
+      "id": "core-cart-transitions",
+      "title": "Core cart transitions",
+      "interviewerPrompt": "Start with a trustworthy cart model. Product identity, quantities, and money must stay consistent as items are added.",
+      "constraints": [
+        "Add a new product as one cart row with quantity 1.",
+        "Adding the same product again must increment its existing row instead of creating a duplicate.",
+        "Keep different products in separate rows with their own quantities and line totals.",
+        "Derive total item count, line totals, and the overall total from the current cart. Format every amount as USD with two decimal places."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-cart-core",
+          "name": "Round 1 · Duplicate adds preserve identity and totals",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".cart-row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 0",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $0.00",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-name",
+              "text": "Wireless Headphones"
+            },
+            {
+              "type": "expectText",
+              "selector": ".qty",
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": ".line-total",
+              "text": "$259.98"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 2",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $259.98",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-name",
+              "index": 1,
+              "text": "Mechanical Keyboard"
+            },
+            {
+              "type": "expectText",
+              "selector": ".qty",
+              "index": 1,
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".line-total",
+              "index": 1,
+              "text": "$89.50"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 3",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $349.48",
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quantity-boundaries",
+      "title": "Quantity boundaries",
+      "interviewerPrompt": "Now make every quantity transition safe. Updates must affect only their target row and return cleanly to an empty cart.",
+      "constraints": [
+        "Increasing and decreasing a quantity must update its row total, total item count, and overall total.",
+        "Decreasing an item at quantity 1 must remove that row.",
+        "Remove must delete only the selected product and leave every other row unchanged.",
+        "An empty cart must report 0 items and a $0.00 total."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-cart-quantity",
+          "name": "Round 2 · Quantity boundaries and targeted removal",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .ghost",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".qty",
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": ".line-total",
+              "text": "$259.98"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 2",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $259.98",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .ghost",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".qty",
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".line-total",
+              "text": "$129.99"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 1",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $129.99",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .ghost",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 0",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $0.00",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .danger",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-name",
+              "text": "Mechanical Keyboard"
+            },
+            {
+              "type": "expectText",
+              "selector": ".qty",
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 1",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $89.50",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .danger"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".empty",
+              "text": "Your cart is empty",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 0",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $0.00",
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inventory-guard",
+      "title": "Inventory guard",
+      "interviewerPrompt": "Inventory is finite. Preserve the cart guarantees while every add path respects stock and communicates the boundary.",
+      "constraints": [
+        "Use stock limits of 2 Wireless Headphones, 3 Mechanical Keyboards, 5 Ergonomic Mice, and 1 USB-C Hub.",
+        "Show the remaining product stock contract as 2 in stock, 3 in stock, 5 in stock, and 1 in stock before cart changes.",
+        "Disable both Add to cart and Increase when a cart line reaches its product's stock limit, and never allow either path to exceed stock.",
+        "Re-enable Add to cart and Increase after the quantity drops below the limit.",
+        "Announce `Wireless Headphones reached its stock limit.` through a stable atomic polite cart status when that limit is reached."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-cart-inventory",
+          "name": "Round 3 · Every add path respects inventory",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".stock-count",
+              "index": 0,
+              "text": "2 in stock",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stock-count",
+              "index": 1,
+              "text": "3 in stock",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stock-count",
+              "index": 2,
+              "text": "5 in stock",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stock-count",
+              "index": 3,
+              "text": "1 in stock",
+              "match": "contains"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".product-card button",
+              "index": 0,
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".qty",
+              "text": "2",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".product-card button",
+              "index": 0,
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".cart-actions .ghost",
+              "index": 1,
+              "disabled": true
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cart-status",
+              "attribute": "id",
+              "expected": "cart-status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cart-status",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cart-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cart-status",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-status",
+              "text": "Wireless Headphones reached its stock limit."
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .ghost",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".qty",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .ghost",
+              "index": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".qty",
+              "text": "1",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".product-card button",
+              "index": 0,
+              "disabled": false
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".cart-actions .ghost",
+              "index": 1,
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".cart-actions .ghost",
+              "index": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".qty",
+              "text": "2",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".product-card button",
+              "index": 0,
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".cart-actions .ghost",
+              "index": 1,
+              "disabled": true
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-status",
+              "text": "Wireless Headphones reached its stock limit."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "promo-and-checkout",
+      "title": "Promo and checkout",
+      "interviewerPrompt": "Finish the purchase flow without weakening money, reset, keyboard, or assistive-technology contracts.",
+      "constraints": [
+        "Normalize promo input with trim and case-insensitive matching. SAVE10 applies a single 10% discount to the current subtotal.",
+        "Show `Promo code is invalid.` for invalid input and let the user recover by applying a valid code. Announce promo feedback through a stable atomic polite status connected to the input.",
+        "Give every Add, Decrease, Increase, and Remove button a product-specific accessible label.",
+        "Disable checkout for an empty cart. A successful checkout must clear the cart and promo state, then announce `Order placed.` through a stable atomic polite status."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-cart-promo",
+          "name": "Round 4 · Promo normalization and one-time math",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".promo-input",
+              "attribute": "id",
+              "expected": "promo-code"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".promo-input",
+              "attribute": "aria-describedby",
+              "expected": "promo-feedback"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".promo-feedback",
+              "attribute": "id",
+              "expected": "promo-feedback"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".promo-feedback",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".promo-feedback",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".promo-feedback",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtotal",
+              "text": "$89.50",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".promo-input",
+              "value": "NOPE"
+            },
+            {
+              "type": "click",
+              "selector": ".apply-promo"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".promo-feedback",
+              "text": "Promo code is invalid.",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".discount",
+              "text": "$0.00",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".grand-total",
+              "text": "$89.50",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".promo-input",
+              "value": "  save10  "
+            },
+            {
+              "type": "click",
+              "selector": ".apply-promo"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".promo-feedback",
+              "text": "10% discount applied.",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtotal",
+              "text": "$89.50",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".discount",
+              "text": "-$8.95",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".grand-total",
+              "text": "$80.55",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".apply-promo"
+            },
+            {
+              "type": "expectText",
+              "selector": ".discount",
+              "text": "-$8.95",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".grand-total",
+              "text": "$80.55",
+              "match": "contains"
+            }
+          ]
+        },
+        {
+          "id": "pressure-cart-checkout",
+          "name": "Round 4 · Accessible checkout resets purchase state",
+          "steps": [
+            {
+              "type": "expectDisabled",
+              "selector": ".checkout-button",
+              "disabled": true
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".checkout-status",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".checkout-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".checkout-status",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".product-card button",
+              "attribute": "aria-label",
+              "expected": "Add Wireless Headphones to cart"
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cart-actions .ghost",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Decrease Wireless Headphones quantity"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cart-actions .ghost",
+              "index": 1,
+              "attribute": "aria-label",
+              "expected": "Increase Wireless Headphones quantity"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cart-actions .danger",
+              "attribute": "aria-label",
+              "expected": "Remove Wireless Headphones from cart"
+            },
+            {
+              "type": "setValue",
+              "selector": ".promo-input",
+              "value": "SAVE10"
+            },
+            {
+              "type": "click",
+              "selector": ".apply-promo"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".promo-feedback",
+              "text": "10% discount applied.",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".checkout-button",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".checkout-button"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total items: 0",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cart-header .subtitle",
+              "text": "Total: $0.00",
+              "match": "contains"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".promo-input",
+              "value": ""
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".promo-feedback",
+              "text": "10% discount applied.",
+              "match": "contains"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".checkout-button",
+              "disabled": true
+            },
+            {
+              "type": "expectText",
+              "selector": ".checkout-status",
+              "text": "Order placed."
+            },
+            {
+              "type": "click",
+              "selector": ".product-card button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cart-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".discount",
+              "text": "$0.00",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".grand-total",
+              "text": "$89.50",
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept cart state correct under pressure",
+    "summary": "The final implementation keeps product identity, quantities, inventory, money, promo feedback, checkout, and accessible announcements synchronized through one cart model. The interview signal is preserving every earlier invariant as purchase rules accumulate.",
+    "takeaways": [
+      "Derive quantities and money from cart lines so every transition has one source of truth.",
+      "Enforce stock in every path that can increase quantity, then expose the same boundary in control state and status feedback.",
+      "Normalize promo codes at the boundary and derive a single discount from the subtotal instead of accumulating adjustments.",
+      "Treat checkout as an explicit reset transition and keep live regions stable while their messages change."
+    ],
+    "frameworkNotes": {
+      "react": "Functional state updates keep cart transitions current, while derived values and stable status elements prevent duplicated purchase state.",
+      "angular": "Immutable cart assignments work with derived getters, and standalone template bindings keep disabled and ARIA state synchronized.",
+      "vue": "Computed totals derive from the cart ref, while immutable replacements keep product rows and purchase feedback predictable."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-shopping-cart-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-shopping-cart-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-shopping-cart-pressure-solution.v1.json"
+  }
+}
