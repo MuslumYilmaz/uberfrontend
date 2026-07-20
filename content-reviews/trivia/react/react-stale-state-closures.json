@@ -28,10 +28,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Stale state in React closures is really a render-snapshot bug: each render creates new closures, and async code may keep reading an older one."
+          "A browser listener or external subscription may live far longer than the render that registered it."
         ],
         "followUpConfusion": [
-          "The fix is not React is wrong; it is understanding when to use functional updates, refs, or correct dependencies."
+          "Choose the smallest tool that matches the callback's contract."
         ]
       },
       "theirEvidence": {
@@ -72,10 +72,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "That is why intervals, delayed handlers, and effects sometimes log or submit outdated values."
+          "Debounce utilities, throttlers, modal libraries, and third-party widgets may retain a callback and invoke it later."
         ],
         "followUpConfusion": [
-          "If you are updating state based on previous state, don’t read from the closure at all."
+          "When the timer only needs the previous state to calculate the next state, a functional update is the preferred React stale closure fix."
         ]
       },
       "theirEvidence": {
@@ -115,10 +115,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Worked async example: delayed submit + permission flow"
+          "An async function keeps the bindings from the render in which the initiating handler ran."
         ],
         "actionableExamples": [
-          "Keep the latest permission in a ref for long-lived async work"
+          "The first illustrative Jest and React Testing Library test advances fake timers: the broken interval remains at 1 after three ticks, while the functional update reaches 3."
         ]
       },
       "theirEvidence": {

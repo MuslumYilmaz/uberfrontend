@@ -183,6 +183,7 @@ type LockedPath = {
 type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' | 'prep_bridge' | 'body';
 
 const TRIVIA_H1_INTENT_LABEL = 'Frontend interview answer';
+const REACT_STALE_CLOSURES_QUESTION_ID = 'react-stale-state-closures';
 const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
 const ASYNC_RACE_SIMULATOR_QUESTION_ID = 'js-async-race-conditions';
 const EQUALITY_PREDICTOR_QUESTION_ID = 'js-equality-vs-strict-equality';
@@ -893,6 +894,23 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showAsyncRaceSimulator(q?: Question | null): boolean {
     return q?.id === ASYNC_RACE_SIMULATOR_QUESTION_ID;
+  }
+
+  isReactStaleClosuresLanding(q?: Question | null): boolean {
+    return q?.id === REACT_STALE_CLOSURES_QUESTION_ID;
+  }
+
+  primaryAnswerHeading(q?: Question | null): string {
+    return this.isReactStaleClosuresLanding(q)
+      ? 'React stale closure: direct answer'
+      : 'Interview quick answer';
+  }
+
+  fullAnswerHeading(q?: Question | null): string {
+    if (this.isOutputQuestion(q)) return 'Deep dive';
+    if (this.isReactStaleClosuresLanding(q)) return 'React stale closure fixes and examples';
+    if (this.showAsyncRaceSimulator(q)) return 'How to prevent stale async UI';
+    return 'Full interview answer';
   }
 
   selectAsyncRaceSimulator(key: AsyncRaceSimulatorKey): void {

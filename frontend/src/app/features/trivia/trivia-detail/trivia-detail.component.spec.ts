@@ -493,6 +493,94 @@ describe('TriviaDetailComponent', () => {
     expect(isBefore(practiceFrame, fullHead)).toBeTrue();
   });
 
+  it('renders the React stale closures landing page developer-first with established SEO schema', async () => {
+    const expectedTitle = 'React Stale Closures: Causes, Fixes, and Tests';
+    const expectedH1 = 'React Stale Closures: Why State Goes Stale and How to Fix It';
+    const expectedDescription =
+      'Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests.';
+    const resolved: any = makeResolved('free', {
+      id: 'react-stale-state-closures',
+      title: 'Why does React sometimes show stale state in closures? How do you fix it?',
+      technology: 'react',
+      description:
+        'Each React render creates new state and prop bindings. A callback created during that render keeps access to those bindings, even when it runs later.',
+      seo: {
+        title: expectedTitle,
+        h1: expectedH1,
+        description: expectedDescription,
+      },
+      publishedAt: '2026-01-25',
+      updatedAt: '2026-07-20',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: '## Quick fix chooser\n\nChoose a fix from the callback lifecycle and the value it needs.',
+          },
+          {
+            type: 'text',
+            text: '## How to test a stale closure bug\n\nAdvance fake timers and assert the corrected state.',
+          },
+        ],
+      },
+    });
+    resolved.tech = 'react';
+    const currentQuestion = resolved.list[0];
+    routeData$.next({
+      questionDetail: {
+        ...resolved,
+        id: currentQuestion.id,
+        question: currentQuestion,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const h1s = Array.from(root.querySelectorAll('h1')) as HTMLElement[];
+    const heads = Array.from(root.querySelectorAll('h2.card-head')) as HTMLElement[];
+    const directHead = heads.find((head) => head.textContent?.trim() === 'React stale closure: direct answer') ?? null;
+    const fullHead = heads.find((head) => head.textContent?.trim() === 'React stale closure fixes and examples') ?? null;
+    const focusHead = heads.find((head) => head.textContent?.trim() === 'Interview focus') ?? null;
+    const practiceFrame = root.querySelector('[data-testid="trivia-practice-frame"]') as HTMLElement | null;
+    const isBefore = (left: Element | null, right: Element | null) =>
+      Boolean(left && right && (left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING));
+
+    expect(h1s.length).toBe(1);
+    expect(h1s[0]?.textContent?.trim()).toBe(expectedH1);
+    expect(root.querySelector('.title-copy > .title__intent')).toBeNull();
+    expect(directHead).toBeTruthy();
+    expect(fullHead).toBeTruthy();
+    expect(focusHead).toBeTruthy();
+    expect(practiceFrame).toBeTruthy();
+    expect(isBefore(directHead, fullHead)).toBeTrue();
+    expect(isBefore(fullHead, focusHead)).toBeTrue();
+    expect(isBefore(focusHead, practiceFrame)).toBeTrue();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const typeNames = graph.map((node: any) => node?.['@type']);
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+
+    expect(payload.title).toBe(expectedTitle);
+    expect(payload.description).toBe(expectedDescription);
+    expect(payload.canonical).toBe('https://frontendatlas.com/react/trivia/react-stale-state-closures');
+    expect(payload.robots).toBeUndefined();
+    expect(typeNames).toContain('BreadcrumbList');
+    expect(typeNames).toContain('TechArticle');
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(typeNames).not.toContain('Question');
+    expect(breadcrumb?.itemListElement?.[2]?.item).toBe(payload.canonical);
+    expect(article?.headline).toBe(expectedH1);
+    expect(article?.datePublished).toBe('2026-01-25T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-07-20T00:00:00.000Z');
+  });
+
   it('adds mobile stacked-table labels to wide answer tables', async () => {
     const fixture = await createLoadedFixture('free', {
       answer: {

@@ -2456,6 +2456,10 @@
           "code": "import React from 'react';\n\nexport function ChatStatus({ roomId }) {\n  const [online, setOnline] = React.useState(false);\n\n  React.useEffect(() => {\n    const connection = createChatConnection(roomId);\n    connection.connect();\n    connection.on('presence', (nextOnline) => setOnline(nextOnline));\n\n    return () => {\n      connection.off('presence');\n      connection.disconnect();\n    };\n  }, [roomId]);\n\n  return <span>{online ? 'Online' : 'Offline'}</span>;\n}\n"
         },
         {
+          "type": "text",
+          "text": "<strong>Timer callback note</strong><br><br>The interval below uses a functional state update because it only needs the previous counter value. If a timer, listener, or subscription must read other changing props or state, first identify whether it should re-synchronize or keep a stable setup; the <a href=\"/react/trivia/react-stale-state-closures\">React stale closure fixes and tests</a> compare dependencies, refs, Effect Events, and intentional snapshots."
+        },
+        {
           "type": "code",
           "language": "jsx",
           "code": "import React from 'react';\n\nexport function IntervalCounter() {\n  const [n, setN] = React.useState(0);\n\n  React.useEffect(() => {\n    const id = setInterval(() => {\n      // Use functional update to avoid stale state\n      setN((x) => x + 1);\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []);\n\n  return <div>{n}</div>;\n}\n"
@@ -4605,103 +4609,317 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain stale closure bugs in React through timers, async handlers, subscriptions, and effects that read an old render snapshot instead of the latest state.",
+    "description": "Each React render creates a new set of state and prop bindings. A callback created during that render keeps access to those bindings, even when it runs later. A React stale closure becomes a bug when the callback should use newer state but reads an older render snapshot. Choose the fix by intent: use a functional update for previous-state changes, complete Effect dependencies for re-synchronization, or a ref or Effect Event for the latest value in long-lived Effect logic.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Common production bug</strong><br><br>Stale state in React closures is really a render-snapshot bug: each render creates new closures, and async code may keep reading an older one. That is why intervals, delayed handlers, and effects sometimes log or submit outdated values. The fix is not “React is wrong”; it is understanding when to use functional updates, refs, or correct dependencies."
-        },
-        {
-          "type": "text",
-          "text": "<strong>The mental model</strong><br><br>React components are not long-lived objects. They are more like:<br><em>\"Functions that React calls again and again to produce UI.\"</em><br><br>Every render creates a <strong>new snapshot</strong> of props, state, and functions. Closures created in that render <em>freeze</em> those values."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "function Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      console.log(count); // ❌ Might log stale value\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []); // empty deps\n\n  return <button onClick={() => setCount(c => c + 1)}>+</button>;\n}"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why this logs stale state</strong><br><br>This effect runs only once. The closure inside <code>setInterval</code> captures <code>count</code> from the <em>first render</em> (which is 0).<br><br>Even if state updates later, this callback still sees <code>count = 0</code> forever. Not a React bug. Just JavaScript closures + React render model. If the symptom is duplicate setup in development rather than stale values, jump to <a href=\"/react/trivia/react-strictmode-double-invoke-effects\">React StrictMode useEffect interview answer</a>."
+          "text": "## Quick fix chooser\n\nStart with what the callback is supposed to do. A dependency is not an optimization hint: every reactive value an Effect reads belongs in its dependency list unless you restructure the code so that value is no longer reactive. A ref or Effect Event is appropriate only when a long-lived callback genuinely needs a latest read without making the surrounding synchronization reactive."
         },
         {
           "type": "list",
           "columns": [
-            "Cause",
-            "What’s actually happening",
-            "Symptom"
+            "Situation",
+            "Preferred fix",
+            "Why",
+            "Common mistake"
           ],
           "rows": [
             [
-              "Closure captures old render values",
-              "Callback keeps references to old variables",
-              "State appears \"stuck\" or outdated"
+              "Updating state from its previous value",
+              "Functional state update",
+              "The updater receives the queued current state, so the callback does not need to read that state binding.",
+              "Writing <code>setCount(count + 1)</code> inside a long-lived callback."
             ],
             [
-              "Effect deps are missing",
-              "Effect never re-runs with new state",
-              "Logic uses old props/state"
+              "Effect should re-synchronize when a value changes",
+              "Include the complete dependency list",
+              "React cleans up the old synchronization and creates one with current inputs.",
+              "Suppressing <code>exhaustive-deps</code> to keep an Effect from running."
             ],
             [
-              "Async logic (timeout, interval, promise)",
-              "Runs after render that created it",
-              "Reads stale snapshot"
+              "Long-lived external callback must read the latest value",
+              "Use <code>useRef</code>, or <code>useEffectEvent</code> when the callback belongs to Effect logic",
+              "The callback can read current data without rebuilding an unrelated external connection.",
+              "Using a ref to hide a value that should make the Effect re-synchronize."
+            ],
+            [
+              "Non-reactive logic called only from an Effect",
+              "Use <code>useEffectEvent</code> when supported",
+              "An Effect Event reads the latest values while the Effect remains reactive only to its real synchronization inputs.",
+              "Calling the Effect Event from normal event handlers or omitting genuinely reactive dependencies."
+            ],
+            [
+              "Logic actually belongs to a click or submit handler",
+              "Move it out of the Effect",
+              "User-action logic can run at the initiating event instead of being inferred from later render state.",
+              "Adding state solely to make an Effect detect the click."
+            ],
+            [
+              "Snapshot from the initiating action is intentionally required",
+              "Keep the captured value and clearly name it",
+              "The old value is the business fact you want, such as the filters used to start an export.",
+              "Replacing an intentional snapshot with a latest-value ref."
             ]
           ],
-          "caption": "Why stale state bugs happen"
+          "caption": "React stale closure quick fix chooser"
         },
         {
           "type": "text",
-          "text": "<strong>Fix #1: Add correct dependencies</strong><br><br>Tell React to recreate the closure when state changes:"
+          "text": "## Mental model: each render is a snapshot\n\nClosures are a JavaScript behavior, not a React feature. A function keeps access to the lexical bindings from where it was created. React adds the render model: every component execution creates new state, prop, and local bindings. A callback from render 1 can still run after render 2 and read render 1's bindings. Nothing was frozen or mutated incorrectly; the older callback is using the environment it captured. Review <a href=\"/javascript/trivia/js-closures\">JavaScript closures</a> for the underlying language rule."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "Render binding",
+            "What the callback reads"
+          ],
+          "rows": [
+            [
+              "1. Initial render",
+              "<code>count</code> is <code>0</code>",
+              "The Effect creates an interval callback that closes over this binding."
+            ],
+            [
+              "2. User increments",
+              "React queues the update",
+              "The existing interval callback does not change."
+            ],
+            [
+              "3. Next render",
+              "A new <code>count</code> binding is <code>1</code>",
+              "New callbacks would see <code>1</code>; the old interval still sees <code>0</code>."
+            ],
+            [
+              "4. Interval fires",
+              "Both render snapshots have existed",
+              "The callback created in step 1 reads <code>0</code>."
+            ]
+          ],
+          "caption": "A callback can outlive the render that created it"
+        },
+        {
+          "type": "text",
+          "text": "A stale closure is not automatically a bug. If an export should record the filters that started it, the captured snapshot is correct. It becomes a bug only when the callback's contract requires a newer value. Before changing code, ask: <em>should this operation re-synchronize, update from previous state, read the latest value, or preserve the initiating snapshot?</em>"
+        },
+        {
+          "type": "text",
+          "text": "## Scenario 1: setInterval reads old state\n\nThis broken interval is created once. Its callback always evaluates <code>count + 1</code> with the <code>count</code> binding from the first render, so later ticks keep requesting the same result."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "useEffect(() => {\n  const id = setInterval(() => {\n    console.log(count);\n  }, 1000);\n\n  return () => clearInterval(id);\n}, [count]); // ✅ now closure updates when count changes"
+          "code": "import { useEffect, useState } from 'react';\n\nexport function BrokenCounter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      setCount(count + 1); // Always calculates 0 + 1\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []); // Missing count\n\n  return <output>Count: {count}</output>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Fix #2: Use functional updates (most common fix)</strong><br><br>If you are <em>updating state based on previous state</em>, don’t read from the closure at all:"
+          "text": "When the timer only needs the previous state to calculate the next state, a functional update is the preferred React stale closure fix. React supplies the queued current value to the updater, so <code>count</code> is no longer a dependency of this Effect."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "setCount(c => c + 1); // ✅ always uses latest state"
+          "code": "import { useEffect, useState } from 'react';\n\nexport function FixedCounter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      setCount((current) => current + 1);\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []);\n\n  return <output>Count: {count}</output>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Fix #3: Use useRef for mutable latest value</strong><br><br>If you need to read the <em>latest</em> value from long-lived async callbacks:"
+          "text": "Including <code>count</code> in the dependency list is also correct if the timer itself should be recreated whenever <code>count</code> changes. React will clean up the old interval and start a new one. That lifecycle may be exactly right for synchronization, but it changes the timer's cadence and does extra setup, so it is usually not the best fit for a simple counter. See the dedicated <a href=\"/react/trivia/react-useeffect-purpose\">useEffect dependency and cleanup guide</a>."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "const countRef = useRef(count);\nuseEffect(() => {\n  countRef.current = count;\n}, [count]);\n\nuseEffect(() => {\n  const id = setInterval(() => {\n    console.log(countRef.current); // ✅ always latest\n  }, 1000);\n  return () => clearInterval(id);\n}, []);"
+          "code": "useEffect(() => {\n  const id = setInterval(() => {\n    console.log(count);\n  }, 1000);\n\n  return () => clearInterval(id);\n}, [count]); // Correct: clean up and re-create when count changes"
         },
         {
           "type": "text",
-          "text": "<strong>Worked async example: delayed submit + permission flow</strong><br><br>Timers are only one stale-closure variant. The same bug appears when a submit handler starts async work and later reads a value that has changed since the click."
+          "text": "## Scenario 2: async callback after await\n\nAn async function keeps the bindings from the render in which the initiating handler ran. The right behavior depends on the product contract. An export usually needs the filters from when the user clicked; a permission check may need the latest permission when the request completes. A ref is not automatically correct for both."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// ❌ Async callback keeps the snapshot from the click that started it\nfunction Checkout({ canSubmit }) {\n  const [status, setStatus] = useState('idle');\n\n  async function handleSubmit() {\n    setStatus('checking');\n    await verifyPaymentIntent();\n\n    if (!canSubmit) {\n      setStatus('blocked');\n      return;\n    }\n\n    setStatus('submitted');\n  }\n\n  return <button onClick={handleSubmit}>Pay</button>;\n}\n\n// ✅ Keep the latest permission in a ref for long-lived async work\nfunction CheckoutFixed({ canSubmit }) {\n  const latestCanSubmit = useRef(canSubmit);\n  const [status, setStatus] = useState('idle');\n\n  useEffect(() => {\n    latestCanSubmit.current = canSubmit;\n  }, [canSubmit]);\n\n  async function handleSubmit() {\n    setStatus('checking');\n    await verifyPaymentIntent();\n\n    if (!latestCanSubmit.current) {\n      setStatus('blocked');\n      return;\n    }\n\n    setStatus('submitted');\n  }\n\n  return <button onClick={handleSubmit}>Pay</button>;\n}"
+          "code": "import { useEffect, useRef, useState } from 'react';\n\n// Intentional snapshot: report the filters that initiated the export.\nexport function ExportButton({ filters }) {\n  async function handleExport() {\n    const filtersAtStart = filters;\n    const file = await createExport(filtersAtStart);\n    auditExport(file.id, filtersAtStart);\n  }\n\n  return <button onClick={handleExport}>Export</button>;\n}\n\n// Latest-value contract: permission must still exist after the await.\nexport function Checkout({ canSubmit }) {\n  const [status, setStatus] = useState('idle');\n  const latestCanSubmit = useRef(canSubmit);\n\n  useEffect(() => {\n    latestCanSubmit.current = canSubmit;\n  }, [canSubmit]);\n\n  async function handleSubmit() {\n    setStatus('checking');\n    await verifyPaymentIntent();\n    setStatus(latestCanSubmit.current ? 'submitted' : 'blocked');\n  }\n\n  return <button onClick={handleSubmit}>Pay: {status}</button>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Important insight</strong><br><br>This is not a React quirk. This is how <em>JavaScript closures</em> work combined with React’s <em>\"each render is a snapshot\"</em> model."
+          "text": "A closure and a race can appear together, but they are different. The ref above answers “what is the latest permission?” It does not stop two requests from completing out of order. Use cancellation, request identity, or an ignore guard for that separate problem; compare the <a href=\"/javascript/trivia/js-async-race-conditions\">async race-condition walkthrough</a>."
         },
         {
           "type": "text",
-          "text": "<strong>When stale closures are expected</strong><br><br>A stale closure is not automatically a bug. Sometimes you intentionally want the snapshot from the click that started the work, such as logging which filters were active when an export began. The real question is: should this callback use the <em>latest</em> value, or the <em>value from the render that created it</em>?"
+          "text": "## Scenario 3: event listener or subscription\n\nA browser listener or external subscription may live far longer than the render that registered it. If the external synchronization should change with <code>isDirty</code>, re-subscribe with complete dependencies. If the subscription identity should stay stable but the handler must inspect the latest value, keep that value in a ref. Review the <a href=\"/react/trivia/react-useref-vs-usestate\">useRef versus useState decision guide</a> before using a ref as a general state substitute."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { useEffect } from 'react';\n\n// Re-subscribe whenever the reactive value changes.\nexport function EscapeGuard({ isDirty }) {\n  useEffect(() => {\n    function onKeyDown(event) {\n      if (event.key === 'Escape' && isDirty) {\n        confirmDiscard();\n      }\n    }\n\n    window.addEventListener('keydown', onKeyDown);\n    return () => window.removeEventListener('keydown', onKeyDown);\n  }, [isDirty]);\n\n  return null;\n}"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { useEffect, useRef } from 'react';\n\n// Keep one listener, but read the latest value when it fires.\nexport function StableEscapeGuard({ isDirty }) {\n  const latestIsDirty = useRef(isDirty);\n\n  useEffect(() => {\n    latestIsDirty.current = isDirty;\n  }, [isDirty]);\n\n  useEffect(() => {\n    function onKeyDown(event) {\n      if (event.key === 'Escape' && latestIsDirty.current) {\n        confirmDiscard();\n      }\n    }\n\n    window.addEventListener('keydown', onKeyDown);\n    return () => window.removeEventListener('keydown', onKeyDown);\n  }, []);\n\n  return null;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Each render creates a new closure with its own state snapshot. Async callbacks keep the snapshot from the render they were created in. Stale state happens when effects or callbacks don’t re-run with new dependencies. You fix it with correct deps, functional updates, or refs.\"</em>"
+          "text": "## Scenario 4: debounced or retained callback\n\nDebounce utilities, throttlers, modal libraries, and third-party widgets may retain a callback and invoke it later. <code>useCallback</code> does not make captured values current by itself. With an incorrect dependency list, it deliberately preserves the stale closure; with correct dependencies, you must still know whether the consumer replaces or keeps the original callback. See the fuller <a href=\"/react/trivia/react-usememo-vs-usecallback\">useMemo and useCallback comparison</a>."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { useEffect, useMemo } from 'react';\n\n// ❌ The debounced function retains the first draft and onSave.\nexport function BrokenAutosave({ draft, onSave }) {\n  const saveLater = useMemo(\n    () => debounce(() => onSave(draft), 300),\n    [],\n  );\n\n  useEffect(() => () => saveLater.cancel(), [saveLater]);\n  return <button onClick={saveLater}>Save after delay</button>;\n}\n\n// ✅ Pass the changing snapshot as an argument; rebuild only for onSave.\nexport function Autosave({ draft, onSave }) {\n  const saveLater = useMemo(\n    () => debounce((nextDraft) => onSave(nextDraft), 300),\n    [onSave],\n  );\n\n  useEffect(() => () => saveLater.cancel(), [saveLater]);\n  return <button onClick={() => saveLater(draft)}>Save after delay</button>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Stale state happens because closures capture values from a specific render. React re-renders create new snapshots, but old async callbacks keep old ones. Fix it by using correct dependencies, functional state updates, or a ref for reading the latest value."
+          "text": "Passing the changing value as an argument makes the snapshot explicit. Another valid design is to recreate and re-register the callback with complete dependencies, provided the third-party API supports replacement and cleanup. The same lifecycle decision appears in <a href=\"/react/coding/react-debounced-search\">debounced React search</a>: cancel obsolete scheduled work instead of assuming memoization updates it."
+        },
+        {
+          "type": "text",
+          "text": "## Modern React 19.2+: useEffectEvent\n\n<code>useEffectEvent</code> is available in React 19.2 and later. FrontendAtlas's executable React sandboxes currently use React 18.3.1, so this example is intentionally illustrative and must not be pasted into this site's sandbox unchanged. In supported React versions, an Effect Event is useful for non-reactive logic that is called only from an Effect and needs the latest props or state."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { useEffect, useEffectEvent } from 'react'; // React 19.2+\n\nexport function ChatRoom({ roomId, theme }) {\n  const onConnected = useEffectEvent(() => {\n    showNotification('Connected', theme); // Reads the latest theme\n  });\n\n  useEffect(() => {\n    const connection = createConnection(roomId);\n    connection.on('connected', () => {\n      onConnected(); // Called from Effect-created logic\n    });\n    connection.connect();\n\n    return () => connection.disconnect();\n  }, [roomId]); // onConnected is not a dependency\n\n  return null;\n}"
+        },
+        {
+          "type": "text",
+          "text": "The connection is reactive to <code>roomId</code>, so changing rooms reconnects. The notification theme is non-reactive: it should be current when the connection reports success, but changing it should not reconnect. Call an Effect Event only from Effects or other Effect Events, do not pass it to children, do not add it to the dependency list, and do not use it as a general click-handler primitive or to hide a genuinely reactive dependency. On React 18, restructure the Effect or use the ref pattern when that latest-read contract is real."
+        },
+        {
+          "type": "text",
+          "text": "## React stale closure fix comparison\n\nChoose the smallest tool that matches the callback's contract. None of these options is a universal “latest state” switch."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Fix",
+            "What it solves",
+            "When it is appropriate",
+            "What it does not solve / common misuse"
+          ],
+          "rows": [
+            [
+              "Functional update",
+              "Calculates next state from queued previous state.",
+              "A callback only needs prior state to update that same state.",
+              "It does not provide latest props or unrelated state."
+            ],
+            [
+              "Complete Effect dependencies",
+              "Re-synchronizes an external system with current reactive inputs.",
+              "The setup itself should change when an input changes.",
+              "Do not omit dependencies merely to keep setup stable."
+            ],
+            [
+              "<code>useRef</code>",
+              "Lets a long-lived callback read a mutable latest value.",
+              "Changing the value should not render or rebuild the external subscription.",
+              "Ref writes do not render; do not use refs to conceal reactive synchronization."
+            ],
+            [
+              "<code>useEffectEvent</code>",
+              "Reads latest values in non-reactive Effect-only logic.",
+              "React 19.2+ code called from an Effect or another Effect Event.",
+              "It is not a child prop, normal event handler, or dependency escape hatch."
+            ],
+            [
+              "<code>useCallback</code>",
+              "Stabilizes callback identity until a declared dependency changes.",
+              "Identity matters to memoized children or another API, with complete dependencies.",
+              "An incomplete dependency list still captures old values; a consumer may retain an older callback."
+            ],
+            [
+              "Move logic out of an Effect",
+              "Runs action-specific work at the click or submit that caused it.",
+              "The logic is a user event, not external synchronization.",
+              "It does not replace Effects that genuinely connect to an external system."
+            ]
+          ],
+          "caption": "React stale closure fix comparison"
+        },
+        {
+          "type": "text",
+          "text": "## How to test a stale closure bug\n\nDrive the delayed boundary that exposes the old snapshot, then assert observable behavior. The first illustrative Jest and React Testing Library test advances fake timers: the broken interval remains at 1 after three ticks, while the functional update reaches 3. FrontendAtlas itself uses Angular's test stack and does not install React Testing Library, so these complete examples are editorial React tests rather than repository test files."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React, { useEffect, useState } from 'react';\nimport { act, cleanup, render, screen } from '@testing-library/react';\nimport '@testing-library/jest-dom';\n\nfunction BrokenCounter() {\n  const [count, setCount] = useState(0);\n  useEffect(() => {\n    const id = setInterval(() => setCount(count + 1), 1000);\n    return () => clearInterval(id);\n  }, []);\n  return <p>Count: {count}</p>;\n}\n\nfunction FixedCounter() {\n  const [count, setCount] = useState(0);\n  useEffect(() => {\n    const id = setInterval(() => setCount((current) => current + 1), 1000);\n    return () => clearInterval(id);\n  }, []);\n  return <p>Count: {count}</p>;\n}\n\nbeforeEach(() => jest.useFakeTimers());\nafterEach(() => {\n  cleanup();\n  jest.runOnlyPendingTimers();\n  jest.useRealTimers();\n});\n\ntest('reproduces the stale timer and verifies the functional fix', () => {\n  const broken = render(<BrokenCounter />);\n  act(() => jest.advanceTimersByTime(3000));\n  expect(screen.getByText('Count: 1')).toBeInTheDocument();\n  broken.unmount();\n\n  render(<FixedCounter />);\n  act(() => jest.advanceTimersByTime(3000));\n  expect(screen.getByText('Count: 3')).toBeInTheDocument();\n});"
+        },
+        {
+          "type": "text",
+          "text": "For a retained event callback, rerender with a new prop before dispatching the browser event. That sequence proves whether the listener observes its creation-time snapshot or the latest value."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React, { useEffect, useRef } from 'react';\nimport { act, render } from '@testing-library/react';\n\nfunction BrokenPing({ value, onRead }) {\n  useEffect(() => {\n    const handlePing = () => onRead(value);\n    window.addEventListener('app:ping', handlePing);\n    return () => window.removeEventListener('app:ping', handlePing);\n  }, []);\n  return null;\n}\n\nfunction LatestPing({ value, onRead }) {\n  const latestValue = useRef(value);\n  useEffect(() => {\n    latestValue.current = value;\n  }, [value]);\n  useEffect(() => {\n    const handlePing = () => onRead(latestValue.current);\n    window.addEventListener('app:ping', handlePing);\n    return () => window.removeEventListener('app:ping', handlePing);\n  }, [onRead]);\n  return null;\n}\n\ntest('distinguishes a retained snapshot from a latest ref read', () => {\n  const onRead = jest.fn();\n  const broken = render(<BrokenPing value=\"first\" onRead={onRead} />);\n  broken.rerender(<BrokenPing value=\"second\" onRead={onRead} />);\n  act(() => window.dispatchEvent(new Event('app:ping')));\n  expect(onRead).toHaveBeenLastCalledWith('first');\n  broken.unmount();\n\n  onRead.mockClear();\n  const fixed = render(<LatestPing value=\"first\" onRead={onRead} />);\n  fixed.rerender(<LatestPing value=\"second\" onRead={onRead} />);\n  act(() => window.dispatchEvent(new Event('app:ping')));\n  expect(onRead).toHaveBeenLastCalledWith('second');\n  fixed.unmount();\n});"
+        },
+        {
+          "type": "text",
+          "text": "## Important distinctions\n\n“Old data” describes a symptom, not one root cause. Identify which timeline or lifecycle is wrong before choosing a fix."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Distinction",
+            "What happened",
+            "Correct diagnostic direction"
+          ],
+          "rows": [
+            [
+              "Stale closure vs race condition",
+              "A closure reads one render's bindings; a race lets concurrent operations finish in an unexpected order.",
+              "Fix the captured-value contract separately from cancellation or request ordering."
+            ],
+            [
+              "Stale closure vs stale server response",
+              "A late response may contain valid data for an older request even if the completion callback reads current state.",
+              "Abort, ignore, or identify superseded requests."
+            ],
+            [
+              "Stale closure vs intentionally captured snapshot",
+              "The older value may be exactly the action-time fact the operation must preserve.",
+              "Name it, such as <code>filtersAtStart</code>, and keep the capture."
+            ],
+            [
+              "Stale closure vs unnecessary Effect",
+              "Derived render data was moved into an Effect, creating duplicated state and synchronization problems.",
+              "Compute during render or handle the initiating user event directly."
+            ],
+            [
+              "Stale closure vs memoization problem",
+              "Memoization controls identity or recomputation; it does not make old captures current.",
+              "Correct dependencies and understand how the consumer retains callbacks."
+            ]
+          ],
+          "caption": "Outdated-value bugs that require different fixes"
+        },
+        {
+          "type": "text",
+          "text": "If setup runs twice only in development, investigate <a href=\"/react/trivia/react-strictmode-double-invoke-effects\">React StrictMode Effect behavior</a>; duplicate setup is a different symptom from a callback reading old state. For the broader hook lifecycle and dependency vocabulary, review the <a href=\"/react/trivia/react-hooks-youve-used\">React Hooks overview</a>."
+        },
+        {
+          "type": "text",
+          "text": "## React stale closure FAQ\n\n<strong>What is a stale closure in React?</strong><br>A callback created during one render reads state or props from that render after newer renders exist, even though its contract requires newer data.<br><br><strong>Why does useEffect read old state?</strong><br>The Effect created a callback with that render's bindings and did not re-synchronize because a reactive dependency was omitted or the callback was intentionally long-lived.<br><br><strong>Does useCallback fix stale closures?</strong><br>No. It caches a function until its dependencies change. Missing dependencies can preserve the stale callback, and a third-party consumer may still retain an older function.<br><br><strong>Should I disable the exhaustive-deps rule?</strong><br>Usually no. Change the dependencies or restructure the Effect. Suppression hides a mismatch between the code and the synchronization contract.<br><br><strong>Should I always use a ref to get the latest state?</strong><br>No. Use functional updates for previous-state calculations and dependencies for reactive synchronization. Use a ref only when a stable, long-lived callback genuinely needs a latest non-rendering value.<br><br><strong>Does useEffectEvent replace Effect dependencies?</strong><br>No. In React 19.2+, it separates non-reactive Effect-only logic; the Effect still lists every value that should cause re-synchronization.<br><br><strong>Is a captured old value always a bug?</strong><br>No. A value intentionally captured when an action begins can be the correct audit or business snapshot.<br><br><strong>Why does setInterval keep seeing the initial state?</strong><br>An interval registered by an empty-dependency Effect keeps the callback created on the initial render. Use a functional update, re-synchronize with dependencies, or deliberately read the latest value when that is the contract."
+        },
+        {
+          "type": "text",
+          "text": "## Source check\n\nTechnical behavior on this page follows the official React references for <a href=\"https://react.dev/learn/state-as-a-snapshot\">state as a snapshot</a>, <a href=\"https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps\">exhaustive Effect dependencies</a>, <a href=\"https://react.dev/reference/react/useEffectEvent\"><code>useEffectEvent</code></a>, and <a href=\"https://react.dev/reference/react/useCallback\"><code>useCallback</code></a>."
+        },
+        {
+          "type": "text",
+          "text": "## 30-second interview answer\n\n<em>Each React render creates new state and prop bindings. A callback keeps access to the bindings from the render that created it, so a timer, listener, or async continuation can later read an older snapshot. I first decide whether the code should update from previous state, re-synchronize an Effect, read the latest value, or preserve the initiating snapshot. Then I choose a functional update, complete dependencies, a ref or Effect Event, or no fix when the capture is intentional.</em>"
+        },
+        {
+          "type": "text",
+          "text": "## Common interview follow-ups\n\nBe ready to explain why adding a dependency can recreate a timer, why a functional updater solves only previous-state calculations, why refs do not trigger rendering, why <code>useCallback</code> can still be stale, and why <code>useEffectEvent</code> is limited to Effect logic. Strong answers state the intended callback lifecycle before naming a hook."
+        },
+        {
+          "type": "text",
+          "text": "## How to explain the trade-off\n\nDependencies favor explicit re-synchronization and fresh closures, but they may recreate an external resource. A functional update avoids reading state when only the previous value is needed. A ref or Effect Event preserves a long-lived setup while providing a latest read, but it must not hide a reactive input. An intentional snapshot makes historical context stable. Continue with <a href=\"/react/interview-questions\">React interview questions</a> or the structured <a href=\"/guides/framework-prep/react-prep-path\">React preparation path</a>."
+        },
+        {
+          "type": "text",
+          "text": "## Summary\n\nA React stale closure comes from a callback retaining one render's bindings, not from JavaScript freezing variables. Fix previous-state updates with a functional updater, re-synchronize Effects with complete dependencies, and use a ref or React 19.2+ Effect Event only when long-lived Effect logic must read the latest value. Keep an older capture when the action-time snapshot is intentional, and test the delayed boundary that reveals which value the callback actually used."
         }
       ]
     },
@@ -4715,10 +4933,12 @@
       "effects",
       "callbacks"
     ],
-    "updatedAt": "2026-04-10",
+    "publishedAt": "2026-01-25",
+    "updatedAt": "2026-07-20",
     "seo": {
-      "title": "React stale closures: async bugs, latest-state fixes, and effect debugging",
-      "description": "Stale closure bugs show up in timers, subscriptions, and async handlers when code reads an old render snapshot instead of the latest state."
+      "title": "React Stale Closures: Causes, Fixes, and Tests",
+      "h1": "React Stale Closures: Why State Goes Stale and How to Fix It",
+      "description": "Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests."
     },
     "incidentCard": {
       "title": "Stale Closure Snapshot Root Cause Check",
@@ -4726,7 +4946,7 @@
       "options": [
         {
           "id": "strictmode-freezes-closure-prod",
-          "label": "StrictMode freezes closure values in production builds, so interval callbacks stop seeing updates."
+          "label": "StrictMode forces interval callbacks to keep their initial values in production builds, so updates are never observable."
         },
         {
           "id": "captured-initial-snapshot",

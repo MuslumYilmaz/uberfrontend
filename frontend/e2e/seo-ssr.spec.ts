@@ -14,6 +14,12 @@ const SSR_ENABLED = (() => {
   }
 })();
 
+const STALE_CLOSURES_PATH = '/react/trivia/react-stale-state-closures';
+const STALE_CLOSURES_TITLE = 'React Stale Closures: Causes, Fixes, and Tests';
+const STALE_CLOSURES_H1 = 'React Stale Closures: Why State Goes Stale and How to Fix It';
+const STALE_CLOSURES_DESCRIPTION =
+  'Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests.';
+
 const CASES = [
   {
     path: '/coding',
@@ -74,6 +80,21 @@ const CASES = [
       'React 18\\+ permits undefined component returns',
       'React 17 and earlier',
       'return null',
+    ],
+  },
+  {
+    path: STALE_CLOSURES_PATH,
+    titleIncludes: STALE_CLOSURES_TITLE,
+    h1: STALE_CLOSURES_H1,
+    detail: true,
+    indexable: true,
+    singleHydratedH1: true,
+    bodyTextIncludes: [
+      'React stale closure: direct answer',
+      'React stale closure fixes and examples',
+      'Quick fix chooser',
+      'How to test a stale closure bug',
+      'Interview focus',
     ],
   },
   {
@@ -606,6 +627,147 @@ test.describe('seo-ssr', () => {
     expect(html).not.toContain('Functional state updates to avoid stale reads.');
     expect(hasLockedShellMarkup(html)).toBe(true);
     expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('noindex,follow');
+  });
+
+  test('raw React stale closures landing page preserves indexable developer-first SEO and schema', async ({ request }) => {
+    const html = await readRawHtml(request, STALE_CLOSURES_PATH);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(STALE_CLOSURES_TITLE);
+    expect(extractRawH1(html)).toBe(STALE_CLOSURES_H1);
+    expect(rawBodyMarkup(html).match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawMeta(html, 'description')).toBe(STALE_CLOSURES_DESCRIPTION);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(STALE_CLOSURES_PATH));
+    expect(robots).toBe('index,follow');
+
+    expect(extractRawPropertyMeta(html, 'og:title')).toBe(STALE_CLOSURES_TITLE);
+    expect(extractRawPropertyMeta(html, 'og:description')).toBe(STALE_CLOSURES_DESCRIPTION);
+    expect(extractRawMeta(html, 'twitter:title')).toBe(STALE_CLOSURES_TITLE);
+    expect(extractRawMeta(html, 'twitter:description')).toBe(STALE_CLOSURES_DESCRIPTION);
+    expect(text).toContain(normalizeText('Each React render creates a new set of state and prop bindings'));
+
+    const orderedContent = [
+      'React stale closure: direct answer',
+      'Quick fix chooser',
+      'Scenario 1: setInterval reads old state',
+      'How to test a stale closure bug',
+      'React stale closure FAQ',
+      'Interview focus',
+    ].map((label) => ({ label, index: text.indexOf(normalizeText(label)) }));
+
+    orderedContent.forEach(({ label, index }) => {
+      expect(index, `raw HTML includes ${label}`).toBeGreaterThanOrEqual(0);
+    });
+    for (let index = 1; index < orderedContent.length; index += 1) {
+      expect(
+        orderedContent[index].index,
+        `${orderedContent[index].label} follows ${orderedContent[index - 1].label}`,
+      ).toBeGreaterThan(orderedContent[index - 1].index);
+    }
+
+    expect(schemaTypes).toContain('BreadcrumbList');
+    expect(schemaTypes).toContain('TechArticle');
+    expect(schemaTypes).not.toContain('FAQPage');
+    expect(schemaTypes).not.toContain('QAPage');
+    expect(schemaTypes).not.toContain('Question');
+
+    const article = schemaNodes.find((node) => node['@type'] === 'TechArticle');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(STALE_CLOSURES_PATH),
+      headline: STALE_CLOSURES_H1,
+      description: STALE_CLOSURES_DESCRIPTION,
+      url: expectedCanonical(STALE_CLOSURES_PATH),
+      mainEntityOfPage: expectedCanonical(STALE_CLOSURES_PATH),
+      datePublished: '2026-01-25T00:00:00.000Z',
+      dateModified: '2026-07-20T00:00:00.000Z',
+      isAccessibleForFree: true,
+    });
+  });
+
+  test('hydrated React stale closures landing page preserves developer-first content without runtime issues', async ({ page }) => {
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+    });
+    const runtimeIssues = collectClientRuntimeIssues(page);
+
+    const response = await page.goto(STALE_CLOSURES_PATH, { waitUntil: 'networkidle' });
+    expect(response?.status()).toBe(200);
+    await assertHydratedBasics(page, {
+      path: STALE_CLOSURES_PATH,
+      titleIncludes: STALE_CLOSURES_TITLE,
+      h1: STALE_CLOSURES_H1,
+      detail: true,
+      indexable: true,
+      singleHydratedH1: true,
+      bodyTextIncludes: [
+        'React stale closure: direct answer',
+        'Quick fix chooser',
+        'How to test a stale closure bug',
+        'Interview focus',
+      ],
+    });
+
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      STALE_CLOSURES_DESCRIPTION,
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', STALE_CLOSURES_TITLE);
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', STALE_CLOSURES_TITLE);
+    await expect(page.locator('table.table--stacked-mobile')).toHaveCount(2);
+
+    const bodyText = normalizeText(await page.locator('body').innerText());
+    const orderedLabels = [
+      'React stale closure: direct answer',
+      'Quick fix chooser',
+      'How to test a stale closure bug',
+      'React stale closure FAQ',
+      'Interview focus',
+    ];
+    const positions = orderedLabels.map((label) => bodyText.indexOf(normalizeText(label)));
+    positions.forEach((position, index) => {
+      expect(position, `hydrated page includes ${orderedLabels[index]}`).toBeGreaterThanOrEqual(0);
+    });
+    for (let index = 1; index < positions.length; index += 1) {
+      expect(positions[index], `${orderedLabels[index]} follows ${orderedLabels[index - 1]}`).toBeGreaterThan(
+        positions[index - 1],
+      );
+    }
+
+    for (const viewport of [
+      { width: 360, height: 800 },
+      { width: 834, height: 1112 },
+      { width: 1366, height: 900 },
+    ]) {
+      await page.setViewportSize(viewport);
+      const layout = await page.evaluate(() => {
+        const main = document.querySelector('[data-testid="trivia-detail-main"]');
+        const stackedTables = Array.from(document.querySelectorAll('table.table--stacked-mobile'));
+        const code = document.querySelector('pre.line-numbers');
+        return {
+          documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          mainOverflow: main ? main.scrollWidth - main.clientWidth : 0,
+          tableDisplays: stackedTables.map((table) => getComputedStyle(table).display),
+          codeWhiteSpace: code ? getComputedStyle(code).whiteSpace : '',
+          codeOverflowX: code ? getComputedStyle(code).overflowX : '',
+        };
+      });
+
+      expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.mainOverflow, `main content overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      if (viewport.width <= 768) {
+        expect(layout.tableDisplays).toEqual(['block', 'block']);
+        expect(layout.codeWhiteSpace).toBe('pre-wrap');
+        expect(layout.codeOverflowX).toBe('hidden');
+      } else {
+        expect(layout.tableDisplays).toEqual(['table', 'table']);
+      }
+    }
+
+    await page.waitForTimeout(300);
+    expectNoHydrationOrChunkIssues(runtimeIssues, STALE_CLOSURES_PATH);
   });
 
   test('raw OpenAI company preview is indexable, crawlable, and free of premium leakage', async ({ request }) => {

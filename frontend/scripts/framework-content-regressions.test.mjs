@@ -929,6 +929,919 @@ function assertTodoListPressureMode() {
   );
 }
 
+function assertShoppingCartPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-shopping-cart',
+      starter: 'assets/sb/react/question/react-shopping-cart.v1.json',
+      solution: 'assets/sb/react/solution/react-shopping-cart-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+    angular: {
+      id: 'angular-shopping-cart-mini',
+      starter: 'assets/sb/angular/question/angular-shopping-cart.v2.json',
+      solution: 'assets/sb/angular/solution/angular-shopping-cart-solution.v2.json',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-shopping-cart',
+      starter: 'assets/sb/vue/question/vue-shopping-cart.v1.json',
+      solution: 'assets/sb/vue/solution/vue-shopping-cart-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+  };
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Shopping Cart question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: Shopping Cart must stay premium`);
+    assert.equal(
+      question.difficulty,
+      'intermediate',
+      `${framework}: Shopping Cart difficulty changed`
+    );
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Shopping Cart updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Shopping Cart starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Shopping Cart solution changed`
+    );
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((test) => test.id),
+      ['cart-adds-product'],
+      `${framework}: normal Shopping Cart checks must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/shopping-cart.v1.json',
+      `${framework}: Shopping Cart must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Shopping Cart frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/shopping-cart.v1.json');
+  assert.equal(scenario.id, 'shopping-cart-pressure-v1');
+  assert.equal(scenario.family, 'shopping-cart');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-shopping-cart',
+    angular: 'angular-shopping-cart-mini',
+    vue: 'vue-shopping-cart',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['core-cart-transitions', 'quantity-boundaries', 'inventory-guard', 'promo-and-checkout']
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Shopping Cart pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-cart-core',
+      'pressure-cart-quantity',
+      'pressure-cart-inventory',
+      'pressure-cart-promo',
+      'pressure-cart-checkout',
+    ]
+  );
+
+  const serializedChecks = JSON.stringify(checks);
+  for (const requiredSignal of [
+    '.product-card',
+    '.cart-row',
+    '.cart-header .subtitle',
+    '.qty',
+    '.line-total',
+    '.stock-count',
+    '.cart-status',
+    '2 in stock',
+    'Wireless Headphones reached its stock limit.',
+    '.promo-input',
+    '.apply-promo',
+    '.promo-feedback',
+    'Promo code is invalid.',
+    '10% discount applied.',
+    '.subtotal',
+    '.discount',
+    '.grand-total',
+    '$8.95',
+    '$80.55',
+    '.checkout-button',
+    '.checkout-status',
+    'Order placed.',
+    'aria-describedby',
+    'aria-live',
+    'aria-atomic',
+  ]) {
+    assert.ok(
+      serializedChecks.includes(requiredSignal),
+      `Shopping Cart pressure checks are missing ${requiredSignal}`
+    );
+  }
+
+  const coreCheck = checks.find((test) => test.id === 'pressure-cart-core');
+  assert.ok(
+    coreCheck.steps.some(
+      (step) =>
+        (step.type === 'expectCount' || step.type === 'waitForCount') &&
+        step.selector === '.cart-row' &&
+        step.count === 2
+    ),
+    'Shopping Cart core flow must prove that duplicate products merge while distinct products do not'
+  );
+  assert.ok(
+    coreCheck.steps.some(
+      (step) => step.type === 'expectText' && step.text === '$259.98'
+    ),
+    'Shopping Cart core flow must verify the duplicated Headphones line total'
+  );
+
+  const inventoryCheck = checks.find((test) => test.id === 'pressure-cart-inventory');
+  assert.ok(
+    inventoryCheck.steps.filter(
+      (step) => step.type === 'expectDisabled' && step.disabled === true
+    ).length >= 2,
+    'Shopping Cart inventory flow must disable both Add and Increase at the stock limit'
+  );
+  assert.ok(
+    inventoryCheck.steps.filter(
+      (step) => step.type === 'expectDisabled' && step.disabled === false
+    ).length >= 2,
+    'Shopping Cart inventory flow must re-enable both controls after decreasing quantity'
+  );
+
+  const promoCheck = checks.find((test) => test.id === 'pressure-cart-promo');
+  assert.deepEqual(
+    promoCheck.steps
+      .filter((step) => step.type === 'setValue' && step.selector === '.promo-input')
+      .map((step) => step.value),
+    ['NOPE', '  save10  '],
+    'Shopping Cart promo flow must cover invalid input and trimmed case normalization'
+  );
+  assert.ok(
+    promoCheck.steps.filter(
+      (step) =>
+        step.type === 'expectText' && step.selector === '.grand-total' && step.text === '$80.55'
+    ).length >= 2,
+    'Shopping Cart promo flow must prove that repeated application does not stack the discount'
+  );
+
+  const checkoutCheck = checks.find((test) => test.id === 'pressure-cart-checkout');
+  assert.ok(
+    checkoutCheck.steps.some(
+      (step) =>
+        step.type === 'expectDisabled' &&
+        step.selector === '.checkout-button' &&
+        step.disabled === true
+    ),
+    'Shopping Cart checkout must stay disabled while the cart is empty'
+  );
+  assert.ok(
+    checkoutCheck.steps.some(
+      (step) =>
+        step.type === 'expectValue' && step.selector === '.promo-input' && step.value === ''
+    ),
+    'Shopping Cart checkout must clear the applied promo input'
+  );
+
+  const commonSolutionMarkers = [
+    /SAVE10/,
+    /Promo code is invalid\./,
+    /10% discount applied\./,
+    /Order placed\./,
+    /stock-count/,
+    /cart-status/,
+    /promo-input/,
+    /promo-feedback/,
+    /checkout-button/,
+    /checkout-status/,
+    /aria-describedby/,
+    /aria-live/,
+    /aria-atomic/,
+  ];
+  const frameworkSolutionMarkers = {
+    react: [/useMemo/, /setCartItems/],
+    angular: [/@for\s*\(product of products;\s*track product\.id/, /get totalQty/],
+    vue: [/computed/, /ref<CartItem\[\]>/],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-shopping-cart-pressure-solution.v1.json`,
+      `${framework}: invalid Shopping Cart pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:shopping-cart-pressure-solution`);
+    const files = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:shopping-cart-pressure-solution`
+    );
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of [
+      ...commonSolutionMarkers,
+      ...frameworkSolutionMarkers[framework],
+    ]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Shopping Cart pressure solution is missing ${marker}`
+      );
+    }
+  }
+}
+
+function assertChipsInputPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-chips-input-autocomplete',
+      starter: 'assets/sb/react/question/react-chips-input-autocomplete.v1.json',
+      solution: 'assets/sb/react/solution/react-chips-input-autocomplete-solution.v1.json',
+      updatedAt: '2026-02-09',
+    },
+    angular: {
+      id: 'angular-chips-input-autocomplete',
+      starter: 'assets/sb/angular/question/angular-chips-input-autocomplete.v1.json',
+      solution: 'assets/sb/angular/solution/angular-chips-input-autocomplete-solution.v1.json',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-chips-input-autocomplete',
+      starter: 'assets/sb/vue/question/vue-chips-input-autocomplete.v1.json',
+      solution: 'assets/sb/vue/solution/vue-chips-input-autocomplete-solution.v1.json',
+      updatedAt: '2026-02-09',
+    },
+  };
+  const expectedNormalChecks = [
+    {
+      id: 'chips-add-suggestion',
+      name: 'Chips input adds suggestion',
+      steps: [
+        {
+          type: 'setValue',
+          selector: '.chip-input',
+          value: 'Ada',
+        },
+        {
+          type: 'waitForCount',
+          selector: '.suggestion',
+          count: 1,
+          timeoutMs: 800,
+        },
+        {
+          type: 'click',
+          selector: '.suggestion',
+        },
+        {
+          type: 'waitForCount',
+          selector: '.chip',
+          count: 1,
+        },
+      ],
+    },
+  ];
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Invite Chips Input question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: Invite Chips Input must stay premium`);
+    assert.equal(
+      question.difficulty,
+      'intermediate',
+      `${framework}: Invite Chips Input difficulty changed`
+    );
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Invite Chips Input updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Invite Chips Input starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Invite Chips Input solution changed`
+    );
+    assert.deepEqual(
+      question.frameworkTests,
+      expectedNormalChecks,
+      `${framework}: normal Invite Chips Input check must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/chips-input-autocomplete.v1.json',
+      `${framework}: Invite Chips Input must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Invite Chips Input frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/chips-input-autocomplete.v1.json');
+  assert.equal(scenario.id, 'chips-input-autocomplete-pressure-v1');
+  assert.equal(scenario.family, 'chips-input-autocomplete');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-chips-input-autocomplete',
+    angular: 'angular-chips-input-autocomplete',
+    vue: 'vue-chips-input-autocomplete',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    [
+      'core-suggestion-selection',
+      'token-normalization',
+      'keyboard-lifecycle',
+      'invite-limit-and-accessibility',
+    ]
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Invite Chips Input pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-chips-core',
+      'pressure-chips-normalization',
+      'pressure-chips-keyboard',
+      'pressure-chips-limit',
+      'pressure-chips-accessibility',
+    ]
+  );
+
+  const serializedChecks = JSON.stringify(checks);
+  for (const requiredSignal of [
+    '.chip-input',
+    '.suggestion',
+    '.chip',
+    '.chip-remove',
+    '.invite-limit',
+    '.invite-status',
+    'Ada Lovelace',
+    'Team@Example.com is already invited.',
+    'invite-option-ethan',
+    'invite-option-ada',
+    'Invite limit reached (5 of 5).',
+    'Invite limit reached. Remove a person to add another.',
+    'aria-activedescendant',
+    'aria-autocomplete',
+    'aria-controls',
+    'aria-describedby',
+    'aria-live',
+    'aria-atomic',
+    'unmountPreview',
+    'expectNoPreviewTimers',
+  ]) {
+    assert.ok(
+      serializedChecks.includes(requiredSignal),
+      `Invite Chips Input pressure checks are missing ${requiredSignal}`
+    );
+  }
+
+  const coreCheck = checks.find((test) => test.id === 'pressure-chips-core');
+  assert.ok(
+    coreCheck.steps.some(
+      (step) =>
+        step.type === 'click' &&
+        step.selector === '.suggestion'
+    ),
+    'Invite Chips Input core flow must prove that the unchanged click contract selects a suggestion'
+  );
+  assert.deepEqual(
+    coreCheck.steps
+      .filter((step) => step.type === 'setValue' && step.selector === '.chip-input')
+      .map((step) => step.value),
+    ['ADA', 'ada@'],
+    'Invite Chips Input core flow must cover case-insensitive filtering and selected-user exclusion'
+  );
+
+  const normalizationCheck = checks.find(
+    (test) => test.id === 'pressure-chips-normalization'
+  );
+  assert.ok(
+    normalizationCheck.steps.some(
+      (step) => step.type === 'key' && step.key === ','
+    ),
+    'Invite Chips Input normalization must cover comma tokenization'
+  );
+  assert.ok(
+    normalizationCheck.steps.some(
+      (step) =>
+        step.type === 'click' &&
+        step.selector === '.chip-remove' &&
+        step.index === 0
+    ),
+    'Invite Chips Input normalization must prove targeted removal'
+  );
+
+  const keyboardCheck = checks.find((test) => test.id === 'pressure-chips-keyboard');
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'key')
+      .map((step) => step.key),
+    ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', 'Backspace'],
+    'Invite Chips Input keyboard flow must cover wrapping, selection, dismissal, and deletion'
+  );
+  assert.ok(
+    keyboardCheck.steps.filter((step) => step.type === 'expectFocused').length >= 2,
+    'Invite Chips Input keyboard flow must keep focus on the actual input'
+  );
+
+  const limitCheck = checks.find((test) => test.id === 'pressure-chips-limit');
+  assert.deepEqual(
+    limitCheck.steps
+      .filter((step) => step.type === 'setValue' && step.selector === '.chip-input')
+      .map((step) => step.value),
+    ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Six'],
+    'Invite Chips Input limit flow must prove the ceiling and re-enable path'
+  );
+  assert.ok(
+    limitCheck.steps.some(
+      (step) => step.type === 'expectDisabled' && step.disabled === true
+    ),
+    'Invite Chips Input must disable entry at five chips'
+  );
+  assert.ok(
+    limitCheck.steps.some(
+      (step) => step.type === 'expectDisabled' && step.disabled === false
+    ),
+    'Invite Chips Input must re-enable entry after removal'
+  );
+
+  const accessibilityCheck = checks.find(
+    (test) => test.id === 'pressure-chips-accessibility'
+  );
+  assert.ok(
+    accessibilityCheck.steps.some((step) => step.type === 'unmountPreview') &&
+      accessibilityCheck.steps.some((step) => step.type === 'expectNoPreviewTimers'),
+    'Invite Chips Input accessibility flow must unmount cleanly without timers'
+  );
+
+  const commonSolutionMarkers = [
+    /Ada Lovelace/,
+    /MAX_(?:CHIPS|INVITES)\s*=\s*5/,
+    /MAX_SUGGESTIONS\s*=\s*6/,
+    /invite-option-/,
+    /chip-input/,
+    /chip-remove/,
+    /invite-limit/,
+    /invite-status/,
+    /aria-autocomplete/,
+    /aria-controls/,
+    /aria-describedby/,
+    /aria-live/,
+    /aria-atomic/,
+    /Invite limit reached/,
+  ];
+  const frameworkSolutionMarkers = {
+    react: [
+      /useMemo/,
+      /useEffect/,
+      /document\.removeEventListener/,
+      /onMouseDown/,
+      /onClick/,
+    ],
+    angular: [
+      /get suggestions/,
+      /(?:@HostListener|Renderer2)/,
+      /ngOnDestroy/,
+      /removeDocumentMouseDown/,
+      /\(mousedown\)/,
+      /\(click\)/,
+    ],
+    vue: [
+      /computed/,
+      /onBeforeUnmount/,
+      /document\.removeEventListener/,
+      /@mousedown/,
+      /@click/,
+    ],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-chips-input-autocomplete-pressure-solution.v1.json`,
+      `${framework}: invalid Invite Chips Input pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:chips-input-autocomplete-pressure-solution`);
+    const files = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:chips-input-autocomplete-pressure-solution`
+    );
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of [
+      ...commonSolutionMarkers,
+      ...frameworkSolutionMarkers[framework],
+    ]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Invite Chips Input pressure solution is missing ${marker}`
+      );
+    }
+    assert.match(
+      source,
+      /<input[\s\S]{0,700}class(?:Name)?="chip-input"/,
+      `${framework}: .chip-input must be the actual input in the pressure solution`
+    );
+  }
+}
+
+function assertPaginationTablePressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-pagination-table',
+      starter: 'assets/sb/react/question/react-pagination-table.v1.json',
+      solution: 'assets/sb/react/solution/react-pagination-table-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+    angular: {
+      id: 'angular-pagination-table',
+      starter: 'assets/sb/angular/question/angular-pagination-table.v2.json',
+      solution: 'assets/sb/angular/solution/angular-pagination-table-solution.v2.json',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-pagination-table',
+      starter: 'assets/sb/vue/question/vue-pagination-table.v1.json',
+      solution: 'assets/sb/vue/solution/vue-pagination-table-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+  };
+  const expectedNormalChecks = [
+    {
+      id: 'pagination-next-page',
+      name: 'Pagination moves to next page',
+      steps: [
+        {
+          type: 'expectCount',
+          selector: 'tbody tr',
+          count: 5,
+        },
+        {
+          type: 'expectText',
+          selector: '.page-info',
+          text: '1',
+          match: 'contains',
+        },
+        {
+          type: 'click',
+          selector: '.footer button',
+          index: 1,
+        },
+        {
+          type: 'waitForText',
+          selector: '.page-info',
+          text: '2',
+          match: 'contains',
+        },
+      ],
+    },
+  ];
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Paginated Table question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: Paginated Table must stay premium`);
+    assert.equal(
+      question.difficulty,
+      'intermediate',
+      `${framework}: Paginated Table difficulty changed`
+    );
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Paginated Table updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Paginated Table starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Paginated Table solution changed`
+    );
+    assert.deepEqual(
+      question.frameworkTests,
+      expectedNormalChecks,
+      `${framework}: normal Paginated Table check must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/pagination-table.v1.json',
+      `${framework}: Paginated Table must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Paginated Table frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/pagination-table.v1.json');
+  assert.equal(scenario.id, 'pagination-table-pressure-v1');
+  assert.equal(scenario.family, 'pagination-table');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-pagination-table',
+    angular: 'angular-pagination-table',
+    vue: 'vue-pagination-table',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    [
+      'core-page-window',
+      'filter-and-page-reset',
+      'sort-and-page-size',
+      'selection-and-accessibility',
+    ]
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Paginated Table pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-table-pagination',
+      'pressure-table-filtering',
+      'pressure-table-sorting',
+      'pressure-table-selection',
+      'pressure-table-accessibility',
+    ]
+  );
+
+  const serializedChecks = JSON.stringify(checks);
+  for (const requiredSignal of [
+    '.table',
+    '.data-row',
+    '.search-input',
+    '.page-size',
+    '.sort-id',
+    '.sort-name',
+    '.sort-role',
+    '.row-select',
+    '.select-page',
+    '.clear-selection',
+    '.previous',
+    '.next',
+    '.footer',
+    '.page-info',
+    '.result-summary',
+    '.selection-summary',
+    '.empty-state',
+    '.table-status',
+    'Page 3 of 3',
+    'No users found.',
+    'LEO@EXAMPLE.COM',
+    'aria-sort',
+    'aria-checked',
+    'aria-describedby',
+    'aria-live',
+    'aria-atomic',
+    'Search cleared. 13 users found.',
+    'unmountPreview',
+    'expectNoPreviewTimers',
+  ]) {
+    assert.ok(
+      serializedChecks.includes(requiredSignal),
+      `Paginated Table pressure checks are missing ${requiredSignal}`
+    );
+  }
+
+  const paginationCheck = checks.find(
+    (test) => test.id === 'pressure-table-pagination'
+  );
+  assert.ok(
+    paginationCheck.steps.some(
+      (step) =>
+        step.type === 'click' &&
+        step.selector === '.footer button' &&
+        step.index === 1
+    ),
+    'Paginated Table pressure core must preserve the normal Next-button selector contract'
+  );
+  assert.ok(
+    paginationCheck.steps.some(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === 'tbody tr' &&
+        step.count === 5
+    ),
+    'Paginated Table pressure core must preserve the normal five-row contract'
+  );
+
+  const filteringCheck = checks.find(
+    (test) => test.id === 'pressure-table-filtering'
+  );
+  assert.deepEqual(
+    filteringCheck.steps
+      .filter((step) => step.type === 'setValue' && step.selector === '.search-input')
+      .map((step) => step.value),
+    ['  VIEWER  ', '  LEO@EXAMPLE.COM  ', 'nobody', ''],
+    'Paginated Table filtering must cover normalization, empty state, and recovery'
+  );
+  assert.ok(
+    filteringCheck.steps.some(
+      (step) =>
+        (step.type === 'expectCount' || step.type === 'waitForCount') &&
+        step.selector === '.data-row' &&
+        step.count === 0
+    ),
+    'Paginated Table filtering must prove that no data rows survive an empty result'
+  );
+
+  const sortingCheck = checks.find((test) => test.id === 'pressure-table-sorting');
+  assert.deepEqual(
+    sortingCheck.steps
+      .filter((step) => step.type === 'click' && step.selector.startsWith('.sort-'))
+      .map((step) => step.selector),
+    ['.sort-name', '.sort-name', '.sort-role', '.sort-id', '.sort-id'],
+    'Paginated Table sorting must cover ascending, descending, stable role, and numeric id order'
+  );
+  assert.ok(
+    sortingCheck.steps.some(
+      (step) =>
+        step.type === 'setValue' &&
+        step.selector === '.page-size' &&
+        step.value === '10'
+    ),
+    'Paginated Table sorting flow must cover the ten-row page size'
+  );
+
+  const selectionCheck = checks.find(
+    (test) => test.id === 'pressure-table-selection'
+  );
+  assert.deepEqual(
+    [...new Set(
+      selectionCheck.steps
+        .filter(
+          (step) =>
+            step.type === 'expectAttribute' &&
+            step.selector === '.select-page' &&
+            step.attribute === 'aria-checked'
+        )
+        .map((step) => step.expected)
+    )],
+    ['false', 'mixed', 'true'],
+    'Paginated Table selection must expose false, mixed, and true page states'
+  );
+  assert.ok(
+    selectionCheck.steps.some(
+      (step) =>
+        step.type === 'expectText' &&
+        step.selector === '.selection-summary' &&
+        step.text === '7 users selected.'
+    ),
+    'Paginated Table selection must persist ids while selecting another page'
+  );
+
+  const accessibilityCheck = checks.find(
+    (test) => test.id === 'pressure-table-accessibility'
+  );
+  assert.ok(
+    accessibilityCheck.steps.some(
+      (step) => step.type === 'key' && step.key === 'Escape'
+    ) &&
+      accessibilityCheck.steps.some((step) => step.type === 'expectFocused') &&
+      accessibilityCheck.steps.some((step) => step.type === 'unmountPreview') &&
+      accessibilityCheck.steps.some((step) => step.type === 'expectNoPreviewTimers'),
+    'Paginated Table accessibility must cover keyboard recovery, focus, and timer cleanup'
+  );
+
+  const commonSolutionMarkers = [
+    /Alice Johnson/,
+    /Leo Walker/,
+    /search-input/,
+    /page-size/,
+    /sort-id/,
+    /sort-name/,
+    /sort-role/,
+    /row-select/,
+    /select-page/,
+    /clear-selection/,
+    /result-summary/,
+    /selection-summary/,
+    /empty-state/,
+    /table-status/,
+    /aria-sort/,
+    /aria-checked/,
+    /aria-describedby/,
+    /aria-live/,
+    /aria-atomic/,
+    /Search cleared\. 13 users found\./,
+  ];
+  const frameworkSolutionMarkers = {
+    react: [/useMemo/, /useState/, /Set<number>/],
+    angular: [/get filteredUsers/, /Set<number>/],
+    vue: [/computed/, /ref/, /Set<number>/],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-pagination-table-pressure-solution.v1.json`,
+      `${framework}: invalid Paginated Table pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:pagination-table-pressure-solution`);
+    const files = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:pagination-table-pressure-solution`
+    );
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of [
+      ...commonSolutionMarkers,
+      ...frameworkSolutionMarkers[framework],
+    ]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Paginated Table pressure solution is missing ${marker}`
+      );
+    }
+  }
+}
+
 async function drainMicrotasks() {
   for (let index = 0; index < 8; index += 1) await Promise.resolve();
 }
@@ -1577,6 +2490,9 @@ assertModernAngularCodingCorpus();
 assertCounterPressureMode();
 assertDebouncedSearchPressureMode();
 assertTodoListPressureMode();
+assertShoppingCartPressureMode();
+assertChipsInputPressureMode();
+assertPaginationTablePressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');
 const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');

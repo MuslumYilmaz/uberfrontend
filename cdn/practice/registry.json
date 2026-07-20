@@ -8498,7 +8498,7 @@
     "route": "/react/trivia/react-stale-state-closures",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain stale closure bugs in React through timers, async handlers, subscriptions, and effects that read an old render snapshot instead of the latest state.",
+    "summary": "Each React render creates a new set of state and prop bindings. A callback created during that render keeps access to those bindings, even when it runs later.",
     "tags": [
       "react",
       "hooks",
@@ -8509,7 +8509,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-07-20",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-stale-state-closures"
   },

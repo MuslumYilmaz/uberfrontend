@@ -21,6 +21,54 @@
         </ul>
     </ng-template>
 
+    <ng-template #interviewPracticeTpl let-q>
+        <section class="card interview-focus" aria-labelledby="trivia-interview-focus-title">
+            <h2 class="card-head" id="trivia-interview-focus-title">Interview focus</h2>
+            <div class="card-body interview-focus__body">
+                <p class="interview-focus__summary">{{ interviewFocusSummary(q) }}</p>
+                <ul class="interview-focus__list">
+                    <li *ngFor="let item of interviewFocusItems(q); trackBy: trackByStringValue">{{ item }}</li>
+                </ul>
+                <a
+                    class="interview-focus__link"
+                    data-trivia-link-zone="prep_bridge"
+                    [routerLink]="interviewQuestionsHubRoute()">
+                    {{ interviewQuestionsHubCtaLabel() }}
+                </a>
+            </div>
+        </section>
+
+        <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
+            <div class="practice-frame__copy">
+                <div class="practice-frame__kicker">Interview answer drill</div>
+                <p class="practice-frame__text">{{ practiceFrameText(q) }}</p>
+            </div>
+            <div class="practice-frame__actions">
+                <a
+                    class="practice-frame__cta practice-frame__cta--primary"
+                    data-testid="trivia-practice-frame-primary"
+                    data-trivia-link-zone="prep_bridge"
+                    [routerLink]="interviewQuestionsHubRoute()">
+                    {{ interviewQuestionsHubCtaLabel() }}
+                </a>
+                <a
+                    class="practice-frame__cta"
+                    data-testid="trivia-practice-frame-plan"
+                    data-trivia-link-zone="prep_bridge"
+                    [routerLink]="studyPlanRoute()">
+                    Follow {{ studyPlanLabel() }}
+                </a>
+                <a
+                    class="practice-frame__link"
+                    data-testid="trivia-practice-frame-hub"
+                    data-trivia-link-zone="prep_bridge"
+                    [routerLink]="['/interview-questions/essential']">
+                    Open Essential 60
+                </a>
+            </div>
+        </section>
+    </ng-template>
+
     <!-- Detail -->
     <main class="main" #mainScroll data-testid="trivia-detail-main" (scroll)="onMainScroll()">
         <div
@@ -117,57 +165,15 @@
 
             <!-- Interview quick answer -->
             <section class="card" *ngIf="!isOutputQuestion(q)">
-                <h2 class="card-head">Interview quick answer</h2>
+                <h2 class="card-head">{{ primaryAnswerHeading(q) }}</h2>
                 <div class="card-body">
                     <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
                 </div>
             </section>
 
-            <section class="card interview-focus" aria-labelledby="trivia-interview-focus-title">
-                <h2 class="card-head" id="trivia-interview-focus-title">Interview focus</h2>
-                <div class="card-body interview-focus__body">
-                    <p class="interview-focus__summary">{{ interviewFocusSummary(q) }}</p>
-                    <ul class="interview-focus__list">
-                        <li *ngFor="let item of interviewFocusItems(q); trackBy: trackByStringValue">{{ item }}</li>
-                    </ul>
-                    <a
-                        class="interview-focus__link"
-                        data-trivia-link-zone="prep_bridge"
-                        [routerLink]="interviewQuestionsHubRoute()">
-                        {{ interviewQuestionsHubCtaLabel() }}
-                    </a>
-                </div>
-            </section>
-
-            <section class="practice-frame" data-testid="trivia-practice-frame" aria-label="Interview practice context">
-                <div class="practice-frame__copy">
-                    <div class="practice-frame__kicker">Interview answer drill</div>
-                    <p class="practice-frame__text">{{ practiceFrameText(q) }}</p>
-                </div>
-                <div class="practice-frame__actions">
-                    <a
-                        class="practice-frame__cta practice-frame__cta--primary"
-                        data-testid="trivia-practice-frame-primary"
-                        data-trivia-link-zone="prep_bridge"
-                        [routerLink]="interviewQuestionsHubRoute()">
-                        {{ interviewQuestionsHubCtaLabel() }}
-                    </a>
-                    <a
-                        class="practice-frame__cta"
-                        data-testid="trivia-practice-frame-plan"
-                        data-trivia-link-zone="prep_bridge"
-                        [routerLink]="studyPlanRoute()">
-                        Follow {{ studyPlanLabel() }}
-                    </a>
-                    <a
-                        class="practice-frame__link"
-                        data-testid="trivia-practice-frame-hub"
-                        data-trivia-link-zone="prep_bridge"
-                        [routerLink]="['/interview-questions/essential']">
-                        Open Essential 60
-                    </a>
-                </div>
-            </section>
+            <ng-container *ngIf="!isReactStaleClosuresLanding(q)">
+                <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
+            </ng-container>
 
             <!-- Full interview answer -->
             <section
@@ -175,7 +181,7 @@
                 class="card"
                 data-testid="trivia-full-answer"
                 [hidden]="isOutputQuestion(q) && !outputDeepDiveOpen()">
-                <h2 class="card-head">{{ isOutputQuestion(q) ? 'Deep dive' : (showAsyncRaceSimulator(q) ? 'How to prevent stale async UI' : 'Full interview answer') }}</h2>
+                <h2 class="card-head">{{ fullAnswerHeading(q) }}</h2>
                 <div class="card-body">
                     <ng-container *ngIf="answerIsRich(); else simpleAnswer">
                         <div class="blocks">
@@ -254,6 +260,10 @@
                     </ng-template>
                 </div>
             </section>
+
+            <ng-container *ngIf="isReactStaleClosuresLanding(q)">
+                <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
+            </ng-container>
 
             <!-- NgRx data flow DevTools trace -->
             <section

@@ -94,15 +94,17 @@ describe('trivia-seo.util', () => {
     expect(second.length).toBeLessThanOrEqual(54);
   });
 
-  it('preserves question-level seo title and description when interview intent is explicit', () => {
+  it('preserves the React stale closures search landing metadata', () => {
+    const expectedTitle = 'React Stale Closures: Causes, Fixes, and Tests';
+    const expectedDescription =
+      'Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests.';
     const title = seoTitleForQuestion({
       id: 'react-stale-state-closures',
       title: 'Why does React sometimes show stale state in closures? How do you fix it?',
       technology: 'react',
       seo: {
-        title: 'React stale closures interview answer',
-        description:
-          'Practice a React interview answer for stale closures with follow-up fixes and dependency-safe patterns.',
+        title: expectedTitle,
+        description: expectedDescription,
       },
     } as any);
 
@@ -112,19 +114,18 @@ describe('trivia-seo.util', () => {
         title: 'Why does React sometimes show stale state in closures? How do you fix it?',
         technology: 'react',
         seo: {
-          title: 'React stale closures interview answer',
-          description:
-            'Practice a React interview answer for stale closures with follow-up fixes and dependency-safe patterns.',
+          title: expectedTitle,
+          description: expectedDescription,
         },
       } as any,
       'fallback description',
       'react'
     );
 
-    expect(title).toBe('React stale closures interview answer');
-    expect(description).toContain('dependency-safe patterns');
-    expect(description.toLowerCase()).not.toContain('question focus:');
-    expect(description.toLowerCase()).not.toContain('frontend interview prep routine');
+    expect(title).toBe(expectedTitle);
+    expect(description).toBe(expectedDescription);
+    expect(title.length).toBeLessThanOrEqual(54);
+    expect(description.length).toBeLessThanOrEqual(155);
   });
 
   it('preserves React render-nothing SEO title when description carries interview intent', () => {

@@ -924,6 +924,7 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json",
+    "pressureModeAsset": "assets/questions/pressure-modes/pagination-table.v1.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-pagination-table.v1.json",
     "access": "premium",
     "updatedAt": "2026-07-15",
@@ -1315,6 +1316,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-shopping-cart"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/shopping-cart.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json",
     "access": "premium",
@@ -2629,6 +2631,7 @@
       "storageKey": "v1:ui:angular:angular-chips-input-autocomplete"
     },
     "solutionAsset": "assets/sb/angular/solution/angular-chips-input-autocomplete-solution.v1.json",
+    "pressureModeAsset": "assets/questions/pressure-modes/chips-input-autocomplete.v1.json",
     "companies": [
       "amazon",
       "airbnb"

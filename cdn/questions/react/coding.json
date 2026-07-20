@@ -890,6 +890,7 @@
       "storageKey": "v2:ui:react:react-pagination-table"
     },
     "solutionAsset": "assets/sb/react/solution/react-pagination-table-solution.v1.json",
+    "pressureModeAsset": "assets/questions/pressure-modes/pagination-table.v1.json",
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -1274,6 +1275,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-shopping-cart"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/shopping-cart.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-shopping-cart-solution.v1.json",
     "companies": [],
     "access": "premium",
@@ -3493,6 +3495,7 @@
       "storageKey": "v1:ui:react:react-chips-input-autocomplete"
     },
     "solutionAsset": "assets/sb/react/solution/react-chips-input-autocomplete-solution.v1.json",
+    "pressureModeAsset": "assets/questions/pressure-modes/chips-input-autocomplete.v1.json",
     "companies": [
       "amazon",
       "airbnb"

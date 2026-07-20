@@ -1,0 +1,762 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "chips-input-autocomplete-pressure-v1",
+  "family": "chips-input-autocomplete",
+  "title": "Invite Chips Input Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-chips-input-autocomplete",
+    "angular": "angular-chips-input-autocomplete",
+    "vue": "vue-chips-input-autocomplete"
+  },
+  "rounds": [
+    {
+      "id": "core-suggestion-selection",
+      "title": "Core suggestion selection",
+      "interviewerPrompt": "Start with a trustworthy autocomplete contract. Filtering and selection must stay predictable across casing, pointer input, and repeated queries.",
+      "constraints": [
+        "Filter candidates by name or email with trimmed, case-insensitive matching and show at most six suggestions.",
+        "Selecting a suggestion by click must add exactly one chip, clear the query, and close the listbox.",
+        "Exclude selected candidates from later suggestions without mutating the source candidate list.",
+        "Use stable candidate ids so suggestion and chip identity does not depend on the rendered index."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chips-core",
+          "name": "Round 1 · Suggestions filter, select, and exclude predictably",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".chip",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "ADA"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".suggestion",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".suggestion",
+              "text": "Ada Lovelace",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".suggestion",
+              "text": "ada@frontendatlas.dev",
+              "match": "contains"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".suggestion"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".chip",
+              "text": "Ada Lovelace",
+              "match": "contains"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".chip-input",
+              "value": ""
+            },
+            {
+              "type": "expectCount",
+              "selector": ".suggestion",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "ada@"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".suggestion",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "token-normalization",
+      "title": "Token normalization",
+      "interviewerPrompt": "Now make free-form entry safe. Token boundaries, duplicate identity, and targeted removal must behave the same for every input path.",
+      "constraints": [
+        "Enter and comma must add a trimmed custom chip and clear the input.",
+        "Whitespace-only input must add nothing and return the input to an empty value.",
+        "Reject duplicates by candidate id or case-insensitive normalized value.",
+        "A remove control must delete only its target chip and expose the target label in its accessible name."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chips-normalization",
+          "name": "Round 2 · Token entry normalizes, deduplicates, and removes by id",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "   "
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".chip",
+              "count": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": ".chip-input",
+              "value": ""
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "  Team@Example.com  "
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": ","
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".chip",
+              "text": "Team@Example.com",
+              "match": "contains"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".chip-input",
+              "value": ""
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-remove",
+              "attribute": "aria-label",
+              "expected": "Remove Team@Example.com"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "team@example.COM"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".chip",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-status",
+              "text": "Team@Example.com is already invited."
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Design"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".chip",
+              "index": 1,
+              "text": "Design",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".chip-remove",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".chip",
+              "text": "Design",
+              "match": "contains"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".chip-field",
+              "text": "Team@Example.com",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-status",
+              "text": "Team@Example.com removed. 1 of 5 invites used."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-lifecycle",
+      "title": "Keyboard lifecycle",
+      "interviewerPrompt": "Complete the combobox keyboard lifecycle. The active option, open state, chip selection, and destructive shortcuts must never drift apart.",
+      "constraints": [
+        "ArrowUp and ArrowDown must wrap through the visible suggestions and update a stable active-descendant id.",
+        "Enter must select the active option while keeping focus on the input.",
+        "Escape must close the listbox and clear the active option without deleting the query or chips.",
+        "Backspace on an empty input must remove only the final chip."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chips-keyboard",
+          "name": "Round 3 · Keyboard navigation wraps and cleans up state",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "@frontendatlas.dev"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".suggestion",
+              "count": 6,
+              "timeoutMs": 700
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "ArrowUp"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-activedescendant",
+              "expected": "invite-option-ethan"
+            },
+            {
+              "type": "expectClass",
+              "selector": ".suggestion",
+              "index": 5,
+              "className": "active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".suggestion",
+              "index": 5,
+              "attribute": "aria-selected",
+              "expected": "true"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-activedescendant",
+              "expected": "invite-option-ada"
+            },
+            {
+              "type": "expectClass",
+              "selector": ".suggestion",
+              "className": "active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".suggestion",
+              "attribute": "aria-selected",
+              "expected": "true"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".chip",
+              "text": "Ada Lovelace",
+              "match": "contains"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".chip-input",
+              "value": ""
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".chip-input"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Bob"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".suggestion",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Escape"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".suggestion",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-activedescendant",
+              "expected": false
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": ""
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Backspace"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-status",
+              "text": "Ada Lovelace removed. 0 of 5 invites used."
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".chip-input"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "invite-limit-and-accessibility",
+      "title": "Invite limit and accessibility",
+      "interviewerPrompt": "Finish with a hard invite boundary and a complete assistive-technology contract. Limits must be enforced through every event path and announced without unstable DOM regions.",
+      "constraints": [
+        "Allow at most five chips, disable the input at the limit, and guard programmatic or keyboard add paths from exceeding it.",
+        "Removing a chip below the limit must immediately re-enable entry and allow another invite.",
+        "Put the combobox role and relationships on the actual input; use a labelled listbox, stable option ids, and product-specific remove labels.",
+        "Keep an always-rendered polite, atomic status region and remove document listeners when the preview unmounts."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chips-limit",
+          "name": "Round 4 · Five-chip limit guards every add path and recovers",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "One"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Two"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Three"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Four"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Five"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 5,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chip-input",
+              "disabled": true
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-limit",
+              "text": "Invite limit reached (5 of 5)."
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Six"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".chip",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-status",
+              "text": "Invite limit reached. Remove a person to add another."
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chip-input",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".chip-remove",
+              "index": 2
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 4,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".chip-field",
+              "text": "Three",
+              "match": "contains"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chip-input",
+              "disabled": false
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-limit",
+              "text": "4 of 5 invites used."
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Six"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 5,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".chip",
+              "index": 4,
+              "text": "Six",
+              "match": "contains"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chip-input",
+              "disabled": true
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-limit",
+              "text": "Invite limit reached (5 of 5)."
+            }
+          ]
+        },
+        {
+          "id": "pressure-chips-accessibility",
+          "name": "Round 4 · Combobox relationships, announcements, and cleanup stay stable",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "role",
+              "expected": "combobox"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-autocomplete",
+              "expected": "list"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-controls",
+              "expected": "invite-suggestions"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-describedby",
+              "expected": "invite-hint invite-limit"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".invite-status",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".invite-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".invite-status",
+              "attribute": "aria-atomic",
+              "expected": "true"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chip-input",
+              "value": "Ada"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".suggestion",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".suggestions",
+              "attribute": "role",
+              "expected": "listbox"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".suggestion",
+              "attribute": "id",
+              "expected": "invite-option-ada"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".suggestion",
+              "attribute": "role",
+              "expected": "option"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-input",
+              "attribute": "aria-activedescendant",
+              "expected": "invite-option-ada"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".suggestion",
+              "attribute": "aria-selected",
+              "expected": "true"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".chip-input"
+            },
+            {
+              "type": "key",
+              "selector": ".chip-input",
+              "key": "Enter"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-status",
+              "text": "Ada Lovelace added. 1 of 5 invites used."
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chip-remove",
+              "attribute": "aria-label",
+              "expected": "Remove Ada Lovelace"
+            },
+            {
+              "type": "click",
+              "selector": ".chip-remove"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".chip",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".invite-status",
+              "text": "Ada Lovelace removed. 0 of 5 invites used."
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept invite input predictable under pressure",
+    "summary": "You protected identity, keyboard state, hard limits, and assistive-technology feedback while the interaction surface kept expanding.",
+    "takeaways": [
+      "Normalize at token boundaries and derive suggestions from immutable candidate and chip state.",
+      "Treat active option, open state, and focus as one keyboard lifecycle.",
+      "Enforce limits in domain handlers even when the visible input is disabled.",
+      "Keep combobox relationships and live regions stable across every state transition."
+    ],
+    "frameworkNotes": {
+      "react": "Use memoized suggestions, functional state updates, and effect cleanup for the document listener.",
+      "angular": "Use derived getters with immutable chip updates and let the component lifecycle clean up document bindings.",
+      "vue": "Use computed suggestions, ref-backed interaction state, and onBeforeUnmount cleanup for the document listener."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-chips-input-autocomplete-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-chips-input-autocomplete-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-chips-input-autocomplete-pressure-solution.v1.json"
+  }
+}
