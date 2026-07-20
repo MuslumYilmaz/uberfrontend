@@ -49,6 +49,29 @@ test('seo: question detail has canonical + json-ld', async ({ page }) => {
     .toContain('TechArticle');
 });
 
+test('seo: HTML form default method page preserves intent-specific metadata and answer', async ({ page }) => {
+  await setSeoHost(page, 'frontendatlas.com');
+  await page.goto('/html/trivia/html-form-default-method');
+  const base = new URL(page.url()).origin;
+
+  await expect(page).toHaveTitle('HTML Form Default Method: GET or POST? (With Example)');
+  expect(await page.title()).not.toMatch(/\band\s*$/i);
+  await expect.poll(() => getMeta(page, 'description')).toBe(
+    'An HTML form defaults to GET. If action is omitted, it submits to the current page URL. See an example, GET vs POST, and common HTML interview mistakes.'
+  );
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/html/trivia/html-form-default-method`);
+  await expect.poll(async () => ((await getMeta(page, 'robots')) || '').toLowerCase()).toBe('index,follow');
+  await expect(page.locator('h1').first()).toHaveText('What is the default method for form submission in HTML?');
+
+  const triviaMain = page.getByTestId('trivia-detail-main');
+  await expect(triviaMain).toContainText(/defaults? to GET/i);
+  await expect(triviaMain).toContainText(/current (?:document|page) URL/i);
+
+  const jsonLd = page.locator('script#seo-jsonld');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
+});
+
 test('seo: coding query variants keep clean canonical, noindex, and filter state', async ({ page }) => {
   await setSeoHost(page, 'frontendatlas.com');
   await page.goto('/coding?q=debounce');
