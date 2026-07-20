@@ -2,7 +2,7 @@
   "contentId": "html-form-default-method",
   "tech": "html",
   "query": "html form default method interview question",
-  "reviewedAt": "2026-04-18",
+  "reviewedAt": "2026-07-20",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "manual",
@@ -23,35 +23,35 @@
         "MDN is authoritative on form submission semantics, GET and POST behavior, and the baseline structure of the form element."
       ],
       "theirGaps": [
-        "The reference format is less explicit about the production security mistake of accidentally leaking sensitive data via the default GET method."
+        "The reference format is less focused on combining the method fallback, omitted-action behavior, and GET-versus-POST security nuance into a compact interview answer."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "HTML forms default to GET, which puts form fields into the URL query string. That is useful for search and filtering, but a production security pitfall when teams accidentally send private data without switching to POST."
+          "An HTML form defaults to GET when method is missing or invalid. If action is also omitted, it submits to the current page URL and serializes successful controls into the query string. Use GET for read-only navigation and POST for state-changing or sensitive submissions, together with HTTPS and server-side validation."
         ],
         "followUpConfusion": [
-          "If a form omits the <code>method</code> attribute, the browser defaults to <strong>GET</strong>. That means fields are serialized into the URL query string."
+          "<strong>POST</strong> places form data in the request body, which keeps it out of the address bar but does not encrypt it or make it private by itself."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "MDN explains form submission semantics well, but it is lighter on the exact production bug this question usually targets: sensitive data ending up in URLs, logs, and history."
+          "MDN explains form submission semantics well, while our page surfaces the practical risk: GET places successful controls in a URL that may be retained in browser history, logs, and analytics."
         ],
         "actionableExamples": [
           "It includes canonical form examples and method notes, so the example criterion stays competitive."
         ],
         "followUpConfusion": [
-          "Our page is more direct on the follow-up confusion between search-friendly GET flows and sensitive workflows that should move to POST."
+          "Our page is more direct about two common follow-ups: an omitted action targets the current page URL, and POST does not provide encryption by itself."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Keep the GET-versus-POST comparison visible so the answer stays practical, not only definitional."
+          "Keep the GET-versus-POST comparison visible, including request location and HTTPS nuance, so the answer stays practical rather than only definitional."
         ],
         "followUpConfusion": []
       },
-      "winReason": "MDN is the canonical form reference, but our page is stronger as an interview answer because it makes the default-GET rule concrete through search use cases, security leakage, and debugging consequences."
+      "winReason": "MDN is the canonical form reference, but our page is stronger as a compact interview answer because it combines the GET fallback, omitted-action target, query-string result, and POST security nuance."
     },
     {
       "label": "HTML Interview Questions and Answers",
@@ -67,35 +67,35 @@
         "It is a strong HTML interview-prep source with broad coverage of document, form, and attribute basics."
       ],
       "theirGaps": [
-        "The category page is not dedicated to form submission defaults, so it is less focused on one exact answer about GET, POST, and security trade-offs."
+        "The category page is not dedicated to form submission defaults, so it is less focused on one exact answer about GET, an omitted action, POST request bodies, and transport security."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "HTML forms default to GET, which puts form fields into the URL query string. That is useful for search and filtering, but a production security pitfall when teams accidentally send private data without switching to POST."
+          "An HTML form defaults to GET when method is missing or invalid. If action is also omitted, it submits to the current page URL and serializes successful controls into the query string. Use GET for read-only navigation and POST for state-changing or sensitive submissions, together with HTTPS and server-side validation."
         ],
         "followUpConfusion": [
-          "If a form omits the <code>method</code> attribute, the browser defaults to <strong>GET</strong>. That means fields are serialized into the URL query string."
+          "<strong>POST</strong> places form data in the request body, which keeps it out of the address bar but does not encrypt it or make it private by itself."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the concrete data-leak and debugging failure mode behind the default GET rule."
+          "GreatFrontEnd is relevant for HTML prep, but the category page is less explicit about the current-page target created by an omitted action and the URL exposure created by default GET."
         ],
         "actionableExamples": [
           "It remains a strong interview bank, so the worked-example criterion stays tied."
         ],
         "followUpConfusion": [
-          "Our page is clearer on the likely follow-up: when GET is correct for search and when POST is required to avoid leaking private data."
+          "Our page answers the likely follow-ups directly: what an omitted action targets and why moving data to a POST request body is not the same as securing it."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Keep the practical login-form scenario visible so the answer stays anchored to a real mistake teams make."
+          "Keep the no-method, no-action form and resulting current-page URL visible so the answer stays anchored to observable browser behavior."
         ],
         "followUpConfusion": []
       },
-      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the security and debugging consequences that make the default form method worth remembering."
+      "winReason": "GreatFrontEnd is broad HTML prep, but our page is more specific about the method and action defaults, the resulting query string, and the controls still required when POST is used."
     },
     {
       "label": "Use forms to get data from users",
@@ -115,31 +115,31 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "HTML forms default to GET, which puts form fields into the URL query string. That is useful for search and filtering, but a production security pitfall when teams accidentally send private data without switching to POST."
+          "An HTML form defaults to GET when method is missing or invalid. If action is also omitted, it submits to the current page URL and serializes successful controls into the query string. Use GET for read-only navigation and POST for state-changing or sensitive submissions, together with HTTPS and server-side validation."
         ],
         "followUpConfusion": [
-          "If a form omits the <code>method</code> attribute, the browser defaults to <strong>GET</strong>. That means fields are serialized into the URL query string."
+          "<strong>POST</strong> places form data in the request body, which keeps it out of the address bar but does not encrypt it or make it private by itself."
         ]
       },
       "theirEvidence": {
         "realWorldUseCases": [
-          "web.dev is grounded in real submission behavior, but our answer is more compact about the accidental-data-leak scenario interviewers usually want to hear."
+          "web.dev is grounded in real submission behavior, while our answer keeps the omitted-method and omitted-action fallbacks together with the resulting query-string URL."
         ],
         "actionableExamples": [
           "The tutorial includes concrete GET and POST examples, so the example criterion stays tied."
         ],
         "followUpConfusion": [
-          "Our page is stronger on the next question teams hit in practice: why GET is fine for search but dangerous for credentials or tokens."
+          "Our page puts missing or invalid method behavior and an omitted action into one short answer, then explains that POST body placement still requires HTTPS and server-side controls."
         ]
       },
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Keep the postcard-versus-envelope framing out of the evidence but retain the GET-versus-POST comparison so the page stays memorable."
+          "Keep the no-method, no-action example and GET-versus-POST comparison so the page remains concrete without implying that POST is inherently private."
         ],
         "followUpConfusion": []
       },
-      "winReason": "web.dev is strong on forms generally, but our page is better as a short interview answer because it turns the default GET rule into an explicit search-versus-sensitive-data decision."
+      "winReason": "web.dev is strong on forms generally, but our page is better as a short interview answer because it connects both attribute fallbacks to the resulting request and avoids overstating POST security."
     }
   ]
 }

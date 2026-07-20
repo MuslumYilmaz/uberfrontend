@@ -2958,7 +2958,7 @@
     "route": "/html/trivia/html-form-default-method",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "HTML forms default to GET, which puts form fields into the URL query string. That is useful for search and filtering, but a production security pitfall when teams accidentally send private data without switching to POST.",
+    "summary": "An HTML form defaults to GET when method is missing or invalid. If action is also omitted, it submits to the current page URL and serializes successful controls into the query string.",
     "tags": [
       "html",
       "forms",
@@ -2969,7 +2969,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-20",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-form-default-method"
   },

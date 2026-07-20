@@ -1633,16 +1633,16 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "HTML forms default to GET, which puts form fields into the URL query string. That is useful for search and filtering, but a production security pitfall when teams accidentally send private data without switching to POST.",
+    "description": "An HTML form defaults to GET when method is missing or invalid. If action is also omitted, it submits to the current page URL and serializes successful controls into the query string. Use GET for read-only navigation and POST for state-changing or sensitive submissions, together with HTTPS and server-side validation.",
     "seo": {
-      "title": "HTML form default method: GET, URL exposure, and debugging pitfalls",
-      "description": "Learn why forms default to GET, when query-string submissions help, and why sensitive or state-changing actions need POST instead."
+      "title": "HTML Form Default Method: GET or POST? (With Example)",
+      "description": "An HTML form defaults to GET. If action is omitted, it submits to the current page URL. See an example, GET vs POST, and common HTML interview mistakes."
     },
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>If a form omits the <code>method</code> attribute, the browser defaults to <strong>GET</strong>. That means fields are serialized into the URL query string. In production, this default is helpful for search and filters, but it becomes a security and debugging pitfall if a login, token, or sensitive workflow accidentally leaks data into the address bar, logs, or browser history."
+          "text": "<strong>Overview</strong><br><br><strong>GET.</strong> If a form omits the <code>method</code> attribute—or uses an invalid value—the browser uses GET. If <code>action</code> is also omitted, the form submits to the current document URL. Successful controls are serialized into its query string. This default fits search and filter navigation, but it is a privacy and debugging pitfall for credentials or tokens because URLs can appear in address bars, history, logs, analytics, and referrer data."
         },
         {
           "type": "list",
@@ -1653,39 +1653,43 @@
           "rows": [
             [
               "Default method",
-              "GET"
+              "GET when method is missing or invalid"
+            ],
+            [
+              "Default action",
+              "Current document URL when action is omitted"
             ],
             [
               "Data transmission",
-              "Appended to URL as query parameters"
+              "Successful controls are encoded as URL query parameters"
             ],
             [
               "Visibility",
               "Visible in browser address bar"
             ],
             [
-              "Caching",
-              "Possible; may be stored in browser history"
+              "History and logs",
+              "The resulting URL may be stored or recorded"
             ],
             [
-              "Security",
-              "Not suitable for sensitive data (passwords, tokens)"
+              "Appropriate use",
+              "Read-only, non-sensitive navigation such as search"
             ]
           ],
           "caption": "Quick overview of default GET behavior"
         },
         {
           "type": "text",
-          "text": "<strong>Example of Default Behavior</strong><br><br>When you don’t define the <code>method</code> attribute, it defaults to GET automatically:"
+          "text": "<strong>What happens when method and action are omitted?</strong><br><br>Assume the current page is <code>https://example.com/search</code>. This form sets neither attribute, so the browser uses GET and submits back to that page:"
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<form action=\"/search\">\n  <input type=\"text\" name=\"q\" placeholder=\"Search...\">\n  <button type=\"submit\">Go</button>\n</form>"
+          "code": "<form>\n  <label>\n    Search\n    <input name=\"q\" value=\"flowers\">\n  </label>\n  <button type=\"submit\">Go</button>\n</form>"
         },
         {
           "type": "text",
-          "text": "Submitting this form will send the request to:<br><code>https://example.com/search?q=flowers</code>"
+          "text": "Submitting the form navigates to:<br><code>https://example.com/search?q=flowers</code><br><br>Only successful controls—such as enabled, named inputs—are included in the form data."
         },
         {
           "type": "text",
@@ -1738,11 +1742,11 @@
             ],
             [
               "⚠️ Length limit",
-              "Most browsers cap URLs around 2048 characters."
+              "Practical URL limits vary across browsers, servers, and intermediaries, so GET is a poor fit for large payloads."
             ],
             [
               "⚠️ Limited use",
-              "Cannot handle complex or binary data like file uploads."
+              "File uploads require POST with multipart/form-data rather than a URL query string."
             ]
           ]
         },
@@ -1771,17 +1775,22 @@
             [
               "Visibility",
               "Visible in address bar",
-              "Hidden from user"
+              "Not placed in the address bar, but still inspectable"
             ],
             [
               "Use cases",
-              "Search, filters, sorting",
-              "Form submissions, file uploads"
+              "Read-only search, filters, sorting",
+              "State changes, sensitive values, file uploads"
             ],
             [
               "Cacheable",
-              "Yes",
-              "No (by default)"
+              "Commonly cacheable and bookmarkable",
+              "Not usually cached or bookmarkable"
+            ],
+            [
+              "Security boundary",
+              "Do not place sensitive values in URLs",
+              "Keeps values out of the URL but still requires HTTPS and server protections"
             ]
           ],
           "caption": "Key differences between GET and POST"
@@ -1797,28 +1806,28 @@
         },
         {
           "type": "text",
-          "text": "<ul><li><strong>GET</strong> → appends data to URL (good for searches)</li><li><strong>POST</strong> → hides data inside the request body (good for sensitive info)</li></ul>"
+          "text": "<ul><li><strong>GET</strong> appends form data to the destination URL, which fits safe, shareable navigation such as search.</li><li><strong>POST</strong> places form data in the request body, which keeps it out of the address bar but does not encrypt it or make it private by itself.</li></ul><br>The special <code>method=\"dialog\"</code> value closes a parent dialog without sending form data; it does not change GET as the missing or invalid default."
         },
         {
           "type": "text",
-          "text": "<strong>Security and Best Practices</strong><br><ul><li>🔒 Use <code>POST</code> for private or modifying actions (like registration or login).</li><li>🔎 Use <code>GET</code> for read-only actions (like search).</li><li>🧩 Always validate and sanitize GET parameters on the server.</li><li>📏 Keep URLs short and meaningful.</li></ul>"
+          "text": "<strong>Security and Best Practices</strong><br><ul><li>Use <code>GET</code> for safe, read-only navigation such as search.</li><li>Use <code>POST</code> for state-changing actions and to keep sensitive values out of URLs.</li><li>Use HTTPS for both methods; POST does not provide encryption.</li><li>Validate and authorize all submitted data on the server, and protect state-changing requests against CSRF.</li><li>Keep GET URLs short, meaningful, and free of secrets.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of it like this:<br>- <strong>GET</strong> → like writing your data on a <em>postcard</em> — everyone can see it.<br>- <strong>POST</strong> → like sealing your message in an <em>envelope</em> — private and secure."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Remember the boundary</strong><br><br>GET versus POST determines the request semantics and where the form data is encoded. HTTPS determines whether the request is encrypted in transit. Authentication, authorization, CSRF protection, and validation remain server responsibilities."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Default method: <strong>GET</strong></li><li>Data is sent via the URL as key–value pairs</li><li>Useful for search and non-sensitive data</li><li>Use <strong>POST</strong> when handling private or large data</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>A missing or invalid <code>method</code> uses <strong>GET</strong>.</li><li>A missing <code>action</code> submits to the current document URL.</li><li>GET encodes successful controls in the URL query string.</li><li>POST moves form data to the request body but is not a security layer.</li><li>Choose the method from the request semantics, then use HTTPS and server-side protections.</li></ul>"
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<form action=\"/submit\" method=\"post\">\n  <!-- Use POST for sensitive or large data -->\n  <input name=\"email\">\n  <button>Send</button>\n</form>"
+          "code": "<form action=\"/submit\" method=\"post\">\n  <!-- POST keeps the value out of the URL; HTTPS is still required. -->\n  <input name=\"email\" type=\"email\">\n  <button>Send</button>\n</form>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A login form should submit via POST, not GET, to avoid leaking credentials in the URL.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Relying on the default GET method and exposing sensitive data.</li><li>Forgetting to set <code>action</code>, leading to unexpected navigation.</li><li>Not handling browser autofill and validation states.</li></ul><strong>Trade-off or test tip</strong><br>POST is safer but requires server handling. Test by inspecting the network tab to confirm the request method."
+          "text": "<strong>Practical scenario</strong><br>A login form should use POST over HTTPS so credentials are not exposed in the URL. The server must still validate the input, authenticate the user safely, and apply appropriate CSRF and rate-limit protections.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Relying on the default GET method and exposing sensitive data in the URL.</li><li>Omitting <code>action</code> without realizing that submission targets the current page URL.</li><li>Assuming POST encrypts or automatically secures the submission.</li><li>Using GET for an action that changes server state.</li></ul><strong>Trade-off or test tip</strong><br>Submit the no-attribute example and inspect both the address bar and the Network panel. Confirm the request method, destination URL, encoded form data, and server behavior."
         }
       ]
     },
@@ -1832,7 +1841,7 @@
       "post",
       "http"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-20",
     "incidentCard": {
       "title": "Default Method Check",
       "scenario": "A teammate builds a login form without a `method` attribute and says, \"Forms naturally submit securely unless we explicitly switch them to GET.\" Another teammate says, \"That is backwards. If you do not set a method, the browser defaults to GET, which puts the form data in the URL. For sensitive actions like login, you should explicitly use POST.\" Which explanation is better?",
@@ -1852,10 +1861,6 @@
       ],
       "correctOptionId": "forms-default-to-get",
       "rereadPrompt": "Re-read the overview and comparison. The default form method is GET, which appends values to the URL. Use POST explicitly when the submission is sensitive or should not be exposed in the address bar."
-    },
-    "seo": {
-      "title": "HTML form default method: GET, URL exposure, and debugging pitfalls",
-      "description": "Learn why forms default to GET, when query-string submissions help, and why sensitive or state-changing actions need POST instead."
     }
   },
   {
