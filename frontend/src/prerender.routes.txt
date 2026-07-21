@@ -513,7 +513,6 @@
 /tracks
 /tracks/crash-7d/preview
 /tracks/foundations-30d/preview
-/tracks/javascript-prep-path/mastery
 /tradeoffs
 /tradeoffs/async-pipe-vs-manual-subscribe-angular
 /tradeoffs/composable-vs-pinia-vue-shared-product-state

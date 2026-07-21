@@ -430,7 +430,7 @@ const INTERVIEW_HUB_LINKS: HubLink[] = [
 const PREP_PLAN_LINKS: PrepPlanLink[] = [
   {
     label: 'JavaScript mastery crash track',
-    route: ['/tracks', 'javascript-prep-path', 'mastery'],
+    route: ['/guides', 'framework-prep', 'javascript-prep-path', 'mastery'],
     summary: 'Deep JavaScript path with checkpoints, output prediction, and coding drills.',
   },
   {

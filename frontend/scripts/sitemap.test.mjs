@@ -14,12 +14,26 @@ import {
 const SRC_DIR = path.resolve('src');
 const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
 const FALLBACK_PATH = path.join(SRC_DIR, 'sitemap.xml');
+const PRERENDER_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
 const MAX_URLS = 50000;
 const GUIDE_REGISTRY_PATH = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
 const APP_ROUTES_PATH = path.join(SRC_DIR, 'app', 'app.routes.ts');
 const ROBOTS_PATH = path.join(SRC_DIR, 'robots.txt');
 const VERCEL_CONFIG_PATH = path.resolve('vercel.json');
 const CODING_QUERY_KEYS = ['reset', 'kind', 'view', 'category', 'tech', 'q', 'diff', 'imp', 'topic', 'focus'];
+const MASTERY_CANONICAL_PATH = '/guides/framework-prep/javascript-prep-path/mastery';
+const MASTERY_ALIAS_PATHS = [
+  '/tracks/javascript-prep-path/mastery',
+  '/track/javascript-prep-path/mastery',
+];
+const LOCKED_NOINDEX_HEADER_SOURCES = [
+  '/tracks/:slug',
+  '/companies/:slug',
+  '/companies/:slug/all',
+  '/companies/:slug/coding',
+  '/companies/:slug/trivia',
+  '/companies/:slug/system',
+];
 
 function readXml(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -348,6 +362,55 @@ function assertPreviewAndHubCoverage(paths) {
   }
 }
 
+function assertMasteryCanonicalCoverage(paths, locs) {
+  if (!paths.has(MASTERY_CANONICAL_PATH)) {
+    throw new Error(`Sitemap missing canonical mastery route: ${MASTERY_CANONICAL_PATH}`);
+  }
+
+  const sitemapAliases = MASTERY_ALIAS_PATHS.filter((route) => paths.has(route));
+  if (sitemapAliases.length) {
+    throw new Error(`Sitemap must exclude mastery redirect aliases: ${sitemapAliases.join(', ')}`);
+  }
+
+  const canonicalMatches = locs.filter((loc) => normalizePath(loc) === MASTERY_CANONICAL_PATH);
+  if (canonicalMatches.length !== 1) {
+    throw new Error(
+      `Indexed sitemaps must contain exactly one canonical mastery URL, found ${canonicalMatches.length}.`,
+    );
+  }
+
+  const fallbackLocs = extractLocs(readXml(FALLBACK_PATH));
+  const fallbackCanonicalMatches = fallbackLocs.filter(
+    (loc) => normalizePath(loc) === MASTERY_CANONICAL_PATH,
+  );
+  const fallbackAliases = fallbackLocs
+    .map((loc) => normalizePath(loc))
+    .filter((route) => MASTERY_ALIAS_PATHS.includes(route));
+  if (fallbackCanonicalMatches.length !== 1 || fallbackAliases.length) {
+    throw new Error(
+      'sitemap.xml fallback must contain the canonical mastery URL exactly once and no mastery aliases.',
+    );
+  }
+
+  if (!fs.existsSync(PRERENDER_PATH)) {
+    throw new Error(`Missing ${PRERENDER_PATH}. Run: npm run gen:data`);
+  }
+  const prerenderRoutes = fs.readFileSync(PRERENDER_PATH, 'utf8')
+    .split(/\r?\n/)
+    .map((route) => route.trim())
+    .filter(Boolean)
+    .map((route) => normalizePath(route));
+  const prerenderCanonicalMatches = prerenderRoutes.filter(
+    (route) => route === MASTERY_CANONICAL_PATH,
+  );
+  const prerenderAliases = prerenderRoutes.filter((route) => MASTERY_ALIAS_PATHS.includes(route));
+  if (prerenderCanonicalMatches.length !== 1 || prerenderAliases.length) {
+    throw new Error(
+      'prerender.routes.txt must contain the canonical mastery route exactly once and no mastery aliases.',
+    );
+  }
+}
+
 function assertNoPrivateOrRedirectRoutes(paths) {
   const forbiddenExact = [
     '/auth/login',
@@ -528,6 +591,28 @@ function collectRouteSeoEntries(routeArray, parentPath, out) {
   });
 }
 
+function collectRouteRedirectEntries(routeArray, parentPath, out) {
+  routeArray.elements.forEach((element) => {
+    if (!ts.isObjectLiteralExpression(element)) return;
+
+    const pathSegment = readStringProperty(element, 'path');
+    const currentPath = joinRoutePath(parentPath, pathSegment);
+    const redirectTo = readStringProperty(element, 'redirectTo');
+    if (redirectTo) {
+      out.push({
+        path: currentPath,
+        pathMatch: readStringProperty(element, 'pathMatch'),
+        redirectTo,
+      });
+    }
+
+    const children = readArrayProperty(element, 'children');
+    if (children) {
+      collectRouteRedirectEntries(children, currentPath, out);
+    }
+  });
+}
+
 function readRoutesArrayExpression(sourceFile) {
   let routesArray = null;
   sourceFile.forEachChild((node) => {
@@ -615,6 +700,44 @@ function assertIndexableRouteTitlesUnique() {
   }
 }
 
+function assertAngularMasteryRedirects() {
+  const source = fs.readFileSync(APP_ROUTES_PATH, 'utf8');
+  const sourceFile = ts.createSourceFile(
+    APP_ROUTES_PATH,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+  const routesArray = readRoutesArrayExpression(sourceFile);
+  if (!routesArray) {
+    throw new Error('Could not parse routes array in src/app/app.routes.ts');
+  }
+
+  const redirects = [];
+  collectRouteRedirectEntries(routesArray, '/', redirects);
+  const expected = new Map([
+    ['/track/:slug/mastery', 'guides/framework-prep/:slug/mastery'],
+    ['/tracks/:slug/mastery', '/guides/framework-prep/:slug/mastery'],
+  ]);
+
+  expected.forEach((redirectTo, routePath) => {
+    const matches = redirects.filter((entry) => entry.path === routePath);
+    if (
+      matches.length !== 1
+      || matches[0].redirectTo !== redirectTo
+      || matches[0].pathMatch !== 'full'
+    ) {
+      throw new Error(`${routePath} must use a full-match Angular redirect to ${redirectTo}.`);
+    }
+  });
+
+  const singularTrackRedirect = redirects.find((entry) => entry.path === '/track/:slug');
+  if (!singularTrackRedirect || singularTrackRedirect.pathMatch !== 'full') {
+    throw new Error('/track/:slug must use pathMatch: full so it cannot swallow the mastery alias.');
+  }
+}
+
 function assertRobotsAllowsCodingQueryNoindex() {
   if (!fs.existsSync(ROBOTS_PATH)) {
     throw new Error(`Missing ${ROBOTS_PATH}.`);
@@ -627,8 +750,17 @@ function assertRobotsAllowsCodingQueryNoindex() {
   if (/^\s*Disallow:\s*\/coding\?/im.test(robots)) {
     throw new Error('robots.txt must not disallow /coding?; query variants need to be crawlable for noindex.');
   }
+  if (!/^\s*Disallow:\s*\/tracks\/\s*$/im.test(robots)) {
+    throw new Error('Deploy A must keep /tracks/ blocked until production X-Robots-Tag verification.');
+  }
+  if (!/^\s*Allow:\s*\/tracks\/\*\/preview\$\s*$/im.test(robots)) {
+    throw new Error('robots.txt must explicitly allow /tracks/*/preview$ routes during Deploy A.');
+  }
+  if (!/^\s*Disallow:\s*\/companies\/\s*$/im.test(robots)) {
+    throw new Error('Deploy A must keep /companies/ blocked until production X-Robots-Tag verification.');
+  }
   if (!/^\s*Allow:\s*\/companies\/\*\/preview\$\s*$/im.test(robots)) {
-    throw new Error('robots.txt must explicitly allow /companies/*/preview$ routes.');
+    throw new Error('robots.txt must explicitly allow /companies/*/preview$ routes during Deploy A.');
   }
 }
 
@@ -662,6 +794,56 @@ function assertVercelCodingQueryNoindexHeaders() {
   if (missing.length) {
     throw new Error(`vercel.json missing X-Robots-Tag noindex headers for /coding query keys: ${missing.join(', ')}`);
   }
+}
+
+function normalizedRobotsHeaderValue(value) {
+  return String(value || '').toLowerCase().replace(/\s+/g, '');
+}
+
+function assertVercelLockedRouteNoindexHeaders() {
+  const config = readVercelConfig();
+  const matchingSources = [];
+
+  (Array.isArray(config.headers) ? config.headers : []).forEach((rule) => {
+    const source = String(rule?.source || '');
+    if (!source.startsWith('/tracks') && !source.startsWith('/companies')) return;
+
+    const robotsHeaders = (Array.isArray(rule.headers) ? rule.headers : [])
+      .filter((header) => String(header?.key || '').toLowerCase() === 'x-robots-tag');
+    if (!robotsHeaders.length) return;
+    if (
+      robotsHeaders.length !== 1
+      || normalizedRobotsHeaderValue(robotsHeaders[0]?.value) !== 'noindex,follow'
+    ) {
+      throw new Error(`${source} must use exactly X-Robots-Tag: noindex, follow.`);
+    }
+    matchingSources.push(source);
+  });
+
+  const expected = [...LOCKED_NOINDEX_HEADER_SOURCES].sort();
+  const actual = [...matchingSources].sort();
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    throw new Error(
+      `Locked-route X-Robots-Tag coverage mismatch. Expected ${expected.join(', ')}; got ${actual.join(', ') || '(none)'}.`,
+    );
+  }
+}
+
+function assertVercelMasteryRedirects() {
+  const config = readVercelConfig();
+  const redirects = Array.isArray(config.redirects) ? config.redirects : [];
+  const expectedSources = ['/tracks/:slug/mastery', '/track/:slug/mastery'];
+  const destination = '/guides/framework-prep/:slug/mastery';
+
+  expectedSources.forEach((source) => {
+    const matches = redirects.filter((redirect) => redirect?.source === source);
+    if (matches.length !== 1) {
+      throw new Error(`vercel.json must contain exactly one mastery redirect for ${source}.`);
+    }
+    if (matches[0]?.destination !== destination || matches[0]?.permanent !== true) {
+      throw new Error(`${source} must permanently redirect to ${destination}.`);
+    }
+  });
 }
 
 function readVercelConfig() {
@@ -776,13 +958,17 @@ assertGuideDetailCoverage(paths);
 assertCoreIndexableCoverage(paths);
 assertRegistryDetailAccessPolicy(paths);
 assertPreviewAndHubCoverage(paths);
+assertMasteryCanonicalCoverage(paths, locs);
 assertNoPrivateOrRedirectRoutes(paths);
 assertCssThemeVariablesSitemapEntry(entries);
 assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertGoogleCompanyPreviewSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
+assertAngularMasteryRedirects();
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();
+assertVercelLockedRouteNoindexHeaders();
+assertVercelMasteryRedirects();
 assertVercelCspAllowsCodingSandboxRunner();
 assertVercelCspAllowsGoogleAnalyticsCollection();
 

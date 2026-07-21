@@ -219,7 +219,7 @@ export class TrackListComponent implements OnInit {
       kicker: '0 to 100 mastery',
       title: JAVASCRIPT_MASTERY_PATH.title,
       subtitle: JAVASCRIPT_MASTERY_PATH.subtitle,
-      route: ['/tracks', JAVASCRIPT_MASTERY_PATH.frameworkSlug, 'mastery'],
+      route: ['/guides', 'framework-prep', JAVASCRIPT_MASTERY_PATH.frameworkSlug, 'mastery'],
       ctaLabel: 'Open mastery board',
       toneClass: 'hero-plan--mastery',
       metrics: [
@@ -561,7 +561,7 @@ export class TrackListComponent implements OnInit {
         '@type': 'ListItem',
         position: this.tracks.length + index + 1,
         name: track.title,
-        url: this.seo.buildCanonicalUrl(`/tracks/${track.slug}/mastery`),
+        url: this.seo.buildCanonicalUrl(`/guides/framework-prep/${track.slug}/mastery`),
       })),
     ];
 

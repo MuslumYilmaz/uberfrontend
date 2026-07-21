@@ -254,7 +254,6 @@ function buildUrls() {
 
   readActiveMasterySlugs().forEach((slug) => {
     addUrl(urls, `/guides/framework-prep/${slug}/mastery`);
-    addUrl(urls, `/tracks/${slug}/mastery`);
   });
 
   readPublicTrackSlugs().forEach((slug) => {

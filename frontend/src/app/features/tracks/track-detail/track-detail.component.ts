@@ -307,7 +307,8 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
       title: `${track.title} track`,
       description: track.subtitle,
       keywords: [track.title, 'front end interview track', 'coding practice', 'system design'],
-      canonical: undefined,
+      robots: 'noindex,follow',
+      canonical: `/tracks/${track.slug}`,
     });
   }
 
