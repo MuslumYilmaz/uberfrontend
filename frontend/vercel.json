@@ -19,6 +19,30 @@
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
     },
     {
+      "source": "/tracks/:slug",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/companies/:slug",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/companies/:slug/all",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/companies/:slug/coding",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/companies/:slug/trivia",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/companies/:slug/system",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
       "source": "/coding",
       "has": [{ "type": "query", "key": "kind" }],
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
@@ -65,6 +89,16 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/tracks/:slug/mastery",
+      "destination": "/guides/framework-prep/:slug/mastery",
+      "permanent": true
+    },
+    {
+      "source": "/track/:slug/mastery",
+      "destination": "/guides/framework-prep/:slug/mastery",
+      "permanent": true
+    },
     {
       "source": "/guides/interview-blueprint/javascript-prep-path",
       "destination": "/guides/framework-prep/javascript-prep-path",

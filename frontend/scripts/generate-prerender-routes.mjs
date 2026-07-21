@@ -269,7 +269,6 @@ function buildRoutes() {
 
   readActiveMasterySlugs().forEach((slug) => {
     addRoute(routes, `/guides/framework-prep/${slug}/mastery`);
-    addRoute(routes, `/tracks/${slug}/mastery`);
   });
 
   return Array.from(routes).sort((a, b) => a.localeCompare(b));

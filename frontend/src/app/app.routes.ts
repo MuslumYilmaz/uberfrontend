@@ -332,7 +332,7 @@ export const routes: Routes = [
           seo: {
             title: 'Company front-end interview questions',
             description: 'A FrontendAtlas editorial grouping for focused coding, concept, and system design practice.',
-            robots: 'noindex,nofollow',
+            robots: 'noindex,follow',
           },
         },
         children: [
@@ -349,7 +349,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company interview questions',
                 description: 'Browse all prompts in this FrontendAtlas editorial practice grouping.',
-                robots: 'noindex,nofollow',
+                robots: 'noindex,follow',
               },
             },
           },
@@ -365,7 +365,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company coding interview questions',
                 description: 'Solve coding and debugging prompts in this FrontendAtlas editorial practice grouping.',
-                robots: 'noindex,nofollow',
+                robots: 'noindex,follow',
               },
             },
           },
@@ -381,7 +381,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company concept questions',
                 description: 'Practice frontend concepts in this FrontendAtlas editorial grouping.',
-                robots: 'noindex,nofollow',
+                robots: 'noindex,follow',
               },
             },
           },
@@ -397,7 +397,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company system design prompts',
                 description: 'Practice frontend system design in this FrontendAtlas editorial grouping.',
-                robots: 'noindex,nofollow',
+                robots: 'noindex,follow',
               },
             },
           },
@@ -467,12 +467,13 @@ export const routes: Routes = [
   },
   {
     path: 'track/:slug',
+    pathMatch: 'full',
     redirectTo: 'tracks/:slug/preview',
   },
   {
     path: 'track/:slug/mastery',
     pathMatch: 'full',
-    redirectTo: 'tracks/:slug/mastery',
+    redirectTo: 'guides/framework-prep/:slug/mastery',
   },
   {
     path: 'tracks',
@@ -510,21 +511,8 @@ export const routes: Routes = [
       },
       {
         path: ':slug/mastery',
-        loadComponent: () =>
-          import('./features/guides/mastery-path/mastery-path-page.component').then(
-            (m) => m.MasteryPathPageComponent,
-          ),
-        resolve: {
-          masteryPath: masteryPathResolver,
-        },
-        data: {
-          seo: {
-            title: 'Framework mastery crash track',
-            description:
-              'Follow a guided 0 to 100 mastery track with concept questions, output prediction, coding drills, and checkpoint gates.',
-            robots: 'index,follow',
-          },
-        },
+        pathMatch: 'full',
+        redirectTo: '/guides/framework-prep/:slug/mastery',
       },
       {
         path: ':slug',
@@ -538,7 +526,7 @@ export const routes: Routes = [
           seo: {
             title: 'Interview prep track',
             description: 'Curated front-end interview questions aligned to a specific goal.',
-            robots: 'noindex,nofollow',
+            robots: 'noindex,follow',
           },
         },
       },

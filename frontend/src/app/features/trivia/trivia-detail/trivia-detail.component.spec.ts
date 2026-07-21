@@ -2403,7 +2403,7 @@ describe('TriviaDetailComponent', () => {
     const frameHub = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-hub"]') as HTMLAnchorElement | null;
 
     expect(framePrimary?.getAttribute('href') || '').toContain('/javascript/interview-questions');
-    expect(framePlan?.getAttribute('href') || '').toContain('/tracks/javascript-prep-path/mastery');
+    expect(framePlan?.getAttribute('href') || '').toContain('/guides/framework-prep/javascript-prep-path/mastery');
     expect(frameHub?.getAttribute('href') || '').toContain('/interview-questions/essential');
   });
 
@@ -2692,7 +2692,7 @@ describe('TriviaDetailComponent', () => {
       String(entry?.name || '').toLowerCase().includes('frontend interview preparation')
     )).toBeTrue();
     expect((article.mentions || []).some((entry: any) =>
-      String(entry?.url || '').includes('/tracks')
+      String(entry?.url || '').includes('/guides/framework-prep/javascript-prep-path/mastery')
     )).toBeTrue();
     expect((article.mentions || []).some((entry: any) =>
       String(entry?.url || '').includes('/companies')

@@ -161,7 +161,7 @@
         <a
           faCard class="card card--mastery"
           *ngFor="let mastery of masteryCards; let i = index"
-          [routerLink]="['/tracks', mastery.slug, 'mastery']"
+          [routerLink]="['/guides', 'framework-prep', mastery.slug, 'mastery']"
           [attr.data-slot]="'mastery-' + i">
           <div class="card-top">
             <span class="pill">{{ mastery.durationLabel }}</span>

@@ -2039,7 +2039,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   studyPlanRoute(): any[] {
     const tech = (this.tech || '').toLowerCase();
-    if (tech === 'javascript') return ['/tracks', 'javascript-prep-path', 'mastery'];
+    if (tech === 'javascript') return ['/guides', 'framework-prep', 'javascript-prep-path', 'mastery'];
     if (tech === 'html' || tech === 'css') return ['/tracks', 'crash-7d', 'preview'];
     return ['/tracks', 'foundations-30d', 'preview'];
   }
@@ -2168,7 +2168,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private studyPlanPath(): string {
     const tech = (this.tech || '').toLowerCase();
-    if (tech === 'javascript') return '/tracks/javascript-prep-path/mastery';
+    if (tech === 'javascript') return '/guides/framework-prep/javascript-prep-path/mastery';
     if (tech === 'html' || tech === 'css') return '/tracks/crash-7d/preview';
     return '/tracks/foundations-30d/preview';
   }

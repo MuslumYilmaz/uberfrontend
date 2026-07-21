@@ -863,7 +863,7 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
           'You want checkpoint-gated modules instead of a date-based plan.',
           'You care more about 0-to-100 mastery than broad frontend coverage.',
         ],
-        route: ['/tracks', 'javascript-prep-path', 'mastery'],
+        route: ['/guides', 'framework-prep', 'javascript-prep-path', 'mastery'],
         ctaLabel: 'Open JS mastery',
       },
     ],

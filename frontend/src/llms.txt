@@ -71,7 +71,7 @@
 - [Frontend interview study plans and tracks](https://frontendatlas.com/tracks): Curated prep tracks and mastery paths.
 - [Crash Track preview](https://frontendatlas.com/tracks/crash-7d/preview): Seven-day frontend interview prep preview.
 - [Foundations Track preview](https://frontendatlas.com/tracks/foundations-30d/preview): Thirty-day foundations prep preview.
-- [JavaScript mastery crash track](https://frontendatlas.com/tracks/javascript-prep-path/mastery): Guided JavaScript mastery path with checkpoints.
+- [JavaScript mastery crash track](https://frontendatlas.com/guides/framework-prep/javascript-prep-path/mastery): Guided JavaScript mastery path with checkpoints.
 - [Company frontend interview questions](https://frontendatlas.com/companies): Company-specific frontend interview prep.
 - [Airbnb interview preview](https://frontendatlas.com/companies/airbnb/preview): Airbnb frontend interview practice preview.
 - [Amazon interview preview](https://frontendatlas.com/companies/amazon/preview): Amazon frontend interview practice preview.
