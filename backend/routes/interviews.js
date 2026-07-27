@@ -7,6 +7,7 @@ const { requireAuth } = require('../middleware/Auth');
 const { requireAdmin } = require('../middleware/RequireAdmin');
 const { rateLimit } = require('../middleware/rateLimit');
 const { interviewConfig, interviewModeAccess } = require('../services/interview/config');
+const { isPhoneUserAgent } = require('../services/interview/user-agent');
 const {
   abandonSession,
   createSession,
@@ -96,7 +97,7 @@ function assertDesktopPreflight(req) {
   const viewportWidth = Number(req.body?.viewportWidth);
   const mobileHint = String(req.get('Sec-CH-UA-Mobile') || '').trim() === '?1';
   const userAgent = String(req.get('User-Agent') || '');
-  const phoneUserAgent = /iPhone|iPod|Windows Phone|Android.+Mobile/i.test(userAgent);
+  const phoneUserAgent = isPhoneUserAgent(userAgent);
   if (
     !Number.isInteger(viewportWidth)
     || viewportWidth < 768
