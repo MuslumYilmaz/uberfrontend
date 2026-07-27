@@ -256,18 +256,150 @@
           },
           {
             "type": "setValue",
-            "selector": ".name",
+            "selector": "#name",
             "value": "Jane Doe"
           },
           {
             "type": "setValue",
-            "selector": ".email",
+            "selector": "#email",
             "value": "jane@example.com"
           },
           {
             "type": "setValue",
-            "selector": ".message",
+            "selector": "#message",
             "value": "Hello from tests"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "contact-form-submit-success",
+        "name": "Contact form handles loading and success",
+        "steps": [
+          {
+            "type": "mockHttp",
+            "status": 201,
+            "durationMs": 300
+          },
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Hello from tests"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": false
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": true
+          },
+          {
+            "type": "expectText",
+            "selector": ".primary",
+            "text": "Sending",
+            "match": "contains"
+          },
+          {
+            "type": "expectHttpRequest",
+            "method": "POST",
+            "url": "https://jsonplaceholder.typicode.com/posts",
+            "bodyContains": "\"email\":\"jane@example.com\"",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".success",
+            "text": "Your message has been sent. Thank you!",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectValue",
+            "selector": "#name",
+            "value": ""
+          },
+          {
+            "type": "expectValue",
+            "selector": "#email",
+            "value": ""
+          },
+          {
+            "type": "expectValue",
+            "selector": "#message",
+            "value": ""
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "contact-form-submit-error",
+        "name": "Contact form handles request errors",
+        "steps": [
+          {
+            "type": "mockHttp",
+            "error": "Network failed",
+            "durationMs": 50
+          },
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Hello from tests"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": false
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "expectHttpRequest",
+            "method": "POST",
+            "url": "https://jsonplaceholder.typicode.com/posts",
+            "bodyContains": "\"email\":\"jane@example.com\"",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".error",
+            "text": "Something went wrong. Please try again.",
+            "timeoutMs": 1000
           },
           {
             "type": "expectDisabled",
@@ -692,7 +824,7 @@
           },
           {
             "type": "setValue",
-            "selector": ".search",
+            "selector": "#search",
             "value": "Alice"
           },
           {
@@ -1022,7 +1154,7 @@
           {
             "type": "expectText",
             "selector": ".label",
-            "text": "Dark",
+            "text": "Light",
             "match": "contains"
           },
           {
@@ -1032,7 +1164,7 @@
           {
             "type": "waitForText",
             "selector": ".label",
-            "text": "Light",
+            "text": "Dark",
             "match": "contains"
           }
         ]
@@ -1136,7 +1268,7 @@
           {
             "type": "expectText",
             "selector": ".step-title",
-            "text": "Account",
+            "text": "Basic info",
             "match": "contains"
           },
           {
@@ -1153,7 +1285,8 @@
           },
           {
             "type": "click",
-            "selector": ".primary"
+            "selector": ".actions button",
+            "index": 1
           },
           {
             "type": "waitForText",
@@ -1177,16 +1310,17 @@
             "type": "setValue",
             "selector": ".field input",
             "index": 2,
-            "value": "34000"
+            "value": "Türkiye"
           },
           {
             "type": "click",
-            "selector": ".primary"
+            "selector": ".actions button",
+            "index": 1
           },
           {
             "type": "waitForText",
             "selector": ".step-title",
-            "text": "Review",
+            "text": "Summary",
             "match": "contains"
           }
         ]
@@ -2344,7 +2478,7 @@
           {
             "type": "setValue",
             "selector": ".input",
-            "value": "lon"
+            "value": "lond"
           },
           {
             "type": "waitForText",
@@ -2354,8 +2488,8 @@
             "timeoutMs": 1000
           },
           {
-            "type": "pointerDown",
-            "selector": ".option"
+          "type": "pointerDown",
+          "selector": ".option"
           },
           {
             "type": "expectValue",
@@ -2571,11 +2705,11 @@
           {
             "type": "expectCount",
             "selector": ".layout .listCard:nth-child(1) .row",
-            "count": 4
+            "count": 5
           },
           {
             "type": "click",
-            "selector": ".layout .listCard:nth-child(1) .row"
+          "selector": ".layout .listCard:nth-child(1) .row input"
           },
           {
             "type": "click",
@@ -2584,8 +2718,8 @@
           },
           {
             "type": "waitForCount",
-            "selector": ".layout .listCard:nth-child(2) .row",
-            "count": 1
+          "selector": ".layout .listCard:last-child .row",
+          "count": 4
           }
         ]
       }
@@ -3037,7 +3171,7 @@
           },
           {
             "type": "click",
-            "selector": ".increase"
+            "selector": "[aria-label=\"increase\"]"
           },
           {
             "type": "waitForText",
@@ -3047,7 +3181,7 @@
           },
           {
             "type": "click",
-            "selector": ".decrease"
+            "selector": "[aria-label=\"decrease\"]"
           },
           {
             "type": "waitForText",
@@ -3513,8 +3647,8 @@
         "steps": [
           {
             "type": "setValue",
-            "selector": ".chip-input",
-            "value": "Ada"
+          "selector": ".chip-input input",
+            "value": "Alice"
           },
           {
             "type": "waitForCount",
@@ -3523,8 +3657,8 @@
             "timeoutMs": 800
           },
           {
-            "type": "click",
-            "selector": ".suggestion"
+          "type": "mouseDown",
+          "selector": ".suggestion"
           },
           {
             "type": "waitForCount",

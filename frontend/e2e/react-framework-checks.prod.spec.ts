@@ -938,12 +938,12 @@ test.describe('Framework checks against the production SSR build', () => {
     }
   });
 
-  test('Autocomplete reports six starter assertions and passes all six with its canonical solution', async ({ page }) => {
+  test('Autocomplete runs all thirteen assertions and passes them with its canonical solution', async ({ page }) => {
     await page.goto('/react/coding/react-autocomplete-search-starter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
     await waitForFrameworkPreview(page, '.input');
 
-    const starterResults = await runChecks(page, 6);
+    const starterResults = await runChecks(page, 13);
     await expect(checkResults(page)).toHaveText([
       'Empty query closes popup',
       'Debounce waits for final query',
@@ -951,8 +951,15 @@ test.describe('Framework checks against the production SSR build', () => {
       'New query cannot select stale options while pending',
       'Loading opens and closes correctly',
       'Error and no-results states are distinct',
+      'Arrow navigation wraps and keeps input focus',
+      'Enter selects active option',
+      'Escape closes without changing query',
+      'Outside pointer closes popup',
+      'Pointer selection survives blur race',
+      'ARIA combobox relationships are wired',
+      'Unmount cleans pending timer and document listener',
     ]);
-    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText(/[0-5]\/6 passed/);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText(/(?:[0-9]|1[0-2])\/13 passed/);
     await expect(starterResults.locator('[data-failure-kind="assertion"]')).not.toHaveCount(0);
     await expectAssertionLayer(starterResults);
 
@@ -963,8 +970,8 @@ test.describe('Framework checks against the production SSR build', () => {
     await input.fill('par');
     await expect(livePreview(page).locator('.option')).toContainText('Paris', { timeout: 3_000 });
 
-    const passingResults = await runChecks(page, 6);
-    await expect(passingResults.locator('.framework-check-results__summary')).toHaveText('6/6 passed');
+    const passingResults = await runChecks(page, 13);
+    await expect(passingResults.locator('.framework-check-results__summary')).toHaveText('13/13 passed');
     await expect(passingResults.locator('.framework-check-result__error')).toHaveCount(0);
     await expect(
       passingResults.locator('[data-testid="framework-check-result"][data-failure-kind]'),

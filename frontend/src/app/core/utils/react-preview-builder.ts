@@ -234,12 +234,12 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         };
 
         document.addEventListener = function(type, listener, options){
-          if (listener) documentListeners.add(type + ':' + String(listener));
+          if (listener && type !== 'selectionchange') documentListeners.add(type + ':' + String(listener));
           return originalAddEventListener(type, listener, options);
         };
 
         document.removeEventListener = function(type, listener, options){
-          if (listener) documentListeners.delete(type + ':' + String(listener));
+          if (listener && type !== 'selectionchange') documentListeners.delete(type + ':' + String(listener));
           return originalRemoveEventListener(type, listener, options);
         };
 
