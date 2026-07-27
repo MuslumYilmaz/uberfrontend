@@ -1,5 +1,10 @@
 {
   "version": 2,
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "content/interview/**"
+    }
+  },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.js" }
   ]

@@ -104,17 +104,31 @@ app.use(
         credentials: true,
     })
 );
-app.use(express.json({
-    verify: (req, _res, buf) => {
-        if (!req.rawBody && buf?.length) req.rawBody = buf;
-    },
-}));
-app.use(express.urlencoded({
+const captureRawBody = (req, _res, buf) => {
+    if (!req.rawBody && buf?.length) req.rawBody = buf;
+};
+const defaultJsonParser = express.json({
+    verify: captureRawBody,
+});
+const defaultUrlencodedParser = express.urlencoded({
     extended: false,
-    verify: (req, _res, buf) => {
-        if (!req.rawBody && buf?.length) req.rawBody = buf;
-    },
-}));
+    verify: captureRawBody,
+});
+const isInterviewApiRequest = (req) => (
+    req.path === '/api/interviews' || req.path.startsWith('/api/interviews/')
+);
+
+// Interview drafts have a separately bounded, authenticated JSON parser in
+// their router. Skipping the default 100 KiB parsers here keeps the advertised
+// draft limit usable without widening the request limit for every endpoint.
+app.use((req, res, next) => {
+    if (isInterviewApiRequest(req)) return next();
+    return defaultJsonParser(req, res, next);
+});
+app.use((req, res, next) => {
+    if (isInterviewApiRequest(req)) return next();
+    return defaultUrlencodedParser(req, res, next);
+});
 app.use(cookieParser());
 
 const apiRateLimitHandler = (_req, res) => res.status(429).json({
@@ -444,6 +458,8 @@ app.use('/api/trivia', require('./routes/trivia-incident'));
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));
 app.use('/api/practice-progress', require('./routes/practice-progress'));
+// ---- Interview Mode (availability stays readable while mutations remain feature-gated) ----
+app.use('/api/interviews', require('./routes/interviews'));
 // ---- Admin routes (protected) ----
 app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 
