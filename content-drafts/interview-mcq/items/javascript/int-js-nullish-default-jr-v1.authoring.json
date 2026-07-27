@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-nullish-default-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "nullish-default-handling",
+    "prompt": "An API may return `0`, `\"\"`, `false`, `null`, or `undefined` for `settings.pageSize`. Preserve every explicit falsy value and use `20` only when the value is `null` or `undefined`. Which assignment meets that contract?",
+    "options": [
+      {
+        "id": "choice-34d6545231",
+        "label": "Use `const pageSize = settings.pageSize ?? 20;` so only nullish values select the default."
+      },
+      {
+        "id": "choice-33f9bf8ac4",
+        "label": "Use `const pageSize = settings.pageSize || 20;` so every falsy value selects the default."
+      },
+      {
+        "id": "choice-14cd09d3d9",
+        "label": "Use `const pageSize = settings.pageSize === null ? 20 : settings.pageSize;` to default only `null`."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-34d6545231",
+    "answerProof": {
+      "summary": "Nullish coalescing selects its right operand only for `null` or `undefined`, so valid falsy values survive unchanged.",
+      "decisiveConstraints": [
+        "The fallback applies only to null and undefined.",
+        "Zero, an empty string, and false are valid values."
+      ],
+      "claims": [
+        {
+          "statement": "The `??` operator returns its right operand only when its left operand is null or undefined.",
+          "sourceIds": [
+            "mdn-nullish-coalescing"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-34d6545231",
+        "verdict": "correct",
+        "explanation": "This exactly distinguishes missing nullish values from explicit falsy values.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-33f9bf8ac4",
+        "verdict": "incorrect",
+        "explanation": "Logical OR replaces every falsy value, including `0`, an empty string, and `false`.",
+        "misconceptionTag": "all-falsy-values-mean-missing",
+        "plausibility": "Logical OR is a familiar and concise default-value idiom.",
+        "falsifyingConstraint": "The contract explicitly preserves falsy values that are not nullish."
+      },
+      {
+        "optionId": "choice-14cd09d3d9",
+        "verdict": "incorrect",
+        "explanation": "The strict comparison handles `null` but leaves `undefined` unchanged instead of selecting the default.",
+        "misconceptionTag": "null-check-omits-undefined",
+        "plausibility": "An explicit null comparison looks more precise than a broad truthiness test.",
+        "falsifyingConstraint": "The contract requires the default for both nullish values, including `undefined`."
+      }
+    ],
+    "remediationTopics": [
+      "nullish-coalescing",
+      "truthy-and-falsy-values",
+      "default-value-contracts"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Nullish coalescing operator",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing",
+        "sourceId": "mdn-nullish-coalescing"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-null-coalescing-operator"
+      ],
+      "sources": [
+        {
+          "id": "mdn-nullish-coalescing",
+          "title": "MDN: Nullish coalescing operator",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-keepalive-active-socket-sr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "keepalive-shared-resource-ownership",
+    "prompt": "Two independently mounted Vue 3.5 `<KeepAlive>` regions can display panes for the same channel at once. The backend permits one WebSocket per channel; every active pane needs messages, deactivated panes must detach, and the socket must close only after the last active subscriber releases it, including cache eviction. Which ownership policy satisfies the full contract?",
+    "options": [
+      {
+        "id": "choice-e594abd3fb",
+        "label": "Let each pane open its channel socket in `onActivated`, close it in `onDeactivated`, and keep the handle local to that pane."
+      },
+      {
+        "id": "choice-1391049086",
+        "label": "Share a channel socket from a registry, but close and delete it whenever any pane's `onDeactivated` hook releases its listener."
+      },
+      {
+        "id": "choice-02b3edbdb0",
+        "label": "Use a channel-keyed registry: acquire and attach in `onActivated`, release in `onDeactivated`, and close/delete at zero subscribers."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-02b3edbdb0",
+    "answerProof": {
+      "summary": "Activation hooks own each pane's subscription, while a channel-keyed registry reference-counts active panes so multiple instances share one socket and the final release closes it.",
+      "decisiveConstraints": [
+        "Separate kept-alive regions may have active panes for the same channel concurrently.",
+        "The backend permits exactly one live WebSocket for that channel.",
+        "Every active pane needs its own listener while inactive or evicted panes must release theirs.",
+        "The shared socket must remain until the last active subscriber releases it, then close."
+      ],
+      "claims": [
+        {
+          "statement": "Vue deactivates a kept-alive component when it leaves the DOM for the cache and activates it when the cached instance is inserted again.",
+          "sourceIds": [
+            "vue35-keepalive-lifecycle"
+          ]
+        },
+        {
+          "statement": "Vue calls `onActivated` on initial mount and cache re-entry, and calls `onDeactivated` on cache removal and unmount.",
+          "sourceIds": [
+            "vue35-keepalive-lifecycle"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-e594abd3fb",
+        "verdict": "incorrect",
+        "explanation": "Activation cleanup is correct per pane, but two active panes for one channel create two sockets and violate the backend limit.",
+        "misconceptionTag": "instance-local-resource-fits-shared-limit",
+        "plausibility": "Each pane's activation and deactivation hooks cleanly match that component instance's visible lifetime.",
+        "falsifyingConstraint": "Concurrent active panes for one channel must share exactly one WebSocket."
+      },
+      {
+        "optionId": "choice-1391049086",
+        "verdict": "incorrect",
+        "explanation": "The first pane to deactivate closes the shared transport even when another active pane still owns a listener and needs messages.",
+        "misconceptionTag": "any-release-ends-shared-resource",
+        "plausibility": "Deleting the registry entry on release appears to prevent cached panes from leaking channel resources.",
+        "falsifyingConstraint": "The socket must remain live until the channel's last active subscriber releases it."
+      },
+      {
+        "optionId": "choice-02b3edbdb0",
+        "verdict": "correct",
+        "explanation": "Per-pane acquire and release follow activation, while the registry shares one socket and closes it exactly when the channel's subscriber count reaches zero.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Vue KeepAlive activation lifecycle",
+      "reference-counted resource ownership",
+      "channel-keyed WebSocket registries",
+      "cross-instance cleanup"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: KeepAlive - Lifecycle of Cached Instance",
+        "url": "https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance",
+        "sourceId": "vue35-keepalive-lifecycle"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-keepalive-lifecycle",
+          "title": "Vue: KeepAlive - Lifecycle of Cached Instance",
+          "url": "https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

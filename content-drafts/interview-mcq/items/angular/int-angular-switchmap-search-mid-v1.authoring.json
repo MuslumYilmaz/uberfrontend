@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-switchmap-search-mid-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "rxjs-latest-request-ownership",
+    "prompt": "An Angular autocomplete maps `query.valueChanges` to `HttpClient.get`. With `mergeMap`, an older request can finish last and replace newer suggestions. The API supports cancellation through unsubscription. Which operator change best enforces latest-query ownership?",
+    "code": {
+      "language": "typescript",
+      "runtime": "angular-17-to-22",
+      "source": "results$ = this.query.valueChanges.pipe(\n  debounceTime(200),\n  distinctUntilChanged(),\n  mergeMap(query => this.http.get<Result[]>('/search', { params: { query } }))\n);"
+    },
+    "options": [
+      {
+        "id": "choice-ae44f2ecf9",
+        "label": "Use `concatMap` to queue each request and emit every response in query order."
+      },
+      {
+        "id": "choice-5a0d863a93",
+        "label": "Use `switchMap` to replace the active request and emit only the latest query's response."
+      },
+      {
+        "id": "choice-143e30ad89",
+        "label": "Use `exhaustMap` to keep the active request and ignore newer queries until it completes."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-5a0d863a93",
+    "answerProof": {
+      "summary": "`switchMap` unsubscribes the previous inner HttpClient observable when a new query arrives, cancelling stale work and transferring ownership to the latest query.",
+      "decisiveConstraints": [
+        "Only the latest query may own the displayed suggestions.",
+        "Unsubscribing can abort the in-progress HttpClient request."
+      ],
+      "claims": [
+        {
+          "statement": "Unsubscribing from an Angular HttpClient observable aborts its request, and `switchMap` cleanup cancels stale requests.",
+          "sourceIds": [
+            "angular22-http-requests"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ae44f2ecf9",
+        "verdict": "incorrect",
+        "explanation": "`concatMap` preserves and processes every query sequentially, so obsolete queued queries can still update the suggestions.",
+        "misconceptionTag": "ordered-responses-equal-latest-only",
+        "plausibility": "Serializing requests does prevent out-of-order completion.",
+        "falsifyingConstraint": "The requirement is latest-query ownership, not delivery of every queued query."
+      },
+      {
+        "optionId": "choice-5a0d863a93",
+        "verdict": "correct",
+        "explanation": "`switchMap` transfers ownership to the newest inner observable and unsubscribes the old HttpClient stream, preventing stale results from committing.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-143e30ad89",
+        "verdict": "incorrect",
+        "explanation": "`exhaustMap` preserves the active request by discarding newer queries until it completes, giving ownership to the first rather than latest query.",
+        "misconceptionTag": "ignore-new-work-means-latest-only",
+        "plausibility": "`exhaustMap` does prevent overlapping inner requests and duplicate concurrent work.",
+        "falsifyingConstraint": "A newer query must supersede the active request instead of being ignored."
+      }
+    ],
+    "remediationTopics": [
+      "RxJS higher-order mapping",
+      "HttpClient cancellation",
+      "latest-request ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Making HTTP requests",
+        "url": "https://angular.dev/guide/http/making-requests",
+        "sourceId": "angular22-http-requests"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "angular-debounced-search"
+      ],
+      "sources": [
+        {
+          "id": "angular22-http-requests",
+          "title": "Angular: Making HTTP requests",
+          "url": "https://angular.dev/guide/http/making-requests",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

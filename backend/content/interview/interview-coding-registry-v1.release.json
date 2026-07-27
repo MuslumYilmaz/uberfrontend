@@ -1,0 +1,168 @@
+{
+  "artifacts": {
+    "private": {
+      "file": "interview-coding-registry-v1.private.json",
+      "sha256": "6a661884a4b1f16af165467002e7455cbe1700461625e635e203b03c5c98d116"
+    },
+    "public": {
+      "file": "interview-coding-registry-v1.public.json",
+      "sha256": "7028d2c9d6469bf4ab6b9a84d06fe48d87d34e7d7fd6e614d62fab72d054c250"
+    }
+  },
+  "contentHash": "f99909dbb7ddc1362c27af9de4048ee1927130dbbfd2d8f99945f0aa78c1929d",
+  "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+  "enabledVariantCount": 24,
+  "finalApproval": null,
+  "registryContentHash": "f99909dbb7ddc1362c27af9de4048ee1927130dbbfd2d8f99945f0aa78c1929d",
+  "registryId": "frontend-interview-coding-registry-v1",
+  "registryVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "status": "candidate",
+  "variantCount": 24,
+  "variantRefs": [
+    {
+      "contentHash": "c1853faf7ae370b504bcd955d136599543e07a6a9b490f1de9023b6648fedca2",
+      "enabled": true,
+      "id": "int-code-angular-junior-counter-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "52409a6b4cde828da82269d78ef450519b3d2221a6ebfb9f9bc44e07bc551422",
+      "enabled": true,
+      "id": "int-code-angular-junior-todo-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "7c14bcc8703013d1ece42f1f82d053300f3f788c97b61152fdf591f7f6e9fa7f",
+      "enabled": true,
+      "id": "int-code-angular-mid-pagination-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "ec60daae836ab6b3ad83f6a98f69b21ec38453a47154e33de7132a3603abc25e",
+      "enabled": true,
+      "id": "int-code-angular-mid-shopping-cart-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "7443c2fc0d8cb341d48bb412bfc2041ad385d32783f7d4d9b608928f1d12685c",
+      "enabled": true,
+      "id": "int-code-angular-senior-chips-autocomplete-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "9a6ff14cb3f761c3cc20491f864349d0952b5573c65939d9c129d6a2446170be",
+      "enabled": true,
+      "id": "int-code-angular-senior-debounced-search-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
+      "enabled": true,
+      "id": "int-code-core-web-junior-escape-html-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
+      "enabled": true,
+      "id": "int-code-core-web-junior-validate-username-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
+      "enabled": true,
+      "id": "int-code-core-web-mid-fetch-timeout-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
+      "enabled": true,
+      "id": "int-code-core-web-mid-take-latest-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "a46562a3755178280473a3aba3ca56d411c25b4f2733b4409a199ed6860aeece",
+      "enabled": true,
+      "id": "int-code-core-web-senior-concurrency-map-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "2a13a53222648c16758abd064e7a9bfc24a306a0a4d29a49ee091a070675e19c",
+      "enabled": true,
+      "id": "int-code-core-web-senior-lru-cache-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "3b06f080ac3e514fdf78779cc898934968aac4215db9e90b6d273eab8ff263d7",
+      "enabled": true,
+      "id": "int-code-react-junior-counter-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "f06e131d0396ccd1ca5e9dd727828b9218e749a92206a191010ef7ddba140200",
+      "enabled": true,
+      "id": "int-code-react-junior-todo-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "a3e2e5168f65206e11ccc07f082c2a7ecdec52dc4df2880d7b188de2f03c7f2e",
+      "enabled": true,
+      "id": "int-code-react-mid-pagination-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "73625055df6d96aac602a108e58f4d35be8931dc35f3b8ef11d6c9a8fdcb9bd8",
+      "enabled": true,
+      "id": "int-code-react-mid-shopping-cart-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "a444c5da5869a5e0fcc16774746bdd4831a5059f6b1f4d4c3594cd76d93e2ac0",
+      "enabled": true,
+      "id": "int-code-react-senior-chips-autocomplete-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "f7f2fc8e8be19eb702e7d5db5d97c43ccf86e4348b7c94e5353f7d03b728186a",
+      "enabled": true,
+      "id": "int-code-react-senior-debounced-search-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "4d631931ffc761c967e17c80cce7e9848583723ba148e019160cabe23f12e847",
+      "enabled": true,
+      "id": "int-code-vue-junior-counter-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "012ad848a6bf43704560cbf100f9bb69addad3f5f7292b786cffc50532a2317e",
+      "enabled": true,
+      "id": "int-code-vue-junior-todo-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "aaa6f6f8c0d96bd2f5b0caf1417a0f19689c3dedd50af309c7d085ba478ff020",
+      "enabled": true,
+      "id": "int-code-vue-mid-pagination-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "b475e5c504f1ba64eda7113703ccbfa2aa50522d5a01da7973a99e08345a88d5",
+      "enabled": true,
+      "id": "int-code-vue-mid-shopping-cart-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "e5459365964710a03de1408efb923b379490769af235d5bc1b2ce4aebdbe9543",
+      "enabled": true,
+      "id": "int-code-vue-senior-chips-autocomplete-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "075cd06b7ed062957e5c38eb479a2311ed1de88ca6e595c3f057e18d1046bfa2",
+      "enabled": true,
+      "id": "int-code-vue-senior-debounced-search-v1",
+      "revision": 1
+    }
+  ]
+}

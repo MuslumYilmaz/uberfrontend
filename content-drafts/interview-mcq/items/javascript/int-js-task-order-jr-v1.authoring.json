@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-task-order-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "code-output",
+    "competency": "task-and-microtask-order",
+    "prompt": "What does this code log, in order, in a standards-compliant browser?",
+    "code": {
+      "language": "javascript",
+      "runtime": "browser",
+      "source": "console.log('render');\n\nsetTimeout(() => console.log('timer'), 0);\n\nPromise.resolve().then(() => console.log('promise'));\n\nconsole.log('commit');"
+    },
+    "options": [
+      {
+        "id": "choice-d74b9e1325",
+        "label": "render → commit → timer → promise"
+      },
+      {
+        "id": "choice-7ea0dfa862",
+        "label": "render → commit → promise → timer"
+      },
+      {
+        "id": "choice-46db452f77",
+        "label": "render → promise → timer → commit"
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-7ea0dfa862",
+    "answerProof": {
+      "summary": "The two direct logs run in the current task; the Promise reaction runs at the microtask checkpoint before the timeout task.",
+      "decisiveConstraints": [
+        "The script body completes before queued callbacks run.",
+        "Microtasks drain before the next timer task."
+      ],
+      "claims": [
+        {
+          "statement": "Promise reactions use the microtask queue, which drains before a timeout callback in the next task.",
+          "sourceIds": [
+            "mdn-microtask-guide"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d74b9e1325",
+        "verdict": "incorrect",
+        "explanation": "A zero-delay timer is still a later task, so it does not run ahead of the Promise microtask.",
+        "misconceptionTag": "zero-delay-timer-runs-immediately",
+        "plausibility": "The timer is registered before the Promise callback and has a delay of zero.",
+        "falsifyingConstraint": "Task registration order does not put a timer ahead of the microtask checkpoint."
+      },
+      {
+        "optionId": "choice-7ea0dfa862",
+        "verdict": "correct",
+        "explanation": "Synchronous logs come first, followed by the Promise microtask and then the timer task.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-46db452f77",
+        "verdict": "incorrect",
+        "explanation": "Neither queued callback can interrupt the current script before `commit` is logged.",
+        "misconceptionTag": "queued-callback-interrupts-script",
+        "plausibility": "The Promise is already resolved and the timeout delay is zero.",
+        "falsifyingConstraint": "The current JavaScript task runs to completion before queued work starts."
+      }
+    ],
+    "remediationTopics": [
+      "event-loop",
+      "microtasks",
+      "timer-tasks"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Using microtasks in JavaScript",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide",
+        "sourceId": "mdn-microtask-guide"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-event-loop",
+        "js-microtasks-vs-macrotasks"
+      ],
+      "sources": [
+        {
+          "id": "mdn-microtask-guide",
+          "title": "MDN: Using microtasks in JavaScript with queueMicrotask()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    },
+    "verification": {
+      "kind": "browser-console-output",
+      "expectedOutput": [
+        "render",
+        "commit",
+        "promise",
+        "timer"
+      ]
+    }
+  }
+}

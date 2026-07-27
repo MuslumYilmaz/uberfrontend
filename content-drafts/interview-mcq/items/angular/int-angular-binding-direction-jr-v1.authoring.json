@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-binding-direction-jr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "template-binding-direction",
+    "prompt": "A Save button must be disabled while `isSaving` is true and call the component's `save()` method when the user activates it. Which Angular template expresses both data flows correctly?",
+    "options": [
+      {
+        "id": "choice-a726bda356",
+        "label": "Property-bound state with a called event method: `<button [disabled]=\"isSaving\" (click)=\"save()\">Save</button>`."
+      },
+      {
+        "id": "choice-e381124a64",
+        "label": "Attribute-bound state with an executed event expression: `<button [attr.disabled]=\"isSaving\" (click)=\"save()\">Save</button>`."
+      },
+      {
+        "id": "choice-a96f7261d6",
+        "label": "Property-bound state with a passed method reference: `<button [disabled]=\"isSaving\" (click)=\"save\">Save</button>`."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-a726bda356",
+    "answerProof": {
+      "summary": "A disabled button needs boolean DOM property binding, while the click event statement must invoke rather than merely reference the component method.",
+      "decisiveConstraints": [
+        "The disabled state flows from the component to the element.",
+        "Activation must invoke the component method rather than return its reference."
+      ],
+      "claims": [
+        {
+          "statement": "Angular property binding writes element properties, while event binding evaluates a template statement when the event occurs.",
+          "sourceIds": [
+            "angular17-template-syntax"
+          ]
+        },
+        {
+          "statement": "Angular attribute binding removes an attribute when its value is null, while an HTML boolean attribute such as disabled is true whenever it remains present regardless of its string value.",
+          "sourceIds": [
+            "angular17-template-syntax",
+            "mdn-html-boolean-attribute"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a726bda356",
+        "verdict": "correct",
+        "explanation": "`[disabled]` updates the button property from component state, and `(click)` invokes the component method for the emitted event.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-e381124a64",
+        "verdict": "incorrect",
+        "explanation": "Binding the HTML attribute to false leaves a `disabled` attribute present as the string `\"false\"`, so the boolean attribute can still disable the button.",
+        "misconceptionTag": "boolean-attribute-follows-property-semantics",
+        "plausibility": "Attribute binding is useful when a value has no corresponding DOM property or must be removed with `null`.",
+        "falsifyingConstraint": "The button must become enabled when `isSaving` is false, which requires boolean property semantics here."
+      },
+      {
+        "optionId": "choice-a96f7261d6",
+        "verdict": "incorrect",
+        "explanation": "The click binding evaluates the `save` reference but does not call it, so activation does not perform the save operation.",
+        "misconceptionTag": "event-binding-invokes-method-reference",
+        "plausibility": "Passing a function reference is valid in callback APIs that invoke the function themselves.",
+        "falsifyingConstraint": "Angular evaluates the event statement directly, so the statement must call `save()`."
+      }
+    ],
+    "remediationTopics": [
+      "Angular property binding",
+      "Angular event binding",
+      "template data-flow direction"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 17: Template syntax",
+        "url": "https://v17.angular.io/guide/template-syntax",
+        "sourceId": "angular17-template-syntax"
+      },
+      {
+        "title": "MDN: Boolean attribute (HTML)",
+        "url": "https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML",
+        "sourceId": "mdn-html-boolean-attribute"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular17-template-syntax",
+          "title": "Angular 17: Template syntax",
+          "url": "https://v17.angular.io/guide/template-syntax",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular 17 archived documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-html-boolean-attribute",
+          "title": "MDN: Boolean attribute (HTML)",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

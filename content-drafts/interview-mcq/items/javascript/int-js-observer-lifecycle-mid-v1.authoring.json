@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-observer-lifecycle-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "observer-resource-lifecycle",
+    "prompt": "A routed infinite list creates a new `IntersectionObserver` on every mount. After several visits, detached sentinels remain observed and old callbacks still request pages. Which lifecycle policy fixes the retained work without sharing route state globally?",
+    "options": [
+      {
+        "id": "choice-aee99617f4",
+        "label": "Keep one global observer forever and let every mounted list add sentinels without removing them."
+      },
+      {
+        "id": "choice-6e87bf32ad",
+        "label": "Own one observer per mount, unobserve removed sentinels, and disconnect it when that list unmounts."
+      },
+      {
+        "id": "choice-8aab4d7334",
+        "label": "Set the local observer variable to `null` on unmount and rely on garbage collection for its targets."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-6e87bf32ad",
+    "answerProof": {
+      "summary": "The observer lifetime should match the list instance: targets are removed when obsolete and disconnect releases all remaining observations at teardown.",
+      "decisiveConstraints": [
+        "Each route mount owns independent pagination state.",
+        "Detached targets must stop generating observer work.",
+        "Unmount must terminate every observation owned by that list."
+      ],
+      "claims": [
+        {
+          "statement": "IntersectionObserver.unobserve stops observing one target, while disconnect stops observing all targets for that observer.",
+          "sourceIds": [
+            "mdn-intersectionobserver-unobserve",
+            "mdn-intersectionobserver-disconnect"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-aee99617f4",
+        "verdict": "incorrect",
+        "explanation": "A permanent observer keeps unrelated route lifetimes coupled and preserves obsolete sentinels unless each is explicitly removed.",
+        "misconceptionTag": "global-singleton-prevents-resource-leaks",
+        "plausibility": "Reusing one observer avoids repeatedly constructing observer objects.",
+        "falsifyingConstraint": "The route instances require isolated ownership and complete cleanup on unmount."
+      },
+      {
+        "optionId": "choice-6e87bf32ad",
+        "verdict": "correct",
+        "explanation": "Target cleanup plus disconnect aligns every observation with the list instance that created it.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-8aab4d7334",
+        "verdict": "incorrect",
+        "explanation": "Dropping one reference does not express observer teardown and leaves the observer registered with its targets until it becomes collectible.",
+        "misconceptionTag": "garbage-collection-replaces-disconnect",
+        "plausibility": "Unreachable JavaScript objects are normally eligible for garbage collection.",
+        "falsifyingConstraint": "The requirement is deterministic teardown of active observation and callbacks at unmount."
+      }
+    ],
+    "remediationTopics": [
+      "intersection-observer",
+      "resource-ownership",
+      "deterministic-cleanup"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: IntersectionObserver.unobserve()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/unobserve",
+        "sourceId": "mdn-intersectionobserver-unobserve"
+      },
+      {
+        "title": "MDN: IntersectionObserver.disconnect()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/disconnect",
+        "sourceId": "mdn-intersectionobserver-disconnect"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-memory-leaks-common-sources"
+      ],
+      "sources": [
+        {
+          "id": "mdn-intersectionobserver-unobserve",
+          "title": "MDN: IntersectionObserver.unobserve()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/unobserve",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-intersectionobserver-disconnect",
+          "title": "MDN: IntersectionObserver.disconnect()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/disconnect",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

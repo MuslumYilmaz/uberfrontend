@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-custom-input-model-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "component-v-model-contract",
+    "prompt": "A Vue 3.5 `PriceInput` wraps a native input and is used as `<PriceInput v-model=\"price\" />`. The parent value must update on typing and later parent changes must appear in the input. Which child implementation best establishes that contract?",
+    "options": [
+      {
+        "id": "choice-18888ec083",
+        "label": "Create the model ref with `defineModel({ required: true })` and bind the inner input's `v-model` to it."
+      },
+      {
+        "id": "choice-d5691dd89f",
+        "label": "Declare a `modelValue` prop and assign directly to that prop from the inner input's event handler."
+      },
+      {
+        "id": "choice-f127f8bb37",
+        "label": "Copy `modelValue` into a local ref once and emit a generic `change` event after the inner input blurs."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-18888ec083",
+    "answerProof": {
+      "summary": "In Vue 3.4 and later, `defineModel()` creates the prop-and-update-event contract for component `v-model`; binding its ref to the inner input keeps both directions synchronized.",
+      "decisiveConstraints": [
+        "The component is running on Vue 3.5.",
+        "Updates must flow from child to parent and from parent to child."
+      ],
+      "claims": [
+        {
+          "statement": "A `defineModel()` ref is synchronized with the parent's component `v-model` value and updates the parent when the child mutates it.",
+          "sourceIds": [
+            "vue35-component-v-model"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-18888ec083",
+        "verdict": "correct",
+        "explanation": "The model ref represents the supported `modelValue` and `update:modelValue` contract, and the inner binding relays changes in both directions.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d5691dd89f",
+        "verdict": "incorrect",
+        "explanation": "A prop binding is readonly in the child; assigning it bypasses the update event expected by the parent's component `v-model`.",
+        "misconceptionTag": "component-model-means-mutable-prop",
+        "plausibility": "The `modelValue` prop does contain the current parent value supplied through `v-model`.",
+        "falsifyingConstraint": "Child-to-parent synchronization requires the matching update event rather than direct prop assignment."
+      },
+      {
+        "optionId": "choice-f127f8bb37",
+        "verdict": "incorrect",
+        "explanation": "The local copy can drift after parent changes, and a generic `change` event does not satisfy the default component `v-model` update contract.",
+        "misconceptionTag": "generic-change-drives-component-model",
+        "plausibility": "Native form controls commonly expose a change event and local refs are writable.",
+        "falsifyingConstraint": "The parent uses the default component `v-model`, which listens for its matching model update event."
+      }
+    ],
+    "remediationTopics": [
+      "Vue component v-model",
+      "defineModel",
+      "controlled input wrappers"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Component v-model",
+        "url": "https://vuejs.org/guide/components/v-model.html",
+        "sourceId": "vue35-component-v-model"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-component-v-model",
+          "title": "Vue: Component v-model",
+          "url": "https://vuejs.org/guide/components/v-model.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

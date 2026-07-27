@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-multiroot-fallthrough-attrs-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "multiroot-fallthrough-attribute-forwarding",
+    "prompt": "A Vue 3.5 `<ActionButton>` renders a decorative `<span>` and a native `<button>` as two root nodes. A parent passes `class` and `@click`; both must reach the native button without declaring every possible attribute or listener as a prop. Which component policy establishes that target?",
+    "code": {
+      "language": "vue",
+      "runtime": "vue-3.5",
+      "source": "<template>\n  <span class=\"icon\" aria-hidden=\"true\">★</span>\n  <button type=\"button\"><slot /></button>\n</template>"
+    },
+    "options": [
+      {
+        "id": "choice-da9e3af793",
+        "label": "Bind `$attrs` to the decorative `<span>` so inherited classes and listeners have one explicit target."
+      },
+      {
+        "id": "choice-0464995a9c",
+        "label": "Wrap both roots in a `<div>` and rely on automatic fallthrough to place inherited classes and listeners."
+      },
+      {
+        "id": "choice-20f05c005a",
+        "label": "Set `inheritAttrs: false` and bind `$attrs` to the `<button>` so classes and listeners reach the control."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-20f05c005a",
+    "answerProof": {
+      "summary": "Multiple-root components do not have one automatic fallthrough target. Explicitly binding attrs to the native button preserves the open attribute/listener API while selecting the interactive owner.",
+      "decisiveConstraints": [
+        "The component has two root nodes, so Vue cannot infer one fallthrough target.",
+        "Inherited classes and listeners belong on the native button rather than a decorative or wrapper element."
+      ],
+      "claims": [
+        {
+          "statement": "Vue requires multiple-root components to bind fallthrough attributes explicitly with `$attrs`, and `inheritAttrs: false` allows deliberate control of their target.",
+          "sourceIds": [
+            "vue35-fallthrough-attributes"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-da9e3af793",
+        "verdict": "incorrect",
+        "explanation": "This is explicit forwarding, but it makes the decorative span own the parent's click listener and styling instead of the button.",
+        "misconceptionTag": "any-explicit-attrs-target-is-equivalent",
+        "plausibility": "Binding `$attrs` does resolve Vue's ambiguous multiple-root inheritance warning.",
+        "falsifyingConstraint": "The native button must own both the inherited styling and activation listener."
+      },
+      {
+        "optionId": "choice-0464995a9c",
+        "verdict": "incorrect",
+        "explanation": "A wrapper creates one automatic target, but the class and click listener then belong to the div rather than the required native control.",
+        "misconceptionTag": "single-wrapper-is-the-intended-attrs-owner",
+        "plausibility": "A single root restores Vue's automatic fallthrough behavior.",
+        "falsifyingConstraint": "The contract requires the native button, not a wrapper, to receive those attributes."
+      },
+      {
+        "optionId": "choice-20f05c005a",
+        "verdict": "correct",
+        "explanation": "Explicit `$attrs` forwarding selects the native button as the owner while retaining support for undeclared classes and listeners.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Vue fallthrough attributes",
+      "multiple root components",
+      "$attrs forwarding",
+      "native control ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Fallthrough Attributes",
+        "url": "https://vuejs.org/guide/components/attrs.html",
+        "sourceId": "vue35-fallthrough-attributes"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-fallthrough-attributes",
+          "title": "Vue: Fallthrough Attributes",
+          "url": "https://vuejs.org/guide/components/attrs.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

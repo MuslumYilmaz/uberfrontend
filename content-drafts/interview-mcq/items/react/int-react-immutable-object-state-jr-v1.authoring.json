@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-immutable-object-state-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "immutable-object-state-update",
+    "prompt": "A React component stores `profile` in state. Its rename handler mutates `profile.name` and passes the same object back to `setProfile`, so the screen may stay stale. Which update follows React's state model?",
+    "options": [
+      {
+        "id": "choice-bdf526cfa1",
+        "label": "Assign `profile.name = nextName`, then call `setProfile(profile)` with the existing object reference."
+      },
+      {
+        "id": "choice-ee11643ebe",
+        "label": "Call `setProfile({ ...profile, name: nextName })` to provide a new object with the updated field."
+      },
+      {
+        "id": "choice-b0f1acaebe",
+        "label": "Store the new name in `useRef`, mutate `profile`, and read the ref during the next component render."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-ee11643ebe",
+    "answerProof": {
+      "summary": "React state should be treated as read-only; replacing the object gives React a new state value and preserves prior render snapshots.",
+      "decisiveConstraints": [
+        "The changed value participates in rendering.",
+        "The existing object is already the current state snapshot."
+      ],
+      "claims": [
+        {
+          "statement": "React documentation directs object state updates to create a replacement rather than mutate the existing object.",
+          "sourceIds": [
+            "react19-updating-objects"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-bdf526cfa1",
+        "verdict": "incorrect",
+        "explanation": "This mutates the current snapshot and supplies the same reference, so React can treat the requested state as unchanged.",
+        "misconceptionTag": "setter-detects-deep-mutation",
+        "plausibility": "The JavaScript object does contain the changed property after mutation.",
+        "falsifyingConstraint": "React state comparison and snapshot semantics require a replacement for this render change."
+      },
+      {
+        "optionId": "choice-ee11643ebe",
+        "verdict": "correct",
+        "explanation": "The spread preserves unchanged fields while producing the new state object whose identity and name reflect the update.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b0f1acaebe",
+        "verdict": "incorrect",
+        "explanation": "Changing a ref does not schedule rendering, and mutating the profile still violates the state snapshot being displayed.",
+        "misconceptionTag": "refs-replace-render-state",
+        "plausibility": "Refs retain mutable values across renders without changing identity.",
+        "falsifyingConstraint": "The new name must trigger and participate in a React render."
+      }
+    ],
+    "remediationTopics": [
+      "React state immutability",
+      "object identity",
+      "render snapshots"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Updating Objects in State",
+        "url": "https://react.dev/learn/updating-objects-in-state",
+        "sourceId": "react19-updating-objects"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-updating-objects",
+          "title": "React: Updating Objects in State",
+          "url": "https://react.dev/learn/updating-objects-in-state",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

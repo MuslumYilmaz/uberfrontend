@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "frontend-interview-reference-v1",
+  "status": "reference-candidate",
+  "language": "en",
+  "feedbackPolicy": "end-of-interview",
+  "items": [
+    {
+      "id": "int-html-native-button-jr-v1",
+      "revision": 1,
+      "technology": "html",
+      "level": "junior",
+      "format": "conceptual",
+      "competency": "semantic-html-and-keyboard-accessibility",
+      "prompt": "A checkout drawer contains `<div role=\"button\" onclick=\"submitOrder()\">Place order</div>`. Mouse activation works, but Tab skips the control and Enter and Space do nothing. It triggers an in-page action, not navigation or form submission, and a custom element is not required. Which change is the best fix with the least custom interaction code?",
+      "options": [
+        {
+          "id": "focusable-div-with-click-only",
+          "label": "Keep the `div`, add `tabindex=\"0\"`, and rely on its current click handler for keyboard activation."
+        },
+        {
+          "id": "use-native-button-control",
+          "label": "Use `<button type=\"button\">Place order</button>` and attach the existing action handler to that native control."
+        },
+        {
+          "id": "anchor-with-prevented-navigation",
+          "label": "Use `<a href=\"#\">Place order</a>` and prevent navigation when its click handler runs the action."
+        }
+      ],
+      "estimatedSeconds": 60
+    },
+    {
+      "id": "int-js-nested-microtask-mid-v1",
+      "revision": 1,
+      "technology": "javascript",
+      "level": "mid",
+      "format": "code-output",
+      "competency": "event-loop-and-microtask-ordering",
+      "prompt": "What does this code log, in order, in a standards-compliant browser?",
+      "code": {
+        "language": "javascript",
+        "runtime": "browser",
+        "source": "console.log('open');\n\nsetTimeout(() => console.log('notify'), 0);\n\nPromise.resolve().then(() => {\n  console.log('validate');\n  queueMicrotask(() => console.log('commit'));\n});\n\nqueueMicrotask(() => console.log('measure'));\n\nconsole.log('close');"
+      },
+      "options": [
+        {
+          "id": "nested-microtask-runs-immediately",
+          "label": "open → close → validate → commit → measure → notify"
+        },
+        {
+          "id": "timer-runs-before-microtasks",
+          "label": "open → close → notify → validate → measure → commit"
+        },
+        {
+          "id": "queued-microtasks-remain-fifo",
+          "label": "open → close → validate → measure → commit → notify"
+        }
+      ],
+      "estimatedSeconds": 120
+    },
+    {
+      "id": "int-vue-computed-watch-mid-v1",
+      "revision": 1,
+      "technology": "vue",
+      "level": "mid",
+      "format": "conceptual",
+      "competency": "derived-state-and-reactive-side-effects",
+      "prompt": "A Vue 3 checkout summary renders `grandTotal`, derived from reactive `subtotal` and `tax`, and must send one analytics event whenever `currency` changes. Both jobs currently use watchers. Which refactor best matches each job?",
+      "options": [
+        {
+          "id": "computed-total-watch-currency",
+          "label": "Use `computed` to derive `grandTotal`, and `watch` `currency` to send the analytics event as an explicit side effect."
+        },
+        {
+          "id": "watchers-copy-both-results",
+          "label": "Use `watch` for both jobs: one watcher writes `grandTotal` into a ref, while another calls analytics when `currency` changes."
+        },
+        {
+          "id": "computed-getter-sends-analytics",
+          "label": "Use `computed` for both jobs, including calling analytics from a computed getter when `currency` changes."
+        }
+      ],
+      "estimatedSeconds": 90
+    },
+    {
+      "id": "int-react-stale-search-sr-v1",
+      "revision": 1,
+      "technology": "react",
+      "level": "senior",
+      "format": "production-scenario",
+      "competency": "effect-lifecycle-and-async-race-ownership",
+      "prompt": "This autocomplete must keep its current client-side `useEffect` fetching architecture. `fetchSearch` cannot be changed and does not accept an `AbortSignal`. When users type quickly, an older response sometimes arrives last. Only the latest Effect run may commit results, errors, or loading state. Which change best enforces that requirement?",
+      "code": {
+        "language": "jsx",
+        "runtime": "react-19.2",
+        "source": "useEffect(() => {\n  setStatus('loading');\n\n  fetchSearch(query)\n    .then((items) => {\n      setResults(items);\n    })\n    .catch((error) => {\n      setError(error);\n    })\n    .finally(() => {\n      setStatus('idle');\n    });\n}, [query]);"
+      },
+      "options": [
+        {
+          "id": "debounce-with-unguarded-handlers",
+          "label": "Debounce `query` by 300 ms; fewer requests make response order stable, so the existing handlers can remain unchanged."
+        },
+        {
+          "id": "cleanup-guards-every-async-commit",
+          "label": "Create an `ignore` flag per Effect run, set it in cleanup, and guard every state write in `then`, `catch`, and `finally`."
+        },
+        {
+          "id": "memoize-promise-by-query",
+          "label": "Create the Promise with `useMemo` keyed by `query`; memoizing it ensures only the newest response can update state."
+        }
+      ],
+      "estimatedSeconds": 180
+    },
+    {
+      "id": "int-angular-onpush-reference-sr-v1",
+      "revision": 1,
+      "technology": "angular",
+      "level": "senior",
+      "format": "production-scenario",
+      "competency": "onpush-input-identity-and-immutable-updates",
+      "prompt": "In an Angular 17–22 app, an explicitly `OnPush` child receives `user` from its parent. A parent control calls `rename`; logs show the new name, but the child stays stale. No child event, signal, or async pipe is involved. While preserving OnPush and parent ownership, what is the best root-cause fix at the input boundary?",
+      "code": {
+        "language": "typescript",
+        "runtime": "angular-17-to-22",
+        "source": "@Component({\n  selector: 'user-card',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `{{ user.name }}`\n})\nexport class UserCardComponent {\n  @Input() user!: User;\n}\n\n// Parent component\nrename(nextName: string) {\n  this.user.name = nextName;\n}"
+      },
+      "options": [
+        {
+          "id": "switch-child-to-default-detection",
+          "label": "Change the child to Default detection so in-place mutations are noticed during ordinary component-tree checks."
+        },
+        {
+          "id": "manually-mark-child-after-mutation",
+          "label": "Keep mutating the object and call `markForCheck()` on the child after every parent-side update."
+        },
+        {
+          "id": "replace-parent-input-reference",
+          "label": "Replace the parent value immutably: `this.user = { ...this.user, name: nextName }`, producing a new input reference."
+        }
+      ],
+      "estimatedSeconds": 150
+    }
+  ]
+}

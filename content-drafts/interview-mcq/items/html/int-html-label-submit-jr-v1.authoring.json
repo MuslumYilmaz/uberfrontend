@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-label-submit-jr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "html",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "explicit-form-label-association",
+    "prompt": "A form renders `<span>Email</span><input id=\"email\" name=\"email\">`. The visible Email text must provide the input's accessible name, and clicking that text must focus the field. Which markup change meets both requirements?",
+    "options": [
+      {
+        "id": "choice-730c9ae1ed",
+        "label": "Move `Email` into the input's `placeholder` and remove the separate visible span from the form."
+      },
+      {
+        "id": "choice-5812ee0366",
+        "label": "Keep the visible span beside the input and add `aria-label=\"Email\"` directly to the input."
+      },
+      {
+        "id": "choice-6d6e29c2cc",
+        "label": "Replace the span with `<label for=\"email\">Email</label>` and keep the matching input `id`."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-6d6e29c2cc",
+    "answerProof": {
+      "summary": "An explicit label associated through for and id names the control and forwards label activation to the matching input.",
+      "decisiveConstraints": [
+        "The visible Email text must name the input.",
+        "Activating that same text must focus the input."
+      ],
+      "claims": [
+        {
+          "statement": "A label associated with a form control forwards activation such as a click to that labeled control.",
+          "sourceIds": [
+            "mdn-label-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-730c9ae1ed",
+        "verdict": "incorrect",
+        "explanation": "A placeholder is a hint inside the control rather than an external label that remains visible and forwards activation.",
+        "misconceptionTag": "placeholder-replaces-label",
+        "plausibility": "Placeholder text can visually identify an empty field and contribute an accessible-name fallback in some combinations.",
+        "falsifyingConstraint": "The prompt requires separate visible text that names and activates the input."
+      },
+      {
+        "optionId": "choice-5812ee0366",
+        "verdict": "incorrect",
+        "explanation": "Aria-label can name the input, but it does not associate the visible span or make clicking that text focus the field.",
+        "misconceptionTag": "accessible-name-also-creates-visible-label-behavior",
+        "plausibility": "The input receives the requested accessible name while the same visible wording remains beside it.",
+        "falsifyingConstraint": "The visible Email text itself must be the activating label."
+      },
+      {
+        "optionId": "choice-6d6e29c2cc",
+        "verdict": "correct",
+        "explanation": "The explicit label supplies both the accessible-name relationship and the requested click-to-focus behavior.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "explicit form labels",
+      "for and id association",
+      "label activation"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: label element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label",
+        "sourceId": "mdn-label-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "html-form-default-method",
+        "html-input-placeholder"
+      ],
+      "sources": [
+        {
+          "id": "mdn-label-element",
+          "title": "MDN: label element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

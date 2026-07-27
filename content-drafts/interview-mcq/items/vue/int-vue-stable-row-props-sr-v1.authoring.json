@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-stable-row-props-sr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "render-update-prop-stability",
+    "prompt": "Profiling a Vue 3.5 trading UI with several large virtualized product viewports shows that high-frequency `selectedId` changes update every mounted `ProductRow`. A shared row-prop adapter creates a new `viewConfig` object for each row containing `selected` and unchanged `currency`; every viewport uses that contract, so its fan-out consumes the render budget. Which contract redesign most directly narrows updates across the system?",
+    "options": [
+      {
+        "id": "choice-a9f2114a27",
+        "label": "Cache each row type with `<KeepAlive>` while the shared contract keeps allocating a fresh `viewConfig` object."
+      },
+      {
+        "id": "choice-a1fb6894b7",
+        "label": "Pass the changing `selectedId` through the shared contract and let every row compare it with its product ID."
+      },
+      {
+        "id": "choice-6add07f66e",
+        "label": "Have the shared contract pass a per-row `selected` Boolean and stable `currency` primitive as separate props."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-6add07f66e",
+    "answerProof": {
+      "summary": "The shared adapter should derive each row's selected Boolean at the boundary and pass stable primitives. A selection event then changes props only for rows representing the previous or next selection, rather than propagating a fresh object or global selectedId through every mounted row in every viewport.",
+      "decisiveConstraints": [
+        "Profiling identifies the shared prop contract as the source of broad child updates, not the virtualizer's DOM window size.",
+        "Selection changes are high-frequency and fan out through several viewports, making unnecessary component work operationally significant.",
+        "The unchanged currency must remain stable across all rows.",
+        "Only rows representing the previous or next selected product need a changed selection value."
+      ],
+      "claims": [
+        {
+          "statement": "Vue's performance guidance recommends keeping props passed to child components as stable as possible so unchanged children can skip updates.",
+          "sourceIds": [
+            "vue35-performance-prop-stability"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a9f2114a27",
+        "verdict": "incorrect",
+        "explanation": "KeepAlive caches dynamically removed component instances; it neither stabilizes the adapter's object identity nor prevents mounted rows from receiving prop updates.",
+        "misconceptionTag": "keep-alive-skips-prop-updates",
+        "plausibility": "Caching row types sounds like a system-level way to reuse expensive component work across virtualized viewports.",
+        "falsifyingConstraint": "The measured fan-out occurs while rows are mounted and the shared adapter keeps producing new prop identities."
+      },
+      {
+        "optionId": "choice-a1fb6894b7",
+        "verdict": "incorrect",
+        "explanation": "Every row receives a changed selectedId prop on every event, so the comparison runs only after every mounted row across the viewports becomes an update candidate.",
+        "misconceptionTag": "child-comparison-prevents-child-update",
+        "plausibility": "Each child has enough information to calculate whether its product is selected.",
+        "falsifyingConstraint": "The shared contract must stop high-frequency selection changes from propagating to unaffected rows."
+      },
+      {
+        "optionId": "choice-6add07f66e",
+        "verdict": "correct",
+        "explanation": "The currency stays identical and selected changes only for affected records, allowing every viewport to skip rows whose primitive prop values remain stable.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "shared rendering contracts",
+      "high-frequency update fan-out",
+      "Vue prop stability",
+      "virtualized-list profiling"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Performance",
+        "url": "https://vuejs.org/guide/best-practices/performance.html",
+        "sourceId": "vue35-performance-prop-stability"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-performance-prop-stability",
+          "title": "Vue: Performance",
+          "url": "https://vuejs.org/guide/best-practices/performance.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "policyId": "interview-runtime-profiles-v1",
+  "profiles": [
+    {
+      "id": "browser",
+      "kind": "browser",
+      "engine": "chromium",
+      "versionPolicy": "runner-pinned",
+      "execution": "verified",
+      "networkAccess": false,
+      "fileSystemAccess": false,
+      "dynamicCodeGeneration": false,
+      "timeoutMs": 1500,
+      "maxOutputBytes": 65536,
+      "maxParallel": 4
+    },
+    {
+      "id": "react-19.2",
+      "kind": "framework",
+      "engine": "react",
+      "versionPolicy": "19.2.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-17",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": "17.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-18",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": "18.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-17.3",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": "17.3.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-19",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": "19.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-20",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": "20.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-21",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": "21.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-22",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": "22.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "angular-17-to-22",
+      "kind": "framework",
+      "engine": "angular",
+      "versionPolicy": ">=17 <23",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    },
+    {
+      "id": "vue-3",
+      "kind": "framework",
+      "engine": "vue",
+      "versionPolicy": "3.x",
+      "execution": "static-snippet",
+      "hostRuntime": "browser"
+    }
+  ],
+  "runtimePatterns": [
+    {
+      "id": "angular-supported-majors",
+      "pattern": "^angular-(?:17|18|19|20|21|22)(?:\\.[0-9]+)?$",
+      "technology": "angular"
+    },
+    {
+      "id": "react-19-series",
+      "pattern": "^react-19(?:\\.[0-9]+)?$",
+      "technology": "react"
+    },
+    {
+      "id": "vue-3-series",
+      "pattern": "^vue-3(?:\\.[0-9]+)?$",
+      "technology": "vue"
+    }
+  ]
+}

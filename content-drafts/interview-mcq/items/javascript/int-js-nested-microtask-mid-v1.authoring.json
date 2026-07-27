@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-nested-microtask-mid-v1",
+  "revision": 4,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "code-output",
+    "competency": "nested-microtask-fifo-order",
+    "prompt": "What does this code log, in order, in a standards-compliant browser?",
+    "code": {
+      "language": "javascript",
+      "runtime": "browser",
+      "source": "console.log('open');\n\nsetTimeout(() => {\n  console.log('notify');\n  queueMicrotask(() => console.log('after-notify'));\n}, 0);\n\nsetTimeout(() => console.log('archive'), 0);\n\nPromise.resolve().then(() => {\n  console.log('validate');\n  queueMicrotask(() => console.log('commit'));\n});\n\nqueueMicrotask(() => console.log('measure'));\nconsole.log('close');"
+    },
+    "options": [
+      {
+        "id": "choice-4aa027b68f",
+        "label": "open → close → validate → commit → measure → notify → after-notify → archive"
+      },
+      {
+        "id": "choice-d36c528b59",
+        "label": "open → close → validate → measure → commit → notify → archive → after-notify"
+      },
+      {
+        "id": "choice-8f266a175e",
+        "label": "open → close → validate → measure → commit → notify → after-notify → archive"
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-8f266a175e",
+    "answerProof": {
+      "summary": "The initial task drains validate, measure, and commit. The first timer then runs notify and drains its after-notify microtask before the event loop can start the second timer's archive callback.",
+      "decisiveConstraints": [
+        "The complete script body is the current task.",
+        "Microtasks are drained in FIFO order until the queue is empty.",
+        "Each timeout callback is a separate task.",
+        "A task-created microtask drains before the next task begins."
+      ],
+      "claims": [
+        {
+          "statement": "A microtask queued while processing a task or the microtask queue runs at the checkpoint before the event loop starts the next task.",
+          "sourceIds": [
+            "mdn-microtask-guide"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-4aa027b68f",
+        "verdict": "incorrect",
+        "explanation": "The commit microtask is appended behind measure, so it cannot run immediately after validate.",
+        "misconceptionTag": "nested-microtask-jumps-queue",
+        "plausibility": "The commit is scheduled from the callback that is currently executing.",
+        "falsifyingConstraint": "Queuing commit does not bypass the older measure microtask."
+      },
+      {
+        "optionId": "choice-d36c528b59",
+        "verdict": "incorrect",
+        "explanation": "After notify's task completes, its queued microtask drains before the archive timer can begin.",
+        "misconceptionTag": "next-timer-precedes-task-created-microtask",
+        "plausibility": "Both timers were already queued before the first timer created after-notify.",
+        "falsifyingConstraint": "The event loop drains microtasks at the end of the notify task before selecting archive."
+      },
+      {
+        "optionId": "choice-8f266a175e",
+        "verdict": "correct",
+        "explanation": "Initial microtasks drain in FIFO order, then notify runs and its microtask drains before archive begins.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "microtask-checkpoint",
+      "fifo-queue-order",
+      "nested-microtasks",
+      "microtask checkpoints between tasks"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Using microtasks in JavaScript",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide",
+        "sourceId": "mdn-microtask-guide"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-event-loop-nested-microtask-output",
+        "js-event-loop"
+      ],
+      "sources": [
+        {
+          "id": "mdn-microtask-guide",
+          "title": "MDN: Using microtasks in JavaScript with queueMicrotask()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    },
+    "verification": {
+      "kind": "browser-console-output",
+      "expectedOutput": [
+        "open",
+        "close",
+        "validate",
+        "measure",
+        "commit",
+        "notify",
+        "after-notify",
+        "archive"
+      ]
+    }
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-flex-min-width-jr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "css",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "flex-item-minimum-size",
+    "prompt": "A flex row has a fixed-width sidebar and `.main { flex: 1; }`. One unbreakable filename makes `.main` wider than the remaining space. Which declaration directly allows that flex item to shrink below its automatic content minimum?",
+    "options": [
+      {
+        "id": "choice-ccbbb88d86",
+        "label": "Set `.main { width: 100%; }` so the item claims the row width before the sidebar is reserved."
+      },
+      {
+        "id": "choice-19f4008397",
+        "label": "Set `.main { min-width: 0; }` so its used width may fall below the content-based minimum."
+      },
+      {
+        "id": "choice-9fe27c3c50",
+        "label": "Set `.main { flex-shrink: 0; }` so the item preserves the filename's intrinsic width during layout."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-19f4008397",
+    "answerProof": {
+      "summary": "Setting the flex item's minimum width to zero lets it shrink below the automatic content-based minimum within the space left by the sidebar.",
+      "decisiveConstraints": [
+        "The sidebar width remains fixed.",
+        "The main flex item must be allowed below its automatic content-based minimum."
+      ],
+      "claims": [
+        {
+          "statement": "Flex items can use an automatic content-based minimum width, and setting min-width zero permits the item to shrink further.",
+          "sourceIds": [
+            "mdn-min-width"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ccbbb88d86",
+        "verdict": "incorrect",
+        "explanation": "A 100% main width consumes the row before the fixed sidebar is accounted for and does not remove the automatic minimum size.",
+        "misconceptionTag": "percentage-width-fixes-flex-overflow",
+        "plausibility": "A percentage width appears to constrain the main area to the viewport.",
+        "falsifyingConstraint": "The main item must shrink within the space left after the fixed sidebar."
+      },
+      {
+        "optionId": "choice-19f4008397",
+        "verdict": "correct",
+        "explanation": "The zero minimum lets the main item shrink within the space that remains after the fixed sidebar.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-9fe27c3c50",
+        "verdict": "incorrect",
+        "explanation": "Disabling shrink preserves the oversized intrinsic width and makes row overflow more likely.",
+        "misconceptionTag": "preserving-content-width-prevents-overflow",
+        "plausibility": "Preventing shrink can protect content from being visually compressed.",
+        "falsifyingConstraint": "The main item must be allowed to shrink below its content-based minimum."
+      }
+    ],
+    "remediationTopics": [
+      "flex-minimum-size",
+      "min-width-zero",
+      "automatic minimum size"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: min-width",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width",
+        "sourceId": "mdn-min-width"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "css-display-flex",
+        "css-make-element-responsive"
+      ],
+      "sources": [
+        {
+          "id": "mdn-min-width",
+          "title": "MDN: min-width",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-ref-primitive-jr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "composition-api-reactive-primitives",
+    "prompt": "A Vue 3.5 Composition API component needs a numeric counter that event handlers replace and the template renders. Which declaration and access pattern correctly keeps the primitive reactive?",
+    "options": [
+      {
+        "id": "choice-c4cecbe708",
+        "label": "Use `reactive(0)` and assign the returned primitive directly whenever the counter changes in script code."
+      },
+      {
+        "id": "choice-51ae9adf8a",
+        "label": "Use `ref(0)` and write through `count.value` in script while the template directly reads `count` without `.value`."
+      },
+      {
+        "id": "choice-a59579b58d",
+        "label": "Use `computed(() => 0)` and overwrite the computed result directly whenever the counter changes in script code."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-51ae9adf8a",
+    "answerProof": {
+      "summary": "A ref can wrap a primitive, exposes its current value through `.value` in JavaScript, and is automatically unwrapped when referenced at the top level of a template.",
+      "decisiveConstraints": [
+        "The state is a replaceable primitive number.",
+        "The state is read both in script and in a Vue template."
+      ],
+      "claims": [
+        {
+          "statement": "Vue refs support reactive primitive values, require `.value` in JavaScript, and are unwrapped in templates under the documented conditions.",
+          "sourceIds": [
+            "vue35-reactivity-fundamentals"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-c4cecbe708",
+        "verdict": "incorrect",
+        "explanation": "The `reactive()` API works with objects and does not provide a mutable reactive wrapper for the primitive value passed here.",
+        "misconceptionTag": "reactive-wraps-primitives",
+        "plausibility": "The API name suggests it can make any supplied JavaScript value reactive.",
+        "falsifyingConstraint": "The required state is a primitive number rather than an object whose properties can be proxied."
+      },
+      {
+        "optionId": "choice-51ae9adf8a",
+        "verdict": "correct",
+        "explanation": "The ref wrapper tracks replacement of the number; script writes its `.value`, while normal template access unwraps the top-level ref.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-a59579b58d",
+        "verdict": "incorrect",
+        "explanation": "A getter-only computed ref represents derived readonly state, so it is not the writable source for an independently changed counter.",
+        "misconceptionTag": "computed-is-general-writable-state",
+        "plausibility": "Computed values are reactive refs and are also automatically unwrapped in templates.",
+        "falsifyingConstraint": "The counter is source state replaced by handlers, not a value derived from other reactive inputs."
+      }
+    ],
+    "remediationTopics": [
+      "Vue refs",
+      "reactive primitives",
+      "template ref unwrapping"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Reactivity Fundamentals",
+        "url": "https://vuejs.org/guide/essentials/reactivity-fundamentals.html",
+        "sourceId": "vue35-reactivity-fundamentals"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-reactivity-fundamentals",
+          "title": "Vue: Reactivity Fundamentals",
+          "url": "https://vuejs.org/guide/essentials/reactivity-fundamentals.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

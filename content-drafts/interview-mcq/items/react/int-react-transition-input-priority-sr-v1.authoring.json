@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-transition-input-priority-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "concurrent-update-priorities",
+    "prompt": "A controlled search input updates `query`, and the same handler updates `filterQuery` used by a costly result tree. Keystrokes feel blocked. The input must reflect every key immediately, while result rendering may be interrupted. Which scheduling change matches those priorities?",
+    "options": [
+      {
+        "id": "choice-abb1c54418",
+        "label": "Place both `setQuery(next)` and `setFilterQuery(next)` inside one `startTransition` callback."
+      },
+      {
+        "id": "choice-211f2d6325",
+        "label": "Run `setQuery(next)` normally, then place `setFilterQuery(next)` inside `startTransition`."
+      },
+      {
+        "id": "choice-2035bfeb0d",
+        "label": "Force `setQuery(next)` with `flushSync`, then run `setFilterQuery(next)` synchronously afterward."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-211f2d6325",
+    "answerProof": {
+      "summary": "The controlled input update remains urgent, while the state that drives expensive results is marked as a non-blocking Transition that React may interrupt for newer input.",
+      "decisiveConstraints": [
+        "The controlled input value must update immediately.",
+        "The result-tree update is allowed to be interrupted."
+      ],
+      "claims": [
+        {
+          "statement": "React Transition updates are non-blocking and interruptible, but a Transition cannot be used to control a text input.",
+          "sourceIds": [
+            "react19-start-transition"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-abb1c54418",
+        "verdict": "incorrect",
+        "explanation": "Marking the controlled input update as a Transition conflicts with the requirement for immediate text-input synchronization.",
+        "misconceptionTag": "all-related-updates-share-transition",
+        "plausibility": "Grouping related state changes in one transition can keep a non-urgent view internally consistent.",
+        "falsifyingConstraint": "React text inputs require their controlling state update to remain urgent."
+      },
+      {
+        "optionId": "choice-211f2d6325",
+        "verdict": "correct",
+        "explanation": "The input state commits at urgent priority while the expensive result-driving update can yield to subsequent keystrokes.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-2035bfeb0d",
+        "verdict": "incorrect",
+        "explanation": "Forcing an early input commit does not make the immediately following expensive synchronous result update interruptible.",
+        "misconceptionTag": "flushsync-makes-later-work-concurrent",
+        "plausibility": "`flushSync` can force React to update the DOM before returning from its callback.",
+        "falsifyingConstraint": "The result rendering itself must be able to yield to newer input."
+      }
+    ],
+    "remediationTopics": [
+      "React transitions",
+      "urgent and non-urgent updates",
+      "controlled input responsiveness"
+    ],
+    "learnMore": [
+      {
+        "title": "React: startTransition",
+        "url": "https://react.dev/reference/react/startTransition",
+        "sourceId": "react19-start-transition"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-start-transition",
+          "title": "React: startTransition",
+          "url": "https://react.dev/reference/react/startTransition",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

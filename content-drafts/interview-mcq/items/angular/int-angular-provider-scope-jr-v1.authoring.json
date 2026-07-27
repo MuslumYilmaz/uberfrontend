@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-provider-scope-jr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "dependency-provider-scope",
+    "prompt": "Two unrelated dashboard components under different routes inject `PreferencesService` and must receive the same service instance for the application's lifetime. Which provider placement directly matches that requirement?",
+    "options": [
+      {
+        "id": "choice-696f260d7d",
+        "label": "Register `PreferencesService` in each component's providers so their component injectors share one instance."
+      },
+      {
+        "id": "choice-3b6eaeabca",
+        "label": "Register `PreferencesService` in both routes' providers so their route injectors share one instance."
+      },
+      {
+        "id": "choice-7adefd2662",
+        "label": "Declare `PreferencesService` with `providedIn: 'root'` so both components resolve one root-injector instance."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-7adefd2662",
+    "answerProof": {
+      "summary": "A root-provided service has one application-wide instance, while providers repeated in separate component or route injector branches create branch-scoped instances.",
+      "decisiveConstraints": [
+        "The components belong to different route and component injector branches.",
+        "They require one application-lifetime in-memory instance."
+      ],
+      "claims": [
+        {
+          "statement": "A service provided in root is shared application-wide, while providers registered in child injector branches create instances for those branches.",
+          "sourceIds": [
+            "angular17-dependency-injection"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-696f260d7d",
+        "verdict": "incorrect",
+        "explanation": "Each component registration belongs to that component's injector branch, so the unrelated components resolve different instances.",
+        "misconceptionTag": "component-providers-are-global",
+        "plausibility": "A component provider does share its instance with descendants in that component subtree.",
+        "falsifyingConstraint": "The two components require the same application-lifetime instance."
+      },
+      {
+        "optionId": "choice-3b6eaeabca",
+        "verdict": "incorrect",
+        "explanation": "Providers on two separate routes belong to different route injector branches, so registering the token twice does not merge their instances.",
+        "misconceptionTag": "separate-route-providers-share-instance",
+        "plausibility": "A route provider can share one instance among consumers inside that route's injector branch.",
+        "falsifyingConstraint": "Consumers in different routes must receive the same application-lifetime instance."
+      },
+      {
+        "optionId": "choice-7adefd2662",
+        "verdict": "correct",
+        "explanation": "`providedIn: 'root'` registers the service with the root injector, which supplies the shared application instance required here.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular dependency injection",
+      "hierarchical injectors",
+      "provider lifetime"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 17: Understanding dependency injection",
+        "url": "https://v17.angular.io/guide/dependency-injection",
+        "sourceId": "angular17-dependency-injection"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular17-dependency-injection",
+          "title": "Angular 17: Understanding dependency injection",
+          "url": "https://v17.angular.io/guide/dependency-injection",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular 17 archive; last reviewed 2023-08-29",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

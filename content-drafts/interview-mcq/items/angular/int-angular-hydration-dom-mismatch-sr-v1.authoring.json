@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-hydration-dom-mismatch-sr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "ssr-hydration-dom-ownership",
+    "prompt": "An Angular SSR page reports DOM-mismatch errors after a component appends a status badge during initialization. The badge derives only from the component's `status` value, is required page markup, and its component must remain hydratable. Which fix restores hydration's ownership contract?",
+    "code": {
+      "language": "typescript",
+      "runtime": "angular-22",
+      "source": "ngOnInit() {\n  const badge = document.createElement('span');\n  badge.textContent = this.status;\n  this.host.nativeElement.appendChild(badge);\n}"
+    },
+    "options": [
+      {
+        "id": "choice-d5c03bc94f",
+        "label": "Move the append to `ngAfterViewInit` and perform it through `Renderer2` after the first client render."
+      },
+      {
+        "id": "choice-fe96112685",
+        "label": "Render the badge in the component template so server and client produce one Angular-managed DOM structure."
+      },
+      {
+        "id": "choice-b51a80fc34",
+        "label": "Add `ngSkipHydration` to this component host and let Angular recreate that subtree only on the client."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-fe96112685",
+    "answerProof": {
+      "summary": "Hydration expects the server and client DOM structures to match and remain under Angular's control; declarative template rendering satisfies that contract.",
+      "decisiveConstraints": [
+        "The markup can be represented through Angular's template.",
+        "The affected component must continue participating in hydration."
+      ],
+      "claims": [
+        {
+          "statement": "Angular hydration requires matching DOM structures and recommends refactoring direct DOM manipulation to Angular constructs.",
+          "sourceIds": [
+            "angular22-hydration"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d5c03bc94f",
+        "verdict": "incorrect",
+        "explanation": "Changing the lifecycle hook and DOM API does not make the extra node part of the server-rendered Angular template structure.",
+        "misconceptionTag": "renderer2-makes-imperative-dom-hydratable",
+        "plausibility": "`Renderer2` and `ngAfterViewInit` are useful for some browser-only imperative integrations.",
+        "falsifyingConstraint": "The added node is renderable markup that must match and remain Angular-managed."
+      },
+      {
+        "optionId": "choice-fe96112685",
+        "verdict": "correct",
+        "explanation": "Template rendering lets both environments produce the expected node and keeps subsequent reconciliation inside Angular's DOM model.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b51a80fc34",
+        "verdict": "incorrect",
+        "explanation": "Skipping only this subtree limits the blast radius, but it still opts the component out instead of restoring a matching managed structure.",
+        "misconceptionTag": "local-skip-restores-hydration-contract",
+        "plausibility": "`ngSkipHydration` is a documented temporary escape hatch for incompatible components.",
+        "falsifyingConstraint": "The badge is refactorable and this component must remain hydratable."
+      }
+    ],
+    "remediationTopics": [
+      "Angular hydration",
+      "server-client DOM consistency",
+      "declarative DOM ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Hydration",
+        "url": "https://angular.dev/guide/hydration",
+        "sourceId": "angular22-hydration"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-hydration",
+          "title": "Angular: Hydration",
+          "url": "https://angular.dev/guide/hydration",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

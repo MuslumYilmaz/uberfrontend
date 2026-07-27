@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-derived-filter-mid-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "derived-state",
+    "prompt": "A Profiler trace shows that filtering a large `products` array is expensive. Its identity stays stable while unchanged, but unrelated state still rerenders the component. The list is a pure function of `products` and `query`. React may reuse a render-time cache while dependencies match, but correctness must survive cache eviction. Which refactor removes Effect-copied state and can avoid repeating the filter on unrelated renders?",
+    "options": [
+      {
+        "id": "choice-4fced9e93d",
+        "label": "Derive `visibleProducts` in the parent on every render and pass it to a child wrapped in `memo`."
+      },
+      {
+        "id": "choice-5dd53e2369",
+        "label": "Derive `visibleProducts` in a `useMemo` calculation with `products` and `query` as dependencies."
+      },
+      {
+        "id": "choice-8ab9362e52",
+        "label": "Derive `visibleProducts` from `products` and a `useDeferredValue(query)` during every render."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-5dd53e2369",
+    "answerProof": {
+      "summary": "The list remains a pure render derivation, while `useMemo` offers a performance cache for stable dependencies; discarding that cache only repeats work and cannot change correctness.",
+      "decisiveConstraints": [
+        "The filtered list is fully determined by current `products` and `query` values.",
+        "Profiling has established that the synchronous filtering work is expensive.",
+        "The `products` identity remains stable while its contents are unchanged.",
+        "Cache retention may improve performance but cannot be required for correct output."
+      ],
+      "claims": [
+        {
+          "statement": "React recommends calculating render-only derived data during rendering instead of storing it in state through an Effect.",
+          "sourceIds": [
+            "react19-no-effect-derived-data"
+          ]
+        },
+        {
+          "statement": "React documents `useMemo` as a performance optimization for caching calculations between renders and says code must still work without that memoization.",
+          "sourceIds": [
+            "react19-use-memo"
+          ]
+        },
+        {
+          "statement": "React documents `useDeferredValue` for deferring an update to part of the UI rather than caching an arbitrary calculation.",
+          "sourceIds": [
+            "react19-use-deferred-value"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-4fced9e93d",
+        "verdict": "incorrect",
+        "explanation": "The parent still performs the expensive filter before the child boundary, and the newly derived array also prevents shallow prop equality at that boundary.",
+        "misconceptionTag": "child-memo-caches-parent-calculation",
+        "plausibility": "A memoized child can skip rendering when all props presented to it remain shallowly equal.",
+        "falsifyingConstraint": "The expensive calculation occurs in the parent on every render and produces a new array before `memo` compares props."
+      },
+      {
+        "optionId": "choice-5dd53e2369",
+        "verdict": "correct",
+        "explanation": "The value stays purely derived, and React may reuse the calculation while both dependencies match; recomputation after cache eviction produces the same list.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-8ab9362e52",
+        "verdict": "incorrect",
+        "explanation": "A deferred query can let an urgent update render before a slower result, but it does not cache the filter against unrelated renders using the same deferred value.",
+        "misconceptionTag": "deferred-value-is-calculation-cache",
+        "plausibility": "Deferring a non-urgent value can keep an input responsive while expensive result UI catches up.",
+        "falsifyingConstraint": "The requirement is to avoid repeating identical work when both filter inputs are unchanged."
+      }
+    ],
+    "remediationTopics": [
+      "React derived state",
+      "Effect necessity",
+      "useMemo dependencies",
+      "performance-only cache semantics",
+      "useDeferredValue",
+      "profile-guided memoization"
+    ],
+    "learnMore": [
+      {
+        "title": "React: You Might Not Need an Effect",
+        "url": "https://react.dev/learn/you-might-not-need-an-effect",
+        "sourceId": "react19-no-effect-derived-data"
+      },
+      {
+        "title": "React: useMemo",
+        "url": "https://react.dev/reference/react/useMemo",
+        "sourceId": "react19-use-memo"
+      },
+      {
+        "title": "React: useDeferredValue",
+        "url": "https://react.dev/reference/react/useDeferredValue",
+        "sourceId": "react19-use-deferred-value"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-no-effect-derived-data",
+          "title": "React: You Might Not Need an Effect",
+          "url": "https://react.dev/learn/you-might-not-need-an-effect",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "react19-use-memo",
+          "title": "React: useMemo",
+          "url": "https://react.dev/reference/react/useMemo",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "react19-use-deferred-value",
+          "title": "React: useDeferredValue",
+          "url": "https://react.dev/reference/react/useDeferredValue",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

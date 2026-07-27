@@ -1,0 +1,400 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "frontend-interview-reference-v1",
+  "items": [
+    {
+      "id": "int-html-native-button-jr-v1",
+      "revision": 1,
+      "correctOptionId": "use-native-button-control",
+      "optionRationales": [
+        {
+          "optionId": "focusable-div-with-click-only",
+          "verdict": "incorrect",
+          "explanation": "`tabindex=\"0\"` puts the `div` in the tab order, but neither the role nor focusability supplies native Enter and Space activation. The custom control would still need keyboard handlers and equivalent focus behavior.",
+          "misconceptionTag": "focusability-provides-button-behavior"
+        },
+        {
+          "optionId": "use-native-button-control",
+          "verdict": "correct",
+          "explanation": "A native button already supplies button semantics, keyboard focus, and activation with Enter and Space. `type=\"button\"` also makes the intended non-submit behavior explicit.",
+          "misconceptionTag": null
+        },
+        {
+          "optionId": "anchor-with-prevented-navigation",
+          "verdict": "incorrect",
+          "explanation": "An anchor represents navigation. Using a fragment link for an in-page action introduces the wrong semantic contract and still requires custom prevention instead of using the native action control.",
+          "misconceptionTag": "links-and-buttons-are-interchangeable"
+        }
+      ],
+      "summaryExplanation": "Prefer the native element whose behavior matches the interaction. ARIA can expose button semantics, but it does not add focusability or keyboard activation to a `div`; a real button provides those behaviors without recreating them.",
+      "remediationTopics": [
+        "native HTML interactive controls",
+        "keyboard activation and focus",
+        "ARIA semantics versus behavior"
+      ],
+      "learnMore": [
+        {
+          "title": "MDN: ARIA button role",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/button_role"
+        }
+      ],
+      "provenance": {
+        "wordingOrigin": "original",
+        "copiedText": false,
+        "relatedContentIds": [
+          "html-aria-roles"
+        ],
+        "sources": [
+          {
+            "title": "MDN: ARIA button role",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/button_role",
+            "role": "technical-verification",
+            "license": "CC-BY-SA-2.5-or-later",
+            "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+            "retrievedAt": "2026-07-22",
+            "revision": "last modified 2026-02-23",
+            "copiedText": false
+          }
+        ]
+      },
+      "review": {
+        "status": "reference-candidate",
+        "technicalReview": "passed",
+        "editorialReview": "passed",
+        "blindReview": {
+          "status": "passed",
+          "reviewer": "codex-independent-blind-review",
+          "reviewedAt": "2026-07-22",
+          "notes": [
+            "Single-best answer confirmed: the native non-submit button uniquely supplies correct semantics, focus, and Enter/Space activation with the least custom code; distractors represent focusability-only and link/button misconceptions."
+          ]
+        },
+        "approvedBy": null,
+        "approvedAt": null,
+        "lengthClueWaiver": null
+      }
+    },
+    {
+      "id": "int-js-nested-microtask-mid-v1",
+      "revision": 1,
+      "correctOptionId": "queued-microtasks-remain-fifo",
+      "optionRationales": [
+        {
+          "optionId": "nested-microtask-runs-immediately",
+          "verdict": "incorrect",
+          "explanation": "The `commit` microtask is queued while `validate` is running. It is appended behind the already queued `measure` microtask rather than running immediately inside the current callback.",
+          "misconceptionTag": "nested-microtask-jumps-the-queue"
+        },
+        {
+          "optionId": "timer-runs-before-microtasks",
+          "verdict": "incorrect",
+          "explanation": "A zero-delay timeout schedules a later task; it does not interrupt the microtask checkpoint. The Promise reaction and both queued microtasks finish before the timer callback runs.",
+          "misconceptionTag": "zero-delay-timer-runs-first"
+        },
+        {
+          "optionId": "queued-microtasks-remain-fifo",
+          "verdict": "correct",
+          "explanation": "The script logs `open` and `close` synchronously. Microtasks then run in queue order: `validate`, the already queued `measure`, and the nested `commit`; the timeout logs `notify` in a later task.",
+          "misconceptionTag": null
+        }
+      ],
+      "summaryExplanation": "After the current script finishes, the browser drains the microtask queue before taking the timeout task. A microtask queued by another microtask is appended to the same FIFO queue, so work already waiting keeps its place.",
+      "remediationTopics": [
+        "browser event-loop phases",
+        "microtask checkpoint ordering",
+        "FIFO scheduling of nested microtasks"
+      ],
+      "learnMore": [
+        {
+          "title": "MDN: Using microtasks in JavaScript with queueMicrotask()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide"
+        }
+      ],
+      "verification": {
+        "expectedOutput": [
+          "open",
+          "close",
+          "validate",
+          "measure",
+          "commit",
+          "notify"
+        ]
+      },
+      "provenance": {
+        "wordingOrigin": "original",
+        "copiedText": false,
+        "relatedContentIds": [
+          "js-event-loop",
+          "js-event-loop-nested-microtask-output"
+        ],
+        "sources": [
+          {
+            "title": "MDN: Using microtasks in JavaScript with queueMicrotask()",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide",
+            "role": "technical-verification",
+            "license": "CC-BY-SA-2.5-or-later",
+            "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+            "retrievedAt": "2026-07-22",
+            "copiedText": false
+          },
+          {
+            "title": "Lydia Hallie: JavaScript Questions",
+            "url": "https://github.com/lydiahallie/javascript-questions",
+            "role": "format-inspiration",
+            "license": "MIT",
+            "licenseUrl": "https://github.com/lydiahallie/javascript-questions/blob/master/LICENSE",
+            "retrievedAt": "2026-07-22",
+            "copiedText": false
+          }
+        ]
+      },
+      "review": {
+        "status": "reference-candidate",
+        "technicalReview": "passed",
+        "editorialReview": "passed",
+        "blindReview": {
+          "status": "passed",
+          "reviewer": "codex-independent-blind-review",
+          "reviewedAt": "2026-07-22",
+          "notes": [
+            "Output verified as open, close, validate, measure, commit, notify; equal-length choices isolate nested-microtask FIFO and timer-priority misconceptions without positional or wording clues."
+          ]
+        },
+        "approvedBy": null,
+        "approvedAt": null,
+        "lengthClueWaiver": null
+      }
+    },
+    {
+      "id": "int-vue-computed-watch-mid-v1",
+      "revision": 1,
+      "correctOptionId": "computed-total-watch-currency",
+      "optionRationales": [
+        {
+          "optionId": "computed-total-watch-currency",
+          "verdict": "correct",
+          "explanation": "`grandTotal` is declarative derived state, so a computed value keeps it synchronized without another writable source of truth. Analytics is an external effect triggered by a state change, which is a watcher job.",
+          "misconceptionTag": null
+        },
+        {
+          "optionId": "watchers-copy-both-results",
+          "verdict": "incorrect",
+          "explanation": "The analytics watcher is appropriate, but copying the total with another watcher creates duplicated writable state that can drift from its inputs. The total should remain a pure derived value.",
+          "misconceptionTag": "watch-is-the-default-reactivity-tool"
+        },
+        {
+          "optionId": "computed-getter-sends-analytics",
+          "verdict": "incorrect",
+          "explanation": "Computed getters should derive values without side effects. Their evaluation is demand-driven and cached, so using one to send analytics couples an imperative action to reads of a derived value.",
+          "misconceptionTag": "computed-getters-should-run-side-effects"
+        }
+      ],
+      "summaryExplanation": "Use `computed` for a value produced from reactive inputs and consumed by rendering. Use `watch` when a change should trigger imperative work such as analytics, persistence, or a network request.",
+      "remediationTopics": [
+        "Vue computed properties",
+        "watchers for side effects",
+        "avoiding duplicated reactive state"
+      ],
+      "learnMore": [
+        {
+          "title": "Vue: Computed Properties",
+          "url": "https://vuejs.org/guide/essentials/computed.html"
+        },
+        {
+          "title": "Vue: Watchers",
+          "url": "https://vuejs.org/guide/essentials/watchers.html"
+        }
+      ],
+      "provenance": {
+        "wordingOrigin": "original",
+        "copiedText": false,
+        "relatedContentIds": [
+          "vue-computed-vs-watchers"
+        ],
+        "sources": [
+          {
+            "title": "Vue: Computed Properties",
+            "url": "https://vuejs.org/guide/essentials/computed.html",
+            "role": "technical-verification",
+            "license": "CC-BY-4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+            "retrievedAt": "2026-07-22",
+            "revision": "Vue 3 documentation",
+            "copiedText": false
+          },
+          {
+            "title": "Vue: Watchers",
+            "url": "https://vuejs.org/guide/essentials/watchers.html",
+            "role": "technical-verification",
+            "license": "CC-BY-4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+            "retrievedAt": "2026-07-22",
+            "revision": "Vue 3 documentation",
+            "copiedText": false
+          }
+        ]
+      },
+      "review": {
+        "status": "reference-candidate",
+        "technicalReview": "passed",
+        "editorialReview": "passed",
+        "blindReview": {
+          "status": "passed",
+          "reviewer": "codex-independent-blind-review",
+          "reviewedAt": "2026-07-22",
+          "notes": [
+            "Computed-plus-watch is uniquely best: the watcher-only alternative works but duplicates derived state, while the computed-only alternative puts an external side effect in a demand-driven getter."
+          ]
+        },
+        "approvedBy": null,
+        "approvedAt": null,
+        "lengthClueWaiver": null
+      }
+    },
+    {
+      "id": "int-react-stale-search-sr-v1",
+      "revision": 1,
+      "correctOptionId": "cleanup-guards-every-async-commit",
+      "optionRationales": [
+        {
+          "optionId": "debounce-with-unguarded-handlers",
+          "verdict": "incorrect",
+          "explanation": "Debouncing can reduce request volume, but any two requests that are sent can still resolve out of order. Unguarded handlers therefore still allow an older Effect run to overwrite newer state.",
+          "misconceptionTag": "debounce-prevents-response-races"
+        },
+        {
+          "optionId": "cleanup-guards-every-async-commit",
+          "verdict": "correct",
+          "explanation": "Cleanup invalidates the previous Effect run before the next one owns the screen. Checking its per-run flag before result, error, and final loading writes prevents every stale completion from committing state.",
+          "misconceptionTag": null
+        },
+        {
+          "optionId": "memoize-promise-by-query",
+          "verdict": "incorrect",
+          "explanation": "Memoization can reuse a Promise for the same dependency value, but it does not cancel or invalidate Promises created for earlier queries. Their callbacks can still commit after a newer response.",
+          "misconceptionTag": "memoization-enforces-latest-request-ownership"
+        }
+      ],
+      "summaryExplanation": "Each Effect run needs its own ownership token. Cleanup invalidates the old run, and every asynchronous state write—including error and final loading updates—must check that ownership before committing.",
+      "remediationTopics": [
+        "React Effect cleanup",
+        "async response race conditions",
+        "latest-request state ownership"
+      ],
+      "learnMore": [
+        {
+          "title": "React: useEffect",
+          "url": "https://react.dev/reference/react/useEffect"
+        }
+      ],
+      "provenance": {
+        "wordingOrigin": "original",
+        "copiedText": false,
+        "relatedContentIds": [
+          "react-useeffect-purpose"
+        ],
+        "sources": [
+          {
+            "title": "React: useEffect",
+            "url": "https://react.dev/reference/react/useEffect",
+            "role": "technical-verification",
+            "license": "CC-BY-4.0",
+            "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+            "retrievedAt": "2026-07-22",
+            "revision": "React 19.2 documentation",
+            "copiedText": false
+          }
+        ]
+      },
+      "review": {
+        "status": "reference-candidate",
+        "technicalReview": "passed",
+        "editorialReview": "passed",
+        "blindReview": {
+          "status": "passed",
+          "reviewer": "codex-independent-blind-review",
+          "reviewedAt": "2026-07-22",
+          "notes": [
+            "Per-Effect cleanup ownership is the only option that prevents stale result, error, and final loading commits; debounce and Promise memoization do not guarantee response order."
+          ]
+        },
+        "approvedBy": null,
+        "approvedAt": null,
+        "lengthClueWaiver": null
+      }
+    },
+    {
+      "id": "int-angular-onpush-reference-sr-v1",
+      "revision": 1,
+      "correctOptionId": "replace-parent-input-reference",
+      "optionRationales": [
+        {
+          "optionId": "switch-child-to-default-detection",
+          "verdict": "incorrect",
+          "explanation": "Default detection may make this mutation appear to work during broader checks, but it removes the intended OnPush boundary instead of fixing the parent's state-update contract.",
+          "misconceptionTag": "default-detection-fixes-mutable-input-design"
+        },
+        {
+          "optionId": "manually-mark-child-after-mutation",
+          "verdict": "incorrect",
+          "explanation": "Manual marking can schedule a check, but requiring the parent to reach into the child after each mutation is a brittle workaround. It preserves the same ambiguous mutable input boundary.",
+          "misconceptionTag": "manual-checking-is-the-primary-input-fix"
+        },
+        {
+          "optionId": "replace-parent-input-reference",
+          "verdict": "correct",
+          "explanation": "Creating a new object gives the OnPush child a new input reference at the template boundary. Angular can then recognize the input change while the component retains its OnPush strategy.",
+          "misconceptionTag": null
+        }
+      ],
+      "summaryExplanation": "An OnPush input backed by a mutable object can stay stale when nested fields change but the reference does not. Replace the parent value immutably so the template binding supplies a new reference to the child.",
+      "remediationTopics": [
+        "Angular OnPush input boundaries",
+        "object reference identity",
+        "immutable parent state updates"
+      ],
+      "learnMore": [
+        {
+          "title": "Angular: Skipping component subtrees",
+          "url": "https://angular.dev/best-practices/skipping-subtrees"
+        }
+      ],
+      "provenance": {
+        "wordingOrigin": "original",
+        "copiedText": false,
+        "relatedContentIds": [
+          "angular-onpush-change-detection-debugging-real-bug",
+          "angular-change-detection-strategies"
+        ],
+        "sources": [
+          {
+            "title": "Angular: Skipping component subtrees",
+            "url": "https://angular.dev/best-practices/skipping-subtrees",
+            "role": "technical-verification",
+            "license": "CC-BY-4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+            "retrievedAt": "2026-07-22",
+            "revision": "Angular docs v22.0.7+sha-388daea; behavior applies to Angular 17–22",
+            "copiedText": false
+          }
+        ]
+      },
+      "review": {
+        "status": "reference-candidate",
+        "technicalReview": "passed",
+        "editorialReview": "passed",
+        "blindReview": {
+          "status": "passed",
+          "reviewer": "codex-independent-blind-review",
+          "reviewedAt": "2026-07-22",
+          "notes": [
+            "With explicit OnPush and parent ownership preserved, replacing the input reference is the unique root-cause fix; Default detection and parent-driven child marking are symptom-level workarounds."
+          ]
+        },
+        "approvedBy": null,
+        "approvedAt": null,
+        "lengthClueWaiver": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-ssr-platform-service-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "ssr-platform-specific-dependency-boundary",
+    "prompt": "An Angular 22 checkout runs with SSR and hydration. Analytics must use a browser SDK in the browser and a server logger during SSR. Components must inject one API, and neither implementation may import the other platform's dependency. Which design satisfies that boundary?",
+    "options": [
+      {
+        "id": "choice-9c5fce67d6",
+        "label": "Inject `PLATFORM_ID` into every analytics caller and guard each browser SDK invocation with `isPlatformBrowser`."
+      },
+      {
+        "id": "choice-6e8d986843",
+        "label": "Keep one analytics implementation for both platforms, import both dependencies there, and branch when the global `window` is unavailable."
+      },
+      {
+        "id": "choice-4bf76fe5ef",
+        "label": "Define an analytics token, provide its browser class normally, and override it with a server class in server configuration."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-4bf76fe5ef",
+    "answerProof": {
+      "summary": "A shared abstraction with platform-specific providers keeps component code platform-neutral and gives each implementation only its platform dependency.",
+      "decisiveConstraints": [
+        "Components must inject one platform-neutral API.",
+        "Browser and server implementations may not import each other's dependencies."
+      ],
+      "claims": [
+        {
+          "statement": "Angular SSR guidance recommends separate service implementations and provider overrides when behavior differs between browser and server.",
+          "sourceIds": [
+            "angular22-ssr-platform-providers"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-9c5fce67d6",
+        "verdict": "incorrect",
+        "explanation": "This spreads platform branching across callers and still makes components depend on browser-specific behavior.",
+        "misconceptionTag": "platform-checks-are-an-architecture-boundary",
+        "plausibility": "`isPlatformBrowser` can guard an isolated browser-only operation.",
+        "falsifyingConstraint": "Every component must depend only on one platform-neutral API."
+      },
+      {
+        "optionId": "choice-6e8d986843",
+        "verdict": "incorrect",
+        "explanation": "The shared class imports both platform dependencies, directly violating the required dependency separation.",
+        "misconceptionTag": "runtime-branch-separates-dependencies",
+        "plausibility": "A runtime branch can prevent one code path from executing.",
+        "falsifyingConstraint": "Neither implementation may import the other platform's dependency."
+      },
+      {
+        "optionId": "choice-4bf76fe5ef",
+        "verdict": "correct",
+        "explanation": "The token keeps consumers stable while browser and server configurations select isolated, platform-specific implementations.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular SSR",
+      "platform-specific providers",
+      "dependency inversion",
+      "server-compatible services"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Server-side and hybrid rendering",
+        "url": "https://angular.dev/guide/ssr",
+        "sourceId": "angular22-ssr-platform-providers"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-ssr-platform-providers",
+          "title": "Angular: Server-side and hybrid rendering",
+          "url": "https://angular.dev/guide/ssr",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

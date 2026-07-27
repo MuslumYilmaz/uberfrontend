@@ -1,0 +1,334 @@
+{
+  "artifacts": {
+    "private": {
+      "file": "frontend-interview-bank-v1.private.json",
+      "sha256": "ce2577fdc6b1e0379f09678415615836f7abc65263d0b12f142ec63970af9dc8"
+    },
+    "public": {
+      "file": "frontend-interview-bank-v1.public.json",
+      "sha256": "0a05a6d1edb27a7e628d49bb187d0eb04ddeeb56d9c57563274c07fcd97e7097"
+    }
+  },
+  "bankId": "frontend-interview-gold-bank",
+  "bankVersion": "1.0.0",
+  "blueprintId": "frontend-interview-bank-v1",
+  "contentHash": "cb3ae89566f78347493c588f0690a162dc83a2a13327a10ab9735d12db8d7f8e",
+  "finalApproval": {
+    "approvedAt": "2026-07-27",
+    "approvedBy": "project-owner",
+    "bankContentHash": "cb3ae89566f78347493c588f0690a162dc83a2a13327a10ab9735d12db8d7f8e",
+    "bankVersion": "1.0.0",
+    "notes": [
+      "Project owner approved this exact unchanged candidate bank hash for Interview Mode V1.",
+      "Approval was recorded on 2026-07-27 UTC after deterministic generation, corpus validation, and real Chromium code-output verification passed."
+    ]
+  },
+  "itemCount": 60,
+  "itemRefs": [
+    {
+      "contentHash": "0eac21711a15beab255b7c5bcf5893e2dbae7182846699f1d9b028d5ff092d6d",
+      "id": "int-angular-async-pipe-mid-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "41872245d7461c92e58f2616376a323ac61d9b4d4da350ac8a8766e4240b3f3a",
+      "id": "int-angular-binding-direction-jr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "5e58a8bfc232fabe210fb02fb08f572b79f028e73011621ee295c2d93a6ddcea",
+      "id": "int-angular-hydration-dom-mismatch-sr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "1024c62338ae9a93f6e83d540f61f40868203b0688b5ade456c76dc162a61328",
+      "id": "int-angular-onpush-reference-sr-v1",
+      "revision": 4
+    },
+    {
+      "contentHash": "937db492ab3c53f7492170f137c711075cd96bc09f4246a6e86e65a6b652a948",
+      "id": "int-angular-output-nonbubbling-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "90df2c0a15c3f3503c3c3d06b0a0aa6beda58ff9dec25883aa7a542b1ce3f991",
+      "id": "int-angular-provider-scope-jr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "771e0a4bf877b45c860fff698e20c02c2d12811fceaf59045f2160d260763955",
+      "id": "int-angular-reactive-form-guard-jr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "be4661e84e535e49688e2b692b0c13ae22b0c9ce2541401340e105fb938b26ea",
+      "id": "int-angular-ssr-platform-service-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "f7cbcba7fe2512364acaa9021a00d7e62cec6c2bdba886c6ed49996e4fb0eac6",
+      "id": "int-angular-switchmap-search-mid-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "d751417e304c8cea0e727c0dca0b4004810847abcf7f77a1654c4f60e70d9415",
+      "id": "int-angular-tosignal-lifetime-mid-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "2c436496b0f11cd1a6d38e64fecf928a3e4b5bde87a8e900d6aa378d502c46af",
+      "id": "int-angular-viewchild-chart-lifecycle-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "09b32751c4e026f59f0250dddbb37b7fea4172b4758bcc03e3b21b38f444c286",
+      "id": "int-angular-zoneless-view-notification-sr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "f7274b6b6766f3e4471da747ca2aab050dd6a819f0ba88624725f1fa705a5788",
+      "id": "int-css-box-sizing-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "f1cd8b54f61a006c29dc09c3ba82b277762121d785b627e583588ae511e08756",
+      "id": "int-css-flex-min-width-jr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "9caf377ee3d0e6f5c236fbd08295ebf48f361a02abf05319c5155cd9c228520f",
+      "id": "int-css-image-intrinsic-ratio-sr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "4a8b5532592dd8ea542cc4ee6e802028d027fe0da83f05ee99951faee1e99a48",
+      "id": "int-css-responsive-grid-overflow-mid-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "b4e01f5526bbb1dd5c445feb0159a911d8186aed715943ec4eec71cfe94f4037",
+      "id": "int-css-stacking-context-mid-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "a2ea24d29824505d791b2507119c0490de06f8fc118b0df64b37b4e2d35f7c25",
+      "id": "int-css-user-preferences-containment-sr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "ce76909e4665aafd7454e5683808121ba7ef56719bf32310f57f899bc22ed2a4",
+      "id": "int-html-defer-order-mid-v1",
+      "revision": 4
+    },
+    {
+      "contentHash": "3a495d40fcb6df209bc280b5fef04b49d1b9e5008265a3ecb1ebf3b291a666e2",
+      "id": "int-html-dialog-focus-contract-sr-v1",
+      "revision": 4
+    },
+    {
+      "contentHash": "28daabf523fb43cccb67b715470fbb075e3aecad56aa2e837839a8a26bd8a94d",
+      "id": "int-html-icon-button-name-mid-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "7a3b2edb4bde5bd31fc9b01c66150f70a6ae5d3614ca5cdec063ab57749522a5",
+      "id": "int-html-label-submit-jr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "9fa2877eb3e83bfaf58c0c5185e915c4a5c54a7fa241a5387cae052a36331ad7",
+      "id": "int-html-native-button-jr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "499c2c8e5ea091c1c0b234fa6fa686cf08c3d316411afd8c6714aaf7485b015a",
+      "id": "int-html-valid-navigation-ssr-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "677c07fe90a492ab63792a5141ac74fde6f2bc77a684cb33c881fc9c42e29ba9",
+      "id": "int-js-abort-ownership-sr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "906727e893c88ff2e6184da186addc465570c1ea4707eee43731d54d3f4667f6",
+      "id": "int-js-async-return-rejection-sr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "7c02b7f13760a442cdea1985fa54db4e9b6d9fd4d2b8921f91319714458909ae",
+      "id": "int-js-dataset-boolean-jr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "ce396917dc83897bf70e86657f6a561e51b2111021171f637f4633d8bda763ae",
+      "id": "int-js-event-target-currenttarget-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "6995cdaf6b970366327b34acf066f29cb513d74cbfa18a9feca3adccf2d88103",
+      "id": "int-js-finally-recovery-mid-v1",
+      "revision": 4
+    },
+    {
+      "contentHash": "126d230cf0b45047157e4e2e209206f27a2a5cd40fb5a0a4627724156d0bbf6c",
+      "id": "int-js-finally-throws-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "e7433b92786cc8d297a28b7599340871589b90a1cdae434ba768dd2d2781a7c9",
+      "id": "int-js-listener-cleanup-mid-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "0a52d9da3695575e06f1655bccf5060c05fca04b48e6b194ec672716ca68cc0e",
+      "id": "int-js-nested-microtask-mid-v1",
+      "revision": 4
+    },
+    {
+      "contentHash": "b96d10dbe28411f5407cab16c5759011c5d24ac743e46980a71ffad5a7bc1230",
+      "id": "int-js-nullish-default-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "7c93e9b72e5daa0ca9d1736988fd20220cf146dac66a25d375cc66f9685d3e5f",
+      "id": "int-js-observer-lifecycle-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "dafce363bc8ede02f8278a4cf00ead15dda04ebce69476eb944326cf9333e210",
+      "id": "int-js-task-order-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "ab7825a2ade0db7b668424086e65b3cb8dd933e353f2293739550f09b80ff870",
+      "id": "int-js-worker-long-task-sr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "be1d15dca5463cf6e8fd4316b6cea2a97d8be0b8cdbc4190f39008710540b7e0",
+      "id": "int-react-controlled-input-jr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "a768e4c87531619d718b6abb4b057cbc5d684eddf299896f09aa03de0542049c",
+      "id": "int-react-derived-filter-mid-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "0aa041fe9967896a68303f31bd309d20a1243bebf811ee916ac9430a2a91e7b1",
+      "id": "int-react-effect-connection-cleanup-mid-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "4bbb784b1ae23557720f43990401eb2cb938129a0f44426f91fb607210d975e9",
+      "id": "int-react-functional-queue-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "faa7490d2246c11ad5cdf88eb26a4c99bbf6eb6872562be6438615078ab8d630",
+      "id": "int-react-immutable-object-state-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "097b15d84ac792e64a0f687425b265a77277ea6f4896340b012a6caa90357cee",
+      "id": "int-react-lift-shared-state-jr-v1",
+      "revision": 8
+    },
+    {
+      "contentHash": "367676570077ecfbf1977d9794c9ce5a129bb2a666dd43ca31928a1bd724b420",
+      "id": "int-react-profile-stable-props-sr-v1",
+      "revision": 4
+    },
+    {
+      "contentHash": "51ef0732809d103958a034094c92c4ef7d56058056149b1d3f920a07c2c996fa",
+      "id": "int-react-split-hot-context-mid-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "de7fa51284f6a096f008e486d9347b95da9ac318da8868e31db504a6ee4862ca",
+      "id": "int-react-ssr-multiroot-useid-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "b43ff90ef55c4e99cf4748954052f90afa5d4df44ee245a9fa64097f0ce19c74",
+      "id": "int-react-stable-list-key-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "48a35dada464c92f6952e15bacf15dc5979979f2a48581011cc303e7fd553746",
+      "id": "int-react-stale-search-sr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "a8495d3ea833a3f3408da2d20a2fd38be3ea41ec0ebfca9da6366120108a8c41",
+      "id": "int-react-transition-input-priority-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "892a804df4a10c763b7bb111a25d48a664695e54e6f1971b1569c949f40104e8",
+      "id": "int-vue-composable-lifecycle-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "731802eb9a4857e89c9467dc91c48480a607f510c573c5005e7db9cd683cbe9c",
+      "id": "int-vue-computed-watch-mid-v1",
+      "revision": 6
+    },
+    {
+      "contentHash": "1b29a846941f3de0d6d3bd5573bbde305791a8e05e49fbe2c10452979ff96273",
+      "id": "int-vue-custom-input-model-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "d00906ca7569dcaadb8ff9d574965792b0e675ea73b4da1d77c129fb457e4ba2",
+      "id": "int-vue-keepalive-active-socket-sr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "dd72f60247128ac7729b425e4a250c5bf51151d9cbe7ec477e04d47810be434e",
+      "id": "int-vue-multiroot-fallthrough-attrs-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "834c41ac81ec70851955793ed78d70c253215c6e4ebb08730e593055cfd2e7d8",
+      "id": "int-vue-pinia-request-scope-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "bdc6d6f162fb528516a10d15f52a644e6c562de725ce546b914bb178cf14b01d",
+      "id": "int-vue-prop-event-ownership-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "929855f1ada061f96576bd5b5923b0cb411f1f97995021239b966bacd055b632",
+      "id": "int-vue-prop-watch-getter-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "8b8a4d834f6a9dfa1f20fb80c79e4a9cc134b4142ca871970d40d1f76a34f3b0",
+      "id": "int-vue-ref-primitive-jr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "cdd0c1c741b87902a508c2c2707cf3c393e76ca18fad30ec34976eecb5d34376",
+      "id": "int-vue-stable-row-props-sr-v1",
+      "revision": 3
+    },
+    {
+      "contentHash": "84ca91fe3e74237f940ad11890f4c7d89777ed7101b5ea0b05423cb11f251dba",
+      "id": "int-vue-timezone-hydration-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "de813e489f3b5011c0776be6cc9f19f1cff477bf97d50bac25a2ae57ad7ba70e",
+      "id": "int-vue-watcher-abort-cleanup-mid-v1",
+      "revision": 2
+    }
+  ],
+  "language": "en",
+  "manifestId": "frontend-interview-bank-v1",
+  "schemaVersion": "2.0.0",
+  "status": "editorial-gold",
+  "totalEstimatedSeconds": 7350
+}

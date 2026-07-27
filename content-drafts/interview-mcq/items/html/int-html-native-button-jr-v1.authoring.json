@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-native-button-jr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "html",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "native-button-semantics",
+    "prompt": "A checkout drawer uses `<div role=\"button\" onclick=\"placeOrder()\">Place order</div>`. Mouse activation works, but Tab skips it and Enter and Space do nothing. It performs a non-submit in-page action, and no custom element is required. Which fix needs the least custom interaction code?",
+    "options": [
+      {
+        "id": "choice-194b7f3f57",
+        "label": "Keep the `div`, add `tabindex=\"0\"`, and emulate both Enter and Space activation in a key handler."
+      },
+      {
+        "id": "choice-7282c9b141",
+        "label": "Use `<button type=\"button\">Place order</button>` and attach the same in-page action handler."
+      },
+      {
+        "id": "choice-4ef72844e2",
+        "label": "Use `<a href=\"#\">Place order</a>` and cancel navigation before running the same action handler."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-7282c9b141",
+    "answerProof": {
+      "summary": "A native button supplies focus, button semantics, and Enter and Space activation without rebuilding those behaviors on a generic element.",
+      "decisiveConstraints": [
+        "The control performs an action rather than navigation.",
+        "It is not a form submit button.",
+        "The solution should minimize custom keyboard behavior."
+      ],
+      "claims": [
+        {
+          "statement": "Adding role button to a generic element does not add focus or keyboard activation, while a native button provides that behavior.",
+          "sourceIds": [
+            "mdn-button-role"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-194b7f3f57",
+        "verdict": "incorrect",
+        "explanation": "This can reproduce the stated keyboard paths, but it rebuilds interaction behavior that the native element already supplies with less code.",
+        "misconceptionTag": "manual-emulation-is-equally-maintainable",
+        "plausibility": "The existing role, tabindex, and complete key handler can make the generic element operable for these inputs.",
+        "falsifyingConstraint": "The prompt asks for the solution with the least custom interaction code."
+      },
+      {
+        "optionId": "choice-7282c9b141",
+        "verdict": "correct",
+        "explanation": "The native button matches the action and supplies the required focus and keyboard behavior; type button prevents accidental submission.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-4ef72844e2",
+        "verdict": "incorrect",
+        "explanation": "An anchor represents navigation, so cancelling a fake destination uses the wrong primitive and adds unnecessary behavior.",
+        "misconceptionTag": "links-and-buttons-are-interchangeable",
+        "plausibility": "Anchors are keyboard-focusable and can visually resemble buttons.",
+        "falsifyingConstraint": "The control performs an in-page action and has no navigation destination."
+      }
+    ],
+    "remediationTopics": [
+      "native-interactive-elements",
+      "keyboard-activation",
+      "button-versus-link"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: ARIA button role",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/button_role",
+        "sourceId": "mdn-button-role"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "html-aria-roles"
+      ],
+      "sources": [
+        {
+          "id": "mdn-button-role",
+          "title": "MDN: ARIA button role",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/button_role",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

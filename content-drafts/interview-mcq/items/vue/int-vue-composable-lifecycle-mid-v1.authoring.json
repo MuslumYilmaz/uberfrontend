@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-composable-lifecycle-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "composable-effect-lifetime",
+    "prompt": "A component calls `useViewportWidth()` synchronously from `<script setup>`. The composable must expose reactive width and leave no `resize` listener after its component unmounts. Which lifetime design best satisfies both requirements?",
+    "options": [
+      {
+        "id": "choice-ef6510bde2",
+        "label": "Add the listener in `onMounted`, remove that same listener in `onUnmounted`, and return the reactive width ref."
+      },
+      {
+        "id": "choice-50f4f35ab0",
+        "label": "Add the listener when the composable module loads, keep it for the page lifetime, and return the width ref."
+      },
+      {
+        "id": "choice-bbe2ea9afe",
+        "label": "Start a timer in the composable, register both lifecycle hooks inside its callback, and return the width ref."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-ef6510bde2",
+    "answerProof": {
+      "summary": "Synchronous composable invocation lets its lifecycle hooks bind to the active component instance; paired mount and unmount hooks then scope the browser listener to that component.",
+      "decisiveConstraints": [
+        "The composable is called synchronously during component setup.",
+        "The listener must be removed when that component unmounts."
+      ],
+      "claims": [
+        {
+          "statement": "Vue composables should clean up side effects in `onUnmounted`, and lifecycle APIs must be registered synchronously while a component is being set up.",
+          "sourceIds": [
+            "vue35-composables"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ef6510bde2",
+        "verdict": "correct",
+        "explanation": "The paired hooks attach the listener only in the browser and remove the identical callback as part of the owning component's lifecycle.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-50f4f35ab0",
+        "verdict": "incorrect",
+        "explanation": "Module scope outlives individual component instances, so the listener remains active after every component using the composable has unmounted.",
+        "misconceptionTag": "module-lifetime-equals-component-lifetime",
+        "plausibility": "A single module listener can avoid attaching duplicate listeners when several components consume the same value.",
+        "falsifyingConstraint": "The stated ownership boundary requires no listener after the consuming component unmounts."
+      },
+      {
+        "optionId": "choice-bbe2ea9afe",
+        "verdict": "incorrect",
+        "explanation": "Lifecycle hook registration inside a later timer is no longer synchronous setup work and cannot reliably bind to the intended component instance.",
+        "misconceptionTag": "lifecycle-hooks-can-register-later",
+        "plausibility": "The timer callback still closes over the composable's local width ref and listener function.",
+        "falsifyingConstraint": "Vue lifecycle registration must happen synchronously while the owner component is being set up."
+      }
+    ],
+    "remediationTopics": [
+      "Vue composables",
+      "component lifecycle hooks",
+      "event listener cleanup"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Composables",
+        "url": "https://vuejs.org/guide/reusability/composables.html",
+        "sourceId": "vue35-composables"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-composables",
+          "title": "Vue: Composables",
+          "url": "https://vuejs.org/guide/reusability/composables.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-prop-watch-getter-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "reactive-prop-watch-sources",
+    "prompt": "In Vue 3.5 `<script setup>`, a child destructures `productId` from `defineProps` and calls `watch(productId, loadProduct)`. Vue warns that a value, not a reactive source, was passed. Which replacement tracks later prop changes and also performs the initial load?",
+    "options": [
+      {
+        "id": "choice-9fc7fb66da",
+        "label": "Create `ref(productId)` once and watch that local ref with `immediate: true` for product loads."
+      },
+      {
+        "id": "choice-6460e4645f",
+        "label": "Watch `() => productId` with `immediate: true` so Vue reads the reactive prop whenever the watcher runs."
+      },
+      {
+        "id": "choice-3eb5d0b8ce",
+        "label": "Place `productId` in a plain array and watch that array with `immediate: true` for every product load."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-6460e4645f",
+    "answerProof": {
+      "summary": "In Vue 3.5 the destructured prop is reactive when accessed in the same block, but `watch` still needs a source; a getter defers the prop read so dependencies can be tracked.",
+      "decisiveConstraints": [
+        "The component uses Vue 3.5 reactive prop destructuring.",
+        "The watcher must run initially and after every parent prop change."
+      ],
+      "claims": [
+        {
+          "statement": "Vue 3.5 keeps destructured props reactive, but passing one to `watch` directly passes its current value; wrapping access in a getter preserves tracking.",
+          "sourceIds": [
+            "vue35-reactive-prop-destructure"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-9fc7fb66da",
+        "verdict": "incorrect",
+        "explanation": "The new ref captures the prop's current value but is not linked to later parent updates, so only changes made to the local copy trigger the watcher.",
+        "misconceptionTag": "ref-copy-retains-source-link",
+        "plausibility": "A ref is a valid watcher source and `immediate` would correctly perform the first load.",
+        "falsifyingConstraint": "Later parent updates must be observed without manually synchronizing a second local source."
+      },
+      {
+        "optionId": "choice-6460e4645f",
+        "verdict": "correct",
+        "explanation": "The getter supplies a valid watcher source and reads the compiler-reactive prop for dependency tracking; `immediate` covers the initial request.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-3eb5d0b8ce",
+        "verdict": "incorrect",
+        "explanation": "A plain array containing the current string is not an array of reactive sources, so it does not establish tracking of subsequent prop reads.",
+        "misconceptionTag": "plain-array-makes-watch-sources",
+        "plausibility": "Vue's watcher API does support arrays when each entry is itself a valid reactive source.",
+        "falsifyingConstraint": "The array contains the already-read primitive value rather than a getter, ref, or reactive object source."
+      }
+    ],
+    "remediationTopics": [
+      "Vue watcher sources",
+      "reactive prop destructuring",
+      "getter-based dependency tracking"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Props",
+        "url": "https://vuejs.org/guide/components/props.html",
+        "sourceId": "vue35-reactive-prop-destructure"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-reactive-prop-destructure",
+          "title": "Vue: Props",
+          "url": "https://vuejs.org/guide/components/props.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

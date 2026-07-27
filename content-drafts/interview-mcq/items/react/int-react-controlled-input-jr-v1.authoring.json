@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-controlled-input-jr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "controlled-input-edit-normalization",
+    "prompt": "A React price field must let a parent Reset replace its displayed text immediately. During editing, users may temporarily enter `''`, `'-'`, or `'12.'`; that exact text must remain visible until blur, when valid input is normalized and committed as a number. Which state design preserves both contracts?",
+    "options": [
+      {
+        "id": "choice-1b1d13d138",
+        "label": "Store `Number(event.target.value)` on every change; stringify it for display, and let Reset replace that number."
+      },
+      {
+        "id": "choice-383ae59733",
+        "label": "Render committed numbers with `defaultValue`; leave interim text in the DOM, and save its parsed value on blur."
+      },
+      {
+        "id": "choice-ad5701d9d0",
+        "label": "Store editing text as controlled string state; parse on blur, and let Reset replace that string."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-ad5701d9d0",
+    "answerProof": {
+      "summary": "Controlled string state preserves temporary editing representations and responds to parent resets; blur owns the later parse and normalized numeric commit.",
+      "decisiveConstraints": [
+        "Parent Reset must immediately control the displayed text.",
+        "Temporary strings such as an empty value, a sign, or a trailing decimal must survive while editing.",
+        "Numeric parsing and normalization happen only at the blur boundary."
+      ],
+      "claims": [
+        {
+          "statement": "A controlled React input uses `value` together with an `onChange` handler that updates the backing state.",
+          "sourceIds": [
+            "react19-input-reference"
+          ]
+        },
+        {
+          "statement": "React's defaultValue specifies only an uncontrolled input's initial value rather than controlling later displayed values.",
+          "sourceIds": [
+            "react19-input-reference"
+          ]
+        },
+        {
+          "statement": "JavaScript Number conversion maps an empty string to zero and invalid numeric strings to NaN, so it cannot preserve every interim editing string.",
+          "sourceIds": [
+            "mdn-number-constructor"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-1b1d13d138",
+        "verdict": "incorrect",
+        "explanation": "Immediate Number conversion collapses or changes interim text representations before blur, so the field cannot display exactly what the user is editing.",
+        "misconceptionTag": "numeric-state-preserves-editing-text",
+        "plausibility": "The application ultimately needs a number, and storing it on each change keeps the committed type consistent.",
+        "falsifyingConstraint": "Interim strings must remain visible unchanged until the blur boundary."
+      },
+      {
+        "optionId": "choice-383ae59733",
+        "verdict": "incorrect",
+        "explanation": "An uncontrolled field can retain interim DOM text, but changing defaultValue later does not make a parent Reset replace the mounted input's display.",
+        "misconceptionTag": "default-value-handles-programmatic-reset",
+        "plausibility": "Leaving the text in the DOM naturally preserves incomplete numeric input until blur.",
+        "falsifyingConstraint": "Parent Reset must immediately replace the currently displayed text."
+      },
+      {
+        "optionId": "choice-ad5701d9d0",
+        "verdict": "correct",
+        "explanation": "String state controls every displayed edit and Reset, while blur separately parses and commits the normalized numeric value.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "controlled React inputs",
+      "editing state versus committed values",
+      "blur-boundary normalization",
+      "value and defaultValue"
+    ],
+    "learnMore": [
+      {
+        "title": "React: input",
+        "url": "https://react.dev/reference/react-dom/components/input",
+        "sourceId": "react19-input-reference"
+      },
+      {
+        "title": "MDN: Number() constructor",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/Number",
+        "sourceId": "mdn-number-constructor"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-input-reference",
+          "title": "React: input",
+          "url": "https://react.dev/reference/react-dom/components/input",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-number-constructor",
+          "title": "MDN: Number() constructor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/Number",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

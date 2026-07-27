@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-computed-watch-mid-v1",
+  "revision": 6,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "derived-state-and-reactive-side-effects",
+    "prompt": "A Vue 3.5 checkout renders `grandTotal`, which is defined entirely by reactive `subtotal` and `tax` and has no independent write path. Separately, after `currency` changes, analytics must inspect the summary after its component DOM patch. Which design assigns both responsibilities correctly?",
+    "options": [
+      {
+        "id": "choice-6269fe34da",
+        "label": "Mirror `grandTotal` into a writable ref with a default price watcher, then watch `currency` post-flush for analytics."
+      },
+      {
+        "id": "choice-1fe784316c",
+        "label": "Derive `grandTotal` with a computed ref from prices, then watch `currency` post-flush for analytics."
+      },
+      {
+        "id": "choice-e0f9dd610e",
+        "label": "Derive `grandTotal` with a computed ref from prices, then watch `currency` at default pre-flush timing."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-1fe784316c",
+    "answerProof": {
+      "summary": "A computed ref owns the purely derived total without duplicating writable state, while a post-flush watcher runs DOM-dependent analytics after Vue patches the owning component.",
+      "decisiveConstraints": [
+        "The total is fully derived and has no independent write path.",
+        "Analytics is an external side effect triggered by currency changes.",
+        "The analytics callback must read rendered output after the owning component's DOM update."
+      ],
+      "claims": [
+        {
+          "statement": "Vue computed properties declaratively derive cached values, while watchers are intended for side effects in response to reactive changes.",
+          "sourceIds": [
+            "vue35-computed",
+            "vue35-watchers"
+          ]
+        },
+        {
+          "statement": "Vue runs a watcher's default callback before the owner's component DOM update, while `flush: 'post'` schedules the callback after Vue updates that DOM.",
+          "sourceIds": [
+            "vue35-watchers"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-6269fe34da",
+        "verdict": "incorrect",
+        "explanation": "The analytics timing is correct, but a writable mirrored total creates a second state owner for a value with no independent write path.",
+        "misconceptionTag": "watcher-mirror-is-derived-state-owner",
+        "plausibility": "A price watcher can assign the arithmetic result before Vue performs the next component update.",
+        "falsifyingConstraint": "The total is entirely derived and must not be maintained as separate writable state."
+      },
+      {
+        "optionId": "choice-1fe784316c",
+        "verdict": "correct",
+        "explanation": "The computed ref expresses the total as derived state, and the post-flush watcher reads the DOM after the currency update's component patch.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-e0f9dd610e",
+        "verdict": "incorrect",
+        "explanation": "The computed total is current, but a default pre-flush watcher runs before its component's DOM update and can read the previous rendered summary.",
+        "misconceptionTag": "default-watcher-sees-patched-owner-dom",
+        "plausibility": "Default watcher timing is batched with component updates, so it can appear to run after rendering for the same reactive change.",
+        "falsifyingConstraint": "Analytics must inspect the rendered output after the owning component's DOM patch."
+      }
+    ],
+    "remediationTopics": [
+      "Vue computed derived state",
+      "post-flush watchers",
+      "DOM-dependent reactive side effects",
+      "watcher flush timing"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Computed Properties",
+        "url": "https://vuejs.org/guide/essentials/computed.html",
+        "sourceId": "vue35-computed"
+      },
+      {
+        "title": "Vue: Watchers",
+        "url": "https://vuejs.org/guide/essentials/watchers.html",
+        "sourceId": "vue35-watchers"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "vue-computed-vs-watchers"
+      ],
+      "sources": [
+        {
+          "id": "vue35-computed",
+          "title": "Vue: Computed Properties",
+          "url": "https://vuejs.org/guide/essentials/computed.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "vue35-watchers",
+          "title": "Vue: Watchers",
+          "url": "https://vuejs.org/guide/essentials/watchers.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

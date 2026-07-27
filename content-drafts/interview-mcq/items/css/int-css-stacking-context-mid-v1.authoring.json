@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-stacking-context-mid-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "css",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "stacking-context-boundaries",
+    "prompt": "A modal has `position: fixed; z-index: 999999`, but it is rendered inside a card with `transform: translateZ(0)`. A sibling page header with `z-index: 10` still paints above the modal. Which explanation and fix address the root cause?",
+    "options": [
+      {
+        "id": "choice-62e747ced2",
+        "label": "The modal z-index is still too small; increase it until it exceeds every value used by the header."
+      },
+      {
+        "id": "choice-ed5ecd0fa2",
+        "label": "Keep the transformed card and add `isolation: isolate` to the modal so its z-index can outrank the header."
+      },
+      {
+        "id": "choice-d1beaac95b",
+        "label": "The transformed card creates a stacking context; move the modal outside it or change the ancestor stack."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-d1beaac95b",
+    "answerProof": {
+      "summary": "A transformed ancestor creates an atomic stacking context, so descendant z-index values only compete inside that context and cannot outrank a sibling context.",
+      "decisiveConstraints": [
+        "The modal is a descendant of the transformed card.",
+        "The header is in a sibling stacking context.",
+        "The modal must paint at the page overlay layer."
+      ],
+      "claims": [
+        {
+          "statement": "A non-none transform creates a stacking context whose descendants are stacked as a unit relative to sibling contexts.",
+          "sourceIds": [
+            "mdn-stacking-context"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-62e747ced2",
+        "verdict": "incorrect",
+        "explanation": "A larger descendant z-index cannot escape its ancestor stacking context to compete directly with the header.",
+        "misconceptionTag": "z-index-is-globally-comparable",
+        "plausibility": "Higher z-index values normally win among positioned elements in the same context.",
+        "falsifyingConstraint": "The two elements do not participate in the same stacking context."
+      },
+      {
+        "optionId": "choice-ed5ecd0fa2",
+        "verdict": "incorrect",
+        "explanation": "Isolation creates another stacking context inside the transformed card; it cannot lift the modal above a header outside that ancestor.",
+        "misconceptionTag": "isolation-escapes-ancestor-stack",
+        "plausibility": "Isolation explicitly creates a stacking context and sounds as if it separates the modal from its ancestors.",
+        "falsifyingConstraint": "Every descendant context remains ordered within the transformed card's position in the outer stack."
+      },
+      {
+        "optionId": "choice-d1beaac95b",
+        "verdict": "correct",
+        "explanation": "Moving the overlay to the intended page-level layer or changing the ancestor context restores the needed stacking comparison.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "stacking-context",
+      "z-index-scope",
+      "overlay-layering"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Stacking context",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout/Stacking_context",
+        "sourceId": "mdn-stacking-context"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "css-z-index",
+        "css-position-relative-absolute-fixed"
+      ],
+      "sources": [
+        {
+          "id": "mdn-stacking-context",
+          "title": "MDN: Stacking context",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout/Stacking_context",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frontendatlas.com/schemas/interview/reference-set-v1.public.schema.json",
+  "title": "FrontendAtlas interview reference set (public candidate data)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "setId",
+    "status",
+    "language",
+    "feedbackPolicy",
+    "items"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "setId": {
+      "const": "frontend-interview-reference-v1"
+    },
+    "status": {
+      "enum": [
+        "reference-candidate",
+        "gold"
+      ]
+    },
+    "language": {
+      "const": "en"
+    },
+    "feedbackPolicy": {
+      "const": "end-of-interview"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "technology",
+        "level",
+        "format",
+        "competency",
+        "prompt",
+        "options",
+        "estimatedSeconds"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "int-html-native-button-jr-v1",
+            "int-js-nested-microtask-mid-v1",
+            "int-vue-computed-watch-mid-v1",
+            "int-react-stale-search-sr-v1",
+            "int-angular-onpush-reference-sr-v1"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "technology": {
+          "enum": [
+            "html",
+            "javascript",
+            "vue",
+            "react",
+            "angular"
+          ]
+        },
+        "level": {
+          "enum": [
+            "junior",
+            "mid",
+            "senior"
+          ]
+        },
+        "format": {
+          "enum": [
+            "conceptual",
+            "code-output",
+            "production-scenario"
+          ]
+        },
+        "competency": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 20
+        },
+        "code": {
+          "$ref": "#/$defs/code"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/option"
+          }
+        },
+        "estimatedSeconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "code-output"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "required": [
+              "code"
+            ]
+          }
+        }
+      ]
+    },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "runtime",
+        "source"
+      ],
+      "properties": {
+        "language": {
+          "enum": [
+            "javascript",
+            "jsx",
+            "typescript"
+          ]
+        },
+        "runtime": {
+          "enum": [
+            "browser",
+            "node",
+            "react-19.2",
+            "angular-17-to-22"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

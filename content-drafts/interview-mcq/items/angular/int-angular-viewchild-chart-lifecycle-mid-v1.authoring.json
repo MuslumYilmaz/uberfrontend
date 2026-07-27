@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-viewchild-chart-lifecycle-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "view-query-resource-lifecycle",
+    "prompt": "A client-only Angular 22 dashboard renders `<canvas #chartCanvas>` unconditionally. A chart library needs the canvas after the component view exists, creates one long-lived chart instance, and exposes `destroy()`. Construction in `ngOnInit` sees an unset query. Which lifecycle owns setup and teardown?",
+    "code": {
+      "language": "typescript",
+      "runtime": "angular-22",
+      "source": "@ViewChild('chartCanvas') canvas!: ElementRef<HTMLCanvasElement>;\nprivate chart?: Chart;"
+    },
+    "options": [
+      {
+        "id": "choice-d21f72e1c6",
+        "label": "Create the chart in the constructor with `document.querySelector`, then destroy it after the next navigation event."
+      },
+      {
+        "id": "choice-57a9624db1",
+        "label": "Read the canvas with `ViewChild`, create the chart in `ngAfterViewInit`, then destroy it in `ngOnDestroy`."
+      },
+      {
+        "id": "choice-d10c67286e",
+        "label": "Create the chart from `ngAfterViewChecked` when the canvas exists, replacing the previous chart on each check."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-57a9624db1",
+    "answerProof": {
+      "summary": "The view query is available after view initialization, while component destruction is the matching boundary for releasing the owned chart instance.",
+      "decisiveConstraints": [
+        "The canvas is unconditionally present in the component view.",
+        "Exactly one chart instance belongs to each component instance."
+      ],
+      "claims": [
+        {
+          "statement": "View queries can be read in `ngAfterViewInit`, which runs after the component view is initialized.",
+          "sourceIds": [
+            "angular22-viewchild",
+            "angular22-component-lifecycle"
+          ]
+        },
+        {
+          "statement": "`ngOnDestroy` runs once before a component is destroyed.",
+          "sourceIds": [
+            "angular22-component-lifecycle"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d21f72e1c6",
+        "verdict": "incorrect",
+        "explanation": "A global query bypasses the component view boundary, and navigation is not the ownership lifetime of a component instance.",
+        "misconceptionTag": "global-dom-query-owns-component-resource",
+        "plausibility": "The constructor and router both appear early and late in common page lifecycles.",
+        "falsifyingConstraint": "The chart belongs to this component and its queried canvas."
+      },
+      {
+        "optionId": "choice-57a9624db1",
+        "verdict": "correct",
+        "explanation": "The canvas query is initialized at setup time, and teardown occurs exactly when the owning component is destroyed.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d10c67286e",
+        "verdict": "incorrect",
+        "explanation": "That hook runs repeatedly, so recreating an imperative chart there causes unnecessary churn and fragile cleanup.",
+        "misconceptionTag": "checked-hook-is-one-time-setup",
+        "plausibility": "The view query is available whenever this hook runs.",
+        "falsifyingConstraint": "The scenario requires one long-lived instance rather than one instance per check."
+      }
+    ],
+    "remediationTopics": [
+      "Angular view queries",
+      "ngAfterViewInit",
+      "ngOnDestroy",
+      "imperative resource ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: ViewChild",
+        "url": "https://angular.dev/api/core/ViewChild",
+        "sourceId": "angular22-viewchild"
+      },
+      {
+        "title": "Angular: Component lifecycle",
+        "url": "https://angular.dev/guide/components/lifecycle",
+        "sourceId": "angular22-component-lifecycle"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-viewchild",
+          "title": "Angular: ViewChild",
+          "url": "https://angular.dev/api/core/ViewChild",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b API documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-component-lifecycle",
+          "title": "Angular: Component lifecycle",
+          "url": "https://angular.dev/guide/components/lifecycle",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

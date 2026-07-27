@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-image-intrinsic-ratio-sr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "css",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "intrinsic-ratio-layout-reservation",
+    "prompt": "Field data shows layout shifts across a publishing platform's responsive feeds when CDN images load. Editors choose different ratios, every delivery variant carries intrinsic pixel metadata, and the shared image contract must reserve the right box before resource selection without fixing rendered size. Which platform change meets those constraints?",
+    "options": [
+      {
+        "id": "choice-33350f531f",
+        "label": "Give every feed image the same estimated `min-height`, then remove that placeholder after its load event."
+      },
+      {
+        "id": "choice-db5d42c2aa",
+        "label": "Emit each asset's `width` and `height` attributes, then apply `max-width: 100%; height: auto` responsively."
+      },
+      {
+        "id": "choice-02072ee3c0",
+        "label": "Wait for each `load`, read its natural dimensions, and then assign the matching wrapper aspect ratio."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-db5d42c2aa",
+    "answerProof": {
+      "summary": "Per-image intrinsic dimensions give the browser an aspect ratio during initial layout, while responsive CSS scales that reserved box without locking its display dimensions.",
+      "decisiveConstraints": [
+        "The shared contract serves assets with different intrinsic ratios.",
+        "Per-asset dimensions are available before resource selection and download.",
+        "The same markup must remain responsive across feed layouts."
+      ],
+      "claims": [
+        {
+          "statement": "Replaced elements such as images can derive a preferred aspect ratio from their width and height attributes before responsive CSS determines the used size.",
+          "sourceIds": [
+            "mdn-aspect-ratio",
+            "mdn-image-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-33350f531f",
+        "verdict": "incorrect",
+        "explanation": "One platform-wide estimate cannot reserve the correct box for assets with different ratios and can shift again when removed.",
+        "misconceptionTag": "one-placeholder-size-fits-all-images",
+        "plausibility": "Any early placeholder height can reduce the initial amount of movement.",
+        "falsifyingConstraint": "The shared contract must reserve each asset's known ratio across responsive layouts."
+      },
+      {
+        "optionId": "choice-db5d42c2aa",
+        "verdict": "correct",
+        "explanation": "Per-asset attributes establish the ratio during initial layout, while responsive CSS adapts the used dimensions to each container.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-02072ee3c0",
+        "verdict": "incorrect",
+        "explanation": "Post-load measurement happens after the platform needed the reservation, so it cannot prevent the original shift.",
+        "misconceptionTag": "post-load-measurement-prevents-shift",
+        "plausibility": "Natural dimensions provide the exact ratio once the resource is available.",
+        "falsifyingConstraint": "Every feed must reserve the correct per-asset space before the resource arrives."
+      }
+    ],
+    "remediationTopics": [
+      "intrinsic-image-size",
+      "aspect-ratio",
+      "layout-stability architecture"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: aspect-ratio",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/aspect-ratio",
+        "sourceId": "mdn-aspect-ratio"
+      },
+      {
+        "title": "MDN: img element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+        "sourceId": "mdn-image-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "css-make-element-responsive",
+        "html-img-srcset"
+      ],
+      "sources": [
+        {
+          "id": "mdn-aspect-ratio",
+          "title": "MDN: aspect-ratio",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/aspect-ratio",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-image-element",
+          "title": "MDN: img element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

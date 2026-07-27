@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-profile-stable-props-sr-v1",
+  "revision": 4,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "profile-guided-render-memoization",
+    "prompt": "Across several high-frequency dashboards, large virtualized tables and charts use a shared `{ data, options }` prop API. Profiler traces show unrelated ticker updates rerendering each expensive surface because parents rebuild equivalent options; those options must still change when filters or theme change. The surfaces read no changing context, React Compiler is disabled, and behavior must stay unchanged. Which cross-team policy creates safe prop-based bailouts?",
+    "options": [
+      {
+        "id": "choice-c75af119fc",
+        "label": "Memoize every surface with a comparator that checks `data` only, while parents keep rebuilding equivalent `options`."
+      },
+      {
+        "id": "choice-bd23a4969b",
+        "label": "Memoize each surface and freeze its initial `options` object in the parent with an empty dependency list."
+      },
+      {
+        "id": "choice-86b1c7e2ce",
+        "label": "Memoize each surface and stabilize parent-owned `options` with every value that can change their contents as dependencies."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-86b1c7e2ce",
+    "answerProof": {
+      "summary": "Memoized surfaces can skip unrelated parent renders when callers preserve option identity, while complete memo dependencies still publish a new object whenever option contents legitimately change.",
+      "decisiveConstraints": [
+        "Profiling identifies the same expensive rerender pattern across several large surfaces.",
+        "Equivalent options are newly allocated on unrelated updates but must change with filters or theme.",
+        "React Compiler is not providing automatic memoization, and changing behavior is out of scope."
+      ],
+      "claims": [
+        {
+          "statement": "React `memo` can skip a render when every prop compares equal with `Object.is`.",
+          "sourceIds": [
+            "react19-memo"
+          ]
+        },
+        {
+          "statement": "React `useMemo` can preserve an object result while its complete dependency list is unchanged and recompute it when a dependency changes.",
+          "sourceIds": [
+            "react19-usememo"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-c75af119fc",
+        "verdict": "incorrect",
+        "explanation": "Ignoring options can skip work, but it also hides legitimate filter or theme changes and can leave a surface rendering stale configuration.",
+        "misconceptionTag": "custom-comparator-may-ignore-changing-props",
+        "plausibility": "Comparing only stable data avoids rerenders caused by newly allocated option objects.",
+        "falsifyingConstraint": "Option contents legitimately change and must still update each surface."
+      },
+      {
+        "optionId": "choice-bd23a4969b",
+        "verdict": "incorrect",
+        "explanation": "An empty dependency list freezes the first options contents, so later filter or theme changes never reach the memoized surface.",
+        "misconceptionTag": "empty-dependencies-are-safe-for-dynamic-options",
+        "plausibility": "A permanently stable object makes memo's shallow comparison succeed on unrelated parent renders.",
+        "falsifyingConstraint": "Filters and theme are valid inputs that must change the options contents."
+      },
+      {
+        "optionId": "choice-86b1c7e2ce",
+        "verdict": "correct",
+        "explanation": "Complete dependencies preserve identity across unrelated updates, publish real option changes, and let memoized surface boundaries bail out safely.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "React Profiler",
+      "referential equality",
+      "memoized component boundaries",
+      "shared component API performance contracts",
+      "virtualized surface profiling"
+    ],
+    "learnMore": [
+      {
+        "title": "React: memo",
+        "url": "https://react.dev/reference/react/memo",
+        "sourceId": "react19-memo"
+      },
+      {
+        "title": "React: useMemo",
+        "url": "https://react.dev/reference/react/useMemo",
+        "sourceId": "react19-usememo"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-memo",
+          "title": "React: memo",
+          "url": "https://react.dev/reference/react/memo",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "react19-usememo",
+          "title": "React: useMemo",
+          "url": "https://react.dev/reference/react/useMemo",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

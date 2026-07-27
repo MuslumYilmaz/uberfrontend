@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "policyId": "interview-quality-policy-v1",
+  "checklistVersion": "1.1.0",
+  "itemWritingReference": {
+    "title": "NBME Item-Writing Guide for Constructed-Response and Multiple-Choice Items",
+    "url": "https://www.nbme.org/sites/default/files/2021-02/NBME_Item%20Writing%20Guide_R_6.pdf",
+    "role": "one-best-answer-methodology",
+    "retrievedAt": "2026-07-22",
+    "revision": "February 2021",
+    "copiedText": false
+  },
+  "options": {
+    "count": 3,
+    "permutationsRequired": 6,
+    "publicIdFormat": "choice-<10 lowercase hexadecimal characters>",
+    "publicIdsMustBeOpaque": true,
+    "prohibitedLabels": [
+      "all of the above",
+      "none of the above"
+    ],
+    "fullContainmentIsBlocker": true,
+    "normalizedDuplicateIsBlocker": true
+  },
+  "reviewRules": {
+    "optionLengthClue": {
+      "ruleId": "option-length-clue",
+      "relativeDeviationFromDistractorMedian": 0.15,
+      "severity": "blocker",
+      "appliesToStatuses": [
+        "candidate",
+        "editorial-gold",
+        "calibrated-gold"
+      ],
+      "waivable": false
+    },
+    "absoluteWording": {
+      "ruleId": "absolute-wording-clue",
+      "terms": [
+        "always",
+        "never"
+      ],
+      "severity": "blocker",
+      "appliesToStatuses": [
+        "candidate",
+        "editorial-gold",
+        "calibrated-gold"
+      ],
+      "waivable": false
+    },
+    "stemEchoClue": {
+      "ruleId": "correct-only-stem-echo",
+      "minimumContentWordNgram": 3,
+      "severity": "blocker",
+      "appliesToStatuses": [
+        "candidate",
+        "editorial-gold",
+        "calibrated-gold"
+      ],
+      "waivable": false
+    },
+    "optionSimilarity": {
+      "ruleId": "option-similarity",
+      "metric": "token-jaccard",
+      "reviewThreshold": 0.8,
+      "severity": "blocker",
+      "appliesToStatuses": [
+        "candidate",
+        "editorial-gold",
+        "calibrated-gold"
+      ],
+      "waivable": false
+    }
+  },
+  "difficultyRubric": {
+    "axes": "Level describes the scope of engineering judgment; difficultyBand describes challenge relative to other items at that same level.",
+    "levels": {
+      "junior": "An isolated language, browser, or standard framework contract with one local owner and an immediately observable consequence. A paired API that forms one contract—such as input/output, model prop/event, native form behavior, or provider scope—can remain junior.",
+      "mid": "A lifecycle, asynchronous, layout, render, or ownership boundary that requires connecting at least two independently failing mechanisms in an application context; recognizing two parts of one standard API is not enough by itself.",
+      "senior": "A cross-instance, cross-request, hydration, rendering-system, or performance-architecture decision spanning multiple lifetimes or operational consequences. Code-output items may instead require Promise adoption, error recovery, and cleanup/pass-through behavior across at least three interacting boundaries."
+    },
+    "bands": {
+      "foundation": "Baseline knowledge expected at the declared level, with the governing contract explicit in the scenario.",
+      "core": "Root-cause selection across at least two realistic constraints or competing remedies at the declared level.",
+      "stretch": "A subtle ordering, version, ownership, or multi-constraint distinction near the upper edge of the declared level."
+    },
+    "levelAllocationRule": "The 60-item blueprint contains exactly 20 junior, 20 mid, and 20 senior items. Compare the full corpus when assigning levels; if an item cannot defensibly fit its cohort under the scope definitions, flag it instead of forcing the quota.",
+    "crossLevelRule": "Bands are not absolute across levels; a senior foundation item can be more direct than a mid stretch item while still testing senior scope.",
+    "bandAllocationRule": "After assigning level, rank items comparatively within each 20-item level cohort: exactly 5 foundation, 10 core, and 5 stretch. Never change a level merely to satisfy a band quota.",
+    "blindReviewRule": "A blind reviewer must apply this rubric and comparative allocation without seeing the authored level, band, correct option, rationales, or provenance."
+  },
+  "calibration": {
+    "minimumMatchingLevelAttempts": 100,
+    "difficultyIndex": {
+      "minimum": 0.2,
+      "maximum": 0.9
+    },
+    "discriminationIndex": {
+      "minimum": 0.2
+    },
+    "distractorSelectionRate": {
+      "minimum": 0.05
+    },
+    "optionSelectionRateSum": {
+      "target": 1,
+      "absoluteTolerance": 0.001
+    }
+  },
+  "reviewIntegrity": {
+    "requireTechnicalEditorialAndBlind": true,
+    "blindReviewerMustDifferFromAuthor": true,
+    "blindReviewerMustDifferFromEditorialReviewer": true,
+    "bindReviewsAndWaiversToRevisionAndContentHash": true,
+    "finalApprovalScope": "bank"
+  }
+}

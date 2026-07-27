@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-timezone-hydration-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "ssr-hydration-determinism",
+    "prompt": "A Vue 3.5 SSR page renders an event time. The server does not know the browser's time zone, so formatting locally during both renders produces different text and a hydration warning. SEO still requires meaningful server text. Which change best removes the mismatch?",
+    "options": [
+      {
+        "id": "choice-da92204662",
+        "label": "Render the same UTC text on the server and initial client pass, then replace it with local text in `onMounted`."
+      },
+      {
+        "id": "choice-edf423c1ff",
+        "label": "Render local text independently on both sides, then add `data-allow-mismatch` to silence the hydration warning."
+      },
+      {
+        "id": "choice-586b4ecc61",
+        "label": "Render UTC text on the server, then use `createApp` on the client to discard that DOM and mount local text."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-da92204662",
+    "answerProof": {
+      "summary": "Hydration needs matching server and initial client output. A deterministic UTC representation supplies meaningful HTML, and localization after mounting waits until hydration has completed in the browser.",
+      "decisiveConstraints": [
+        "The browser time zone is unavailable during server rendering.",
+        "Server HTML must remain meaningful and be hydrated rather than discarded."
+      ],
+      "claims": [
+        {
+          "statement": "Vue identifies server/client time-zone differences as a hydration mismatch cause and recommends performing unavailable local conversion as a client-only operation.",
+          "sourceIds": [
+            "vue35-ssr-hydration"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-da92204662",
+        "verdict": "correct",
+        "explanation": "Both hydration inputs contain identical useful text, and the mounted update occurs only after the client owns the hydrated component.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-edf423c1ff",
+        "verdict": "incorrect",
+        "explanation": "Selective suppression acknowledges an unavoidable mismatch but does not make independently formatted initial output deterministic between environments.",
+        "misconceptionTag": "suppression-fixes-nondeterminism",
+        "plausibility": "Vue 3.5 provides `data-allow-mismatch` for mismatches that developers intentionally accept.",
+        "falsifyingConstraint": "The prompt asks to remove a preventable mismatch, not only hide its warning."
+      },
+      {
+        "optionId": "choice-586b4ecc61",
+        "verdict": "incorrect",
+        "explanation": "Mounting a fresh client app gives up hydration and discards the server DOM instead of attaching Vue to the meaningful SSR output.",
+        "misconceptionTag": "client-remount-is-hydration-fix",
+        "plausibility": "A fresh client mount avoids comparing its local-time render with the existing server nodes.",
+        "falsifyingConstraint": "The requirement is to preserve and hydrate the server-rendered content."
+      }
+    ],
+    "remediationTopics": [
+      "Vue SSR hydration",
+      "deterministic initial rendering",
+      "client-only localization"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Server-Side Rendering",
+        "url": "https://vuejs.org/guide/scaling-up/ssr.html",
+        "sourceId": "vue35-ssr-hydration"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-ssr-hydration",
+          "title": "Vue: Server-Side Rendering",
+          "url": "https://vuejs.org/guide/scaling-up/ssr.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

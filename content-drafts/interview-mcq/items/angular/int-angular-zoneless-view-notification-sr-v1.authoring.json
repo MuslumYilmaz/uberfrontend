@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-zoneless-view-notification-sr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "zoneless-onpush-view-notification",
+    "prompt": "An Angular 22 app uses zoneless change detection. A `ResizeObserver` adapter assigns a plain `width` field read by an OnPush template, but the text stays stale. The adapter contract must keep the plain field, and unrelated views must not be force-refreshed. Which notification is the narrowest correct integration?",
+    "options": [
+      {
+        "id": "choice-524f3fa9f3",
+        "label": "Assign the field in the observer callback, then call `ChangeDetectorRef.markForCheck()` for that view."
+      },
+      {
+        "id": "choice-ed30561541",
+        "label": "Assign the field inside `NgZone.run()` and rely on leaving that callback to refresh the view."
+      },
+      {
+        "id": "choice-a3da5f6a0d",
+        "label": "Assign the field in the observer callback, then call `ApplicationRef.tick()` for the whole application."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-524f3fa9f3",
+    "answerProof": {
+      "summary": "In a zoneless application, `markForCheck()` is an explicit scheduler notification that marks the owning OnPush view for checking without forcing an immediate application-wide tick.",
+      "decisiveConstraints": [
+        "The state must remain a plain field rather than a template-read signal.",
+        "The browser callback is not otherwise an Angular scheduler notification.",
+        "The integration must not force-refresh unrelated views."
+      ],
+      "claims": [
+        {
+          "statement": "Angular lists `ChangeDetectorRef.markForCheck()` as a notification used to schedule change detection in zoneless applications.",
+          "sourceIds": [
+            "angular22-zoneless"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-524f3fa9f3",
+        "verdict": "correct",
+        "explanation": "The assignment updates the plain state and `markForCheck()` supplies the explicit view-level notification required by the zoneless scheduler.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-ed30561541",
+        "verdict": "incorrect",
+        "explanation": "Entering `NgZone` preserves compatibility for zone-aware libraries, but zone completion alone is not the requested zoneless scheduler notification.",
+        "misconceptionTag": "ngzone-entry-notifies-zoneless-scheduler",
+        "plausibility": "In a ZoneJS-based application, completing work inside the Angular zone commonly leads to a change-detection pass.",
+        "falsifyingConstraint": "The application deliberately uses zoneless change detection and the callback supplies no documented notification."
+      },
+      {
+        "optionId": "choice-a3da5f6a0d",
+        "verdict": "incorrect",
+        "explanation": "A manual application tick can refresh the value, but it synchronously checks the application instead of marking the affected view through the scheduler.",
+        "misconceptionTag": "global-tick-is-narrow-view-notification",
+        "plausibility": "`ApplicationRef.tick()` can make a stale template reflect an updated plain field.",
+        "falsifyingConstraint": "The integration must avoid force-refreshing unrelated views."
+      }
+    ],
+    "remediationTopics": [
+      "Angular zoneless change detection",
+      "OnPush notifications",
+      "ChangeDetectorRef.markForCheck"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Zoneless",
+        "url": "https://angular.dev/guide/zoneless",
+        "sourceId": "angular22-zoneless"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-zoneless",
+          "title": "Angular: Zoneless",
+          "url": "https://angular.dev/guide/zoneless",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

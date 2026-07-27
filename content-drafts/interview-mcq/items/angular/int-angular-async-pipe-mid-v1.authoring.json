@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-async-pipe-mid-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "template-observable-subscription",
+    "prompt": "An `OnPush` price component renders a long-lived `price$` whose emissions occur after initial rendering. The template must show every emission, and the subscription must end when the view is destroyed. Which approach meets both requirements?",
+    "options": [
+      {
+        "id": "choice-530e993124",
+        "label": "Subscribe with `takeUntilDestroyed()`, assign each value to a field, and rely on that assignment to refresh the `OnPush` view."
+      },
+      {
+        "id": "choice-f4d0721513",
+        "label": "Read `price$` with `firstValueFrom()`, assign the result to a field, and call `markForCheck()` when the Promise settles."
+      },
+      {
+        "id": "choice-1e010e05b8",
+        "label": "Render `price$` through the `async` pipe, which marks the view on emissions and unsubscribes when the view is destroyed."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-1e010e05b8",
+    "answerProof": {
+      "summary": "The AsyncPipe both notifies an OnPush view when a new value arrives and binds its subscription cleanup to view destruction.",
+      "decisiveConstraints": [
+        "Emissions after initial rendering must notify the OnPush view.",
+        "The long-lived subscription must end with the view."
+      ],
+      "claims": [
+        {
+          "statement": "Angular's AsyncPipe marks its component to be checked when a new value arrives and automatically unsubscribes when that component is destroyed.",
+          "sourceIds": [
+            "angular17-async-pipe"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-530e993124",
+        "verdict": "incorrect",
+        "explanation": "The operator handles teardown, but assigning an ordinary field does not itself notify an OnPush view.",
+        "misconceptionTag": "teardown-operator-also-notifies-onpush",
+        "plausibility": "`takeUntilDestroyed()` correctly ties an imperative subscription to the component lifecycle.",
+        "falsifyingConstraint": "Every stream emission must make the OnPush view eligible to refresh."
+      },
+      {
+        "optionId": "choice-f4d0721513",
+        "verdict": "incorrect",
+        "explanation": "`firstValueFrom()` can notify the view after one resolution, but it stops observing later prices.",
+        "misconceptionTag": "single-promise-preserves-live-stream",
+        "plausibility": "Calling `markForCheck()` after an asynchronous assignment can make an OnPush view eligible for checking.",
+        "falsifyingConstraint": "The view must refresh for every emission from the long-lived stream."
+      },
+      {
+        "optionId": "choice-1e010e05b8",
+        "verdict": "correct",
+        "explanation": "The AsyncPipe marks the OnPush view for checking on emissions and disposes its owned subscription when the view is destroyed.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular AsyncPipe",
+      "OnPush view notification",
+      "observable lifecycle",
+      "avoiding duplicated view state"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 17: AsyncPipe",
+        "url": "https://v17.angular.io/api/common/AsyncPipe",
+        "sourceId": "angular17-async-pipe"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular17-async-pipe",
+          "title": "Angular 17: AsyncPipe",
+          "url": "https://v17.angular.io/api/common/AsyncPipe",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular 17 archived API documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

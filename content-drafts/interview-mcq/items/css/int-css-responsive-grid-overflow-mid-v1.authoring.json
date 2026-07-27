@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-responsive-grid-overflow-mid-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "css",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "responsive-grid-track-sizing",
+    "prompt": "A card grid should create as many columns as fit, prefer cards at least `18rem` wide, collapse safely below that size, and keep a long URL fully readable without horizontal page overflow. Which rule set satisfies the full contract?",
+    "options": [
+      {
+        "id": "choice-a0413333b1",
+        "label": "Define auto-fit tracks with `minmax(min(100%, 18rem), 1fr)` and allow each URL to wrap anywhere."
+      },
+      {
+        "id": "choice-d91fdd92e4",
+        "label": "Use `repeat(auto-fit, minmax(18rem, 1fr))` and give unbroken URLs emergency wrap points."
+      },
+      {
+        "id": "choice-b511809ff1",
+        "label": "Build an auto-fit grid around a bounded `12rem` floor and give unbroken URLs emergency wrap points."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-a0413333b1",
+    "answerProof": {
+      "summary": "Auto-fit adapts the column count, the bounded minimum cannot exceed the container on narrow screens, and anywhere wrapping prevents unbroken content from inflating a track.",
+      "decisiveConstraints": [
+        "The column count must respond to available width.",
+        "A preferred 18rem minimum cannot force overflow below 18rem.",
+        "Long unbroken URLs must be allowed to wrap."
+      ],
+      "claims": [
+        {
+          "statement": "auto-fit repeats tracks to fill the grid container, minmax defines their size range, and overflow-wrap anywhere permits otherwise unbreakable strings to wrap when needed.",
+          "sourceIds": [
+            "mdn-css-repeat",
+            "mdn-css-minmax",
+            "mdn-overflow-wrap"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a0413333b1",
+        "verdict": "correct",
+        "explanation": "It adapts track count and size at both wide and narrow widths while containing unbroken content.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d91fdd92e4",
+        "verdict": "incorrect",
+        "explanation": "The track count adapts and content wraps, but the fixed 18rem minimum can still make a container narrower than 18rem overflow.",
+        "misconceptionTag": "grid-minimum-shrinks-below-declared-size",
+        "plausibility": "This is a common responsive-grid pattern when the container is guaranteed to stay at least 18rem wide.",
+        "falsifyingConstraint": "The grid must collapse safely even when its available width is below 18rem."
+      },
+      {
+        "optionId": "choice-b511809ff1",
+        "verdict": "incorrect",
+        "explanation": "The tracks adapt safely and URLs wrap, but the 12rem sizing target no longer preserves the required 18rem preferred card width.",
+        "misconceptionTag": "any-fluid-minimum-preserves-design-target",
+        "plausibility": "A smaller bounded minimum is a valid responsive grid when the design permits denser cards.",
+        "falsifyingConstraint": "This design explicitly prefers cards to remain at least 18rem wide when space permits."
+      }
+    ],
+    "remediationTopics": [
+      "css-grid",
+      "minmax",
+      "overflow-wrap"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: repeat()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/repeat",
+        "sourceId": "mdn-css-repeat"
+      },
+      {
+        "title": "MDN: minmax()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/minmax",
+        "sourceId": "mdn-css-minmax"
+      },
+      {
+        "title": "MDN: overflow-wrap",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow-wrap",
+        "sourceId": "mdn-overflow-wrap"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "css-grid-vs-flexbox",
+        "css-make-element-responsive"
+      ],
+      "sources": [
+        {
+          "id": "mdn-css-repeat",
+          "title": "MDN: repeat()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/repeat",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-css-minmax",
+          "title": "MDN: minmax()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/minmax",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-overflow-wrap",
+          "title": "MDN: overflow-wrap",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow-wrap",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

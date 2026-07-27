@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-onpush-reference-sr-v1",
+  "revision": 4,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "onpush-input-identity",
+    "prompt": "A normalized Angular 17 store publishes entity references to several selectors. It mutates one cached user in place, so an `OnPush` card stays stale; profiling shows unchanged cards currently prune correctly. Updated consumers need one coherent snapshot while unaffected cards should keep skipping work. Which store contract fixes the boundary?",
+    "code": {
+      "language": "typescript",
+      "runtime": "angular-17",
+      "source": "@Component({\n  selector: 'user-card',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `{{ user.name }}`\n})\nexport class UserCardComponent {\n  @Input() user!: User;\n}\n\n// Normalized store\nrename(userId: string, nextName: string) {\n  const user = this.usersById[userId];\n  user.name = nextName;\n  this.selectedUser = user;\n}"
+    },
+    "options": [
+      {
+        "id": "choice-1aabb13e93",
+        "label": "Keep mutating the cached entity, but clone it inside the dashboard selector before passing it to matching cards."
+      },
+      {
+        "id": "choice-4bd3139db7",
+        "label": "Keep the cached entity reference and increment one version input passed to every card after any entity write."
+      },
+      {
+        "id": "choice-c1d3f4d122",
+        "label": "Replace the cached entity immutably and publish its new reference while preserving every unchanged entity reference."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-c1d3f4d122",
+    "answerProof": {
+      "summary": "Replacing the normalized entity at the store boundary publishes one coherent new identity to all affected consumers while unchanged references continue enabling OnPush pruning.",
+      "decisiveConstraints": [
+        "Every selector must observe one coherent identity for the updated entity.",
+        "Unchanged entity references must remain stable so unrelated cards can keep pruning.",
+        "The updated entity must reach OnPush inputs with a new object identity."
+      ],
+      "claims": [
+        {
+          "statement": "Angular 17 does not invoke OnPush change detection for a mutated object input when its reference is preserved.",
+          "sourceIds": [
+            "angular17-onpush-subtrees"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-1aabb13e93",
+        "verdict": "incorrect",
+        "explanation": "The dashboard can receive a new wrapper, but other selectors still observe the mutated cached identity and no single store snapshot represents the update.",
+        "misconceptionTag": "selector-local-clone-repairs-store-identity",
+        "plausibility": "A selector-local clone gives the affected dashboard card a new input reference.",
+        "falsifyingConstraint": "Several selectors must observe one coherent updated entity identity."
+      },
+      {
+        "optionId": "choice-4bd3139db7",
+        "verdict": "incorrect",
+        "explanation": "The changing version can refresh the stale card, but passing it everywhere makes every card an update candidate after unrelated entity writes.",
+        "misconceptionTag": "global-version-preserves-subtree-pruning",
+        "plausibility": "A primitive version change reliably notifies OnPush inputs after a store write.",
+        "falsifyingConstraint": "Cards backed by unchanged entities should retain their current pruning behavior."
+      },
+      {
+        "optionId": "choice-c1d3f4d122",
+        "verdict": "correct",
+        "explanation": "The immutable replacement becomes the shared updated snapshot, while stable identities for other entities preserve their cards' bailout path.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular OnPush",
+      "input reference identity",
+      "immutable normalized-store updates"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 17: Skipping component subtrees",
+        "url": "https://v17.angular.io/guide/change-detection-skipping-subtrees",
+        "sourceId": "angular17-onpush-subtrees"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular17-onpush-subtrees",
+          "title": "Angular 17: Skipping component subtrees",
+          "url": "https://v17.angular.io/guide/change-detection-skipping-subtrees",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular 17 archive; last reviewed 2022-05-04",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

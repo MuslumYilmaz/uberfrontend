@@ -1,0 +1,1654 @@
+{
+  "registryId": "frontend-interview-coding-registry-v1",
+  "registryVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "status": "candidate",
+  "variants": [
+    {
+      "contentHash": "c1853faf7ae370b504bcd955d136599543e07a6a9b490f1de9023b6648fedca2",
+      "enabled": true,
+      "id": "int-code-angular-junior-counter-v1",
+      "level": "junior",
+      "prompt": "Implement a standalone counter with increment, decrement, and reset. Guard the decrement at zero, disable the minus button when the value is 0, and keep state in a single component property for predictable behavior.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Start at 0 and display the current value.",
+            "Support increment, decrement, and reset.",
+            "Never allow a negative value.",
+            "Disable decrement while the value is 0."
+          ],
+          "id": "base-correctness",
+          "prompt": "Start with a reliable counter. Keep the behavior small, explicit, and state-driven.",
+          "title": "Base correctness"
+        },
+        {
+          "constraints": [
+            "Add a labeled step selector with 1, 5, and 10.",
+            "Use 1 as the default step.",
+            "Apply the selected step to both increment and decrement.",
+            "Clamp decrement at 0 when the selected step is larger than the value."
+          ],
+          "id": "configurable-step",
+          "prompt": "The product team now needs larger jumps without duplicating counter logic.",
+          "title": "Configurable step"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "angular-counter-starter",
+      "starterAsset": "assets/sb/angular/question/angular-counter.v2.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"angular-counter\",\n  \"private\": true\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;}\n.value{font-size:48px;line-height:1;font-weight:800;text-align:center;margin-bottom:12px;}\n.actions{display:flex;gap:8px;justify-content:center}\nbutton{background:#a3e635;color:#111;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}\nbutton[disabled]{opacity:.5;cursor:not-allowed}\nbutton.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151}\n",
+          "path": "src/app/app.component.css"
+        },
+        {
+          "content": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Counter</h1>\n\n    <div class=\"panel\">\n      <div class=\"value\">{{ count }}</div>\n      <div class=\"actions\">\n        <button (click)=\"dec()\" [disabled]=\"isZero\" aria-label=\"decrement\">−</button>\n        <button (click)=\"inc()\" aria-label=\"increment\">+</button>\n        <button (click)=\"reset()\" class=\"ghost\" aria-label=\"reset\">Reset</button>\n      </div>\n    </div>\n  </section>\n</main>\n",
+          "path": "src/app/app.component.html"
+        },
+        {
+          "content": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // TODO: Hold the current count value\n  count = 0;\n\n  // TODO: Return true when count is zero (used to disable the decrement button)\n  get isZero(): boolean {\n    return false;\n  }\n\n  // TODO: Increment count by 1\n  inc(): void {\n  }\n\n  // TODO: Decrement count only when count is greater than 0\n  dec(): void {\n  }\n\n  // TODO: Reset count to 0\n  reset(): void {\n  }\n}\n",
+          "path": "src/app/app.component.ts"
+        },
+        {
+          "content": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Counter</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n",
+          "path": "src/index.html"
+        },
+        {
+          "content": "import 'zone.js';\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n",
+          "path": "src/styles.css"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "Counter (Standalone Component)",
+      "track": "angular"
+    },
+    {
+      "contentHash": "52409a6b4cde828da82269d78ef450519b3d2221a6ebfb9f9bc44e07bc551422",
+      "enabled": true,
+      "id": "int-code-angular-junior-todo-v1",
+      "level": "junior",
+      "prompt": "Build a small todo list using an Angular standalone component. Add tasks, mark them complete, remove them, and render stable list identity with modern `@for (...; track ...)` control flow.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Trim task text and reject empty or whitespace-only submissions.",
+            "Disable Add while the normalized input is empty.",
+            "Support both form submission with Enter and the Add button.",
+            "Clear the input after a successful add and assign every task a stable unique id."
+          ],
+          "id": "core-transitions",
+          "prompt": "Start with reliable task creation. Treat input normalization and identity as part of the state contract.",
+          "title": "Core transitions"
+        },
+        {
+          "constraints": [
+            "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
+            "Expose the selected filter with aria-pressed.",
+            "Announce the remaining active-task count with correct singular and plural copy.",
+            "Clear completed tasks without removing active tasks."
+          ],
+          "id": "derived-filters",
+          "prompt": "The list now needs trustworthy derived views. Filtering must never discard or rewrite source tasks.",
+          "title": "Derived filters"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-07-15",
+      "sourceQuestionId": "angular-todo-list-starter",
+      "starterAsset": "assets/sb/angular/question/angular-todo-list.v2.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"angular-todo-list\",\n  \"private\": true\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.input-row{display:flex;gap:8px;}\n.input-row input{flex:1;background:#020617;border-radius:8px;border:1px solid #1f2937;padding:8px 10px;color:#e5e7eb;font-size:14px;}\n.input-row input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f1;}\n.primary{background:#4ade80;color:#022c22;border:none;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;}\n.primary[disabled]{opacity:.6;cursor:not-allowed;}\n.list{list-style:none;margin:0;padding:0;display:grid;gap:6px;}\n.item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:8px;background:#020617;border:1px solid transparent;}\n.item-main{display:flex;align-items:center;gap:8px;font-size:14px;}\n.item-main input[type=checkbox]{accent-color:#22c55e;}\n.item-main span.done{text-decoration:line-through;color:#9ca3af;}\nbutton.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;}\nbutton.ghost.small{padding:4px 10px;font-size:12px;}\n.empty{margin:4px 0 0;font-size:13px;color:#9ca3af;text-align:center;}\n.footer{display:flex;justify-content:flex-end;margin-top:4px;}\n",
+          "path": "src/app/app.component.css"
+        },
+        {
+          "content": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:480px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Todo List</h1>\n\n    <div class=\"panel\">\n      <div class=\"input-row\">\n        <input type=\"text\" placeholder=\"Add a new task...\" [(ngModel)]=\"newTask\" />\n        <button type=\"button\" class=\"primary\" (click)=\"addTask()\">Add</button>\n      </div>\n\n      @if (hasTodos) {\n        <ul class=\"list\">\n        @for (todo of todos; track todo.id) {\n          <li class=\"item\">\n            <label class=\"item-main\">\n              <input type=\"checkbox\" [(ngModel)]=\"todo.done\" />\n              <span [class.done]=\"todo.done\">{{ todo.text }}</span>\n            </label>\n            <button type=\"button\" class=\"ghost\" (click)=\"removeTask(todo)\">Remove</button>\n          </li>\n        }\n        </ul>\n      } @else {\n        <p class=\"empty\">No tasks yet. Add your first one above.</p>\n      }\n\n      @if (hasTodos) {\n        <div class=\"footer\">\n          <button type=\"button\" class=\"ghost small\" (click)=\"clearCompleted()\">Clear completed</button>\n        </div>\n      }\n    </div>\n  </section>\n</main>\n",
+          "path": "src/app/app.component.html"
+        },
+        {
+          "content": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // TODO: Bind this to the input with [(ngModel)]\n  newTask = '';\n\n  // TODO: Store todo items here (e.g. { id, text, done })\n  todos: Todo[] = [];\n\n  // You can use this to generate simple ids for new todos\n  private nextId = 1;\n\n  // Optional derived flag if you want to show / hide parts of the UI\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  // TODO: Add a new todo using the current input value\n  addTask(): void {\n    // - Trim the text\n    // - Ignore empty / whitespace-only values\n    // - Push a new todo into this.todos with a unique id and done: false\n    // - Clear the input afterwards\n  }\n\n  // TODO: Toggle completion state for a given todo\n  toggleTask(todo: Todo): void {\n    // You can either flip todo.done here or rely entirely on [(ngModel)] on the checkbox\n  }\n\n  // TODO: Remove a single todo from the list\n  removeTask(todo: Todo): void {\n    // Hint: filter this.todos to exclude the given id\n  }\n\n  // Optional: Clear all completed todos at once\n  clearCompleted(): void {\n    // this.todos = this.todos.filter(t => !t.done);\n  }\n}\n",
+          "path": "src/app/app.component.ts"
+        },
+        {
+          "content": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Todo List</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n",
+          "path": "src/index.html"
+        },
+        {
+          "content": "import 'zone.js';\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n",
+          "path": "src/styles.css"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "Todo List (Standalone Component with @for)",
+      "track": "angular"
+    },
+    {
+      "contentHash": "7c14bcc8703013d1ece42f1f82d053300f3f788c97b61152fdf591f7f6e9fa7f",
+      "enabled": true,
+      "id": "int-code-angular-mid-pagination-v1",
+      "level": "mid",
+      "prompt": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Render 13 users in stable source order with a default page size of five.",
+            "Previous and Next must move one page at a time without leaving the valid page range.",
+            "The final page must render only users 11 through 13 and disable Next.",
+            "Keep the existing footer button order and page-info contract intact."
+          ],
+          "id": "core-page-window",
+          "prompt": "Start with pagination users can trust. Every page must expose the correct slice and guard both boundaries.",
+          "title": "Core page window"
+        },
+        {
+          "constraints": [
+            "Trim the query and match name, email, or role case-insensitively.",
+            "Every query change must reset pagination to page one.",
+            "Derive page counts from the filtered collection and keep the page range valid.",
+            "Render a single empty-state row and disable both pagination controls when nothing matches."
+          ],
+          "id": "filter-and-page-reset",
+          "prompt": "Now layer search onto pagination. Normalization, result counts, empty state, and the active page must stay synchronized.",
+          "title": "Filter and page reset"
+        },
+        {
+          "constraints": [
+            "Sort ID numerically and Name or Role case-insensitively.",
+            "The first activation of a new column must sort ascending and the second descending.",
+            "Equal sort values must retain their original source order.",
+            "Changing sort or page size must reset to page one and recompute the page window."
+          ],
+          "id": "sort-and-page-size",
+          "prompt": "Add deterministic sorting and a second page size without letting derived state drift or compare numeric ids as strings.",
+          "title": "Sort and page size"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-07-15",
+      "sourceQuestionId": "angular-pagination-table",
+      "starterAsset": "assets/sb/angular/question/angular-pagination-table.v2.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"angular-pagination-table\",\n  \"private\": true\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "table.table{width:100%;border-collapse:collapse;background:#0b1020;border:1px solid #1f2937;border-radius:8px;overflow:hidden}\nth,td{text-align:left;padding:8px;font-size:13px;border-bottom:1px solid #1f2937}\ntr:last-child td{border-bottom:none}\n.pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:8px}\nbutton{background:#4ade80;color:#111;padding:8px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}\nbutton[disabled]{opacity:.5;cursor:not-allowed}\n",
+          "path": "src/app/app.component.css"
+        },
+        {
+          "content": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:520px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Users (Pagination)</h1>\n\n    <table class=\"table\">\n      <thead>\n        <tr>\n          <th>ID</th>\n          <th>Name</th>\n          <th>Email</th>\n          <th>Role</th>\n        </tr>\n      </thead>\n      <tbody>\n        @for (user of pagedUsers; track user.id) {\n          <tr>\n          <td>{{ user.id }}</td>\n          <td>{{ user.name }}</td>\n          <td>{{ user.email }}</td>\n          <td>{{ user.role }}</td>\n          </tr>\n        }\n      </tbody>\n    </table>\n\n    <div class=\"pagination\">\n      <button (click)=\"goToPrevious()\" [disabled]=\"isFirstPage\">Previous</button>\n      <span>{{ currentPage + 1 }} / {{ totalPages }}</span>\n      <button (click)=\"goToNext()\" [disabled]=\"isLastPage\">Next</button>\n    </div>\n  </section>\n</main>\n",
+          "path": "src/app/app.component.html"
+        },
+        {
+          "content": "import { Component } from '@angular/core';\nimport { User, USERS } from './users.data';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users: [] = USERS;\n  readonly pageSize = 5;\n\n  // TODO: Hold current page index (0-based)\n  currentPage = 0;\n\n  // TODO: Total number of pages\n  get totalPages(): number {\n    return 1;\n  }\n\n  // TODO: Slice the current 5 items\n  get pagedUsers() {\n    return this.users;\n  }\n\n  // TODO: First page check\n  get isFirstPage(): boolean {\n    return false;\n  }\n\n  // TODO: Last page check\n  get isLastPage(): boolean {\n    return false;\n  }\n\n  // TODO: Previous page\n  goToPrevious(): void {}\n\n  // TODO: Next page\n  goToNext(): void {}\n}\n",
+          "path": "src/app/app.component.ts"
+        },
+        {
+          "content": "export type User = {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n};\n\nexport const USERS: User[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },\n  { id: 3, name: 'Carla Perez', email: 'carla@example.com', role: 'Viewer' },\n  { id: 4, name: 'David Kim', email: 'david@example.com', role: 'Editor' },\n  { id: 5, name: 'Emma Brown', email: 'emma@example.com', role: 'Viewer' },\n  { id: 6, name: 'Frank Wu', email: 'frank@example.com', role: 'Admin' },\n  { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Viewer' },\n  { id: 8, name: 'Henry Ford', email: 'henry@example.com', role: 'Editor' },\n  { id: 9, name: 'Ivy Stone', email: 'ivy@example.com', role: 'Viewer' },\n  { id: 10, name: 'Jack Ryan', email: 'jack@example.com', role: 'Viewer' },\n  { id: 11, name: 'Karen Diaz', email: 'karen@example.com', role: 'Editor' },\n  { id: 12, name: 'Leo Walker', email: 'leo@example.com', role: 'Viewer' },\n  { id: 13, name: 'Mia Clark', email: 'mia@example.com', role: 'Admin' },\n  { id: 14, name: 'Noah Hall', email: 'noah@example.com', role: 'Viewer' },\n  { id: 15, name: 'Olivia King', email: 'olivia@example.com', role: 'Editor' },\n  { id: 16, name: 'Paul Green', email: 'paul@example.com', role: 'Viewer' },\n  { id: 17, name: 'Quinn Ross', email: 'quinn@example.com', role: 'Viewer' },\n  { id: 18, name: 'Rita Long', email: 'rita@example.com', role: 'Editor' },\n  { id: 19, name: 'Sam Young', email: 'sam@example.com', role: 'Viewer' },\n  { id: 20, name: 'Tina Fox', email: 'tina@example.com', role: 'Viewer' }\n];\n",
+          "path": "src/app/users.data.ts"
+        },
+        {
+          "content": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Pagination Table</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n",
+          "path": "src/index.html"
+        },
+        {
+          "content": "import 'zone.js';\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n",
+          "path": "src/styles.css"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "Angular Paginated Data Table",
+      "track": "angular"
+    },
+    {
+      "contentHash": "ec60daae836ab6b3ad83f6a98f69b21ec38453a47154e33de7132a3603abc25e",
+      "enabled": true,
+      "id": "int-code-angular-mid-shopping-cart-v1",
+      "level": "mid",
+      "prompt": "Build a small shopping cart UI using an Angular standalone component. Render a product list with \"Add to cart\" buttons and a cart section where you can increase/decrease quantities, remove items, and show derived totals. Concepts: components, state, derived-state.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Add a new product as one cart row with quantity 1.",
+            "Adding the same product again must increment its existing row instead of creating a duplicate.",
+            "Keep different products in separate rows with their own quantities and line totals.",
+            "Derive total item count, line totals, and the overall total from the current cart. Format every amount as USD with two decimal places."
+          ],
+          "id": "core-cart-transitions",
+          "prompt": "Start with a trustworthy cart model. Product identity, quantities, and money must stay consistent as items are added.",
+          "title": "Core cart transitions"
+        },
+        {
+          "constraints": [
+            "Increasing and decreasing a quantity must update its row total, total item count, and overall total.",
+            "Decreasing an item at quantity 1 must remove that row.",
+            "Remove must delete only the selected product and leave every other row unchanged.",
+            "An empty cart must report 0 items and a $0.00 total."
+          ],
+          "id": "quantity-boundaries",
+          "prompt": "Now make every quantity transition safe. Updates must affect only their target row and return cleanly to an empty cart.",
+          "title": "Quantity boundaries"
+        },
+        {
+          "constraints": [
+            "Use stock limits of 2 Wireless Headphones, 3 Mechanical Keyboards, 5 Ergonomic Mice, and 1 USB-C Hub.",
+            "Show the remaining product stock contract as 2 in stock, 3 in stock, 5 in stock, and 1 in stock before cart changes.",
+            "Disable both Add to cart and Increase when a cart line reaches its product's stock limit, and never allow either path to exceed stock.",
+            "Re-enable Add to cart and Increase after the quantity drops below the limit.",
+            "Announce `Wireless Headphones reached its stock limit.` through a stable atomic polite cart status when that limit is reached."
+          ],
+          "id": "inventory-guard",
+          "prompt": "Inventory is finite. Preserve the cart guarantees while every add path respects stock and communicates the boundary.",
+          "title": "Inventory guard"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-07-15",
+      "sourceQuestionId": "angular-shopping-cart-mini",
+      "starterAsset": "assets/sb/angular/question/angular-shopping-cart.v2.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"angular-shopping-cart\",\n  \"private\": true\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": ".app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}\n.layout{width:100%;max-width:520px;display:grid;gap:16px;}\n.column{background:#020617;border-radius:16px;border:1px solid #1f2937;padding:16px 16px 12px;display:grid;gap:12px;}\n.title{margin:0;font-size:18px;font-weight:700;}\n.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}\n.product-list,.cart-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;}\n.product-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.product-main{display:grid;gap:2px;}\n.product-name{font-size:14px;font-weight:600;}\n.product-price{font-size:13px;color:#a3e635;}\n.cart-header{display:grid;gap:4px;}\n.cart-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.cart-info{display:grid;gap:4px;}\n.cart-name{font-size:14px;font-weight:600;}\n.cart-meta{display:flex;align-items:center;gap:4px;font-size:12px;color:#9ca3af;}\n.unit-price,.line-total{font-variant-numeric:tabular-nums;}\n.times,.equals{opacity:.7;}\n.cart-actions{display:flex;gap:6px;}\nbutton{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}\nbutton:hover{border-color:#a3e635;}\nbutton.ghost{background:transparent;}\nbutton.danger{border-color:#f97316;color:#f97316;}\n.empty{margin:4px 0 0;font-size:13px;color:#6b7280;}\n",
+          "path": "src/app/app.component.css"
+        },
+        {
+          "content": "<main class=\"app\">\n  <section class=\"layout\">\n    <!-- Products -->\n    <section class=\"column\">\n      <h1 class=\"title\">Products</h1>\n      <ul class=\"product-list\">\n        @for (product of products; track product.id) {\n          <li\n          class=\"product-card\"\n        >\n          <div class=\"product-main\">\n            <div class=\"product-name\">{{ product.name }}</div>\n            <div class=\"product-price\">{{ product.price | currency:'USD':'symbol':'1.2-2' }}</div>\n          </div>\n          <button type=\"button\" (click)=\"addToCart(product)\">\n            Add to cart\n          </button>\n          </li>\n        }\n      </ul>\n    </section>\n\n    <!-- Cart -->\n    <section class=\"column\">\n      <header class=\"cart-header\">\n        <h1 class=\"title\">Cart</h1>\n        <p class=\"subtitle\">\n          Total items: <strong>{{ totalQty }}</strong>\n          ·\n          Total: <strong>{{ totalPrice | currency:'USD':'symbol':'1.2-2' }}</strong>\n        </p>\n      </header>\n\n      @if (cartItems.length) {\n        <ul class=\"cart-list\">\n          @for (item of cartItems; track item.id) {\n            <li\n            class=\"cart-row\"\n          >\n            <div class=\"cart-info\">\n              <div class=\"cart-name\">{{ item.name }}</div>\n              <div class=\"cart-meta\">\n                <span class=\"unit-price\">{{ item.price | currency:'USD':'symbol':'1.2-2' }}</span>\n                <span class=\"times\">x</span>\n                <span class=\"qty\">{{ item.quantity }}</span>\n                <span class=\"equals\">=</span>\n                <span class=\"line-total\">\n                  {{ item.price * item.quantity | currency:'USD':'symbol':'1.2-2' }}\n                </span>\n              </div>\n            </div>\n\n            <div class=\"cart-actions\">\n              <button\n                type=\"button\"\n                class=\"ghost\"\n                (click)=\"decreaseQty(item)\"\n                aria-label=\"decrease quantity\"\n              >\n                −\n              </button>\n              <button\n                type=\"button\"\n                class=\"ghost\"\n                (click)=\"increaseQty(item)\"\n                aria-label=\"increase quantity\"\n              >\n                +\n              </button>\n              <button\n                type=\"button\"\n                class=\"danger\"\n                (click)=\"removeItem(item)\"\n              >\n                Remove\n              </button>\n            </div>\n            </li>\n          }\n        </ul>\n      } @else {\n        <p class=\"empty\">Your cart is empty. Add something from the left.</p>\n      }\n    </section>\n  </section>\n</main>\n",
+          "path": "src/app/app.component.html"
+        },
+        {
+          "content": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ninterface Product {\n  id: string;\n  name: string;\n  price: number;\n}\n\ninterface CartItem extends Product {\n  quantity: number;\n}\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 },\n  { id: 'p4', name: 'USB-C Hub', price: 39.0 }\n];\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Static product list\n  products = PRODUCTS;\n\n  // TODO: Hold cart items (array of { id, name, price, quantity })\n  cartItems: CartItem[] = [];\n\n  // TODO: Derive total quantity from cartItems\n  get totalQty(): number {\n    return 0;\n  }\n\n  // TODO: Derive total price from cartItems\n  get totalPrice(): number {\n    return 0;\n  }\n\n\n\n  // TODO: Add product to cart\n  // - If it does not exist, add with quantity 1\n  // - If it exists, increase quantity by 1\n  addToCart(product: Product): void {\n  }\n\n  // TODO: Increase quantity of a cart item\n  increaseQty(item: CartItem): void {\n  }\n\n  // TODO: Decrease quantity of a cart item\n  // - If quantity would go to 0, either remove item or clamp at 1\n  decreaseQty(item: CartItem): void {\n  }\n\n  // TODO: Remove item from the cart entirely\n  removeItem(item: CartItem): void {\n  }\n}\n",
+          "path": "src/app/app.component.ts"
+        },
+        {
+          "content": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Shopping Cart</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n",
+          "path": "src/index.html"
+        },
+        {
+          "content": "import 'zone.js';\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#020617;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n",
+          "path": "src/styles.css"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "Shopping Cart Mini (Standalone Component)",
+      "track": "angular"
+    },
+    {
+      "contentHash": "7443c2fc0d8cb341d48bb412bfc2041ad385d32783f7d4d9b608928f1d12685c",
+      "enabled": true,
+      "id": "int-code-angular-senior-chips-autocomplete-v1",
+      "level": "senior",
+      "prompt": "Build a Material-like invite field in Angular. As users type, show autocomplete suggestions, convert selections into removable chips, and support keyboard shortcuts (Enter/comma/backspace).",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Filter candidates by name or email with trimmed, case-insensitive matching and show at most six suggestions.",
+            "Selecting a suggestion by click must add exactly one chip, clear the query, and close the listbox.",
+            "Exclude selected candidates from later suggestions without mutating the source candidate list.",
+            "Use stable candidate ids so suggestion and chip identity does not depend on the rendered index."
+          ],
+          "id": "core-suggestion-selection",
+          "prompt": "Start with a trustworthy autocomplete contract. Filtering and selection must stay predictable across casing, pointer input, and repeated queries.",
+          "title": "Core suggestion selection"
+        },
+        {
+          "constraints": [
+            "Enter and comma must add a trimmed custom chip and clear the input.",
+            "Whitespace-only input must add nothing and return the input to an empty value.",
+            "Reject duplicates by candidate id or case-insensitive normalized value.",
+            "A remove control must delete only its target chip and expose the target label in its accessible name."
+          ],
+          "id": "token-normalization",
+          "prompt": "Now make free-form entry safe. Token boundaries, duplicate identity, and targeted removal must behave the same for every input path.",
+          "title": "Token normalization"
+        },
+        {
+          "constraints": [
+            "ArrowUp and ArrowDown must wrap through the visible suggestions and update a stable active-descendant id.",
+            "Enter must select the active option while keeping focus on the input.",
+            "Escape must close the listbox and clear the active option without deleting the query or chips.",
+            "Backspace on an empty input must remove only the final chip."
+          ],
+          "id": "keyboard-lifecycle",
+          "prompt": "Complete the combobox keyboard lifecycle. The active option, open state, chip selection, and destructive shortcuts must never drift apart.",
+          "title": "Keyboard lifecycle"
+        },
+        {
+          "constraints": [
+            "Allow at most five chips, disable the input at the limit, and guard programmatic or keyboard add paths from exceeding it.",
+            "Removing a chip below the limit must immediately re-enable entry and allow another invite.",
+            "Put the combobox role and relationships on the actual input; use a labelled listbox, stable option ids, and product-specific remove labels.",
+            "Keep an always-rendered polite, atomic status region and remove document listeners when the preview unmounts."
+          ],
+          "id": "invite-limit-and-accessibility",
+          "prompt": "Finish with a hard invite boundary and a complete assistive-technology contract. Limits must be enforced through every event path and announced without unstable DOM regions.",
+          "title": "Invite limit and accessibility"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-07-15",
+      "sourceQuestionId": "angular-chips-input-autocomplete",
+      "starterAsset": "assets/sb/angular/question/angular-chips-input-autocomplete.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"angular-chips-input-autocomplete\",\n  \"private\": true\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.card{width:100%;max-width:640px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:12px;}\nh1{margin:0;font-size:20px;}\n.subtitle{margin:0;color:#9ca3af;font-size:14px;line-height:1.45;}\n.combobox{position:relative;}\n.chip-input{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;}\n.chip-input:focus-within{border-color:#a3e635;box-shadow:0 0 0 2px rgba(163,230,53,.15);}\n.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;background:#172036;border:1px solid #2c3c62;font-size:13px;}\n.chip-remove{border:none;background:transparent;color:#9ca3af;cursor:pointer;font-size:16px;line-height:1;padding:0;}\n.chip-remove:hover{color:#e5e7eb;}\n.chip-input input{flex:1;min-width:180px;border:none;outline:none;background:transparent;color:#e5e7eb;font-size:14px;padding:4px 0;}\n.chip-input input::placeholder{color:#6b7280;}\n.suggestions{position:absolute;left:0;right:0;z-index:10;margin-top:8px;max-height:260px;overflow:auto;border-radius:12px;border:1px solid #1f2937;background:#0a0f1e;padding:0;list-style:none;}\n.suggestion{display:grid;gap:2px;padding:10px 12px;border-bottom:1px solid rgba(31,41,55,.5);cursor:pointer;}\n.suggestion:last-child{border-bottom:none;}\n.suggestion span{font-size:12px;color:#9ca3af;}\n.suggestion.active{background:rgba(163,230,53,.12);}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\n",
+          "path": "src/app/app.component.css"
+        },
+        {
+          "content": "<main class=\"page\">\n  <section class=\"card\">\n    <h1>Invite people</h1>\n    <p class=\"subtitle\">\n      Build a chips input with autocomplete, keyboard shortcuts, and removable tags.\n    </p>\n\n    <div\n      class=\"combobox\"\n      role=\"combobox\"\n      [attr.aria-expanded]=\"isOpen\"\n      aria-haspopup=\"listbox\"\n      [attr.aria-owns]=\"listboxId\"\n      [attr.aria-activedescendant]=\"activeDescendant\"\n    >\n      <div class=\"chip-input\">\n        @for (chip of chips; track chip.id) {\n          <span class=\"chip\">\n          <span>{{ chip.label }}</span>\n          <button\n            type=\"button\"\n            class=\"chip-remove\"\n            (click)=\"removeChip(chip.id)\"\n            [attr.aria-label]=\"'Remove ' + chip.label\"\n          >\n            ×\n          </button>\n          </span>\n        }\n\n        <input\n          type=\"text\"\n          [ngModel]=\"query\"\n          (ngModelChange)=\"onInput($event)\"\n          (focus)=\"onFocus()\"\n          (keydown)=\"handleKeyDown($event)\"\n          placeholder=\"Type a name or email...\"\n        />\n      </div>\n\n      @if (isOpen) {\n        <ul [id]=\"listboxId\" class=\"suggestions\" role=\"listbox\">\n        @for (item of suggestions; track item.id; let i = $index) {\n          <li\n          [id]=\"optionId(i)\"\n          role=\"option\"\n          [attr.aria-selected]=\"i === activeIndex\"\n          [class.suggestion]=\"true\"\n          [class.active]=\"i === activeIndex\"\n          (mousedown)=\"selectSuggestion(item)\"\n        >\n          <strong>{{ item.label }}</strong>\n          <span>{{ item.value }}</span>\n          </li>\n        }\n        </ul>\n      }\n    </div>\n\n    <p class=\"hint\">\n      Keyboard: Arrow keys navigate, Enter/comma add chip, Backspace removes the last chip.\n    </p>\n  </section>\n</main>\n",
+          "path": "src/app/app.component.html"
+        },
+        {
+          "content": "import { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\ntype Candidate = {\n  id: string;\n  name: string;\n  email: string;\n};\n\ntype Chip = {\n  id: string;\n  label: string;\n  value: string;\n};\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'invite-suggestions';\n\n  readonly users: Candidate[] = [\n    { id: 'alice', name: 'Alice Johnson', email: 'alice@frontendatlas.dev' },\n    { id: 'bob', name: 'Bob Smith', email: 'bob@frontendatlas.dev' },\n    { id: 'charlie', name: 'Charlie Kim', email: 'charlie@frontendatlas.dev' },\n    { id: 'diana', name: 'Diana Lopez', email: 'diana@frontendatlas.dev' },\n    { id: 'ethan', name: 'Ethan Brown', email: 'ethan@frontendatlas.dev' },\n    { id: 'fiona', name: 'Fiona Patel', email: 'fiona@frontendatlas.dev' },\n    { id: 'george', name: 'George Miller', email: 'george@frontendatlas.dev' }\n  ];\n\n  chips: Chip[] = [];\n  query = '';\n  isOpen = false;\n  activeIndex = -1;\n\n  get suggestions(): Chip[] {\n    // TODO:\n    // 1) trim+lower query\n    // 2) filter users by name/email includes query\n    // 3) remove users already selected in chips\n    // 4) map to Chip shape + limit to 6\n    return [];\n  }\n\n  onInput(value: string): void {\n    this.query = value;\n    this.activeIndex = -1;\n    // TODO: open dropdown only when query has text and suggestions exist\n  }\n\n  onFocus(): void {\n    // TODO: open dropdown when query has text and suggestions exist\n  }\n\n  addChip(chip: Chip): void {\n    // TODO: prevent duplicates by id or normalized value\n    // then append chip, clear query, close dropdown, reset active index\n  }\n\n  addCustomFromQuery(): void {\n    // TODO: if query has text, create custom chip: id='custom-'+normalize(query)\n    // and call addChip(...)\n  }\n\n  removeChip(chipId: string): void {\n    // TODO: remove chip by id\n  }\n\n  selectSuggestion(chip: Chip): void {\n    // TODO: add selected suggestion chip\n  }\n\n  handleKeyDown(event: KeyboardEvent): void {\n    // TODO:\n    // ArrowDown/ArrowUp => move active suggestion (wrap around)\n    // Enter => select active suggestion if present, otherwise add custom\n    // comma => add custom\n    // Backspace on empty query => remove last chip\n    // Escape => close suggestions\n  }\n\n\n  optionId(index: number): string {\n    return 'invite-option-' + String(index);\n  }\n\n  get activeDescendant(): string | null {\n    return this.activeIndex >= 0 ? this.optionId(this.activeIndex) : null;\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(event: MouseEvent): void {\n    const target = event.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen = false;\n      this.activeIndex = -1;\n    }\n  }\n\n  private normalize(value: string): string {\n    return value.trim().toLowerCase();\n  }\n}\n",
+          "path": "src/app/app.component.ts"
+        },
+        {
+          "content": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Invite Chips</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n",
+          "path": "src/index.html"
+        },
+        {
+          "content": "import 'zone.js';\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#0a0a0a;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n",
+          "path": "src/styles.css"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "Invite Chips Input (Tags + Autocomplete)",
+      "track": "angular"
+    },
+    {
+      "contentHash": "9a6ff14cb3f761c3cc20491f864349d0952b5573c65939d9c129d6a2446170be",
+      "enabled": true,
+      "id": "int-code-angular-senior-debounced-search-v1",
+      "level": "senior",
+      "prompt": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Treat the trimmed input as the search query.",
+            "Restart the 500 ms debounce window whenever the query changes.",
+            "Do not show results before the final query finishes its debounce and request.",
+            "Render matching users with the existing result-row contract."
+          ],
+          "id": "base-debounce",
+          "prompt": "Start with a dependable search flow that waits for the final query before showing results.",
+          "title": "Base debounce"
+        },
+        {
+          "constraints": [
+            "Show the fake API failure for the query error without leaving loading active.",
+            "Show an explicit no-results state for a completed search with no matches.",
+            "Clear stale errors and results when a new query starts.",
+            "Treat whitespace-only input as empty and return to the initial prompt."
+          ],
+          "id": "state-recovery",
+          "prompt": "The interviewer now wants every terminal state to recover cleanly when the user keeps typing.",
+          "title": "State recovery"
+        },
+        {
+          "constraints": [
+            "Clear old result rows as soon as a newer non-empty query starts.",
+            "Cancel or ignore every response that no longer belongs to the current query.",
+            "A stale response must not change results, loading, or error state.",
+            "Keep loading active until the current request settles."
+          ],
+          "id": "latest-query-wins",
+          "prompt": "Assume requests can overlap. Only the newest query may commit results or finish the loading state.",
+          "title": "Latest query wins"
+        },
+        {
+          "constraints": [
+            "Connect the input to stable search-status and search-results regions with aria-describedby and aria-controls.",
+            "Expose the status row as an atomic polite live region.",
+            "Expose request activity with aria-busy and errors with role alert.",
+            "Cancel both a pending debounce and an already-started fake request during teardown.",
+            "Do not update state after the component unmounts or is destroyed."
+          ],
+          "id": "accessible-lifecycle",
+          "prompt": "Finish by making state announcements explicit and proving that teardown leaves no search timer behind.",
+          "title": "Accessible lifecycle"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-07-15",
+      "sourceQuestionId": "angular-debounced-search",
+      "starterAsset": "assets/sb/angular/question/angular-debounced-search.v2.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"angular-debounced-search\",\n  \"private\": true\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": ".app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}\n.card{width:100%;max-width:640px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:18px 18px 16px;display:grid;gap:16px;}\n.header{display:grid;gap:4px;}\n.title{margin:0;font-size:20px;font-weight:700;}\n.subtitle{margin:0;font-size:13px;color:#9ca3af;}\n.field{display:grid;gap:6px;}\n.label{font-size:13px;color:#9ca3af;}\n.input{width:100%;border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 12px;font-size:14px;outline:none;}\n.input:focus{border-color:#a3e635;box-shadow:0 0 0 1px #a3e63533;}\n.status-row{min-height:18px;font-size:12px;display:flex;align-items:center;}\n.status{color:#9ca3af;}\n.status--loading{color:#e5e7eb;}\n.status--muted{color:#6b7280;}\n.status--error{color:#f97316;}\n.results{list-style:none;margin:0;padding:0;display:grid;gap:8px;}\n.result-row{padding:8px 10px;border-radius:10px;border:1px solid #1f2937;background:#020617;display:grid;gap:2px;}\n.result-name{font-size:14px;font-weight:600;}\n.result-email{font-size:12px;color:#9ca3af;font-variant-numeric:tabular-nums;}\n.empty{margin:0;font-size:13px;color:#6b7280;}\n",
+          "path": "src/app/app.component.css"
+        },
+        {
+          "content": "<main class=\"app\">\n  <section class=\"card\">\n    <header class=\"header\">\n      <h1 class=\"title\">Debounced Search</h1>\n      <p class=\"subtitle\">Type to search a fake user directory. Search runs 500ms after you stop typing.</p>\n    </header>\n\n    <div class=\"field\">\n      <label class=\"label\" for=\"search-input\">Search</label>\n      <input\n        id=\"search-input\"\n        class=\"input\"\n        type=\"text\"\n        [value]=\"query\"\n        (input)=\"onQueryChange($any($event.target).value)\"\n        placeholder=\"Start typing a name or email...\"\n        autocomplete=\"off\"\n      />\n    </div>\n\n    <div class=\"status-row\">\n      @if (isLoading) {\n        <span class=\"status status--loading\">Searching…</span>\n      }\n      @if (!isLoading && !error && query) {\n        <span class=\"status\">Showing {{ results.length }} result(s) for \"{{ query }}\"</span>\n      }\n      @if (!isLoading && !error && !query) {\n        <span class=\"status status--muted\">Start typing to search.</span>\n      }\n      @if (error) {\n        <span class=\"status status--error\">{{ error }}</span>\n      }\n    </div>\n\n    @if (results.length) {\n      <ul class=\"results\">\n      @for (result of results; track result.id) {\n        <li class=\"result-row\">\n        <div class=\"result-name\">{{ result.name }}</div>\n        <div class=\"result-email\">{{ result.email }}</div>\n        </li>\n      }\n      </ul>\n    }\n\n    @if (!results.length && !isLoading && query && !error) {\n      <p class=\"empty\">\n        No results found for \"{{ query }}\".\n      </p>\n    }\n  </section>\n</main>\n",
+          "path": "src/app/app.component.html"
+        },
+        {
+          "content": "import { Component } from '@angular/core';\nimport { Subject, of, timer, throwError } from 'rxjs';\nimport { catchError, debounceTime, delay, distinctUntilChanged, switchMap, tap, takeUntil } from 'rxjs/operators';\n\ninterface Result {\n  id: number;\n  name: string;\n  email: string;\n}\n\nconst FAKE_DATA: Result[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Raw input value (for displaying in the header / status text)\n  query = '';\n\n  // Results, loading and error state used in the template\n  results: Result[] = [];\n  isLoading = false;\n  error: string | null = null;\n\n  // Stream of search terms coming from the input\n  private searchTerm$ = new Subject();\n\n  // Used to clean up the subscription\n  private destroy$ = new Subject();\n\n  constructor() {\n    // TODO: Wire up the debounced search stream here\n    // - debounceTime(500)\n    // - distinctUntilChanged()\n    // - handle empty queries by clearing results & skipping API\n    // - toggle isLoading and error state\n    // - switchMap into fakeApiSearch\n    // - catch errors and recover with []\n    this.setupSearchStream();\n  }\n\n  // Called from the template on every input event\n  onQueryChange(value: string): void {\n    this.query = value;\n    // TODO: push the latest value into the searchTerm$ stream\n    // this.searchTerm$.next(value);\n  }\n\n  ngOnDestroy(): void {\n    this.destroy$.next(null);\n    this.destroy$.complete();\n  }\n\n  private setupSearchStream(): void {\n    // TODO: Build the RxJS pipeline here using searchTerm$\n    // Example operators: debounceTime, distinctUntilChanged, tap, switchMap, catchError, takeUntil\n  }\n\n  // Fake API: filters the in-memory array and responds after a delay.\n  // You can treat this as given and focus on the RxJS wiring.\n  private fakeApiSearch(term: string) {\n    const trimmed = term.trim().toLowerCase();\n    const delayMs = 600;\n\n    if (!trimmed) {\n      return of([]).pipe(delay(delayMs));\n    }\n\n    const filtered = FAKE_DATA.filter((item) => {\n      const name = item.name.toLowerCase();\n      const email = item.email.toLowerCase();\n      return name.includes(trimmed) || email.includes(trimmed);\n    });\n\n    // Deliberately fail for the query \"error\" so students can see error handling.\n    if (trimmed === 'error') {\n      return timer(delayMs).pipe(\n        switchMap(() => throwError(() => new Error('Fake API error')))\n      );\n    }\n\n    return of(filtered).pipe(delay(delayMs));\n  }\n}\n",
+          "path": "src/app/app.component.ts"
+        },
+        {
+          "content": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Debounced Search</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n",
+          "path": "src/index.html"
+        },
+        {
+          "content": "import 'zone.js';\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#020617;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n",
+          "path": "src/styles.css"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "Angular Debounced Search with Fake API (RxJS)",
+      "track": "angular"
+    },
+    {
+      "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
+      "enabled": true,
+      "id": "int-code-core-web-junior-escape-html-v1",
+      "level": "junior",
+      "prompt": "Implement escapeHtml(text) to encode &, <, >, \" and ' when raw text must be interpolated into the HTML text-content portion of a constructed markup string. For live DOM text, assign `textContent` instead. This narrow encoder is not a sanitizer and does not make values safe for URLs, event handlers, style/CSS, unquoted attributes, or other output contexts.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Input text (string): Raw user text to escape for HTML.",
+            "Return string: A string encoded for the HTML text-content context in constructed markup."
+          ],
+          "id": "implementation-contract",
+          "prompt": "Implement escapeHtml(text) to encode &, <, >, \" and ' when raw text must be interpolated into the HTML text-content portion of a constructed markup string. For live DOM text, assign `textContent` instead. This narrow encoder is not a sanitizer and does not make values safe for URLs, event handlers, style/CSS, unquoted attributes, or other output contexts.",
+          "title": "Escape HTML for Safe Text"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "sourceContentVersion": "2026-07-14",
+      "sourceQuestionId": "js-escape-html",
+      "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-escape-html.starterCode",
+      "starterFiles": [
+        {
+          "content": "export default function escapeHtml(text) {\n  throw new Error('Not implemented');\n}\n",
+          "path": "escapeHtml.js"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "Escape HTML for Safe Text",
+      "track": "core-web"
+    },
+    {
+      "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
+      "enabled": true,
+      "id": "int-code-core-web-junior-validate-username-v1",
+      "level": "junior",
+      "prompt": "Implement validateUsername(name) to enforce common username rules and handle edge cases safely. Rules: 3–16 chars, lowercase letters/digits/underscore only, must start with a letter, no consecutive underscores, and no trailing underscore.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Input name (string): The username to validate.",
+            "Return boolean: True if valid; otherwise false."
+          ],
+          "id": "implementation-contract",
+          "prompt": "Implement validateUsername(name) to enforce common username rules and handle edge cases safely. Rules: 3–16 chars, lowercase letters/digits/underscore only, must start with a letter, no consecutive underscores, and no trailing underscore.",
+          "title": "Validate Username (Rules + Edge Cases)"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "sourceContentVersion": "2026-02-03",
+      "sourceQuestionId": "js-validate-username",
+      "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-validate-username.starterCode",
+      "starterFiles": [
+        {
+          "content": "export default function validateUsername(name) {\n  throw new Error('Not implemented');\n}\n",
+          "path": "validateUsername.js"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "Validate Username (Rules + Edge Cases)",
+      "track": "core-web"
+    },
+    {
+      "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
+      "enabled": true,
+      "id": "int-code-core-web-mid-fetch-timeout-v1",
+      "level": "mid",
+      "prompt": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Input url (string): The request URL.",
+            "Input options ({ timeoutMs?: number, signal?: AbortSignal, fetchFn?: Function, ...init }): Optional timeout, AbortSignal, and a fetch function override for testing. Any extra fields are passed to fetch.",
+            "Return Promise<any>: Resolves with parsed JSON or rejects on timeout, abort, or non-OK response."
+          ],
+          "id": "implementation-contract",
+          "prompt": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
+          "title": "Fetch JSON with Timeout + Abort"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "sourceContentVersion": "2026-07-14",
+      "sourceQuestionId": "js-fetch-json-timeout",
+      "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-fetch-json-timeout.starterCode",
+      "starterFiles": [
+        {
+          "content": "export default async function fetchJson(url, options = {}) {\n  // TODO: support timeoutMs + AbortSignal, throw on non-OK responses\n  throw new Error('Not implemented');\n}\n",
+          "path": "fetchJson.js"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "Fetch JSON with Timeout + Abort",
+      "track": "core-web"
+    },
+    {
+      "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
+      "enabled": true,
+      "id": "int-code-core-web-mid-take-latest-v1",
+      "level": "mid",
+      "prompt": "Implement takeLatest(fn) that wraps an async function and guarantees only the most recent call can resolve. Each new call aborts the previous one via AbortController, and stale results must not update state. This prevents out-of-order responses in search-as-you-type, autocomplete, and live filtering. Concepts: async, cancellation, race control.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Input fn ((signal: AbortSignal, ...args: any[]) => Promise<T>): Async worker to run. It receives an AbortSignal as the first argument, followed by your call arguments.",
+            "Return (...args: any[]) => Promise<T>: A wrapped function that aborts the previous call and resolves only the latest result."
+          ],
+          "id": "implementation-contract",
+          "prompt": "Implement takeLatest(fn) that wraps an async function and guarantees only the most recent call can resolve. Each new call aborts the previous one via AbortController, and stale results must not update state. This prevents out-of-order responses in search-as-you-type, autocomplete, and live filtering. Concepts: async, cancellation, race control.",
+          "title": "Take Latest (Abort Previous Requests)"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "sourceContentVersion": "2026-07-14",
+      "sourceQuestionId": "js-take-latest",
+      "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-take-latest.starterCode",
+      "starterFiles": [
+        {
+          "content": "export default function takeLatest(fn) {\n  // TODO: return a wrapped function that aborts previous calls and resolves only the latest\n  throw new Error('Not implemented');\n}\n",
+          "path": "takeLatest.js"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "Take Latest (Abort Previous Requests)",
+      "track": "core-web"
+    },
+    {
+      "contentHash": "a46562a3755178280473a3aba3ca56d411c25b4f2733b4409a199ed6860aeece",
+      "enabled": true,
+      "id": "int-code-core-web-senior-concurrency-map-v1",
+      "level": "senior",
+      "prompt": "Implement a concurrency-limited async map that preserves order. Run at most N promises at a time, resolve results in input order, and reject early on errors to avoid hanging work.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Input items (T[]): Inputs to process.",
+            "Input limit (number): Max number of concurrent worker calls. Must be ≥ 1.",
+            "Input worker ((item: T, index: number) => Promise<R>): Async mapper.",
+            "Input strategy ('fail-fast' | 'all-settled'): Optional error handling strategy (default `'fail-fast'`). On error: either reject immediately (`'fail-fast'`) or collect all outcomes (`'all-settled'`).",
+            "Return Promise<R[] | Array<{ status: 'fulfilled' | 'rejected'; value?: R; reason?: any }>>: If `'fail-fast'`, resolves to `R[]` or rejects on the first error. If `'all-settled'`, always resolves to settled outcomes in input order."
+          ],
+          "id": "implementation-contract",
+          "prompt": "Implement a concurrency-limited async map that preserves order. Run at most N promises at a time, resolve results in input order, and reject early on errors to avoid hanging work.",
+          "title": "Concurrency-Limited Map (order-preserving)"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "sourceContentVersion": "2026-01-31",
+      "sourceQuestionId": "js-concurrency-map-limit",
+      "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-concurrency-map-limit.starterCode",
+      "starterFiles": [
+        {
+          "content": "export default async function mapAsyncLimit(items, limit, worker, strategy = 'fail-fast') {\n  // TODO:\n  // 1) Validate inputs (limit >= 1)\n  // 2) Launch up to `limit` concurrent runners\n  // 3) Each runner pulls the next index and writes its result at that index\n  // 4) 'fail-fast' rejects on first error, 'all-settled' aggregates statuses\n}\n\nexport const sleep = (ms) => new Promise(r => setTimeout(r, ms));\n",
+          "path": "mapAsyncLimit.js"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "Concurrency-Limited Map (order-preserving)",
+      "track": "core-web"
+    },
+    {
+      "contentHash": "2a13a53222648c16758abd064e7a9bfc24a306a0a4d29a49ee091a070675e19c",
+      "enabled": true,
+      "id": "int-code-core-web-senior-lru-cache-v1",
+      "level": "senior",
+      "prompt": "Implement createLruCache(maxSize) to keep a bounded, eviction-based cache. This is a classic way to prevent \"memory leaks\" caused by unbounded Maps in long-lived SPAs (analytics, image metadata, computed results).",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Input maxSize (number): Maximum number of entries to retain. Must be a positive integer.",
+            "Return { get, set, has, size, clear, keys }: An LRU cache API backed by Map insertion order."
+          ],
+          "id": "implementation-contract",
+          "prompt": "Implement createLruCache(maxSize) to keep a bounded, eviction-based cache. This is a classic way to prevent \"memory leaks\" caused by unbounded Maps in long-lived SPAs (analytics, image metadata, computed results).",
+          "title": "Create an LRU Cache (Bounded Memory)"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "sourceContentVersion": "2026-02-05",
+      "sourceQuestionId": "js-create-lru-cache",
+      "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-create-lru-cache.starterCode",
+      "starterFiles": [
+        {
+          "content": "export default function createLruCache(maxSize) {\n  throw new Error('Not implemented');\n}\n",
+          "path": "createLruCache.js"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "Create an LRU Cache (Bounded Memory)",
+      "track": "core-web"
+    },
+    {
+      "contentHash": "3b06f080ac3e514fdf78779cc898934968aac4215db9e90b6d273eab8ff263d7",
+      "enabled": true,
+      "id": "int-code-react-junior-counter-v1",
+      "level": "junior",
+      "prompt": "Build a React counter component with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Start at 0 and display the current value.",
+            "Support increment, decrement, and reset.",
+            "Never allow a negative value.",
+            "Disable decrement while the value is 0."
+          ],
+          "id": "base-correctness",
+          "prompt": "Start with a reliable counter. Keep the behavior small, explicit, and state-driven.",
+          "title": "Base correctness"
+        },
+        {
+          "constraints": [
+            "Add a labeled step selector with 1, 5, and 10.",
+            "Use 1 as the default step.",
+            "Apply the selected step to both increment and decrement.",
+            "Clamp decrement at 0 when the selected step is larger than the value."
+          ],
+          "id": "configurable-step",
+          "prompt": "The product team now needs larger jumps without duplicating counter logic.",
+          "title": "Configurable step"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "react-counter",
+      "starterAsset": "assets/sb/react/question/react-counter.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"react-counter\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": { \"start\": \"react-scripts start\" }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>React SDK • Counter</title></head><body><div id=\"root\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:420px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; }\n.value { font-size:48px; font-weight:800; text-align:center; margin-bottom:12px; }\n.actions { display:flex; gap:8px; justify-content:center; }\n\nbutton { background:#a3e635; color:#111; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }\nbutton[disabled] { opacity:.5; cursor:not-allowed; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "import React, { useState } from 'react';\nimport './App.css';\n\nexport default function App() {\n  // Current count value\n  const [count, setCount] = useState(0); // TODO: Hold current count value\n\n  // Derived boolean for disabling '-'\n  const isZero = count === 0; // TODO: Disable '-' when count is 0\n\n  // TODO: Implement actions\n  const inc = () => {};\n  const dec = () => {};\n  const reset = () => {};\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Counter</h1>\n\n        <div className=\"panel\">\n          <div className=\"value\">{count}</div>\n\n          <div className=\"actions\">\n            <button onClick={dec} disabled={isZero}>−</button>\n            <button onClick={inc}>+</button>\n            <button onClick={reset} className=\"ghost\">Reset</button>\n          </div>\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+          "path": "src/App.tsx"
+        },
+        {
+          "content": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
+          "path": "src/index.tsx"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"jsx\": \"react-jsx\",\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "React Counter (Guarded Decrement)",
+      "track": "react"
+    },
+    {
+      "contentHash": "f06e131d0396ccd1ca5e9dd727828b9218e749a92206a191010ef7ddba140200",
+      "enabled": true,
+      "id": "int-code-react-junior-todo-v1",
+      "level": "junior",
+      "prompt": "Create a local-state todo list: add, toggle, and remove items. Keep input state controlled, generate stable ids, and update the todos array immutably so React can detect changes and re-render correctly. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Trim task text and reject empty or whitespace-only submissions.",
+            "Disable Add while the normalized input is empty.",
+            "Support both form submission with Enter and the Add button.",
+            "Clear the input after a successful add and assign every task a stable unique id."
+          ],
+          "id": "core-transitions",
+          "prompt": "Start with reliable task creation. Treat input normalization and identity as part of the state contract.",
+          "title": "Core transitions"
+        },
+        {
+          "constraints": [
+            "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
+            "Expose the selected filter with aria-pressed.",
+            "Announce the remaining active-task count with correct singular and plural copy.",
+            "Clear completed tasks without removing active tasks."
+          ],
+          "id": "derived-filters",
+          "prompt": "The list now needs trustworthy derived views. Filtering must never discard or rewrite source tasks.",
+          "title": "Derived filters"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "react-todo-list",
+      "starterAsset": "assets/sb/react/question/react-todo-list.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"react-todo-list\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": { \"start\": \"react-scripts start\" }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>React SDK • Todo List</title></head><body><div id=\"root\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:480px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; display:grid; gap:12px; }\n.input-row { display:flex; gap:8px; }\n.input-row input { flex:1; background:#020617; border-radius:8px; border:1px solid #1f2937; padding:8px 10px; color:#e5e7eb; font-size:14px; }\n.input-row input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 1px #6366f1; }\n\n.primary { background:#4ade80; color:#022c22; border:none; border-radius:999px; padding:8px 14px; font-weight:600; font-size:14px; cursor:pointer; }\n.primary[disabled] { opacity:.6; cursor:not-allowed; }\n\n.list { list-style:none; margin:0; padding:0; display:grid; gap:6px; }\n.item { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 8px; border-radius:8px; background:#020617; border:1px solid transparent; }\n.item-main { display:flex; align-items:center; gap:8px; font-size:14px; }\n.item-main input[type=checkbox] { accent-color:#22c55e; }\n.item-main span.done { text-decoration:line-through; color:#9ca3af; }\n\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }\nbutton.ghost.small { padding:4px 10px; font-size:12px; }\n\n.empty { margin:4px 0 0; font-size:13px; color:#9ca3af; text-align:center; }\n.footer { display:flex; justify-content:flex-end; margin-top:4px; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Todo = {\n  id: number;\n  text: string;\n  done: boolean;\n};\n\nexport default function App() {\n  // Controlled input for the new task\n  const [newTask, setNewTask] = useState('');\n\n  // List of todo items\n  // NOTE: no generic type argument here to avoid TS error in this environment\n  const [todos, setTodos] = useState([]);\n\n  // Derived flag for showing list / empty state\n  const hasTodos = (todos as Todo[]).length > 0;\n\n  // TODO: Add a new todo using the current newTask value\n  // - Trim the text\n  // - Ignore empty strings\n  // - Append a new Todo object to the array\n  // - Clear the input afterwards\n  const addTask = () => {\n    // Implement in the solution\n  };\n\n  // TODO: Toggle the \"done\" flag for a given todo (by id)\n  const toggleTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove a single todo (by id)\n  const removeTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove all todos where done === true\n  const clearCompleted = () => {\n    // Implement in the solution\n  };\n\n  const typedTodos = todos as Todo[];\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Todo List</h1>\n\n        <div className=\"panel\">\n          <div className=\"input-row\">\n            <input\n              type=\"text\"\n              placeholder=\"Add a new task...\"\n              value={newTask}\n              onChange={(event) => setNewTask(event.target.value)}\n            />\n            <button type=\"button\" className=\"primary\" onClick={addTask}>\n              Add\n            </button>\n          </div>\n\n          {hasTodos ? (\n            <ul className=\"list\">\n              {typedTodos.map((todo) => (\n                <li key={todo.id} className=\"item\">\n                  <label className=\"item-main\">\n                    <input\n                      type=\"checkbox\"\n                      checked={todo.done}\n                      onChange={() => toggleTask(todo.id)}\n                    />\n                    <span className={todo.done ? 'done' : ''}>{todo.text}</span>\n                  </label>\n\n                  <button\n                    type=\"button\"\n                    className=\"ghost\"\n                    onClick={() => removeTask(todo.id)}\n                  >\n                    Remove\n                  </button>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">No tasks yet. Add your first one above.</p>\n          )}\n\n          {hasTodos && (\n            <div className=\"footer\">\n              <button\n                type=\"button\"\n                className=\"ghost small\"\n                onClick={clearCompleted}\n              >\n                Clear completed\n              </button>\n            </div>\n          )}\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+          "path": "src/App.tsx"
+        },
+        {
+          "content": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
+          "path": "src/index.tsx"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"jsx\": \"react-jsx\",\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "Todo List (Component with Local State)",
+      "track": "react"
+    },
+    {
+      "contentHash": "a3e2e5168f65206e11ccc07f082c2a7ecdec52dc4df2880d7b188de2f03c7f2e",
+      "enabled": true,
+      "id": "int-code-react-mid-pagination-v1",
+      "level": "mid",
+      "prompt": "Build a simple paginated data table in React that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. React focus: keep page index in state and derive page slices. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Render 13 users in stable source order with a default page size of five.",
+            "Previous and Next must move one page at a time without leaving the valid page range.",
+            "The final page must render only users 11 through 13 and disable Next.",
+            "Keep the existing footer button order and page-info contract intact."
+          ],
+          "id": "core-page-window",
+          "prompt": "Start with pagination users can trust. Every page must expose the correct slice and guard both boundaries.",
+          "title": "Core page window"
+        },
+        {
+          "constraints": [
+            "Trim the query and match name, email, or role case-insensitively.",
+            "Every query change must reset pagination to page one.",
+            "Derive page counts from the filtered collection and keep the page range valid.",
+            "Render a single empty-state row and disable both pagination controls when nothing matches."
+          ],
+          "id": "filter-and-page-reset",
+          "prompt": "Now layer search onto pagination. Normalization, result counts, empty state, and the active page must stay synchronized.",
+          "title": "Filter and page reset"
+        },
+        {
+          "constraints": [
+            "Sort ID numerically and Name or Role case-insensitively.",
+            "The first activation of a new column must sort ascending and the second descending.",
+            "Equal sort values must retain their original source order.",
+            "Changing sort or page size must reset to page one and recompute the page window."
+          ],
+          "id": "sort-and-page-size",
+          "prompt": "Add deterministic sorting and a second page size without letting derived state drift or compare numeric ids as strings.",
+          "title": "Sort and page size"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "react-pagination-table",
+      "starterAsset": "assets/sb/react/question/react-pagination-table.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"react-pagination-table\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": {\n    \"start\": \"react-scripts start\" }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>React SDK • Paginated Table</title></head><body><div id=\"root\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:720px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:20px; box-sizing:border-box; display:grid; gap:12px; }\n\n.header { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }\n.header h1 { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:2px 0 0; font-size:12px; color:#9ca3af; }\n.meta { font-size:12px; color:#9ca3af; }\n\n.panel { background:#020617; border-radius:12px; border:1px solid #1f2937; overflow:hidden; }\n\n.table { width:100%; border-collapse:collapse; font-size:13px; }\n.table thead { background:#0b1020; }\n.table th, .table td { padding:8px 10px; border-bottom:1px solid #111827; text-align:left; }\n.table tbody tr:nth-child(even) { background:#020617; }\n\n.footer { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; gap:8px; }\n.page-info { font-size:12px; color:#9ca3af; }\n\nbutton { border:none; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; background:#22c55e; color:#021210; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\nbutton[disabled] { opacity:0.5; cursor:not-allowed; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype User = {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n};\n\nconst USERS: User[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },\n  { id: 3, name: 'Carla Perez', email: 'carla@example.com', role: 'Viewer' },\n  { id: 4, name: 'David Kim', email: 'david@example.com', role: 'Editor' },\n  { id: 5, name: 'Emma Brown', email: 'emma@example.com', role: 'Viewer' },\n  { id: 6, name: 'Frank Wu', email: 'frank@example.com', role: 'Admin' },\n  { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Viewer' },\n  { id: 8, name: 'Henry Ford', email: 'henry@example.com', role: 'Editor' },\n  { id: 9, name: 'Ivy Stone', email: 'ivy@example.com', role: 'Viewer' },\n  { id: 10, name: 'Jack Ryan', email: 'jack@example.com', role: 'Viewer' },\n  { id: 11, name: 'Karen Diaz', email: 'karen@example.com', role: 'Editor' },\n  { id: 12, name: 'Leo Walker', email: 'leo@example.com', role: 'Viewer' },\n  { id: 13, name: 'Mia Clark', email: 'mia@example.com', role: 'Admin' },\n  { id: 14, name: 'Noah Hall', email: 'noah@example.com', role: 'Viewer' },\n  { id: 15, name: 'Olivia King', email: 'olivia@example.com', role: 'Editor' },\n  { id: 16, name: 'Paul Green', email: 'paul@example.com', role: 'Viewer' },\n  { id: 17, name: 'Quinn Ross', email: 'quinn@example.com', role: 'Viewer' },\n  { id: 18, name: 'Rita Long', email: 'rita@example.com', role: 'Editor' },\n  { id: 19, name: 'Sam Young', email: 'sam@example.com', role: 'Viewer' },\n  { id: 20, name: 'Tina Fox', email: 'tina@example.com', role: 'Viewer' }\n];\n\nconst PAGE_SIZE = 5;\n\nexport default function App() {\n  // TODO: Hold current page index (0-based)\n  const [currentPage, setCurrentPage] = useState(0);\n\n  // TODO: Compute total number of pages based on USERS.length and PAGE_SIZE\n  const totalPages = 1;\n\n  // TODO: Derive only the users for the current page\n  const pagedUsers: User[] = USERS;\n\n  // TODO: Are we on the first page?\n  const isFirstPage = false;\n\n  // TODO: Are we on the last page?\n  const isLastPage = false;\n\n  // TODO: Go to previous page (if not already on the first page)\n  const goPrevious = () => {\n  };\n\n  // TODO: Go to next page (if not already on the last page)\n  const goNext = () => {\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <header className=\"header\">\n          <div>\n            <h1>Users</h1>\n            <p className=\"subtitle\">Simple paginated table (5 per page)</p>\n          </div>\n          <div className=\"meta\">Total users: {USERS.length}</div>\n        </header>\n\n        <div className=\"panel\">\n          <table className=\"table\" aria-label=\"Users table\">\n            <thead>\n              <tr>\n                <th>ID</th>\n                <th>Name</th>\n                <th>Email</th>\n                <th>Role</th>\n              </tr>\n            </thead>\n            <tbody>\n              {pagedUsers.map((user) => (\n                <tr key={user.id}>\n                  <td>{user.id}</td>\n                  <td>{user.name}</td>\n                  <td>{user.email}</td>\n                  <td>{user.role}</td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n\n          <footer className=\"footer\">\n            <button\n              type=\"button\"\n              className=\"ghost\"\n              onClick={goPrevious}\n              disabled={isFirstPage}\n            >\n              Previous\n            </button>\n            <span className=\"page-info\">\n              Page {currentPage + 1} of {totalPages}\n            </span>\n            <button\n              type=\"button\"\n              onClick={goNext}\n              disabled={isLastPage}\n            >\n              Next\n            </button>\n          </footer>\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+          "path": "src/App.tsx"
+        },
+        {
+          "content": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root') as HTMLElement).render(<App />);\n",
+          "path": "src/index.tsx"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"jsx\": \"react-jsx\",\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "React Paginated Data Table",
+      "track": "react"
+    },
+    {
+      "contentHash": "73625055df6d96aac602a108e58f4d35be8931dc35f3b8ef11d6c9a8fdcb9bd8",
+      "enabled": true,
+      "id": "int-code-react-mid-shopping-cart-v1",
+      "level": "mid",
+      "prompt": "Build a small shopping cart UI in React. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. React focus: use immutable updates for cart lines and derived totals. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Add a new product as one cart row with quantity 1.",
+            "Adding the same product again must increment its existing row instead of creating a duplicate.",
+            "Keep different products in separate rows with their own quantities and line totals.",
+            "Derive total item count, line totals, and the overall total from the current cart. Format every amount as USD with two decimal places."
+          ],
+          "id": "core-cart-transitions",
+          "prompt": "Start with a trustworthy cart model. Product identity, quantities, and money must stay consistent as items are added.",
+          "title": "Core cart transitions"
+        },
+        {
+          "constraints": [
+            "Increasing and decreasing a quantity must update its row total, total item count, and overall total.",
+            "Decreasing an item at quantity 1 must remove that row.",
+            "Remove must delete only the selected product and leave every other row unchanged.",
+            "An empty cart must report 0 items and a $0.00 total."
+          ],
+          "id": "quantity-boundaries",
+          "prompt": "Now make every quantity transition safe. Updates must affect only their target row and return cleanly to an empty cart.",
+          "title": "Quantity boundaries"
+        },
+        {
+          "constraints": [
+            "Use stock limits of 2 Wireless Headphones, 3 Mechanical Keyboards, 5 Ergonomic Mice, and 1 USB-C Hub.",
+            "Show the remaining product stock contract as 2 in stock, 3 in stock, 5 in stock, and 1 in stock before cart changes.",
+            "Disable both Add to cart and Increase when a cart line reaches its product's stock limit, and never allow either path to exceed stock.",
+            "Re-enable Add to cart and Increase after the quantity drops below the limit.",
+            "Announce `Wireless Headphones reached its stock limit.` through a stable atomic polite cart status when that limit is reached."
+          ],
+          "id": "inventory-guard",
+          "prompt": "Inventory is finite. Preserve the cart guarantees while every add path respects stock and communicates the boundary.",
+          "title": "Inventory guard"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "react-shopping-cart",
+      "starterAsset": "assets/sb/react/question/react-shopping-cart.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"react-shopping-cart\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": { \"start\": \"react-scripts start\" }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>React SDK • Shopping Cart</title></head><body><div id=\"root\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#020617;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n\n.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}\n.layout{width:100%;max-width:520px;display:grid;gap:16px;}\n.column{background:#020617;border-radius:16px;border:1px solid #1f2937;padding:16px 16px 12px;display:grid;gap:12px;}\n.title{margin:0;font-size:18px;font-weight:700;}\n.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}\n.product-list,.cart-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;}\n.product-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.product-main{display:grid;gap:2px;}\n.product-name{font-size:14px;font-weight:600;}\n.product-price{font-size:13px;color:#a3e635;}\n.cart-header{display:grid;gap:4px;}\n.cart-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.cart-info{display:grid;gap:4px;}\n.cart-name{font-size:14px;font-weight:600;}\n.cart-meta{display:flex;align-items:center;gap:4px;font-size:12px;color:#9ca3af;}\n.unit-price,.line-total{font-variant-numeric:tabular-nums;}\n.times,.equals{opacity:.7;}\n.cart-actions{display:flex;gap:6px;}\nbutton{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}\nbutton:hover{border-color:#a3e635;}\nbutton.ghost{background:transparent;}\nbutton.danger{border-color:#f97316;color:#f97316;}\n.empty{margin:4px 0 0;font-size:13px;color:#6b7280;}\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Product = {\n  id: string;\n  name: string;\n  price: number;\n};\n\ntype CartItem = Product & {\n  quantity: number;\n};\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 },\n  { id: 'p4', name: 'USB-C Hub', price: 39.0 }\n];\n\nexport default function App() {\n  // Static product list\n  const [products] = useState(PRODUCTS);\n\n  // TODO: Hold cart items (array of { id, name, price, quantity })\n  const [cartItems, setCartItems] = useState([]);\n\n  // TODO: Derive total quantity from cartItems\n  const totalQty = 0;\n\n  // TODO: Derive total price from cartItems\n  const totalPrice = 0;\n\n  // TODO: Add product to cart\n  // - If it does not exist, add with quantity 1\n  // - If it exists, increase quantity by 1\n  function addToCart(product: Product) {\n  }\n\n  // TODO: Increase quantity of a cart item\n  function increaseQty(item: CartItem) {\n  }\n\n  // TODO: Decrease quantity of a cart item\n  // - If quantity would go to 0, either remove item or clamp at 1\n  function decreaseQty(item: CartItem) {\n  }\n\n  // TODO: Remove item from the cart entirely\n  function removeItem(item: CartItem) {\n  }\n\n  return (\n    <main className=\"app\">\n      <section className=\"layout\">\n        {/* Products */}\n        <section className=\"column\">\n          <h1 className=\"title\">Products</h1>\n          <ul className=\"product-list\">\n            {products.map(p => (\n              <li className=\"product-card\" key={p.id}>\n                <div className=\"product-main\">\n                  <div className=\"product-name\">{p.name}</div>\n                  <div className=\"product-price\">${p.price.toFixed(2)}</div>\n                </div>\n                <button type=\"button\" onClick={() => addToCart(p)}>\n                  Add to cart\n                </button>\n              </li>\n            ))}\n          </ul>\n        </section>\n\n        {/* Cart */}\n        <section className=\"column\">\n          <header className=\"cart-header\">\n            <h1 className=\"title\">Cart</h1>\n            <p className=\"subtitle\">\n              Total items: <strong>{totalQty}</strong> · Total: <strong>${totalPrice.toFixed(2)}</strong>\n            </p>\n          </header>\n\n          {cartItems.length > 0 ? (\n            <ul className=\"cart-list\">\n              {cartItems.map(item => (\n                <li className=\"cart-row\" key={item.id}>\n                  <div className=\"cart-info\">\n                    <div className=\"cart-name\">{item.name}</div>\n                    <div className=\"cart-meta\">\n                      <span className=\"unit-price\">${item.price.toFixed(2)}</span>\n                      <span className=\"times\">x</span>\n                      <span className=\"qty\">{item.quantity}</span>\n                      <span className=\"equals\">=</span>\n                      <span className=\"line-total\">${(item.price * item.quantity).toFixed(2)}</span>\n                    </div>\n                  </div>\n\n                  <div className=\"cart-actions\">\n                    <button\n                      type=\"button\"\n                      className=\"ghost\"\n                      onClick={() => decreaseQty(item)}\n                      aria-label=\"decrease quantity\"\n                    >\n                      −\n                    </button>\n                    <button\n                      type=\"button\"\n                      className=\"ghost\"\n                      onClick={() => increaseQty(item)}\n                      aria-label=\"increase quantity\"\n                    >\n                      +\n                    </button>\n                    <button\n                      type=\"button\"\n                      className=\"danger\"\n                      onClick={() => removeItem(item)}\n                    >\n                      Remove\n                    </button>\n                  </div>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">Your cart is empty. Add something from above.</p>\n          )}\n        </section>\n      </section>\n    </main>\n  );\n}\n",
+          "path": "src/App.tsx"
+        },
+        {
+          "content": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
+          "path": "src/index.tsx"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"jsx\": \"react-jsx\",\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "React Shopping Cart Mini",
+      "track": "react"
+    },
+    {
+      "contentHash": "a444c5da5869a5e0fcc16774746bdd4831a5059f6b1f4d4c3594cd76d93e2ac0",
+      "enabled": true,
+      "id": "int-code-react-senior-chips-autocomplete-v1",
+      "level": "senior",
+      "prompt": "Build a Material-like invite field in React. As users type, show autocomplete suggestions, convert selections into removable chips, and support keyboard shortcuts (Enter/comma/backspace).",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Filter candidates by name or email with trimmed, case-insensitive matching and show at most six suggestions.",
+            "Selecting a suggestion by click must add exactly one chip, clear the query, and close the listbox.",
+            "Exclude selected candidates from later suggestions without mutating the source candidate list.",
+            "Use stable candidate ids so suggestion and chip identity does not depend on the rendered index."
+          ],
+          "id": "core-suggestion-selection",
+          "prompt": "Start with a trustworthy autocomplete contract. Filtering and selection must stay predictable across casing, pointer input, and repeated queries.",
+          "title": "Core suggestion selection"
+        },
+        {
+          "constraints": [
+            "Enter and comma must add a trimmed custom chip and clear the input.",
+            "Whitespace-only input must add nothing and return the input to an empty value.",
+            "Reject duplicates by candidate id or case-insensitive normalized value.",
+            "A remove control must delete only its target chip and expose the target label in its accessible name."
+          ],
+          "id": "token-normalization",
+          "prompt": "Now make free-form entry safe. Token boundaries, duplicate identity, and targeted removal must behave the same for every input path.",
+          "title": "Token normalization"
+        },
+        {
+          "constraints": [
+            "ArrowUp and ArrowDown must wrap through the visible suggestions and update a stable active-descendant id.",
+            "Enter must select the active option while keeping focus on the input.",
+            "Escape must close the listbox and clear the active option without deleting the query or chips.",
+            "Backspace on an empty input must remove only the final chip."
+          ],
+          "id": "keyboard-lifecycle",
+          "prompt": "Complete the combobox keyboard lifecycle. The active option, open state, chip selection, and destructive shortcuts must never drift apart.",
+          "title": "Keyboard lifecycle"
+        },
+        {
+          "constraints": [
+            "Allow at most five chips, disable the input at the limit, and guard programmatic or keyboard add paths from exceeding it.",
+            "Removing a chip below the limit must immediately re-enable entry and allow another invite.",
+            "Put the combobox role and relationships on the actual input; use a labelled listbox, stable option ids, and product-specific remove labels.",
+            "Keep an always-rendered polite, atomic status region and remove document listeners when the preview unmounts."
+          ],
+          "id": "invite-limit-and-accessibility",
+          "prompt": "Finish with a hard invite boundary and a complete assistive-technology contract. Limits must be enforced through every event path and announced without unstable DOM regions.",
+          "title": "Invite limit and accessibility"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-02-09",
+      "sourceQuestionId": "react-chips-input-autocomplete",
+      "starterAsset": "assets/sb/react/question/react-chips-input-autocomplete.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"react-chips-input-autocomplete\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": { \"start\": \"react-scripts start\" }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>React SDK • Invite Chips</title></head><body><div id=\"root\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root{color-scheme:dark;}\nhtml,body{margin:0;height:100%;background:#0a0a0a;}\nbody{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;}\n.card{width:100%;max-width:640px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:12px;}\nh1{margin:0;font-size:20px;}\n.subtitle{margin:0;color:#9ca3af;font-size:14px;line-height:1.45;}\n.combobox{position:relative;}\n.chip-input{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;}\n.chip-input:focus-within{border-color:#a3e635;box-shadow:0 0 0 2px rgba(163,230,53,.15);}\n.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;background:#172036;border:1px solid #2c3c62;font-size:13px;}\n.chip-remove{border:none;background:transparent;color:#9ca3af;cursor:pointer;font-size:16px;line-height:1;padding:0;}\n.chip-remove:hover{color:#e5e7eb;}\n.chip-input input{flex:1;min-width:180px;border:none;outline:none;background:transparent;color:#e5e7eb;font-size:14px;padding:4px 0;}\n.chip-input input::placeholder{color:#6b7280;}\n.suggestions{position:absolute;left:0;right:0;z-index:10;margin-top:8px;max-height:260px;overflow:auto;border-radius:12px;border:1px solid #1f2937;background:#0a0f1e;padding:0;list-style:none;}\n.suggestion{display:grid;gap:2px;padding:10px 12px;border-bottom:1px solid rgba(31,41,55,.5);cursor:pointer;}\n.suggestion:last-child{border-bottom:none;}\n.suggestion span{font-size:12px;color:#9ca3af;}\n.suggestion.active{background:rgba(163,230,53,.12);}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "import {\n  useCallback,\n  useEffect,\n  useMemo,\n  useRef,\n  useState\n} from 'react';\nimport './App.css';\n\ntype Candidate = {\n  id: string;\n  name: string;\n  email: string;\n};\n\ntype Chip = {\n  id: string;\n  label: string;\n  value: string;\n};\n\ntype KeyInputEvent = {\n  key: string;\n  preventDefault: () => void;\n};\n\nconst USERS: Candidate[] = [\n  { id: 'alice', name: 'Alice Johnson', email: 'alice@frontendatlas.dev' },\n  { id: 'bob', name: 'Bob Smith', email: 'bob@frontendatlas.dev' },\n  { id: 'charlie', name: 'Charlie Kim', email: 'charlie@frontendatlas.dev' },\n  { id: 'diana', name: 'Diana Lopez', email: 'diana@frontendatlas.dev' },\n  { id: 'ethan', name: 'Ethan Brown', email: 'ethan@frontendatlas.dev' },\n  { id: 'fiona', name: 'Fiona Patel', email: 'fiona@frontendatlas.dev' },\n  { id: 'george', name: 'George Miller', email: 'george@frontendatlas.dev' }\n];\n\nfunction normalize(value: string): string {\n  return value.trim().toLowerCase();\n}\n\nexport default function App() {\n  const rootRef = useRef<HTMLDivElement | null>(null);\n\n  const [chips, setChips] = useState<Chip[]>([]);\n  const [query, setQuery] = useState('');\n  const [isOpen, setIsOpen] = useState(false);\n  const [activeIndex, setActiveIndex] = useState(-1);\n\n  const listboxId = 'invite-suggestions';\n\n  const suggestions = useMemo<Chip[]>(() => {\n    // TODO:\n    // 1) trim+lower query\n    // 2) filter USERS by name/email includes query\n    // 3) remove users already selected in chips\n    // 4) map to Chip shape + limit to 6\n    return [];\n  }, [chips, query]);\n\n  const addChip = useCallback((chip: Chip) => {\n    // TODO: prevent duplicates by id or normalized value\n    // then append chip, clear query, close dropdown, reset active index\n  }, []);\n\n  const addCustomFromQuery = useCallback(() => {\n    // TODO: if query has text, create custom chip: id='custom-'+normalize(query)\n    // and call addChip(...)\n  }, []);\n\n  const removeChip = useCallback((chipId: string) => {\n    // TODO: remove by id\n  }, []);\n\n  const selectSuggestion = useCallback((chip: Chip) => {\n    // TODO: add selected suggestion chip\n  }, []);\n\n  const handleKeyDown = (event: KeyInputEvent) => {\n    // TODO:\n    // ArrowDown/ArrowUp => move active suggestion (wrap around)\n    // Enter => select active suggestion if present, otherwise add custom\n    // comma => add custom\n    // Backspace on empty query => remove last chip\n    // Escape => close suggestions\n  };\n\n  useEffect(() => {\n    setActiveIndex(-1);\n  }, [query]);\n\n  useEffect(() => {\n    const hasQuery = normalize(query).length > 0;\n    setIsOpen(hasQuery && suggestions.length > 0);\n  }, [query, suggestions.length]);\n\n  useEffect(() => {\n    function onDocMouseDown(event: MouseEvent) {\n      const target = event.target as Node | null;\n      if (!target || !rootRef.current) return;\n      if (!rootRef.current.contains(target)) {\n        setIsOpen(false);\n        setActiveIndex(-1);\n      }\n    }\n\n    document.addEventListener('mousedown', onDocMouseDown);\n    return () => document.removeEventListener('mousedown', onDocMouseDown);\n  }, []);\n\n  const activeDescendant =\n    activeIndex >= 0 ? 'invite-option-' + String(activeIndex) : undefined;\n\n  return (\n    <main className='page'>\n      <section className='card'>\n        <h1>Invite people</h1>\n        <p className='subtitle'>\n          Build a chips input with autocomplete, keyboard shortcuts, and removable tags.\n        </p>\n\n        <div\n          ref={rootRef}\n          className='combobox'\n          role='combobox'\n          aria-expanded={isOpen}\n          aria-haspopup='listbox'\n          aria-owns={listboxId}\n          aria-activedescendant={activeDescendant}\n        >\n          <div className='chip-input'>\n            {chips.map((chip) => (\n              <span className='chip' key={chip.id}>\n                <span>{chip.label}</span>\n                <button\n                  type='button'\n                  className='chip-remove'\n                  onClick={() => removeChip(chip.id)}\n                  aria-label={'Remove ' + chip.label}\n                >\n                  ×\n                </button>\n              </span>\n            ))}\n\n            <input\n              type='text'\n              value={query}\n              onChange={(event) => setQuery(event.target.value)}\n              onKeyDown={handleKeyDown}\n              placeholder='Type a name or email...'\n            />\n          </div>\n\n          {isOpen && (\n            <ul id={listboxId} className='suggestions' role='listbox'>\n              {suggestions.map((item, index) => (\n                <li\n                  key={item.id}\n                  id={'invite-option-' + String(index)}\n                  role='option'\n                  aria-selected={index === activeIndex}\n                  className={index === activeIndex ? 'suggestion active' : 'suggestion'}\n                  onMouseDown={() => selectSuggestion(item)}\n                >\n                  <strong>{item.label}</strong>\n                  <span>{item.value}</span>\n                </li>\n              ))}\n            </ul>\n          )}\n        </div>\n\n        <p className='hint'>\n          Keyboard: Arrow keys navigate, Enter/comma add chip, Backspace removes the last chip.\n        </p>\n      </section>\n    </main>\n  );\n}\n",
+          "path": "src/App.tsx"
+        },
+        {
+          "content": "import { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
+          "path": "src/index.tsx"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"jsx\": \"react-jsx\",\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "Invite Chips Input (Tags + Autocomplete)",
+      "track": "react"
+    },
+    {
+      "contentHash": "f7f2fc8e8be19eb702e7d5db5d97c43ccf86e4348b7c94e5353f7d03b728186a",
+      "enabled": true,
+      "id": "int-code-react-senior-debounced-search-v1",
+      "level": "senior",
+      "prompt": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel pending debounce work, guard stale responses from updating state, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects. React focus: debounce with useEffect + setTimeout cleanup, and manage loading/error state. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Treat the trimmed input as the search query.",
+            "Restart the 500 ms debounce window whenever the query changes.",
+            "Do not show results before the final query finishes its debounce and request.",
+            "Render matching users with the existing result-row contract."
+          ],
+          "id": "base-debounce",
+          "prompt": "Start with a dependable search flow that waits for the final query before showing results.",
+          "title": "Base debounce"
+        },
+        {
+          "constraints": [
+            "Show the fake API failure for the query error without leaving loading active.",
+            "Show an explicit no-results state for a completed search with no matches.",
+            "Clear stale errors and results when a new query starts.",
+            "Treat whitespace-only input as empty and return to the initial prompt."
+          ],
+          "id": "state-recovery",
+          "prompt": "The interviewer now wants every terminal state to recover cleanly when the user keeps typing.",
+          "title": "State recovery"
+        },
+        {
+          "constraints": [
+            "Clear old result rows as soon as a newer non-empty query starts.",
+            "Cancel or ignore every response that no longer belongs to the current query.",
+            "A stale response must not change results, loading, or error state.",
+            "Keep loading active until the current request settles."
+          ],
+          "id": "latest-query-wins",
+          "prompt": "Assume requests can overlap. Only the newest query may commit results or finish the loading state.",
+          "title": "Latest query wins"
+        },
+        {
+          "constraints": [
+            "Connect the input to stable search-status and search-results regions with aria-describedby and aria-controls.",
+            "Expose the status row as an atomic polite live region.",
+            "Expose request activity with aria-busy and errors with role alert.",
+            "Cancel both a pending debounce and an already-started fake request during teardown.",
+            "Do not update state after the component unmounts or is destroyed."
+          ],
+          "id": "accessible-lifecycle",
+          "prompt": "Finish by making state announcements explicit and proving that teardown leaves no search timer behind.",
+          "title": "Accessible lifecycle"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "react-debounced-search",
+      "starterAsset": "assets/sb/react/question/react-debounced-search.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"react-debounced-search\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": { \"start\": \"react-scripts start\" }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>React SDK • Debounced Search</title></head><body><div id=\"root\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.card { width:100%; max-width:640px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:18px 18px 16px; display:grid; gap:16px; }\n.header { display:grid; gap:4px; }\n.title { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:0; font-size:13px; color:#9ca3af; }\n.field { display:grid; gap:6px; }\n.label { font-size:13px; color:#9ca3af; }\n.input { width:100%; border-radius:999px; border:1px solid #374151; background:#020617; color:#e5e7eb; padding:8px 12px; font-size:14px; outline:none; }\n.input:focus { border-color:#a3e635; box-shadow:0 0 0 1px #a3e63533; }\n.status-row { min-height:18px; font-size:12px; display:flex; align-items:center; }\n.status { color:#9ca3af; }\n.status--loading { color:#e5e7eb; }\n.status--muted { color:#6b7280; }\n.status--error { color:#f97316; }\n.results { list-style:none; margin:0; padding:0; display:grid; gap:8px; }\n.result-row { padding:8px 10px; border-radius:10px; border:1px solid #1f2937; background:#020617; display:grid; gap:2px; }\n.result-name { font-size:14px; font-weight:600; }\n.result-email { font-size:12px; color:#9ca3af; font-variant-numeric:tabular-nums; }\n.empty { margin:0; font-size:13px; color:#6b7280; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "import React, { useState, useEffect } from 'react';\nimport './App.css';\n\ninterface Result {\n  id: number;\n  name: string;\n  email: string;\n}\n\nconst FAKE_DATA: Result[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\n// Fake API: filters the in-memory array and responds after a delay.\n// Treat this as given and focus on wiring up the debounced React logic.\nfunction fakeApiSearch(term: string): Promise<Result[]> {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nexport default function App() {\n  // Current input value\n  const [query, setQuery] = useState(''); // TODO: hold current search query\n\n  // Results, loading, and error state\n  const [results, setResults] = useState([]); // TODO: store API results\n  const [isLoading, setIsLoading] = useState(false);    // TODO: toggle while request in-flight\n  const [error, setError] = useState(null); // TODO: store error messages\n\n  // TODO: Implement debounced search in a useEffect.\n  // Requirements:\n  // - Wait 500ms after the user stops typing before calling fakeApiSearch(query)\n  // - Clear results and flags when query is empty (no API call)\n  // - Set isLoading while the debounced request is running\n  // - On success: fill results and clear loading\n  // - On failure: set error, clear results, clear loading\n  // - Use the cleanup function to cancel the timeout / ignore stale responses\n  // useEffect(() => {\n  //   // your logic here\n  // }, [query]);\n\n  const handleChange = (event) => {\n    const value = event.target.value;\n    setQuery(value);\n    // Optional: you may want to clear error here when the user types again.\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Debounced Search</h1>\n          <p className=\"subtitle\">Type to search a fake user directory. Search runs 500ms after you stop typing.</p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"search-input\">Search</label>\n          <input\n            id=\"search-input\"\n            className=\"input\"\n            type=\"text\"\n            value={query}\n            onChange={handleChange}\n            placeholder=\"Start typing a name or email...\"\n            autoComplete=\"off\"\n          />\n        </div>\n\n        <div className=\"status-row\">\n          {isLoading && <span className=\"status status--loading\">Searching…</span>}\n          {!isLoading && !error && query && (\n            <span className=\"status\">Showing {results.length} result(s) for \"{query}\"</span>\n          )}\n          {!isLoading && !error && !query && (\n            <span className=\"status status--muted\">Start typing to search.</span>\n          )}\n          {error && <span className=\"status status--error\">{error}</span>}\n        </div>\n\n        {results.length > 0 && (\n          <ul className=\"results\">\n            {results.map((r) => (\n              <li key={r.id} className=\"result-row\">\n                <div className=\"result-name\">{r.name}</div>\n                <div className=\"result-email\">{r.email}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n\n        {!results.length && !isLoading && query && !error && (\n          <p className=\"empty\">No results found for \"{query}\".</p>\n        )}\n      </section>\n    </main>\n  );\n}\n",
+          "path": "src/App.tsx"
+        },
+        {
+          "content": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
+          "path": "src/index.tsx"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"jsx\": \"react-jsx\",\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "React Debounced Search with Fake API",
+      "track": "react"
+    },
+    {
+      "contentHash": "4d631931ffc761c967e17c80cce7e9848583723ba148e019160cabe23f12e847",
+      "enabled": true,
+      "id": "int-code-vue-junior-counter-v1",
+      "level": "junior",
+      "prompt": "Build a Vue 3 counter component with increment/decrement and a zero floor. Use reactive state and guard the decrement so it never goes negative. Call out disabled states and clean template logic. Concepts: vue, components, reactivity, event handlers, basics. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Start at 0 and display the current value.",
+            "Support increment, decrement, and reset.",
+            "Never allow a negative value.",
+            "Disable decrement while the value is 0."
+          ],
+          "id": "base-correctness",
+          "prompt": "Start with a reliable counter. Keep the behavior small, explicit, and state-driven.",
+          "title": "Base correctness"
+        },
+        {
+          "constraints": [
+            "Add a labeled step selector with 1, 5, and 10.",
+            "Use 1 as the default step.",
+            "Apply the selected step to both increment and decrement.",
+            "Clamp decrement at 0 when the selected step is larger than the value."
+          ],
+          "id": "configurable-step",
+          "prompt": "The product team now needs larger jumps without duplicating counter logic.",
+          "title": "Configurable step"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "vue-counter",
+      "starterAsset": "assets/sb/vue/question/vue-counter.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"vue-counter\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"vue\": \"3.x\"\n  },\n  \"scripts\": {\n    \"serve\": \"vue-cli-service serve\"\n  }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Vue SDK • Counter</title></head><body><div id=\"app\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:420px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; }\n.value { font-size:48px; font-weight:800; text-align:center; margin-bottom:12px; }\n.actions { display:flex; gap:8px; justify-content:center; }\n\nbutton { background:#a3e635; color:#111; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }\nbutton[disabled] { opacity:.5; cursor:not-allowed; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Counter</h1>\n\n      <div class=\"panel\">\n        <div class=\"value\">{{ count }}</div>\n\n        <div class=\"actions\">\n          <button @click=\"dec\" :disabled=\"isZero\">−</button>\n          <button @click=\"inc\">+</button>\n          <button @click=\"reset\" class=\"ghost\">Reset</button>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, computed } from 'vue';\n\n// TODO: Hold current count value\n// Use ref so UI shows initial value (0) even before student implements logic\nconst count = ref(0);\n\n// TODO: Disable decrement when count is zero\n// Keep false initially so student must fix it\nconst isZero = computed(() => false);\n\n// TODO: Implement actions\nconst inc = () => {};\nconst dec = () => {};\nconst reset = () => {};\n</script>\n",
+          "path": "src/App.vue"
+        },
+        {
+          "content": "import 'zone.js';\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\n\ncreateApp(App).mount('#app');\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Node\",\n    \"strict\": true,\n    \"allowJs\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "Vue Counter (Guarded Decrement)",
+      "track": "vue"
+    },
+    {
+      "contentHash": "012ad848a6bf43704560cbf100f9bb69addad3f5f7292b786cffc50532a2317e",
+      "enabled": true,
+      "id": "int-code-vue-junior-todo-v1",
+      "level": "junior",
+      "prompt": "Build a small Todo List in Vue 3 using the Composition API and &lt;script setup&gt;. Users should be able to add tasks, mark them as completed, remove individual tasks, and clear all completed tasks. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Trim task text and reject empty or whitespace-only submissions.",
+            "Disable Add while the normalized input is empty.",
+            "Support both form submission with Enter and the Add button.",
+            "Clear the input after a successful add and assign every task a stable unique id."
+          ],
+          "id": "core-transitions",
+          "prompt": "Start with reliable task creation. Treat input normalization and identity as part of the state contract.",
+          "title": "Core transitions"
+        },
+        {
+          "constraints": [
+            "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
+            "Expose the selected filter with aria-pressed.",
+            "Announce the remaining active-task count with correct singular and plural copy.",
+            "Clear completed tasks without removing active tasks."
+          ],
+          "id": "derived-filters",
+          "prompt": "The list now needs trustworthy derived views. Filtering must never discard or rewrite source tasks.",
+          "title": "Derived filters"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-07-16",
+      "sourceQuestionId": "vue-todo-list",
+      "starterAsset": "assets/sb/vue/question/vue-todo-list.v2.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"vue-todo-list\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"vue\": \"3.x\"\n  },\n  \"scripts\": {\n    \"serve\": \"vue-cli-service serve\"\n  }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Vue SDK • Todo List</title></head><body><div id=\"app\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:480px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; display:grid; gap:12px; }\n.input-row { display:flex; gap:8px; }\n.input-row input { flex:1; background:#020617; border-radius:8px; border:1px solid #1f2937; padding:8px 10px; color:#e5e7eb; font-size:14px; }\n.input-row input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 1px #6366f1; }\n\n.primary { background:#4ade80; color:#022c22; border:none; border-radius:999px; padding:8px 14px; font-weight:600; font-size:14px; cursor:pointer; }\n.primary[disabled] { opacity:.6; cursor:not-allowed; }\n\n.list { list-style:none; margin:0; padding:0; display:grid; gap:6px; }\n.item { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 8px; border-radius:8px; background:#020617; border:1px solid transparent; }\n.item-main { display:flex; align-items:center; gap:8px; font-size:14px; }\n.item-main input[type=checkbox] { accent-color:#22c55e; }\n.item-main span.done { text-decoration:line-through; color:#9ca3af; }\n\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }\nbutton.ghost.small { padding:4px 10px; font-size:12px; }\n\n.empty { margin:4px 0 0; font-size:13px; color:#9ca3af; text-align:center; }\n.footer { display:flex; justify-content:flex-end; margin-top:4px; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Todo List</h1>\n\n      <div class=\"panel\">\n        <div class=\"input-row\">\n          <input\n            type=\"text\"\n            placeholder=\"Add a new task...\"\n            v-model=\"newTask\"\n          />\n          <button type=\"button\" class=\"primary\" @click=\"addTask\">\n            Add\n          </button>\n        </div>\n\n        <ul class=\"list\" v-if=\"hasTodos\">\n          <li\n            v-for=\"todo in todos\"\n            :key=\"todo.id\"\n            class=\"item\"\n          >\n            <label class=\"item-main\">\n              <input\n                type=\"checkbox\"\n                :checked=\"todo.done\"\n                @change=\"toggleTask(todo.id)\"\n              />\n              <span :class=\"{ done: todo.done }\">{{ todo.text }}</span>\n            </label>\n\n            <button\n              type=\"button\"\n              class=\"ghost\"\n              @click=\"removeTask(todo.id)\"\n            >\n              Remove\n            </button>\n          </li>\n        </ul>\n\n        <p v-else class=\"empty\">No tasks yet. Add your first one above.</p>\n\n        <div class=\"footer\" v-if=\"hasTodos\">\n          <button\n            type=\"button\"\n            class=\"ghost small\"\n            @click=\"clearCompleted\"\n          >\n            Clear completed\n          </button>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { computed, ref } from 'vue';\n\ntype Todo = {\n  id: number;\n  text: string;\n  done: boolean;\n};\n\n// Controlled input for the new task.\nconst newTask = ref('');\n\n// Todo items start empty so the initial preview shows the empty state.\nconst todos = ref([] as Todo[]);\n\n// Derived flag for switching between the list and empty state.\nconst hasTodos = computed(() => todos.value.length > 0);\n\n// TODO: Add a trimmed, non-empty task and clear newTask afterwards.\nconst addTask = () => {\n  // Implement the add flow.\n};\n\n// TODO: Toggle the done state for the todo with this id.\nconst toggleTask = (_id: number) => {\n  // Implement the toggle flow.\n};\n\n// TODO: Remove the todo with this id.\nconst removeTask = (_id: number) => {\n  // Implement the remove flow.\n};\n\n// TODO: Remove every todo whose done state is true.\nconst clearCompleted = () => {\n  // Implement the clear-completed flow.\n};\n</script>\n",
+          "path": "src/App.vue"
+        },
+        {
+          "content": "import 'zone.js';\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\n\ncreateApp(App).mount('#app');\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Node\",\n    \"strict\": true,\n    \"allowJs\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 1500,
+      "title": "Todo List (Refs + List Rendering)",
+      "track": "vue"
+    },
+    {
+      "contentHash": "aaa6f6f8c0d96bd2f5b0caf1417a0f19689c3dedd50af309c7d085ba478ff020",
+      "enabled": true,
+      "id": "int-code-vue-mid-pagination-v1",
+      "level": "mid",
+      "prompt": "Build a simple paginated data table in Vue 3 that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Vue focus: keep page index in a ref and derive page slices with computed. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Render 13 users in stable source order with a default page size of five.",
+            "Previous and Next must move one page at a time without leaving the valid page range.",
+            "The final page must render only users 11 through 13 and disable Next.",
+            "Keep the existing footer button order and page-info contract intact."
+          ],
+          "id": "core-page-window",
+          "prompt": "Start with pagination users can trust. Every page must expose the correct slice and guard both boundaries.",
+          "title": "Core page window"
+        },
+        {
+          "constraints": [
+            "Trim the query and match name, email, or role case-insensitively.",
+            "Every query change must reset pagination to page one.",
+            "Derive page counts from the filtered collection and keep the page range valid.",
+            "Render a single empty-state row and disable both pagination controls when nothing matches."
+          ],
+          "id": "filter-and-page-reset",
+          "prompt": "Now layer search onto pagination. Normalization, result counts, empty state, and the active page must stay synchronized.",
+          "title": "Filter and page reset"
+        },
+        {
+          "constraints": [
+            "Sort ID numerically and Name or Role case-insensitively.",
+            "The first activation of a new column must sort ascending and the second descending.",
+            "Equal sort values must retain their original source order.",
+            "Changing sort or page size must reset to page one and recompute the page window."
+          ],
+          "id": "sort-and-page-size",
+          "prompt": "Add deterministic sorting and a second page size without letting derived state drift or compare numeric ids as strings.",
+          "title": "Sort and page size"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "vue-pagination-table",
+      "starterAsset": "assets/sb/vue/question/vue-pagination-table.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"vue-pagination-table\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"vue\": \"3.x\"\n  },\n  \"scripts\": {\n    \"serve\": \"vue-cli-service serve\"\n  }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Vue SDK • Paginated Table</title></head><body><div id=\"app\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:720px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:20px; box-sizing:border-box; display:grid; gap:12px; }\n\n.header { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }\n.header h1 { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:2px 0 0; font-size:12px; color:#9ca3af; }\n.meta { font-size:12px; color:#9ca3af; }\n\n.panel { background:#020617; border-radius:12px; border:1px solid #1f2937; overflow:hidden; }\n\n.table { width:100%; border-collapse:collapse; font-size:13px; }\n.table thead { background:#0b1020; }\n.table th, .table td { padding:8px 10px; border-bottom:1px solid #111827; text-align:left; }\n.table tbody tr:nth-child(even) { background:#020617; }\n\n.footer { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; gap:8px; }\n.page-info { font-size:12px; color:#9ca3af; }\n\nbutton { border:none; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; background:#22c55e; color:#021210; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\nbutton[disabled] { opacity:0.5; cursor:not-allowed; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <header class=\"header\">\n        <div>\n          <h1>Users</h1>\n          <p class=\"subtitle\">Simple paginated table (5 per page)</p>\n        </div>\n        <div class=\"meta\">Total users: {{ USERS.length }}</div>\n      </header>\n\n      <div class=\"panel\">\n        <table class=\"table\" aria-label=\"Users table\">\n          <thead>\n            <tr>\n              <th>ID</th>\n              <th>Name</th>\n              <th>Email</th>\n              <th>Role</th>\n            </tr>\n          </thead>\n          <tbody>\n            <tr v-for=\"user in pagedUsers\" :key=\"user.id\">\n              <td>{{ user.id }}</td>\n              <td>{{ user.name }}</td>\n              <td>{{ user.email }}</td>\n              <td>{{ user.role }}</td>\n            </tr>\n          </tbody>\n        </table>\n\n        <footer class=\"footer\">\n          <button\n            type=\"button\"\n            class=\"ghost\"\n            @click=\"goPrevious\"\n            :disabled=\"isFirstPage\"\n          >\n            Previous\n          </button>\n          <span class=\"page-info\">\n            Page {{ currentPage + 1 }} of {{ totalPages }}\n          </span>\n          <button\n            type=\"button\"\n            @click=\"goNext\"\n            :disabled=\"isLastPage\"\n          >\n            Next\n          </button>\n        </footer>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, computed } from 'vue';\n\ntype User = {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n};\n\nconst USERS: User[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },\n  { id: 3, name: 'Carla Perez', email: 'carla@example.com', role: 'Viewer' },\n  { id: 4, name: 'David Kim', email: 'david@example.com', role: 'Editor' },\n  { id: 5, name: 'Emma Brown', email: 'emma@example.com', role: 'Viewer' },\n  { id: 6, name: 'Frank Wu', email: 'frank@example.com', role: 'Admin' },\n  { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Viewer' },\n  { id: 8, name: 'Henry Ford', email: 'henry@example.com', role: 'Editor' },\n  { id: 9, name: 'Ivy Stone', email: 'ivy@example.com', role: 'Viewer' },\n  { id: 10, name: 'Jack Ryan', email: 'jack@example.com', role: 'Viewer' },\n  { id: 11, name: 'Karen Diaz', email: 'karen@example.com', role: 'Editor' },\n  { id: 12, name: 'Leo Walker', email: 'leo@example.com', role: 'Viewer' },\n  { id: 13, name: 'Mia Clark', email: 'mia@example.com', role: 'Admin' },\n  { id: 14, name: 'Noah Hall', email: 'noah@example.com', role: 'Viewer' },\n  { id: 15, name: 'Olivia King', email: 'olivia@example.com', role: 'Editor' },\n  { id: 16, name: 'Paul Green', email: 'paul@example.com', role: 'Viewer' },\n  { id: 17, name: 'Quinn Ross', email: 'quinn@example.com', role: 'Viewer' },\n  { id: 18, name: 'Rita Long', email: 'rita@example.com', role: 'Editor' },\n  { id: 19, name: 'Sam Young', email: 'sam@example.com', role: 'Viewer' },\n  { id: 20, name: 'Tina Fox', email: 'tina@example.com', role: 'Viewer' }\n];\n\nconst PAGE_SIZE = 5;\n\n// TODO: Hold current page index (0-based)\nconst currentPage = ref(0);\n\n// TODO: Compute total number of pages based on USERS.length and PAGE_SIZE\nconst totalPages = computed(() => 1);\n\n// TODO: Derive only the users for the current page\nconst pagedUsers = computed<User[]>(() => USERS);\n\n// TODO: Are we on the first page?\nconst isFirstPage = computed(() => false);\n\n// TODO: Are we on the last page?\nconst isLastPage = computed(() => false);\n\n// TODO: Go to previous page (if not already on the first page)\nconst goPrevious = () => {\n};\n\n// TODO: Go to next page (if not already on the last page)\nconst goNext = () => {\n};\n</script>\n",
+          "path": "src/App.vue"
+        },
+        {
+          "content": "import 'zone.js';\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\n\ncreateApp(App).mount('#app');\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Node\",\n    \"strict\": true,\n    \"allowJs\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "Vue Paginated Data Table",
+      "track": "vue"
+    },
+    {
+      "contentHash": "b475e5c504f1ba64eda7113703ccbfa2aa50522d5a01da7973a99e08345a88d5",
+      "enabled": true,
+      "id": "int-code-vue-mid-shopping-cart-v1",
+      "level": "mid",
+      "prompt": "Build a small shopping cart UI in Vue 3. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. Vue focus: use reactive arrays and computed totals. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Add a new product as one cart row with quantity 1.",
+            "Adding the same product again must increment its existing row instead of creating a duplicate.",
+            "Keep different products in separate rows with their own quantities and line totals.",
+            "Derive total item count, line totals, and the overall total from the current cart. Format every amount as USD with two decimal places."
+          ],
+          "id": "core-cart-transitions",
+          "prompt": "Start with a trustworthy cart model. Product identity, quantities, and money must stay consistent as items are added.",
+          "title": "Core cart transitions"
+        },
+        {
+          "constraints": [
+            "Increasing and decreasing a quantity must update its row total, total item count, and overall total.",
+            "Decreasing an item at quantity 1 must remove that row.",
+            "Remove must delete only the selected product and leave every other row unchanged.",
+            "An empty cart must report 0 items and a $0.00 total."
+          ],
+          "id": "quantity-boundaries",
+          "prompt": "Now make every quantity transition safe. Updates must affect only their target row and return cleanly to an empty cart.",
+          "title": "Quantity boundaries"
+        },
+        {
+          "constraints": [
+            "Use stock limits of 2 Wireless Headphones, 3 Mechanical Keyboards, 5 Ergonomic Mice, and 1 USB-C Hub.",
+            "Show the remaining product stock contract as 2 in stock, 3 in stock, 5 in stock, and 1 in stock before cart changes.",
+            "Disable both Add to cart and Increase when a cart line reaches its product's stock limit, and never allow either path to exceed stock.",
+            "Re-enable Add to cart and Increase after the quantity drops below the limit.",
+            "Announce `Wireless Headphones reached its stock limit.` through a stable atomic polite cart status when that limit is reached."
+          ],
+          "id": "inventory-guard",
+          "prompt": "Inventory is finite. Preserve the cart guarantees while every add path respects stock and communicates the boundary.",
+          "title": "Inventory guard"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "vue-shopping-cart",
+      "starterAsset": "assets/sb/vue/question/vue-shopping-cart.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"vue-shopping-cart\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"vue\": \"3.x\"\n  },\n  \"scripts\": {\n    \"serve\": \"vue-cli-service serve\"\n  }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Vue SDK • Shopping Cart</title></head><body><div id=\"app\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.app { min-height:100vh; display:grid; place-items:center; background:#020617; color:#e5e7eb; padding:24px; }\n.layout { width:100%; max-width:960px; display:grid; gap:16px; grid-template-columns: 1fr; }\n.column { background:#020617; border-radius:16px; border:1px solid #1f2937; padding:16px 16px 12px; display:grid; gap:12px; }\n.title { margin:0; font-size:18px; font-weight:700; }\n.subtitle { margin:4px 0 0; font-size:13px; color:#9ca3af; }\n.product-list, .cart-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }\n.product-card { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 10px; border-radius:12px; border:1px solid #1f2937; background:#020617; }\n.product-main { display:grid; gap:2px; }\n.product-name { font-size:14px; font-weight:600; }\n.product-price { font-size:13px; color:#a3e635; }\n.cart-header { display:grid; gap:4px; }\n.cart-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 10px; border-radius:12px; border:1px solid #1f2937; background:#020617; }\n.cart-info { display:grid; gap:4px; }\n.cart-name { font-size:14px; font-weight:600; }\n.cart-meta { display:flex; align-items:center; gap:4px; font-size:12px; color:#9ca3af; }\n.unit-price, .line-total { font-variant-numeric:tabular-nums; }\n.times, .equals { opacity:.7; }\n.cart-actions { display:flex; gap:6px; }\nbutton { border-radius:999px; border:1px solid #374151; background:#020617; color:#e5e7eb; padding:6px 12px; font-size:13px; font-weight:600; cursor:pointer; }\nbutton:hover { border-color:#a3e635; }\nbutton.ghost { background:transparent; }\nbutton.danger { border-color:#f97316; color:#f97316; }\n.empty { margin:4px 0 0; font-size:13px; color:#6b7280; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "<template>\n  <main class=\"app\">\n    <section class=\"layout\">\n      <!-- Products -->\n      <section class=\"column\">\n        <h1 class=\"title\">Products</h1>\n        <ul class=\"product-list\">\n          <li\n            v-for=\"p in products\"\n            :key=\"p.id\"\n            class=\"product-card\"\n          >\n            <div class=\"product-main\">\n              <div class=\"product-name\">{{ p.name }}</div>\n              <div class=\"product-price\">{{ formatCurrency(p.price) }}</div>\n            </div>\n            <button type=\"button\" @click=\"addToCart(p)\">\n              Add to cart\n            </button>\n          </li>\n        </ul>\n      </section>\n\n      <!-- Cart -->\n      <section class=\"column\">\n        <header class=\"cart-header\">\n          <h1 class=\"title\">Cart</h1>\n          <p class=\"subtitle\">\n            Total items: <strong>{{ totalQty }}</strong>\n            ·\n            Total: <strong>{{ formatCurrency(totalPrice) }}</strong>\n          </p>\n        </header>\n\n        <template v-if=\"cartItems.length\">\n          <ul class=\"cart-list\">\n            <li\n              v-for=\"item in cartItems\"\n              :key=\"item.id\"\n              class=\"cart-row\"\n            >\n              <div class=\"cart-info\">\n                <div class=\"cart-name\">{{ item.name }}</div>\n                <div class=\"cart-meta\">\n                  <span class=\"unit-price\">{{ formatCurrency(item.price) }}</span>\n                  <span class=\"times\">x</span>\n                  <span class=\"qty\">{{ item.quantity }}</span>\n                  <span class=\"equals\">=</span>\n                  <span class=\"line-total\">\n                    {{ formatCurrency(item.price * item.quantity) }}\n                  </span>\n                </div>\n              </div>\n\n              <div class=\"cart-actions\">\n                <button\n                  type=\"button\"\n                  class=\"ghost\"\n                  @click=\"decreaseQty(item)\"\n                  aria-label=\"decrease quantity\"\n                >\n                  −\n                </button>\n                <button\n                  type=\"button\"\n                  class=\"ghost\"\n                  @click=\"increaseQty(item)\"\n                  aria-label=\"increase quantity\"\n                >\n                  +\n                </button>\n                <button\n                  type=\"button\"\n                  class=\"danger\"\n                  @click=\"removeItem(item)\"\n                >\n                  Remove\n                </button>\n              </div>\n            </li>\n          </ul>\n        </template>\n        <p v-else class=\"empty\">Your cart is empty. Add something from the left.</p>\n      </section>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, computed } from 'vue';\n\ntype Product = {\n  id: string;\n  name: string;\n  price: number;\n};\n\ntype CartItem = Product & { quantity: number };\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 },\n  { id: 'p4', name: 'USB-C Hub', price: 39.0 }\n];\n\n// Static product list\nconst products = PRODUCTS;\n\n// TODO: Hold cart items (array of { id, name, price, quantity })\nconst cartItems = ref<CartItem[]>([]);\n\n// TODO: Derive total quantity from cartItems\nconst totalQty = computed(() => 0);\n\n// TODO: Derive total price from cartItems\nconst totalPrice = computed(() => 0);\n\nfunction formatCurrency(value: number): string {\n  return new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency: 'USD',\n    minimumFractionDigits: 2,\n    maximumFractionDigits: 2\n  }).format(value);\n}\n\n// TODO: Add product to cart\n// - If it does not exist, add with quantity 1\n// - If it exists, increase quantity by 1\nfunction addToCart(product: Product): void {\n}\n\n// TODO: Increase quantity of a cart item\nfunction increaseQty(item: CartItem): void {\n}\n\n// TODO: Decrease quantity of a cart item\n// - If quantity would go to 0, either remove item or clamp at 1\nfunction decreaseQty(item: CartItem): void {\n}\n\n// TODO: Remove item from the cart entirely\nfunction removeItem(item: CartItem): void {\n}\n</script>\n",
+          "path": "src/App.vue"
+        },
+        {
+          "content": "import 'zone.js';\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\n\ncreateApp(App).mount('#app');\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Node\",\n    \"strict\": true,\n    \"allowJs\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2100,
+      "title": "Vue Shopping Cart Mini",
+      "track": "vue"
+    },
+    {
+      "contentHash": "e5459365964710a03de1408efb923b379490769af235d5bc1b2ce4aebdbe9543",
+      "enabled": true,
+      "id": "int-code-vue-senior-chips-autocomplete-v1",
+      "level": "senior",
+      "prompt": "Build a Material-like invite field in Vue 3. As users type, show autocomplete suggestions, convert selections into removable chips, and support keyboard shortcuts (Enter/comma/backspace).",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Filter candidates by name or email with trimmed, case-insensitive matching and show at most six suggestions.",
+            "Selecting a suggestion by click must add exactly one chip, clear the query, and close the listbox.",
+            "Exclude selected candidates from later suggestions without mutating the source candidate list.",
+            "Use stable candidate ids so suggestion and chip identity does not depend on the rendered index."
+          ],
+          "id": "core-suggestion-selection",
+          "prompt": "Start with a trustworthy autocomplete contract. Filtering and selection must stay predictable across casing, pointer input, and repeated queries.",
+          "title": "Core suggestion selection"
+        },
+        {
+          "constraints": [
+            "Enter and comma must add a trimmed custom chip and clear the input.",
+            "Whitespace-only input must add nothing and return the input to an empty value.",
+            "Reject duplicates by candidate id or case-insensitive normalized value.",
+            "A remove control must delete only its target chip and expose the target label in its accessible name."
+          ],
+          "id": "token-normalization",
+          "prompt": "Now make free-form entry safe. Token boundaries, duplicate identity, and targeted removal must behave the same for every input path.",
+          "title": "Token normalization"
+        },
+        {
+          "constraints": [
+            "ArrowUp and ArrowDown must wrap through the visible suggestions and update a stable active-descendant id.",
+            "Enter must select the active option while keeping focus on the input.",
+            "Escape must close the listbox and clear the active option without deleting the query or chips.",
+            "Backspace on an empty input must remove only the final chip."
+          ],
+          "id": "keyboard-lifecycle",
+          "prompt": "Complete the combobox keyboard lifecycle. The active option, open state, chip selection, and destructive shortcuts must never drift apart.",
+          "title": "Keyboard lifecycle"
+        },
+        {
+          "constraints": [
+            "Allow at most five chips, disable the input at the limit, and guard programmatic or keyboard add paths from exceeding it.",
+            "Removing a chip below the limit must immediately re-enable entry and allow another invite.",
+            "Put the combobox role and relationships on the actual input; use a labelled listbox, stable option ids, and product-specific remove labels.",
+            "Keep an always-rendered polite, atomic status region and remove document listeners when the preview unmounts."
+          ],
+          "id": "invite-limit-and-accessibility",
+          "prompt": "Finish with a hard invite boundary and a complete assistive-technology contract. Limits must be enforced through every event path and announced without unstable DOM regions.",
+          "title": "Invite limit and accessibility"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-02-09",
+      "sourceQuestionId": "vue-chips-input-autocomplete",
+      "starterAsset": "assets/sb/vue/question/vue-chips-input-autocomplete.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\"name\":\"vue-chips-input-autocomplete\",\"version\":\"0.1.0\",\"private\":true,\"dependencies\":{\"vue\":\"3.x\"},\"scripts\":{\"serve\":\"vue-cli-service serve\"}}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Vue SDK • Invite Chips</title></head><body><div id=\"app\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root{color-scheme:dark;}\nhtml,body{margin:0;height:100%;background:#0a0a0a;}\nbody{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;}\n.card{width:100%;max-width:640px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:12px;}\nh1{margin:0;font-size:20px;}\n.subtitle{margin:0;color:#9ca3af;font-size:14px;line-height:1.45;}\n.combobox{position:relative;}\n.chip-input{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;}\n.chip-input:focus-within{border-color:#a3e635;box-shadow:0 0 0 2px rgba(163,230,53,.15);}\n.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;background:#172036;border:1px solid #2c3c62;font-size:13px;}\n.chip-remove{border:none;background:transparent;color:#9ca3af;cursor:pointer;font-size:16px;line-height:1;padding:0;}\n.chip-remove:hover{color:#e5e7eb;}\n.chip-input input{flex:1;min-width:180px;border:none;outline:none;background:transparent;color:#e5e7eb;font-size:14px;padding:4px 0;}\n.chip-input input::placeholder{color:#6b7280;}\n.suggestions{position:absolute;left:0;right:0;z-index:10;margin-top:8px;max-height:260px;overflow:auto;border-radius:12px;border:1px solid #1f2937;background:#0a0f1e;padding:0;list-style:none;}\n.suggestion{display:grid;gap:2px;padding:10px 12px;border-bottom:1px solid rgba(31,41,55,.5);cursor:pointer;}\n.suggestion:last-child{border-bottom:none;}\n.suggestion span{font-size:12px;color:#9ca3af;}\n.suggestion.active{background:rgba(163,230,53,.12);}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <h1>Invite people</h1>\n      <p class=\"subtitle\">\n        Build a chips input with autocomplete, keyboard shortcuts, and removable tags.\n      </p>\n\n      <div\n        ref=\"rootRef\"\n        class=\"combobox\"\n        role=\"combobox\"\n        :aria-expanded=\"isOpen\"\n        aria-haspopup=\"listbox\"\n        :aria-owns=\"listboxId\"\n        :aria-activedescendant=\"activeDescendant\"\n      >\n        <div class=\"chip-input\">\n          <span class=\"chip\" v-for=\"chip in chips\" :key=\"chip.id\">\n            <span>{{ chip.label }}</span>\n            <button\n              type=\"button\"\n              class=\"chip-remove\"\n              @click=\"removeChip(chip.id)\"\n              :aria-label=\"'Remove ' + chip.label\"\n            >\n              ×\n            </button>\n          </span>\n\n          <input\n            type=\"text\"\n            v-model=\"query\"\n            @focus=\"onFocus\"\n            @keydown=\"onKeyDown\"\n            placeholder=\"Type a name or email...\"\n          />\n        </div>\n\n        <ul v-if=\"isOpen\" :id=\"listboxId\" class=\"suggestions\" role=\"listbox\">\n          <li\n            v-for=\"(item, index) in suggestions\"\n            :key=\"item.id\"\n            :id=\"optionId(index)\"\n            role=\"option\"\n            :aria-selected=\"index === activeIndex\"\n            class=\"suggestion\"\n            :class=\"{ active: index === activeIndex }\"\n            @mousedown=\"selectSuggestion(item)\"\n          >\n            <strong>{{ item.label }}</strong>\n            <span>{{ item.value }}</span>\n          </li>\n        </ul>\n      </div>\n\n      <p class=\"hint\">\n        Keyboard: Arrow keys navigate, Enter/comma add chip, Backspace removes the last chip.\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';\n\ntype Candidate = {\n  id: string;\n  name: string;\n  email: string;\n};\n\ntype Chip = {\n  id: string;\n  label: string;\n  value: string;\n};\n\nconst USERS: Candidate[] = [\n  { id: 'alice', name: 'Alice Johnson', email: 'alice@frontendatlas.dev' },\n  { id: 'bob', name: 'Bob Smith', email: 'bob@frontendatlas.dev' },\n  { id: 'charlie', name: 'Charlie Kim', email: 'charlie@frontendatlas.dev' },\n  { id: 'diana', name: 'Diana Lopez', email: 'diana@frontendatlas.dev' },\n  { id: 'ethan', name: 'Ethan Brown', email: 'ethan@frontendatlas.dev' },\n  { id: 'fiona', name: 'Fiona Patel', email: 'fiona@frontendatlas.dev' },\n  { id: 'george', name: 'George Miller', email: 'george@frontendatlas.dev' }\n];\n\nconst rootRef = ref<HTMLElement | null>(null);\nconst listboxId = 'invite-suggestions';\n\nconst chips = ref<Chip[]>([]);\nconst query = ref('');\nconst isOpen = ref(false);\nconst activeIndex = ref(-1);\n\nconst suggestions = computed<Chip[]>(() => {\n  // TODO:\n  // 1) trim+lower query\n  // 2) filter USERS by name/email includes query\n  // 3) remove users already selected in chips\n  // 4) map to Chip shape + limit to 6\n  return [];\n});\n\nconst activeDescendant = computed(() =>\n  activeIndex.value >= 0 ? optionId(activeIndex.value) : undefined\n);\n\nfunction addChip(chip: Chip) {\n  // TODO: prevent duplicates by id or normalized value\n  // then append chip, clear query, close dropdown, reset active index\n}\n\nfunction addCustomFromQuery() {\n  // TODO: if query has text, create custom chip: id='custom-'+normalize(query)\n  // and call addChip(...)\n}\n\nfunction removeChip(chipId: string) {\n  // TODO: remove chip by id\n}\n\nfunction selectSuggestion(chip: Chip) {\n  // TODO: add selected suggestion chip\n}\n\nfunction onKeyDown(event: KeyboardEvent) {\n  // TODO:\n  // ArrowDown/ArrowUp => move active suggestion (wrap around)\n  // Enter => select active suggestion if present, otherwise add custom\n  // comma => add custom\n  // Backspace on empty query => remove last chip\n  // Escape => close suggestions\n}\n\nwatch(query, () => {\n  activeIndex.value = -1;\n  // TODO: open dropdown only when query has text and suggestions exist\n});\n\nfunction onFocus() {\n  // TODO: open dropdown when query has text and suggestions exist\n}\n\nfunction optionId(index: number): string {\n  return 'invite-option-' + String(index);\n}\n\nfunction normalize(value: string): string {\n  return value.trim().toLowerCase();\n}\n\nfunction onDocMouseDown(event: MouseEvent) {\n  const target = event.target as Node | null;\n  if (!target || !rootRef.value) return;\n  if (!rootRef.value.contains(target)) {\n    isOpen.value = false;\n    activeIndex.value = -1;\n  }\n}\n\nonMounted(() => {\n  document.addEventListener('mousedown', onDocMouseDown);\n});\n\nonBeforeUnmount(() => {\n  document.removeEventListener('mousedown', onDocMouseDown);\n});\n</script>\n",
+          "path": "src/App.vue"
+        },
+        {
+          "content": "import 'zone.js';\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\n\ncreateApp(App).mount('#app');\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Node\",\n    \"strict\": true,\n    \"allowJs\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "Invite Chips Input (Tags + Autocomplete)",
+      "track": "vue"
+    },
+    {
+      "contentHash": "075cd06b7ed062957e5c38eb479a2311ed1de88ca6e595c3f057e18d1046bfa2",
+      "enabled": true,
+      "id": "int-code-vue-senior-debounced-search-v1",
+      "level": "senior",
+      "prompt": "Implement a Vue 3 debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX. Concepts: vue, composition-api, watch. Vue focus: debounce with watch + timeout cleanup and reactive loading state. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "publicRequirements": [
+        {
+          "constraints": [
+            "Treat the trimmed input as the search query.",
+            "Restart the 500 ms debounce window whenever the query changes.",
+            "Do not show results before the final query finishes its debounce and request.",
+            "Render matching users with the existing result-row contract."
+          ],
+          "id": "base-debounce",
+          "prompt": "Start with a dependable search flow that waits for the final query before showing results.",
+          "title": "Base debounce"
+        },
+        {
+          "constraints": [
+            "Show the fake API failure for the query error without leaving loading active.",
+            "Show an explicit no-results state for a completed search with no matches.",
+            "Clear stale errors and results when a new query starts.",
+            "Treat whitespace-only input as empty and return to the initial prompt."
+          ],
+          "id": "state-recovery",
+          "prompt": "The interviewer now wants every terminal state to recover cleanly when the user keeps typing.",
+          "title": "State recovery"
+        },
+        {
+          "constraints": [
+            "Clear old result rows as soon as a newer non-empty query starts.",
+            "Cancel or ignore every response that no longer belongs to the current query.",
+            "A stale response must not change results, loading, or error state.",
+            "Keep loading active until the current request settles."
+          ],
+          "id": "latest-query-wins",
+          "prompt": "Assume requests can overlap. Only the newest query may commit results or finish the loading state.",
+          "title": "Latest query wins"
+        },
+        {
+          "constraints": [
+            "Connect the input to stable search-status and search-results regions with aria-describedby and aria-controls.",
+            "Expose the status row as an atomic polite live region.",
+            "Expose request activity with aria-busy and errors with role alert.",
+            "Cancel both a pending debounce and an already-started fake request during teardown.",
+            "Do not update state after the component unmounts or is destroyed."
+          ],
+          "id": "accessible-lifecycle",
+          "prompt": "Finish by making state announcements explicit and proving that teardown leaves no search timer behind.",
+          "title": "Accessible lifecycle"
+        }
+      ],
+      "revision": 1,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "sourceContentVersion": "2026-01-30",
+      "sourceQuestionId": "vue-debounced-search",
+      "starterAsset": "assets/sb/vue/question/vue-debounced-search.v1.json",
+      "starterFiles": [
+        {
+          "content": "{\n  \"name\": \"vue-debounced-search\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"vue\": \"3.x\"\n  },\n  \"scripts\": {\n    \"serve\": \"vue-cli-service serve\"\n  }\n}\n",
+          "path": "package.json"
+        },
+        {
+          "content": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Vue SDK • Debounced Search</title></head><body><div id=\"app\"></div></body></html>",
+          "path": "public/index.html"
+        },
+        {
+          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.card { width:100%; max-width:640px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:18px 18px 16px; display:grid; gap:16px; }\n.header { display:grid; gap:4px; }\n.title { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:0; font-size:13px; color:#9ca3af; }\n.field { display:grid; gap:6px; }\n.label { font-size:13px; color:#9ca3af; }\n.input { width:100%; border-radius:999px; border:1px solid #374151; background:#020617; color:#e5e7eb; padding:8px 12px; font-size:14px; outline:none; }\n.input:focus { border-color:#a3e635; box-shadow:0 0 0 1px #a3e63533; }\n.status-row { min-height:18px; font-size:12px; display:flex; align-items:center; }\n.status { color:#9ca3af; }\n.status--loading { color:#e5e7eb; }\n.status--muted { color:#6b7280; }\n.status--error { color:#f97316; }\n.results { list-style:none; margin:0; padding:0; display:grid; gap:8px; }\n.result-row { padding:8px 10px; border-radius:10px; border:1px solid #1f2937; background:#020617; display:grid; gap:2px; }\n.result-name { font-size:14px; font-weight:600; }\n.result-email { font-size:12px; color:#9ca3af; font-variant-numeric:tabular-nums; }\n.empty { margin:0; font-size:13px; color:#6b7280; }\n",
+          "path": "src/App.css"
+        },
+        {
+          "content": "<template>\n  <main class=\"main\">\n    <section class=\"card\">\n      <header class=\"header\">\n        <h1 class=\"title\">Debounced Search</h1>\n        <p class=\"subtitle\">\n          Type to search a fake user directory. Search runs 500ms after you stop typing.\n        </p>\n      </header>\n\n      <div class=\"field\">\n        <label class=\"label\" for=\"search-input\">Search</label>\n        <input\n          id=\"search-input\"\n          class=\"input\"\n          type=\"text\"\n          :value=\"query\"\n          @input=\"onInput\"\n          placeholder=\"Start typing a name or email...\"\n          autocomplete=\"off\"\n        />\n      </div>\n\n      <div class=\"status-row\">\n        <span v-if=\"isLoading\" class=\"status status--loading\">Searching…</span>\n        <span\n          v-else-if=\"!error && query\"\n          class=\"status\"\n        >\n          Showing {{ results.length }} result(s) for \"{{ query }}\"\n        </span>\n        <span\n          v-else-if=\"!error && !query\"\n          class=\"status status--muted\"\n        >\n          Start typing to search.\n        </span>\n        <span v-if=\"error\" class=\"status status--error\">{{ error }}</span>\n      </div>\n\n      <ul class=\"results\" v-if=\"results.length\">\n        <li class=\"result-row\" v-for=\"r in results\" :key=\"r.id\">\n          <div class=\"result-name\">{{ r.name }}</div>\n          <div class=\"result-email\">{{ r.email }}</div>\n        </li>\n      </ul>\n\n      <p\n        class=\"empty\"\n        v-if=\"!results.length && !isLoading && query && !error\"\n      >\n        No results found for \"{{ query }}\".\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, watch } from 'vue';\n\ninterface Result {\n  id: number;\n  name: string;\n  email: string;\n}\n\nconst FAKE_DATA: Result[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\n// Fake API: filters the in-memory array and responds after a delay.\n// Treat this as given and focus on wiring the debounced watcher.\nfunction fakeApiSearch(term: string): Promise<Result[]> {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const mail = item.email.toLowerCase();\n        return name.includes(trimmed) || mail.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\n// Current input value\nconst query = ref(''); // TODO: hold current search query\n\n// Results, loading, and error state\nconst results = ref<Result[]>([]); // TODO: store API results\nconst isLoading = ref(false); // TODO: toggle while request in-flight\nconst error = ref<string | null>(null); // TODO: store error messages\n\n// Optional handle for the debounce timeout\nlet timeoutId: number | undefined;\n\n// TODO: Implement debounced search logic here.\n// Requirements:\n// - Watch `query` and wait 500ms after it changes before calling fakeApiSearch\n// - If trimmed query is empty: clear results and reset flags; skip API call\n// - Set `isLoading` while the debounced request is running\n// - On success: update `results` and clear `isLoading`\n// - On failure: clear results, clear `isLoading`, and set `error`\n// - Use `onInvalidate` to clear the timeout so stale searches don't run\nwatch(query, (value, _oldValue, onInvalidate) => {\n  // TODO: implement debounced search using setTimeout and onInvalidate\n  // Example shape:\n  // - clearTimeout(timeoutId)\n  // - handle empty query\n  // - set loading & clear error\n  // - timeoutId = window.setTimeout(() => fakeApiSearch(...), 500)\n  // - update refs in then/catch\n\n  onInvalidate(() => {\n    if (timeoutId !== undefined) {\n      window.clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n  });\n});\n\nconst onInput = (event: Event) => {\n  const target = event.target as HTMLInputElement;\n  query.value = target.value;\n};\n</script>\n",
+          "path": "src/App.vue"
+        },
+        {
+          "content": "import 'zone.js';\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\n\ncreateApp(App).mount('#app');\n",
+          "path": "src/main.ts"
+        },
+        {
+          "content": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Node\",\n    \"strict\": true,\n    \"allowJs\": true\n  }\n}\n",
+          "path": "tsconfig.json"
+        }
+      ],
+      "timeLimitSeconds": 2700,
+      "title": "Vue Debounced Search with Fake API",
+      "track": "vue"
+    }
+  ]
+}
