@@ -145,6 +145,38 @@ export const test = baseTest.extend<{
       });
     });
 
+    // Interview Mode is fail-closed. Frontend-only suites should observe the
+    // production default without depending on a running API; interview specs
+    // register a more specific route later when they need enabled access.
+    await page.route(/\/api\/interviews\/availability(?:\?.*)?$/, async (route) => {
+      const req = route.request();
+      if (req.method() === 'OPTIONS') {
+        await route.fulfill({ status: 204 });
+        return;
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json; charset=utf-8',
+        body: JSON.stringify({
+          enabled: false,
+          accessMode: 'off',
+          unavailableReason: 'Interview Mode is not available.',
+          quota: null,
+          activeSession: null,
+          lastResults: [],
+          targets: [],
+          levels: [],
+          tracks: [],
+          minViewportWidth: 768,
+          timing: {
+            mcqSeconds: 600,
+            codingReadySeconds: 300,
+          },
+        }),
+      });
+    });
+
     page.on('console', (msg) => {
       if (msg.type() !== 'error') return;
       issues.push({ type: 'console.error', message: formatConsoleMessage(msg) });
