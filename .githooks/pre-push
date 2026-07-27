@@ -43,7 +43,7 @@ BACKEND_SOURCE_FILES="$(mktemp)"
 BACKEND_TEST_FILES="$(mktemp)"
 BACKEND_NODECHECK_FILES="$(mktemp)"
 trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS" "$BACKEND_SOURCE_FILES" "$BACKEND_TEST_FILES" "$BACKEND_NODECHECK_FILES"' EXIT
-FRONTEND_CHANGE_RE='^(frontend/|cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
+FRONTEND_CHANGE_RE='^(frontend/|content-drafts/interview-mcq/|cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
 BACKEND_CHANGE_RE='^backend/'
 
 # Collect file paths included in refs being pushed.

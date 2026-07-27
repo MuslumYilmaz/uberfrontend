@@ -21,7 +21,7 @@ jobs:
     name: Playwright Critical
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     defaults:
       run:
         working-directory: frontend
@@ -75,8 +75,18 @@ jobs:
         env:
           CI: true
 
+      - name: Run Interview Mode V1 tests
+        run: npm run test:e2e:interview
+        env:
+          CI: true
+
       - name: Run production React framework checks
         run: npm run test:e2e:react:prod
+        env:
+          CI: true
+
+      - name: Run canonical framework solution catalog
+        run: npm run test:e2e:framework-catalog:prod
         env:
           CI: true
 
