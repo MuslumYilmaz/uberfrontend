@@ -39,6 +39,7 @@ import {
 } from './core/resolvers/guide-detail.resolver';
 import { masteryPathResolver } from './core/resolvers/mastery-path.resolver';
 import { PlaybookIndexComponent } from './features/guides/playbook/playbook-index/playbook-index.component';
+import { interviewAccessGuard } from './features/interview-mode/interview-access.guard';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -1067,6 +1068,42 @@ export const routes: Routes = [
           'Practice focused frontend coding challenges with real prompts, starter code, tests, and solution follow-ups across JavaScript, React, Angular, Vue, HTML, and CSS. Selected challenges are free to start; premium unlocks deeper sets and solutions.',
       },
     },
+  },
+  {
+    path: 'interview',
+    canActivate: [interviewAccessGuard],
+    data: {
+      seo: {
+        title: 'Frontend Mock Interview',
+        description:
+          'Run a timed frontend mock interview with role-level questions and a final coding task.',
+        robots: 'noindex,nofollow',
+      },
+    },
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/interview-mode/interview-setup.component').then(
+            (m) => m.InterviewSetupComponent,
+          ),
+      },
+      {
+        path: ':id/results',
+        loadComponent: () =>
+          import('./features/interview-mode/interview-results.component').then(
+            (m) => m.InterviewResultsComponent,
+          ),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./features/interview-mode/interview-session.component').then(
+            (m) => m.InterviewSessionComponent,
+          ),
+      },
+    ],
   },
   {
     path: 'incidents',

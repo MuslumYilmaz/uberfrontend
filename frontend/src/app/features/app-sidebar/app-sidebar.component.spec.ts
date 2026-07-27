@@ -2,10 +2,13 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { BugReportService } from '../../core/services/bug-report.service';
 import { PracticeRegistryService } from '../../core/services/practice-registry.service';
 import { AppSidebarDrawerService } from '../../core/services/app-sidebar-drawer.service';
 import { AuthService } from '../../core/services/auth.service';
+import { InterviewAccessMode } from '../../core/models/interview.model';
+import { InterviewService } from '../../core/services/interview.service';
 import { AppSidebarComponent } from './app-sidebar.component';
 
 @Component({
@@ -15,10 +18,36 @@ import { AppSidebarComponent } from './app-sidebar.component';
 class DummyPageComponent {}
 
 describe('AppSidebarComponent', () => {
-  async function configureTestingModule(options?: { isLoggedIn?: boolean; isPro?: boolean }) {
+  async function configureTestingModule(options?: {
+    isLoggedIn?: boolean;
+    isPro?: boolean;
+    role?: 'user' | 'admin';
+    interviewAccessMode?: InterviewAccessMode;
+    interviewEnabled?: boolean;
+  }) {
     const isLoggedIn = options?.isLoggedIn ?? false;
     const isPro = options?.isPro ?? false;
+    const role = options?.role ?? 'user';
+    const interviewAccessMode = options?.interviewAccessMode ?? 'off';
+    const interviewEnabled = options?.interviewEnabled
+      ?? interviewAccessMode !== 'off';
     const bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
+    const interviews = jasmine.createSpyObj<InterviewService>('InterviewService', [
+      'getAvailability',
+    ]);
+    interviews.getAvailability.and.returnValue(of({
+      enabled: interviewEnabled,
+      accessMode: interviewAccessMode,
+      unavailableReason: interviewEnabled ? null : 'Interview Mode is unavailable.',
+      quota: null,
+      activeSession: null,
+      lastResults: [],
+      targets: [],
+      levels: [],
+      tracks: [],
+      minViewportWidth: 768,
+      timing: { mcqSeconds: 600, codingReadySeconds: 300 },
+    }));
     const practiceRegistry = {
       catalogEntries: signal([
         { key: 'question-library', label: 'Question Library', icon: 'pi pi-database', route: '/coding', family: 'question' },
@@ -49,6 +78,8 @@ describe('AppSidebarComponent', () => {
         DummyPageComponent,
         RouterTestingModule.withRoutes([
           { path: 'dashboard', component: DummyPageComponent },
+          { path: 'interview', component: DummyPageComponent },
+          { path: 'interview/:id', component: DummyPageComponent },
           { path: 'coding', component: DummyPageComponent },
           { path: 'coding/:id', component: DummyPageComponent },
           { path: ':tech/coding/:id', component: DummyPageComponent },
@@ -82,6 +113,7 @@ describe('AppSidebarComponent', () => {
       providers: [
         { provide: BugReportService, useValue: bugReport },
         { provide: PracticeRegistryService, useValue: practiceRegistry },
+        { provide: InterviewService, useValue: interviews },
         {
           provide: AuthService,
           useValue: {
@@ -91,7 +123,7 @@ describe('AppSidebarComponent', () => {
                   _id: 'user_1',
                   username: 'sidebar_user',
                   email: 'sidebar@example.com',
-                  role: 'user',
+                  role,
                   accessTier: isPro ? 'premium' : 'free',
                 }
                 : null,
@@ -104,6 +136,7 @@ describe('AppSidebarComponent', () => {
 
     return {
       bugReport,
+      interviews,
       router: TestBed.inject(Router),
     };
   }
@@ -200,6 +233,74 @@ describe('AppSidebarComponent', () => {
 
     expect(questionLibraryLink.classList.contains('is-active')).toBeTrue();
     expect(practiceCatalog.classList.contains('open')).toBeTrue();
+  });
+
+  it('exposes the timed mock interview and keeps it active during a session', async () => {
+    const { router } = await configureTestingModule({
+      isLoggedIn: true,
+      interviewAccessMode: 'public',
+    });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+
+    await fixture.ngZone?.run(async () => router.navigateByUrl('/interview/session-1'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const interviewLink = fixture.nativeElement.querySelector(
+      'a[aria-label="Timed Mock Interview"]',
+    ) as HTMLAnchorElement;
+    const practiceCatalog = fixture.nativeElement.querySelector('#group-1') as HTMLElement;
+
+    expect(interviewLink).toBeTruthy();
+    expect(interviewLink.getAttribute('href') || '').toContain('/interview');
+    expect(interviewLink.classList.contains('is-active')).toBeTrue();
+    expect(practiceCatalog.classList.contains('open')).toBeTrue();
+  });
+
+  it('does not expose the interview link while the feature is off', async () => {
+    await configureTestingModule({
+      isLoggedIn: true,
+      interviewAccessMode: 'off',
+      interviewEnabled: false,
+    });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('a[aria-label="Timed Mock Interview"]'),
+    ).toBeNull();
+  });
+
+  it('hides internal preview navigation from non-admin users', async () => {
+    await configureTestingModule({
+      isLoggedIn: true,
+      role: 'user',
+      interviewAccessMode: 'internal',
+      interviewEnabled: true,
+    });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('a[aria-label="Timed Mock Interview"]'),
+    ).toBeNull();
+  });
+
+  it('exposes internal preview navigation to admins', async () => {
+    await configureTestingModule({
+      isLoggedIn: true,
+      role: 'admin',
+      interviewAccessMode: 'internal',
+      interviewEnabled: true,
+    });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('a[aria-label="Timed Mock Interview"]'),
+    ).not.toBeNull();
   });
 
   it('opens the drawer when the shared drawer service is toggled', async () => {

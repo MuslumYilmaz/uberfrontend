@@ -1,0 +1,374 @@
+<main class="session-page" data-testid="interview-session">
+  <section *ngIf="loading()" class="state-card" faCard role="status">
+    Restoring your interview from the server…
+  </section>
+
+  <section *ngIf="error()" class="state-card state-card--error" faCard role="alert">
+    <p>{{ error() }}</p>
+    <button faButton variant="ghost" type="button" (click)="load()">Reload session</button>
+  </section>
+
+  <ng-container *ngIf="session() as active">
+    <header class="session-header">
+      <div>
+        <p class="eyebrow">Frontend mock interview</p>
+        <h1>{{ active.track | titlecase }} · {{ active.level | titlecase }}</h1>
+      </div>
+      <div class="session-header__actions">
+        <app-interview-deadline-timer
+          *ngIf="active.status === 'mcq_active'"
+          label="MCQ time"
+          [serverNow]="active.serverNow"
+          [deadlineAt]="active.mcqDeadlineAt"
+          (expired)="submitMcq(true)">
+        </app-interview-deadline-timer>
+        <app-interview-deadline-timer
+          *ngIf="active.status === 'coding_ready'"
+          label="Start coding within"
+          [serverNow]="active.serverNow"
+          [deadlineAt]="active.codingReadyDeadlineAt || active.coding?.readyDeadlineAt || null"
+          (expired)="reconcileAfterCodingDeadline()">
+        </app-interview-deadline-timer>
+        <app-interview-deadline-timer
+          *ngIf="active.status === 'coding_active'"
+          label="Coding time"
+          [serverNow]="active.serverNow"
+          [deadlineAt]="active.coding?.deadlineAt || null"
+          (expired)="reconcileAfterCodingDeadline()">
+        </app-interview-deadline-timer>
+        <button faButton variant="ghost" size="sm" type="button" (click)="abandon()">
+          End interview
+        </button>
+      </div>
+    </header>
+
+    <section *ngIf="active.status === 'mcq_active'" class="mcq-layout">
+      <aside class="progress-card" faCard aria-label="Question progress">
+        <div class="progress-card__summary">
+          <strong>{{ answeredCount() }}/{{ active.questions.length }} answered</strong>
+          <span>No feedback until results</span>
+        </div>
+        <nav class="question-nav" aria-label="Interview questions">
+          <button
+            *ngFor="let question of active.questions; let index = index"
+            type="button"
+            [class.question-nav__item--active]="!reviewing() && currentIndex() === index"
+            [class.question-nav__item--answered]="!!question.selectedOptionId"
+            [attr.aria-current]="!reviewing() && currentIndex() === index ? 'step' : null"
+            (click)="goToQuestion(index)">
+            <span>{{ index + 1 }}</span>
+            <span class="sr-only">
+              Question {{ index + 1 }}, {{ question.selectedOptionId ? 'answered' : 'unanswered' }}
+            </span>
+          </button>
+        </nav>
+        <button faButton variant="ghost" block type="button" (click)="showReview()">
+          Review answers
+        </button>
+      </aside>
+
+      <section *ngIf="!reviewing() && currentQuestion() as question" class="question-card" faCard elevated>
+        <div class="question-meta">
+          <span>Question {{ currentIndex() + 1 }} of {{ active.questions.length }}</span>
+          <span>{{ question.technology }} · {{ question.competency }}</span>
+        </div>
+
+        <fieldset [disabled]="savingAnswerFor() === question.id || transitioning()">
+          <legend>{{ question.prompt }}</legend>
+          <pre *ngIf="question.code" class="question-code"><code>{{ question.code }}</code></pre>
+          <label
+            *ngFor="let option of question.options"
+            class="option"
+            [class.option--selected]="question.selectedOptionId === option.id">
+            <input
+              type="radio"
+              [name]="'question-' + question.id"
+              [value]="option.id"
+              [checked]="question.selectedOptionId === option.id"
+              (change)="selectAnswer(question, option.id)">
+            <span>{{ option.label }}</span>
+          </label>
+        </fieldset>
+
+        <p *ngIf="savingAnswerFor() === question.id" class="save-note" role="status">
+          Saving answer…
+        </p>
+
+        <div class="question-actions">
+          <button
+            faButton
+            variant="ghost"
+            type="button"
+            [disabled]="currentIndex() === 0"
+            (click)="goToQuestion(currentIndex() - 1)">
+            Previous
+          </button>
+          <button
+            *ngIf="currentIndex() < active.questions.length - 1; else reviewButton"
+            faButton
+            variant="primary"
+            type="button"
+            (click)="goToQuestion(currentIndex() + 1)">
+            Next
+          </button>
+          <ng-template #reviewButton>
+            <button faButton variant="primary" type="button" (click)="showReview()">
+              Review answers
+            </button>
+          </ng-template>
+        </div>
+      </section>
+
+      <section *ngIf="reviewing()" class="review-card" faCard elevated>
+        <p class="eyebrow">MCQ review</p>
+        <h2>Check for unanswered questions</h2>
+        <p>
+          You can return to any question. Submitting locks this section and reveals no
+          correctness feedback until the complete interview ends.
+        </p>
+        <ol class="review-list">
+          <li *ngFor="let question of active.questions; let index = index">
+            <button type="button" (click)="goToQuestion(index)">
+              <span>Question {{ index + 1 }}</span>
+              <strong [class.unanswered]="!question.selectedOptionId">
+                {{ question.selectedOptionId ? 'Answered' : 'Unanswered' }}
+              </strong>
+            </button>
+          </li>
+        </ol>
+        <div class="review-actions">
+          <button faButton variant="ghost" type="button" (click)="goToQuestion(currentIndex())">
+            Return to questions
+          </button>
+          <button
+            faButton
+            variant="primary"
+            type="button"
+            [loading]="transitioning()"
+            [disabled]="!!savingAnswerFor()"
+            (click)="submitMcq()"
+            data-testid="submit-mcq">
+            Submit MCQ section
+          </button>
+        </div>
+      </section>
+    </section>
+
+    <section *ngIf="active.status === 'coding_ready'" class="transition-card" faCard elevated>
+      <p class="eyebrow">MCQ answers locked</p>
+      <h2>Your coding task is next</h2>
+      <p>
+        The coding timer starts when you continue. You will receive only the prompt,
+        requirements, starter files, and bounded check results—never solutions.
+      </p>
+      <ul>
+        <li>Your draft saves to this device immediately and syncs to the server.</li>
+        <li>Refresh does not pause the timer.</li>
+        <li>The task awards 0 XP and does not update normal coding progress.</li>
+      </ul>
+      <button
+        faButton
+        variant="primary"
+        size="lg"
+        type="button"
+        [loading]="transitioning()"
+        (click)="startCoding()"
+        data-testid="start-coding">
+        Start coding task
+      </button>
+    </section>
+
+    <section *ngIf="active.status === 'coding_active' && active.coding?.task as task" class="coding-layout">
+      <aside class="coding-brief" faCard>
+        <p class="eyebrow">Final stage</p>
+        <h2>{{ task.title }}</h2>
+        <p>{{ task.prompt }}</p>
+        <h3>Requirements</h3>
+        <div *ngFor="let requirement of task.requirements" class="requirement-group">
+          <strong>{{ requirement.title }}</strong>
+          <p *ngIf="requirement.prompt">{{ requirement.prompt }}</p>
+          <ul *ngIf="requirement.constraints.length">
+            <li *ngFor="let constraint of requirement.constraints">{{ constraint }}</li>
+          </ul>
+        </div>
+        <p class="zero-xp">Interview coding awards 0 XP.</p>
+      </aside>
+
+      <section
+        *ngIf="task.runner === 'javascript'; else frameworkWorkspace"
+        class="workspace"
+        faCard
+        padding="none">
+        <div class="workspace__bar">
+          <div class="file-tabs" role="tablist" aria-label="Starter files">
+            <button
+              *ngFor="let file of codingFiles()"
+              type="button"
+              role="tab"
+              [attr.aria-selected]="activeFilePath() === file.path"
+              [class.file-tab--active]="activeFilePath() === file.path"
+              (click)="selectFile(file.path)">
+              {{ file.path }}
+            </button>
+          </div>
+          <span
+            class="draft-status"
+            [class.draft-status--warning]="draftSync() === 'offline' || draftSync() === 'error'"
+            role="status">
+            {{ draftStatusLabel() }}
+          </span>
+        </div>
+
+        <div class="editor-shell" *ngIf="activeFile() as file">
+          <app-monaco-editor
+            *ngIf="!editorFallback(); else textareaEditor"
+            [modelKey]="'interview-' + active.id + '-' + file.path"
+            [code]="file.content"
+            [language]="file.language"
+            [readOnly]="file.readOnly"
+            [options]="{ minimap: { enabled: false }, fontSize: 13, wordWrap: 'on' }"
+            (codeChange)="onCodeChange($event)"
+            (loadFailed)="useTextareaFallback()">
+          </app-monaco-editor>
+          <ng-template #textareaEditor>
+            <textarea
+              class="editor-fallback"
+              [attr.aria-label]="'Code editor for ' + file.path"
+              [readOnly]="file.readOnly"
+              [value]="file.content"
+              spellcheck="false"
+              (input)="onCodeChange($any($event.target).value)">
+            </textarea>
+          </ng-template>
+        </div>
+
+        <div class="runner">
+          <div class="runner__actions">
+            <button
+              faButton
+              variant="ghost"
+              type="button"
+              [loading]="runningChecks()"
+              [disabled]="submittingCoding() || draftSync() !== 'saved' || !syncedDraftHash()"
+              (click)="runChecks()">
+              Run checks
+            </button>
+            <button
+              faButton
+              variant="primary"
+              type="button"
+              [loading]="submittingCoding()"
+              [disabled]="runningChecks() || draftSync() !== 'saved' || !syncedDraftHash()"
+              (click)="submitCoding()"
+              data-testid="submit-coding">
+              Submit interview
+            </button>
+          </div>
+
+          <div *ngIf="checkResults().length; else noChecks" class="check-results" aria-live="polite">
+            <p>{{ checkSummary().passed }}/{{ checkSummary().total }} checks passed</p>
+            <ul>
+              <li *ngFor="let result of checkResults()" [class.check-failed]="!result.passed">
+                <strong>{{ result.passed ? 'Passed' : 'Needs work' }} · {{ result.name }}</strong>
+                <span *ngIf="result.message">{{ result.message }}</span>
+              </li>
+            </ul>
+          </div>
+          <ng-template #noChecks>
+            <p class="runner__empty">
+              Checks run in an isolated browser worker. Only bounded pass/fail results are recorded.
+            </p>
+          </ng-template>
+        </div>
+      </section>
+
+      <ng-template #frameworkWorkspace>
+        <section class="workspace framework-workspace" faCard padding="none">
+          <div class="workspace__bar">
+            <span
+              class="draft-status"
+              [class.draft-status--warning]="draftSync() === 'offline' || draftSync() === 'error'"
+              role="status">
+              {{ draftStatusLabel() }}
+            </span>
+            <div class="runner__actions">
+              <button
+                faButton
+                variant="ghost"
+                type="button"
+                [loading]="runningChecks()"
+                [disabled]="submittingCoding() || draftSync() !== 'saved' || !syncedDraftHash()"
+                (click)="runChecks()">
+                Run checks
+              </button>
+              <button
+                faButton
+                variant="primary"
+                type="button"
+                [loading]="submittingCoding()"
+                [disabled]="runningChecks() || draftSync() !== 'saved' || !syncedDraftHash()"
+                (click)="submitCoding()">
+                Submit interview
+              </button>
+            </div>
+          </div>
+
+          <app-coding-framework-panel
+            #frameworkPanel
+            *ngIf="frameworkQuestion() as question"
+            class="framework-panel"
+            [question]="question"
+            [tech]="$any(active.track)"
+            [starterFilesOverride]="frameworkStarterFiles()"
+            [frameworkTestsOverride]="frameworkTests()"
+            [storageKeyOverride]="'interview:' + active.id + ':' + task.id"
+            [interviewMode]="true"
+            [disablePersistence]="true"
+            [suppressAttemptRecording]="true"
+            [solutionFilesMap]="{}"
+            [editorOptions]="{ minimap: { enabled: false }, fontSize: 13, wordWrap: 'on' }"
+            (filesChanged)="onFrameworkFilesChanged($event)">
+          </app-coding-framework-panel>
+
+          <div class="runner framework-run-summary">
+            <div *ngIf="checkResults().length; else frameworkNoChecks" class="check-results" aria-live="polite">
+              <p>{{ checkSummary().passed }}/{{ checkSummary().total }} checks passed</p>
+              <ul>
+                <li *ngFor="let result of checkResults()" [class.check-failed]="!result.passed">
+                  <strong>{{ result.passed ? 'Passed' : 'Needs work' }} · {{ result.name }}</strong>
+                  <span *ngIf="result.message">{{ result.message }}</span>
+                </li>
+              </ul>
+            </div>
+            <ng-template #frameworkNoChecks>
+              <p class="runner__empty">
+                Preview and checks run in isolated browser frames. Only bounded pass/fail results are recorded.
+              </p>
+            </ng-template>
+          </div>
+        </section>
+      </ng-template>
+    </section>
+
+    <section
+      *ngIf="active.status === 'abandoned' || active.status === 'voided_technical'"
+      class="state-card"
+      faCard
+      elevated>
+      <h2>{{ active.status === 'voided_technical' ? 'Interview voided for a technical issue' : 'Interview ended' }}</h2>
+      <p *ngIf="active.status === 'voided_technical'">
+        This attempt should not count against your quota. No answer report is created for a voided session.
+      </p>
+      <a
+        *ngIf="active.status === 'abandoned'; else interviewHome"
+        faButton
+        variant="primary"
+        [routerLink]="['/interview', active.id, 'results']">
+        View report
+      </a>
+      <ng-template #interviewHome>
+        <a faButton variant="primary" routerLink="/interview">Return to interview home</a>
+      </ng-template>
+    </section>
+  </ng-container>
+</main>

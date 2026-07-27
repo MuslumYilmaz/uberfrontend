@@ -1,0 +1,155 @@
+<main class="interview-page" data-testid="interview-setup">
+  <header class="interview-hero">
+    <p class="eyebrow" data-testid="interview-access-label">
+      {{ availability()?.accessMode === 'internal' ? 'Internal preview' : 'Timed simulation' }}
+    </p>
+    <h1>Frontend mock interview</h1>
+    <p>
+      Complete five multiple-choice questions, then move to one coding task.
+      Answers stay locked until the final report.
+    </p>
+  </header>
+
+  <section *ngIf="loading()" class="status-card" faCard role="status">
+    Preparing interview options…
+  </section>
+
+  <section *ngIf="error()" class="status-card status-card--error" faCard role="alert">
+    <p>{{ error() }}</p>
+    <button faButton variant="ghost" type="button" (click)="load()">Try again</button>
+  </section>
+
+  <ng-container *ngIf="availability() as available">
+    <section
+      *ngIf="viewportBlocked()"
+      class="status-card status-card--warning"
+      faCard
+      role="alert"
+      data-testid="interview-mobile-block">
+      <h2>A larger screen is required to start</h2>
+      <p>
+        The coding workspace needs at least {{ available.minViewportWidth }}px.
+        You can return on a tablet or desktop without using an attempt.
+      </p>
+    </section>
+
+    <section *ngIf="available.activeSession as active" class="resume-card" faCard elevated>
+      <div>
+        <p class="eyebrow">Active interview</p>
+        <h2>Continue your {{ active.track || 'frontend' }} interview</h2>
+        <p>Your server timer continues while the interview is active.</p>
+      </div>
+      <button faButton variant="primary" type="button" (click)="resume(active.id)">
+        Resume interview
+      </button>
+    </section>
+
+    <section
+      *ngIf="!available.enabled"
+      class="status-card status-card--warning"
+      faCard
+      role="status">
+      <h2>Interview Mode is currently unavailable</h2>
+      <p>{{ available.unavailableReason || 'Please check back later.' }}</p>
+    </section>
+
+    <section *ngIf="quotaExhausted()" class="status-card status-card--warning" faCard role="status">
+      <h2>No attempts remaining</h2>
+      <p *ngIf="available.quota?.resetAt as resetAt">
+        Your quota resets {{ resetAt | date:'medium' }}.
+      </p>
+    </section>
+
+    <form class="setup-grid" (ngSubmit)="start()" *ngIf="available.enabled && !available.activeSession">
+      <section class="setup-card" faCard elevated>
+        <div class="setup-card__header">
+          <div>
+            <p class="eyebrow">Interview target</p>
+            <h2>Choose the role you are preparing for</h2>
+          </div>
+          <span *ngIf="available.quota as quota" class="quota">
+            <ng-container *ngIf="quota.unlimited; else boundedQuota">Unlimited attempts</ng-container>
+            <ng-template #boundedQuota>
+              {{ quota.remaining }}<ng-container *ngIf="quota.limit !== null"> / {{ quota.limit }}</ng-container>
+              attempts
+            </ng-template>
+          </span>
+        </div>
+
+        <div class="fields">
+          <fa-field label="Level" hint="Controls scenario depth and coding expectations.">
+            <fa-select
+              [options]="available.levels"
+              [value]="selectedLevel()"
+              optionLabel="label"
+              optionValue="value"
+              [disabled]="starting()"
+              (valueChange)="onLevelChange($event)">
+            </fa-select>
+          </fa-field>
+
+          <fa-field label="Track" [hint]="questionMix()">
+            <fa-select
+              [options]="available.tracks"
+              [value]="selectedTrack()"
+              optionLabel="label"
+              optionValue="value"
+              [disabled]="starting()"
+              (valueChange)="onTrackChange($event)">
+            </fa-select>
+          </fa-field>
+
+        </div>
+
+        <div class="duration-summary">
+          <strong>Fixed interview timing</strong>
+          <span>{{ mcqDurationLabel() }} MCQ · {{ codingMinutes() }} minutes coding</span>
+        </div>
+
+        <p
+          *ngIf="targetUnavailable()"
+          class="target-warning"
+          role="status"
+          data-testid="interview-target-unavailable">
+          This level and track combination is not available yet. Choose another interview target.
+        </p>
+
+        <div class="rules" aria-label="Interview rules">
+          <h3>Before you begin</h3>
+          <ul>
+            <li>The MCQ section comes first; coding is always the final stage.</li>
+            <li>Leaving or refreshing does not pause the server-controlled timer.</li>
+            <li>No answer feedback or solutions appear before submission.</li>
+            <li>Interview Mode awards 0 XP and does not update solved progress.</li>
+          </ul>
+        </div>
+
+        <button
+          faButton
+          variant="primary"
+          size="lg"
+          type="submit"
+          [loading]="starting()"
+          [disabled]="!canStart()"
+          data-testid="interview-start">
+          Start timed interview
+        </button>
+      </section>
+    </form>
+
+    <section *ngIf="available.lastResults.length" class="recent" aria-labelledby="recent-results-title">
+      <h2 id="recent-results-title">Recent interviews</h2>
+      <div class="recent__grid">
+        <a
+          *ngFor="let result of available.lastResults"
+          faCard
+          interactive
+          [routerLink]="['/interview', result.sessionId, 'results']">
+          <strong>{{ result.track || 'Frontend' | titlecase }} · {{ result.level || 'Interview' | titlecase }}</strong>
+          <span *ngIf="result.total !== undefined">{{ result.correct || 0 }}/{{ result.total }} MCQ correct</span>
+          <span *ngIf="result.completedAt">{{ result.completedAt | date:'mediumDate' }}</span>
+        </a>
+      </div>
+    </section>
+  </ng-container>
+</main>

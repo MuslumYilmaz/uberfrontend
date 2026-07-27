@@ -1,0 +1,172 @@
+<main class="results-page" data-testid="interview-results">
+  <section *ngIf="loading()" class="state-card" faCard role="status">
+    Preparing your interview report…
+  </section>
+
+  <section *ngIf="error()" class="state-card state-card--error" faCard role="alert">
+    <p>{{ error() }}</p>
+    <a *ngIf="voided(); else retryResult" faButton variant="primary" routerLink="/interview">
+      Return to interview home
+    </a>
+    <ng-template #retryResult>
+      <button faButton variant="ghost" type="button" (click)="load()">Try again</button>
+    </ng-template>
+  </section>
+
+  <ng-container *ngIf="result() as report">
+    <header class="results-hero">
+      <div>
+        <p class="eyebrow">Interview complete</p>
+        <h1>{{ report.track | titlecase }} · {{ report.level | titlecase }} report</h1>
+        <p *ngIf="report.completedAt">{{ report.completedAt | date:'medium' }}</p>
+      </div>
+      <div class="results-hero__actions">
+        <a faButton variant="ghost" routerLink="/interview">Interview home</a>
+        <a faButton variant="primary" routerLink="/interview">Start a new interview</a>
+      </div>
+    </header>
+
+    <section class="disclaimer" faCard role="note">
+      <strong>Preparation feedback only</strong>
+      <span>{{ report.disclaimer }}</span>
+      <span>This session awarded 0 XP and did not change solved progress.</span>
+    </section>
+
+    <section class="score-grid" aria-label="Interview summary">
+      <article faCard elevated>
+        <span>Correct</span>
+        <strong>{{ report.score.correct }}</strong>
+      </article>
+      <article faCard elevated>
+        <span>Incorrect</span>
+        <strong>{{ report.score.incorrect }}</strong>
+      </article>
+      <article faCard elevated>
+        <span>Unanswered</span>
+        <strong>{{ report.score.unanswered }}</strong>
+      </article>
+      <article faCard elevated>
+        <span>MCQ time used</span>
+        <strong>{{ formatTiming(report.mcqTiming) }}</strong>
+      </article>
+      <article *ngIf="report.codingTiming" faCard elevated>
+        <span>Coding time used</span>
+        <strong>{{ formatTiming(report.codingTiming) }}</strong>
+      </article>
+    </section>
+
+    <section *ngIf="report.sections.length" class="report-section" aria-labelledby="breakdown-title">
+      <h2 id="breakdown-title">Topic breakdown</h2>
+      <div class="breakdown-grid">
+        <article *ngFor="let section of report.sections" faCard>
+          <strong>{{ section.label }}</strong>
+          <span>{{ section.correct }} correct</span>
+          <span>{{ section.incorrect }} incorrect</span>
+          <span>{{ section.unanswered }} unanswered</span>
+        </article>
+      </div>
+    </section>
+
+    <section *ngIf="report.remediationTopics.length" class="report-section focus-section" faCard>
+      <div>
+        <p class="eyebrow">Review next</p>
+        <h2>Topics to prepare</h2>
+        <p>These suggestions come from missed or unanswered questions in this session.</p>
+      </div>
+      <ul>
+        <li *ngFor="let topic of report.remediationTopics">{{ topic }}</li>
+      </ul>
+    </section>
+
+    <section *ngIf="report.coding as coding" class="report-section coding-result" faCard>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Coding task</p>
+          <h2>Coding evidence</h2>
+        </div>
+        <span>{{ coding.submitted ? 'Submitted' : coding.attempted ? 'Attempted' : 'Not attempted' }}</span>
+      </div>
+
+      <p class="local-evidence">
+        {{ codingEvidenceText(coding) }}
+        These browser checks are client-reported practice evidence, not an authoritative evaluation.
+      </p>
+
+      <ul *ngIf="coding.checks.length" class="check-list">
+        <li *ngFor="let check of coding.checks" [class.check-list__failed]="!check.passed">
+          <strong>{{ check.passed ? 'Local pass' : 'Local check needs work' }} · {{ check.name }}</strong>
+          <span *ngIf="check.message">{{ check.message }}</span>
+        </li>
+      </ul>
+
+      <div *ngIf="coding.rubric.length" class="rubric">
+        <article *ngFor="let item of coding.rubric">
+          <div>
+            <strong>{{ item.label }}</strong>
+            <ul *ngIf="item.criteria.length">
+              <li *ngFor="let criterion of item.criteria">{{ criterion }}</li>
+            </ul>
+          </div>
+          <span
+            class="requirement-status"
+            [class.requirement-status--passed]="item.status === 'passed'"
+            [class.requirement-status--failed]="item.status === 'failed'">
+            {{ item.status === 'passed'
+              ? 'Passed'
+              : item.status === 'failed'
+                ? 'Failed'
+                : 'Not evaluated' }}
+          </span>
+        </article>
+      </div>
+
+      <a
+        *ngIf="coding.sourceQuestionId"
+        faButton
+        variant="ghost"
+        class="full-task-link"
+        [routerLink]="[
+          '/',
+          report.track === 'core-web' ? 'javascript' : report.track,
+          'coding',
+          coding.sourceQuestionId
+        ]">
+        Open the original practice task
+      </a>
+    </section>
+
+    <section *ngIf="report.questions.length" class="report-section" aria-labelledby="answers-title">
+      <h2 id="answers-title">Answer review</h2>
+      <div class="answer-list">
+        <details
+          *ngFor="let question of report.questions; let index = index"
+          faCard
+          [class.answer--correct]="question.correct"
+          [class.answer--incorrect]="!question.correct">
+          <summary>
+            <span>Question {{ index + 1 }} · {{ question.technology }} · {{ question.competency }}</span>
+            <strong>{{ question.correct ? 'Correct' : question.selectedOptionId ? 'Incorrect' : 'Unanswered' }}</strong>
+          </summary>
+          <div class="answer-body">
+            <h3>{{ question.prompt }}</h3>
+            <pre *ngIf="question.code" class="question-code"><code>{{ question.code }}</code></pre>
+            <dl>
+              <div>
+                <dt>Your answer</dt>
+                <dd>{{ optionLabel(question, question.selectedOptionId) }}</dd>
+              </div>
+              <div>
+                <dt>Correct answer</dt>
+                <dd>{{ optionLabel(question, question.correctOptionId) }}</dd>
+              </div>
+            </dl>
+            <p *ngIf="question.explanation">{{ question.explanation }}</p>
+            <div *ngIf="question.remediationTopics.length" class="topic-list">
+              <span *ngFor="let topic of question.remediationTopics">{{ topic }}</span>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+  </ng-container>
+</main>

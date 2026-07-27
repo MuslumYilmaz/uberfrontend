@@ -72,6 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
     /^\/(javascript|angular|react|vue|html|css)\/trivia\/[^/]+$/,
     /^\/coding\/[^/]+$/,
     /^\/(javascript|angular|react|vue|html|css)\/coding\/[^/]+$/,
+    /^\/interview\/[^/]+\/?$/,
     /^\/$/,
     /^\/showcase\/?$/,
   ];

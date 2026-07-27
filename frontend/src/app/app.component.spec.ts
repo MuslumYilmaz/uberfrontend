@@ -58,6 +58,7 @@ describe('AppComponent', () => {
         AppComponent,
         RouterTestingModule.withRoutes([
           { path: 'dashboard', component: DummyDashboardComponent },
+          { path: 'interview/:id', component: DummyDashboardComponent },
           { path: 'coding', component: DummyDashboardComponent },
           { path: 'tracks', component: DummyDashboardComponent },
           { path: 'interview-questions', component: DummyDashboardComponent },
@@ -182,5 +183,20 @@ describe('AppComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.sidebar')?.classList.contains('is-collapsed')).toBeFalse();
     expect(compiled.querySelector('[data-testid="prep-roadmap-switcher"]')?.classList.contains('prep-switcher--compact')).toBeFalse();
+  });
+
+  it('uses the focused shell while an interview session is active', async () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const router = TestBed.inject(Router);
+    await fixture.ngZone!.run(() => router.navigateByUrl('/interview/session-1'));
+    fixture.detectChanges();
+    await renderDeferredBlocks(fixture);
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.app-layout')).toBeNull();
+    expect(compiled.querySelector('.main--full')).not.toBeNull();
+    expect(compiled.querySelector('.sidebar')).toBeNull();
   });
 });
