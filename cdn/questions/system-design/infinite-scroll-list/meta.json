@@ -17,29 +17,30 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements and a 60-second answer",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture and data flow",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Pagination, state, and data correctness",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Component and API contracts",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Virtualization, accessibility, recovery, and verification",
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-01-30"
+  "publishedAt": "2025-11-22",
+  "updatedAt": "2026-07-27"
 }

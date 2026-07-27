@@ -204,6 +204,9 @@
                         <!-- TEXT -->
                         <div *ngIf="b.type === 'text'" class="sd-text">{{ b.text }}</div>
 
+                        <!-- HEADING -->
+                        <h3 *ngIf="b.type === 'heading'" class="sd-h3">{{ b.text }}</h3>
+
                         <!-- DIVIDER -->
                         <div *ngIf="b.type === 'divider'" class="sd-divider"></div>
 
@@ -266,15 +269,27 @@
                         <div *ngIf="b.type === 'links'" class="sd-links">
                             <div class="sd-links-title" *ngIf="b.title">{{ b.title }}</div>
                             <div class="sd-links-list">
-                                <a
-                                    class="sd-link-item"
-                                    *ngFor="let link of b.items; trackBy: trackByLinkItem"
-                                    [routerLink]="link.href">
-                                    <span class="sd-link-item__label">{{ link.label }}</span>
-                                    <span class="sd-link-item__description" *ngIf="link.description">
-                                        {{ link.description }}
-                                    </span>
-                                </a>
+                                <ng-container *ngFor="let link of b.items; trackBy: trackByLinkItem">
+                                    <a
+                                        *ngIf="isExternalLink(link.href); else internalLink"
+                                        class="sd-link-item"
+                                        [href]="link.href"
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                        <span class="sd-link-item__label">{{ link.label }}</span>
+                                        <span class="sd-link-item__description" *ngIf="link.description">
+                                            {{ link.description }}
+                                        </span>
+                                    </a>
+                                    <ng-template #internalLink>
+                                        <a class="sd-link-item" [routerLink]="link.href">
+                                            <span class="sd-link-item__label">{{ link.label }}</span>
+                                            <span class="sd-link-item__description" *ngIf="link.description">
+                                                {{ link.description }}
+                                            </span>
+                                        </a>
+                                    </ng-template>
+                                </ng-container>
                             </div>
                         </div>
 

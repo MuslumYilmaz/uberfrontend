@@ -427,6 +427,47 @@
   background: color-mix(in srgb, var(--uf-surface) 97%, var(--uf-text-primary) 3%);
 }
 
+.company-role-grid,
+.company-source-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.company-role-grid article,
+.company-source-list article,
+.company-walkthrough-steps li {
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 8px;
+  padding: 14px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  background: color-mix(in srgb, var(--uf-surface) 97%, var(--uf-text-primary) 3%);
+}
+
+.company-role-grid strong {
+  color: var(--uf-text-primary);
+}
+
+.company-source-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.company-source-list a {
+  color: var(--uf-accent);
+  text-underline-offset: 2px;
+}
+
+.company-walkthrough-steps {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
 .openai-links,
 .company-guide-links {
   grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
@@ -527,7 +568,10 @@
   .openai-prompt-list,
   .openai-link-grid,
   .company-link-grid,
-  .company-faq-list {
+  .company-faq-list,
+  .company-role-grid,
+  .company-source-list,
+  .company-walkthrough-steps {
     grid-template-columns: 1fr;
   }
 

@@ -491,6 +491,30 @@ function assertGoogleCompanyPreviewSitemapEntry(entries) {
   }
 }
 
+function assertNetflixCompanyPreviewSitemapEntry(entries) {
+  const loc = 'https://frontendatlas.com/companies/netflix/preview';
+  const matches = entries.filter((item) => item.loc === loc);
+  if (matches.length !== 1) {
+    throw new Error(`Sitemap must include exactly one Netflix company preview loc: ${loc}`);
+  }
+  if (matches[0].lastmod !== '2026-07-27') {
+    throw new Error(`Netflix company preview sitemap lastmod must be 2026-07-27, got ${matches[0].lastmod || '(missing)'}`);
+  }
+}
+
+function assertInfiniteScrollSystemDesignSitemapEntry(entries) {
+  const loc = 'https://frontendatlas.com/system-design/infinite-scroll-list';
+  const matches = entries.filter((item) => item.loc === loc);
+  if (matches.length !== 1) {
+    throw new Error(`Sitemap must include exactly one Infinite Scroll system design loc: ${loc}`);
+  }
+  if (matches[0].lastmod !== '2026-07-27') {
+    throw new Error(
+      `Infinite Scroll system design sitemap lastmod must be 2026-07-27, got ${matches[0].lastmod || '(missing)'}`,
+    );
+  }
+}
+
 function normalizeTitle(value) {
   return String(value || '')
     .trim()
@@ -997,6 +1021,8 @@ assertNoPrivateOrRedirectRoutes(paths);
 assertCssThemeVariablesSitemapEntry(entries);
 assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertGoogleCompanyPreviewSitemapEntry(entries);
+assertNetflixCompanyPreviewSitemapEntry(entries);
+assertInfiniteScrollSystemDesignSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
 assertAngularMasteryRedirects();
 assertRobotsAllowsCodingQueryNoindex();

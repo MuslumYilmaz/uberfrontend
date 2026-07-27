@@ -53,6 +53,55 @@ const GOOGLE_PREVIEW_RESOURCE_ROUTES = [
   '/system-design/infinite-scroll-list',
   '/javascript/trivia/js-compare-two-objects',
 ];
+const NETFLIX_PREVIEW_ROUTE = '/companies/netflix/preview';
+const NETFLIX_PREVIEW_CANONICAL = `https://frontendatlas.com${NETFLIX_PREVIEW_ROUTE}`;
+const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend Interview Questions: 6 Prompts + Prep Guide';
+const NETFLIX_PREVIEW_DESCRIPTION =
+  'Prepare for a Netflix frontend interview with 6 representative prompts on JavaScript, React, streaming UI, performance, accessibility, and system design.';
+const NETFLIX_PREVIEW_H1 = 'Netflix Frontend Interview Questions';
+const NETFLIX_PREVIEW_HEADINGS = [
+  'Prepare for product judgment, not Netflix trivia',
+  'What Netflix publishes—and what you still need to confirm',
+  'Three product contexts for practicing transferable frontend judgment',
+  'Six Netflix frontend interview practice questions',
+  'Scope Continue Watching before drawing architecture boxes',
+  'A 7-day Netflix frontend interview preparation plan',
+  'Common Netflix frontend interview preparation questions',
+  'Build the underlying skills with free practice',
+  'Sources and evidence limits',
+];
+const NETFLIX_PREVIEW_TRUST_NOTE =
+  'These are representative FrontendAtlas practice prompts, not leaked or confirmed Netflix interview questions. Interview formats vary by role and team, so use recruiter-provided material as the source of truth.';
+const NETFLIX_PREVIEW_PROMPTS = [
+  { id: 'resilient-title-search', title: 'Implement resilient title search' },
+  { id: 'accessible-continue-watching-row', title: 'Build an accessible Continue Watching row' },
+  {
+    id: 'personalized-row-rendering',
+    title: 'Stop personalized rows from re-rendering unnecessarily',
+  },
+  {
+    id: 'streaming-caching-failure-states',
+    title: 'Reason about streaming delivery, caching, and failure states',
+  },
+  {
+    id: 'continue-watching-system-design',
+    title: 'Design Continue Watching for regional and device scale',
+  },
+  {
+    id: 'consequential-frontend-decision',
+    title: 'Defend a consequential frontend decision',
+  },
+];
+const NETFLIX_PREVIEW_RESOURCE_ROUTES = [
+  '/javascript/coding/js-debounce',
+  '/javascript/coding/js-take-latest',
+  '/react/trivia/react-prevent-unnecessary-rerenders',
+  '/javascript/trivia/content-delivery-caching-strategies-streaming',
+  '/system-design/infinite-scroll-list',
+  '/system-design/dashboard-widgets-draggable-resizable',
+  '/guides/system-design-blueprint/performance',
+  '/guides/behavioral/stories',
+];
 const execFileAsync = promisify(execFile);
 
 function pickSystemDesignSampleId() {
@@ -469,6 +518,185 @@ try {
       googleBreadcrumbItems[2]?.name === GOOGLE_PREVIEW_H1 &&
       googleBreadcrumbItems[2]?.item === GOOGLE_PREVIEW_CANONICAL,
     detail: `item_count=${googleBreadcrumbItems.length}`,
+  });
+
+  const netflixUrl = `${base}${NETFLIX_PREVIEW_ROUTE}`;
+  const netflixCurlOptions = { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT };
+  const netflixStatus = await curlStatus(netflixUrl, netflixCurlOptions);
+  const netflixBody = await curlBody(netflixUrl, netflixCurlOptions);
+  const netflixTitle = extractTitle(netflixBody);
+  const netflixDescription = extractMetaContent(netflixBody, 'name', 'description');
+  const netflixCanonical = extractCanonical(netflixBody);
+  const netflixRobots = extractRobots(netflixBody);
+  const netflixH1 = extractH1(netflixBody);
+  const netflixVisibleText = extractVisibleText(netflixBody);
+  const netflixInternalLinks = extractInternalLinkPaths(netflixBody);
+  const netflixJsonLd = extractSeoJsonLd(netflixBody);
+  const netflixCollectionPage = netflixJsonLd.graph.find((node) =>
+    hasSchemaType(node, 'CollectionPage'));
+  const netflixBreadcrumbs = netflixJsonLd.graph.find((node) =>
+    hasSchemaType(node, 'BreadcrumbList'));
+  const netflixItemList = netflixJsonLd.graph.find((node) => hasSchemaType(node, 'ItemList'));
+  const netflixListItems = Array.isArray(netflixItemList?.itemListElement)
+    ? netflixItemList.itemListElement
+    : [];
+
+  checks.push({
+    name: 'Googlebot receives Netflix company preview as 200',
+    ok: netflixStatus === 200,
+    detail: `${netflixStatus} ${NETFLIX_PREVIEW_ROUTE}`,
+  });
+  checks.push({
+    name: 'Netflix company preview has exact title',
+    ok: netflixTitle === NETFLIX_PREVIEW_TITLE,
+    detail: `title=${netflixTitle || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Netflix company preview has exact description',
+    ok: netflixDescription === NETFLIX_PREVIEW_DESCRIPTION,
+    detail: `description=${netflixDescription || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Netflix company preview mirrors exact Open Graph metadata',
+    ok:
+      extractMetaContent(netflixBody, 'property', 'og:title') === NETFLIX_PREVIEW_TITLE &&
+      extractMetaContent(netflixBody, 'property', 'og:description') === NETFLIX_PREVIEW_DESCRIPTION,
+    detail: `og:title=${extractMetaContent(netflixBody, 'property', 'og:title') || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Netflix company preview mirrors exact Twitter metadata',
+    ok:
+      extractMetaContent(netflixBody, 'name', 'twitter:title') === NETFLIX_PREVIEW_TITLE &&
+      extractMetaContent(netflixBody, 'name', 'twitter:description') === NETFLIX_PREVIEW_DESCRIPTION,
+    detail: `twitter:title=${extractMetaContent(netflixBody, 'name', 'twitter:title') || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Netflix company preview canonical is self-referential',
+    ok: netflixCanonical === NETFLIX_PREVIEW_CANONICAL,
+    detail: `canonical=${netflixCanonical || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Netflix company preview robots is index,follow',
+    ok: netflixRobots.replace(/\s+/g, '') === 'index,follow',
+    detail: `robots=${netflixRobots || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Netflix company preview has exact h1',
+    ok: netflixH1 === NETFLIX_PREVIEW_H1,
+    detail: `h1=${netflixH1 || '(missing)'}`,
+  });
+
+  const missingNetflixHeadings = NETFLIX_PREVIEW_HEADINGS.filter(
+    (heading) => !netflixVisibleText.includes(normalizeText(heading)),
+  );
+  checks.push({
+    name: 'Netflix company preview core guide sections are present in raw HTML',
+    ok: missingNetflixHeadings.length === 0,
+    detail: missingNetflixHeadings.length
+      ? `missing=${missingNetflixHeadings.join(' | ')}`
+      : 'all present',
+  });
+  checks.push({
+    name: 'Netflix company preview trust note is present in raw HTML',
+    ok: netflixVisibleText.includes(normalizeText(NETFLIX_PREVIEW_TRUST_NOTE)),
+    detail: netflixVisibleText.includes(normalizeText(NETFLIX_PREVIEW_TRUST_NOTE))
+      ? 'present'
+      : 'missing',
+  });
+
+  const missingNetflixPrompts = NETFLIX_PREVIEW_PROMPTS.filter(
+    (prompt) => !netflixVisibleText.includes(normalizeText(prompt.title)),
+  );
+  checks.push({
+    name: 'Netflix company preview prompt titles are visible in raw HTML',
+    ok: missingNetflixPrompts.length === 0,
+    detail: missingNetflixPrompts.length
+      ? `missing=${missingNetflixPrompts.map((prompt) => prompt.title).join(' | ')}`
+      : 'all six present',
+  });
+
+  const missingNetflixResourceLinks = NETFLIX_PREVIEW_RESOURCE_ROUTES.filter(
+    (route) => !netflixInternalLinks.has(route),
+  );
+  checks.push({
+    name: 'Netflix company preview has all contextual public resource links in raw HTML',
+    ok: missingNetflixResourceLinks.length === 0,
+    detail: missingNetflixResourceLinks.length
+      ? `missing=${missingNetflixResourceLinks.join(', ')}`
+      : 'all eight present',
+  });
+
+  checks.push({
+    name: 'Netflix company preview JSON-LD parses',
+    ok: !netflixJsonLd.error && netflixJsonLd.graph.length > 0,
+    detail: netflixJsonLd.error || `graph_nodes=${netflixJsonLd.graph.length}`,
+  });
+  const requiredNetflixSchemaTypes = [
+    'Organization',
+    'WebSite',
+    'CollectionPage',
+    'BreadcrumbList',
+    'ItemList',
+  ];
+  const missingNetflixSchemaTypes = requiredNetflixSchemaTypes.filter(
+    (type) => !netflixJsonLd.graph.some((node) => hasSchemaType(node, type)),
+  );
+  checks.push({
+    name: 'Netflix company preview has the required top-level schema graph',
+    ok: missingNetflixSchemaTypes.length === 0,
+    detail: missingNetflixSchemaTypes.length
+      ? `missing=${missingNetflixSchemaTypes.join(', ')}`
+      : 'all present',
+  });
+  const forbiddenNetflixSchemaTypes = ['FAQPage', 'QAPage', 'JobPosting', 'PracticeProblem'];
+  const presentForbiddenNetflixSchemaTypes = forbiddenNetflixSchemaTypes.filter(
+    (type) => netflixJsonLd.graph.some((node) => hasSchemaType(node, type)),
+  );
+  checks.push({
+    name: 'Netflix company preview avoids unsupported rich-result schema',
+    ok: presentForbiddenNetflixSchemaTypes.length === 0,
+    detail: presentForbiddenNetflixSchemaTypes.length
+      ? `present=${presentForbiddenNetflixSchemaTypes.join(', ')}`
+      : 'none present',
+  });
+
+  const netflixListMatchesVisiblePrompts = NETFLIX_PREVIEW_PROMPTS.every((prompt, index) => {
+    const item = netflixListItems[index];
+    return (
+      item?.position === index + 1 &&
+      item?.name === prompt.title &&
+      item?.url === `${NETFLIX_PREVIEW_CANONICAL}#${prompt.id}`
+    );
+  });
+  checks.push({
+    name: 'Netflix company preview ItemList matches all six visible prompts',
+    ok: netflixListItems.length === 6 && netflixListMatchesVisiblePrompts,
+    detail: `item_count=${netflixListItems.length}`,
+  });
+  checks.push({
+    name: 'Netflix company preview CollectionPage references the top-level ItemList',
+    ok:
+      Boolean(netflixCollectionPage?.mainEntity?.['@id']) &&
+      netflixCollectionPage?.mainEntity?.['@id'] === netflixItemList?.['@id'],
+    detail: `mainEntity=${netflixCollectionPage?.mainEntity?.['@id'] || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Netflix company preview CollectionPage declares free access and current modification date',
+    ok:
+      netflixCollectionPage?.isAccessibleForFree === true &&
+      netflixCollectionPage?.dateModified === '2026-07-27T00:00:00.000Z',
+    detail: `dateModified=${netflixCollectionPage?.dateModified || '(missing)'}`,
+  });
+  const netflixBreadcrumbItems = Array.isArray(netflixBreadcrumbs?.itemListElement)
+    ? netflixBreadcrumbs.itemListElement
+    : [];
+  checks.push({
+    name: 'Netflix company preview BreadcrumbList ends at the canonical page',
+    ok:
+      netflixBreadcrumbItems.length === 3 &&
+      netflixBreadcrumbItems[2]?.name === NETFLIX_PREVIEW_H1 &&
+      netflixBreadcrumbItems[2]?.item === NETFLIX_PREVIEW_CANONICAL,
+    detail: `item_count=${netflixBreadcrumbItems.length}`,
   });
 
   let failed = 0;

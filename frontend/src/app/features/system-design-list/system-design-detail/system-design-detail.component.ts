@@ -41,6 +41,7 @@ import {
 
 type Block =
   | { type: 'text'; text: string }
+  | { type: 'heading'; text: string }
   | { type: 'code'; language?: string; code: string; height?: number }
   | {
     type: 'image';
@@ -125,6 +126,7 @@ type SDQuestion = {
   access?: 'free' | 'premium';
   type?: string;
   author?: string;
+  publishedAt?: string;
   updatedAt?: string;
   difficulty?: string;
   premiumPreview?: PremiumPreviewContent;
@@ -531,6 +533,10 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     return path.startsWith('http') ? path : `assets/${path.replace(/^\/+/, '')}`;
   }
 
+  isExternalLink(href: string): boolean {
+    return /^https?:\/\//i.test(String(href || '').trim());
+  }
+
   /**
    * Set current item by id.
    * If list is loaded and id is unknown → navigate to /404 with the missing URL.
@@ -763,47 +769,25 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     };
   }
 
-  private buildFaqSchema(question: SDQuestion, canonical: string, isLocked: boolean): Record<string, any> | null {
-    const sections = this.sections();
-    const items = sections.slice(0, 6).map((s) => {
-      const baseAnswer = isLocked
-        ? this.sdDescription(question)
-        : (s.content || '').trim();
-      const answerText = this.trimWords(this.normalizePreviewText(baseAnswer || question.description || ''), 36);
-      if (!answerText) return null;
-      return {
-        '@type': 'Question',
-        name: s.title,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: answerText,
-        },
-      };
-    }).filter(Boolean) as Array<Record<string, any>>;
-
-    if (!items.length) return null;
-
-    return {
-      '@type': 'FAQPage',
-      '@id': `${canonical}#faq`,
-      mainEntity: items,
-    };
-  }
-
   private resolveAuthor(_q: SDQuestion): string {
     return PUBLIC_EDITORIAL_FACTS.author.name;
   }
 
-  private resolveUpdatedIso(q: SDQuestion): string | null {
-    const raw = (q as any).updatedAt;
+  private resolveDateIso(raw?: string): string | null {
     if (!raw) return null;
     const d = new Date(raw);
     if (Number.isNaN(d.getTime())) return null;
     return d.toISOString();
   }
 
-  private resolvePublishedIso(dateModified: string | null): string {
-    return dateModified || '2025-01-01T00:00:00.000Z';
+  private resolveUpdatedIso(q: SDQuestion): string | null {
+    return this.resolveDateIso(q.updatedAt);
+  }
+
+  private resolvePublishedIso(q: SDQuestion, dateModified: string | null): string {
+    return this.resolveDateIso(q.publishedAt)
+      || dateModified
+      || '2025-01-01T00:00:00.000Z';
   }
 
   private structuredDataImageUrl(): string {
@@ -829,7 +813,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const description = this.seoDescription(question);
     const keywords = this.sdKeywords(question);
     const dateModified = this.resolveUpdatedIso(question);
-    const datePublished = this.resolvePublishedIso(dateModified);
+    const datePublished = this.resolvePublishedIso(question, dateModified);
     const imageUrl = this.structuredDataImageUrl();
     const accessibleForFree = isContentAccessibleForFree(question.access);
     const robots = robotsForContentAccess(question.access);
@@ -883,8 +867,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     };
 
     const learningResource = this.buildLearningResourceSchema(question, canonical);
-    const faq = accessibleForFree ? this.buildFaqSchema(question, canonical, false) : null;
-    const jsonLd = faq ? [breadcrumb, article, learningResource, faq] : [breadcrumb, article, learningResource];
+    const jsonLd = [breadcrumb, article, learningResource];
 
     this.seo.updateTags({
       title: seoTitle,

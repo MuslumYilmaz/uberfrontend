@@ -1,126 +1,121 @@
 {
-    "key": "R",
-    "title": "Reflect & Requirements",
-    "blocks": [
+  "key": "R",
+  "title": "Requirements and a 60-second answer",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Begin by turning “infinite scroll” from an interaction pattern into a bounded product problem. Confirm what is being browsed, whether results can change while the session is open, how users return to an item, and whether the collection must remain discoverable without JavaScript. The design below assumes a one-way, changing feed with an unknown total, cursor pagination, variable-height rows, and scroll restoration after navigation."
+    },
+    {
+      "type": "heading",
+      "text": "A strong 60-second answer"
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Interview-ready opening",
+      "text": "I would render a server-addressable first page, then ask a data controller for cursor-based pages as an IntersectionObserver sentinel approaches the viewport. The controller admits only one request for a cursor, aborts obsolete work, rejects responses from an older filter generation, and merges results through a stable ID map so retries or overlapping pages cannot create duplicates. The view starts as a normal list and adds windowing only after measurement shows that mounted DOM is the bottleneck. For variable-height rows, the window keeps a measurement cache and a small overscan range. Loading, end, and retry states remain in the list flow; aria-busy and polite status announcements explain changes; a visible Load More control provides keyboard, assistive-technology, and recovery access. Before navigation I save an anchor item and intra-item offset, not just a fragile document pixel. I would verify there are no duplicates or gaps, reject stale responses, restore position, bound the DOM, and measure long tasks on a mid-range device."
+    },
+    {
+      "type": "heading",
+      "text": "Choose the browsing model before the architecture"
+    },
+    {
+      "type": "table",
+      "title": "Infinite scroll, Load More, or pagination",
+      "columns": [
+        "Model",
+        "Best fit",
+        "Main cost",
+        "Decision"
+      ],
+      "rows": [
+        [
+          "Infinite scroll",
+          "Exploratory feeds where the next item is more important than a precise destination",
+          "Weak sense of progress, difficult footer access, and more restoration work",
+          "Use for continuous discovery, but keep an explicit fallback control"
+        ],
+        [
+          "Load More",
+          "Discovery where users benefit from a deliberate pause and a stable footer",
+          "Adds an action between batches",
+          "Often the most accessible default and the fallback for automatic loading"
+        ],
+        [
+          "Pagination",
+          "Search results, audit trails, and collections that need durable page URLs",
+          "Interrupts continuous browsing",
+          "Prefer when position, sharing, crawlability, and back navigation dominate"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Clarify the contract"
+    },
+    {
+      "type": "checklist",
+      "title": "Questions that materially change the design",
+      "items": [
+        "Can items change during the session? Assume yes, so the server supplies deterministic order and an opaque cursor.",
+        "Is the total known or is random access required? Assume an unknown total and forward browsing.",
+        "Are rows fixed height? Assume variable text and media, so measurement and anchor correction are required.",
+        "Should return navigation restore context? Assume yes, by item identity and intra-item offset.",
+        "Must the collection be crawlable without automatic loading? Assume durable pages and visible sequential links."
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "In this first step, the interviewer wants to see if you truly understand the problem before jumping into solutions. Act like someone who thinks with clarity: restate the goal, identify the core challenge, and ask a few smart clarifying questions."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Functional requirements",
+              "items": [
+                "Render a useful first page quickly and reserve media dimensions to prevent layout shifts.",
+                "Load the next cursor near the viewport without issuing duplicate requests.",
+                "Represent initial loading, incremental loading, empty, partial error, retry, and end states.",
+                "Preserve stable order and remove duplicate IDs across overlapping or repeated responses.",
+                "Restore filters, loaded data, focus, and the reading position after navigation."
+              ]
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What you're solving:**\nA scrolling list that keeps loading more items when the user reaches the bottom. You need to make it feel smooth, predictable, and easy to recover from errors."
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer looks for:**\n- You don't rush into coding.\n- You understand the user experience first.\n- You’re aware of performance concerns early.\n- You identify states: loading, success, empty, end, error.\n- You already think about reuse and component boundaries."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Slow down and frame the problem. Show that you understand: \"We need a list that loads progressively and stays smooth even after many items. Let me clarify a few things first.\" This immediately signals senior-level thinking."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "The user flow you should describe",
-            "steps": [
-                {
-                    "title": "1. First load",
-                    "text": "Show skeletons → fetch first items → render them."
-                },
-                {
-                    "title": "2. Scroll near bottom",
-                    "text": "A sentinel triggers a 'load more' action."
-                },
-                {
-                    "title": "3. Append new items",
-                    "text": "Show loading placeholders → fetch → append."
-                },
-                {
-                    "title": "4. End or error",
-                    "text": "\"End of list\" message or an inline retry button."
-                }
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Smart clarifying questions you should ask",
-                            "items": [
-                                "How many items can exist in total?",
-                                "Does the API use page numbers or cursors?",
-                                "Do items have fixed or variable height?",
-                                "Should scroll position be restored?",
-                                "Can items update while the user scrolls?"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "What you should explicitly confirm",
-                            "items": [
-                                "Scrolling should stay smooth at all times.",
-                                "Loading states should not jump the layout.",
-                                "The DOM shouldn't grow endlessly.",
-                                "Accessibility must still work.",
-                                "The component should be reusable with different item UIs."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Key UX goal",
-                    "value": "Smooth scrolling",
-                    "helperText": "Your design must avoid jank while loading new items."
-                },
-                {
-                    "label": "Key performance idea",
-                    "value": "Limit DOM size",
-                    "helperText": "Too many nodes = lag. Plan ahead."
-                },
-                {
-                    "label": "Key FE decision",
-                    "value": "When to virtualize?",
-                    "helperText": "Introduce it only if the list grows very large."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Critical trade-off you should highlight",
-            "text": "If you keep too many items in the DOM, scroll slows down. If you virtualize too aggressively, managing scroll position becomes tricky. Good candidates acknowledge this tension early."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Quality requirements",
+              "items": [
+                "Keep input and scrolling responsive on a representative mid-range device.",
+                "Bound mounted DOM nodes and retained page data for long sessions.",
+                "Support keyboard and screen-reader operation without relying on the sentinel.",
+                "Expose recoverable failures in context instead of replacing successful content.",
+                "Keep important collection content reachable through crawlable URLs and links."
+              ]
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "links",
+      "title": "Requirements references",
+      "items": [
+        {
+          "label": "Google Search: lazy-loaded content",
+          "href": "https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading",
+          "description": "Use Google’s guidance when automatic loading must coexist with discoverable, linkable collection pages."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Requirement boundary",
+      "text": "Do not promise infinite retention, perfect real-time consistency, and constant DOM size at once. State which consistency model the product needs, which historical pages may be evicted, and how users recover content that is no longer mounted."
+    }
+  ]
 }

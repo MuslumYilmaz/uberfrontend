@@ -182,10 +182,10 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     },
     {
       step: 'Step 4',
-      title: 'Practice senior/staff rounds',
-      detail: 'Use premium previews to understand the expected shape of senior frontend system design interview answers.',
-      route: ['/', 'system-design', 'netflix-scale-expansion'],
-      cta: 'Senior frontend system design interview',
+      title: 'Apply the framework to company-scale tradeoffs',
+      detail: 'Practice constrained-device performance, caching, accessibility, and decision tradeoffs before deeper premium breakdowns.',
+      route: ['/', 'companies', 'netflix', 'preview'],
+      cta: 'Netflix frontend interview questions',
     },
   ];
 

@@ -267,6 +267,148 @@ describe('CompanyPreviewComponent', () => {
     expect(hrefs).toContain('/pricing?src=company_preview_google');
   });
 
+  it('publishes exact Netflix metadata and a linked six-item schema graph synchronously', async () => {
+    await createComponent('netflix');
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const itemList = graph.find((entry: any) => entry?.['@type'] === 'ItemList');
+    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+
+    expect(payload.title).toBe('Netflix Frontend Interview Questions: 6 Prompts + Prep Guide');
+    expect(payload.description).toBe(
+      'Prepare for a Netflix frontend interview with 6 representative prompts on JavaScript, React, streaming UI, performance, accessibility, and system design.',
+    );
+    expect(payload.canonical).toBe('/companies/netflix/preview');
+    expect(payload.robots).toBe('index,follow');
+
+    expect(collection?.url).toBe('https://frontendatlas.com/companies/netflix/preview');
+    expect(collection?.headline).toBe('Netflix Frontend Interview Questions');
+    expect(collection?.dateModified).toBe('2026-07-27T00:00:00.000Z');
+    expect(collection?.isAccessibleForFree).toBeTrue();
+    expect(collection?.mainEntity?.['@id']).toBe(
+      'https://frontendatlas.com/companies/netflix/preview#practice-prompts',
+    );
+    expect(collection?.mentions?.length).toBe(8);
+    expect(collection?.disambiguatingDescription).toContain(
+      'not leaked or confirmed Netflix interview questions',
+    );
+
+    expect(itemList?.['@id']).toBe(
+      'https://frontendatlas.com/companies/netflix/preview#practice-prompts',
+    );
+    expect(itemList?.numberOfItems).toBe(6);
+    expect(itemList?.itemListElement?.map((item: any) => item.name)).toEqual([
+      'Implement resilient title search',
+      'Build an accessible Continue Watching row',
+      'Stop personalized rows from re-rendering unnecessarily',
+      'Reason about streaming delivery, caching, and failure states',
+      'Design Continue Watching for regional and device scale',
+      'Defend a consequential frontend decision',
+    ]);
+    expect(itemList?.itemListElement?.[0]?.url).toBe(
+      'https://frontendatlas.com/companies/netflix/preview#resilient-title-search',
+    );
+    expect(itemList?.itemListElement?.[5]?.url).toBe(
+      'https://frontendatlas.com/companies/netflix/preview#consequential-frontend-decision',
+    );
+    expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
+      'FrontendAtlas',
+      'Company Frontend Interview Questions',
+      'Netflix Frontend Interview Questions',
+    ]);
+
+    expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
+    expect(questionService.loadSystemDesign).not.toHaveBeenCalled();
+  });
+
+  it('renders the complete public Netflix guide before its premium CTA without catalog leakage', async () => {
+    const fixture = await createComponent('netflix');
+    const host: HTMLElement = fixture.nativeElement;
+    const text = host.textContent || '';
+
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Netflix Frontend Interview Questions');
+    expect(host.querySelector('.preview-breadcrumb span:last-child')?.textContent?.trim()).toBe(
+      'Netflix Frontend Interview Questions',
+    );
+    expect(text).toContain('Prepare for product judgment, not Netflix trivia');
+    expect(text).toContain('What Netflix publishes—and what you still need to confirm');
+    expect(text).toContain('Three product contexts for practicing transferable frontend judgment');
+    expect(text).toContain('Six Netflix frontend interview practice questions');
+    expect(text).toContain('Scope Continue Watching before drawing architecture boxes');
+    expect(text).toContain('A 7-day Netflix frontend interview preparation plan');
+    expect(text).toContain('Common Netflix frontend interview preparation questions');
+    expect(text).toContain('Sources and evidence limits');
+    expect(text).toContain('Day 7');
+    expect(text).toContain('Deliverable:');
+    expect(text).toContain(
+      'These are representative FrontendAtlas practice prompts, not leaked or confirmed Netflix interview questions. Interview formats vary by role and team, so use recruiter-provided material as the source of truth.',
+    );
+    expect(text).toContain('Are these real Netflix interview questions?');
+
+    const promptIds = [
+      'resilient-title-search',
+      'accessible-continue-watching-row',
+      'personalized-row-rendering',
+      'streaming-caching-failure-states',
+      'continue-watching-system-design',
+      'consequential-frontend-decision',
+    ];
+    for (const id of promptIds) {
+      expect(host.querySelector(`#${id}`)).withContext(`visible prompt #${id}`).not.toBeNull();
+    }
+
+    const freePractice = host.querySelector('#netflix-free-practice')?.closest('section');
+    const sourceNotes = host.querySelector('#netflix-source-notes')?.closest('section');
+    const premiumCta = host.querySelector('#netflix-premium-route')?.closest('section');
+    expect(freePractice).not.toBeNull();
+    expect(sourceNotes).not.toBeNull();
+    expect(premiumCta).not.toBeNull();
+    expect(
+      sourceNotes && premiumCta
+        ? Boolean(sourceNotes.compareDocumentPosition(premiumCta) & Node.DOCUMENT_POSITION_FOLLOWING)
+        : false,
+    ).toBeTrue();
+
+    expect(host.querySelector('fa-question-row')).toBeNull();
+    expect(host.querySelector('code')).toBeNull();
+    expect(text).not.toContain('known questions');
+    expect(text).not.toContain('Curry Function');
+    expect(text).not.toContain('Toast Notification System');
+    expect(host.querySelector('a[href*="/react/coding/react-counter"]')).toBeNull();
+  });
+
+  it('links the Netflix guide only to its selected public resources and labelled official context', async () => {
+    const fixture = await createComponent('netflix');
+    const host: HTMLElement = fixture.nativeElement;
+    const hrefs = Array.from(host.querySelectorAll<HTMLAnchorElement>('a')).map((anchor) =>
+      anchor.getAttribute('href'),
+    );
+    const resourcePaths = [
+      '/javascript/coding/js-debounce',
+      '/javascript/coding/js-take-latest',
+      '/react/trivia/react-prevent-unnecessary-rerenders',
+      '/javascript/trivia/content-delivery-caching-strategies-streaming',
+      '/system-design/infinite-scroll-list',
+      '/system-design/dashboard-widgets-draggable-resizable',
+      '/guides/system-design-blueprint/performance',
+      '/guides/behavioral/stories',
+    ];
+
+    for (const path of resourcePaths) {
+      expect(hrefs).withContext(`public resource ${path}`).toContain(path);
+    }
+
+    expect(hrefs).not.toContain('/system-design/netflix-scale-expansion');
+    expect(hrefs).toContain('https://jobs.netflix.com/careers/engineering');
+    expect(hrefs).toContain('https://jobs.netflix.com/culture');
+    expect(hrefs).toContain('https://jobs.netflix.com/careers/new-grads');
+    expect(hrefs).toContain('/companies');
+    expect(hrefs).toContain('/pricing?src=company_preview_netflix');
+  });
+
   it('frames generic company previews as editorial practice groupings', async () => {
     const fixture = await createComponent('amazon');
     const host: HTMLElement = fixture.nativeElement;

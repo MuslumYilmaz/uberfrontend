@@ -27,6 +27,21 @@ import {
   GOOGLE_PROCESS_NOTE,
   GOOGLE_RESOURCE_LINKS,
 } from './google-preview-content';
+import {
+  NETFLIX_OFFICIAL_SOURCES,
+  NETFLIX_PRACTICE_PROMPTS,
+  NETFLIX_PREP_SEQUENCE,
+  NETFLIX_PREVIEW_CANONICAL_PATH,
+  NETFLIX_PREVIEW_DATE_MODIFIED,
+  NETFLIX_PREVIEW_DESCRIPTION,
+  NETFLIX_PREVIEW_FAQS,
+  NETFLIX_PREVIEW_H1,
+  NETFLIX_PREVIEW_TITLE,
+  NETFLIX_PREVIEW_TRUST_NOTE,
+  NETFLIX_RESOURCE_LINKS,
+  NETFLIX_ROLE_LENSES,
+  NETFLIX_WALKTHROUGH_STEPS,
+} from './netflix-preview-content';
 
 type CompanyPreviewQuestion = {
   id: string;
@@ -211,6 +226,7 @@ export class CompanyPreviewComponent implements OnInit {
   label = '';
   isOpenAiPreview = false;
   isGooglePreview = false;
+  isNetflixPreview = false;
   readonly openAiTitle = OPENAI_PREVIEW_TITLE;
   readonly openAiH1 = OPENAI_PREVIEW_H1;
   readonly openAiTrustNote = OPENAI_TRUST_NOTE;
@@ -224,6 +240,15 @@ export class CompanyPreviewComponent implements OnInit {
   readonly googlePrepSequence = GOOGLE_PREP_SEQUENCE;
   readonly googleFaqs = GOOGLE_PREVIEW_FAQS;
   readonly googleResourceLinks = GOOGLE_RESOURCE_LINKS;
+  readonly netflixH1 = NETFLIX_PREVIEW_H1;
+  readonly netflixTrustNote = NETFLIX_PREVIEW_TRUST_NOTE;
+  readonly netflixRoleLenses = NETFLIX_ROLE_LENSES;
+  readonly netflixPracticePrompts = NETFLIX_PRACTICE_PROMPTS;
+  readonly netflixWalkthroughSteps = NETFLIX_WALKTHROUGH_STEPS;
+  readonly netflixPrepSequence = NETFLIX_PREP_SEQUENCE;
+  readonly netflixFaqs = NETFLIX_PREVIEW_FAQS;
+  readonly netflixResourceLinks = NETFLIX_RESOURCE_LINKS;
+  readonly netflixOfficialSources = NETFLIX_OFFICIAL_SOURCES;
   data$: Observable<CompanyPreviewData> = of({
     counts: { all: 0, coding: 0, trivia: 0, system: 0 },
     samples: [],
@@ -246,6 +271,7 @@ export class CompanyPreviewComponent implements OnInit {
     this.label = this.prettyCompany(this.slug);
     this.isOpenAiPreview = this.slug === 'openai';
     this.isGooglePreview = this.slug === 'google';
+    this.isNetflixPreview = this.slug === 'netflix';
 
     if (this.isOpenAiPreview) {
       this.publishOpenAiSeo();
@@ -254,6 +280,11 @@ export class CompanyPreviewComponent implements OnInit {
 
     if (this.isGooglePreview) {
       this.publishGoogleSeo();
+      return;
+    }
+
+    if (this.isNetflixPreview) {
+      this.publishNetflixSeo();
       return;
     }
 
@@ -496,6 +527,82 @@ export class CompanyPreviewComponent implements OnInit {
       description: GOOGLE_PREVIEW_DESCRIPTION,
       robots: 'index,follow',
       canonical: GOOGLE_PREVIEW_CANONICAL_PATH,
+      jsonLd: [collectionPage, itemList, breadcrumb],
+    });
+  }
+
+  private publishNetflixSeo(): void {
+    const canonicalUrl = this.seo.buildCanonicalUrl(NETFLIX_PREVIEW_CANONICAL_PATH);
+    const itemListId = `${canonicalUrl}#practice-prompts`;
+    const itemList = {
+      '@type': 'ItemList',
+      '@id': itemListId,
+      name: 'Six Netflix frontend interview practice prompts',
+      description: COMPANY_PRACTICE_DISCLAIMER,
+      numberOfItems: NETFLIX_PRACTICE_PROMPTS.length,
+      itemListElement: NETFLIX_PRACTICE_PROMPTS.map((prompt, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: prompt.title,
+        url: `${canonicalUrl}#${prompt.id}`,
+      })),
+    };
+
+    const collectionPage = {
+      '@type': 'CollectionPage',
+      '@id': `${canonicalUrl}#collection`,
+      url: canonicalUrl,
+      name: NETFLIX_PREVIEW_TITLE,
+      headline: NETFLIX_PREVIEW_H1,
+      description: NETFLIX_PREVIEW_DESCRIPTION,
+      disambiguatingDescription: NETFLIX_PREVIEW_TRUST_NOTE,
+      inLanguage: 'en',
+      dateModified: NETFLIX_PREVIEW_DATE_MODIFIED,
+      isAccessibleForFree: true,
+      about: [
+        { '@type': 'Thing', name: 'Netflix frontend interview preparation' },
+        { '@type': 'Thing', name: 'JavaScript and React user interfaces' },
+        { '@type': 'Thing', name: 'Streaming UI performance and accessibility' },
+        { '@type': 'Thing', name: 'Frontend system design' },
+      ],
+      mentions: NETFLIX_RESOURCE_LINKS.map((link) => ({
+        '@type': 'WebPage',
+        name: link.label,
+        url: this.seo.buildCanonicalUrl(link.path),
+      })),
+      mainEntity: { '@id': itemListId },
+    };
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonicalUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Company Frontend Interview Questions',
+          item: this.seo.buildCanonicalUrl('/companies'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: NETFLIX_PREVIEW_H1,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: NETFLIX_PREVIEW_TITLE,
+      description: NETFLIX_PREVIEW_DESCRIPTION,
+      robots: 'index,follow',
+      canonical: NETFLIX_PREVIEW_CANONICAL_PATH,
       jsonLd: [collectionPage, itemList, breadcrumb],
     });
   }

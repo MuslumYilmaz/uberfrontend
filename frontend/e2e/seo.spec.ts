@@ -244,6 +244,12 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   const text = await res.text();
   expect(text).toContain('# FrontendAtlas');
   expect(text).toContain('https://frontendatlas.com/sitemap-index.xml');
+  expect(text).toContain(
+    '[Netflix frontend interview questions](https://frontendatlas.com/companies/netflix/preview)',
+  );
+  expect(text).toContain(
+    'Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);

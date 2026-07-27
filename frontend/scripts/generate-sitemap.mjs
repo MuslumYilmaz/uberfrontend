@@ -17,6 +17,7 @@ const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com').r
 const MAX_URLS = 50000;
 const COMPANY_PREVIEW_LASTMOD_OVERRIDES = new Map([
   ['google', '2026-07-13'],
+  ['netflix', '2026-07-27'],
   ['openai', '2026-07-11'],
 ]);
 

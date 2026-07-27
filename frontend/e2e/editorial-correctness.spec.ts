@@ -27,6 +27,10 @@ const publicCopyCases = [
     expected: 'These free practice pages reinforce the same transferable skills.',
   },
   {
+    path: '/companies/netflix/preview',
+    expected: 'Prepare for product judgment, not Netflix trivia',
+  },
+  {
     path: '/system-design',
     expected: 'Practice the system-design prompts interviewers recognize',
   },

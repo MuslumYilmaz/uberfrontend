@@ -1,162 +1,132 @@
 {
-    "key": "D",
-    "title": "Data model",
-    "blocks": [
+  "key": "D",
+  "title": "Pagination, state, and data correctness",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Model the feed as a state machine, not an items array plus loosely related booleans. The core model needs normalized entities, deterministic order, committed pagination state, active request identity, and separate initial versus incremental failures. This makes impossible combinations harder to represent and gives every async result a clear acceptance rule."
+    },
+    {
+      "type": "heading",
+      "text": "Cursor pagination is the default for a mutable feed"
+    },
+    {
+      "type": "table",
+      "title": "Cursor versus offset pagination",
+      "columns": [
+        "Property",
+        "Cursor",
+        "Offset"
+      ],
+      "rows": [
+        [
+          "Changing data",
+          "Continues after an opaque ordering boundary and better resists insertions ahead of the user",
+          "A new item shifts later offsets and can create duplicates or skipped records"
+        ],
+        [
+          "Random access",
+          "Usually sequential unless the server exposes saved boundaries",
+          "Simple page-number jumps and shareable offsets"
+        ],
+        [
+          "Client contract",
+          "Treat nextCursor as opaque and commit it only with a successful page",
+          "Track page or offset and require a stable sort with a tie-breaker"
+        ],
+        [
+          "Best fit",
+          "Unknown, mutable feeds and timelines",
+          "Mostly stable catalogs, admin tables, and bounded search results"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Ordering invariant",
+      "text": "The server must define deterministic order, such as rankedAt descending with item ID as a tie-breaker. A cursor represents that ordering boundary. The client may deduplicate repeated IDs, but it cannot repair a server contract that produces ambiguous order or silently omits items."
+    },
+    {
+      "type": "heading",
+      "text": "State worth naming in the interview"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "In this step, the interviewer wants to see if you can describe the shape of the data your components work with. You should show that you understand: what an item looks like, how pagination is represented, and which UI states must be part of the model (loading, error, end-of-list, filters, etc.)."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Content and request state",
+              "items": [
+                "Feed identity: feedKey, normalizedFilters, sort, and generation.",
+                "Content: entitiesById, orderedIds, and loadedPages, with each ID appearing once in order.",
+                "Pagination: committed nextCursor and hasMore.",
+                "Request: status, requestedCursor, requestId, and AbortController."
+              ]
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should talk about data:**\n\"I’ll keep the data model simple: one type for each list item, one for pagination/meta info, and one for the list’s UI state. The page can also have filters that affect which items we load.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You keep entities small and focused.\n- You treat loading/error/end-of-list as first-class data.\n- You don’t mix view-only details (like DOM nodes) into the data model.\n- You can explain where each piece of data lives and who owns it."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Name the main types out loud. Keep them simple. Show that you’re modeling the data your components actually need, not designing a full backend schema."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Core entities you should define",
-            "columns": [
-                "Entity",
-                "Fields (example)",
-                "What you say out loud"
-            ],
-            "rows": [
-                [
-                    "ListItem",
-                    "id, title, description, thumbnailUrl, createdAt",
-                    "\"Each row in the list is a `ListItem`: it has an `id` plus whatever fields the UI needs like title, description and maybe an image.\""
-                ],
-                [
-                    "PaginationMeta",
-                    "currentPage, pageSize, hasMore, totalCount?",
-                    "\"`PaginationMeta` tracks where we are: current page, page size, whether there are more items, maybe a total count if the API provides it.\""
-                ],
-                [
-                    "ListUiState",
-                    "items[], status, errorMessage, isInitialLoad, isLoadingMore",
-                    "\"`ListUiState` includes the array of items plus UI flags: `status` (idle/loading/success/error), optional `errorMessage`, and booleans like `isInitialLoad` vs `isLoadingMore`.\""
-                ],
-                [
-                    "Filters (optional)",
-                    "searchQuery, sortBy, selectedTag, etc.",
-                    "\"If the list is filterable, I’d keep a small `Filters` object with things like search query, sort option or selected tag and pass it into the fetch calls.\""
-                ],
-                [
-                    "Cursor (optional alternative)",
-                    "cursorToken, hasMore",
-                    "\"If the API is cursor-based, instead of `currentPage` I’d keep a `cursorToken` from the last response and a `hasMore` flag.\""
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should explicitly name",
-                            "items": [
-                                "A clear type for each list item.",
-                                "A structure that tracks pagination (page or cursor).",
-                                "Flags for `isInitialLoad` and `isLoadingMore`.",
-                                "`hasMore` to know when to stop fetching.",
-                                "An error field for showing inline error messages."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should avoid",
-                            "items": [
-                                "Designing a huge database schema instead of a UI-oriented model.",
-                                "Storing raw DOM elements in state.",
-                                "Hiding loading/error logic in local variables instead of the model.",
-                                "Relying only on implicit states (e.g. `items.length === 0` means loading).",
-                                "Using many separate booleans that are hard to reason about."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "How data changes over time",
-            "steps": [
-                {
-                    "title": "1. Initial load",
-                    "text": "`ListUiState` starts with `items = []`, `status = 'loading'`, `isInitialLoad = true`."
-                },
-                {
-                    "title": "2. First response",
-                    "text": "Items are filled, `PaginationMeta` is updated, `status = 'success'`, `isInitialLoad = false`."
-                },
-                {
-                    "title": "3. Load more",
-                    "text": "When sentinel fires, `isLoadingMore = true`; on success, new items are appended and `hasMore` is updated."
-                },
-                {
-                    "title": "4. Error or end of list",
-                    "text": "On error, `status = 'error'` and `errorMessage` is set. When `hasMore` is false, the model represents that we reached the end."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Must-have entities",
-                    "value": "Item + Pagination + UI state",
-                    "helperText": "These three cover 90% of the interview discussion."
-                },
-                {
-                    "label": "Key idea",
-                    "value": "Model UI states",
-                    "helperText": "Loading, error, and end-of-list are part of the data model."
-                },
-                {
-                    "label": "Good signal",
-                    "value": "Small, composable types",
-                    "helperText": "If you can explain each type in one sentence, you’re on the right track."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A strong frontend data model is not just about the items. It also captures pagination and UI states explicitly, so the rendering logic stays simple and easy to reason about."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Recovery and viewport state",
+              "items": [
+                "Failures: separate initialError, incrementalError, and failedCursor.",
+                "Restoration: anchorItemId, anchorOffsetPx, focusedItemId, and savedRange.",
+                "Windowing: measuredHeights keyed by ID, estimatedHeight, visibleRange, and overscan.",
+                "Every async result carries one immutable generation."
+              ]
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Stable ordering and ID deduplication"
+    },
+    {
+      "type": "steps",
+      "title": "Commit algorithm",
+      "steps": [
+        {
+          "title": "1. Capture request identity",
+          "text": "Before fetching, capture generation, requestedCursor, and a unique requestId. Mark that cursor in flight without changing the committed nextCursor."
+        },
+        {
+          "title": "2. Reject obsolete work",
+          "text": "After resolution, compare the captured generation and requestId with current state. If filters changed, the request was replaced, or cancellation won the race, ignore the response even when the network could not be aborted."
+        },
+        {
+          "title": "3. Merge by stable ID",
+          "text": "For each item, update entitiesById. Append its ID to orderedIds only when that ID has not appeared. Preserve the server page order rather than sorting again using client clocks."
+        },
+        {
+          "title": "4. Commit the page atomically",
+          "text": "Store page membership, clear the matching error, and update nextCursor or hasMore in the same transition. If the server returns the same cursor again, stop and report a contract error instead of looping."
+        },
+        {
+          "title": "5. Preserve retry semantics",
+          "text": "On failure, remove the in-flight marker but retain failedCursor and the committed nextCursor. Retry asks for exactly that cursor, so a transient error cannot skip a page."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Reject stale responses by generation"
+    },
+    {
+      "type": "text",
+      "text": "A filter or sort change creates a new feed generation. Abort active requests as an efficiency measure, clear page and cursor state according to the product’s transition policy, and start the new initial load. The generation comparison remains the correctness mechanism because an abort may arrive after a response, a cache may resolve synchronously, or a transport may ignore AbortSignal. Debouncing input reduces requests but does not prevent stale results; generation-based acceptance does."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Correctness test",
+      "text": "After any sequence of duplicate observer events, failures, retries, filter changes, and out-of-order responses, the visible order must contain no duplicate IDs, no page committed from an old generation, and no cursor advanced without its page."
+    }
+  ]
 }
