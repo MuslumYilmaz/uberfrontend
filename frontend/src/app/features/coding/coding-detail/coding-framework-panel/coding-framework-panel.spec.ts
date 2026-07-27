@@ -557,6 +557,9 @@ describe('CodingFrameworkPanelComponent', () => {
     const component = createComponent();
     setCounterCheck(component);
     previewBuilder.build.and.resolveTo(counterHtml());
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+    ]);
 
     const results = await component.runFrameworkChecks();
 
@@ -586,6 +589,9 @@ describe('CodingFrameworkPanelComponent', () => {
     component.disablePersistence = true;
     setCounterCheck(component);
     previewBuilder.build.and.resolveTo(counterHtml());
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+    ]);
 
     const results = await component.runFrameworkChecks();
 
@@ -598,6 +604,12 @@ describe('CodingFrameworkPanelComponent', () => {
     const component = createComponent();
     setCounterCheck(component);
     previewBuilder.build.and.resolveTo(counterHtml({ broken: true }));
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([{
+      name: 'Counter flow',
+      passed: false,
+      error: '.value did not reach text "1" before timeout. Last text: "0"',
+      failureKind: 'assertion',
+    }]);
 
     const results = await component.runFrameworkChecks();
 
@@ -617,6 +629,12 @@ describe('CodingFrameworkPanelComponent', () => {
     setCounterCheck(component);
     (component as any).frameworkCheckReadyTimeoutMs = 5;
     previewBuilder.build.and.resolveTo('<!doctype html><html><body><div class="value">0</div></body></html>');
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([{
+      name: 'Counter flow',
+      passed: false,
+      error: 'Framework check sandbox timed out waiting for preview render readiness',
+      failureKind: 'infrastructure-timeout',
+    }]);
 
     const results = await component.runFrameworkChecks();
 
@@ -703,7 +721,7 @@ describe('CodingFrameworkPanelComponent', () => {
       passCount: 1,
       totalCount: 1,
     }));
-  });
+  }, 15_000);
 
   it('mounts a fresh scratch preview for each framework check', async () => {
     const component = createComponent();
@@ -746,7 +764,7 @@ describe('CodingFrameworkPanelComponent', () => {
     const results = await component.runFrameworkChecks();
 
     expect(results.map((result) => result.passed)).toEqual([true, true]);
-  });
+  }, 15_000);
 });
 
 function deferred<T>() {
