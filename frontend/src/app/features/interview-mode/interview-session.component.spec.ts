@@ -267,6 +267,7 @@ describe('InterviewSessionComponent', () => {
     }));
     fixture = TestBed.createComponent(InterviewSessionComponent);
     component = fixture.componentInstance;
+    component.editorFallback.set(true);
     fixture.detectChanges();
 
     component.runChecks();
