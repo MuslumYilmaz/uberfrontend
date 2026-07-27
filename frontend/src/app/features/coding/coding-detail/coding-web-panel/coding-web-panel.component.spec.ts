@@ -68,6 +68,9 @@ describe('CodingWebPanelComponent attempt feedback', () => {
   });
 
   it('records a web attempt after DOM tests run', async () => {
+    const runWeb = spyOn<any>((component as any).opaqueCheckRunner, 'runWeb').and.resolveTo([
+      { name: 'renders cta text', passed: true },
+    ]);
     (component as any).htmlCode.set('<button class="cta">Save</button>');
     (component as any).cssCode.set('.cta { display: block; }');
     component.testCode.set(`
@@ -79,6 +82,10 @@ describe('CodingWebPanelComponent attempt feedback', () => {
     const results = await component.runWebTests();
 
     expect(results).toEqual([{ name: 'renders cta text', passed: true }]);
+    expect(runWeb).toHaveBeenCalledWith(
+      jasmine.stringMatching('<button class="cta">Save</button>'),
+      jasmine.stringMatching("test\\('renders cta text'"),
+    );
     expect(attemptInsights.recordRun).toHaveBeenCalledWith(jasmine.objectContaining({
       questionId: 'html-card',
       lang: 'web',
@@ -254,6 +261,12 @@ describe('CodingWebPanelComponent attempt feedback', () => {
   });
 
   it('records failure metadata for failing DOM tests', async () => {
+    spyOn<any>((component as any).opaqueCheckRunner, 'runWeb').and.resolveTo([{
+      name: 'renders cta text',
+      passed: false,
+      error: 'Expected "Cancel" to be "Save"',
+      failureKind: 'assertion',
+    }]);
     (component as any).htmlCode.set('<button class="cta">Cancel</button>');
     (component as any).cssCode.set('.cta { display: block; }');
     component.testCode.set(`
