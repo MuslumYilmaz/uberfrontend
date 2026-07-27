@@ -48,6 +48,38 @@ describe('OpaqueDomCheckRunner', () => {
     expect(frame?.isConnected).toBeFalse();
   });
 
+  it('can install the Angular HttpClient double before framework bootstrap', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body><form class="form"></form><script>
+        class TestObservable {
+          constructor(start) { this.start = start; }
+          subscribe(observer) { return { unsubscribe: this.start(observer) || (() => {}) }; }
+        }
+        class TestHttpClient {}
+        window.__FA_PREPARE_ANGULAR_HTTP_CHECK(TestHttpClient, TestObservable);
+        const client = new TestHttpClient();
+        document.querySelector('.form').addEventListener('submit', event => {
+          event.preventDefault();
+          client.post('/api/contact', { name: 'Ada' }).subscribe({
+            next() {}, error() {}, complete() {}
+          });
+        });
+        window.__FA_NOTIFY_PREVIEW_READY('render-ready');
+      <\/script></body></html>`,
+      [{
+        id: 'pre-bootstrap-http',
+        name: 'Pre-bootstrap HTTP',
+        steps: [
+          { type: 'mockHttp', status: 200, durationMs: 25 },
+          { type: 'submit', selector: '.form' },
+          { type: 'expectHttpRequest', method: 'POST', url: '/api/contact', bodyContains: 'Ada' },
+        ],
+      }] as any,
+    );
+
+    expect(results).toEqual([{ name: 'Pre-bootstrap HTTP', passed: true }]);
+  });
+
   it('awaits async web tests, preserves source order, and clamps serialized errors', async () => {
     const results = await runner.runWeb(
       '<!doctype html><html><body><div class="status">ready</div></body></html>',
@@ -231,6 +263,92 @@ describe('OpaqueDomCheckRunner', () => {
     expect(runFrame).toHaveBeenCalledTimes(2);
     expect(firstOptions.config.invocationId).toBe(secondOptions.config.invocationId);
     expect(firstOptions.config.frameId).not.toBe(secondOptions.config.frameId);
+  });
+
+  it('mocks HTTP before preview boot and verifies request, loading, and success state', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body>
+        <button class="submit" type="button">Send</button>
+        <div class="status"></div>
+        <script>
+          const button = document.querySelector('.submit');
+          const status = document.querySelector('.status');
+          button.addEventListener('click', () => {
+            button.disabled = true;
+            status.textContent = 'Sending';
+            const request = new XMLHttpRequest();
+            request.open('POST', 'https://jsonplaceholder.typicode.com/posts');
+            request.addEventListener('load', () => {
+              status.textContent = 'Sent';
+              button.disabled = false;
+            });
+            request.send(JSON.stringify({ email: 'jane@example.com' }));
+          });
+          setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+        <\/script>
+      </body></html>`,
+      [{
+        id: 'http-lifecycle',
+        name: 'HTTP lifecycle',
+        steps: [
+          { type: 'mockHttp', status: 201, durationMs: 150 },
+          { type: 'click', selector: '.submit' },
+          {
+            type: 'expectHttpRequest',
+            method: 'POST',
+            url: 'https://jsonplaceholder.typicode.com/posts',
+            bodyContains: 'jane@example.com',
+            count: 1,
+          },
+          { type: 'expectDisabled', selector: '.submit', disabled: true },
+          { type: 'expectText', selector: '.status', text: 'Sending' },
+          { type: 'waitForText', selector: '.status', text: 'Sent', timeoutMs: 500 },
+          { type: 'expectDisabled', selector: '.submit', disabled: false },
+        ],
+      }] as any,
+    );
+
+    expect(results).toEqual([{ name: 'HTTP lifecycle', passed: true }]);
+  });
+
+  it('records mocked fetch requests and resolves their configured response', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body>
+        <form class="form"><button class="submit" type="submit">Send</button></form>
+        <div class="status"></div>
+        <script>
+          const form = document.querySelector('.form');
+          const status = document.querySelector('.status');
+          form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+              method: 'POST',
+              body: JSON.stringify({ email: 'jane@example.com' }),
+            });
+            status.textContent = response.ok ? 'Sent' : 'Failed';
+          });
+          setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+        <\/script>
+      </body></html>`,
+      [{
+        id: 'fetch-lifecycle',
+        name: 'Fetch lifecycle',
+        steps: [
+          { type: 'mockHttp', status: 201, durationMs: 50 },
+          { type: 'submit', selector: '.form' },
+          {
+            type: 'expectHttpRequest',
+            method: 'POST',
+            url: 'https://jsonplaceholder.typicode.com/posts',
+            bodyContains: 'jane@example.com',
+            count: 1,
+          },
+          { type: 'waitForText', selector: '.status', text: 'Sent', timeoutMs: 500 },
+        ],
+      }] as any,
+    );
+
+    expect(results).toEqual([{ name: 'Fetch lifecycle', passed: true }]);
   });
 
   it('runs the real React builder with production vendor assets at the assertion layer', async () => {

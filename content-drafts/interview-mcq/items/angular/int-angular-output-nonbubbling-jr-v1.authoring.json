@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-output-nonbubbling-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "component-output-propagation",
+    "prompt": "A `<profile-editor>` inside `<settings-panel>` emits `saveRequested`. The application shell binds `(saveRequested)` on `<settings-panel>`, but its handler does not run. The editor must remain nested, and the shell should receive one explicit component event. Which change fixes the boundary?",
+    "options": [
+      {
+        "id": "choice-9877835aea",
+        "label": "Move the shell listener to a higher ancestor and rely on the editor output to propagate through component boundaries."
+      },
+      {
+        "id": "choice-3b04614739",
+        "label": "Have the panel handle the editor output and emit its own named component output for the application shell to bind."
+      },
+      {
+        "id": "choice-5ffa9d85e5",
+        "label": "Have the panel listen on document and forward a matching native event to the shell component."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-3b04614739",
+    "answerProof": {
+      "summary": "Angular component outputs do not bubble through nested component boundaries, so the intermediate component must explicitly handle and expose the event.",
+      "decisiveConstraints": [
+        "The shell binds to the intermediate component rather than the editor.",
+        "The shell must receive an explicit Angular component event."
+      ],
+      "claims": [
+        {
+          "statement": "Angular custom events emitted through outputs do not bubble through the DOM.",
+          "sourceIds": [
+            "angular22-component-outputs"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-9877835aea",
+        "verdict": "incorrect",
+        "explanation": "Moving the listener farther outward cannot observe an output that stops at the editor's direct component boundary.",
+        "misconceptionTag": "angular-outputs-bubble",
+        "plausibility": "Native DOM events commonly bubble through ancestors.",
+        "falsifyingConstraint": "Angular documentation explicitly states that component outputs do not bubble."
+      },
+      {
+        "optionId": "choice-3b04614739",
+        "verdict": "correct",
+        "explanation": "The panel handles its child's output and deliberately exposes a separate output at the boundary observed by the shell.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-5ffa9d85e5",
+        "verdict": "incorrect",
+        "explanation": "An Angular output is not a document-level native event, so this listener does not repair the component contract.",
+        "misconceptionTag": "output-is-document-event",
+        "plausibility": "Document delegation can observe bubbling native events.",
+        "falsifyingConstraint": "The required communication mechanism is an explicit component output."
+      }
+    ],
+    "remediationTopics": [
+      "Angular outputs",
+      "non-bubbling component events",
+      "component event boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Custom events with outputs",
+        "url": "https://angular.dev/guide/components/outputs",
+        "sourceId": "angular22-component-outputs"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-component-outputs",
+          "title": "Angular: Custom events with outputs",
+          "url": "https://angular.dev/guide/components/outputs",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

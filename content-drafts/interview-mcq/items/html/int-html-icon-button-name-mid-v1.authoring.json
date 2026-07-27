@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-icon-button-name-mid-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "html",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "stateful-icon-control-semantics",
+    "prompt": "An icon-only audio control sends an asynchronous mute request. While pending it must prevent repeat activation; after confirmation its accessible name must state the next action, and the SVG must stay decorative. Which implementation aligns interaction, confirmed state, and naming?",
+    "options": [
+      {
+        "id": "choice-13e7ae0432",
+        "label": "Use a native button, bind `disabled` while pending, derive its `aria-label` from confirmed state, and hide the SVG."
+      },
+      {
+        "id": "choice-2166e15b1c",
+        "label": "Use a native button, set only `aria-disabled` while pending, derive its label from optimistic state, and hide the SVG."
+      },
+      {
+        "id": "choice-1a33c34241",
+        "label": "Use a button-role span, set `aria-disabled` while pending, derive its label from confirmed state, and hide the SVG."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-13e7ae0432",
+    "answerProof": {
+      "summary": "A native disabled button blocks repeat activation with platform behavior, while a label derived from confirmed state announces the valid next action and the SVG remains excluded from the name.",
+      "decisiveConstraints": [
+        "Pending network work must block repeated activation through the native control state.",
+        "The accessible name must follow confirmed rather than speculative audio state.",
+        "The decorative SVG must remain outside the accessible name."
+      ],
+      "claims": [
+        {
+          "statement": "aria-label can provide an accessible name when an element has no suitable visible label, so updating it can keep an icon-only control's action name current.",
+          "sourceIds": [
+            "mdn-aria-label"
+          ]
+        },
+        {
+          "statement": "A native button provides keyboard behavior that a generic element with role button must implement separately.",
+          "sourceIds": [
+            "mdn-button-role"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-13e7ae0432",
+        "verdict": "correct",
+        "explanation": "Native disabled behavior blocks repeat input, confirmed state supplies the valid next action, and the graphic does not duplicate the name.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-2166e15b1c",
+        "verdict": "incorrect",
+        "explanation": "Aria-disabled communicates state but does not prevent activation, and optimistic naming can announce an action that the failed request never established.",
+        "misconceptionTag": "aria-disabled-and-optimism-complete-control-state",
+        "plausibility": "ARIA can expose pending availability, and optimistic state often makes controls feel immediately responsive.",
+        "falsifyingConstraint": "Repeat activation must be blocked and the announced next action must follow confirmed state."
+      },
+      {
+        "optionId": "choice-1a33c34241",
+        "verdict": "incorrect",
+        "explanation": "The role and ARIA state describe the control, but the span still lacks native disabling, focus, and keyboard activation behavior.",
+        "misconceptionTag": "button-role-supplies-keyboard-contract",
+        "plausibility": "The role, state, label, and hidden icon can make the span sound correct to assistive technology.",
+        "falsifyingConstraint": "The interaction contract must block activation and preserve native keyboard behavior without custom emulation."
+      }
+    ],
+    "remediationTopics": [
+      "dynamic accessible names",
+      "native disabled behavior",
+      "confirmed versus optimistic UI state",
+      "decorative SVG"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: aria-label",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-label",
+        "sourceId": "mdn-aria-label"
+      },
+      {
+        "title": "MDN: ARIA button role",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/button_role",
+        "sourceId": "mdn-button-role"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "html-aria-roles",
+        "web-accessibility-make-page-accessible"
+      ],
+      "sources": [
+        {
+          "id": "mdn-aria-label",
+          "title": "MDN: aria-label attribute",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-label",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-button-role",
+          "title": "MDN: ARIA button role",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/button_role",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

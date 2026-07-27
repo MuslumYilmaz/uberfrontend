@@ -34,6 +34,10 @@ ALLOW_MISSING_WEBKIT="${PRE_PUSH_ALLOW_MISSING_WEBKIT:-}"
 if [ -z "$ALLOW_MISSING_WEBKIT" ]; then
   ALLOW_MISSING_WEBKIT="$(git config --bool --get hooks.allowMissingWebkit || true)"
 fi
+# Backend related tests start many independent MongoMemoryServer processes.
+# Keep local high-core machines from exhausting mongod/socket resources while
+# retaining a small amount of parallelism. Override only for deliberate local QA.
+BACKEND_JEST_MAX_WORKERS="${PRE_PUSH_BACKEND_JEST_MAX_WORKERS:-2}"
 
 ZERO_SHA="0000000000000000000000000000000000000000"
 HAVE_REFS=0
@@ -43,7 +47,7 @@ BACKEND_SOURCE_FILES="$(mktemp)"
 BACKEND_TEST_FILES="$(mktemp)"
 BACKEND_NODECHECK_FILES="$(mktemp)"
 trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS" "$BACKEND_SOURCE_FILES" "$BACKEND_TEST_FILES" "$BACKEND_NODECHECK_FILES"' EXIT
-FRONTEND_CHANGE_RE='^(frontend/|cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
+FRONTEND_CHANGE_RE='^(frontend/|content-drafts/interview-mcq/|cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
 BACKEND_CHANGE_RE='^backend/'
 
 # Collect file paths included in refs being pushed.
@@ -143,7 +147,8 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
       [ -z "${file:-}" ] && continue
       backend_source_args+=("${file#backend/}")
     done < "$BACKEND_SOURCE_FILES"
-    if ! npm -C backend test -- --findRelatedTests --passWithNoTests "${backend_source_args[@]}"; then
+    if ! npm -C backend test -- --findRelatedTests --passWithNoTests \
+      --maxWorkers="$BACKEND_JEST_MAX_WORKERS" "${backend_source_args[@]}"; then
       echo "[pre-push] ERROR: Backend related tests failed. Push aborted." >&2
       exit 1
     fi
@@ -157,7 +162,8 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
       [ -z "${file:-}" ] && continue
       backend_test_args+=("${file#backend/}")
     done < "$BACKEND_TEST_FILES"
-    if ! npm -C backend test -- --runTestsByPath "${backend_test_args[@]}"; then
+    if ! npm -C backend test -- --runTestsByPath \
+      --maxWorkers="$BACKEND_JEST_MAX_WORKERS" "${backend_test_args[@]}"; then
       echo "[pre-push] ERROR: Changed backend test files failed. Push aborted." >&2
       exit 1
     fi

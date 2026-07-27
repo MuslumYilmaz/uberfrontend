@@ -1,0 +1,513 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frontendatlas.com/schemas/interview/v2/bank-reviews.schema.json",
+  "title": "FrontendAtlas consolidated interview bank reviews v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "bankId",
+    "bankVersion",
+    "status",
+    "items",
+    "finalApproval"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0.0"
+    },
+    "bankId": {
+      "$ref": "#/$defs/slug"
+    },
+    "bankVersion": {
+      "$ref": "#/$defs/semanticVersion"
+    },
+    "status": {
+      "$ref": "#/$defs/bankStatus"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/itemReview"
+      }
+    },
+    "finalApproval": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/finalApproval"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "editorial-gold",
+              "calibrated-gold"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "technical": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "passed"
+                    }
+                  }
+                },
+                "editorial": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "passed"
+                    }
+                  }
+                },
+                "blind": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "passed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "finalApproval": {
+            "$ref": "#/$defs/finalApproval"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "candidate"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "finalApproval": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "semanticVersion": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "bankStatus": {
+      "enum": [
+        "candidate",
+        "editorial-gold",
+        "calibrated-gold"
+      ]
+    },
+    "itemReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "contentHash",
+        "technical",
+        "editorial",
+        "blind",
+        "waivers"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contentHash": {
+          "$ref": "#/$defs/contentHash"
+        },
+        "technical": {
+          "$ref": "#/$defs/technicalReviewRecord"
+        },
+        "editorial": {
+          "$ref": "#/$defs/editorialReviewRecord"
+        },
+        "blind": {
+          "$ref": "#/$defs/blindReviewRecord"
+        },
+        "waivers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waiver"
+          }
+        }
+      }
+    },
+    "reviewRecordBase": {
+      "type": "object",
+      "required": [
+        "status",
+        "reviewer",
+        "reviewerType",
+        "reviewedAt",
+        "reviewedRevision",
+        "contentHash",
+        "checklistVersion",
+        "notes"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "passed",
+            "failed"
+          ]
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reviewerType": {
+          "enum": [
+            "human",
+            "ai",
+            "ai-assisted"
+          ]
+        },
+        "reviewedAt": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            }
+          ]
+        },
+        "reviewedRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contentHash": {
+          "$ref": "#/$defs/contentHash"
+        },
+        "checklistVersion": {
+          "$ref": "#/$defs/semanticVersion"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "pending"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reviewer": {
+                "type": "null"
+              },
+              "reviewedAt": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reviewer": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reviewedAt": {
+                "type": "string",
+                "format": "date"
+              },
+              "notes": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "notes": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "technicalReviewRecord": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/reviewRecordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "verifiedCorrectOptionId",
+            "rejectedDistractorOptionIds",
+            "verifiedSourceIds"
+          ],
+          "properties": {
+            "verifiedCorrectOptionId": {
+              "$ref": "#/$defs/slug"
+            },
+            "rejectedDistractorOptionIds": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/slug"
+              }
+            },
+            "verifiedSourceIds": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/slug"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "editorialReviewRecord": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/reviewRecordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "originalityConfirmed",
+            "oneBestAnswerConfirmed",
+            "parallelOptionsConfirmed",
+            "clueFlags"
+          ],
+          "properties": {
+            "originalityConfirmed": {
+              "type": "boolean"
+            },
+            "oneBestAnswerConfirmed": {
+              "type": "boolean"
+            },
+            "parallelOptionsConfirmed": {
+              "type": "boolean"
+            },
+            "clueFlags": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "blindReviewRecord": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/reviewRecordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "selectedOptionId",
+            "confidence",
+            "alternativeValidOptionIds",
+            "clueFlags",
+            "assessedLevel",
+            "assessedDifficultyBand"
+          ],
+          "properties": {
+            "selectedOptionId": {
+              "$ref": "#/$defs/slug"
+            },
+            "confidence": {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "alternativeValidOptionIds": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/slug"
+              }
+            },
+            "clueFlags": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assessedLevel": {
+              "enum": [
+                "junior",
+                "mid",
+                "senior"
+              ]
+            },
+            "assessedDifficultyBand": {
+              "enum": [
+                "foundation",
+                "core",
+                "stretch"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "waiver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleId",
+        "reason",
+        "reviewer",
+        "reviewedAt",
+        "revision",
+        "contentHash"
+      ],
+      "properties": {
+        "ruleId": {
+          "$ref": "#/$defs/slug"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 20
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contentHash": {
+          "$ref": "#/$defs/contentHash"
+        }
+      }
+    },
+    "finalApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvedBy",
+        "approvedAt",
+        "bankVersion",
+        "bankContentHash",
+        "notes"
+      ],
+      "properties": {
+        "approvedBy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approvedAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "bankVersion": {
+          "$ref": "#/$defs/semanticVersion"
+        },
+        "bankContentHash": {
+          "$ref": "#/$defs/contentHash"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

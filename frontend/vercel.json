@@ -19,6 +19,14 @@
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
     },
     {
+      "source": "/interview",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/interview/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
       "source": "/tracks/:slug",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
     },
@@ -132,6 +140,8 @@
     { "source": "/billing/:path*", "destination": "/index.html" },
     { "source": "/onboarding", "destination": "/index.html" },
     { "source": "/onboarding/:path*", "destination": "/index.html" },
+    { "source": "/interview", "destination": "/index.html" },
+    { "source": "/interview/:path*", "destination": "/index.html" },
     { "source": "/track/:slug", "destination": "/index.html" },
     { "source": "/tracks/:slug", "destination": "/index.html" },
     { "source": "/companies/:slug", "destination": "/index.html" },

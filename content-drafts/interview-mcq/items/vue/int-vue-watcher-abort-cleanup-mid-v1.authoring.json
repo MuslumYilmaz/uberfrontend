@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-watcher-abort-cleanup-mid-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "watcher-request-cancellation",
+    "prompt": "A component-owned Vue 3.5 watcher fetches suggestions whenever `query` changes. `fetch` accepts an `AbortSignal`; an obsolete request must stop when a new run begins, and the current request must stop when the watcher ends. Which implementation owns both boundaries?",
+    "options": [
+      {
+        "id": "choice-b47b1ca3c5",
+        "label": "Keep one controller outside the watcher; abort and replace it at each run, but register no cleanup when the watcher stops."
+      },
+      {
+        "id": "choice-f73aa5aee8",
+        "label": "Create a controller per run, ignore stale results with a request token, and abort only after the response settles."
+      },
+      {
+        "id": "choice-344f9df631",
+        "label": "Create a controller per run, register its abort synchronously with `onWatcherCleanup`, then fetch with its signal."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-344f9df631",
+    "answerProof": {
+      "summary": "A controller owned by each watcher run can be aborted during invalidation or watcher teardown, and Vue requires `onWatcherCleanup` registration before the async callback crosses an await boundary.",
+      "decisiveConstraints": [
+        "The runtime is Vue 3.5, where `onWatcherCleanup` is available.",
+        "The stale network request should be stopped, not merely ignored after completion.",
+        "The active request must not outlive its component-owned watcher."
+      ],
+      "claims": [
+        {
+          "statement": "Vue runs registered watcher cleanup when a watcher is invalidated or stopped, and `onWatcherCleanup` must be called during synchronous watcher execution.",
+          "sourceIds": [
+            "vue35-watchers-cleanup"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-b47b1ca3c5",
+        "verdict": "incorrect",
+        "explanation": "Replacing the controller cancels superseded runs, but without watcher cleanup the final request can continue after its owner ends.",
+        "misconceptionTag": "rerun-cleanup-also-covers-watcher-stop",
+        "plausibility": "Aborting before each new run correctly handles overlapping query changes.",
+        "falsifyingConstraint": "The current request must also stop when the component-owned watcher ends."
+      },
+      {
+        "optionId": "choice-f73aa5aee8",
+        "verdict": "incorrect",
+        "explanation": "The token can protect state commits, but aborting only after settlement leaves obsolete network work running until completion.",
+        "misconceptionTag": "ignore-stale-result-equals-cancel-request",
+        "plausibility": "A request token prevents an older response from replacing newer suggestions.",
+        "falsifyingConstraint": "Obsolete work must stop when ownership changes, not after the response has already settled."
+      },
+      {
+        "optionId": "choice-344f9df631",
+        "verdict": "correct",
+        "explanation": "Synchronous cleanup registration gives Vue an abort callback before the request starts, covering both rerun invalidation and watcher teardown.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Vue watcher cleanup",
+      "AbortController",
+      "latest-request ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Watchers",
+        "url": "https://vuejs.org/guide/essentials/watchers.html",
+        "sourceId": "vue35-watchers-cleanup"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-watchers-cleanup",
+          "title": "Vue: Watchers",
+          "url": "https://vuejs.org/guide/essentials/watchers.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

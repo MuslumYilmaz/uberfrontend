@@ -1439,7 +1439,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'In timeout wrapper, guard with a settled flag and clear timer on completion.',
         'In abort wrapper, reject immediately if already aborted and remove listeners after settle.',
-        'For composed abort signal, propagate abort when any source aborts.',
+        'For a composed signal, preserve the first abort reason and handle already-aborted inputs.',
       ],
       confidence: 0.91,
     }),

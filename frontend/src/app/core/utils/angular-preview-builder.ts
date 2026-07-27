@@ -273,7 +273,6 @@ function compileTS(src, filename){
 
     // Strip common network APIs inside the sandboxed preview (keep navigator for libs)
     ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
-
     // Prevent native form submission inside sandboxed iframes (no allow-forms),
     // while still allowing frameworks to handle submit events.
     (function(){
@@ -426,6 +425,13 @@ function compileTS(src, filename){
       // ESM Angular deps
       await import('zone.js');
       await import('@angular/compiler');
+      if (typeof window.__FA_PREPARE_ANGULAR_HTTP_CHECK === 'function') {
+        const [{ HttpClient }, { Observable }] = await Promise.all([
+          import('@angular/common/http'),
+          import('rxjs'),
+        ]);
+        window.__FA_PREPARE_ANGULAR_HTTP_CHECK(HttpClient, Observable);
+      }
 
       // Build & import your app entry via Blob URL (no percent-encoded data URLs)
       const mainURL = self.FA_emit('src/main.ts');

@@ -179,6 +179,35 @@ describe('CodingDetailComponent', () => {
     document.body.style.overflow = '';
   });
 
+  it('labels unverified HTML/CSS and framework questions as manual completion', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'html';
+    component.question.set({ id: 'html-card', technology: 'html' } as any);
+    expect(component.submitLabel()).toBe('Mark as complete');
+
+    component.tech = 'react';
+    component.question.set({ id: 'react-manual', technology: 'react', frameworkTests: [] } as any);
+    expect(component.submitLabel()).toBe('Mark as complete');
+
+    component.question.set({
+      id: 'react-checked',
+      technology: 'react',
+      frameworkTests: [{
+        id: 'render',
+        name: 'Render',
+        steps: [{ type: 'expectExists', selector: '.app' }],
+      }],
+    } as any);
+    expect(component.submitLabel()).toBe('Run checks');
+
+    auth.isLoggedIn.and.returnValue(true);
+    component.solved.set(true);
+    component.question.set({ id: 'react-manual', technology: 'react', frameworkTests: [] } as any);
+    expect(component.submitLabel()).toBe('Mark as incomplete');
+  });
+
   it('delegates runTests to the JS panel for JS questions', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

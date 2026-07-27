@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-event-target-currenttarget-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "code-output",
+    "competency": "event-target-and-listener-owner",
+    "prompt": "What does the delegated click handler log, in order, in a standards-compliant browser?",
+    "code": {
+      "language": "javascript",
+      "runtime": "browser",
+      "source": "const list = document.createElement('div');\nconst button = document.createElement('button');\nlist.append(button);\n\nlist.addEventListener('click', (event) => {\n  console.log(event.target.tagName);\n  console.log(event.currentTarget.tagName);\n});\n\nbutton.click();"
+    },
+    "options": [
+      {
+        "id": "choice-a72cdba8d3",
+        "label": "DIV → DIV"
+      },
+      {
+        "id": "choice-7857d2ac10",
+        "label": "BUTTON → BUTTON"
+      },
+      {
+        "id": "choice-30484588aa",
+        "label": "BUTTON → DIV"
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-30484588aa",
+    "answerProof": {
+      "summary": "The button originates the event, while the bubbling listener executes on the containing div.",
+      "decisiveConstraints": [
+        "The click originates on the button.",
+        "The registered listener belongs to the div."
+      ],
+      "claims": [
+        {
+          "statement": "`target` identifies where the event was dispatched, whereas `currentTarget` identifies the element whose handler is running.",
+          "sourceIds": [
+            "mdn-event-target",
+            "mdn-event-currenttarget"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a72cdba8d3",
+        "verdict": "incorrect",
+        "explanation": "The listener owner is the div, but the original clicked target remains the button while the event bubbles.",
+        "misconceptionTag": "bubbling-rewrites-event-target",
+        "plausibility": "Both values are read while the div's listener is executing.",
+        "falsifyingConstraint": "Bubbling does not replace the event's originating target."
+      },
+      {
+        "optionId": "choice-7857d2ac10",
+        "verdict": "incorrect",
+        "explanation": "The button is the target, but it is not the element on which this listener was registered.",
+        "misconceptionTag": "currenttarget-equals-clicked-node",
+        "plausibility": "The event started on the button and carries that node as its target.",
+        "falsifyingConstraint": "The callback is attached to the containing div, making that div currentTarget."
+      },
+      {
+        "optionId": "choice-30484588aa",
+        "verdict": "correct",
+        "explanation": "`target` is the button that was clicked and `currentTarget` is the div handling the bubbled event.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "event-target",
+      "event-currenttarget",
+      "event-delegation"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Event target",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Event/target",
+        "sourceId": "mdn-event-target"
+      },
+      {
+        "title": "MDN: Event currentTarget",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget",
+        "sourceId": "mdn-event-currenttarget"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-event-delegation",
+        "js-event-bubbling-capturing"
+      ],
+      "sources": [
+        {
+          "id": "mdn-event-target",
+          "title": "MDN: Event target property",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Event/target",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-event-currenttarget",
+          "title": "MDN: Event currentTarget property",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    },
+    "verification": {
+      "kind": "browser-console-output",
+      "expectedOutput": [
+        "BUTTON",
+        "DIV"
+      ]
+    }
+  }
+}

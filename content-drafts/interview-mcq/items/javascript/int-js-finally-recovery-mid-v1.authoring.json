@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-finally-recovery-mid-v1",
+  "revision": 4,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "code-output",
+    "competency": "promise-finally-transparency",
+    "prompt": "What does this Promise chain log, in order, in a standards-compliant browser?",
+    "code": {
+      "language": "javascript",
+      "runtime": "browser",
+      "source": "Promise.reject('network')\n  .catch((error) => {\n    console.log(`caught:${error}`);\n    return 'cached';\n  })\n  .finally(() => console.log('cleanup'))\n  .then((value) => console.log(`value:${value}`));"
+    },
+    "options": [
+      {
+        "id": "choice-3274b7aaa9",
+        "label": "caught:network → cleanup → value:cached"
+      },
+      {
+        "id": "choice-d551c98aed",
+        "label": "cleanup → caught:network → value:cached"
+      },
+      {
+        "id": "choice-bdfd4a8be4",
+        "label": "caught:network → cleanup → value:undefined"
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-3274b7aaa9",
+    "answerProof": {
+      "summary": "The catch handler recovers with cached. The following finally callback runs without replacing that fulfillment value, so the final handler receives cached.",
+      "decisiveConstraints": [
+        "The catch handler converts the rejection to the fulfilled value cached.",
+        "The finally callback completes normally and does not replace that value."
+      ],
+      "claims": [
+        {
+          "statement": "A catch handler that returns normally recovers a rejected Promise to fulfillment.",
+          "sourceIds": [
+            "mdn-promise-catch"
+          ]
+        },
+        {
+          "statement": "A finally callback that completes normally passes the chain's prior settlement through unchanged.",
+          "sourceIds": [
+            "mdn-promise-finally"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-3274b7aaa9",
+        "verdict": "correct",
+        "explanation": "Catch logs and recovers first; finally logs cleanup without replacing cached, which reaches the final handler.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d551c98aed",
+        "verdict": "incorrect",
+        "explanation": "The catch handler is earlier in the chain and must settle before the following finally callback can run.",
+        "misconceptionTag": "finally-runs-before-earlier-catch",
+        "plausibility": "Finally is commonly described as cleanup that runs regardless of success or failure.",
+        "falsifyingConstraint": "Promise reactions still execute in their declared chain order."
+      },
+      {
+        "optionId": "choice-bdfd4a8be4",
+        "verdict": "incorrect",
+        "explanation": "The undefined return from the cleanup callback does not replace cached; a normally completed finally is transparent to the prior result.",
+        "misconceptionTag": "finally-replaces-value-with-undefined",
+        "plausibility": "An ordinary then handler with no explicit return fulfills the next link with undefined.",
+        "falsifyingConstraint": "A normally completed finally callback preserves the settlement that entered it."
+      }
+    ],
+    "remediationTopics": [
+      "promise-finally",
+      "promise-chain-values",
+      "thenable adoption in finally"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Promise.prototype.finally()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally",
+        "sourceId": "mdn-promise-finally"
+      },
+      {
+        "title": "MDN: Promise.prototype.catch()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch",
+        "sourceId": "mdn-promise-catch"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-promises-async-await"
+      ],
+      "sources": [
+        {
+          "id": "mdn-promise-catch",
+          "title": "MDN: Promise.prototype.catch()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-promise-finally",
+          "title": "MDN: Promise.prototype.finally()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    },
+    "verification": {
+      "kind": "browser-console-output",
+      "expectedOutput": [
+        "caught:network",
+        "cleanup",
+        "value:cached"
+      ]
+    }
+  }
+}

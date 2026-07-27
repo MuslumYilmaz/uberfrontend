@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnDestroy, OnInit, computed, effect, inject } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
@@ -10,6 +10,8 @@ import { PracticeCatalogEntry } from '../../core/models/practice.model';
 import { PracticeRegistryService } from '../../core/services/practice-registry.service';
 import { AppSidebarDrawerService } from '../../core/services/app-sidebar-drawer.service';
 import { AuthService } from '../../core/services/auth.service';
+import { InterviewService } from '../../core/services/interview.service';
+import { interviewAvailabilityAllowsRole } from '../../core/models/interview.model';
 import { isProActive } from '../../core/utils/entitlements.util';
 
 interface LinkItem {
@@ -53,14 +55,32 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   private readonly bugReport = inject(BugReportService);
   private readonly practiceRegistry = inject(PracticeRegistryService);
   private readonly drawerState = inject(AppSidebarDrawerService);
+  private readonly interviews = inject(InterviewService);
   readonly auth = inject(AuthService);
   readonly isPro = computed(() => isProActive(this.auth.user()));
   readonly drawerOpen = this.drawerState.isOpen;
+  readonly interviewNavVisible = signal(false);
 
   isLink = (i: NavItem): i is LinkItem => i.type === 'link';
   isGroup = (i: NavItem): i is GroupItem => i.type === 'group';
 
   nav: NavItem[] = this.buildNav(this.practiceRegistry.catalogEntries());
+
+  private readonly syncInterviewAccessEffect = effect((onCleanup) => {
+    const user = this.auth.user();
+    this.interviewNavVisible.set(false);
+    if (!user) return;
+
+    const subscription = this.interviews.getAvailability().subscribe({
+      next: (availability) => {
+        this.interviewNavVisible.set(
+          interviewAvailabilityAllowsRole(availability, user.role),
+        );
+      },
+      error: () => this.interviewNavVisible.set(false),
+    });
+    onCleanup(() => subscription.unsubscribe());
+  }, { allowSignalWrites: true });
 
   private readonly syncNavEffect = effect(() => {
     this.nav = this.buildNav(this.practiceRegistry.catalogEntries());
@@ -140,6 +160,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     switch (item.key) {
       case 'dashboard':
         return path === '/dashboard';
+      case 'interview-mode':
+        return path === '/interview' || path.startsWith('/interview/');
       case 'question-library':
         return (path === '/coding' || path.startsWith('/coding/') || isQuestionDetailRoute)
           && view !== 'formats'
@@ -222,15 +244,25 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         label: 'Practice Library',
         icon: 'pi pi-code',
         open: false,
-        children: practiceEntries.map((entry) => ({
-          key: entry.key,
-          type: 'link' as const,
-          label: entry.label,
-          to: entry.route,
-          icon: entry.icon,
-          query: entry.query,
-          badge: entry.badge ?? null,
-        })),
+        children: [
+          ...(this.interviewNavVisible() ? [{
+            key: 'interview-mode',
+            type: 'link' as const,
+            label: 'Timed Mock Interview',
+            to: '/interview',
+            icon: 'pi pi-stopwatch',
+            badge: 'New',
+          }] : []),
+          ...practiceEntries.map((entry) => ({
+            key: entry.key,
+            type: 'link' as const,
+            label: entry.label,
+            to: entry.route,
+            icon: entry.icon,
+            query: entry.query,
+            badge: entry.badge ?? null,
+          })),
+        ],
       },
       {
         type: 'group',

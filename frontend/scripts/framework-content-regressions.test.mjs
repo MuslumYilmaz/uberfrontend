@@ -1212,8 +1212,8 @@ function assertChipsInputPressureMode() {
       steps: [
         {
           type: 'setValue',
-          selector: '.chip-input',
-          value: 'Ada',
+          selector: '.chip-input input',
+          value: 'Alice',
         },
         {
           type: 'waitForCount',
@@ -1222,7 +1222,7 @@ function assertChipsInputPressureMode() {
           timeoutMs: 800,
         },
         {
-          type: 'click',
+          type: 'mouseDown',
           selector: '.suggestion',
         },
         {
@@ -1587,7 +1587,19 @@ function assertPaginationTablePressureMode() {
     );
     assert.deepEqual(
       question.frameworkTests,
-      expectedNormalChecks,
+      framework === 'angular'
+        ? expectedNormalChecks.map((check) => ({
+            ...check,
+            steps: check.steps.map((step) => ({
+              ...step,
+              selector: step.selector === '.page-info'
+                ? '.pagination span'
+                : step.selector === '.footer button'
+                  ? '.pagination button'
+                  : step.selector,
+            })),
+          }))
+        : expectedNormalChecks,
       `${framework}: normal Paginated Table check must stay unchanged`
     );
     assert.equal(

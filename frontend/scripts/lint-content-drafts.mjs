@@ -224,7 +224,7 @@ function expectedFamilyFromPath(filePath) {
 
 function shouldSkip(filePath) {
   const relative = rel(filePath);
-  return relative === README_FILE || TEMPLATE_FILES.has(relative);
+  return path.basename(filePath) === README_FILE || TEMPLATE_FILES.has(relative);
 }
 
 function validateFrontmatter(frontmatter, filePath) {

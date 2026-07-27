@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-effect-connection-cleanup-mid-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "effect-resource-lifecycle",
+    "prompt": "A chat component opens a new server connection in an Effect keyed by `roomId`. A room change must replace the connection, unmount must close it, and development Strict Mode probes setup and cleanup. Which ownership contract covers every boundary?",
+    "options": [
+      {
+        "id": "choice-5afd94a8df",
+        "label": "Disconnect the ref's previous connection at each setup, store the replacement, and return no cleanup from the Effect."
+      },
+      {
+        "id": "choice-74ff89e73a",
+        "label": "Replace a connection ref at each setup, then use a separate mount-only cleanup to disconnect its current value on unmount."
+      },
+      {
+        "id": "choice-cd66552e7f",
+        "label": "Create the connection per Effect run and return cleanup that disconnects that run before replacement or unmount."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-cd66552e7f",
+    "answerProof": {
+      "summary": "An Effect that creates a connection must return cleanup for that same connection, allowing React to stop the previous synchronization before a dependency rerun or unmount.",
+      "decisiveConstraints": [
+        "Each `roomId` requires its own current connection.",
+        "The connection must stop when its Effect run is no longer current."
+      ],
+      "claims": [
+        {
+          "statement": "React runs an Effect cleanup before setup with changed dependencies and after unmount, with an extra development setup-cleanup cycle as a stress test.",
+          "sourceIds": [
+            "react19-use-effect"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-5afd94a8df",
+        "verdict": "incorrect",
+        "explanation": "Closing the previous ref at the next setup handles dependency replacement, but returning no cleanup leaves the latest connection open on unmount.",
+        "misconceptionTag": "next-setup-covers-unmount-cleanup",
+        "plausibility": "Each room change explicitly closes the connection from the preceding setup before creating its replacement.",
+        "falsifyingConstraint": "The current connection must also close when no later setup occurs before unmount."
+      },
+      {
+        "optionId": "choice-74ff89e73a",
+        "verdict": "incorrect",
+        "explanation": "Replacing the ref loses ownership of earlier room connections, while the mount-only cleanup closes only whichever resource the ref holds at unmount.",
+        "misconceptionTag": "current-ref-cleanup-covers-replaced-resource",
+        "plausibility": "A ref can retain the latest connection across renders and gives unmount cleanup one stable place to find it.",
+        "falsifyingConstraint": "Each dependency replacement must close the connection created by the previous Effect run."
+      },
+      {
+        "optionId": "choice-cd66552e7f",
+        "verdict": "correct",
+        "explanation": "Cleanup closes the resource owned by that run, so React can replace or remove the run without leaving its connection alive.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "React Effect cleanup",
+      "external resource ownership",
+      "Strict Mode Effect checks"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useEffect",
+        "url": "https://react.dev/reference/react/useEffect",
+        "sourceId": "react19-use-effect"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-effect",
+          "title": "React: useEffect",
+          "url": "https://react.dev/reference/react/useEffect",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

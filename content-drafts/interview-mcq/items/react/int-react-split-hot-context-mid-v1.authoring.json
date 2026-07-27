@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-split-hot-context-mid-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "context-update-boundaries",
+    "prompt": "Within one route, `RouteContext` serves a `ThemePreview` that reads only `theme` and a `PointerReadout` that reads only coordinates updated on every move. Profiling shows the preview rerendering for coordinate changes. Context must remain the distribution mechanism. Which local refactor isolates the hot updates?",
+    "options": [
+      {
+        "id": "choice-7a2b3874ec",
+        "label": "Memoize one combined `{ theme, pointer }` value with both fields in the provider's dependencies."
+      },
+      {
+        "id": "choice-1018f6ace1",
+        "label": "Provide `theme` and `pointer` through separate route contexts and subscribe each consumer to its field."
+      },
+      {
+        "id": "choice-e488bfa860",
+        "label": "Wrap `ThemePreview` in `memo` while keeping its subscription to the combined route context."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-1018f6ace1",
+    "answerProof": {
+      "summary": "Two route-local contexts align provider propagation with the two subscription needs, so coordinate changes do not publish a new value to the theme-only consumer.",
+      "decisiveConstraints": [
+        "The route has one theme-only consumer and one coordinate-only consumer.",
+        "The coordinate provider changes at pointer frequency while the theme provider rarely changes.",
+        "Context remains the required distribution mechanism."
+      ],
+      "claims": [
+        {
+          "statement": "React rerenders consumers when their context provider receives a different value, and memoization of the consumer does not block fresh context values.",
+          "sourceIds": [
+            "react19-use-context"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-7a2b3874ec",
+        "verdict": "incorrect",
+        "explanation": "The combined object still changes identity whenever coordinates change, so both consumers subscribed to that provider receive the update.",
+        "misconceptionTag": "usememo-freezes-changing-context",
+        "plausibility": "Memoizing a provider object avoids updates caused only by an unrelated parent render.",
+        "falsifyingConstraint": "One declared dependency changes on every pointer movement."
+      },
+      {
+        "optionId": "choice-1018f6ace1",
+        "verdict": "correct",
+        "explanation": "Each route provider now changes at its own cadence, and each consumer subscribes only to the update domain it reads.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-e488bfa860",
+        "verdict": "incorrect",
+        "explanation": "A component that reads a changed context value rerenders even when `memo` can otherwise skip parent-driven renders with equal props.",
+        "misconceptionTag": "memo-blocks-context-updates",
+        "plausibility": "Memo can skip a child render when only its parent rerenders and its props remain equal.",
+        "falsifyingConstraint": "These components directly subscribe to the changing combined context."
+      }
+    ],
+    "remediationTopics": [
+      "React context propagation",
+      "provider value identity",
+      "subscription boundaries",
+      "route-local update isolation"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useContext",
+        "url": "https://react.dev/reference/react/useContext",
+        "sourceId": "react19-use-context"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-context",
+          "title": "React: useContext",
+          "url": "https://react.dev/reference/react/useContext",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

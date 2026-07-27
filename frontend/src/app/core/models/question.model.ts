@@ -89,6 +89,7 @@ export type FrameworkTestStepType =
   | 'expectNoText'
   | 'expectDisabled'
   | 'click'
+  | 'submit'
   | 'mouseDown'
   | 'pointerDown'
   | 'wait'
@@ -100,6 +101,8 @@ export type FrameworkTestStepType =
   | 'waitForCount'
   | 'expectAttribute'
   | 'expectClass'
+  | 'mockHttp'
+  | 'expectHttpRequest'
   | 'key'
   | 'unmountPreview'
   | 'expectNoPreviewTimers'
@@ -120,6 +123,11 @@ export type FrameworkTestStep = {
   count?: number;
   attribute?: string;
   className?: string;
+  url?: string;
+  method?: string;
+  status?: number;
+  error?: string;
+  bodyContains?: string;
   expected?: string | boolean | number;
 };
 

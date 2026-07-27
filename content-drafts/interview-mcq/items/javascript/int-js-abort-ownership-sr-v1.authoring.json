@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-abort-ownership-sr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "abortable-request-ownership",
+    "prompt": "Two autocomplete widgets can be mounted together, and each accepts overlapping queries through an endpoint that honors `AbortSignal`. A new query must cancel only that widget's prior request; stale settlements must not write results, loading, or errors; expected cancellation stays silent. Which ownership policy spans both instance and request lifetimes?",
+    "options": [
+      {
+        "id": "choice-00d2a7af26",
+        "label": "Share one controller across widgets; cancel it on any query, gate callbacks by a global run token, and silence `AbortError`."
+      },
+      {
+        "id": "choice-0f12eaa15e",
+        "label": "Store a controller per widget; cancel its predecessor, gate every settlement by that run's identity, and silence `AbortError`."
+      },
+      {
+        "id": "choice-a5e40234a1",
+        "label": "Store a controller per widget; cancel its predecessor, gate result and error writes, but let every run's `finally` clear loading."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-0f12eaa15e",
+    "answerProof": {
+      "summary": "Each widget owns its controller slot, while each run captures its own identity. Replacing one widget's owner aborts only its predecessor, guarded settlements cannot mutate from stale runs, and AbortError is handled as expected cancellation.",
+      "decisiveConstraints": [
+        "Cancellation in one mounted widget must not invalidate another widget's current request.",
+        "Every success, failure, and loading settlement must retain run-level write authority.",
+        "Cleanup from an older run must not act through a pointer to its newer successor.",
+        "Expected AbortError cancellation is not a user-visible error."
+      ],
+      "claims": [
+        {
+          "statement": "AbortController can stop fetch through its signal; an aborted signal is one-use, and a default abort rejects the operation with AbortError.",
+          "sourceIds": [
+            "mdn-abortcontroller",
+            "mdn-abortsignal"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-00d2a7af26",
+        "verdict": "incorrect",
+        "explanation": "A module-wide controller and generation couple independent widgets, so a query in one can cancel or invalidate the other's current owner.",
+        "misconceptionTag": "global-request-owner-preserves-instance-isolation",
+        "plausibility": "One global generation can enforce a simple latest-request rule across all callbacks.",
+        "falsifyingConstraint": "Latest ownership is scoped independently to each mounted widget."
+      },
+      {
+        "optionId": "choice-0f12eaa15e",
+        "verdict": "correct",
+        "explanation": "Per-widget storage isolates instances; the captured run identity guards every write, and cancellation stops only the superseded local request.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-a5e40234a1",
+        "verdict": "incorrect",
+        "explanation": "An obsolete run cannot replace results or errors, but its unguarded finally can clear the loading state owned by a newer request.",
+        "misconceptionTag": "stale-finally-write-is-harmless",
+        "plausibility": "Success and failure writes are the most visible stale-settlement risks and are already gated.",
+        "falsifyingConstraint": "Loading settlement must retain the same run-level write authority as results and errors."
+      }
+    ],
+    "remediationTopics": [
+      "abortcontroller",
+      "request-cancellation",
+      "latest-request-ownership",
+      "cross-instance isolation"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: AbortController",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+        "sourceId": "mdn-abortcontroller"
+      },
+      {
+        "title": "MDN: AbortSignal",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal",
+        "sourceId": "mdn-abortsignal"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-async-race-conditions"
+      ],
+      "sources": [
+        {
+          "id": "mdn-abortcontroller",
+          "title": "MDN: AbortController",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-abortsignal",
+          "title": "MDN: AbortSignal",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

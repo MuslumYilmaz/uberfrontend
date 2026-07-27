@@ -1,0 +1,251 @@
+{
+  "schemaVersion": "2.0.0",
+  "manifestId": "frontend-interview-bank-v1",
+  "bankId": "frontend-interview-gold-bank",
+  "bankVersion": "1.0.0",
+  "status": "editorial-gold",
+  "language": "en",
+  "blueprintId": "frontend-interview-bank-v1",
+  "itemRefs": [
+    {
+      "id": "int-angular-async-pipe-mid-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-angular-binding-direction-jr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-angular-hydration-dom-mismatch-sr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-angular-output-nonbubbling-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-onpush-reference-sr-v1",
+      "revision": 4
+    },
+    {
+      "id": "int-angular-provider-scope-jr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-angular-reactive-form-guard-jr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-angular-ssr-platform-service-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-switchmap-search-mid-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-angular-tosignal-lifetime-mid-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-angular-viewchild-chart-lifecycle-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-zoneless-view-notification-sr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-css-box-sizing-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-css-flex-min-width-jr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-css-image-intrinsic-ratio-sr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-css-responsive-grid-overflow-mid-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-css-stacking-context-mid-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-css-user-preferences-containment-sr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-html-defer-order-mid-v1",
+      "revision": 4
+    },
+    {
+      "id": "int-html-dialog-focus-contract-sr-v1",
+      "revision": 4
+    },
+    {
+      "id": "int-html-icon-button-name-mid-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-html-label-submit-jr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-html-native-button-jr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-html-valid-navigation-ssr-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-abort-ownership-sr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-js-async-return-rejection-sr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-js-event-target-currenttarget-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-finally-recovery-mid-v1",
+      "revision": 4
+    },
+    {
+      "id": "int-js-finally-throws-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-listener-cleanup-mid-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-js-dataset-boolean-jr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-js-nested-microtask-mid-v1",
+      "revision": 4
+    },
+    {
+      "id": "int-js-nullish-default-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-observer-lifecycle-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-task-order-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-worker-long-task-sr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-react-controlled-input-jr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-react-derived-filter-mid-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-react-effect-connection-cleanup-mid-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-react-functional-queue-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-ssr-multiroot-useid-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-immutable-object-state-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-lift-shared-state-jr-v1",
+      "revision": 8
+    },
+    {
+      "id": "int-react-profile-stable-props-sr-v1",
+      "revision": 4
+    },
+    {
+      "id": "int-react-split-hot-context-mid-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-react-stable-list-key-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-stale-search-sr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-react-transition-input-priority-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-composable-lifecycle-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-computed-watch-mid-v1",
+      "revision": 6
+    },
+    {
+      "id": "int-vue-custom-input-model-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-keepalive-active-socket-sr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-vue-pinia-request-scope-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-prop-event-ownership-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-prop-watch-getter-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-ref-primitive-jr-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-vue-multiroot-fallthrough-attrs-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-stable-row-props-sr-v1",
+      "revision": 3
+    },
+    {
+      "id": "int-vue-timezone-hydration-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-watcher-abort-cleanup-mid-v1",
+      "revision": 2
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "2.0.0",
+  "policyId": "interview-source-policy-v1",
+  "requireHttps": true,
+  "minimumOfficialTechnicalSourcesPerItem": 1,
+  "allowedRoles": [
+    "technical-verification",
+    "format-inspiration"
+  ],
+  "allowedLicenseIds": [
+    "BSD-3-Clause",
+    "CC-BY-3.0",
+    "CC-BY-4.0",
+    "CC-BY-SA-2.5",
+    "CC-BY-SA-3.0",
+    "CC-BY-SA-4.0",
+    "CC0-1.0",
+    "MIT",
+    "W3C-20150513"
+  ],
+  "officialDomains": [
+    {
+      "hostname": "developer.mozilla.org",
+      "sourceClass": "web-platform",
+      "freshnessDays": 365,
+      "licenseRules": [
+        {
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license"
+        }
+      ]
+    },
+    {
+      "hostname": "react.dev",
+      "sourceClass": "framework",
+      "freshnessDays": 180,
+      "licenseRules": [
+        {
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md"
+        }
+      ]
+    },
+    {
+      "hostname": "angular.dev",
+      "sourceClass": "framework",
+      "freshnessDays": 180,
+      "licenseRules": [
+        {
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license"
+        }
+      ]
+    },
+    {
+      "hostname": "v17.angular.io",
+      "sourceClass": "framework",
+      "freshnessDays": 180,
+      "licenseRules": [
+        {
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license"
+        }
+      ]
+    },
+    {
+      "hostname": "vuejs.org",
+      "sourceClass": "framework",
+      "freshnessDays": 180,
+      "licenseRules": [
+        {
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE"
+        }
+      ]
+    }
+  ],
+  "unofficialSourceRules": {
+    "allowedRole": "format-inspiration",
+    "mustDeclareOfficial": false,
+    "copiedText": false
+  }
+}

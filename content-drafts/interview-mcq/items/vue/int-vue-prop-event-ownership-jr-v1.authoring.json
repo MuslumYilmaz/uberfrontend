@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-prop-event-ownership-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "component-state-ownership",
+    "prompt": "A Vue 3.5 cart row receives a `line` object as a prop. The parent owns the cart and recalculates totals when quantities change. Without adding a shared store, how should the child request a new quantity?",
+    "options": [
+      {
+        "id": "choice-4b11c85646",
+        "label": "Emit a quantity-change event with the next quantity value, then let the parent update the cart line it owns."
+      },
+      {
+        "id": "choice-55b8024762",
+        "label": "Mutate the cart line object's quantity inside the child, then let that nested prop change flow to the parent."
+      },
+      {
+        "id": "choice-cf40c32b71",
+        "label": "Copy the prop's quantity into a child ref once, then edit that ref without notifying the parent component."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-4b11c85646",
+    "answerProof": {
+      "summary": "The child should describe the requested change with an event while the parent remains the single owner that mutates the cart state and derives totals.",
+      "decisiveConstraints": [
+        "The parent owns the cart state and total calculation.",
+        "No shared store is being introduced."
+      ],
+      "claims": [
+        {
+          "statement": "Vue props form a one-way-down binding, and a child should usually emit an event instead of mutating an object prop's nested state.",
+          "sourceIds": [
+            "vue35-props",
+            "vue35-component-events"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-4b11c85646",
+        "verdict": "correct",
+        "explanation": "An emitted request preserves one-way data flow: the parent applies the change to its cart and recalculates from the authoritative state.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-55b8024762",
+        "verdict": "incorrect",
+        "explanation": "Vue cannot prevent every nested object mutation, but doing it in the child changes parent-owned state through an implicit path.",
+        "misconceptionTag": "nested-props-are-child-owned",
+        "plausibility": "The nested assignment can appear to update the rendered cart because both components reference the same object.",
+        "falsifyingConstraint": "The prompt makes the parent the explicit owner responsible for applying quantity changes."
+      },
+      {
+        "optionId": "choice-cf40c32b71",
+        "verdict": "incorrect",
+        "explanation": "A one-time local copy is disconnected from later parent updates and does not tell the parent to recalculate its cart totals.",
+        "misconceptionTag": "local-copy-preserves-two-way-sync",
+        "plausibility": "A local ref gives the child a writable value without directly assigning to a readonly prop binding.",
+        "falsifyingConstraint": "The parent must receive each requested quantity so its authoritative cart and totals change."
+      }
+    ],
+    "remediationTopics": [
+      "Vue one-way data flow",
+      "component events",
+      "state ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Props",
+        "url": "https://vuejs.org/guide/components/props.html",
+        "sourceId": "vue35-props"
+      },
+      {
+        "title": "Vue: Component Events",
+        "url": "https://vuejs.org/guide/components/events.html",
+        "sourceId": "vue35-component-events"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-props",
+          "title": "Vue: Props",
+          "url": "https://vuejs.org/guide/components/props.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "vue35-component-events",
+          "title": "Vue: Component Events",
+          "url": "https://vuejs.org/guide/components/events.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

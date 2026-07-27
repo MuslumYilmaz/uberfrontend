@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-listener-cleanup-mid-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "event-listener-identity-cleanup",
+    "prompt": "A panel registers a resize listener with an inline arrow and `{ capture: true }`, then removes a new inline arrow without specifying capture. Repeated mounts leave old callbacks active. Which cleanup fixes both matching boundaries without removing other components' listeners?",
+    "options": [
+      {
+        "id": "choice-a69e33471f",
+        "label": "Store one `onResize` function, add it with capture true, then remove that function with capture false."
+      },
+      {
+        "id": "choice-56f121d348",
+        "label": "Keep capture true in both calls, but create a fresh `onResize` arrow when the panel unmounts."
+      },
+      {
+        "id": "choice-e4a78142c6",
+        "label": "Store one `onResize` function and pass it with capture true to both the add and remove calls."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-e4a78142c6",
+    "answerProof": {
+      "summary": "Listener removal must match both the registered callback object and its capture value; fixing only one boundary leaves the registration active.",
+      "decisiveConstraints": [
+        "Only this panel's listener may be removed.",
+        "The removal callback must match the registered callback object.",
+        "The removal capture value must match the registration."
+      ],
+      "claims": [
+        {
+          "statement": "removeEventListener needs a matching listener reference and capture value to remove a registered event listener.",
+          "sourceIds": [
+            "mdn-removeeventlistener"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a69e33471f",
+        "verdict": "incorrect",
+        "explanation": "The function identity matches, but the capture value does not, so this removal does not match the registered listener.",
+        "misconceptionTag": "callback-identity-alone-matches-listener",
+        "plausibility": "Reusing the stored function fixes the most visible difference between the two calls.",
+        "falsifyingConstraint": "Removal must also use the capture value from registration."
+      },
+      {
+        "optionId": "choice-56f121d348",
+        "verdict": "incorrect",
+        "explanation": "The capture value matches, but the fresh arrow is a different function object and cannot remove the original listener.",
+        "misconceptionTag": "equivalent-function-source-matches-listener",
+        "plausibility": "Both arrows call the same layout operation and both registrations use capture true.",
+        "falsifyingConstraint": "Removal must receive the exact callback object used during registration."
+      },
+      {
+        "optionId": "choice-e4a78142c6",
+        "verdict": "correct",
+        "explanation": "The stored callback and matching capture value identify exactly the registration owned by this panel.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "event-listener-identity",
+      "lifecycle-cleanup",
+      "callback-references",
+      "capture matching"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: EventTarget.removeEventListener()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener",
+        "sourceId": "mdn-removeeventlistener"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-memory-leaks-common-sources",
+        "js-event-delegation"
+      ],
+      "sources": [
+        {
+          "id": "mdn-removeeventlistener",
+          "title": "MDN: EventTarget.removeEventListener()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

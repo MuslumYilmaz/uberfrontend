@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "2.0.0",
+  "blueprintId": "frontend-interview-bank-v1",
+  "bankId": "frontend-interview-gold-bank",
+  "questionCount": 60,
+  "distributions": {
+    "level": {
+      "junior": 20,
+      "mid": 20,
+      "senior": 20
+    },
+    "technology": {
+      "javascript": 12,
+      "html": 6,
+      "css": 6,
+      "react": 12,
+      "angular": 12,
+      "vue": 12
+    },
+    "technologyByLevel": {
+      "junior": {
+        "javascript": 4,
+        "html": 2,
+        "css": 2,
+        "react": 4,
+        "angular": 4,
+        "vue": 4
+      },
+      "mid": {
+        "javascript": 4,
+        "html": 2,
+        "css": 2,
+        "react": 4,
+        "angular": 4,
+        "vue": 4
+      },
+      "senior": {
+        "javascript": 4,
+        "html": 2,
+        "css": 2,
+        "react": 4,
+        "angular": 4,
+        "vue": 4
+      }
+    },
+    "difficultyBandByLevel": {
+      "junior": {
+        "foundation": 5,
+        "core": 10,
+        "stretch": 5
+      },
+      "mid": {
+        "foundation": 5,
+        "core": 10,
+        "stretch": 5
+      },
+      "senior": {
+        "foundation": 5,
+        "core": 10,
+        "stretch": 5
+      }
+    },
+    "formatByLevel": {
+      "junior": {
+        "conceptual": 11,
+        "code-output": 2,
+        "production-scenario": 7
+      },
+      "mid": {
+        "conceptual": 8,
+        "code-output": 2,
+        "production-scenario": 10
+      },
+      "senior": {
+        "conceptual": 5,
+        "code-output": 2,
+        "production-scenario": 13
+      }
+    },
+    "correctOptionPosition": {
+      "first": 20,
+      "second": 20,
+      "third": 20
+    }
+  },
+  "competencyConstraint": {
+    "distinctByTechnology": {
+      "javascript": 12,
+      "html": 6,
+      "css": 6,
+      "react": 12,
+      "angular": 12,
+      "vue": 12
+    }
+  },
+  "selectionPolicy": {
+    "sessionQuestionCount": 5,
+    "coreQuestionsPerSession": 3,
+    "frameworkQuestionsPerSession": 2,
+    "coreTechnologies": [
+      "javascript",
+      "html",
+      "css"
+    ],
+    "frameworkTechnologies": [
+      "react",
+      "angular",
+      "vue"
+    ],
+    "eligiblePoolPerLevel": {
+      "core": 8,
+      "selectedFramework": 4,
+      "total": 12
+    }
+  },
+  "codeOutputConstraint": {
+    "count": 6,
+    "technology": "javascript",
+    "codeLanguage": "javascript",
+    "runtime": "browser",
+    "verificationKind": "browser-console-output"
+  }
+}

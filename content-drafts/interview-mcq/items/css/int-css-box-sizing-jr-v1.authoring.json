@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-box-sizing-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "css",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "content-box-size-calculation",
+    "prompt": "A card has `width: 200px; padding: 20px; border: 2px solid; box-sizing: content-box`. Ignoring margins, what is its rendered outer width and why?",
+    "options": [
+      {
+        "id": "choice-85a71956d5",
+        "label": "`244px`; the width covers content, then 40px of horizontal padding and 4px of borders are added."
+      },
+      {
+        "id": "choice-5bbcbe8518",
+        "label": "`200px`; the declared width already includes content, padding, and borders under content-box."
+      },
+      {
+        "id": "choice-338e1c235e",
+        "label": "`240px`; horizontal padding is added to width, while borders do not affect the outer size."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-85a71956d5",
+    "answerProof": {
+      "summary": "With content-box, width sizes the content box; both sides of padding and border expand the rendered border box to 244 pixels.",
+      "decisiveConstraints": [
+        "The element explicitly uses content-box.",
+        "Padding and border apply on both horizontal sides.",
+        "Margins are excluded."
+      ],
+      "claims": [
+        {
+          "statement": "Under content-box, declared width applies to content and padding plus border are added to obtain the outer size.",
+          "sourceIds": [
+            "mdn-box-sizing"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-85a71956d5",
+        "verdict": "correct",
+        "explanation": "The calculation is 200 + 20 + 20 + 2 + 2, producing a 244px border box.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-5bbcbe8518",
+        "verdict": "incorrect",
+        "explanation": "That result describes border-box sizing, not the content-box value specified in the prompt.",
+        "misconceptionTag": "content-box-includes-padding-border",
+        "plausibility": "Many applications globally switch every element to border-box.",
+        "falsifyingConstraint": "This card explicitly overrides the sizing model to content-box."
+      },
+      {
+        "optionId": "choice-338e1c235e",
+        "verdict": "incorrect",
+        "explanation": "Content-box adds both border widths as well as padding to the outer border-box width.",
+        "misconceptionTag": "border-does-not-affect-box-size",
+        "plausibility": "The two 20px padding values are the largest visible additions.",
+        "falsifyingConstraint": "The requested outer width includes the border box."
+      }
+    ],
+    "remediationTopics": [
+      "box-sizing",
+      "content-box",
+      "css-box-model"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: box-sizing",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-sizing",
+        "sourceId": "mdn-box-sizing"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "css-box-model"
+      ],
+      "sources": [
+        {
+          "id": "mdn-box-sizing",
+          "title": "MDN: box-sizing",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-sizing",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-reactive-form-guard-jr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "reactive-form-validation-boundary",
+    "prompt": "A reactive signup form already guards its submit method when the form is invalid. Which email-control configuration makes both an empty value and a malformed email invalid?",
+    "code": {
+      "language": "typescript",
+      "runtime": "angular-17",
+      "source": "form = new FormGroup({\n  email: new FormControl('')\n});\n\nsubmit() {\n  if (this.form.invalid) return;\n  this.api.createAccount(this.form.value).subscribe();\n}"
+    },
+    "options": [
+      {
+        "id": "choice-8572038f39",
+        "label": "Pair `Validators.required` with `Validators.email` on that control."
+      },
+      {
+        "id": "choice-7fff8ac45f",
+        "label": "Pair `Validators.required` with `Validators.minLength(1)` on that control."
+      },
+      {
+        "id": "choice-49fb315741",
+        "label": "Pair `Validators.email` with `Validators.maxLength(254)` on that control."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-8572038f39",
+    "answerProof": {
+      "summary": "Required rejects an empty value, while email checks the syntax of a non-empty value; together they make both cases invalid in the reactive form model.",
+      "decisiveConstraints": [
+        "An empty email must make the control invalid.",
+        "A non-empty malformed email must make the control invalid."
+      ],
+      "claims": [
+        {
+          "statement": "Reactive-form validators are configured on controls; composing required with email covers both the empty-value and email-format failures in the control status.",
+          "sourceIds": [
+            "angular17-form-validation"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-8572038f39",
+        "verdict": "correct",
+        "explanation": "Required covers the empty case and email covers malformed non-empty values, so the existing form-invalid guard can rely on the control status.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-7fff8ac45f",
+        "verdict": "incorrect",
+        "explanation": "Required and a minimum length of one both reject emptiness, but neither validates the syntax of a non-empty email.",
+        "misconceptionTag": "presence-rules-imply-email-syntax",
+        "plausibility": "Both validators make the control invalid when no characters are entered.",
+        "falsifyingConstraint": "The control must also reject a non-empty malformed email."
+      },
+      {
+        "optionId": "choice-49fb315741",
+        "verdict": "incorrect",
+        "explanation": "Email validates syntax when a value is present, and max length bounds that value, but an empty value still passes both checks.",
+        "misconceptionTag": "email-validator-implies-required",
+        "plausibility": "The pair can reject malformed or excessively long non-empty addresses.",
+        "falsifyingConstraint": "The control must also be invalid when its value is empty."
+      }
+    ],
+    "remediationTopics": [
+      "Angular reactive-form validators",
+      "form status",
+      "composing control validators"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 17: Validating form input",
+        "url": "https://v17.angular.io/guide/form-validation",
+        "sourceId": "angular17-form-validation"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular17-form-validation",
+          "title": "Angular 17: Validating form input",
+          "url": "https://v17.angular.io/guide/form-validation",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular 17 archived documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

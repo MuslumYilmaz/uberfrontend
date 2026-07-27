@@ -1261,7 +1261,7 @@ describe('CodingJsPanelComponent', () => {
     expect(component.showStuckNudge()).toBeFalse();
   });
 
-  it('toggles interview setup panel only when interview mode is inactive', () => {
+  it('toggles timed-practice setup panel only when timed practice is inactive', () => {
     const component = TestBed.runInInjectionContext(
       () => new CodingJsPanelComponent({} as any),
     );
@@ -1277,7 +1277,7 @@ describe('CodingJsPanelComponent', () => {
     expect(component.interviewSetupOpen()).toBeFalse();
   });
 
-  it('hides interview setup while solution panel is open', () => {
+  it('hides timed-practice setup while solution panel is open', () => {
     const component = TestBed.runInInjectionContext(
       () => new CodingJsPanelComponent({} as any),
     );
@@ -1288,7 +1288,7 @@ describe('CodingJsPanelComponent', () => {
     expect(component.showInterviewSetup()).toBeFalse();
   });
 
-  it('closes interview setup panel when interview mode starts', () => {
+  it('closes timed-practice setup panel when timed practice starts', () => {
     const component = TestBed.runInInjectionContext(
       () => new CodingJsPanelComponent({} as any),
     );

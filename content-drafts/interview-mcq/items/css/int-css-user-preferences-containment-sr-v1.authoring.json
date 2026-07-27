@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-user-preferences-containment-sr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "css",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "adaptive-visual-effects-and-containment",
+    "prompt": "A loading card uses an infinite shimmer; its loading state and boundary are only visual. In reduced-motion mode the shimmer must stop, and in forced-colors mode both state and boundary must remain perceivable. Profiling suggests paint containment for the decorative shimmer layer, but focus indicators may extend beyond the card. Which policy meets the contract?",
+    "options": [
+      {
+        "id": "choice-c2c926f974",
+        "label": "Use both media queries with text status and system borders, then apply `contain: paint` to the interactive card."
+      },
+      {
+        "id": "choice-41ec89d26e",
+        "label": "Stop the animation and add text, keep the boundary as a `box-shadow`, and isolate paint on the shimmer layer."
+      },
+      {
+        "id": "choice-0ca72f9a1e",
+        "label": "Stop the animation, expose text status, use system-color borders, and isolate paint on the decorative shimmer."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-0ca72f9a1e",
+    "answerProof": {
+      "summary": "CSS preference queries adapt motion and forced-color presentation. A real system-color border survives forced colors, while paint containment on the decorative layer avoids clipping the card's external focus paint.",
+      "decisiveConstraints": [
+        "Decorative motion stops for reduced-motion users.",
+        "Text status and a non-shadow boundary remain perceivable in forced colors.",
+        "Containment is limited to a non-interactive paint layer.",
+        "Interactive focus indicators remain unclipped."
+      ],
+      "claims": [
+        {
+          "statement": "The prefers-reduced-motion and forced-colors media features expose those active user preferences to CSS.",
+          "sourceIds": [
+            "mdn-prefers-reduced-motion",
+            "mdn-forced-colors"
+          ]
+        },
+        {
+          "statement": "In forced-colors mode, box shadows are forced to none while system color keywords participate in the forced palette.",
+          "sourceIds": [
+            "mdn-forced-colors"
+          ]
+        },
+        {
+          "statement": "Paint containment clips descendants to the containing box, so it should be scoped where that clipping is acceptable.",
+          "sourceIds": [
+            "mdn-css-contain"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-c2c926f974",
+        "verdict": "incorrect",
+        "explanation": "The preference handling is sound, but paint containment on the interactive card can clip focus indicators that extend outside its bounds.",
+        "misconceptionTag": "paint-containment-is-safe-on-interactive-owner",
+        "plausibility": "Containing the entire card can isolate a larger portion of its painting work.",
+        "falsifyingConstraint": "Focus rings must remain visible outside the card boundary."
+      },
+      {
+        "optionId": "choice-41ec89d26e",
+        "verdict": "incorrect",
+        "explanation": "The motion, text, and containment choices are scoped, but forced-colors removes the box shadow that supplies the only boundary.",
+        "misconceptionTag": "box-shadow-survives-forced-colors",
+        "plausibility": "A box shadow can draw a clear card edge in ordinary color modes.",
+        "falsifyingConstraint": "The boundary must remain perceivable when forced-colors removes box shadows."
+      },
+      {
+        "optionId": "choice-0ca72f9a1e",
+        "verdict": "correct",
+        "explanation": "It stops decorative motion, provides text status and a system-palette border, and scopes clipping to the non-interactive shimmer.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "prefers-reduced-motion",
+      "forced-colors",
+      "paint-containment"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: prefers-reduced-motion",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion",
+        "sourceId": "mdn-prefers-reduced-motion"
+      },
+      {
+        "title": "MDN: forced-colors",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/forced-colors",
+        "sourceId": "mdn-forced-colors"
+      },
+      {
+        "title": "MDN: contain",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/contain",
+        "sourceId": "mdn-css-contain"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "css-hardware-acceleration",
+        "css-media-queries"
+      ],
+      "sources": [
+        {
+          "id": "mdn-prefers-reduced-motion",
+          "title": "MDN: prefers-reduced-motion",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-forced-colors",
+          "title": "MDN: forced-colors",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/forced-colors",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-css-contain",
+          "title": "MDN: contain",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/contain",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

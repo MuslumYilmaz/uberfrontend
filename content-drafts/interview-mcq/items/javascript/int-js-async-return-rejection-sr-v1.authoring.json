@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-async-return-rejection-sr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "code-output",
+    "competency": "async-rejection-propagation",
+    "prompt": "What does this code log in a standards-compliant browser?",
+    "code": {
+      "language": "javascript",
+      "runtime": "browser",
+      "source": "async function load() {\n  try {\n    return Promise.reject('offline');\n  } catch {\n    console.log('inner-catch');\n    return 'cached';\n  } finally {\n    console.log('inner-finally');\n  }\n}\n\nload()\n  .catch((error) => {\n    console.log(`outer:${error}`);\n    return 'queued';\n  })\n  .finally(() => console.log('outer-finally'))\n  .then((value) => console.log(`value:${value}`));"
+    },
+    "options": [
+      {
+        "id": "choice-e43a22f15b",
+        "label": "inner-catch → inner-finally → outer-finally → value:cached"
+      },
+      {
+        "id": "choice-826c3fab45",
+        "label": "inner-finally → outer:offline → outer-finally → value:queued"
+      },
+      {
+        "id": "choice-84060db0f6",
+        "label": "inner-finally → outer-finally → outer:offline → value:queued"
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-826c3fab45",
+    "answerProof": {
+      "summary": "The local finally runs as the async function returns, its result adopts the returned rejection, the outer catch recovers with `queued`, and the outer finally preserves that fulfillment.",
+      "decisiveConstraints": [
+        "The rejected Promise is returned, not awaited inside the try block.",
+        "The local finally executes while control leaves the try statement.",
+        "The outer catch converts the rejection to fulfillment before the outer finally and then."
+      ],
+      "claims": [
+        {
+          "statement": "An async function returns a Promise that adopts a returned Promise, while try/catch handles a rejection at an await expression inside its block.",
+          "sourceIds": [
+            "mdn-async-function"
+          ]
+        },
+        {
+          "statement": "Promise finally passes through the prior settled state unless its callback throws or returns a rejected Promise.",
+          "sourceIds": [
+            "mdn-promise-finally"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-e43a22f15b",
+        "verdict": "incorrect",
+        "explanation": "The try block returns a Promise object normally, so its later rejection is not thrown into the local catch and `cached` is never produced.",
+        "misconceptionTag": "try-catches-returned-promise-rejection",
+        "plausibility": "The rejected Promise expression is visibly located inside the try block.",
+        "falsifyingConstraint": "No await observes the rejection before control leaves the try block."
+      },
+      {
+        "optionId": "choice-826c3fab45",
+        "verdict": "correct",
+        "explanation": "The local finally runs first, Promise adoption delivers the rejection to the outer catch, recovery yields `queued`, and outer finally passes it through.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-84060db0f6",
+        "verdict": "incorrect",
+        "explanation": "The outer finally is chained after the outer catch, so the rejection handler must run and recover before that finally callback executes.",
+        "misconceptionTag": "finally-runs-before-upstream-catch",
+        "plausibility": "Both callbacks are queued reactions, and `finally` is often described as cleanup that runs regardless of outcome.",
+        "falsifyingConstraint": "Promise reactions execute in chain order; this finally receives the settlement produced by the preceding catch."
+      }
+    ],
+    "remediationTopics": [
+      "async-functions",
+      "await-error-handling",
+      "promise-adoption"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: async function",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function",
+        "sourceId": "mdn-async-function"
+      },
+      {
+        "title": "MDN: Promise.prototype.finally()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally",
+        "sourceId": "mdn-promise-finally"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-promises-async-await",
+        "js-async-await-example-when-promise-is-preferred"
+      ],
+      "sources": [
+        {
+          "id": "mdn-async-function",
+          "title": "MDN: async function",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-promise-finally",
+          "title": "MDN: Promise.prototype.finally()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    },
+    "verification": {
+      "kind": "browser-console-output",
+      "expectedOutput": [
+        "inner-finally",
+        "outer:offline",
+        "outer-finally",
+        "value:queued"
+      ]
+    }
+  }
+}

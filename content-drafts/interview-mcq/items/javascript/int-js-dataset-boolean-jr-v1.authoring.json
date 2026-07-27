@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-dataset-boolean-jr-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "dom-dataset-string-coercion",
+    "prompt": "Server-rendered buttons carry `data-enabled=\"true\"` or `data-enabled=\"false\"`. The current handler still runs for disabled records because it tests `if (button.dataset.enabled)`. The HTML attribute contract cannot change. Which check makes the handler honor both values?",
+    "code": {
+      "language": "javascript",
+      "runtime": "browser",
+      "source": "if (button.dataset.enabled) {\n  runAction();\n}"
+    },
+    "options": [
+      {
+        "id": "choice-f857e17860",
+        "label": "Compare `button.dataset.enabled === 'true'` before running the action."
+      },
+      {
+        "id": "choice-576324eda5",
+        "label": "Wrap `button.dataset.enabled` with `Boolean()` before running the action."
+      },
+      {
+        "id": "choice-4a8ab5ea5e",
+        "label": "Use `button.dataset.enabled ?? false` before running the action."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-f857e17860",
+    "answerProof": {
+      "summary": "Dataset values are strings, so the string `false` is truthy. An explicit comparison converts this two-value string contract into the intended Boolean decision.",
+      "decisiveConstraints": [
+        "The server contract emits only the strings true and false.",
+        "The false string must not enable the action."
+      ],
+      "claims": [
+        {
+          "statement": "Values written through data attributes are exposed through dataset as strings.",
+          "sourceIds": [
+            "mdn-html-element-dataset"
+          ]
+        },
+        {
+          "statement": "A non-empty JavaScript string is truthy, including a string whose text is false.",
+          "sourceIds": [
+            "mdn-truthy"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-f857e17860",
+        "verdict": "correct",
+        "explanation": "The explicit comparison maps only the server's true string to the enabled branch.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-576324eda5",
+        "verdict": "incorrect",
+        "explanation": "Boolean conversion treats both non-empty strings as true, so the false string still enables the action.",
+        "misconceptionTag": "boolean-conversion-parses-string-content",
+        "plausibility": "Boolean conversion is the normal way to coerce an unknown JavaScript value to a Boolean.",
+        "falsifyingConstraint": "The non-empty false string must map to the disabled branch."
+      },
+      {
+        "optionId": "choice-4a8ab5ea5e",
+        "verdict": "incorrect",
+        "explanation": "Nullish coalescing preserves the present false string, which remains truthy when the condition evaluates it.",
+        "misconceptionTag": "nullish-default-parses-false-string",
+        "plausibility": "The operator supplies a Boolean false fallback when an attribute is absent.",
+        "falsifyingConstraint": "A present data-enabled value still needs content-based interpretation."
+      }
+    ],
+    "remediationTopics": [
+      "HTMLElement dataset",
+      "string truthiness",
+      "explicit Boolean parsing"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: HTMLElement.dataset",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset",
+        "sourceId": "mdn-html-element-dataset"
+      },
+      {
+        "title": "MDN: Truthy",
+        "url": "https://developer.mozilla.org/en-US/docs/Glossary/Truthy",
+        "sourceId": "mdn-truthy"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-html-element-dataset",
+          "title": "MDN: HTMLElement.dataset",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-truthy",
+          "title": "MDN: Truthy",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Truthy",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-dialog-focus-contract-sr-v1",
+  "revision": 4,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "html",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "modal-dialog-focus-contract",
+    "prompt": "A design-system modal accepts requests from several portal-mounted features. An audit finds competing dialogs, background controls in the Tab order, and route changes that can detach an opener before close. If detached, focus must move to a stable heading in the new route. The browser supports native `<dialog>`. Which policy enforces the contract?",
+    "options": [
+      {
+        "id": "choice-a2e9b450ec",
+        "label": "Queue through one coordinator, use `showModal()`, set initial focus, then restore a connected opener or the closed dialog."
+      },
+      {
+        "id": "choice-13bc78c911",
+        "label": "Queue through one coordinator, use `show()`, set `aria-modal`, set initial focus, then restore the opener or page heading."
+      },
+      {
+        "id": "choice-c827d82460",
+        "label": "Queue through one coordinator, use `showModal()`, set initial focus, then restore a connected opener or page heading."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-c827d82460",
+    "answerProof": {
+      "summary": "One coordinator serializes cross-feature ownership, showModal establishes browser modality, and close handling restores a connected opener or the declared route fallback.",
+      "decisiveConstraints": [
+        "Only one portal-mounted feature may own the modal boundary at a time.",
+        "Background controls must not remain interactive while the dialog is open.",
+        "Focus restoration must use the stable route heading when navigation removes the opener."
+      ],
+      "claims": [
+        {
+          "statement": "showModal displays a dialog modally, makes content outside it inert, and supplies native modal keyboard behavior including Escape handling.",
+          "sourceIds": [
+            "mdn-dialog-element"
+          ]
+        },
+        {
+          "statement": "Node.isConnected reports whether a node remains connected to a Document.",
+          "sourceIds": [
+            "mdn-node-is-connected"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a2e9b450ec",
+        "verdict": "incorrect",
+        "explanation": "The coordinator and modal call are correct, but a closed dialog is not the required focus destination after its opener disappears.",
+        "misconceptionTag": "closed-dialog-is-safe-route-fallback",
+        "plausibility": "The dialog remains a known element when the original trigger no longer exists.",
+        "falsifyingConstraint": "The new route requires focus on its stable heading when the opener is detached."
+      },
+      {
+        "optionId": "choice-13bc78c911",
+        "verdict": "incorrect",
+        "explanation": "The show method opens a non-modal dialog; adding aria-modal does not give it the browser's inert background behavior.",
+        "misconceptionTag": "aria-modal-converts-show-to-showmodal",
+        "plausibility": "The accessibility attribute describes a modal surface to assistive technology.",
+        "falsifyingConstraint": "Background controls must leave the active interaction order while the dialog is open."
+      },
+      {
+        "optionId": "choice-c827d82460",
+        "verdict": "correct",
+        "explanation": "The coordinator serializes requests, showModal supplies browser modality, and restoration chooses a valid target across navigation.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "dialog-element",
+      "modal-focus-management",
+      "focus-restoration",
+      "cross-feature modal ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: dialog element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
+        "sourceId": "mdn-dialog-element"
+      },
+      {
+        "title": "MDN: Node.isConnected",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected",
+        "sourceId": "mdn-node-is-connected"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "html-aria-roles",
+        "web-accessibility-make-page-accessible"
+      ],
+      "sources": [
+        {
+          "id": "mdn-dialog-element",
+          "title": "MDN: dialog element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-node-is-connected",
+          "title": "MDN: Node.isConnected",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

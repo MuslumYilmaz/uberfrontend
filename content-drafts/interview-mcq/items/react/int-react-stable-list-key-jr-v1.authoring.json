@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-stable-list-key-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "list-key-reconciliation-boundary",
+    "prompt": "`EditableRow` is returned directly by `products.map` and owns an unsaved draft. Its nested input has `key={product.id}`, but rows may reorder. Which identity contract keeps the draft with its record?",
+    "options": [
+      {
+        "id": "choice-d3c93d66f6",
+        "label": "Move `product.id` to each mapped `<EditableRow>`; remove the redundant key from its nested input."
+      },
+      {
+        "id": "choice-07566a4635",
+        "label": "Add the current `index` key to each mapped `<EditableRow>` and keep `product.id` on its nested input."
+      },
+      {
+        "id": "choice-082c02dcf6",
+        "label": "Leave each row unkeyed and reset its draft from `product.name` in an Effect whenever `product.id` changes."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-d3c93d66f6",
+    "answerProof": {
+      "summary": "The key must identify the component returned by the map, and the stable record ID lets that EditableRow instance and its draft follow the same record through reordering.",
+      "decisiveConstraints": [
+        "The component that owns draft state is the direct item returned by the map.",
+        "The list can reorder while each record retains a stable ID."
+      ],
+      "claims": [
+        {
+          "statement": "React requires keys on the elements directly produced by a map and recommends stable data IDs because keys determine component identity when list order changes.",
+          "sourceIds": [
+            "react19-rendering-lists"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d3c93d66f6",
+        "verdict": "correct",
+        "explanation": "The direct mapped component receives a record-stable key, so its draft state follows that record and the inner input needs no separate list key.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-07566a4635",
+        "verdict": "incorrect",
+        "explanation": "The mapped component receives a key, but an index still follows position and can attach an existing draft to another record after reordering.",
+        "misconceptionTag": "position-is-record-identity",
+        "plausibility": "The direct mapped component now has a key, while the nested input also retains the record ID.",
+        "falsifyingConstraint": "The mapped component identity must follow a stable record rather than its current position."
+      },
+      {
+        "optionId": "choice-082c02dcf6",
+        "verdict": "incorrect",
+        "explanation": "The Effect can replace a mismatched draft after reorder, but it discards the unsaved text instead of preserving that state with its original record.",
+        "misconceptionTag": "effect-reset-repairs-record-identity",
+        "plausibility": "Watching the incoming record ID can make each reused row eventually display its newly assigned product.",
+        "falsifyingConstraint": "The unsaved draft must move with its original record rather than be reset after identity is lost."
+      }
+    ],
+    "remediationTopics": [
+      "React list keys",
+      "key placement at map sites",
+      "component identity",
+      "state preservation during reorder"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Rendering Lists",
+        "url": "https://react.dev/learn/rendering-lists",
+        "sourceId": "react19-rendering-lists"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-rendering-lists",
+          "title": "React: Rendering Lists",
+          "url": "https://react.dev/learn/rendering-lists",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

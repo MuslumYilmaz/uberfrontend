@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-ssr-multiroot-useid-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "ssr-multiroot-id-coordination",
+    "prompt": "One document contains two independently server-rendered React 19 roots. Both call `useId` for label/input pairs. Within each root, server markup must hydrate unchanged, and IDs must not collide across roots. Which configuration satisfies both constraints?",
+    "options": [
+      {
+        "id": "choice-171f18ff58",
+        "label": "Give each root a distinct `identifierPrefix`, and reuse that root's prefix in its server render and `hydrateRoot` call."
+      },
+      {
+        "id": "choice-c2ef6e19de",
+        "label": "Give both roots one shared `identifierPrefix`, then append a random browser suffix to every `useId` result."
+      },
+      {
+        "id": "choice-25a300dc45",
+        "label": "Omit `identifierPrefix` on the server, then assign separate prefixes only in the two browser `hydrateRoot` calls."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-171f18ff58",
+    "answerProof": {
+      "summary": "Each root needs a distinct namespace, and each root must use the same namespace during server rendering and hydration.",
+      "decisiveConstraints": [
+        "The two independent roots must not generate colliding IDs.",
+        "Each root's hydrated IDs must match its server-rendered IDs."
+      ],
+      "claims": [
+        {
+          "statement": "Multiple independent React roots should use distinct `identifierPrefix` values.",
+          "sourceIds": [
+            "react19-useid"
+          ]
+        },
+        {
+          "statement": "A server-rendered root must use the same prefix in the server API and `hydrateRoot`.",
+          "sourceIds": [
+            "react19-useid"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-171f18ff58",
+        "verdict": "correct",
+        "explanation": "Distinct prefixes prevent cross-root collisions, while matching each prefix across server and client preserves hydration identity.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-c2ef6e19de",
+        "verdict": "incorrect",
+        "explanation": "A shared prefix does not namespace the roots, and a random client-only suffix changes IDs during hydration.",
+        "misconceptionTag": "client-randomness-fixes-server-id-collisions",
+        "plausibility": "Random suffixes can make IDs unique within browser-only rendering.",
+        "falsifyingConstraint": "Hydrated IDs must reproduce the server output deterministically."
+      },
+      {
+        "optionId": "choice-25a300dc45",
+        "verdict": "incorrect",
+        "explanation": "Client-only prefixes produce IDs that differ from those emitted by the server for each root.",
+        "misconceptionTag": "identifier-prefix-is-client-only",
+        "plausibility": "The option is passed directly to the client hydration API.",
+        "falsifyingConstraint": "React requires the corresponding server and client prefixes to match."
+      }
+    ],
+    "remediationTopics": [
+      "React useId",
+      "identifierPrefix",
+      "multi-root SSR",
+      "hydration identity"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useId",
+        "url": "https://react.dev/reference/react/useId",
+        "sourceId": "react19-useid"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-useid",
+          "title": "React: useId",
+          "url": "https://react.dev/reference/react/useId",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

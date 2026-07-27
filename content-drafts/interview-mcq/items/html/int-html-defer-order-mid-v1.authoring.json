@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-defer-order-mid-v1",
+  "revision": 4,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "html",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "script-loading-order",
+    "prompt": "A page places deferred `config.js`, then inline `startApp()`, then deferred `app.js` in `<head>`. In production `startApp()` runs before its dependencies. All three steps must execute `config` → `app` → `startApp` after parsing without blocking it. What is the smallest correct change?",
+    "options": [
+      {
+        "id": "choice-6073cc6798",
+        "label": "Add `defer` to the inline bootstrap tag and leave it between the two deferred external scripts."
+      },
+      {
+        "id": "choice-e53bf6a500",
+        "label": "Move `startApp()` into `bootstrap.js`, then defer config, app, and bootstrap in dependency order."
+      },
+      {
+        "id": "choice-c78a2ebaa7",
+        "label": "Make all three scripts external and `async`, keeping dependency order only in the markup."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-e53bf6a500",
+    "answerProof": {
+      "summary": "Defer affects classic external scripts, not inline code. Moving the bootstrap into an external script lets all three downloads avoid parser blocking while deferred execution preserves document order after parsing.",
+      "decisiveConstraints": [
+        "Parsing must continue during every script download.",
+        "Config, app, and bootstrap must execute in that order.",
+        "Bootstrap must not run until the body has been parsed."
+      ],
+      "claims": [
+        {
+          "statement": "Defer has no effect on inline scripts; deferred classic external scripts execute after parsing in document order, while async scripts have no order guarantee.",
+          "sourceIds": [
+            "mdn-script-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-6073cc6798",
+        "verdict": "incorrect",
+        "explanation": "The external files are deferred, but the inline call still executes immediately during head parsing before either deferred dependency.",
+        "misconceptionTag": "defer-delays-neighboring-inline-code",
+        "plausibility": "The inline call appears between the same tags and can look like part of their deferred sequence.",
+        "falsifyingConstraint": "The bootstrap itself must execute after both dependencies and parsed body markup."
+      },
+      {
+        "optionId": "choice-e53bf6a500",
+        "verdict": "correct",
+        "explanation": "Making the bootstrap external lets defer govern every step, preserving non-blocking downloads, post-parse execution, and document order.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-c78a2ebaa7",
+        "verdict": "incorrect",
+        "explanation": "Async avoids parser blocking but executes each file when it becomes available, so document order cannot enforce the dependency chain.",
+        "misconceptionTag": "async-tags-preserve-source-order",
+        "plausibility": "All three scripts are external and their source order visually expresses the intended dependency sequence.",
+        "falsifyingConstraint": "Execution must remain config then app then bootstrap regardless of download completion order."
+      }
+    ],
+    "remediationTopics": [
+      "script-defer",
+      "script-async",
+      "inline versus external script attributes"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: script element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script",
+        "sourceId": "mdn-script-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "html-parsing-rendering",
+        "html-head-tag"
+      ],
+      "sources": [
+        {
+          "id": "mdn-script-element",
+          "title": "MDN: script element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,530 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frontendatlas.com/schemas/interview/reference-set-v1.private.schema.json",
+  "title": "FrontendAtlas interview reference set (private answer and review data)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "setId",
+    "items"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "setId": {
+      "const": "frontend-interview-reference-v1"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "correctOptionId",
+        "optionRationales",
+        "summaryExplanation",
+        "remediationTopics",
+        "learnMore",
+        "provenance",
+        "review"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "int-html-native-button-jr-v1",
+            "int-js-nested-microtask-mid-v1",
+            "int-vue-computed-watch-mid-v1",
+            "int-react-stale-search-sr-v1",
+            "int-angular-onpush-reference-sr-v1"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "correctOptionId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "optionRationales": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/rationale"
+          }
+        },
+        "summaryExplanation": {
+          "type": "string",
+          "minLength": 20
+        },
+        "remediationTopics": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "learnMore": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "review": {
+          "$ref": "#/$defs/review"
+        },
+        "verification": {
+          "$ref": "#/$defs/verification"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "id": {
+                "const": "int-js-nested-microtask-mid-v1"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "then": {
+            "required": [
+              "verification"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "verification"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "rationale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "optionId",
+        "verdict",
+        "explanation",
+        "misconceptionTag"
+      ],
+      "properties": {
+        "optionId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "verdict": {
+          "enum": [
+            "correct",
+            "incorrect"
+          ]
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 10
+        },
+        "misconceptionTag": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "correct"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "misconceptionTag": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "misconceptionTag": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "url"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wordingOrigin",
+        "copiedText",
+        "relatedContentIds",
+        "sources"
+      ],
+      "properties": {
+        "wordingOrigin": {
+          "const": "original"
+        },
+        "copiedText": {
+          "const": false
+        },
+        "relatedContentIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "url",
+        "role",
+        "license",
+        "licenseUrl",
+        "retrievedAt",
+        "copiedText"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "role": {
+          "enum": [
+            "technical-verification",
+            "format-inspiration"
+          ]
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "licenseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "retrievedAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "copiedText": {
+          "const": false
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "technicalReview",
+        "editorialReview",
+        "blindReview",
+        "approvedBy",
+        "approvedAt",
+        "lengthClueWaiver"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "reference-candidate",
+            "gold"
+          ]
+        },
+        "technicalReview": {
+          "enum": [
+            "pending",
+            "passed",
+            "failed"
+          ]
+        },
+        "editorialReview": {
+          "enum": [
+            "pending",
+            "passed",
+            "failed"
+          ]
+        },
+        "blindReview": {
+          "$ref": "#/$defs/blindReview"
+        },
+        "approvedBy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "approvedAt": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            }
+          ]
+        },
+        "lengthClueWaiver": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/lengthClueWaiver"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "gold"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "technicalReview": {
+                "const": "passed"
+              },
+              "editorialReview": {
+                "const": "passed"
+              },
+              "blindReview": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "passed"
+                  }
+                }
+              },
+              "approvedBy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "approvedBy": {
+                "type": "null"
+              },
+              "approvedAt": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "blindReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reviewer",
+        "reviewedAt",
+        "notes"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "passed",
+            "failed"
+          ]
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reviewedAt": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            }
+          ]
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "pending"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reviewer": {
+                "type": "null"
+              },
+              "reviewedAt": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reviewer": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reviewedAt": {
+                "type": "string",
+                "format": "date"
+              },
+              "notes": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "lengthClueWaiver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "approvedBy",
+        "approvedAt"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 20
+        },
+        "approvedBy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approvedAt": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedOutput"
+      ],
+      "properties": {
+        "expectedOutput": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

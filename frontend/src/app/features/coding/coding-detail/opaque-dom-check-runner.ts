@@ -399,10 +399,195 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   const parentWindow = window.parent;
   const parentPostMessage = parentWindow.postMessage.bind(parentWindow);
   const nativeSetTimeout = window.setTimeout.bind(window);
+  const nativeClearTimeout = window.clearTimeout.bind(window);
   const nativeNow = Date.now.bind(Date);
   let started = false;
   let lifecycleFailed = false;
   let lastRequestedFocus: Element | null = null;
+  const httpCalls: Array<{ method: string; url: string; body: string }> = [];
+  let httpMock = {
+    status: 200,
+    delayMs: 0,
+    error: '',
+  };
+  let httpMockInstalled = false;
+  const httpMockDiagnostics = { constructed: 0, opened: 0, sent: 0 };
+
+  const configureHttpMock = (step: FrameworkTestStep) => {
+    const rawStatus = Number(step.status ?? 200);
+    const rawDelay = Number(step.durationMs ?? 0);
+    httpMock = {
+      status: Number.isFinite(rawStatus) ? Math.max(100, Math.min(599, rawStatus)) : 200,
+      delayMs: Number.isFinite(rawDelay) ? Math.max(0, rawDelay) : 0,
+      error: String(step.error || ''),
+    };
+  };
+  const installHttpMock = (step: FrameworkTestStep) => {
+    configureHttpMock(step);
+    if (httpMockInstalled) return;
+    httpMockInstalled = true;
+
+    const mockFetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+      const request = typeof Request !== 'undefined' && input instanceof Request ? input : null;
+      const method = String(init?.method || request?.method || 'GET').toUpperCase();
+      const url = String(request?.url || input);
+      const body = typeof init?.body === 'string' ? init.body : String(init?.body || '');
+      httpCalls.push({ method, url, body });
+      return new Promise<Response>((resolve, reject) => {
+        nativeSetTimeout(() => {
+          if (httpMock.error) {
+            reject(new TypeError(httpMock.error));
+            return;
+          }
+          resolve(new Response('{"id":1}', {
+            status: httpMock.status,
+            headers: { 'Content-Type': 'application/json' },
+          }));
+        }, httpMock.delayMs);
+      });
+    }) as typeof window.fetch;
+    Object.defineProperty(window, 'fetch', {
+      value: mockFetch,
+      writable: false,
+      configurable: true,
+    });
+
+    class MockXMLHttpRequest extends EventTarget {
+      static readonly UNSENT = 0;
+      static readonly OPENED = 1;
+      static readonly HEADERS_RECEIVED = 2;
+      static readonly LOADING = 3;
+      static readonly DONE = 4;
+      readonly UNSENT = 0;
+      readonly OPENED = 1;
+      readonly HEADERS_RECEIVED = 2;
+      readonly LOADING = 3;
+      readonly DONE = 4;
+      readyState = 0;
+      response: unknown = null;
+      responseText = '';
+      responseType: XMLHttpRequestResponseType = '';
+      responseURL = '';
+      responseXML: Document | null = null;
+      status = 0;
+      statusText = '';
+      timeout = 0;
+      upload = new EventTarget();
+      withCredentials = false;
+      onabort: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => unknown) | null = null;
+      onerror: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => unknown) | null = null;
+      onload: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => unknown) | null = null;
+      onloadend: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => unknown) | null = null;
+      onloadstart: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => unknown) | null = null;
+      onprogress: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => unknown) | null = null;
+      onreadystatechange: ((this: XMLHttpRequest, ev: Event) => unknown) | null = null;
+      ontimeout: ((this: XMLHttpRequest, ev: ProgressEvent<EventTarget>) => unknown) | null = null;
+      private method = 'GET';
+      private url = '';
+      private timer: number | undefined;
+
+      constructor() {
+        super();
+        httpMockDiagnostics.constructed += 1;
+      }
+
+      open(method: string, url: string | URL): void {
+        httpMockDiagnostics.opened += 1;
+        this.method = String(method || 'GET').toUpperCase();
+        this.url = String(url);
+        this.responseURL = this.url;
+        this.readyState = this.OPENED;
+        this.dispatchEvent(new Event('readystatechange'));
+      }
+
+      send(body?: Document | XMLHttpRequestBodyInit | null): void {
+        httpMockDiagnostics.sent += 1;
+        const serializedBody = typeof body === 'string' ? body : String(body || '');
+        httpCalls.push({ method: this.method, url: this.url, body: serializedBody });
+        this.timer = nativeSetTimeout(() => {
+          this.timer = undefined;
+          this.readyState = this.DONE;
+          if (httpMock.error) {
+            this.status = 0;
+            this.dispatchEvent(new ProgressEvent('error'));
+            this.dispatchEvent(new ProgressEvent('loadend'));
+            return;
+          }
+          this.status = httpMock.status;
+          this.statusText = httpMock.status >= 200 && httpMock.status < 300 ? 'OK' : 'Error';
+          this.responseText = '{"id":1}';
+          this.response = this.responseType === 'json' ? { id: 1 } : this.responseText;
+          this.dispatchEvent(new Event('readystatechange'));
+          this.dispatchEvent(new ProgressEvent('load'));
+          this.dispatchEvent(new ProgressEvent('loadend'));
+        }, httpMock.delayMs);
+      }
+
+      abort(): void {
+        if (this.timer !== undefined) nativeClearTimeout(this.timer);
+        this.timer = undefined;
+        this.readyState = this.UNSENT;
+        this.dispatchEvent(new ProgressEvent('abort'));
+        this.dispatchEvent(new ProgressEvent('loadend'));
+      }
+
+      setRequestHeader(): void { }
+      overrideMimeType(): void { }
+      getAllResponseHeaders(): string {
+        return this.status ? 'content-type: application/json\r\n' : '';
+      }
+      getResponseHeader(name: string): string | null {
+        return this.status && name.toLowerCase() === 'content-type' ? 'application/json' : null;
+      }
+    }
+
+    Object.defineProperty(window, 'XMLHttpRequest', {
+      value: MockXMLHttpRequest,
+      writable: false,
+      configurable: true,
+    });
+  };
+
+  const bootstrapHttpMock = config.check?.steps.find(
+    (step) => String(step?.type || step?.action || '') === 'mockHttp',
+  );
+  if (bootstrapHttpMock) {
+    (window as Window & {
+      __FA_PREPARE_ANGULAR_HTTP_CHECK?: (
+        httpClient: { prototype: { post?: (...args: unknown[]) => unknown } },
+        observable: new (subscribe: (subscriber: {
+          next(value: unknown): void;
+          error(error: unknown): void;
+          complete(): void;
+        }) => (() => void) | void) => unknown,
+      ) => void;
+    }).__FA_PREPARE_ANGULAR_HTTP_CHECK = (HttpClient, Observable) => {
+      installHttpMock(bootstrapHttpMock);
+      HttpClient.prototype.post = function post(url: unknown, body: unknown): unknown {
+        return new Observable((subscriber) => {
+          let serializedBody = '';
+          try { serializedBody = typeof body === 'string' ? body : JSON.stringify(body ?? ''); }
+          catch { serializedBody = String(body ?? ''); }
+          httpCalls.push({ method: 'POST', url: String(url || ''), body: serializedBody });
+          // Use the framework-visible timer so Angular's Zone triggers change
+          // detection after success/error callbacks update template state.
+          const timer = window.setTimeout(() => {
+            if (httpMock.error) {
+              subscriber.error(new Error(httpMock.error));
+              return;
+            }
+            if (httpMock.status < 200 || httpMock.status >= 300) {
+              subscriber.error(new Error(`HTTP ${httpMock.status}`));
+              return;
+            }
+            subscriber.next({ id: 1 });
+            subscriber.complete();
+          }, httpMock.delayMs);
+          return () => window.clearTimeout(timer);
+        });
+      };
+    };
+  }
 
   // Backgrounded and non-rendered sandbox frames may reject native focus even
   // though the application made the correct focus request. Track focus/blur
@@ -529,6 +714,31 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   const executeStep = (step: FrameworkTestStep): Promise<void> => {
     const type = String(step?.type || step?.action || '').trim();
     const selector = String(step?.selector || '').trim();
+    if (type === 'mockHttp') {
+      installHttpMock(step);
+      configureHttpMock(step);
+      httpCalls.length = 0;
+      return Promise.resolve();
+    }
+    if (type === 'expectHttpRequest') {
+      const expectedMethod = String(step.method || '').trim().toUpperCase();
+      const expectedUrl = String(step.url || '').trim();
+      const bodyContains = String(step.bodyContains || '');
+      const matches = httpCalls.filter((call) => {
+        const methodMatches = !expectedMethod || call.method === expectedMethod;
+        const urlMatches = !expectedUrl
+          || (step.match === 'contains' ? call.url.includes(expectedUrl) : call.url === expectedUrl);
+        const bodyMatches = !bodyContains || call.body.includes(bodyContains);
+        return methodMatches && urlMatches && bodyMatches;
+      });
+      const expectedCount = Math.max(0, Number(step.count ?? 1));
+      if (matches.length !== expectedCount) {
+        const recorded = httpCalls.map((call) => `${call.method} ${call.url}`).join(', ') || 'none';
+        const diagnostics = `mock=${httpMockInstalled ? 'installed' : 'missing'}, constructed=${httpMockDiagnostics.constructed}, opened=${httpMockDiagnostics.opened}, sent=${httpMockDiagnostics.sent}`;
+        throw new Error(`Expected ${expectedCount} matching HTTP request(s) but found ${matches.length}. Recorded: ${recorded}. ${diagnostics}`);
+      }
+      return Promise.resolve();
+    }
     if (type === 'wait') return delay(Math.max(0, Number(step.durationMs ?? step.timeoutMs ?? 0)));
     if (type === 'unmountPreview') {
       const hook = (window as Window & { __FA_UNMOUNT_PREVIEW?: () => void }).__FA_UNMOUNT_PREVIEW;
@@ -622,6 +832,13 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const clickable = element as HTMLElement;
       if (typeof clickable.click !== 'function') throw new Error(`${selector} is not clickable`);
       clickable.click();
+      return delay(50);
+    }
+    if (type === 'submit') {
+      const form = element as HTMLFormElement;
+      if (!(form instanceof HTMLFormElement)) throw new Error(`${selector} is not a form`);
+      const SubmitEventCtor = window.SubmitEvent || Event;
+      form.dispatchEvent(new SubmitEventCtor('submit', { bubbles: true, cancelable: true }));
       return delay(50);
     }
     if (type === 'mouseDown') {

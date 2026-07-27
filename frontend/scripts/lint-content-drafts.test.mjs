@@ -232,6 +232,13 @@ function testApprovedDraftPasses() {
   assert.match(output, /1 file\(s\) checked/);
 }
 
+function testNestedReadmeIsDocumentationNotDraftContent() {
+  const tempRoot = makeTempRoot();
+  writeFile(tempRoot, 'interview-mcq/README.md', '# Interview MCQ bank\n\nAuthoring documentation only.\n');
+  const output = runLinter(tempRoot);
+  assert.match(output, /0 file\(s\) checked/);
+}
+
 function testEditingDraftWarnsButPasses() {
   const tempRoot = makeTempRoot();
   writeFile(tempRoot, 'trivia/event-delegation.md', buildTriviaDraft('editing', {
@@ -356,6 +363,7 @@ function testSystemDesignDraftRequiresTwoSources() {
 }
 
 testApprovedDraftPasses();
+testNestedReadmeIsDocumentationNotDraftContent();
 testEditingDraftWarnsButPasses();
 testApprovedDraftFailsWithVerifyMarker();
 testOutlineDraftFailsWithoutEditorialIntentFields();

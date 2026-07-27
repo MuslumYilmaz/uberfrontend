@@ -31,5 +31,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Chromium for interview-bank verification
+        run: npx playwright install --with-deps chromium
+
       - name: Run frontend unit and content verification
         run: npm run verify:unit-and-content

@@ -72,14 +72,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() editorOptions: any;
   /** Normalized solution files from solutionAsset, provided by parent */
   @Input() solutionFilesMap: Record<string, string> = {};
+  @Input() starterFilesOverride: Record<string, string> | null = null;
   @Input() frameworkTestsOverride: FrameworkTest[] | null = null;
   @Input() storageKeyOverride: string | null = null;
   @Input() interviewMode = false;
   @Input() disablePersistence = false;
+  @Input() suppressAttemptRecording = false;
   @Input() liteMode = false;
   @Input() deferPreview = false;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
   @Output() frameworkCheckRun = new EventEmitter<FrameworkCheckRunEvent>();
+  @Output() filesChanged = new EventEmitter<Record<string, string>>();
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
   @ViewChild('frameworkEditor') frameworkEditor?: MonacoEditorComponent;
@@ -253,7 +256,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const workspaceIdentityChanged =
       !!changes['question']
       || !!changes['tech']
-      || !!changes['storageKeyOverride'];
+      || !!changes['storageKeyOverride']
+      || !!changes['starterFilesOverride'];
 
     if (workspaceIdentityChanged) {
       this.cancelFrameworkCheckRun();
@@ -644,7 +648,14 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     let entryHint: string;
     let dependencies: Record<string, string> | undefined;
 
-    if (meta?.asset) {
+    if (this.starterFilesOverride !== null) {
+      starters = this.boundedPlainFiles(this.starterFilesOverride);
+      if (!Object.keys(starters).length) starters = this.createFrameworkFallbackFiles();
+      const requestedOpen = String(meta?.openFile || '').replace(/^\/+/, '');
+      entryHint = requestedOpen && requestedOpen in starters
+        ? requestedOpen
+        : this.pickFirstOpen(starters);
+    } else if (meta?.asset) {
       try {
         // Use shared util to fetch the asset
         const raw = await fetchSdkAsset(this.http, meta.asset);
@@ -699,6 +710,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       const files = starters;
       const entryFile = entryHint;
       this.filesMap.set(files);
+      this.emitFilesChanged(files);
       this.frameworkEntryFile = entryFile;
       this.openAllDirsFromPaths(Object.keys(files));
       this.openPath.set(entryFile);
@@ -747,6 +759,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (!this.isActiveInit(initToken, q)) return;
 
     this.filesMap.set(files);
+    this.emitFilesChanged(files);
     this.frameworkEntryFile = entryFile;
     this.openAllDirsFromPaths(Object.keys(files));
     this.openPath.set(entryFile);
@@ -810,6 +823,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
     // update current file content
     this.filesMap.update(m => ({ ...m, [path]: code }));
+    this.emitFilesChanged(this.filesMap());
     this.clearFrameworkCheckResults();
 
     // persist user changes
@@ -999,7 +1013,13 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   private recordFrameworkAttempt(question: Question, results: TestResult[]): void {
-    if (!this.attemptInsights || !Array.isArray(results) || results.length === 0 || !this.isFrameworkTech()) return;
+    if (
+      this.suppressAttemptRecording
+      || !this.attemptInsights
+      || !Array.isArray(results)
+      || results.length === 0
+      || !this.isFrameworkTech()
+    ) return;
 
     const totalCount = results.length;
     const passCount = results.filter((item) => item.passed).length;
@@ -1039,6 +1059,33 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       .sort()
       .map((path) => `${path}\n${files[path] ?? ''}`)
       .join('\n---FILE---\n');
+  }
+
+  private boundedPlainFiles(value: Record<string, string>): Record<string, string> {
+    const entries: Array<[string, string]> = [];
+    let totalChars = 0;
+    for (const [rawPath, rawContent] of Object.entries(value || {}).slice(0, 32)) {
+      const path = String(rawPath || '').trim().replace(/\\/g, '/').replace(/^\/+/, '');
+      const parts = path.split('/');
+      if (
+        !path
+        || path.length > 160
+        || parts.some((part) => !part || part === '.' || part === '..')
+        || /[\0\r\n]/.test(path)
+        || typeof rawContent !== 'string'
+        || rawContent.length > 256_000
+      ) {
+        continue;
+      }
+      totalChars += path.length + rawContent.length;
+      if (totalChars > 1_000_000) break;
+      entries.push([path, rawContent]);
+    }
+    return Object.fromEntries(entries);
+  }
+
+  private emitFilesChanged(files: Record<string, string>): void {
+    this.filesChanged.emit(this.boundedPlainFiles(files));
   }
 
   private setPreviewHtml(
@@ -1233,8 +1280,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
             .map((step) => ({ ...step })),
         };
       })
-      .filter((item) => item.id && item.steps.length > 0)
-      .slice(0, 6);
+      .filter((item) => item.id && item.steps.length > 0);
   }
 
   private clearFrameworkCheckResults(): void {

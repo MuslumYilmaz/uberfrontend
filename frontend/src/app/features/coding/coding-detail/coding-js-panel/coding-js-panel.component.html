@@ -23,17 +23,17 @@
                     (click)="toggleInterviewSetupPanel()"
                 >
                     <app-fa-glyph icon="pi pi-clock" aria-hidden="true"></app-fa-glyph>
-                    <span>Interview {{ interviewDurationMin() }}m</span>
+                    <span>Timed practice {{ interviewDurationMin() }}m</span>
                 </button>
                 <div *ngIf="interviewSetupOpen()" class="interview-setup__panel" data-testid="interview-mode-setup-panel">
                     <div class="interview-setup__row">
-                        <span class="interview-setup__title">Interview mode</span>
+                        <span class="interview-setup__title">Timed practice</span>
                         <button type="button" class="assist-chip__dismiss" (click)="closeInterviewSetupPanel()">Close</button>
                     </div>
                     <div class="interview-setup__controls">
                         <div class="lang-wrap">
                             <select #interviewDuration class="lang-select" [value]="interviewDurationMin()"
-                                aria-label="Interview mode duration" (change)="onInterviewDurationChange(interviewDuration.value)">
+                                aria-label="Timed practice duration" (change)="onInterviewDurationChange(interviewDuration.value)">
                                 <option value="15">15 min</option>
                                 <option value="30">30 min</option>
                                 <option value="45">45 min</option>
@@ -48,7 +48,7 @@
             </div>
 
             <span *ngIf="assistInterviewEnabled() && interviewModeEnabled()" class="interview-status-badge">
-                Interview active
+                Timed practice active
             </span>
 
             <div class="lang-compact">
@@ -381,7 +381,7 @@
                         </div>
 
                         <div *ngIf="interviewSummary() as summary" class="interview-summary" data-testid="interview-summary">
-                            <strong>Interview mode summary</strong>
+                            <strong>Timed practice summary</strong>
                             <p>Runs: {{ summary.runs }} · Best pass: {{ summary.bestPassPct }}% · Elapsed: {{ summary.elapsedSec }}s</p>
                         </div>
 

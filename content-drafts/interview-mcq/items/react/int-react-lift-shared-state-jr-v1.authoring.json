@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-lift-shared-state-jr-v1",
+  "revision": 8,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "shared-state-ownership",
+    "prompt": "Two accordion panels receive `activePanelId` from their nearest parent. Each also initializes local `isOpen` from that prop. After the parent resets the identifier to `null`, a panel can remain open. No component outside this parent and its panels needs the value. Which design gives Reset and panel clicks one consistent state owner?",
+    "options": [
+      {
+        "id": "choice-b1bc8a85be",
+        "label": "Have each panel derive `isOpen` from `activePanelId` and report clicks to the parent that owns the identifier."
+      },
+      {
+        "id": "choice-25a60efcb5",
+        "label": "Have each panel own local `isOpen` and update that value only from the panel's own click handler."
+      },
+      {
+        "id": "choice-6eb79b8deb",
+        "label": "Have each panel own local `isOpen` and notify its sibling directly whenever one panel is activated."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-b1bc8a85be",
+    "answerProof": {
+      "summary": "The parent is already the closest common owner, so each panel should derive its open state from the received identifier and report activation upward.",
+      "decisiveConstraints": [
+        "The nearest parent already owns and resets `activePanelId`.",
+        "The Reset bug appears because panel state can diverge from the parent identifier.",
+        "No component outside that parent subtree needs the state."
+      ],
+      "claims": [
+        {
+        "statement": "React recommends one owner for coordinated state, with controlled children receiving current values and event handlers from their closest common parent.",
+          "sourceIds": [
+            "react19-sharing-state"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-b1bc8a85be",
+        "verdict": "correct",
+        "explanation": "Each panel reads the parent's current identifier directly and reports activation upward, so Reset and click updates use one owner.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-25a60efcb5",
+        "verdict": "incorrect",
+        "explanation": "A panel-local value is a second owner and its click-only update path does not participate when the parent resets its identifier.",
+        "misconceptionTag": "local-click-state-follows-parent-reset",
+        "plausibility": "Each panel can update its own visible state directly when the user activates it.",
+        "falsifyingConstraint": "The parent can reset the accordion without invoking a panel's click handler."
+      },
+      {
+        "optionId": "choice-6eb79b8deb",
+        "verdict": "incorrect",
+        "explanation": "Sibling-to-sibling notifications distribute ownership and still leave the parent's Reset path disconnected from each local value.",
+        "misconceptionTag": "siblings-should-coordinate-local-copies",
+        "plausibility": "Direct notifications can make panel clicks appear synchronized during ordinary interaction.",
+        "falsifyingConstraint": "The parent can reset the accordion independently and already owns the authoritative identifier."
+      }
+    ],
+    "remediationTopics": [
+      "lifting React state",
+      "controlled components",
+      "avoiding copied props in state",
+      "state invariants"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Sharing State Between Components",
+        "url": "https://react.dev/learn/sharing-state-between-components",
+        "sourceId": "react19-sharing-state"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-sharing-state",
+          "title": "React: Sharing State Between Components",
+          "url": "https://react.dev/learn/sharing-state-between-components",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

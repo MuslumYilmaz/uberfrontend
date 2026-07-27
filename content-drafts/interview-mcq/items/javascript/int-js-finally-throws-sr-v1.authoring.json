@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-finally-throws-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "code-output",
+    "competency": "promise-recovery-and-finally-failure",
+    "prompt": "What does this Promise chain log, in order, in a standards-compliant browser?",
+    "code": {
+      "language": "javascript",
+      "runtime": "browser",
+      "source": "Promise.resolve('start')\n  .then((value) => {\n    console.log(value);\n    throw new Error('boom');\n  })\n  .finally(() => console.log('finally-1'))\n  .catch((error) => {\n    console.log(error.message);\n    return 'recovered';\n  })\n  .finally(() => {\n    console.log('finally-2');\n    throw new Error('cleanup');\n  })\n  .then(\n    (value) => console.log(value),\n    (error) => console.log(error.message),\n  );"
+    },
+    "options": [
+      {
+        "id": "choice-0e2fc15e16",
+        "label": "start → finally-1 → boom → finally-2 → recovered"
+      },
+      {
+        "id": "choice-312fd4b338",
+        "label": "start → boom → finally-1 → finally-2 → cleanup"
+      },
+      {
+        "id": "choice-7b0b744ee5",
+        "label": "start → finally-1 → boom → finally-2 → cleanup"
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-7b0b744ee5",
+    "answerProof": {
+      "summary": "The first finally transparently preserves `boom`; catch recovers, but the second finally throws `cleanup`, replacing that fulfillment with a rejection handled by the final rejection callback.",
+      "decisiveConstraints": [
+        "Promise handlers run in written chain order.",
+        "The catch returns a fulfilled recovery value.",
+        "A throw from finally rejects the Promise returned by finally."
+      ],
+      "claims": [
+        {
+          "statement": "A normal finally is transparent, but a finally callback that throws makes the returned Promise reject with the thrown reason.",
+          "sourceIds": [
+            "mdn-promise-finally"
+          ]
+        },
+        {
+          "statement": "A catch handler that returns normally converts the handled rejection into a fulfilled Promise.",
+          "sourceIds": [
+            "mdn-promise-catch"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-0e2fc15e16",
+        "verdict": "incorrect",
+        "explanation": "The second finally is not transparent because it throws, so `recovered` cannot reach the fulfillment callback.",
+        "misconceptionTag": "finally-never-changes-settlement",
+        "plausibility": "Finally normally passes through the chain's existing value or reason.",
+        "falsifyingConstraint": "A thrown cleanup error explicitly replaces the recovered fulfillment with rejection."
+      },
+      {
+        "optionId": "choice-312fd4b338",
+        "verdict": "incorrect",
+        "explanation": "The first finally appears before catch in the chain, so it logs before catch observes `boom`.",
+        "misconceptionTag": "catch-skips-earlier-finally",
+        "plausibility": "Catch is the handler that consumes the rejection from the first then callback.",
+        "falsifyingConstraint": "Promise propagation reaches the preceding finally link before the later catch link."
+      },
+      {
+        "optionId": "choice-7b0b744ee5",
+        "verdict": "correct",
+        "explanation": "Both finally callbacks run in order, and the second one's throw becomes the final handled rejection.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "promise-chain-order",
+      "promise-recovery",
+      "finally-rejection"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Promise.prototype.finally()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally",
+        "sourceId": "mdn-promise-finally"
+      },
+      {
+        "title": "MDN: Promise.prototype.catch()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch",
+        "sourceId": "mdn-promise-catch"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-promises-async-await"
+      ],
+      "sources": [
+        {
+          "id": "mdn-promise-finally",
+          "title": "MDN: Promise.prototype.finally()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-promise-catch",
+          "title": "MDN: Promise.prototype.catch()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    },
+    "verification": {
+      "kind": "browser-console-output",
+      "expectedOutput": [
+        "start",
+        "finally-1",
+        "boom",
+        "finally-2",
+        "cleanup"
+      ]
+    }
+  }
+}

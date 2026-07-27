@@ -1,0 +1,100 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  InterviewCodingResult,
+  InterviewResult,
+} from '../../core/models/interview.model';
+import { InterviewService } from '../../core/services/interview.service';
+import { FaButtonComponent, FaCardComponent } from '../../shared/ui';
+
+@Component({
+  selector: 'app-interview-results',
+  standalone: true,
+  imports: [CommonModule, RouterLink, FaButtonComponent, FaCardComponent],
+  templateUrl: './interview-results.component.html',
+  styleUrls: ['./interview-results.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class InterviewResultsComponent implements OnInit {
+  private readonly interviews = inject(InterviewService);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly result = signal<InterviewResult | null>(null);
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
+  readonly voided = signal(false);
+  private sessionId = '';
+
+  ngOnInit(): void {
+    this.sessionId = this.route.snapshot.paramMap.get('id')?.trim() || '';
+    if (!this.sessionId) {
+      this.loading.set(false);
+      this.error.set('This result link is invalid.');
+      return;
+    }
+    this.load();
+  }
+
+  load(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.voided.set(false);
+    this.interviews.getResult(this.sessionId).subscribe({
+      next: (result) => {
+        this.result.set(result);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        this.loading.set(false);
+        const code = String(error?.error?.code || error?.error?.error?.code || '');
+        if (code === 'INTERVIEW_SESSION_VOIDED') {
+          this.voided.set(true);
+          this.error.set('This interview was voided after a technical issue, so no answer report was created.');
+          return;
+        }
+        this.error.set(error?.status === 409 || error?.status === 425
+          ? 'This interview is still being finalized. Try again in a moment.'
+          : 'The interview report could not be loaded.');
+      },
+    });
+  }
+
+  optionLabel(
+    result: InterviewResult['questions'][number],
+    optionId: string | null,
+  ): string {
+    if (!optionId) return 'No answer';
+    return result.options.find((option) => option.id === optionId)?.label ?? 'Answer unavailable';
+  }
+
+  formatDuration(seconds: number | null): string {
+    if (seconds === null) return 'Not available';
+    const minutes = Math.floor(seconds / 60);
+    const remainder = seconds % 60;
+    return `${minutes}m ${remainder}s`;
+  }
+
+  formatTiming(timing: { usedSeconds: number | null; allowedSeconds: number | null }): string {
+    const used = this.formatDuration(timing.usedSeconds);
+    return timing.allowedSeconds === null
+      ? used
+      : `${used} of ${this.formatDuration(timing.allowedSeconds)}`;
+  }
+
+  codingEvidenceText(coding: InterviewCodingResult): string {
+    if (coding.submitted) {
+      return coding.locallyVerified
+        ? `${coding.passedChecks}/${coding.totalChecks} browser checks passed for the submitted draft.`
+        : 'No matching browser check run was recorded for the submitted draft.';
+    }
+
+    if (coding.attempted) {
+      return coding.locallyVerified
+        ? `${coding.passedChecks}/${coding.totalChecks} browser checks passed for the latest saved draft, which was not submitted.`
+        : 'No matching browser check run was recorded for the latest saved draft, which was not submitted.';
+    }
+
+    return 'No coding draft or browser check run was recorded.';
+  }
+}

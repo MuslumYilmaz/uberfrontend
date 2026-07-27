@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-stale-search-sr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "effect-async-race-ownership",
+    "prompt": "Several routes can mount independent instances of this autocomplete. Within one instance, query changes can start overlapping requests, and unmount can occur before settlement. `fetchSearch` is a legacy client with no cancellation support. Every result, error, and loading write must come from that same instance's current Effect run, without invalidating another instance's current run. Which change enforces this?",
+    "code": {
+      "language": "jsx",
+      "runtime": "react-19.2",
+      "source": "useEffect(() => {\n  setStatus('loading');\n\n  fetchSearch(query)\n    .then((items) => setResults(items))\n    .catch((error) => setError(error))\n    .finally(() => setStatus('idle'));\n}, [query]);"
+    },
+    "options": [
+      {
+        "id": "choice-681c0cc8fd",
+        "label": "Use one module-level generation counter; each run records it and commits only while its recorded value remains current."
+      },
+      {
+        "id": "choice-23ee524b51",
+        "label": "Use one component-level mounted ref; only unmount cleanup clears it and every asynchronous handler checks the ref."
+      },
+      {
+        "id": "choice-ad1b440775",
+        "label": "Use one Effect-run invalidation flag; that run's cleanup sets it and every asynchronous handler checks the flag."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-ad1b440775",
+    "answerProof": {
+      "summary": "A local flag belongs to one Effect run and one component instance; that run's cleanup revokes its write authority on rerun or unmount without coupling independent instances.",
+      "decisiveConstraints": [
+        "The request function cannot be changed or aborted.",
+        "Results, errors, and final loading updates all require same-instance latest-run ownership.",
+        "Ownership must be revoked on both a dependency rerun and component unmount.",
+        "Current runs in independently mounted instances must remain eligible to commit."
+      ],
+      "claims": [
+        {
+          "statement": "React documents using an Effect cleanup flag so responses from obsolete requests are ignored even if they arrive out of order.",
+          "sourceIds": [
+            "react19-use-effect"
+          ]
+        },
+        {
+          "statement": "React runs an Effect's cleanup before dependency-driven setup reruns and after the component is removed, matching the lifetime required by a run-local invalidation flag.",
+          "sourceIds": [
+            "react19-use-effect"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-681c0cc8fd",
+        "verdict": "incorrect",
+        "explanation": "A shared generation can suppress stale callbacks, but a request started by one instance also invalidates the still-current run of another instance.",
+        "misconceptionTag": "global-generation-preserves-instance-ownership",
+        "plausibility": "A generation check is a common way to reject callbacks from an older request.",
+        "falsifyingConstraint": "The ownership boundary is per mounted instance, while the counter is shared across instances."
+      },
+      {
+        "optionId": "choice-23ee524b51",
+        "verdict": "incorrect",
+        "explanation": "The ref blocks writes after unmount, but it remains true across query reruns, so an older request in the same mounted instance can still commit.",
+        "misconceptionTag": "mounted-status-is-run-identity",
+        "plausibility": "A mounted ref can prevent callbacks from writing after their component has unmounted.",
+        "falsifyingConstraint": "The same instance can start a newer run while it remains mounted."
+      },
+      {
+        "optionId": "choice-ad1b440775",
+        "verdict": "correct",
+        "explanation": "Cleanup revokes exactly that run's ownership on rerun or unmount, and guarding every callback covers success, failure, and loading commits.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "React Effect cleanup",
+      "async response races",
+      "per-instance request ownership",
+      "unmount-safe asynchronous state"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useEffect",
+        "url": "https://react.dev/reference/react/useEffect",
+        "sourceId": "react19-use-effect"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "react-useeffect-purpose"
+      ],
+      "sources": [
+        {
+          "id": "react19-use-effect",
+          "title": "React: useEffect",
+          "url": "https://react.dev/reference/react/useEffect",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

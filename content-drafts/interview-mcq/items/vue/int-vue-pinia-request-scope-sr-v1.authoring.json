@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-pinia-request-scope-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "ssr-store-request-ownership",
+    "prompt": "A Node server creates one Pinia instance at module scope and reuses it for every Vue 3.5 SSR request. Under concurrent traffic, one user's cart can appear in another response. Which architecture best fixes the ownership boundary?",
+    "options": [
+      {
+        "id": "choice-08cb186562",
+        "label": "Reset the shared Pinia state at the start of each request, then render concurrently with that singleton."
+      },
+      {
+        "id": "choice-654b0f9457",
+        "label": "Create the Vue app and a new `createPinia()` container per request, then serialize only its store state."
+      },
+      {
+        "id": "choice-f6793e14cb",
+        "label": "Reuse the shared Pinia but create fresh component instances per request before serializing its store state."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-654b0f9457",
+    "answerProof": {
+      "summary": "Server modules are reused across requests, so request-specific global state needs a new application and Pinia container per request before its isolated state is serialized.",
+      "decisiveConstraints": [
+        "SSR requests may execute concurrently in one server process.",
+        "Cart state is private to one request and user."
+      ],
+      "claims": [
+        {
+          "statement": "Vue's SSR guidance warns that module-scope singleton state can leak across requests and recommends creating the app and global stores anew for every request.",
+          "sourceIds": [
+            "vue35-ssr-request-state"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-08cb186562",
+        "verdict": "incorrect",
+        "explanation": "Resetting does not isolate overlapping renders; a second request can reset or mutate the singleton while the first request still uses it.",
+        "misconceptionTag": "reset-makes-singleton-request-scoped",
+        "plausibility": "A reset appears to remove state left by the previously completed request.",
+        "falsifyingConstraint": "The server handles concurrent requests whose render lifetimes can overlap."
+      },
+      {
+        "optionId": "choice-654b0f9457",
+        "verdict": "correct",
+        "explanation": "Each request receives an independent store graph, and serializing that exact instance prevents another request's mutations from entering its response.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-f6793e14cb",
+        "verdict": "incorrect",
+        "explanation": "Fresh component instances do not isolate a Pinia container they all share, so their request-specific actions still mutate the same store state.",
+        "misconceptionTag": "component-scope-isolates-global-store",
+        "plausibility": "Vue already creates separate component trees while rendering separate application responses.",
+        "falsifyingConstraint": "The leaked cart is held by the reused module-scope Pinia instance, not by component-local state."
+      }
+    ],
+    "remediationTopics": [
+      "Vue SSR state isolation",
+      "Pinia request ownership",
+      "cross-request state pollution"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Server-Side Rendering",
+        "url": "https://vuejs.org/guide/scaling-up/ssr.html",
+        "sourceId": "vue35-ssr-request-state"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-ssr-request-state",
+          "title": "Vue: Server-Side Rendering",
+          "url": "https://vuejs.org/guide/scaling-up/ssr.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-22",
+          "revision": "Vue 3.5.34 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

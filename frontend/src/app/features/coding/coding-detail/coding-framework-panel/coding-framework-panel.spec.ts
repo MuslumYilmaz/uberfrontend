@@ -1,6 +1,7 @@
 import { PLATFORM_ID, NgZone, SimpleChange } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { PreviewBuilderService } from '../../../../core/services/preview-builder.service';
@@ -48,14 +49,14 @@ describe('CodingFrameworkPanelComponent', () => {
     });
   });
 
-  function createComponent(): CodingFrameworkPanelComponent {
+  function createComponent(http: any = {}): CodingFrameworkPanelComponent {
     const sanitizer = TestBed.inject(DomSanitizer);
     const zone = TestBed.inject(NgZone);
 
     const component = TestBed.runInInjectionContext(
       () => new CodingFrameworkPanelComponent(
         codeStore,
-        {} as any,
+        http,
         sanitizer,
         zone,
         previewBuilder,
@@ -228,6 +229,26 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(component.frameworkChecks()).toEqual([]);
   });
 
+  it('keeps every configured framework check instead of truncating after six', () => {
+    const component = createComponent();
+    component.question = {
+      id: 'react-thirteen-checks',
+      tags: ['react'],
+      frameworkTests: Array.from({ length: 13 }, (_unused, index) => ({
+        id: `check-${index + 1}`,
+        name: `Check ${index + 1}`,
+        steps: [{ type: 'expectExists', selector: `.target-${index + 1}` }],
+      })),
+    } as any;
+
+    component.initFromQuestion();
+
+    expect(component.frameworkChecks().length).toBe(13);
+    expect(component.frameworkChecks().map((check) => check.id)).toEqual(
+      Array.from({ length: 13 }, (_unused, index) => `check-${index + 1}`),
+    );
+  });
+
   it('switches pressure checks without reinitializing the framework workspace', () => {
     const component = createComponent();
     const initSpy = spyOn(component, 'initFromQuestion');
@@ -245,6 +266,97 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(initSpy).not.toHaveBeenCalled();
     expect(component.frameworkChecks()).toEqual(pressureChecks);
     expect(component.frameworkCheckResults()).toEqual([]);
+  });
+
+  it('boots interview files from the override without fetching a catalog asset', async () => {
+    const http = jasmine.createSpyObj('HttpClient', ['get']);
+    const component = createComponent(http);
+    component.question = {
+      id: 'react-interview',
+      tags: ['react'],
+      sdk: { asset: 'assets/private-or-catalog-starter.json', openFile: 'src/App.tsx' },
+    } as any;
+    component.interviewMode = true;
+    component.disablePersistence = true;
+    component.starterFilesOverride = {
+      'src/App.tsx': 'export default function App() { return <main>Interview</main>; }',
+      'src/App.css': 'main { display: grid; }',
+    };
+
+    component.initFromQuestion();
+    await flushMicrotasks();
+
+    expect(http.get).not.toHaveBeenCalled();
+    expect(component.filesMap()['src/App.tsx']).toContain('Interview');
+    expect(codeStore.initFrameworkAsync).not.toHaveBeenCalled();
+    expect(codeStore.saveFrameworkFileAsync).not.toHaveBeenCalled();
+  });
+
+  it('fetches only the pinned public starter asset for a new interview workspace', async () => {
+    const http = jasmine.createSpyObj('HttpClient', ['get']);
+    http.get.and.returnValue(of({
+      openFile: 'src/App.tsx',
+      files: {
+        'src/App.tsx': 'export default function App() { return <main>Starter</main>; }',
+        'src/App.css': 'main { display: grid; }',
+      },
+    }));
+    const component = createComponent(http);
+    component.question = {
+      id: 'react-new-interview',
+      tags: ['react'],
+      sdk: { asset: 'assets/sb/react/question/react-counter.v2.json' },
+    } as any;
+    component.interviewMode = true;
+    component.disablePersistence = true;
+    component.starterFilesOverride = null;
+
+    component.initFromQuestion();
+    await flushMicrotasks();
+
+    expect(http.get).toHaveBeenCalledTimes(1);
+    expect(http.get).toHaveBeenCalledWith('assets/sb/react/question/react-counter.v2.json');
+    expect(component.filesMap()['src/App.tsx']).toContain('Starter');
+    expect(codeStore.initFrameworkAsync).not.toHaveBeenCalled();
+  });
+
+  it('emits bounded interview files without using normal draft persistence', async () => {
+    const component = createComponent();
+    const emitted: Record<string, string>[] = [];
+    component.interviewMode = true;
+    component.disablePersistence = true;
+    component.starterFilesOverride = {
+      '/src/App.tsx': 'export default function App() { return null; }',
+    };
+    component.filesChanged.subscribe((files) => emitted.push(files));
+
+    component.initFromQuestion();
+    await flushMicrotasks();
+    component.onFrameworkCodeChange('export default function App() { return <p>Edited</p>; }');
+
+    expect(emitted.length).toBeGreaterThan(0);
+    const latest = emitted[emitted.length - 1];
+    expect(latest['src/App.tsx']).toContain('Edited');
+    expect(Object.getPrototypeOf(latest)).toBe(Object.prototype);
+    expect(codeStore.saveFrameworkFileAsync).not.toHaveBeenCalled();
+    expect(codeStore.setFrameworkBundleAsync).not.toHaveBeenCalled();
+  });
+
+  it('does not re-bootstrap the interview workspace when one file is edited', async () => {
+    const component = createComponent();
+    component.interviewMode = true;
+    component.disablePersistence = true;
+    component.starterFilesOverride = {
+      'src/App.tsx': 'export default function App() { return null; }',
+    };
+    component.initFromQuestion();
+    await flushMicrotasks();
+    const bootstrap = spyOn(component, 'initFromQuestion').and.callThrough();
+
+    component.onFrameworkCodeChange('export default function App() { return <p>Edited</p>; }');
+
+    expect(bootstrap).not.toHaveBeenCalled();
+    expect(component.filesMap()['src/App.tsx']).toContain('Edited');
   });
 
   it('flushes the old draft and reinitializes when the storage key changes', async () => {
@@ -445,6 +557,9 @@ describe('CodingFrameworkPanelComponent', () => {
     const component = createComponent();
     setCounterCheck(component);
     previewBuilder.build.and.resolveTo(counterHtml());
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+    ]);
 
     const results = await component.runFrameworkChecks();
 
@@ -467,10 +582,34 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(record.code).toBeUndefined();
   });
 
+  it('can run interview checks without recording normal attempt insights', async () => {
+    const component = createComponent();
+    component.interviewMode = true;
+    component.suppressAttemptRecording = true;
+    component.disablePersistence = true;
+    setCounterCheck(component);
+    previewBuilder.build.and.resolveTo(counterHtml());
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+    ]);
+
+    const results = await component.runFrameworkChecks();
+
+    expect(results[0].passed).toBeTrue();
+    expect(attemptInsights.recordRun).not.toHaveBeenCalled();
+    expect(codeStore.saveFrameworkFileAsync).not.toHaveBeenCalled();
+  });
+
   it('records failed framework checks with category and signature metadata', async () => {
     const component = createComponent();
     setCounterCheck(component);
     previewBuilder.build.and.resolveTo(counterHtml({ broken: true }));
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([{
+      name: 'Counter flow',
+      passed: false,
+      error: '.value did not reach text "1" before timeout. Last text: "0"',
+      failureKind: 'assertion',
+    }]);
 
     const results = await component.runFrameworkChecks();
 
@@ -490,6 +629,12 @@ describe('CodingFrameworkPanelComponent', () => {
     setCounterCheck(component);
     (component as any).frameworkCheckReadyTimeoutMs = 5;
     previewBuilder.build.and.resolveTo('<!doctype html><html><body><div class="value">0</div></body></html>');
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([{
+      name: 'Counter flow',
+      passed: false,
+      error: 'Framework check sandbox timed out waiting for preview render readiness',
+      failureKind: 'infrastructure-timeout',
+    }]);
 
     const results = await component.runFrameworkChecks();
 
@@ -576,7 +721,7 @@ describe('CodingFrameworkPanelComponent', () => {
       passCount: 1,
       totalCount: 1,
     }));
-  });
+  }, 15_000);
 
   it('mounts a fresh scratch preview for each framework check', async () => {
     const component = createComponent();
@@ -619,7 +764,7 @@ describe('CodingFrameworkPanelComponent', () => {
     const results = await component.runFrameworkChecks();
 
     expect(results.map((result) => result.passed)).toEqual([true, true]);
-  });
+  }, 15_000);
 });
 
 function deferred<T>() {

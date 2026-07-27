@@ -1,0 +1,729 @@
+{
+  "schemaVersion": "1.0.0",
+  "registryId": "frontend-interview-coding-registry-v1",
+  "registryVersion": "1.0.0",
+  "status": "candidate",
+  "finalApproval": null,
+  "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+  "reviewBatch": {
+    "reviewedDefinitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+    "reviewedAt": "2026-07-27",
+    "technical": {
+      "reviewer": "codex-interview-coding-technical-v1",
+      "reviewerType": "ai",
+      "status": "passed",
+      "notes": [
+        "Every source question, starter asset, and pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
+        "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+      ]
+    },
+    "editorial": {
+      "reviewer": "codex-interview-coding-editorial-v1",
+      "reviewerType": "ai",
+      "status": "passed",
+      "notes": [
+        "The selected tasks are realistic implementation exercises with explicit observable constraints.",
+        "Rubric groups align with the requirements exposed for the selected level and round limit."
+      ]
+    },
+    "seniorLevelReviews": [
+      {
+        "variantId": "int-code-react-senior-debounced-search-v1",
+        "reviewer": "codex-interview-coding-level-v1",
+        "reviewerType": "ai",
+        "status": "passed",
+        "notes": [
+          "Four rounds span debounce ownership, terminal-state recovery, stale-response control, accessibility, and teardown."
+        ]
+      },
+      {
+        "variantId": "int-code-react-senior-chips-autocomplete-v1",
+        "reviewer": "codex-interview-coding-level-v1",
+        "reviewerType": "ai",
+        "status": "passed",
+        "notes": [
+          "Four rounds span normalized identity, combobox keyboard behavior, invite boundaries, accessibility, and teardown."
+        ]
+      },
+      {
+        "variantId": "int-code-angular-senior-debounced-search-v1",
+        "reviewer": "codex-interview-coding-level-v1",
+        "reviewerType": "ai",
+        "status": "passed",
+        "notes": [
+          "Four rounds exercise RxJS-style cancellation ownership, race safety, accessible state, and component destruction."
+        ]
+      },
+      {
+        "variantId": "int-code-angular-senior-chips-autocomplete-v1",
+        "reviewer": "codex-interview-coding-level-v1",
+        "reviewerType": "ai",
+        "status": "passed",
+        "notes": [
+          "Four rounds exercise component identity, keyboard state, hard limits, ARIA relationships, and listener cleanup."
+        ]
+      },
+      {
+        "variantId": "int-code-vue-senior-debounced-search-v1",
+        "reviewer": "codex-interview-coding-level-v1",
+        "reviewerType": "ai",
+        "status": "passed",
+        "notes": [
+          "Four rounds exercise watcher/timer ownership, async race safety, accessible state, and unmount cleanup."
+        ]
+      },
+      {
+        "variantId": "int-code-vue-senior-chips-autocomplete-v1",
+        "reviewer": "codex-interview-coding-level-v1",
+        "reviewerType": "ai",
+        "status": "passed",
+        "notes": [
+          "Four rounds exercise reactive identity, combobox keyboard state, invite limits, ARIA relationships, and unmount cleanup."
+        ]
+      }
+    ]
+  },
+  "variants": [
+    {
+      "id": "int-code-core-web-junior-validate-username-v1",
+      "revision": 1,
+      "track": "core-web",
+      "level": "junior",
+      "catalog": "javascript",
+      "sourceQuestionId": "js-validate-username",
+      "expectedQuestionHash": "33b5bb1050a7efb5ad59f896c1d0e7208e3dd0a36d9959a1ae19a5d0b430cc4d",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "rubric": [
+        {
+          "id": "input-contract",
+          "title": "Input and length contract",
+          "criteria": [
+            "Reject non-string inputs.",
+            "Accept only names between 3 and 16 characters."
+          ],
+          "checkNames": [
+            "rejects invalid length",
+            "rejects non-string values"
+          ]
+        },
+        {
+          "id": "username-rules",
+          "title": "Username rules",
+          "criteria": [
+            "Require a lowercase letter as the first character.",
+            "Allow lowercase letters, digits, and underscores without trailing or consecutive underscores."
+          ],
+          "checkNames": [
+            "accepts valid usernames",
+            "rejects uppercase or invalid chars",
+            "rejects leading digit, trailing underscore, or consecutive underscores"
+          ]
+        }
+      ],
+      "remediationTopics": [
+        "Input validation boundaries",
+        "Regular-expression decomposition",
+        "Defensive type checks"
+      ]
+    },
+    {
+      "id": "int-code-core-web-junior-escape-html-v1",
+      "revision": 1,
+      "track": "core-web",
+      "level": "junior",
+      "catalog": "javascript",
+      "sourceQuestionId": "js-escape-html",
+      "expectedQuestionHash": "8340c5e481f60644a7862af77b94c9b31d01a6a42ed4d9a01f6bb0a5ca69ba12",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "rubric": [
+        {
+          "id": "encoding-contract",
+          "title": "Encoding contract",
+          "criteria": [
+            "Encode ampersand, angle brackets, double quote, and apostrophe.",
+            "Leave ordinary text unchanged and avoid double-decoding existing entities."
+          ],
+          "checkNames": [
+            "escapes HTML special characters",
+            "leaves safe text unchanged",
+            "escapes ampersands in existing entities"
+          ]
+        },
+        {
+          "id": "context-boundary",
+          "title": "Context boundary",
+          "criteria": [
+            "Keep the implementation scoped to HTML text-content interpolation.",
+            "Do not present the encoder as a general sanitizer."
+          ],
+          "checkNames": []
+        }
+      ],
+      "remediationTopics": [
+        "Contextual output encoding",
+        "HTML text versus attribute contexts",
+        "DOM textContent safety"
+      ]
+    },
+    {
+      "id": "int-code-core-web-mid-take-latest-v1",
+      "revision": 1,
+      "track": "core-web",
+      "level": "mid",
+      "catalog": "javascript",
+      "sourceQuestionId": "js-take-latest",
+      "expectedQuestionHash": "d37f8d33114051f89e5d20affa0a177a9898150f28ad4c73d0e94d3688e9e66c",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "rubric": [
+        {
+          "id": "cancellation-ownership",
+          "title": "Cancellation ownership",
+          "criteria": [
+            "Give each call its own AbortController.",
+            "Abort only the previous in-flight call when a newer call starts."
+          ],
+          "checkNames": [
+            "does not abort a controller after its call has completed",
+            "aborts the previous controller immediately"
+          ]
+        },
+        {
+          "id": "latest-settlement",
+          "title": "Latest-call settlement",
+          "criteria": [
+            "Allow only the newest call to resolve successfully.",
+            "Prevent stale cleanup from clearing ownership of a newer call."
+          ],
+          "checkNames": [
+            "resolves only the latest call",
+            "a stale finally cannot clear the newer in-flight controller"
+          ]
+        },
+        {
+          "id": "error-propagation",
+          "title": "Error propagation",
+          "criteria": [
+            "Preserve errors from the current call.",
+            "Expose cancellation as an AbortError-compatible rejection."
+          ],
+          "checkNames": [
+            "propagates errors from the latest call"
+          ]
+        }
+      ],
+      "remediationTopics": [
+        "AbortController ownership",
+        "Async race control",
+        "Stale finally guards"
+      ]
+    },
+    {
+      "id": "int-code-core-web-mid-fetch-timeout-v1",
+      "revision": 1,
+      "track": "core-web",
+      "level": "mid",
+      "catalog": "javascript",
+      "sourceQuestionId": "js-fetch-json-timeout",
+      "expectedQuestionHash": "1aa0d039934137375ab1b3c426a1d12713da5d6b6b5844f19add92c8f8cad37d",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "rubric": [
+        {
+          "id": "response-contract",
+          "title": "Response contract",
+          "criteria": [
+            "Parse JSON only from successful responses.",
+            "Reject non-OK responses with the HTTP status."
+          ],
+          "checkNames": [
+            "resolves JSON for ok responses",
+            "throws on non-ok status"
+          ]
+        },
+        {
+          "id": "timeout-cancellation",
+          "title": "Timeout cancellation",
+          "criteria": [
+            "Abort the request when timeoutMs elapses.",
+            "Clear owned timeout resources after every terminal path."
+          ],
+          "checkNames": [
+            "aborts on timeout"
+          ]
+        },
+        {
+          "id": "external-signal",
+          "title": "External signal composition",
+          "criteria": [
+            "Respect an already-aborted or later-aborted caller signal.",
+            "Do not leak abort listeners after settlement."
+          ],
+          "checkNames": [
+            "respects external abort signal",
+            "the embedded fetch mock handles an already-aborted signal"
+          ]
+        }
+      ],
+      "remediationTopics": [
+        "Fetch error handling",
+        "AbortSignal composition",
+        "Timer and listener cleanup"
+      ]
+    },
+    {
+      "id": "int-code-core-web-senior-lru-cache-v1",
+      "revision": 1,
+      "track": "core-web",
+      "level": "senior",
+      "catalog": "javascript",
+      "sourceQuestionId": "js-create-lru-cache",
+      "expectedQuestionHash": "9d0739b5835abcd83a02b6d311bdc60062f8019201c952a511546da5cee97709",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "rubric": [
+        {
+          "id": "capacity-contract",
+          "title": "Capacity contract",
+          "criteria": [
+            "Reject non-positive or non-integer capacities.",
+            "Evict exactly the least-recently-used key on overflow."
+          ],
+          "checkNames": [
+            "throws for invalid maxSize",
+            "evicts least-recently-used on overflow"
+          ]
+        },
+        {
+          "id": "recency-contract",
+          "title": "Recency contract",
+          "criteria": [
+            "Refresh recency on successful get.",
+            "Refresh recency without growing size when an existing key is updated."
+          ],
+          "checkNames": [
+            "get refreshes recency",
+            "updating an existing key does not grow size"
+          ]
+        },
+        {
+          "id": "api-contract",
+          "title": "Cache API contract",
+          "criteria": [
+            "Keep has, size, clear, and keys consistent with stored entries.",
+            "Return keys from least to most recently used."
+          ],
+          "checkNames": []
+        }
+      ],
+      "remediationTopics": [
+        "Bounded-cache invariants",
+        "Map insertion order",
+        "Amortized constant-time updates"
+      ]
+    },
+    {
+      "id": "int-code-core-web-senior-concurrency-map-v1",
+      "revision": 1,
+      "track": "core-web",
+      "level": "senior",
+      "catalog": "javascript",
+      "sourceQuestionId": "js-concurrency-map-limit",
+      "expectedQuestionHash": "869a8faee3c301a7d024b5252979d043ff636eb6dd07d556a62cd6bd310cd762",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 1,
+      "runner": "javascript",
+      "rubric": [
+        {
+          "id": "concurrency-bound",
+          "title": "Concurrency bound",
+          "criteria": [
+            "Reject an invalid limit.",
+            "Never run more workers concurrently than the configured limit."
+          ],
+          "checkNames": [
+            "respects concurrency limit (no more than limit active)",
+            "throws if limit < 1"
+          ]
+        },
+        {
+          "id": "ordered-results",
+          "title": "Ordered results",
+          "criteria": [
+            "Write every result at its source index.",
+            "Resolve in input order despite different worker durations."
+          ],
+          "checkNames": [
+            "preserves order with mixed durations"
+          ]
+        },
+        {
+          "id": "error-strategies",
+          "title": "Error strategies",
+          "criteria": [
+            "Reject the fail-fast mode on its first observed worker error.",
+            "Return ordered fulfilled and rejected outcomes in all-settled mode."
+          ],
+          "checkNames": [
+            "fail-fast rejects on first error",
+            "all-settled aggregates outcomes"
+          ]
+        }
+      ],
+      "remediationTopics": [
+        "Concurrency scheduling",
+        "Order preservation",
+        "Fail-fast versus all-settled semantics"
+      ]
+    },
+    {
+      "id": "int-code-react-junior-counter-v1",
+      "revision": 1,
+      "track": "react",
+      "level": "junior",
+      "catalog": "react",
+      "sourceQuestionId": "react-counter",
+      "expectedQuestionHash": "430f69a04d7f6f6a0d547263ce65a837228aa9a38c64bc4116d16880bf942b83",
+      "expectedStarterAssetHash": "7d5d08b08211964ab8ca82b4b2e51addd5d4a57e6d4b4a371e73c84f44cc72f5",
+      "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "React state transitions",
+        "Derived disabled state",
+        "Configurable update steps"
+      ]
+    },
+    {
+      "id": "int-code-react-junior-todo-v1",
+      "revision": 1,
+      "track": "react",
+      "level": "junior",
+      "catalog": "react",
+      "sourceQuestionId": "react-todo-list",
+      "expectedQuestionHash": "e58f6281c6c5c12ce1a92603499d2c22bdb2658c9a0c5e6e81247287a8525bd8",
+      "expectedStarterAssetHash": "c286e2546c2dc4a7fe9afe954771d87f3e7d8b6aaf945e31039fd545f5b93649",
+      "expectedPressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Stable React list identity",
+        "Normalized form input",
+        "Derived list filters"
+      ]
+    },
+    {
+      "id": "int-code-react-mid-pagination-v1",
+      "revision": 1,
+      "track": "react",
+      "level": "mid",
+      "catalog": "react",
+      "sourceQuestionId": "react-pagination-table",
+      "expectedQuestionHash": "22216672241e96ee92ee284c66e828c464f0e50ddfdec8f096f963a2192e9ff9",
+      "expectedStarterAssetHash": "7cecf0917c82b8585f7e71891b9e91d51b4ec168719d33042bceed7943b055e8",
+      "expectedPressureAssetHash": "91d478feeb7ac3dbb2a656c76a61cd2847e69c2230137dbb275dbb7ba3ef76f1",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Derived pagination state",
+        "Filter and page reset ownership",
+        "Stable sorting"
+      ]
+    },
+    {
+      "id": "int-code-react-mid-shopping-cart-v1",
+      "revision": 1,
+      "track": "react",
+      "level": "mid",
+      "catalog": "react",
+      "sourceQuestionId": "react-shopping-cart",
+      "expectedQuestionHash": "6e2e1a02e569d4bc7d33bddf88f18c38d9a7c78ee66f33bb191050f53223cdae",
+      "expectedStarterAssetHash": "201d03313a7ab3a0ad99aadcf5b1fdb374fdacd8d6c21d77247a187ed6ca4d4b",
+      "expectedPressureAssetHash": "22c4a913853a5ad9bb1ab688b27b7ca89d0316bdc5642a86d884a76279c80238",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Immutable cart transitions",
+        "Derived money totals",
+        "Inventory boundary guards"
+      ]
+    },
+    {
+      "id": "int-code-react-senior-debounced-search-v1",
+      "revision": 1,
+      "track": "react",
+      "level": "senior",
+      "catalog": "react",
+      "sourceQuestionId": "react-debounced-search",
+      "expectedQuestionHash": "0c5e3c11677e5f212cb498bf18a730a8042fb12ec3dd2bb68235dc8bb6b260b6",
+      "expectedStarterAssetHash": "76a4d2021563c09632b1ed36d4bc2b73cdfa8e1745657497b8de9ca5a74ee8fd",
+      "expectedPressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Effect and timer ownership",
+        "Latest-request-wins control",
+        "Accessible async states"
+      ]
+    },
+    {
+      "id": "int-code-react-senior-chips-autocomplete-v1",
+      "revision": 1,
+      "track": "react",
+      "level": "senior",
+      "catalog": "react",
+      "sourceQuestionId": "react-chips-input-autocomplete",
+      "expectedQuestionHash": "fda1a18b03670ce6956fa30e11f8e1fd730c00b95f5446fbc0b2356c580a1778",
+      "expectedStarterAssetHash": "8e4549bab1326096e01b28489310047caf37ac913f74647b23bea06e2d1a5c81",
+      "expectedPressureAssetHash": "024959244433cbb0cb92667b2292d2b44e5e50cfd416ac2be4c57ce7e6fa9aa0",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Combobox keyboard state",
+        "Normalized chip identity",
+        "ARIA relationships and cleanup"
+      ]
+    },
+    {
+      "id": "int-code-angular-junior-counter-v1",
+      "revision": 1,
+      "track": "angular",
+      "level": "junior",
+      "catalog": "angular",
+      "sourceQuestionId": "angular-counter-starter",
+      "expectedQuestionHash": "54969ea35d13354c770555bd91a00fad30e6f28aa6fb8823586b7ca2b0c2ea19",
+      "expectedStarterAssetHash": "231776aa460a498fe76a6ada5a5e0518bb7762550b48c54a6e0ffda6dcdd6e07",
+      "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Angular component state transitions",
+        "Derived disabled state",
+        "Template-bound step updates"
+      ]
+    },
+    {
+      "id": "int-code-angular-junior-todo-v1",
+      "revision": 1,
+      "track": "angular",
+      "level": "junior",
+      "catalog": "angular",
+      "sourceQuestionId": "angular-todo-list-starter",
+      "expectedQuestionHash": "4361d88fb21aed3a5c0637d1b920533b6ce3f2dc998e93670d11b2e566f5a642",
+      "expectedStarterAssetHash": "da2f8424d64c15fb40e21c54e4457c2bd2ef9981bfad7ad10e39e87f6871b510",
+      "expectedPressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Stable Angular list identity",
+        "Normalized form input",
+        "Derived list filters"
+      ]
+    },
+    {
+      "id": "int-code-angular-mid-pagination-v1",
+      "revision": 1,
+      "track": "angular",
+      "level": "mid",
+      "catalog": "angular",
+      "sourceQuestionId": "angular-pagination-table",
+      "expectedQuestionHash": "b21a1f259e1b9b05fd9e9aacb03847ac2afb1e408380347d65f570b68cc6ecfd",
+      "expectedStarterAssetHash": "6db11981a30fdd241abf5fc873cd1ab23b1133cd4fa133464668a64d8782fabc",
+      "expectedPressureAssetHash": "91d478feeb7ac3dbb2a656c76a61cd2847e69c2230137dbb275dbb7ba3ef76f1",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Derived pagination state",
+        "Filter and page reset ownership",
+        "Stable numeric and text sorting"
+      ]
+    },
+    {
+      "id": "int-code-angular-mid-shopping-cart-v1",
+      "revision": 1,
+      "track": "angular",
+      "level": "mid",
+      "catalog": "angular",
+      "sourceQuestionId": "angular-shopping-cart-mini",
+      "expectedQuestionHash": "6123fd8abad5badd0f1bcc9fdac91de2ffc7d75ce1ee1c5692cf6eabd2670334",
+      "expectedStarterAssetHash": "450287b2bc1ab07b2613e55b3ffa45536c76b0a2217c09a96c6dd41b22d72cb3",
+      "expectedPressureAssetHash": "22c4a913853a5ad9bb1ab688b27b7ca89d0316bdc5642a86d884a76279c80238",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Immutable cart transitions",
+        "Derived money totals",
+        "Inventory boundary guards"
+      ]
+    },
+    {
+      "id": "int-code-angular-senior-debounced-search-v1",
+      "revision": 1,
+      "track": "angular",
+      "level": "senior",
+      "catalog": "angular",
+      "sourceQuestionId": "angular-debounced-search",
+      "expectedQuestionHash": "efcf186b9f682a3670dd554859968dab7d3a5d30529fc87f2f028edb6f6c733d",
+      "expectedStarterAssetHash": "9a2d1aa78b378f1839abe8ade2b66f739c8c2e85de363822f40eacefb230d21d",
+      "expectedPressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "RxJS cancellation ownership",
+        "Latest-request-wins control",
+        "Accessible async states"
+      ]
+    },
+    {
+      "id": "int-code-angular-senior-chips-autocomplete-v1",
+      "revision": 1,
+      "track": "angular",
+      "level": "senior",
+      "catalog": "angular",
+      "sourceQuestionId": "angular-chips-input-autocomplete",
+      "expectedQuestionHash": "f7b56cfe53d3913d8057bc7db4a1a84d74a6f70c299919ca2a736b232c4c34a8",
+      "expectedStarterAssetHash": "da9140ce4d7d4cf76a5569c69970e6846446f3567684116c28df013314f17951",
+      "expectedPressureAssetHash": "024959244433cbb0cb92667b2292d2b44e5e50cfd416ac2be4c57ce7e6fa9aa0",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Combobox keyboard state",
+        "Normalized chip identity",
+        "ARIA relationships and listener cleanup"
+      ]
+    },
+    {
+      "id": "int-code-vue-junior-counter-v1",
+      "revision": 1,
+      "track": "vue",
+      "level": "junior",
+      "catalog": "vue",
+      "sourceQuestionId": "vue-counter",
+      "expectedQuestionHash": "15b53480ffd43eef02041d41afffe13ccb5d26012c1347eb652c0959cd41fad1",
+      "expectedStarterAssetHash": "7d1eb5d429959aa4a0e190f0f8eae4075d25a4e7e01cd034508629404669042b",
+      "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Vue reactive state transitions",
+        "Derived disabled state",
+        "Configurable update steps"
+      ]
+    },
+    {
+      "id": "int-code-vue-junior-todo-v1",
+      "revision": 1,
+      "track": "vue",
+      "level": "junior",
+      "catalog": "vue",
+      "sourceQuestionId": "vue-todo-list",
+      "expectedQuestionHash": "0d2b5deb6696c5c0c3f2a2436f5578dd86f018ccb336862ae69ac7364634a9a8",
+      "expectedStarterAssetHash": "10e793a0d5c0696cab9da903ca1fc9abdc2200a9f9efb2f70f7113fe0f493ab2",
+      "expectedPressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
+      "timeLimitSeconds": 1500,
+      "roundLimit": 2,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Stable Vue list identity",
+        "Normalized form input",
+        "Derived list filters"
+      ]
+    },
+    {
+      "id": "int-code-vue-mid-pagination-v1",
+      "revision": 1,
+      "track": "vue",
+      "level": "mid",
+      "catalog": "vue",
+      "sourceQuestionId": "vue-pagination-table",
+      "expectedQuestionHash": "05f489311ad50a7025c2fa3b6f23feb6f177975847e808c98024dc24e44a681c",
+      "expectedStarterAssetHash": "b95933b4b2734412dc042d34ac08ff0faeac8846961f5bf3ea02f068930346f0",
+      "expectedPressureAssetHash": "91d478feeb7ac3dbb2a656c76a61cd2847e69c2230137dbb275dbb7ba3ef76f1",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Derived pagination state",
+        "Filter and page reset ownership",
+        "Stable sorting"
+      ]
+    },
+    {
+      "id": "int-code-vue-mid-shopping-cart-v1",
+      "revision": 1,
+      "track": "vue",
+      "level": "mid",
+      "catalog": "vue",
+      "sourceQuestionId": "vue-shopping-cart",
+      "expectedQuestionHash": "ca14b84bdb520204e62a45281fb68082a1a5956b69a6ecf634ca95962691c454",
+      "expectedStarterAssetHash": "ac011eef54afd1cb253fcca44baf343a6539ee220100788f64c9c45b0f3fd01b",
+      "expectedPressureAssetHash": "22c4a913853a5ad9bb1ab688b27b7ca89d0316bdc5642a86d884a76279c80238",
+      "timeLimitSeconds": 2100,
+      "roundLimit": 3,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Reactive cart transitions",
+        "Derived money totals",
+        "Inventory boundary guards"
+      ]
+    },
+    {
+      "id": "int-code-vue-senior-debounced-search-v1",
+      "revision": 1,
+      "track": "vue",
+      "level": "senior",
+      "catalog": "vue",
+      "sourceQuestionId": "vue-debounced-search",
+      "expectedQuestionHash": "d8bf7f1153930a577c436b5c01469aa457f044963264b1cd8b89e178217c9c43",
+      "expectedStarterAssetHash": "86bdab9dd9da63df89d9be16d0f9cce8c9f88f6ce908f2784deb3576eff057d0",
+      "expectedPressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Watcher and timer ownership",
+        "Latest-request-wins control",
+        "Accessible async states"
+      ]
+    },
+    {
+      "id": "int-code-vue-senior-chips-autocomplete-v1",
+      "revision": 1,
+      "track": "vue",
+      "level": "senior",
+      "catalog": "vue",
+      "sourceQuestionId": "vue-chips-input-autocomplete",
+      "expectedQuestionHash": "4135131590814b145e8aedd53a8d575c2d4298c9883a9e3009bde9249a913eac",
+      "expectedStarterAssetHash": "e5ec952b3cd9814825924fe3b71a951d0b6c17d85746ab8d785bb9bbc4d34645",
+      "expectedPressureAssetHash": "024959244433cbb0cb92667b2292d2b44e5e50cfd416ac2be4c57ce7e6fa9aa0",
+      "timeLimitSeconds": 2700,
+      "roundLimit": 4,
+      "runner": "framework-preview",
+      "remediationTopics": [
+        "Combobox keyboard state",
+        "Normalized chip identity",
+        "ARIA relationships and unmount cleanup"
+      ]
+    }
+  ]
+}

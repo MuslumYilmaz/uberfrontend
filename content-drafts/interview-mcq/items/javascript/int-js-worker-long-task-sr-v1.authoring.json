@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-worker-long-task-sr-v1",
+  "revision": 3,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "bounded-worker-generation-ownership",
+    "prompt": "Eight independently mounted dashboard widgets receive payloads faster than their pure 300 ms transforms finish. The design must bound total worker concurrency, coalesce superseded queued work per widget, prevent one widget from invalidating another, and let only each widget's latest compact result update the DOM. Which architecture meets the full contract?",
+    "options": [
+      {
+        "id": "choice-d08885cf72",
+        "label": "Use a bounded shared Worker pool; coalesce queued jobs per widget, tag widget generations, and gate main-thread commits per widget."
+      },
+      {
+        "id": "choice-565ae3f79b",
+        "label": "Use a bounded shared Worker pool; coalesce queued jobs globally, tag one shared generation, and gate main-thread commits globally."
+      },
+      {
+        "id": "choice-1790b8f8e7",
+        "label": "Start one Worker per payload; tag jobs by widget generation, gate main-thread commits per widget, and terminate Workers after settlement."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-d08885cf72",
+    "answerProof": {
+      "summary": "A bounded shared Worker pool isolates CPU-heavy transforms while per-widget queue coalescing and generations preserve independent latest-result ownership.",
+      "decisiveConstraints": [
+        "The transformations are pure and cross the Worker boundary as messages.",
+        "Total parallel CPU work must remain bounded across independently updating widgets.",
+        "Queued work must be coalesced independently for each widget.",
+        "Only the latest generation for that same widget may commit on the main thread."
+      ],
+      "claims": [
+        {
+          "statement": "Web Workers run scripts in a background thread separate from the window execution thread and communicate by messages.",
+          "sourceIds": [
+            "mdn-using-web-workers"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d08885cf72",
+        "verdict": "correct",
+        "explanation": "The shared pool bounds off-main-thread work, while per-widget coalescing and generations isolate each widget's queue and stale-result decisions.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-565ae3f79b",
+        "verdict": "incorrect",
+        "explanation": "One global queue and generation let a payload from one widget supersede queued work or returned results belonging to another widget.",
+        "misconceptionTag": "global-generation-preserves-instance-ownership",
+        "plausibility": "The shared pool is bounded, and one generation counter appears to provide a simple latest-result rule.",
+        "falsifyingConstraint": "Supersession and result gating must be isolated per widget."
+      },
+      {
+        "optionId": "choice-1790b8f8e7",
+        "verdict": "incorrect",
+        "explanation": "Per-payload workers isolate CPU work and gate stale commits, but their creation rate leaves total concurrent transforms unbounded.",
+        "misconceptionTag": "worker-per-job-is-bounded-architecture",
+        "plausibility": "Each Worker keeps its transform off the main thread, and per-widget generations suppress stale commits.",
+        "falsifyingConstraint": "The architecture must bound parallel CPU work rather than create a Worker for every payload."
+      }
+    ],
+    "remediationTopics": [
+      "Web Worker pools",
+      "main-thread long tasks",
+      "generation-based stale-result guards",
+      "bounded concurrency"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Using Web Workers",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers",
+        "sourceId": "mdn-using-web-workers"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "js-web-workers-basics"
+      ],
+      "sources": [
+        {
+          "id": "mdn-using-web-workers",
+          "title": "MDN: Using Web Workers",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

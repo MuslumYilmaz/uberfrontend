@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-tosignal-lifetime-mid-v1",
+  "revision": 2,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "rxjs-signal-lifecycle",
+    "prompt": "An Angular 22 live-price panel converts a long-lived `updates$` stream to a signal. Each mounted panel must own one subscription, and destroyed panels must stop listening. Which setup gives the signal the required lifetime?",
+    "options": [
+      {
+        "id": "choice-c9d5340ce1",
+        "label": "Create `toSignal(updates$, { initialValue })` in each panel's injection context and retain automatic cleanup."
+      },
+      {
+        "id": "choice-65d2d06373",
+        "label": "Create `toSignal(updates$, { initialValue })` once in a root service and share that application-lived subscription."
+      },
+      {
+        "id": "choice-888c8f5dcf",
+        "label": "Create `toSignal(updates$, { initialValue, manualCleanup: true })` in each panel and omit explicit teardown."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-c9d5340ce1",
+    "answerProof": {
+      "summary": "By default, `toSignal` binds its observable subscription to the creating injection context; enabling manual cleanup instead transfers teardown responsibility to the caller.",
+      "decisiveConstraints": [
+        "Creation occurs in the component's injection context.",
+        "The observable is long-lived and should follow the component lifetime without caller-owned teardown."
+      ],
+      "claims": [
+        {
+          "statement": "toSignal subscribes immediately and automatically unsubscribes when its creating context is destroyed unless the caller opts into manual cleanup.",
+          "sourceIds": [
+            "angular22-rxjs-signal-interop"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-c9d5340ce1",
+        "verdict": "correct",
+        "explanation": "The default behavior uses the active injection context for cleanup, so each panel owns one subscription that ends with that panel.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-65d2d06373",
+        "verdict": "incorrect",
+        "explanation": "A root-provided service owns application-lifetime state, so the shared subscription does not end when an individual panel is destroyed.",
+        "misconceptionTag": "shared-root-signal-has-component-lifetime",
+        "plausibility": "A root signal can avoid duplicate subscriptions when the state is intentionally application-scoped.",
+        "falsifyingConstraint": "This subscription must belong to each component instance rather than the application."
+      },
+      {
+        "optionId": "choice-888c8f5dcf",
+        "verdict": "incorrect",
+        "explanation": "`manualCleanup: true` disables destruction-based cleanup, so omitting explicit teardown lets the long-lived subscription outlive its panel.",
+        "misconceptionTag": "manual-cleanup-retains-destroyref-teardown",
+        "plausibility": "Manual cleanup is useful for streams that complete naturally or when another owner explicitly controls teardown.",
+        "falsifyingConstraint": "Destroyed panels must stop listening without caller-owned teardown."
+      }
+    ],
+    "remediationTopics": [
+      "Angular toSignal",
+      "DestroyRef",
+      "RxJS and signal ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: RxJS interop with signals",
+        "url": "https://angular.dev/ecosystem/rxjs-interop",
+        "sourceId": "angular22-rxjs-signal-interop"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-rxjs-signal-interop",
+          "title": "Angular: RxJS interop with signals",
+          "url": "https://angular.dev/ecosystem/rxjs-interop",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-22",
+          "revision": "Angular v22.0.7+sha-bc3ff3b documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

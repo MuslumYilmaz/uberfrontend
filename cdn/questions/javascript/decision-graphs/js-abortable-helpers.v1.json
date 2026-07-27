@@ -63,7 +63,7 @@
             "lineEnd": 52,
             "snippet": "const abortOnce = (reason) => {"
           },
-          "why": "One shared abort path keeps behavior consistent and cleans all source listeners.",
+          "why": "One shared abort path preserves the first abort reason and cleans all source listeners.",
           "alternative": "Handle cleanup separately in each signal listener.",
           "tradeoff": "Central helper adds structure, but makes composed cancellation easier to reason about."
         }

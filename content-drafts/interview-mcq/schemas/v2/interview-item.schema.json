@@ -1,0 +1,655 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frontendatlas.com/schemas/interview/v2/interview-item.schema.json",
+  "title": "FrontendAtlas interview MCQ authoring item v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "revision",
+    "author",
+    "public",
+    "private"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0.0"
+    },
+    "id": {
+      "$ref": "#/$defs/slug"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "author": {
+      "$ref": "#/$defs/author"
+    },
+    "public": {
+      "$ref": "#/$defs/publicItem"
+    },
+    "private": {
+      "$ref": "#/$defs/privateItem"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "public": {
+            "type": "object",
+            "properties": {
+              "format": {
+                "const": "code-output"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          }
+        },
+        "required": [
+          "public"
+        ]
+      },
+      "then": {
+        "properties": {
+          "public": {
+            "type": "object",
+            "required": [
+              "code"
+            ],
+            "properties": {
+              "technology": {
+                "const": "javascript"
+              },
+              "code": {
+                "type": "object",
+                "properties": {
+                  "language": {
+                    "const": "javascript"
+                  },
+                  "runtime": {
+                    "const": "browser"
+                  }
+                }
+              }
+            }
+          },
+          "private": {
+            "type": "object",
+            "required": [
+              "verification"
+            ],
+            "properties": {
+              "verification": {
+                "$ref": "#/$defs/verification"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "private": {
+            "type": "object",
+            "properties": {
+              "verification": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "opaqueOptionId": {
+      "type": "string",
+      "pattern": "^choice-[0-9a-f]{10}$"
+    },
+    "author": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "authoredAt"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "type": {
+          "enum": [
+            "human",
+            "ai",
+            "ai-assisted"
+          ]
+        },
+        "authoredAt": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "publicItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "technology",
+        "level",
+        "difficultyBand",
+        "format",
+        "competency",
+        "prompt",
+        "options",
+        "estimatedSeconds"
+      ],
+      "properties": {
+        "technology": {
+          "enum": [
+            "javascript",
+            "html",
+            "css",
+            "react",
+            "angular",
+            "vue"
+          ]
+        },
+        "level": {
+          "enum": [
+            "junior",
+            "mid",
+            "senior"
+          ]
+        },
+        "difficultyBand": {
+          "enum": [
+            "foundation",
+            "core",
+            "stretch"
+          ]
+        },
+        "format": {
+          "enum": [
+            "conceptual",
+            "code-output",
+            "production-scenario"
+          ]
+        },
+        "competency": {
+          "$ref": "#/$defs/slug"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 20
+        },
+        "code": {
+          "$ref": "#/$defs/code"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/option"
+          }
+        },
+        "estimatedSeconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "runtime",
+        "source"
+      ],
+      "properties": {
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/opaqueOptionId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "privateItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correctOptionId",
+        "optionRationales",
+        "answerProof",
+        "remediationTopics",
+        "learnMore",
+        "provenance"
+      ],
+      "properties": {
+        "correctOptionId": {
+          "$ref": "#/$defs/opaqueOptionId"
+        },
+        "optionRationales": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/rationale"
+          }
+        },
+        "answerProof": {
+          "$ref": "#/$defs/answerProof"
+        },
+        "remediationTopics": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "learnMore": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "verification": {
+          "$ref": "#/$defs/verification"
+        },
+        "calibration": {
+          "$ref": "#/$defs/calibration"
+        }
+      }
+    },
+    "rationale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "optionId",
+        "verdict",
+        "explanation",
+        "plausibility",
+        "misconceptionTag",
+        "falsifyingConstraint"
+      ],
+      "properties": {
+        "optionId": {
+          "$ref": "#/$defs/opaqueOptionId"
+        },
+        "verdict": {
+          "enum": [
+            "correct",
+            "incorrect"
+          ]
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 10
+        },
+        "plausibility": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "misconceptionTag": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/slug"
+            }
+          ]
+        },
+        "falsifyingConstraint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "correct"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "misconceptionTag": {
+                "type": "null"
+              },
+              "plausibility": {
+                "type": "null"
+              },
+              "falsifyingConstraint": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "misconceptionTag": {
+                "$ref": "#/$defs/slug"
+              },
+              "plausibility": {
+                "type": "string",
+                "minLength": 10
+              },
+              "falsifyingConstraint": {
+                "type": "string",
+                "minLength": 10
+              }
+            }
+          }
+        }
+      ]
+    },
+    "answerProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "decisiveConstraints",
+        "claims"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 20
+        },
+        "decisiveConstraints": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "claims": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/claim"
+          }
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statement",
+        "sourceIds"
+      ],
+      "properties": {
+        "statement": {
+          "type": "string",
+          "minLength": 10
+        },
+        "sourceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        }
+      }
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "url",
+        "sourceId"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sourceId": {
+          "$ref": "#/$defs/slug"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wordingOrigin",
+        "copiedText",
+        "relatedContentIds",
+        "sources"
+      ],
+      "properties": {
+        "wordingOrigin": {
+          "const": "original"
+        },
+        "copiedText": {
+          "const": false
+        },
+        "relatedContentIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "url",
+        "role",
+        "licenseId",
+        "licenseUrl",
+        "retrievedAt",
+        "revision",
+        "official",
+        "copiedText"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "role": {
+          "enum": [
+            "technical-verification",
+            "format-inspiration"
+          ]
+        },
+        "licenseId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9.+-]*$"
+        },
+        "licenseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "retrievedAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "official": {
+          "type": "boolean"
+        },
+        "copiedText": {
+          "const": false
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "expectedOutput"
+      ],
+      "properties": {
+        "kind": {
+          "const": "browser-console-output"
+        },
+        "expectedOutput": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "calibration": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "pending"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "matchingLevelAttempts",
+            "difficultyIndex",
+            "discriminationIndex",
+            "optionSelectionRates",
+            "measuredAt"
+          ],
+          "properties": {
+            "status": {
+              "const": "measured"
+            },
+            "matchingLevelAttempts": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "difficultyIndex": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "discriminationIndex": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "optionSelectionRates": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "$ref": "#/$defs/optionSelectionRate"
+              }
+            },
+            "measuredAt": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        }
+      ]
+    },
+    "optionSelectionRate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "optionId",
+        "rate"
+      ],
+      "properties": {
+        "optionId": {
+          "$ref": "#/$defs/opaqueOptionId"
+        },
+        "rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}

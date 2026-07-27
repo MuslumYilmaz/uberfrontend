@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-functional-queue-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "subscription-stale-closure-updates",
+    "prompt": "A React total subscribes once to a stable `socket` in an Effect. A burst can deliver several deltas before the next render. Its handler calls `setTotal(total + delta)`, so updates overwrite one another; the subscription must not restart whenever `total` changes. Which implementation preserves every delta and the listener lifecycle?",
+    "options": [
+      {
+        "id": "choice-97db5d8904",
+        "label": "Subscribe for `socket`, add each delta with `setTotal(previous => previous + delta)`, and return the listener cleanup."
+      },
+      {
+        "id": "choice-8d0a206f25",
+        "label": "Subscribe with `[socket, total]`, add each delta with `setTotal(total + delta)`, and clean up before each resubscription."
+      },
+      {
+        "id": "choice-3a2d2342fe",
+        "label": "Subscribe once for `socket`, copy `total` inside the handler, add the delta, and pass that local value to `setTotal`."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-97db5d8904",
+    "answerProof": {
+      "summary": "A stable subscription can use a functional state updater so every message composes with the preceding queued result without capturing or depending on the rendered total.",
+      "decisiveConstraints": [
+        "Several socket callbacks can run before React renders their result.",
+        "Every delta must compose with the result of earlier queued deltas.",
+        "The stable socket subscription must not restart when only total changes.",
+        "The listener still requires cleanup when its Effect ownership ends."
+      ],
+      "claims": [
+        {
+          "statement": "React processes queued updater functions in order, passing each updater the state produced by the preceding updater.",
+          "sourceIds": [
+            "react19-queueing-state"
+          ]
+        },
+        {
+          "statement": "An Effect may return cleanup for its external subscription, and React runs that cleanup before replacement or unmount.",
+          "sourceIds": [
+            "react19-use-effect-subscription"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-97db5d8904",
+        "verdict": "correct",
+        "explanation": "Every message queues a function over the latest queued total, while the listener remains owned by the stable socket Effect and is cleaned up with it.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-8d0a206f25",
+        "verdict": "incorrect",
+        "explanation": "Adding total as a dependency restarts the subscription only after a render; messages within the same burst still share one captured total and can overwrite each other.",
+        "misconceptionTag": "resubscription-refreshes-each-burst-callback",
+        "plausibility": "The next render creates a handler that closes over the newly committed total and cleans up the preceding listener.",
+        "falsifyingConstraint": "Several deltas may arrive before that render and resubscription occur."
+      },
+      {
+        "optionId": "choice-3a2d2342fe",
+        "verdict": "incorrect",
+        "explanation": "Each callback initializes its local copy from the same captured render snapshot, so separate messages do not receive the result queued by the previous callback.",
+        "misconceptionTag": "handler-local-copy-advances-render-snapshot",
+        "plausibility": "A mutable local value can correctly accumulate several calculations within one callback invocation.",
+        "falsifyingConstraint": "Separate socket callbacks do not share that local value or the preceding queued result."
+      }
+    ],
+    "remediationTopics": [
+      "React state batching",
+      "functional state updaters",
+      "stale subscription closures",
+      "Effect listener cleanup"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Queueing a Series of State Updates",
+        "url": "https://react.dev/learn/queueing-a-series-of-state-updates",
+        "sourceId": "react19-queueing-state"
+      },
+      {
+        "title": "React: useEffect",
+        "url": "https://react.dev/reference/react/useEffect",
+        "sourceId": "react19-use-effect-subscription"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-queueing-state",
+          "title": "React: Queueing a Series of State Updates",
+          "url": "https://react.dev/learn/queueing-a-series-of-state-updates",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "react19-use-effect-subscription",
+          "title": "React: useEffect",
+          "url": "https://react.dev/reference/react/useEffect",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-22",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

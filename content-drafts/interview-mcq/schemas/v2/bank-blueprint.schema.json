@@ -1,0 +1,368 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frontendatlas.com/schemas/interview/v2/bank-blueprint.schema.json",
+  "title": "FrontendAtlas interview bank blueprint v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "blueprintId",
+    "bankId",
+    "questionCount",
+    "distributions",
+    "competencyConstraint",
+    "selectionPolicy",
+    "codeOutputConstraint"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0.0"
+    },
+    "blueprintId": {
+      "$ref": "#/$defs/slug"
+    },
+    "bankId": {
+      "$ref": "#/$defs/slug"
+    },
+    "questionCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "distributions": {
+      "$ref": "#/$defs/distributions"
+    },
+    "competencyConstraint": {
+      "$ref": "#/$defs/competencyConstraint"
+    },
+    "selectionPolicy": {
+      "$ref": "#/$defs/selectionPolicy"
+    },
+    "codeOutputConstraint": {
+      "$ref": "#/$defs/codeOutputConstraint"
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "quota": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "levelQuota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "junior",
+        "mid",
+        "senior"
+      ],
+      "properties": {
+        "junior": {
+          "$ref": "#/$defs/quota"
+        },
+        "mid": {
+          "$ref": "#/$defs/quota"
+        },
+        "senior": {
+          "$ref": "#/$defs/quota"
+        }
+      }
+    },
+    "technologyQuota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "javascript",
+        "html",
+        "css",
+        "react",
+        "angular",
+        "vue"
+      ],
+      "properties": {
+        "javascript": {
+          "$ref": "#/$defs/quota"
+        },
+        "html": {
+          "$ref": "#/$defs/quota"
+        },
+        "css": {
+          "$ref": "#/$defs/quota"
+        },
+        "react": {
+          "$ref": "#/$defs/quota"
+        },
+        "angular": {
+          "$ref": "#/$defs/quota"
+        },
+        "vue": {
+          "$ref": "#/$defs/quota"
+        }
+      }
+    },
+    "difficultyBandQuota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "foundation",
+        "core",
+        "stretch"
+      ],
+      "properties": {
+        "foundation": {
+          "$ref": "#/$defs/quota"
+        },
+        "core": {
+          "$ref": "#/$defs/quota"
+        },
+        "stretch": {
+          "$ref": "#/$defs/quota"
+        }
+      }
+    },
+    "difficultyBandByLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "junior",
+        "mid",
+        "senior"
+      ],
+      "properties": {
+        "junior": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        },
+        "mid": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        },
+        "senior": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        }
+      }
+    },
+    "technologyByLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "junior",
+        "mid",
+        "senior"
+      ],
+      "properties": {
+        "junior": {
+          "$ref": "#/$defs/technologyQuota"
+        },
+        "mid": {
+          "$ref": "#/$defs/technologyQuota"
+        },
+        "senior": {
+          "$ref": "#/$defs/technologyQuota"
+        }
+      }
+    },
+    "formatQuota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conceptual",
+        "code-output",
+        "production-scenario"
+      ],
+      "properties": {
+        "conceptual": {
+          "$ref": "#/$defs/quota"
+        },
+        "code-output": {
+          "$ref": "#/$defs/quota"
+        },
+        "production-scenario": {
+          "$ref": "#/$defs/quota"
+        }
+      }
+    },
+    "formatByLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "junior",
+        "mid",
+        "senior"
+      ],
+      "properties": {
+        "junior": {
+          "$ref": "#/$defs/formatQuota"
+        },
+        "mid": {
+          "$ref": "#/$defs/formatQuota"
+        },
+        "senior": {
+          "$ref": "#/$defs/formatQuota"
+        }
+      }
+    },
+    "correctOptionPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first",
+        "second",
+        "third"
+      ],
+      "properties": {
+        "first": {
+          "$ref": "#/$defs/quota"
+        },
+        "second": {
+          "$ref": "#/$defs/quota"
+        },
+        "third": {
+          "$ref": "#/$defs/quota"
+        }
+      }
+    },
+    "distributions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "technology",
+        "technologyByLevel",
+        "difficultyBandByLevel",
+        "formatByLevel",
+        "correctOptionPosition"
+      ],
+      "properties": {
+        "level": {
+          "$ref": "#/$defs/levelQuota"
+        },
+        "technology": {
+          "$ref": "#/$defs/technologyQuota"
+        },
+        "technologyByLevel": {
+          "$ref": "#/$defs/technologyByLevel"
+        },
+        "difficultyBandByLevel": {
+          "$ref": "#/$defs/difficultyBandByLevel"
+        },
+        "formatByLevel": {
+          "$ref": "#/$defs/formatByLevel"
+        },
+        "correctOptionPosition": {
+          "$ref": "#/$defs/correctOptionPosition"
+        }
+      }
+    },
+    "competencyConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "distinctByTechnology"
+      ],
+      "properties": {
+        "distinctByTechnology": {
+          "$ref": "#/$defs/technologyQuota"
+        }
+      }
+    },
+    "selectionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionQuestionCount",
+        "coreQuestionsPerSession",
+        "frameworkQuestionsPerSession",
+        "coreTechnologies",
+        "frameworkTechnologies",
+        "eligiblePoolPerLevel"
+      ],
+      "properties": {
+        "sessionQuestionCount": {
+          "const": 5
+        },
+        "coreQuestionsPerSession": {
+          "const": 3
+        },
+        "frameworkQuestionsPerSession": {
+          "const": 2
+        },
+        "coreTechnologies": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "javascript",
+              "html",
+              "css"
+            ]
+          }
+        },
+        "frameworkTechnologies": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "react",
+              "angular",
+              "vue"
+            ]
+          }
+        },
+        "eligiblePoolPerLevel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "core",
+            "selectedFramework",
+            "total"
+          ],
+          "properties": {
+            "core": {
+              "const": 8
+            },
+            "selectedFramework": {
+              "const": 4
+            },
+            "total": {
+              "const": 12
+            }
+          }
+        }
+      }
+    },
+    "codeOutputConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count",
+        "technology",
+        "codeLanguage",
+        "runtime",
+        "verificationKind"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "technology": {
+          "const": "javascript"
+        },
+        "codeLanguage": {
+          "const": "javascript"
+        },
+        "runtime": {
+          "const": "browser"
+        },
+        "verificationKind": {
+          "const": "browser-console-output"
+        }
+      }
+    }
+  }
+}

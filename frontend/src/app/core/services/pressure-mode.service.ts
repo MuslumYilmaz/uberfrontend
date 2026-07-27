@@ -19,6 +19,7 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'expectNoText',
   'expectDisabled',
   'click',
+  'submit',
   'mouseDown',
   'pointerDown',
   'wait',
@@ -30,6 +31,8 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'waitForCount',
   'expectAttribute',
   'expectClass',
+  'mockHttp',
+  'expectHttpRequest',
   'key',
   'unmountPreview',
   'expectNoPreviewTimers',
@@ -156,12 +159,16 @@ export class PressureModeService {
       'key',
       'attribute',
       'className',
+      'url',
+      'method',
+      'error',
+      'bodyContains',
     ] as const) {
       if (typeof source[key] === 'string') {
         (step as Record<string, unknown>)[key] = source[key];
       }
     }
-    for (const key of ['index', 'timeoutMs', 'durationMs', 'count'] as const) {
+    for (const key of ['index', 'timeoutMs', 'durationMs', 'count', 'status'] as const) {
       if (typeof source[key] === 'number' && Number.isFinite(source[key])) {
         (step as Record<string, unknown>)[key] = source[key];
       }

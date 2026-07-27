@@ -829,6 +829,40 @@ function assertVercelLockedRouteNoindexHeaders() {
   }
 }
 
+function assertVercelInterviewRouteControls() {
+  const config = readVercelConfig();
+  const expectedSources = ['/interview', '/interview/:path*'];
+  const headers = Array.isArray(config.headers) ? config.headers : [];
+  const rewrites = Array.isArray(config.rewrites) ? config.rewrites : [];
+  const fallbackIndex = rewrites.findIndex((rule) => rule?.source === '/:path*');
+
+  expectedSources.forEach((source) => {
+    const headerMatches = headers.filter((rule) => rule?.source === source);
+    const robotsHeaders = (Array.isArray(headerMatches[0]?.headers)
+      ? headerMatches[0].headers
+      : [])
+      .filter((header) => String(header?.key || '').toLowerCase() === 'x-robots-tag');
+    if (
+      headerMatches.length !== 1
+      || robotsHeaders.length !== 1
+      || normalizedRobotsHeaderValue(robotsHeaders[0]?.value) !== 'noindex,nofollow'
+    ) {
+      throw new Error(`${source} must use exactly X-Robots-Tag: noindex, nofollow.`);
+    }
+
+    const rewriteMatches = rewrites
+      .map((rule, index) => ({ rule, index }))
+      .filter(({ rule }) => rule?.source === source);
+    if (
+      rewriteMatches.length !== 1
+      || rewriteMatches[0].rule?.destination !== '/index.html'
+      || (fallbackIndex >= 0 && rewriteMatches[0].index > fallbackIndex)
+    ) {
+      throw new Error(`${source} must rewrite to /index.html before the 404 fallback.`);
+    }
+  });
+}
+
 function assertVercelMasteryRedirects() {
   const config = readVercelConfig();
   const redirects = Array.isArray(config.redirects) ? config.redirects : [];
@@ -968,6 +1002,7 @@ assertAngularMasteryRedirects();
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();
 assertVercelLockedRouteNoindexHeaders();
+assertVercelInterviewRouteControls();
 assertVercelMasteryRedirects();
 assertVercelCspAllowsCodingSandboxRunner();
 assertVercelCspAllowsGoogleAnalyticsCollection();

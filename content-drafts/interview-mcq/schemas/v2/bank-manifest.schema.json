@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frontendatlas.com/schemas/interview/v2/bank-manifest.schema.json",
+  "title": "FrontendAtlas interview bank manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "manifestId",
+    "bankId",
+    "bankVersion",
+    "status",
+    "language",
+    "blueprintId",
+    "itemRefs"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0.0"
+    },
+    "manifestId": {
+      "$ref": "#/$defs/slug"
+    },
+    "bankId": {
+      "$ref": "#/$defs/slug"
+    },
+    "bankVersion": {
+      "$ref": "#/$defs/semanticVersion"
+    },
+    "status": {
+      "$ref": "#/$defs/bankStatus"
+    },
+    "language": {
+      "const": "en"
+    },
+    "blueprintId": {
+      "$ref": "#/$defs/slug"
+    },
+    "itemRefs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/itemRef"
+      }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "semanticVersion": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)$"
+    },
+    "bankStatus": {
+      "enum": [
+        "candidate",
+        "editorial-gold",
+        "calibrated-gold"
+      ]
+    },
+    "itemRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

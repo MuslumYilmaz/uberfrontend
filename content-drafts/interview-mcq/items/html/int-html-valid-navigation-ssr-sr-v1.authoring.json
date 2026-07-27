@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-valid-navigation-ssr-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-22"
+  },
+  "public": {
+    "technology": "html",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "valid-interactive-content-for-ssr",
+    "prompt": "A server-rendered card wraps a receipt-link component in `<a href=\"/receipt\">`, while the component renders another `<a href=\"/receipt\">View receipt</a>`. The parsed DOM contains sibling anchors before hydration, and the client reports a mismatch. The user action is navigation. What is the semantic root fix?",
+    "options": [
+      {
+        "id": "choice-dbdb162d4b",
+        "label": "Keep a single native link for the destination and apply the required card styling to that link."
+      },
+      {
+        "id": "choice-b7a26611b2",
+        "label": "Keep both anchors, call `preventDefault()` on the outer click handler, and suppress that subtree's hydration warning."
+      },
+      {
+        "id": "choice-e2f9ce0521",
+        "label": "Remove the outer `href`, add `role=\"presentation\"`, and keep the receipt anchor nested inside it."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-dbdb162d4b",
+    "answerProof": {
+      "summary": "Navigation belongs to one anchor, and removing invalid nested interactive content gives server markup and the parsed client DOM the same structure.",
+      "decisiveConstraints": [
+        "The action navigates to a URL.",
+        "An anchor cannot contain another anchor.",
+        "Hydration requires structurally valid, deterministic parsed markup."
+      ],
+      "claims": [
+        {
+          "statement": "An anchor cannot contain interactive descendants or another anchor, and an anchor with href is the native navigation primitive.",
+          "sourceIds": [
+            "mdn-anchor-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-dbdb162d4b",
+        "verdict": "correct",
+        "explanation": "One valid anchor matches the navigation intent and removes the parser repair that caused structural drift.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b7a26611b2",
+        "verdict": "incorrect",
+        "explanation": "Event cancellation and warning suppression do not change how the HTML parser repairs nested anchors or remove the invalid content model.",
+        "misconceptionTag": "hydration-warning-is-cosmetic",
+        "plausibility": "Event handling plus a hydration escape hatch can be appropriate for intentional client-only differences.",
+        "falsifyingConstraint": "The mismatch comes from invalid semantics that can and should be corrected at the source."
+      },
+      {
+        "optionId": "choice-e2f9ce0521",
+        "verdict": "incorrect",
+        "explanation": "Removing `href` changes the outer anchor's role, but an anchor element still cannot contain another anchor and the parser still repairs that structure.",
+        "misconceptionTag": "href-removal-makes-nested-anchor-valid",
+        "plausibility": "An anchor without `href` is no longer a native navigation control, so it can seem like a neutral wrapper.",
+        "falsifyingConstraint": "The content model and parser rule prohibit an anchor descendant regardless of the outer anchor's role."
+      }
+    ],
+    "remediationTopics": [
+      "html-content-models",
+      "anchor-semantics",
+      "hydration-markup-validity"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: anchor element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+        "sourceId": "mdn-anchor-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [
+        "html-a-tag",
+        "html-href-attribute"
+      ],
+      "sources": [
+        {
+          "id": "mdn-anchor-element",
+          "title": "MDN: anchor element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}
