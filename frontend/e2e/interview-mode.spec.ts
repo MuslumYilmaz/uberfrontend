@@ -754,8 +754,11 @@ test('renders the bounded framework interview shell without normal solution/prog
 
   await page.goto(`/interview/${session.id}`);
   await expect(page.getByRole('heading', { name: 'React Counter (Guarded Decrement)' })).toBeVisible();
-  await expect(page.locator('app-coding-framework-panel')).toBeVisible();
-  await expect(page.getByTestId('framework-code-editor')).toBeVisible();
+  const frameworkPanel = page.locator('app-coding-framework-panel');
+  await expect(frameworkPanel).toBeVisible();
+  const frameworkEditor = frameworkPanel.getByRole('textbox');
+  await expect(frameworkEditor).toBeVisible();
+  await expect(frameworkEditor).toBeEditable();
   await expect(page.getByRole('button', { name: 'Run checks', exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Rebuild preview', exact: true })).toBeVisible();
   await expect(page.getByText('Interview coding awards 0 XP.')).toBeVisible();
