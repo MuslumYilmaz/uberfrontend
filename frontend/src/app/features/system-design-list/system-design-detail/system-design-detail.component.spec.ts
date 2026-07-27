@@ -104,6 +104,51 @@ describe('SystemDesignDetailComponent', () => {
     }));
   });
 
+  it('keeps the infinite-scroll metadata contract and publishes truthful structured-data dates', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const description = 'Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.';
+
+    (component as any).applyResolvedQuestion({
+      id: 'infinite-scroll-list',
+      title: 'Infinite Scroll List System Design',
+      description,
+      tags: ['infinite-scroll', 'pagination', 'virtualization'],
+      access: 'free',
+      publishedAt: '2025-11-22',
+      updatedAt: '2026-07-27',
+      radio: [
+        {
+          key: 'R',
+          title: 'Requirements and a 60-second answer',
+          blocks: [{ type: 'text', text: 'Start with requirements visible on the page.' }],
+        },
+      ],
+    });
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const article = graph.find((entry: any) => entry?.['@type'] === 'Article');
+    const learningResource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
+    const typeNames = graph.map((entry: any) => entry?.['@type']);
+
+    expect(component.title()).toBe('Infinite Scroll List System Design');
+    expect(payload).toEqual(jasmine.objectContaining({
+      title: 'Infinite Scroll List System Design',
+      description,
+      canonical: '/system-design/infinite-scroll-list',
+      robots: undefined,
+    }));
+    expect(article?.datePublished).toBe('2025-11-22T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-07-27T00:00:00.000Z');
+    expect(article?.isAccessibleForFree).toBeTrue();
+    expect(learningResource?.isAccessibleForFree).toBeTrue();
+    expect(typeNames).toContain('BreadcrumbList');
+    expect(typeNames).toContain('Article');
+    expect(typeNames).toContain('LearningResource');
+    expect(typeNames).not.toContain('FAQPage');
+  });
+
   it('marks premium system design content noindex without FAQ answer schema', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;
@@ -141,7 +186,7 @@ describe('SystemDesignDetailComponent', () => {
     expect(component.locked()).toBeFalse();
   });
 
-  it('renders system design link blocks as real internal anchors', () => {
+  it('renders heading blocks semantically and separates internal from safe external links', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;
 
@@ -157,6 +202,10 @@ describe('SystemDesignDetailComponent', () => {
           title: 'Interview framing and requirements',
           blocks: [
             {
+              type: 'heading',
+              text: 'Choose a pagination strategy',
+            },
+            {
               type: 'links',
               title: 'Contextual practice links',
               items: [
@@ -169,6 +218,11 @@ describe('SystemDesignDetailComponent', () => {
                   label: 'Machine coding hub',
                   href: '/machine-coding',
                 },
+                {
+                  label: 'MDN Intersection Observer',
+                  href: 'https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API',
+                  description: 'Review the browser API used for the loading sentinel.',
+                },
               ],
             },
           ],
@@ -178,11 +232,17 @@ describe('SystemDesignDetailComponent', () => {
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
+    const heading = host.querySelector('h3.sd-h3') as HTMLHeadingElement | null;
     const links = Array.from(host.querySelectorAll('.sd-link-item')) as HTMLAnchorElement[];
-    const hrefs = links.map((link) => link.getAttribute('href'));
+    const internalLink = links.find((link) => link.textContent?.includes('Frontend system design question bank'));
+    const externalLink = links.find((link) => link.textContent?.includes('MDN Intersection Observer'));
 
-    expect(hrefs).toContain('/system-design');
-    expect(hrefs).toContain('/machine-coding');
+    expect(heading?.textContent?.trim()).toBe('Choose a pagination strategy');
+    expect(internalLink?.getAttribute('href')).toBe('/system-design');
+    expect(internalLink?.hasAttribute('target')).toBeFalse();
+    expect(externalLink?.getAttribute('href')).toBe('https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API');
+    expect(externalLink?.getAttribute('target')).toBe('_blank');
+    expect(externalLink?.getAttribute('rel')).toBe('noopener noreferrer');
     expect(host.textContent || '').toContain('Use this prompt alongside other frontend architecture scenarios.');
   });
 

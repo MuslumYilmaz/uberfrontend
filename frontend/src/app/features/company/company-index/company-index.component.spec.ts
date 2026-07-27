@@ -92,6 +92,15 @@ describe('CompanyIndexComponent', () => {
     expect(googleGuide?.getAttribute('href')).not.toContain('?');
   });
 
+  it('exposes a clean descriptive Netflix guide anchor in the SSR shell', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    const netflixGuide = host.querySelector<HTMLAnchorElement>('a[href="/companies/netflix/preview"]');
+
+    expect(netflixGuide).toBeTruthy();
+    expect(netflixGuide?.textContent?.trim()).toBe('Netflix frontend interview questions');
+    expect(netflixGuide?.getAttribute('href')).not.toContain('?');
+  });
+
   it('labels company cards and schema as editorial groupings without provenance claims', () => {
     const host: HTMLElement = fixture.nativeElement;
     expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(

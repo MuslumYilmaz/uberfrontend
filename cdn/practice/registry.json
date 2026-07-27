@@ -8835,7 +8835,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-27",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/infinite-scroll-list/meta.json"
   },

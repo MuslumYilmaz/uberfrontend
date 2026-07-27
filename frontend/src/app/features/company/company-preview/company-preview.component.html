@@ -2,7 +2,7 @@
   <nav class="preview-breadcrumb" aria-label="Company breadcrumb">
     <a [routerLink]="['/companies']">Companies</a>
     <span>/</span>
-    <span>{{ isOpenAiPreview ? openAiH1 : (isGooglePreview ? googleH1 : label + ' frontend interview questions preview') }}</span>
+    <span>{{ isOpenAiPreview ? openAiH1 : (isGooglePreview ? googleH1 : (isNetflixPreview ? netflixH1 : label + ' frontend interview questions preview')) }}</span>
   </nav>
 
   <p class="preview-caveat" data-testid="company-practice-disclaimer">
@@ -148,7 +148,7 @@
   </ng-container>
 
   <ng-template #nonOpenAiPreview>
-  <ng-container *ngIf="isGooglePreview; else genericPreview">
+  <ng-container *ngIf="isGooglePreview; else nonGooglePreview">
     <header class="preview-hero company-guide-hero fa-card fa-card--elevated">
       <p class="preview-kicker">Public Google prep guide</p>
       <h1>{{ googleH1 }}</h1>
@@ -337,6 +337,231 @@
       </a>
     </section>
   </ng-container>
+
+  <ng-template #nonGooglePreview>
+  <ng-container *ngIf="isNetflixPreview; else genericPreview">
+    <header class="preview-hero company-guide-hero fa-card fa-card--elevated">
+      <p class="preview-kicker">Public Netflix prep guide</p>
+      <h1>{{ netflixH1 }}</h1>
+      <p class="preview-subtitle">
+        Prepare with six representative prompts across JavaScript request control, React rendering, streaming delivery,
+        accessible multi-device UI, frontend system design, and consequential decision making.
+      </p>
+      <p class="preview-caveat">
+        This guide uses public Netflix product and engineering context to create realistic constraints. It does not
+        claim access to private interview material, a fixed interview format, or Netflix's current internal stack.
+      </p>
+      <div class="preview-meta" aria-label="Netflix guide coverage">
+        <span class="preview-chip">6 representative prompts</span>
+        <span class="preview-chip">JavaScript, React, streaming UI, system design</span>
+        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+      </div>
+    </header>
+
+    <section class="company-guide-section company-guide-section--intro" aria-labelledby="netflix-study-first">
+      <div>
+        <p class="preview-kicker">Study priorities</p>
+        <h2 id="netflix-study-first">Prepare for product judgment, not Netflix trivia</h2>
+        <p>
+          Product context is useful when it creates constraints you can reason about. A title-search interaction exposes
+          request ordering and accessible state. A Continue Watching row adds stable focus, image delivery, progress
+          reconciliation, device capability, and partial failure. The goal is to explain those contracts before reaching
+          for a framework or drawing architecture boxes.
+        </p>
+        <p>
+          Start with one reliable implementation slice, measure its behavior, and then widen the discussion to delivery,
+          system design, and rollout. This produces stronger evidence than memorizing a technology list or assuming every
+          Netflix frontend role uses the same interview loop.
+        </p>
+      </div>
+      <aside class="company-guide-note company-guide-note--trust" aria-label="Trust note">
+        <strong>Trust note:</strong> {{ netflixTrustNote }}
+      </aside>
+    </section>
+
+    <aside class="company-process-note" aria-labelledby="netflix-published-context">
+      <p class="preview-kicker">Source boundary · reviewed July 2026</p>
+      <h2 id="netflix-published-context">What Netflix publishes—and what you still need to confirm</h2>
+      <p>
+        Netflix publishes broad engineering domains, culture material, and role-specific careers information. Those
+        sources can inform practice scenarios, but they do not establish one universal frontend interview format.
+        New-grad guidance is especially scope-specific and should not be generalized to experienced roles.
+      </p>
+      <p>
+        Use the job description and recruiter-provided material to confirm exercise types, allowed tools, design depth,
+        timing, and team context. Treat the older React TV UI and Lumen dashboard posts below as engineering case studies,
+        not evidence of today's interview process.
+      </p>
+    </aside>
+
+    <section class="company-guide-section" aria-labelledby="netflix-role-lenses">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Role lenses</p>
+        <h2 id="netflix-role-lenses">Three product contexts for practicing transferable frontend judgment</h2>
+        <p>
+          These are preparation lenses derived from public engineering domains, not claimed interview rounds or team
+          assignments. Choose the lens closest to the role, then keep the underlying reasoning framework-neutral.
+        </p>
+      </div>
+      <div class="company-role-grid">
+        <article *ngFor="let lens of netflixRoleLenses">
+          <h3>{{ lens.title }}</h3>
+          <p>{{ lens.description }}</p>
+          <p><strong>Practice focus:</strong> {{ lens.practiceFocus }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section" aria-labelledby="netflix-practice-prompts">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Representative practice prompts</p>
+        <h2 id="netflix-practice-prompts">Six Netflix frontend interview practice questions</h2>
+        <p>
+          For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest
+          credible slice, and test failures. The evaluation guidance is public; paid solutions and catalog titles remain
+          outside this page.
+        </p>
+      </div>
+
+      <div class="company-prompt-list">
+        <article
+          class="company-prompt"
+          *ngFor="let prompt of netflixPracticePrompts; let i = index"
+          [attr.id]="prompt.id">
+          <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
+          <h3>{{ prompt.title }}</h3>
+          <p>{{ prompt.statement }}</p>
+
+          <div class="company-prompt__detail">
+            <h4>What this measures</h4>
+            <p>{{ prompt.whatThisMeasures }}</p>
+          </div>
+
+          <div class="company-prompt__detail">
+            <h4>Clarify first</h4>
+            <ul>
+              <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
+            </ul>
+          </div>
+
+          <div class="company-prompt__detail">
+            <h4>Strong answer should cover</h4>
+            <ul>
+              <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
+            </ul>
+          </div>
+
+          <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
+          <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">
+            {{ prompt.resourceLabel }}
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-walkthrough" aria-labelledby="netflix-continue-watching-walkthrough">
+      <p class="preview-kicker">Public mini walkthrough</p>
+      <h2 id="netflix-continue-watching-walkthrough">Scope Continue Watching before drawing architecture boxes</h2>
+      <p>
+        Treat this as a representative exercise, not a description of Netflix's private architecture. Work from the user
+        contract toward components and services. Any performance budget you introduce is an interview assumption that
+        must be stated and validated, not a claimed Netflix target.
+      </p>
+      <ol class="company-walkthrough-steps">
+        <li *ngFor="let step of netflixWalkthroughSteps">
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="company-guide-section" aria-labelledby="netflix-prep-plan">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Actionable preparation</p>
+        <h2 id="netflix-prep-plan">A 7-day Netflix frontend interview preparation plan</h2>
+        <p>Every day ends with code, evidence, a design artifact, or a question you can use in the real process.</p>
+      </div>
+      <ol class="company-prep-sequence">
+        <li *ngFor="let item of netflixPrepSequence">
+          <strong>{{ item.day }}</strong>
+          <div>
+            <p>{{ item.focus }}</p>
+            <p class="company-prep-sequence__artifact"><strong>Deliverable:</strong> {{ item.artifact }}</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="company-guide-section" aria-labelledby="netflix-prep-faq">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Preparation FAQ</p>
+        <h2 id="netflix-prep-faq">Common Netflix frontend interview preparation questions</h2>
+      </div>
+      <div class="company-faq-list">
+        <article *ngFor="let item of netflixFaqs">
+          <h3>{{ item.question }}</h3>
+          <p>{{ item.answer }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-links" aria-labelledby="netflix-free-practice">
+      <div>
+        <p class="preview-kicker">Free public practice</p>
+        <h2 id="netflix-free-practice">Build the underlying skills with free practice</h2>
+        <p>
+          These public pages cover the implementation, performance, delivery, design, and communication skills used by
+          the representative prompts. They are supporting drills, not claimed Netflix questions.
+        </p>
+      </div>
+      <div class="company-link-grid">
+        <a
+          *ngFor="let link of netflixResourceLinks"
+          class="company-resource-link"
+          [routerLink]="link.path">
+          <strong>{{ link.label }}</strong>
+          <span>{{ link.description }}</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="company-guide-section" aria-labelledby="netflix-source-notes">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Official context and case studies</p>
+        <h2 id="netflix-source-notes">Sources and evidence limits</h2>
+        <p>
+          These links support the public context used by the guide. Their notes state what each source can—and
+          cannot—establish about preparation.
+        </p>
+      </div>
+      <div class="company-source-list">
+        <article *ngFor="let source of netflixOfficialSources">
+          <h3>
+            <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{ source.label }}</a>
+          </h3>
+          <p>{{ source.note }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-cta" aria-labelledby="netflix-premium-route">
+      <div>
+        <p class="preview-kicker">Premium company route</p>
+        <h2 id="netflix-premium-route">Continue with the full Netflix practice set</h2>
+        <p>
+          This public guide is complete enough to plan a focused week. Premium keeps the broader company-tagged
+          editorial route gated, with deeper navigation across coding, concept questions, and system design.
+        </p>
+      </div>
+      <a
+        class="preview-btn preview-btn--primary"
+        [routerLink]="['/pricing']"
+        [queryParams]="{ src: 'company_preview_netflix' }">
+        Unlock the full Netflix practice set
+      </a>
+    </section>
+  </ng-container>
+  </ng-template>
   </ng-template>
 
   <ng-template #genericPreview>

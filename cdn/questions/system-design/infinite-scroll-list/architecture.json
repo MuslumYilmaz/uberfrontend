@@ -1,162 +1,105 @@
 {
-    "key": "A",
-    "title": "Architecture / High-level design",
-    "blocks": [
+  "key": "A",
+  "title": "Architecture and data flow",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Use a small pipeline with explicit ownership: the route owns the query and restoration key, a feed controller owns remote-data correctness, the list viewport owns rendering and observation, and a row renderer owns item presentation. This separation matters because a visibility signal is only a request hint. It must not be allowed to mutate cursors or append results directly."
+    },
+    {
+      "type": "heading",
+      "text": "The boxes to draw"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "In this step, the interviewer wants to see if you can turn a vague idea (\"infinite scroll list\") into a clean set of components and data flows. You should talk in terms of boxes and arrows: where state lives, who fetches data, and how scrolling triggers new loads."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "State and data ownership",
+              "items": [
+                "The route owns normalized filters, sort order, feed identity, the first page, and the restoration key.",
+                "The controller owns entities, order, cursors, request generations, cancellation, errors, and cache policy.",
+                "The page API owns deterministic ordering and opaque cursor semantics."
+              ]
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame it:**\n\"At a high level, I’d split this into a page container, a reusable `InfiniteScrollList` component, a data-fetching layer, and a pluggable item renderer. The list manages scroll + pagination state, the data layer talks to the API, and the page decides what to render inside each row.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You don’t stuff everything into one giant component.\n- You put state and side-effects in the right place.\n- You can describe data flow clearly: \"event → state update → re-render\".\n- You think about reuse (same list used on multiple pages)."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Draw or describe 3–4 boxes max. Keep it simple: Page → InfiniteScrollList → DataFetcher + ItemRenderer. Show that you can separate responsibilities without over-engineering."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Core building blocks you should mention",
-            "columns": [
-                "Piece",
-                "Responsibility",
-                "What you say out loud"
-            ],
-            "rows": [
-                [
-                    "Page / Screen",
-                    "Owns filters, layout and passes props into the list.",
-                    "\"This page decides which API to call and how each item should look. It passes those down to the list as props.\""
-                ],
-                [
-                    "InfiniteScrollList component",
-                    "Tracks pages, items, loading, error, end-of-list; wires IntersectionObserver.",
-                    "\"The list component owns pagination state and observes a sentinel at the bottom to know when to load more.\""
-                ],
-                [
-                    "Data fetching layer (hook/service)",
-                    "Wraps the HTTP calls and hides pagination details (page vs cursor).",
-                    "\"I’d hide API details behind a small helper so the list just calls `loadNextPage()` and gets items back.\""
-                ],
-                [
-                    "Item renderer",
-                    "Pure visual component for a single item (row/card).",
-                    "\"Rendering of each item is separate, so the list can be reused with different UIs: rows today, cards tomorrow.\""
-                ],
-                [
-                    "State store (optional)",
-                    "Keeps items/filters across navigation, if needed.",
-                    "\"If we need to preserve scroll + filters between visits, I’d lift state into a store or higher-level container.\""
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should explicitly say",
-                            "items": [
-                                "The list component owns pagination state (current page, items, `hasMore`, loading, error).",
-                                "IntersectionObserver lives inside the list and observes a sentinel element at the bottom.",
-                                "The data layer exposes a simple API like `loadInitial()` and `loadMore()`.",
-                                "The item renderer is stateless and only receives props.",
-                                "If needed, global state can keep filters and scroll position."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things that are red flags",
-                            "items": [
-                                "Mixing fetching logic and heavy layout in one huge component.",
-                                "Letting many components manage their own pagination state.",
-                                "Triggering network calls directly from scroll events everywhere.",
-                                "Tightly coupling the list to one specific item layout.",
-                                "No clear place where errors and loading state are handled."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Data flow you should walk through",
-            "steps": [
-                {
-                    "title": "1. Page mounts",
-                    "text": "Page renders `InfiniteScrollList` and passes a `fetchPage` function and an `ItemComponent`."
-                },
-                {
-                    "title": "2. Initial fetch",
-                    "text": "List calls `fetchPage(0)` via the data layer, sets `loading=true`, then stores the first batch of items."
-                },
-                {
-                    "title": "3. Observe sentinel",
-                    "text": "List attaches IntersectionObserver to a sentinel at the bottom. When it becomes visible and `hasMore` is true, it triggers `fetchPage(nextPage)`."
-                },
-                {
-                    "title": "4. Append items",
-                    "text": "New items are merged into the existing array; list updates `hasMore`, `loading`, and `error` accordingly."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "State ownership",
-                    "value": "Centered in list",
-                    "helperText": "One clear place tracks pages, items, and loading."
-                },
-                {
-                    "label": "Side-effects",
-                    "value": "Isolated",
-                    "helperText": "Fetching + IntersectionObserver live in well-defined components/hooks."
-                },
-                {
-                    "label": "Reusability",
-                    "value": "High",
-                    "helperText": "Same list works with different item UIs and different APIs."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "Good architecture here is not about fancy patterns. It’s about clear responsibilities: one place for scroll + pagination logic, one place for data fetching, and simple, reusable item components."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Rendering ownership",
+              "items": [
+                "The viewport owns the sentinel, virtual range, loading and retry rows, announcements, and anchor capture.",
+                "The item renderer owns semantic row markup, a stable key, reserved media geometry, and item actions.",
+                "Neither rendering layer mutates server cursors or invents pagination state."
+              ]
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Forward data flow"
+    },
+    {
+      "type": "steps",
+      "title": "From first render to the next page",
+      "steps": [
+        {
+          "title": "1. Hydrate a useful first page",
+          "text": "The route renders initial items and the next cursor in HTML. The client normalizes them into an ID-keyed entity map plus an ordered ID array, then attaches one observer to the sentinel."
+        },
+        {
+          "title": "2. Convert visibility into intent",
+          "text": "When the sentinel enters a prefetch margin, the viewport emits loadNext. The controller ignores the signal when there is no next cursor, the same cursor is already in flight, retry cooldown is active, or the feed generation has changed."
+        },
+        {
+          "title": "3. Start an owned request",
+          "text": "The controller captures the current generation and cursor, creates an AbortController, marks that cursor as pending, and calls the page API. Repeated observer callbacks therefore collapse into one request."
+        },
+        {
+          "title": "4. Validate before merging",
+          "text": "On response, the controller first compares the captured generation with the active one. A response for old filters is discarded. Valid items are merged by stable ID, their ordered IDs are appended only once, and nextCursor changes only after the page commits."
+        },
+        {
+          "title": "5. Render and announce",
+          "text": "The viewport derives its rendered range from ordered IDs, the measurement cache, scroll position, and overscan. It removes the loading row, announces how many items were added, and leaves focus where the user placed it."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Guard duplicate sentinel triggers"
+    },
+    {
+      "type": "text",
+      "text": "IntersectionObserver may fire several times while layout shifts, the loading row changes height, or the user crosses the threshold repeatedly. A boolean isLoading guard helps, but cursor identity is the stronger lock. Keep an inFlightCursor set or one active request record, and make loadNext idempotent for that cursor. Do not advance the cursor when the request starts. If the request fails, the same cursor remains available for Retry; if it succeeds, commit the returned nextCursor atomically with the merged page."
+    },
+    {
+      "type": "links",
+      "title": "Concurrency practice",
+      "items": [
+        {
+          "label": "Implement takeLatest request behavior",
+          "href": "/javascript/coding/js-take-latest",
+          "description": "Practice admitting only the latest request result when filters or queries change."
+        },
+        {
+          "label": "Build abortable JavaScript helpers",
+          "href": "/javascript/coding/js-abortable-helpers",
+          "description": "Practice propagating AbortSignal through reusable asynchronous utilities."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Architecture checkpoint",
+      "text": "The important arrow is not sentinel to network. It is sentinel to intent, intent to a guarded controller transition, validated response to normalized state, and derived state to the viewport. That boundary contains duplicate triggers, retries, filter races, and rendering complexity."
+    }
+  ]
 }

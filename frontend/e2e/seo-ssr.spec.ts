@@ -220,6 +220,79 @@ const GOOGLE_PREVIEW_INBOUND_PAGES = [
   { path: '/tracks', anchor: 'Google-focused frontend practice' },
 ] as const;
 
+const NETFLIX_PREVIEW_PATH = '/companies/netflix/preview';
+const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend Interview Questions: 6 Prompts + Prep Guide';
+const NETFLIX_PREVIEW_DESCRIPTION =
+  'Prepare for a Netflix frontend interview with 6 representative prompts on JavaScript, React, streaming UI, performance, accessibility, and system design.';
+const NETFLIX_PREVIEW_H1 = 'Netflix Frontend Interview Questions';
+const NETFLIX_PREVIEW_PROMPTS = [
+  { id: 'resilient-title-search', title: 'Implement resilient title search' },
+  { id: 'accessible-continue-watching-row', title: 'Build an accessible Continue Watching row' },
+  {
+    id: 'personalized-row-rendering',
+    title: 'Stop personalized rows from re-rendering unnecessarily',
+  },
+  {
+    id: 'streaming-caching-failure-states',
+    title: 'Reason about streaming delivery, caching, and failure states',
+  },
+  {
+    id: 'continue-watching-system-design',
+    title: 'Design Continue Watching for regional and device scale',
+  },
+  {
+    id: 'consequential-frontend-decision',
+    title: 'Defend a consequential frontend decision',
+  },
+] as const;
+const NETFLIX_PREVIEW_RESOURCES = [
+  '/javascript/coding/js-debounce',
+  '/javascript/coding/js-take-latest',
+  '/react/trivia/react-prevent-unnecessary-rerenders',
+  '/javascript/trivia/content-delivery-caching-strategies-streaming',
+  '/system-design/infinite-scroll-list',
+  '/system-design/dashboard-widgets-draggable-resizable',
+  '/guides/system-design-blueprint/performance',
+  '/guides/behavioral/stories',
+] as const;
+const NETFLIX_OFFICIAL_SOURCES = [
+  'https://jobs.netflix.com/careers/engineering',
+  'https://jobs.netflix.com/culture',
+  'https://jobs.netflix.com/careers/new-grads',
+  'https://netflixtechblog.com/crafting-a-high-performance-tv-user-interface-using-react-3350e5a6ad3b',
+  'https://netflixtechblog.com/lumen-custom-self-service-dashboarding-for-netflix-8c56b541548c',
+] as const;
+const NETFLIX_PREVIEW_INBOUND_PAGES = [
+  { path: '/', anchor: 'View Netflix preview' },
+  { path: '/companies', anchor: 'Netflix frontend interview questions' },
+  { path: '/system-design', anchor: 'Netflix frontend interview questions' },
+] as const;
+
+const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
+const INFINITE_SCROLL_TITLE = 'Infinite Scroll List System Design';
+const INFINITE_SCROLL_DESCRIPTION =
+  'Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.';
+const INFINITE_SCROLL_SECTION_TITLES = [
+  'Requirements and a 60-second answer',
+  'Architecture and data flow',
+  'Pagination, state, and data correctness',
+  'Component and API contracts',
+  'Virtualization, accessibility, recovery, and verification',
+] as const;
+const INFINITE_SCROLL_INTERNAL_RESOURCES = [
+  '/javascript/coding/js-take-latest',
+  '/javascript/coding/js-abortable-helpers',
+  '/guides/system-design-blueprint/performance',
+  '/guides/system-design-blueprint/evaluation',
+] as const;
+const INFINITE_SCROLL_OFFICIAL_SOURCES = [
+  'https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API',
+  'https://www.w3.org/WAI/ARIA/apg/patterns/feed/',
+  'https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading',
+  'https://developer.mozilla.org/en-US/docs/Web/API/History/scrollRestoration',
+  'https://web.dev/articles/virtualize-long-lists-react-window',
+] as const;
+
 function expectedCanonical(path: string): string {
   if (path === '/') return `${CANONICAL_BASE}/`;
   return `${CANONICAL_BASE}${path}`;
@@ -770,6 +843,155 @@ test.describe('seo-ssr', () => {
     expectNoHydrationOrChunkIssues(runtimeIssues, STALE_CLOSURES_PATH);
   });
 
+  test('raw infinite scroll guide preserves its proven snippet while exposing the complete public design answer', async ({ request }) => {
+    const html = await readRawHtml(request, INFINITE_SCROLL_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const caseText = rawVisibleTextPreserveCase(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(INFINITE_SCROLL_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(INFINITE_SCROLL_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(INFINITE_SCROLL_TITLE);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(INFINITE_SCROLL_PATH));
+    expect(robots).toBe('index,follow');
+
+    for (const heading of INFINITE_SCROLL_SECTION_TITLES) {
+      expect(text, `infinite scroll guide includes ${heading}`).toContain(normalizeText(heading));
+      expect(bodyMarkup, `${heading} renders as a semantic H2`).toMatch(
+        new RegExp(`<h2\\b[^>]*>\\s*${escapeRegExp(heading)}\\s*<\\/h2>`, 'i'),
+      );
+    }
+
+    [
+      'one-way, changing feed',
+      'unknown total',
+      'cursor pagination',
+      'variable-height rows',
+      'scroll restoration',
+      'stable ordering',
+      'ID deduplication',
+      'duplicate sentinel',
+      'AbortController',
+      'request generation',
+      'stale response',
+      'anchor item and intra-item offset',
+      'measurement cache',
+      'overscan',
+      'bounded data cache',
+      'aria-busy',
+      'status announcements',
+      'visible Load More',
+      'persistent page URLs',
+      'sequential links',
+      'DOM node count',
+      'long tasks',
+      'duplicates or gaps',
+    ].forEach((expectedText) => {
+      expect(text, `infinite scroll guide includes ${expectedText}`).toContain(normalizeText(expectedText));
+    });
+
+    for (const resourcePath of INFINITE_SCROLL_INTERNAL_RESOURCES) {
+      expectCleanRawLink(html, resourcePath, INFINITE_SCROLL_PATH);
+    }
+    for (const sourceUrl of INFINITE_SCROLL_OFFICIAL_SOURCES) {
+      expectCleanRawLink(html, sourceUrl, INFINITE_SCROLL_PATH);
+    }
+
+    expect(caseText).not.toContain('**');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+    expect(bodyMarkup).not.toMatch(/<app-locked-preview\b/i);
+    expect(caseText).not.toContain('View pricing');
+
+    ['BreadcrumbList', 'Article', 'LearningResource'].forEach((type) => {
+      expect(schemaTypes, `JSON-LD includes ${type}`).toContain(type);
+    });
+    expect(schemaTypes).not.toContain('FAQPage');
+
+    const article = schemaNodes.find((node) => node['@type'] === 'Article');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(INFINITE_SCROLL_PATH),
+      headline: INFINITE_SCROLL_TITLE,
+      description: INFINITE_SCROLL_DESCRIPTION,
+      url: expectedCanonical(INFINITE_SCROLL_PATH),
+      mainEntityOfPage: expectedCanonical(INFINITE_SCROLL_PATH),
+      datePublished: '2025-11-22T00:00:00.000Z',
+      dateModified: '2026-07-27T00:00:00.000Z',
+      isAccessibleForFree: true,
+    });
+
+    const learningResource = schemaNodes.find((node) => node['@type'] === 'LearningResource');
+    expect(learningResource).toMatchObject({
+      '@id': `${expectedCanonical(INFINITE_SCROLL_PATH)}#learning-resource`,
+      name: INFINITE_SCROLL_TITLE,
+      description: INFINITE_SCROLL_DESCRIPTION,
+      url: expectedCanonical(INFINITE_SCROLL_PATH),
+      isAccessibleForFree: true,
+    });
+  });
+
+  test('infinite scroll guide keeps decision tables usable without page overflow at target widths', async ({ page }) => {
+    const runtimeIssues = collectClientRuntimeIssues(page);
+    const viewports = [
+      { width: 360, height: 800 },
+      { width: 390, height: 844 },
+      { width: 834, height: 1112 },
+      { width: 1366, height: 900 },
+      { width: 1440, height: 900 },
+    ];
+
+    await page.setViewportSize(viewports[0]);
+    const response = await page.goto(INFINITE_SCROLL_PATH, { waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBe(200);
+    await expect(page.locator('h1')).toHaveText(INFINITE_SCROLL_TITLE);
+    await expect(page.locator('.sd-table-scroll')).toHaveCount(4);
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      const layout = await page.evaluate(() => {
+        const main = document.querySelector<HTMLElement>('.sdl-center');
+        const tableScrollers = Array.from(document.querySelectorAll<HTMLElement>('.sd-table-scroll'));
+        return {
+          documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          mainOverflow: main ? main.scrollWidth - main.clientWidth : Number.POSITIVE_INFINITY,
+          h1Count: document.querySelectorAll('h1').length,
+          tables: tableScrollers.map((scroller) => ({
+            clientWidth: scroller.clientWidth,
+            scrollWidth: scroller.scrollWidth,
+            overflowX: getComputedStyle(scroller).overflowX,
+          })),
+        };
+      });
+
+      expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.mainOverflow, `main content overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.h1Count, `single H1 at ${viewport.width}px`).toBe(1);
+      expect(layout.tables, `decision tables at ${viewport.width}px`).toHaveLength(4);
+      layout.tables.forEach((table, index) => {
+        expect(table.clientWidth, `table ${index + 1} has a usable viewport at ${viewport.width}px`).toBeGreaterThan(0);
+        expect(table.scrollWidth, `table ${index + 1} contains its content at ${viewport.width}px`).toBeGreaterThanOrEqual(
+          table.clientWidth,
+        );
+        expect(['auto', 'scroll'], `table ${index + 1} scroll behavior at ${viewport.width}px`).toContain(
+          table.overflowX,
+        );
+      });
+
+      if (viewport.width <= 390) {
+        expect(
+          layout.tables.some((table) => table.scrollWidth > table.clientWidth),
+          `at least one decision table scrolls horizontally at ${viewport.width}px`,
+        ).toBe(true);
+      }
+    }
+
+    await page.waitForTimeout(300);
+    expectNoHydrationOrChunkIssues(runtimeIssues, INFINITE_SCROLL_PATH);
+  });
+
   test('raw OpenAI company preview is indexable, crawlable, and free of premium leakage', async ({ request }) => {
     const html = await readRawHtml(request, '/companies/openai/preview');
     const text = rawVisibleText(html);
@@ -942,6 +1164,167 @@ test.describe('seo-ssr', () => {
         normalizeText(inbound.anchor),
       );
     }
+  });
+
+  test('raw Netflix company preview exposes the complete public guide, schema, and crawlable links', async ({ request }) => {
+    test.setTimeout(120_000);
+
+    const html = await readRawHtml(request, NETFLIX_PREVIEW_PATH);
+    const text = rawVisibleText(html);
+    const caseText = rawVisibleTextPreserveCase(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(NETFLIX_PREVIEW_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(NETFLIX_PREVIEW_DESCRIPTION);
+    expect(extractRawPropertyMeta(html, 'og:title')).toBe(NETFLIX_PREVIEW_TITLE);
+    expect(extractRawPropertyMeta(html, 'og:description')).toBe(NETFLIX_PREVIEW_DESCRIPTION);
+    expect(extractRawMeta(html, 'twitter:title')).toBe(NETFLIX_PREVIEW_TITLE);
+    expect(extractRawMeta(html, 'twitter:description')).toBe(NETFLIX_PREVIEW_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(NETFLIX_PREVIEW_H1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(NETFLIX_PREVIEW_PATH));
+    expect(robots).toBe('index,follow');
+
+    [
+      'Public Netflix prep guide',
+      'Prepare for product judgment, not Netflix trivia',
+      'What Netflix publishes—and what you still need to confirm',
+      'Three product contexts for practicing transferable frontend judgment',
+      'Six Netflix frontend interview practice questions',
+      'Scope Continue Watching before drawing architecture boxes',
+      'A 7-day Netflix frontend interview preparation plan',
+      'Common Netflix frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ].forEach((expectedText) => {
+      expect(text, `Netflix preview includes ${expectedText}`).toContain(normalizeText(expectedText));
+    });
+
+    expect(caseText).toContain(
+      'These are representative FrontendAtlas practice prompts, not leaked or confirmed Netflix interview questions. Interview formats vary by role and team, so use recruiter-provided material as the source of truth.',
+    );
+    expect(caseText).toContain('An older engineering case study');
+    expect(caseText).not.toContain('47 known questions');
+    expect(caseText).not.toContain('Curry Function');
+    expect(caseText).not.toContain('Toast Notification System');
+    expect(caseText).not.toContain('Try free challenge');
+
+    for (const prompt of NETFLIX_PREVIEW_PROMPTS) {
+      expect(text, `visible prompt ${prompt.title}`).toContain(normalizeText(prompt.title));
+      expect(html, `visible prompt anchor ${prompt.id}`).toMatch(
+        new RegExp(`\\bid=["']${escapeRegExp(prompt.id)}["']`, 'i'),
+      );
+    }
+
+    for (const resourcePath of NETFLIX_PREVIEW_RESOURCES) {
+      expectCleanRawLink(html, resourcePath, NETFLIX_PREVIEW_PATH);
+    }
+    for (const sourceUrl of NETFLIX_OFFICIAL_SOURCES) {
+      expectCleanRawLink(html, sourceUrl, NETFLIX_PREVIEW_PATH);
+    }
+
+    ['Organization', 'WebSite', 'CollectionPage', 'BreadcrumbList', 'ItemList'].forEach((type) => {
+      expect(schemaTypes, `JSON-LD includes ${type}`).toContain(type);
+    });
+    ['FAQPage', 'QAPage', 'JobPosting', 'PracticeProblem'].forEach((type) => {
+      expect(schemaTypes, `JSON-LD excludes unsupported ${type}`).not.toContain(type);
+    });
+
+    const collectionPage = schemaNodes.find((node) => node['@type'] === 'CollectionPage');
+    expect(collectionPage).toMatchObject({
+      '@id': `${expectedCanonical(NETFLIX_PREVIEW_PATH)}#collection`,
+      url: expectedCanonical(NETFLIX_PREVIEW_PATH),
+      name: NETFLIX_PREVIEW_TITLE,
+      headline: NETFLIX_PREVIEW_H1,
+      description: NETFLIX_PREVIEW_DESCRIPTION,
+      inLanguage: 'en',
+      dateModified: '2026-07-27T00:00:00.000Z',
+      isAccessibleForFree: true,
+      mainEntity: { '@id': `${expectedCanonical(NETFLIX_PREVIEW_PATH)}#practice-prompts` },
+    });
+    expect(collectionPage?.mentions).toHaveLength(8);
+
+    const breadcrumb = schemaNodes.find((node) => node['@type'] === 'BreadcrumbList');
+    expect((breadcrumb?.['itemListElement'] || []).map((item: any) => item.name)).toEqual([
+      'FrontendAtlas',
+      'Company Frontend Interview Questions',
+      NETFLIX_PREVIEW_H1,
+    ]);
+
+    const itemList = schemaNodes.find((node) => node['@type'] === 'ItemList');
+    expect(itemList?.['@id']).toBe(`${expectedCanonical(NETFLIX_PREVIEW_PATH)}#practice-prompts`);
+    const itemListElements = itemList?.['itemListElement'];
+    expect(Array.isArray(itemListElements)).toBe(true);
+    expect(itemListElements).toHaveLength(6);
+
+    itemListElements.forEach((entry: any, index: number) => {
+      const expectedPrompt = NETFLIX_PREVIEW_PROMPTS[index];
+      const itemName = entry?.name ?? entry?.item?.name;
+      const itemUrl = entry?.url ?? entry?.item?.url;
+      expect(entry?.position).toBe(index + 1);
+      expect(itemName).toBe(expectedPrompt.title);
+      expect(itemUrl).toBe(`${expectedCanonical(NETFLIX_PREVIEW_PATH)}#${expectedPrompt.id}`);
+
+      const fragment = new URL(String(itemUrl)).hash.slice(1);
+      expect(fragment).toBe(expectedPrompt.id);
+      expect(html, `ItemList fragment #${fragment} maps to visible markup`).toMatch(
+        new RegExp(`\\bid=["']${escapeRegExp(fragment)}["']`, 'i'),
+      );
+    });
+
+    for (const resourcePath of NETFLIX_PREVIEW_RESOURCES) {
+      const resourceHtml = await readRawHtml(request, resourcePath);
+      const resourceRobots = normalizeText(extractRawMeta(resourceHtml, 'robots')).replace(/\s+/g, '');
+      expect(extractRawCanonical(resourceHtml), `self-canonical for ${resourcePath}`).toBe(
+        expectedCanonical(resourcePath),
+      );
+      expect(resourceRobots, `indexable robots for ${resourcePath}`).not.toContain('noindex');
+      expect(hasLockedShellMarkup(resourceHtml), `unlocked raw page for ${resourcePath}`).toBe(false);
+    }
+
+    for (const inbound of NETFLIX_PREVIEW_INBOUND_PAGES) {
+      const sourceHtml = await readRawHtml(request, inbound.path);
+      expectCleanRawLink(sourceHtml, NETFLIX_PREVIEW_PATH, inbound.path);
+      expect(
+        extractRawLinkText(sourceHtml, NETFLIX_PREVIEW_PATH),
+        `anchor text on ${inbound.path}`,
+      ).toContain(normalizeText(inbound.anchor));
+    }
+  });
+
+  test('Netflix company preview reflows without horizontal overflow at target widths', async ({ page }) => {
+    const runtimeIssues = collectClientRuntimeIssues(page);
+    const viewports = [
+      { width: 360, height: 800 },
+      { width: 390, height: 844 },
+      { width: 834, height: 1112 },
+      { width: 1366, height: 900 },
+      { width: 1440, height: 900 },
+    ];
+
+    await page.setViewportSize(viewports[0]);
+    await page.goto(NETFLIX_PREVIEW_PATH, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('h1')).toHaveText(NETFLIX_PREVIEW_H1);
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      const layout = await page.evaluate(() => {
+        const preview = document.querySelector<HTMLElement>('[data-testid="company-preview-page"]');
+        return {
+          documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          previewOverflow: preview ? preview.scrollWidth - preview.clientWidth : Number.POSITIVE_INFINITY,
+          h1Count: document.querySelectorAll('h1').length,
+        };
+      });
+
+      expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.previewOverflow, `Netflix preview overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.h1Count, `single H1 at ${viewport.width}px`).toBe(1);
+    }
+
+    await page.waitForTimeout(300);
+    expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
   });
 
   test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {

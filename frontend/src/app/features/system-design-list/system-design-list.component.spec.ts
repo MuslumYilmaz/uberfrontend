@@ -261,6 +261,24 @@ describe('SystemDesignListComponent', () => {
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
   });
 
+  it('uses the public Netflix guide for the fourth system-design start step', async () => {
+    const { fixture } = await createComponent();
+    const startSection = (fixture.nativeElement as HTMLElement).querySelector(
+      '[data-testid="system-design-start-section"]',
+    );
+    const netflixGuide = startSection?.querySelector<HTMLAnchorElement>(
+      'a[href="/companies/netflix/preview"]',
+    );
+
+    expect(netflixGuide).toBeTruthy();
+    expect(netflixGuide?.textContent?.replace(/\s+/g, ' ').trim()).toContain(
+      'Netflix frontend interview questions',
+    );
+    expect(
+      startSection?.querySelector('a[href="/system-design/netflix-scale-expansion"]'),
+    ).toBeNull();
+  });
+
   it('publishes ItemList and FAQ schema for the system design hub', async () => {
     const { seo } = await createComponent();
 
