@@ -29,46 +29,7 @@ import {
     </div>
     <span class="sr-only" aria-live="polite" aria-atomic="true">{{ announcement() }}</span>
   `,
-  styles: [`
-    :host { display: inline-block; }
-    .timer {
-      display: inline-flex;
-      align-items: baseline;
-      gap: var(--uf-space-2);
-      padding: 8px 12px;
-      border: 1px solid var(--uf-border-subtle);
-      border-radius: var(--uf-radius-pill);
-      background: var(--uf-surface-alt);
-      color: var(--uf-text-primary);
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-    .timer--warning {
-      border-color: var(--uf-status-warn-border);
-      background: var(--uf-status-warn-bg);
-    }
-    .timer--urgent {
-      border-color: var(--uf-status-danger-border);
-      background: var(--uf-status-danger-bg);
-      color: var(--uf-status-danger-text);
-    }
-    .timer__label {
-      color: var(--uf-text-secondary);
-      font-size: var(--uf-meta-size);
-    }
-    .timer__value { font-size: var(--uf-subsection-title-size); }
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-  `],
+  styleUrl: './interview-deadline-timer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InterviewDeadlineTimerComponent implements OnChanges, OnDestroy {
