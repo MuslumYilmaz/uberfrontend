@@ -56,7 +56,18 @@ function run() {
       stdio: 'inherit',
     });
 
-    return warnOnly ? 0 : (result.status ?? 1);
+    if (result.error) {
+      console.error(`[lint:spelling] failed to start cspell: ${result.error.message}`);
+      return 1;
+    }
+    if (result.signal) {
+      console.error(`[lint:spelling] cspell terminated by signal ${result.signal}`);
+      return 1;
+    }
+
+    // In warn-only mode cspell's --no-exit-code suppresses spelling findings,
+    // while configuration, runtime, and CLI failures still propagate here.
+    return result.status ?? 1;
   } finally {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
