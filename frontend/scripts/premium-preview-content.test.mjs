@@ -15,14 +15,11 @@ const reactCoding = readJson('cdn/questions/react/coding.json');
 const javascriptCoding = readJson('cdn/questions/javascript/coding.json');
 const angularCoding = readJson('cdn/questions/angular/coding.json');
 const systemDesignIndex = readJson('cdn/questions/system-design/index.json');
-const systemDesignMeta = readJson('cdn/questions/system-design/multi-step-form-autosave/meta.json');
 const practiceRegistry = readJson('cdn/practice/registry.json');
 const premiumPreviewCatalog = readJson('frontend/src/app/core/content/premium-preview-catalog.json');
 
 const codingUnlock =
   'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.';
-const systemDesignUnlock =
-  'Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis.';
 
 const required = [
   { id: 'react-contact-form-starter', record: reactCoding.find((item) => item.id === 'react-contact-form-starter'), unlock: codingUnlock },
@@ -30,8 +27,6 @@ const required = [
   { id: 'js-promise-all', record: javascriptCoding.find((item) => item.id === 'js-promise-all'), unlock: codingUnlock },
   { id: 'react-use-effect-once', record: reactCoding.find((item) => item.id === 'react-use-effect-once'), unlock: codingUnlock },
   { id: 'angular-tabs-switcher', record: angularCoding.find((item) => item.id === 'angular-tabs-switcher'), unlock: codingUnlock },
-  { id: 'multi-step-form-autosave', record: systemDesignIndex.find((item) => item.id === 'multi-step-form-autosave'), unlock: systemDesignUnlock },
-  { id: 'multi-step-form-autosave meta', record: systemDesignMeta, unlock: systemDesignUnlock },
 ];
 
 const forbiddenRawLabels = [
@@ -251,13 +246,21 @@ for (const tech of techs) {
 for (const item of systemDesignIndex) {
   const key = `system-design/${item.id}`;
   catalogTargets.set(key, item);
+  assert.equal(
+    item.premiumPreview,
+    undefined,
+    `${key}: system-design preview must live only in its meta.json`,
+  );
   if (item.access !== 'premium') continue;
 
   const meta = readJson(`cdn/questions/system-design/${item.id}/meta.json`);
-  const catalogPreview = premiumPreviewCatalog[key];
-  const inlinePreview = meta.premiumPreview || item.premiumPreview;
-  assert.ok(!(inlinePreview && catalogPreview), `${key}: inline and catalog previews compete as canonical sources`);
-  const previewContent = inlinePreview || catalogPreview;
+  assert.equal(
+    premiumPreviewCatalog[key],
+    undefined,
+    `${key}: shared premium-preview catalog must not contain system-design previews`,
+  );
+  assert.ok(meta.premiumPreview, `${key}: canonical meta premiumPreview is missing`);
+  const previewContent = meta.premiumPreview;
   const preview = lockedPreviewBuilders.buildLockedPreviewForSystemDesign({
     id: item.id,
     title: meta.title || item.title,
@@ -267,7 +270,21 @@ for (const item of systemDesignIndex) {
     premiumPreview: previewContent,
   }, { candidates: systemDesignIndex });
   corpusResults.push({ key, title: item.title, preview, source: previewContent ? 'authored' : 'fallback' });
+
+  const registryEntry = practiceRegistry.find((entry) => entry.id === item.id);
+  assert.ok(registryEntry, `${key}: generated practice-registry entry is missing`);
+  assert.equal(
+    registryEntry.summary,
+    previewContent.summary,
+    `${key}: generated practice-registry summary must come from meta.json`,
+  );
 }
+
+assert.deepEqual(
+  Object.keys(premiumPreviewCatalog).filter((key) => key.startsWith('system-design/')),
+  [],
+  'System-design previews must not remain in the shared premium-preview catalog',
+);
 
 const incidentIndex = readJson('cdn/incidents/index.json');
 for (const item of incidentIndex.filter((candidate) => candidate.access === 'premium')) {

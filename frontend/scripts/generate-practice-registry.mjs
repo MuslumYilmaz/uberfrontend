@@ -160,8 +160,24 @@ function buildQuestionEntries() {
     const items = safeArray(readJson(systemDesignIndex));
     items.forEach((item) => {
       if (!item?.id || !item?.title) return;
-      const premiumPreview = item.premiumPreview
-        || catalogPreview(`system-design/${item.id}`);
+      const metaPath = path.join(
+        QUESTIONS_DIR,
+        'system-design',
+        String(item.id),
+        'meta.json',
+      );
+      if (!fs.existsSync(metaPath)) {
+        throw new Error(
+          `[gen:practice-registry] Missing system-design meta for ${item.id}`
+        );
+      }
+      const meta = readJson(metaPath);
+      const premiumPreview = meta?.premiumPreview;
+      if (normalizeAccess(item.access) === 'premium' && !premiumPreview) {
+        throw new Error(
+          `[gen:practice-registry] Missing canonical premiumPreview in ${relFromFrontend(metaPath)}`
+        );
+      }
       entries.push({
         id: String(item.id),
         family: 'question',

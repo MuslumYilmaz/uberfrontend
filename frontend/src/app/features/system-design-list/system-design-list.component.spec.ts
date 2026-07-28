@@ -246,36 +246,55 @@ describe('SystemDesignListComponent', () => {
 
     expect(pageText).toContain('Frontend system design interview preparation');
     expect(pageText).toContain('Connect system design to the rest of frontend interview prep');
-    expect(pageText).toContain('Most asked frontend system design questions');
+    expect(pageText).toContain('Core frontend system design patterns');
     expect(pageText).toContain('Frontend system design interview rubric');
     expect(pageText).toContain('Common mistakes');
     expect(pageText).toContain('Frontend system design interview questions FAQ');
     expect(pageText).toContain('Infinite lists');
     expect(pageText).toContain('Notification systems');
-    expect(pageText).toContain('Staff-level dashboards');
+    expect(pageText).toContain('Streaming chat');
 
     const mostAskedSection = host.querySelector('[data-testid="system-design-most-asked-section"]');
-    expect(mostAskedSection?.querySelectorAll('a').length).toBe(8);
-    expect(mostAskedSection?.textContent || '').toContain('Component-driven Design System Architecture');
+    expect(mostAskedSection?.querySelectorAll('a').length).toBe(3);
+    expect(mostAskedSection?.textContent || '').toContain('AI Chat Textarea Design');
+    expect(
+      mostAskedSection?.querySelector('a[href="/system-design/ai-chat-textarea-design"]')
+        ?.getAttribute('data-access'),
+    ).toBe('premium');
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/machine-coding"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
   });
 
-  it('uses the public Netflix guide for the fourth system-design start step', async () => {
+  it('places the filter and question bank directly after the compact RADIO entry', async () => {
+    const { fixture } = await createComponent();
+    const host = fixture.nativeElement as HTMLElement;
+    const radio = host.querySelector('.sd-radio-cta');
+    const filter = host.querySelector('.sd-filter-bar');
+    const bank = host.querySelector('[data-testid="system-design-bank"]');
+    const related = host.querySelector('[data-testid="system-design-related-focus-section"]');
+
+    expect(radio?.nextElementSibling).toBe(filter);
+    expect(filter?.nextElementSibling).toBe(bank);
+    expect(bank?.nextElementSibling).toBe(related);
+    expect(text(fixture)).toContain('free full solutions');
+    expect(text(fixture)).not.toContain('Most asked frontend system design questions');
+  });
+
+  it('uses the representative Continue Watching case for the fourth start step', async () => {
     const { fixture } = await createComponent();
     const startSection = (fixture.nativeElement as HTMLElement).querySelector(
       '[data-testid="system-design-start-section"]',
     );
     const netflixGuide = startSection?.querySelector<HTMLAnchorElement>(
-      'a[href="/companies/netflix/preview"]',
+      'a[href="/system-design/netflix-scale-expansion"]',
     );
 
     expect(netflixGuide).toBeTruthy();
     expect(netflixGuide?.textContent?.replace(/\s+/g, ' ').trim()).toContain(
-      'Netflix frontend interview questions',
+      'Netflix Continue Watching frontend system design',
     );
     expect(
-      startSection?.querySelector('a[href="/system-design/netflix-scale-expansion"]'),
+      startSection?.querySelector('a[href="/companies/netflix/preview"]'),
     ).toBeNull();
   });
 
