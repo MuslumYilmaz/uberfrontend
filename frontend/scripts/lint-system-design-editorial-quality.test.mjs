@@ -163,6 +163,19 @@ assert.equal(run(setup(), 'structure').status, 0);
   assert.equal(result.status, 0, `${result.stdout}${result.stderr}`);
 }
 
+{
+  const root = setup();
+  const metaPath = path.join(root, 'example-system', 'meta.json');
+  const meta = fs.readFileSync(metaPath, 'utf8').replace(
+    '"title": "Example Frontend System Design",',
+    '"title": "Example Frontend System Design",\n  "title": "Example Frontend System Design",',
+  );
+  fs.writeFileSync(metaPath, meta);
+  const result = run(root, 'structure');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /contains duplicate JSON key "title"/);
+}
+
 expectFailure(({ sections }) => {
   sections.architecture.blocks.push({ type: 'diagram', nodes: [] });
 }, /unsupported block type/, 'structure');

@@ -135,9 +135,40 @@ function addWarning(message) {
   warnings.push(message);
 }
 
+function reportDuplicateJsonKeys(filePath, text) {
+  const source = ts.parseJsonText(filePath, text);
+
+  function visit(node) {
+    if (ts.isObjectLiteralExpression(node)) {
+      const seen = new Set();
+      node.properties.forEach((property) => {
+        if (!ts.isPropertyAssignment(property)) return;
+        const name = property.name;
+        const key = (
+          ts.isStringLiteral(name)
+          || ts.isNumericLiteral(name)
+          || ts.isIdentifier(name)
+        ) ? name.text : '';
+        if (!key) return;
+        if (seen.has(key)) {
+          const { line } = source.getLineAndCharacterOfPosition(name.getStart(source));
+          addError(`${rel(filePath)} contains duplicate JSON key ${JSON.stringify(key)} at line ${line + 1}`);
+        } else {
+          seen.add(key);
+        }
+      });
+    }
+    ts.forEachChild(node, visit);
+  }
+
+  visit(source);
+}
+
 function readJson(filePath) {
   try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const text = fs.readFileSync(filePath, 'utf8');
+    reportDuplicateJsonKeys(filePath, text);
+    return JSON.parse(text);
   } catch (error) {
     addError(`${rel(filePath)} could not be parsed: ${error.message}`);
     return null;
