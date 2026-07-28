@@ -1,0 +1,488 @@
+{
+  "version": 1,
+  "questions": {
+    "ai-agent-run-inspector": {
+      "assertions": [
+        {
+          "id": "terminal-and-snapshot-events",
+          "target": "all",
+          "require": [
+            "run\\.snapshot",
+            "run\\.stopped"
+          ]
+        },
+        {
+          "id": "approval-reconciliation",
+          "target": "visible",
+          "require": [
+            "approval.{0,100}(server|authoritative|version)"
+          ]
+        },
+        {
+          "id": "exhaustive-event-reducer",
+          "target": "code",
+          "require": [
+            "TraceEventDataByType",
+            "TraceEventEnvelope",
+            "assertNever\\(event\\)"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "ai-agent-run-inspector-contract",
+          "name": "RunStatus",
+          "requiredLiterals": [
+            "completed",
+            "failed",
+            "stopped"
+          ]
+        },
+        {
+          "group": "ai-agent-run-inspector-contract",
+          "name": "TraceEventDataByType",
+          "requiredMembers": [
+            "run.snapshot",
+            "span.started",
+            "span.delta",
+            "span.completed",
+            "approval.requested",
+            "approval.resolved",
+            "run.completed",
+            "run.failed",
+            "run.stopped"
+          ]
+        }
+      ]
+    },
+    "infinite-scroll-list": {
+      "assertions": [
+        {
+          "id": "query-aware-loader",
+          "target": "all",
+          "require": [
+            "queryKey|query key",
+            "AbortSignal"
+          ]
+        }
+      ]
+    },
+    "endless-short-video-feed": {
+      "assertions": [
+        {
+          "id": "media-adapter-boundary",
+          "target": "visible",
+          "require": [
+            "media adapter",
+            "manifest|rendition"
+          ],
+          "forbid": [
+            "RADIO.{0,120}(Reflect|Assumptions|Diagram|Operations)"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "endless-short-video-feed-contract",
+          "name": "VideoItem",
+          "requiredMembers": [
+            "posterUrl",
+            "renditions"
+          ]
+        },
+        {
+          "group": "endless-short-video-feed-contract",
+          "name": "MediaRendition",
+          "requiredMembers": [
+            "mimeType",
+            "width",
+            "height",
+            "bitrateKbps"
+          ]
+        }
+      ]
+    },
+    "notification-toast-system": {
+      "assertions": [
+        {
+          "id": "single-lifecycle-owner",
+          "target": "visible",
+          "require": [
+            "lifecycle coordinator",
+            "persistent"
+          ]
+        }
+      ]
+    },
+    "scalable-notifications-feed": {
+      "assertions": [
+        {
+          "id": "ordered-resume-model",
+          "target": "all",
+          "require": [
+            "sequence",
+            "cursor",
+            "read marker"
+          ]
+        },
+        {
+          "id": "discriminated-event-payloads",
+          "target": "code",
+          "sections": [
+            "interfaces"
+          ],
+          "require": [
+            "type:\\s*'notification\\.upserted'[^}]{0,160}notification:\\s*NotificationItem",
+            "type:\\s*'notification\\.removed'[^}]{0,160}notificationId:\\s*string",
+            "type:\\s*'read-marker\\.updated'[^}]{0,160}readMarker:\\s*ReadMarker"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "scalable-notifications-feed-contract",
+          "name": "NotificationEvent",
+          "requiredLiterals": [
+            "notification.upserted",
+            "notification.removed",
+            "read-marker.updated"
+          ]
+        }
+      ]
+    },
+    "live-comments-global-stream": {
+      "assertions": [
+        {
+          "id": "moderated-resume-model",
+          "target": "all",
+          "require": [
+            "moderation.{0,40}revision|moderationRevision",
+            "cursor|sequence"
+          ],
+          "forbid": [
+            "RADIO.{0,120}(Reflect|Assumptions|Diagram|Operations)",
+            "moderationRevision"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "live-comments-global-stream-contract",
+          "name": "Comment",
+          "requiredMembers": [
+            "moderation"
+          ]
+        },
+        {
+          "group": "live-comments-global-stream-contract",
+          "name": "CommentEvent",
+          "requiredLiterals": [
+            "comment.upserted",
+            "comment.removed"
+          ]
+        }
+      ]
+    },
+    "netflix-scale-expansion": {
+      "assertions": [
+        {
+          "id": "continue-watching-reconciliation",
+          "target": "visible",
+          "require": [
+            "43%",
+            "51%",
+            "focus"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "netflix-scale-expansion-contract",
+          "name": "ContinueWatchingRow",
+          "requiredMembers": [
+            "fetchedAt"
+          ]
+        },
+        {
+          "group": "netflix-scale-expansion-contract",
+          "name": "ArtworkCandidate",
+          "requiredMembers": [
+            "height",
+            "format"
+          ]
+        }
+      ]
+    },
+    "multi-step-form-autosave": {
+      "assertions": [
+        {
+          "id": "hybrid-draft-versioning",
+          "target": "all",
+          "require": [
+            "schemaVersion",
+            "revision",
+            "local.{0,40}draft"
+          ]
+        }
+      ]
+    },
+    "realtime-search-debounce-cache": {
+      "assertions": [
+        {
+          "id": "cancellation-and-stale-suppression",
+          "target": "all",
+          "require": [
+            "AbortSignal",
+            "stale.{0,30}(response|result)|generation"
+          ]
+        }
+      ]
+    },
+    "dashboard-widgets-draggable-resizable": {
+      "assertions": [
+        {
+          "id": "schema-and-document-version-separation",
+          "target": "all",
+          "require": [
+            "schemaVersion",
+            "revision"
+          ],
+          "forbid": [
+            "type\\s+LayoutVersion\\s*=\\s*1\\s*\\|\\s*2"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "dashboard-widgets-draggable-resizable-contract",
+          "name": "DashboardSnapshot",
+          "requiredMembers": [
+            "schemaVersion",
+            "revision",
+            "layouts"
+          ]
+        },
+        {
+          "group": "dashboard-widgets-draggable-resizable-contract",
+          "name": "LayoutCommit",
+          "requiredMembers": [
+            "breakpoint",
+            "basedOnRevision",
+            "layout"
+          ]
+        }
+      ]
+    },
+    "live-chart-high-frequency-updates": {
+      "assertions": [
+        {
+          "id": "retention-vs-paint",
+          "target": "visible",
+          "require": [
+            "paint.{0,50}coalesc|coalesc.{0,50}paint",
+            "sample.{0,50}(retain|retention|ring buffer)"
+          ]
+        }
+      ]
+    },
+    "component-design-system-architecture": {
+      "assertions": [
+        {
+          "id": "component-specific-semantics",
+          "target": "visible",
+          "require": [
+            "RTL",
+            "tooltip",
+            "menu"
+          ]
+        }
+      ]
+    },
+    "image-upload-preview": {
+      "assertions": [
+        {
+          "id": "canonical-upload-lifecycle",
+          "target": "all",
+          "require": [
+            "UploadStatus",
+            "requesting-upload",
+            "finalizing",
+            "complete"
+          ],
+          "forbid": [
+            "status\\s*===\\s*['\"]uploaded['\"]"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "image-upload-preview-contract",
+          "name": "UploadStatus",
+          "requiredLiterals": [
+            "idle",
+            "validating",
+            "preprocessing",
+            "requesting-upload",
+            "uploading",
+            "finalizing",
+            "complete",
+            "cancelled",
+            "error"
+          ],
+          "forbiddenLiterals": [
+            "uploaded"
+          ]
+        },
+        {
+          "group": "image-upload-preview-contract",
+          "name": "ImageUploadState",
+          "requiredMembers": [
+            "status",
+            "attemptId",
+            "session",
+            "asset",
+            "error"
+          ]
+        }
+      ]
+    },
+    "flashcard-language-trainer": {
+      "assertions": [
+        {
+          "id": "durable-command-convergence",
+          "target": "all",
+          "require": [
+            "idempotency|commandId",
+            "baseRevision|revision"
+          ]
+        }
+      ]
+    },
+    "cross-device-preferences-sync": {
+      "assertions": [
+        {
+          "id": "per-field-reconciliation",
+          "target": "all",
+          "require": [
+            "per-key.{0,30}revision|key-specific.{0,30}revision|field.{0,30}revision|fieldRevision",
+            "sync cursor|syncCursor"
+          ]
+        }
+      ]
+    },
+    "ai-chat-textarea-design": {
+      "assertions": [
+        {
+          "id": "composer-and-current-turn-scope",
+          "target": "all",
+          "require": [
+            "composition|IME",
+            "AbortSignal|AbortController"
+          ]
+        }
+      ]
+    },
+    "ai-image-generation-mvp": {
+      "assertions": [
+        {
+          "id": "long-running-job-lifecycle",
+          "target": "all",
+          "require": [
+            "202 Accepted",
+            "idempotency",
+            "status URL|statusUrl"
+          ]
+        }
+      ]
+    },
+    "model-training-progress-dashboard": {
+      "assertions": [
+        {
+          "id": "ordered-progress-stream",
+          "target": "all",
+          "require": [
+            "eventId",
+            "sequence",
+            "cursor"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "model-training-progress-dashboard-contract",
+          "name": "RunSnapshot",
+          "requiredMembers": [
+            "contiguousSequence",
+            "resumeCursor"
+          ]
+        },
+        {
+          "group": "model-training-progress-dashboard-contract",
+          "name": "MonitorState",
+          "requiredMembers": [
+            "contiguousSequence",
+            "resumeCursor"
+          ]
+        }
+      ]
+    },
+    "ai-ux-considerations": {
+      "assertions": [
+        {
+          "id": "proposal-review-command-outcome",
+          "target": "visible",
+          "require": [
+            "proposal",
+            "review",
+            "per-item|per item",
+            "outcome"
+          ]
+        }
+      ]
+    },
+    "news-feed-timeline": {
+      "assertions": [
+        {
+          "id": "authoritative-ranked-order",
+          "target": "visible",
+          "require": [
+            "server-authoritative|server authoritative",
+            "rank.{0,30}revision"
+          ]
+        }
+      ]
+    },
+    "ui-component-state-from-mock": {
+      "assertions": [
+        {
+          "id": "support-inbox-state-ownership",
+          "target": "visible",
+          "require": [
+            "support inbox",
+            "URL state",
+            "draft"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "ui-component-state-from-mock-contract",
+          "name": "Ticket",
+          "requiredMembers": [
+            "messageIds",
+            "version",
+            "capabilities"
+          ]
+        },
+        {
+          "group": "ui-component-state-from-mock-contract",
+          "name": "TicketCommandResult",
+          "requiredLiterals": [
+            "accepted",
+            "conflict"
+          ]
+        }
+      ]
+    }
+  }
+}
