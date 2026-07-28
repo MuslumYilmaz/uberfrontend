@@ -138,6 +138,7 @@ function cleanValue(value) {
 
 function stripMarkup(value) {
   return String(value || '')
+    .replace(/[’‘]/g, '\'')
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/<pre\b[\s\S]*?<\/pre>/gi, ' ')
     .replace(/<code\b[\s\S]*?<\/code>/gi, ' ')
@@ -320,7 +321,88 @@ function extractGuideDocuments() {
   return docs;
 }
 
-export function collectContentDocuments() {
-  return [...extractTriviaDocuments(), ...extractGuideDocuments()]
+function collectSystemDesignBlockText(block, parts) {
+  if (!block || typeof block !== 'object') return;
+  if (block.type === 'text' || block.type === 'heading') parts.push(block.text);
+  if (block.type === 'image') parts.push(block.alt, block.caption);
+  if (block.type === 'checklist') parts.push(block.title, ...(block.items || []));
+  if (block.type === 'callout') parts.push(block.title, block.text);
+  if (block.type === 'links') {
+    parts.push(block.title);
+    (block.items || []).forEach((item) => parts.push(item?.label, item?.description));
+  }
+  if (block.type === 'table') {
+    parts.push(block.title, ...(block.columns || []));
+    (block.rows || []).forEach((row) => parts.push(...(Array.isArray(row) ? row : [])));
+  }
+  if (block.type === 'columns') {
+    (block.columns || []).forEach((column) => (
+      (column?.blocks || []).forEach((inner) => collectSystemDesignBlockText(inner, parts))
+    ));
+  }
+  if (block.type === 'stats') {
+    (block.items || []).forEach((item) => parts.push(item?.label, item?.value, item?.helperText));
+  }
+  if (block.type === 'steps') {
+    parts.push(block.title);
+    (block.steps || []).forEach((step) => parts.push(step?.title, step?.text));
+  }
+}
+
+function extractSystemDesignDocuments() {
+  const root = path.join(cdnQuestionsDir, 'system-design');
+  const indexPath = path.join(root, 'index.json');
+  if (!fs.existsSync(indexPath)) return [];
+  const index = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+  if (!Array.isArray(index)) return [];
+
+  return index.flatMap((entry) => {
+    const id = String(entry?.id || '').trim();
+    if (!id) return [];
+    const folder = path.join(root, id);
+    const metaPath = path.join(folder, 'meta.json');
+    if (!fs.existsSync(metaPath)) return [];
+    const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    const parts = [
+      entry.title,
+      entry.description,
+      meta?.seo?.title,
+      meta?.seo?.description,
+      meta?.premiumPreview?.summary,
+      meta?.premiumPreview?.unlockDescription,
+      ...(meta?.premiumPreview?.learningOutcomes || []),
+    ];
+    ['requirements', 'architecture', 'data', 'interfaces', 'optimizations'].forEach((section) => {
+      const sectionPath = path.join(folder, `${section}.json`);
+      if (!fs.existsSync(sectionPath)) return;
+      const parsed = JSON.parse(fs.readFileSync(sectionPath, 'utf8'));
+      parts.push(parsed?.title);
+      (parsed?.blocks || []).forEach((block) => collectSystemDesignBlockText(block, parts));
+    });
+    const content = stripMarkup(parts.filter(isNonEmptyValue).join('.\n\n'));
+    if (!content) return [];
+    return [{
+      kind: 'system-design',
+      sourcePath: relFromRepo(folder),
+      virtualPath: path.posix.join('system-design', `${id}.txt`),
+      content,
+    }];
+  });
+}
+
+function isNonEmptyValue(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+export function collectContentDocuments(options = {}) {
+  const requestedKinds = Array.isArray(options.kinds) && options.kinds.length
+    ? new Set(options.kinds)
+    : null;
+  return [
+    ...extractTriviaDocuments(),
+    ...extractGuideDocuments(),
+    ...extractSystemDesignDocuments(),
+  ]
+    .filter((document) => !requestedKinds || requestedKinds.has(document.kind))
     .sort((left, right) => left.virtualPath.localeCompare(right.virtualPath));
 }

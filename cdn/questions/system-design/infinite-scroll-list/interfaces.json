@@ -1,6 +1,6 @@
 {
   "key": "I",
-  "title": "Component and API contracts",
+  "title": "Interface contracts for components and pagination",
   "blocks": [
     {
       "type": "text",
@@ -14,7 +14,7 @@
       "type": "callout",
       "variant": "info",
       "title": "Request and response",
-      "text": "fetchPage receives cursor, limit, normalized filters, and AbortSignal. It returns items, nextCursor, and optionally an ordering version. No nextCursor means the end. The client stores and returns the opaque cursor without parsing or incrementing it."
+      "text": "PageLoader receives one structured request containing the stable query key, normalized filters, sort order, page limit, opaque cursor, and AbortSignal. It returns ordered items, nextCursor, and optionally an ordering version. No nextCursor means the end. The client stores and returns the opaque cursor without parsing or incrementing it."
     },
     {
       "type": "columns",
@@ -53,7 +53,7 @@
     },
     {
       "type": "text",
-      "text": "InfiniteScrollList receives feedKey, initialPage, fetchPage, renderItem, getItemId, estimatedItemHeight, overscan, and restoration data. Optional callbacks report an error, committed page, or end. Do not expose observer instances, measurement nodes, raw scroll events, cursor setters, or contradictory state flags."
+      "text": "InfiniteScrollList receives feedKey, initialPage, pageLoader, renderItem, getItemId, estimatedItemHeight, overscan, and restoration data. Optional callbacks report an error, committed page, or end. Do not expose observer instances, measurement nodes, raw scroll events, cursor setters, or contradictory state flags."
     },
     {
       "type": "columns",
@@ -140,6 +140,46 @@
       "variant": "warning",
       "title": "Avoid a leaky component",
       "text": "If callers must synchronize cursor, loading, observer state, and retries, the component exports its races. Prefer immutable inputs and guarded commands."
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "PageLoader.load receives the complete query identity, normalized filters, sort order, page limit, opaque cursor, and AbortSignal. Its result contains ordered items, the next opaque cursor, and an optional ordering version. The controller validates the cursor relationship, ignores a stale generation, deduplicates by item identity, and never derives a next cursor from list length."
+    },
+    {
+      "type": "steps",
+      "title": "A query change through the loader",
+      "steps": [
+        {
+          "title": "Observe intent",
+          "text": "IntersectionObserver is a prefetch hint; the visible Load More button invokes the same admission path."
+        },
+        {
+          "title": "Admit once",
+          "text": "Reject repeat requests for a cursor already pending or committed."
+        },
+        {
+          "title": "Merge safely",
+          "text": "Validate the generation, normalize entities, append unseen IDs, and advance only after a successful page."
+        },
+        {
+          "title": "Restore context",
+          "text": "After navigation or variable-height measurement, mount the anchor and restore its intra-item offset."
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type PageRequest = {\n  queryKey: string;\n  filters: Readonly<Record<string, string | readonly string[]>>;\n  sort: string;\n  limit: number;\n  cursor?: string;\n  signal: AbortSignal;\n};\n\ntype PageResult<T> = {\n  items: readonly T[];\n  nextCursor?: string;\n  orderingVersion?: string;\n};\n\ninterface PageLoader<T> {\n  load(input: PageRequest): Promise<PageResult<T>>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "infinite-scroll-list-contract"
+      }
     }
   ]
 }

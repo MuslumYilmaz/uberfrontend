@@ -144,7 +144,13 @@ const RAW_HTML_CASES: Array<{
     path: '/system-design/infinite-scroll-list',
     access: 'free',
     titleText: 'Infinite Scroll List System Design',
-    includeText: ['paginated loading', 'virtualization'],
+    includeText: ['cursor pagination', 'virtualization'],
+  },
+  {
+    path: '/system-design/ai-agent-run-inspector',
+    access: 'free',
+    titleText: 'AI Agent Run Inspector Frontend System Design',
+    includeText: ['nested agent turns', 'Worked example: follow one run through the reducer', 'Interview answer checkpoint'],
   },
   {
     path: '/system-design/endless-short-video-feed',
@@ -265,19 +271,21 @@ const NETFLIX_OFFICIAL_SOURCES = [
 const NETFLIX_PREVIEW_INBOUND_PAGES = [
   { path: '/', anchor: 'View Netflix preview' },
   { path: '/companies', anchor: 'Netflix frontend interview questions' },
-  { path: '/system-design', anchor: 'Netflix frontend interview questions' },
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
-const INFINITE_SCROLL_TITLE = 'Infinite Scroll List System Design';
-const INFINITE_SCROLL_DESCRIPTION =
-  'Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.';
+const INFINITE_SCROLL_TITLE = 'Infinite Scroll List Frontend System Design';
+const INFINITE_SCROLL_H1 = 'Infinite Scroll List System Design';
+const INFINITE_SCROLL_SEO_DESCRIPTION =
+  'Design infinite scrolling with cursor pagination, request recovery, virtualization, stable scroll anchors, and accessible navigation alternatives.';
+const INFINITE_SCROLL_CATALOG_DESCRIPTION =
+  'Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.';
 const INFINITE_SCROLL_SECTION_TITLES = [
   'Requirements and a 60-second answer',
   'Architecture and data flow',
   'Pagination, state, and data correctness',
-  'Component and API contracts',
-  'Virtualization, accessibility, recovery, and verification',
+  'Interface contracts for components and pagination',
+  'Optimizations for virtualization, accessibility, recovery, and verification',
 ] as const;
 const INFINITE_SCROLL_INTERNAL_RESOURCES = [
   '/javascript/coding/js-take-latest',
@@ -291,6 +299,25 @@ const INFINITE_SCROLL_OFFICIAL_SOURCES = [
   'https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading',
   'https://developer.mozilla.org/en-US/docs/Web/API/History/scrollRestoration',
   'https://web.dev/articles/virtualize-long-lists-react-window',
+] as const;
+
+const AI_AGENT_RUN_INSPECTOR_PATH = '/system-design/ai-agent-run-inspector';
+const AI_AGENT_RUN_INSPECTOR_TITLE = 'AI Agent Run Inspector Frontend System Design';
+const AI_AGENT_RUN_INSPECTOR_SEO_DESCRIPTION =
+  'Design an AI agent trace viewer with nested spans, streamed tool calls, human approvals, reconnects, virtualization, redaction, and accessible navigation.';
+const PREMIUM_SYSTEM_DESIGN_SEO_CASES = [
+  {
+    path: '/system-design/netflix-scale-expansion',
+    title: 'Netflix Continue Watching Frontend System Design',
+    description: 'Design a Continue Watching frontend with progress reconciliation, optimistic removal, focus navigation, responsive media loading, and safe rollout.',
+    paidText: 'Worked example: stale progress and optimistic removal',
+  },
+  {
+    path: '/system-design/ui-component-state-from-mock',
+    title: 'UI Component and State Design From a Mock',
+    description: 'Turn a support-inbox mock into component boundaries, URL and server state, local drafts, optimistic updates, responsive behavior, and accessible focus.',
+    paidText: 'Desktop mock',
+  },
 ] as const;
 
 function expectedCanonical(path: string): string {
@@ -691,6 +718,42 @@ test.describe('seo-ssr', () => {
     }
   });
 
+  test('rewritten premium system designs expose exact SEO and schema without leaking the answer', async ({ request }) => {
+    for (const entry of PREMIUM_SYSTEM_DESIGN_SEO_CASES) {
+      const html = await readRawHtml(request, entry.path);
+      const schemaNodes = extractRawJsonLdNodes(html);
+      const schemaTypes = extractRawJsonLdTypes(html);
+      const searchableHtml = normalizeText(html.replace(/<[^>]+>/g, ' '));
+
+      expect(extractRawTitle(html)).toBe(entry.title);
+      expect(extractRawH1(html)).toBe(entry.title);
+      expect((rawBodyMarkup(html).match(/<h1\b/gi) || []).length).toBe(1);
+      expect(extractRawMeta(html, 'description')).toBe(entry.description);
+      expect(extractRawCanonical(html)).toBe(expectedCanonical(entry.path));
+      expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('noindex,follow');
+      expect(hasLockedShellMarkup(html)).toBe(true);
+      expect(searchableHtml).not.toContain(normalizeText(entry.paidText));
+      expect(schemaTypes).toEqual(expect.arrayContaining(['BreadcrumbList', 'Article', 'LearningResource']));
+
+      const article = schemaNodes.find((node) => node['@type'] === 'Article');
+      expect(article).toMatchObject({
+        '@id': expectedCanonical(entry.path),
+        headline: entry.title,
+        description: entry.description,
+        url: expectedCanonical(entry.path),
+        mainEntityOfPage: expectedCanonical(entry.path),
+        isAccessibleForFree: false,
+      });
+      const learningResource = schemaNodes.find((node) => node['@type'] === 'LearningResource');
+      expect(learningResource).toMatchObject({
+        '@id': `${expectedCanonical(entry.path)}#learning-resource`,
+        name: entry.title,
+        url: expectedCanonical(entry.path),
+        isAccessibleForFree: false,
+      });
+    }
+  });
+
   test('raw premium progress-bar shell preserves literal threshold comparators without solution leakage', async ({ request }) => {
     const html = await readRawHtml(request, '/react/coding/react-progress-bar-thresholds');
 
@@ -853,8 +916,8 @@ test.describe('seo-ssr', () => {
     const schemaTypes = extractRawJsonLdTypes(html);
 
     expect(extractRawTitle(html)).toBe(INFINITE_SCROLL_TITLE);
-    expect(extractRawMeta(html, 'description')).toBe(INFINITE_SCROLL_DESCRIPTION);
-    expect(extractRawH1(html)).toBe(INFINITE_SCROLL_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(INFINITE_SCROLL_SEO_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(INFINITE_SCROLL_H1);
     expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
     expect(extractRawCanonical(html)).toBe(expectedCanonical(INFINITE_SCROLL_PATH));
     expect(robots).toBe('index,follow');
@@ -889,7 +952,7 @@ test.describe('seo-ssr', () => {
       'sequential links',
       'DOM node count',
       'long tasks',
-      'duplicates or gaps',
+      'duplicates, gaps',
     ].forEach((expectedText) => {
       expect(text, `infinite scroll guide includes ${expectedText}`).toContain(normalizeText(expectedText));
     });
@@ -914,23 +977,118 @@ test.describe('seo-ssr', () => {
     const article = schemaNodes.find((node) => node['@type'] === 'Article');
     expect(article).toMatchObject({
       '@id': expectedCanonical(INFINITE_SCROLL_PATH),
-      headline: INFINITE_SCROLL_TITLE,
-      description: INFINITE_SCROLL_DESCRIPTION,
+      headline: INFINITE_SCROLL_H1,
+      description: INFINITE_SCROLL_SEO_DESCRIPTION,
       url: expectedCanonical(INFINITE_SCROLL_PATH),
       mainEntityOfPage: expectedCanonical(INFINITE_SCROLL_PATH),
       datePublished: '2025-11-22T00:00:00.000Z',
-      dateModified: '2026-07-27T00:00:00.000Z',
+      dateModified: '2026-07-28T00:00:00.000Z',
       isAccessibleForFree: true,
     });
 
     const learningResource = schemaNodes.find((node) => node['@type'] === 'LearningResource');
     expect(learningResource).toMatchObject({
       '@id': `${expectedCanonical(INFINITE_SCROLL_PATH)}#learning-resource`,
-      name: INFINITE_SCROLL_TITLE,
-      description: INFINITE_SCROLL_DESCRIPTION,
+      name: INFINITE_SCROLL_H1,
+      description: INFINITE_SCROLL_CATALOG_DESCRIPTION,
       url: expectedCanonical(INFINITE_SCROLL_PATH),
       isAccessibleForFree: true,
     });
+  });
+
+  test('raw AI agent run inspector is indexable and exposes the complete free design answer', async ({ request }) => {
+    const html = await readRawHtml(request, AI_AGENT_RUN_INSPECTOR_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(AI_AGENT_RUN_INSPECTOR_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(AI_AGENT_RUN_INSPECTOR_SEO_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(AI_AGENT_RUN_INSPECTOR_TITLE);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH));
+    expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+
+    [
+      'nested agent turns',
+      'A compact mental model',
+      'Six concepts to keep separate',
+      'Worked example: follow one run through the reducer',
+      'Event-by-event reconciliation',
+      'denied v4 from another tab',
+      'Idempotent merge algorithm',
+      'approval.requested',
+      'Human-in-the-loop approval UI races',
+      'Accessible virtualized treegrid',
+      'Mobile and overflow resilience',
+      'Interview answer checkpoint',
+    ].forEach((expectedText) => {
+      expect(text, `agent run inspector includes ${expectedText}`).toContain(normalizeText(expectedText));
+    });
+
+    [
+      'AI agent trace viewer',
+      'AI agent observability UI',
+      'agent execution trace',
+      'tool call inspector',
+      'human-in-the-loop approval UI',
+      'real-time trace streaming',
+      'OpenTelemetry GenAI spans',
+      'virtualized treegrid',
+    ].forEach((phrase) => {
+      const normalizedPhrase = normalizeText(phrase);
+      const occurrenceCount = text.split(normalizedPhrase).length - 1;
+      expect(occurrenceCount, `${phrase} appears once without keyword stuffing`).toBe(1);
+    });
+
+    ['BreadcrumbList', 'Article', 'LearningResource'].forEach((type) => {
+      expect(schemaTypes, `JSON-LD includes ${type}`).toContain(type);
+    });
+    const article = schemaNodes.find((node) => node['@type'] === 'Article');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH),
+      headline: AI_AGENT_RUN_INSPECTOR_TITLE,
+      description: AI_AGENT_RUN_INSPECTOR_SEO_DESCRIPTION,
+      url: expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH),
+      mainEntityOfPage: expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH),
+      datePublished: '2026-07-28T00:00:00.000Z',
+      dateModified: '2026-07-28T00:00:00.000Z',
+      isAccessibleForFree: true,
+    });
+  });
+
+  test('hydrated AI agent run inspector keeps its indexable metadata and full free content', async ({ page }) => {
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+    });
+    const runtimeIssues = collectClientRuntimeIssues(page);
+
+    const response = await page.goto(AI_AGENT_RUN_INSPECTOR_PATH, { waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBe(200);
+    await expect(page).toHaveTitle(AI_AGENT_RUN_INSPECTOR_TITLE);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH),
+    );
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      AI_AGENT_RUN_INSPECTOR_SEO_DESCRIPTION,
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index,follow');
+    await expect(page.locator('h1')).toHaveText(AI_AGENT_RUN_INSPECTOR_TITLE);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('.locked-card')).toHaveCount(0);
+    await expect(page.getByText('Idempotent merge algorithm', { exact: true })).toBeVisible();
+    await expect(page.getByText('Worked example: follow one run through the reducer', { exact: true })).toBeVisible();
+    await expect(page.getByText('Event-by-event reconciliation', { exact: true })).toBeVisible();
+    await expect(page.getByText('Accessible virtualized treegrid', { exact: true })).toBeVisible();
+    await expect(page.getByText('Interview answer checkpoint', { exact: true })).toBeVisible();
+
+    await page.waitForTimeout(300);
+    expectNoHydrationOrChunkIssues(runtimeIssues, AI_AGENT_RUN_INSPECTOR_PATH);
   });
 
   test('infinite scroll guide keeps decision tables usable without page overflow at target widths', async ({ page }) => {
@@ -946,8 +1104,9 @@ test.describe('seo-ssr', () => {
     await page.setViewportSize(viewports[0]);
     const response = await page.goto(INFINITE_SCROLL_PATH, { waitUntil: 'domcontentloaded' });
     expect(response?.status()).toBe(200);
-    await expect(page.locator('h1')).toHaveText(INFINITE_SCROLL_TITLE);
-    await expect(page.locator('.sd-table-scroll')).toHaveCount(4);
+    await expect(page.locator('h1')).toHaveText(INFINITE_SCROLL_H1);
+    const expectedTableCount = await page.locator('.sd-table-scroll').count();
+    expect(expectedTableCount).toBeGreaterThanOrEqual(4);
 
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
@@ -969,7 +1128,7 @@ test.describe('seo-ssr', () => {
       expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
       expect(layout.mainOverflow, `main content overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
       expect(layout.h1Count, `single H1 at ${viewport.width}px`).toBe(1);
-      expect(layout.tables, `decision tables at ${viewport.width}px`).toHaveLength(4);
+      expect(layout.tables, `decision tables at ${viewport.width}px`).toHaveLength(expectedTableCount);
       layout.tables.forEach((table, index) => {
         expect(table.clientWidth, `table ${index + 1} has a usable viewport at ${viewport.width}px`).toBeGreaterThan(0);
         expect(table.scrollWidth, `table ${index + 1} contains its content at ${viewport.width}px`).toBeGreaterThanOrEqual(

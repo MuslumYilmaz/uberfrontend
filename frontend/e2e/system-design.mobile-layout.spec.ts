@@ -1,8 +1,30 @@
 import { test, expect } from './fixtures';
+import { buildMockUser, installAuthMock } from './auth-mocks';
 
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const TABLET_VIEWPORT = { width: 834, height: 1112 };
 const DESKTOP_VIEWPORT = { width: 1366, height: 900 };
+const E2E_BASE_URL = (
+  process.env.PLAYWRIGHT_BASE_URL
+  || `http://${process.env.PLAYWRIGHT_HOST || '127.0.0.1'}:${process.env.PLAYWRIGHT_PORT || '4200'}`
+).replace(/\/$/, '');
+
+async function seedPremiumSession(page: import('@playwright/test').Page) {
+  const token = `system-design-premium-${Date.now()}`;
+  const user = buildMockUser({
+    _id: 'system-design-premium-user',
+    username: 'system_design_premium',
+    email: 'system-design-premium@example.com',
+    accessTier: 'premium',
+  });
+  await installAuthMock(page, { token, user });
+  await page.context().addCookies([{
+    name: 'access_token',
+    value: encodeURIComponent(token),
+    url: E2E_BASE_URL,
+  }]);
+  await page.addInitScript(() => localStorage.setItem('fa:auth:session', '1'));
+}
 
 async function stabilize(page: import('@playwright/test').Page) {
   await page.addStyleTag({
@@ -158,5 +180,75 @@ test.describe('system design mobile layout guardrail', () => {
     await expect(page.locator('.locked-card')).toBeVisible();
     await stabilize(page);
     await assertSystemDesignNoOverflow(page);
+  });
+
+  test('AI agent run inspector - worked example table and trace code stay contained on mobile', async ({ page }) => {
+    await page.setViewportSize(MOBILE_VIEWPORT);
+    const response = await page.goto('/system-design/ai-agent-run-inspector');
+
+    expect(response?.status()).toBe(200);
+    await expect(page.locator('h1')).toHaveText('AI Agent Run Inspector Frontend System Design');
+    await expect(page.locator('.locked-card')).toHaveCount(0);
+    await expect(page.locator('.sd-table-scroll')).not.toHaveCount(0);
+    await expect(page.locator('.sd-code')).not.toHaveCount(0);
+
+    const workedExampleHeading = page.getByText('Worked example: follow one run through the reducer', { exact: true });
+    await workedExampleHeading.scrollIntoViewIfNeeded();
+    const workedExampleTable = page.locator('.sd-table').filter({ hasText: 'Event-by-event reconciliation' });
+    const workedExampleCode = workedExampleHeading.locator(
+      'xpath=following-sibling::div[contains(@class, "sd-code")][1]',
+    );
+
+    await expect(workedExampleTable).toHaveCount(1);
+    await expect(workedExampleCode).toHaveCount(1);
+    const workedExampleTableMetrics = await workedExampleTable.locator('.sd-table-scroll').evaluate((el) => ({
+      clientWidth: el.clientWidth,
+      scrollWidth: el.scrollWidth,
+      overflowX: getComputedStyle(el).overflowX,
+    }));
+    expect(workedExampleTableMetrics.clientWidth, 'worked example table has a usable viewport').toBeGreaterThan(0);
+    expect(workedExampleTableMetrics.scrollWidth, 'worked example table contains its wide columns').toBeGreaterThan(
+      workedExampleTableMetrics.clientWidth,
+    );
+    expect(['auto', 'scroll'], 'worked example table scroll stays inside its container').toContain(
+      workedExampleTableMetrics.overflowX,
+    );
+    await assertElementFitsWidth(workedExampleCode, 'worked example trace code');
+
+    await stabilize(page);
+    await assertSystemDesignNoOverflow(page);
+  });
+
+  test('premium Netflix and mock-design worked examples stay contained on mobile', async ({ page }) => {
+    await page.setViewportSize(MOBILE_VIEWPORT);
+    await seedPremiumSession(page);
+
+    const cases = [
+      {
+        path: '/system-design/netflix-scale-expansion',
+        title: 'Netflix Continue Watching Frontend System Design',
+        workedExample: 'Worked example: stale progress and optimistic removal',
+        table: 'One action through store and UI',
+      },
+      {
+        path: '/system-design/ui-component-state-from-mock',
+        title: 'UI Component and State Design From a Mock',
+        workedExample: 'Worked example: background update during an unsent reply',
+        table: 'One scenario through each state layer',
+      },
+    ];
+
+    for (const entry of cases) {
+      const response = await page.goto(entry.path);
+      expect(response?.status()).toBe(200);
+      await expect(page.locator('h1')).toHaveText(entry.title);
+      await expect(page.locator('.locked-card')).toHaveCount(0);
+      await expect(page.getByText(entry.workedExample, { exact: true })).toBeVisible();
+      await expect(page.locator('.sd-table').filter({ hasText: entry.table })).toHaveCount(1);
+      await expect(page.locator('.sd-code')).not.toHaveCount(0);
+
+      await stabilize(page);
+      await assertSystemDesignNoOverflow(page);
+    }
   });
 });

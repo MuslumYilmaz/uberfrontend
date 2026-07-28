@@ -1,6 +1,6 @@
 {
   "key": "D",
-  "title": "Data model",
+  "title": "Data",
   "blocks": [
     {
       "type": "text",
@@ -10,19 +10,29 @@
       "type": "divider"
     },
     {
+      "type": "code",
+      "language": "ts",
+      "code": "type ModerationState =\n  | { kind: 'visible'; revision: number }\n  | { kind: 'removed'; revision: number; reason: string };\n\ninterface CommentAuthor {\n  id: string;\n  label: string;\n  avatarUrl?: string;\n}\n\ninterface Comment {\n  id: string;\n  sequence: number;\n  author: CommentAuthor;\n  body: string | null;\n  createdAt: string;\n  moderation: ModerationState;\n}\n\ninterface CommentTimeline {\n  entities: Record<string, Comment>;\n  orderedIds: string[];\n  receivedEventIds: Set<string>;\n  contiguousSequence: number;\n  resumeCursor: string | null;\n  gapAfterSequence: number | null;\n}\n\ninterface FollowState {\n  mode: 'live' | 'paused';\n  anchorId: string | null;\n  pendingCount: number;\n}\n\ntype CommentEventEnvelope = {\n  schemaVersion: 1;\n  eventId: string;\n  sequence: number;\n  cursor: string;\n};\n\ntype CommentEvent =\n  | (CommentEventEnvelope & { type: 'comment.upserted'; comment: Comment })\n  | (CommentEventEnvelope & {\n      type: 'comment.removed';\n      commentId: string;\n      moderation: ModerationState;\n    });\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "live-comments-global-stream-contract"
+      }
+    },
+    {
       "type": "checklist",
       "title": "Core entities",
       "items": [
-        "Comment: id, userId, text, createdAt, flags",
-        "FeedState: ordered ids, cursor, hasMore",
-        "ModerationState: mutedUsers, hiddenComments",
-        "BufferQueue: pending comments with timestamps",
-        "NetworkState: reconnectAttempts, lastSeenCursor"
+        "Comment: id, author label, body, sequence, moderation revision, and display timestamp",
+        "Timeline: ordered IDs, contiguous sequence, resume cursor, and unresolved gap",
+        "ModerationState: authoritative tombstones plus local muted-user presentation",
+        "IngestQueue: validated events waiting for the next store transaction",
+        "ConnectionState: freshness, retry attempt, and last safely reduced cursor"
       ]
     },
     {
       "type": "table",
-      "title": "State you should keep on the client",
+      "title": "Client-owned state",
       "columns": [
         "State",
         "Why",
@@ -37,7 +47,7 @@
         [
           "Buffer queue",
           "Batch apply updates",
-          "Flush every 100–250ms"
+          "Flush on a measured scheduling policy without dropping accepted events"
         ],
         [
           "Scroll intent",
@@ -51,11 +61,11 @@
     },
     {
       "type": "checklist",
-      "title": "Data considerations to mention",
+      "title": "Timeline-data integrity checks",
       "items": [
-        "Stable IDs for dedupe and ordering.",
-        "Client-side view model for render-ready state.",
-        "Cache metadata (TTL, size cap, eviction).",
+        "Stable event and comment IDs for replay dedupe; server sequence for ordering.",
+        "Derive safe comment rows from normalized entities, moderation state, and follow mode.",
+        "Separate bounds for rendered rows, retained bodies, and compact sequence/anchor metadata.",
         "Metrics payloads for UX health."
       ]
     },
@@ -67,6 +77,45 @@
       "variant": "info",
       "title": "View model note",
       "text": "Keep a render-ready view model separate from raw payloads to avoid expensive transforms on every tick."
+    },
+    {
+      "type": "heading",
+      "text": "Comment order, moderation, and follow-mode ownership"
+    },
+    {
+      "type": "text",
+      "text": "Separate comment entities from ordered timeline IDs, contiguous sequence, opaque stream cursor, moderation revision, follow mode, and composer commands. A tombstone retains identity and layout context without exposing removed content. The new-item counter derives from accepted IDs not yet placed into the paused viewport, rather than from every transport frame."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "Comment",
+          "id, sequence, author label, body, moderation state",
+          "Entity store"
+        ],
+        [
+          "Timeline",
+          "ordered IDs, cursor, gap",
+          "Stream store"
+        ],
+        [
+          "FollowState",
+          "live or paused, anchorId, pending count",
+          "View state"
+        ],
+        [
+          "ComposerCommand",
+          "clientId, phase, error",
+          "Action overlay"
+        ]
+      ]
     }
   ]
 }

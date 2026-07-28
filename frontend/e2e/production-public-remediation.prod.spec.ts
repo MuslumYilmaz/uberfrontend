@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { APIRequestContext, Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 
@@ -9,8 +11,6 @@ const CANONICAL_BASE = (process.env.PLAYWRIGHT_CANONICAL_BASE || 'https://fronte
 
 const CODING_UNLOCK =
   'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.';
-const SYSTEM_DESIGN_UNLOCK =
-  'Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis.';
 const COMPANY_PRACTICE_DISCLAIMER =
   'Editorial practice groupings, not verified official interview questions or endorsements.';
 const COVERAGE_REFERENCE_DISCLAIMER =
@@ -23,7 +23,43 @@ type PremiumPreviewCase = {
   h1: string;
   unlock: string;
   requiredPracticeCopy: readonly string[];
+  canonicalPreview?: PremiumPreviewContent;
 };
+
+type PremiumPreviewContent = {
+  summary: string;
+  learningOutcomes: string[];
+  unlockDescription: string;
+};
+
+function readSystemDesignPremiumPreview(questionId: string): PremiumPreviewContent {
+  const metaPath = join(
+    process.cwd(),
+    '../cdn/questions/system-design',
+    questionId,
+    'meta.json',
+  );
+  const metadata = JSON.parse(readFileSync(metaPath, 'utf8')) as {
+    premiumPreview?: Partial<PremiumPreviewContent>;
+  };
+  const preview = metadata.premiumPreview;
+  if (
+    typeof preview?.summary !== 'string'
+    || !Array.isArray(preview.learningOutcomes)
+    || preview.learningOutcomes.some((outcome) => typeof outcome !== 'string')
+    || typeof preview.unlockDescription !== 'string'
+  ) {
+    throw new Error(`${questionId}/meta.json has an invalid premiumPreview contract`);
+  }
+
+  return {
+    summary: preview.summary,
+    learningOutcomes: preview.learningOutcomes,
+    unlockDescription: preview.unlockDescription,
+  };
+}
+
+const MULTI_STEP_FORM_PREVIEW = readSystemDesignPremiumPreview('multi-step-form-autosave');
 
 const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
   {
@@ -35,8 +71,15 @@ const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
   {
     path: '/system-design/multi-step-form-autosave',
     h1: 'Multi-step Form with Autosave',
-    unlock: SYSTEM_DESIGN_UNLOCK,
-    requiredPracticeCopy: ['step state', 'save cadence', 'versioned drafts', 'validation behavior', 'successful submission'],
+    unlock: MULTI_STEP_FORM_PREVIEW.unlockDescription,
+    requiredPracticeCopy: [
+      'durable local draft',
+      'remote acknowledgement',
+      'newer server data',
+      'save conflicts',
+      'keyboard focus',
+    ],
+    canonicalPreview: MULTI_STEP_FORM_PREVIEW,
   },
   {
     path: '/javascript/coding/js-throttle',
@@ -456,6 +499,11 @@ test.describe('production/SSR public remediation smoke', () => {
       expect(summary.toLowerCase(), `summary does not repeat title on ${previewCase.path}`).not.toMatch(
         new RegExp(`^${escapeRegExp(previewCase.h1.toLowerCase())}(?:\\b|:)`),
       );
+      if (previewCase.canonicalPreview) {
+        expect(summary, `canonical summary for ${previewCase.path}`).toBe(
+          normalizeText(previewCase.canonicalPreview.summary),
+        );
+      }
 
       const outcomes = page.getByTestId('premium-preview-outcomes').locator('li');
       const outcomeCount = await outcomes.count();
@@ -464,6 +512,13 @@ test.describe('production/SSR public remediation smoke', () => {
       for (let index = 0; index < outcomeCount; index += 1) {
         const outcome = normalizeText(await outcomes.nth(index).innerText());
         expect(outcome, `complete outcome ${index + 1} for ${previewCase.path}`).toMatch(/[.!?]$/);
+      }
+      if (previewCase.canonicalPreview) {
+        const renderedOutcomes = await outcomes.allInnerTexts();
+        expect(
+          renderedOutcomes.map(normalizeText),
+          `canonical learning outcomes for ${previewCase.path}`,
+        ).toEqual(previewCase.canonicalPreview.learningOutcomes.map(normalizeText));
       }
 
       const previewText = normalizeText(await preview.innerText());

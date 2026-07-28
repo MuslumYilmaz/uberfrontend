@@ -1,74 +1,153 @@
 {
   "key": "O",
-  "title": "Optimizations and deep dive",
+  "title": "Optimizations for recovery, performance, and accessibility",
   "blocks": [
     {
-      "type": "checklist",
-      "title": "Performance and scalability",
-      "items": [
-        "Memoize heavy subtrees and list rows to avoid re-render churn.",
-        "Use derived selectors for computed state (filters, counts).",
-        "Split large UI areas with code-splitting or route-based chunks.",
-        "Keep props stable to avoid unnecessary renders.",
-        "Virtualize lists when item count is large."
-      ]
+      "type": "heading",
+      "text": "Failure and recovery"
     },
     {
       "type": "table",
-      "title": "Performance issues and fixes",
+      "title": "Failure modes",
       "columns": [
-        "Issue",
-        "Cause",
-        "Fix"
+        "Failure",
+        "Preserved state",
+        "Recovery behavior"
       ],
       "rows": [
         [
-          "Re-render storms",
-          "Changing object identities",
-          "Memoize + stable props"
+          "List request fails",
+          "Committed URL query and any validated cached page",
+          "Show retry near the list while keeping navigation and filters usable."
         ],
         [
-          "Slow lists",
-          "Too many DOM nodes",
-          "Virtualize + windowed rendering"
+          "Selected ticket is missing",
+          "List query, draft repository, and return anchor",
+          "Show a not-found detail state and let the user return without resetting the inbox."
         ],
         [
-          "Stale UI",
-          "Derived state stored",
-          "Compute with selectors"
+          "Background event arrives out of order",
+          "Newest accepted entity version",
+          "Ignore older versions; request a focused refresh when a version gap matters."
         ],
         [
-          "Hard to test",
-          "Global state everywhere",
-          "Scope state to smallest owner"
+          "Reply response is lost",
+          "Draft plus idempotency key and uncertain command record",
+          "Retry the same command identity or reconcile from the event stream before sending new text."
+        ],
+        [
+          "Another agent changes status",
+          "Local draft and current selection",
+          "Merge the server version, clear a conflicting overlay, and announce one meaningful update."
+        ],
+        [
+          "Session expires",
+          "Local draft according to product security policy",
+          "Pause commands, offer sign-in, then revalidate permissions before resuming."
+        ],
+        [
+          "Mobile detail closes",
+          "Query, list anchor, and ticket-keyed draft",
+          "Return to the initiating ticket and restore focus after it is mounted."
+        ],
+        [
+          "Large conversation loads",
+          "Ticket header and composer",
+          "Page older messages, preserve reading anchor, and introduce windowing only after measurement."
         ]
       ]
     },
     {
-      "type": "stats",
+      "type": "heading",
+      "text": "Performance decisions"
+    },
+    {
+      "type": "text",
+      "text": "Begin with paginated semantic lists, targeted entity subscriptions, and stable keys. Measure list length, row complexity, update frequency, main-thread work, memory, and focus behavior on representative hardware. Virtualization is useful when those measurements show the mounted list is the bottleneck; it is not triggered by a universal threshold such as one hundred items. If introduced, pin the selected or focused item, preserve scroll anchors when rows change height, and test screen-reader and browser-find consequences."
+    },
+    {
+      "type": "checklist",
+      "title": "Render and request controls",
       "items": [
+        "Debounce only incomplete search input; commit a complete query to the URL and cache key.",
+        "Abort obsolete list and detail reads while retaining generation and entity-version guards.",
+        "Normalize shared summaries so a background ticket update rerenders only affected consumers.",
+        "Keep composer keystrokes in a local draft store rather than updating the entire ticket entity.",
+        "Page conversation history from a stable anchor and preserve the reading position when older messages prepend.",
+        "Move heavy message formatting or search indexing off the main thread only after profiling identifies it as meaningful.",
+        "Use skeletons only when they preserve layout and do not hide a useful cached state."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility and responsive behavior"
+    },
+    {
+      "type": "text",
+      "text": "The page uses landmarks and visible headings for filters, ticket list, ticket details, and reply composition. Ticket rows are ordinary links or buttons unless interaction requirements genuinely need a composite widget. The selected item has a visual and programmatic current state. Form controls have persistent labels, errors are associated with the relevant field, and status announcements are polite unless immediate danger requires stronger interruption. Only a true modal dialog or drawer contains focus; an ordinary popover menu follows its keyboard pattern and returns focus to the control that opened it."
+    },
+    {
+      "type": "text",
+      "text": "On mobile, list and detail are explicit navigation states rather than CSS-hidden desktop panes that remain in the tab order. Browser Back returns to the list query and anchor. A conflict message does not steal focus for a background-only change; after a failed submitted action, focus can move to a concise correction summary or first invalid field. Long customer names, ticket IDs, translated labels, and message code blocks wrap or scroll inside bounded containers without widening the page."
+    },
+    {
+      "type": "heading",
+      "text": "Test and rollout"
+    },
+    {
+      "type": "steps",
+      "title": "Release sequence",
+      "steps": [
         {
-          "label": "Re-render target",
-          "value": "< 16ms",
-          "helperText": "Avoid frame drops on interaction."
+          "title": "Lock state invariants",
+          "text": "Test URL selection, draft isolation, version merges, idempotent commands, and focus restoration with deterministic reducer fixtures."
         },
         {
-          "label": "List threshold",
-          "value": "> 100 items",
-          "helperText": "Consider virtualization."
+          "title": "Exercise interruption",
+          "text": "Use slow requests, cancellation, offline transitions, duplicate events, version conflicts, permission changes, and lost responses."
         },
         {
-          "label": "State scope",
-          "value": "As local as possible",
-          "helperText": "Minimize prop drilling and updates."
+          "title": "Validate responsive navigation",
+          "text": "Test direct mobile detail links, browser Back, list-anchor restoration, large text, bidirectional text, and keyboard-only operation."
+        },
+        {
+          "title": "Measure field behavior",
+          "text": "Track query acceptance, list usefulness, reply outcome, conflict recovery, draft loss, and responsiveness by device cohort."
+        },
+        {
+          "title": "Expand gradually",
+          "text": "Release by workspace cohort and retain a compatible read-only fallback if command behavior regresses."
         }
       ]
     },
     {
       "type": "callout",
-      "variant": "warning",
-      "title": "Pitfall",
-      "text": "Global state for everything makes components hard to test and slow to render. Prefer local state unless multiple parts truly need it."
+      "variant": "success",
+      "title": "Interview answer checkpoint",
+      "text": "Be ready to explain five decisions: derive selection from the URL, normalize versioned server entities, isolate ticket-keyed drafts, model mutations as overlays, and restore responsive navigation by stable identity.",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "W3C WAI-ARIA Authoring Practices",
+          "href": "https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/",
+          "description": "Keyboard focus, persistence, and predictable interaction guidance."
+        },
+        {
+          "label": "MDN History API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/History_API",
+          "description": "Browser session-history concepts for query and selection navigation."
+        },
+        {
+          "label": "MDN AbortController",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+          "description": "Cancellation primitives for obsolete browser requests."
+        }
+      ],
+      "editorialRole": "references"
     }
   ]
 }

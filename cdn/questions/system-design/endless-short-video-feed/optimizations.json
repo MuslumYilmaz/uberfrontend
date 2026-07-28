@@ -1,6 +1,6 @@
 {
   "key": "O",
-  "title": "Optimizations and deep dive",
+  "title": "Optimizations",
   "blocks": [
     {
       "type": "text",
@@ -25,40 +25,40 @@
       "type": "checklist",
       "title": "Playback reliability",
       "items": [
-        "Adaptive bitrate (ABR) with conservative downshift.",
-        "Fallback to low-res or poster-only on bad networks.",
+        "Choose a conservative MP4 rendition before playback from measured session evidence.",
+        "On a later attempt, choose a lower rendition or remain poster-only when recovery is unlikely.",
         "Abort in-flight requests when the user skips quickly.",
         "Capture errors with a retry UI and silent auto-retry."
       ]
     },
     {
       "type": "table",
-      "title": "Performance targets you can quote",
+      "title": "Starting budgets to validate",
       "columns": [
         "Metric",
-        "Target",
+        "How to evaluate",
         "Why it matters"
       ],
       "rows": [
         [
           "Time-to-first-frame",
-          "<= 1.0s",
-          "Perceived instant playback"
+          "Percentiles by network and device",
+          "Measures perceived playback startup"
         ],
         [
           "Rebuffer rate",
-          "< 1%",
-          "Smooth session quality"
+          "Session distribution",
+          "Shows playback continuity without a universal threshold"
         ],
         [
           "INP",
-          "<= 200ms",
-          "Fast touch/scroll feedback"
+          "Field p75 by input and device",
+          "Measures touch and control responsiveness"
         ],
         [
           "Dropped frames",
-          "< 2%",
-          "Visible jank control"
+          "Frame and long-task distribution",
+          "Measures visible jank"
         ]
       ]
     },
@@ -67,25 +67,25 @@
       "items": [
         {
           "label": "Prefetch window",
-          "value": "2-3 videos",
-          "helperText": "Keep memory bounded and speed high."
+          "value": "Adaptive",
+          "helperText": "Tune from startup wins, abandoned bytes, memory, and swipe velocity."
         },
         {
           "label": "Scroll budget",
-          "value": "16ms",
-          "helperText": "Frame budget for smooth scrolling."
+          "value": "Profiled",
+          "helperText": "Measure main-thread work and frame delivery by device class."
         },
         {
           "label": "TTFF budget",
-          "value": "<= 1.0s",
-          "helperText": "Primary success metric."
+          "value": "Cohort budget",
+          "helperText": "Begin with a testable TTFF hypothesis and revise from field data."
         }
       ]
     },
     {
       "type": "callout",
       "variant": "warning",
-      "title": "What sinks candidates",
+      "title": "Unreliable shortcut",
       "text": "Vague answers like “use CDN” without showing how prefetching, cancellation, and playback lifecycle actually work on the client."
     },
     {
@@ -93,15 +93,15 @@
     },
     {
       "type": "steps",
-      "title": "Deep dive: preventing jank",
+      "title": "Keeping swipes smooth while media work changes",
       "steps": [
         {
           "title": "1) Batch updates",
-          "text": "Apply updates on a cadence (100-250ms) instead of per event."
+          "text": "Coalesce viewport and progress presentation only when profiling shows excess commits; playback and user intent still update immediately."
         },
         {
           "title": "2) Bound the DOM",
-          "text": "Virtualize long lists or carousels so DOM size stays small."
+          "text": "Virtualize offscreen video cards while retaining stable item and scroll-anchor identity."
         },
         {
           "title": "3) Cancel stale work",
@@ -112,6 +112,97 @@
           "text": "Log LCP/INP and feature-specific KPIs to validate rollout."
         }
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Playback and preload recovery"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Autoplay is rejected",
+          "Show an explicit play control and keep the card focused.",
+          "The UI never claims playback started."
+        ],
+        [
+          "Network stalls",
+          "Keep poster and controls visible with retry or lower-quality choice.",
+          "Scrolling remains available."
+        ],
+        [
+          "Media decode fails",
+          "Quarantine that candidate and try a compatible fallback.",
+          "One broken item does not stop the feed."
+        ],
+        [
+          "Tab backgrounds",
+          "Pause visual work and apply a clear playback policy.",
+          "Return does not start multiple players."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Cards expose a stable heading, playback control, mute state, captions availability, and progress without requiring a swipe gesture. Keyboard and switch users can move sequentially and trigger playback explicitly. Reduced motion removes snap animation where feasible, captions and audio descriptions remain selectable, and status updates avoid announcing every time tick."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Profile first play, gesture response, decoder count, memory, abandoned bytes, and failed play promises by device class. Roll out preload distance and player reuse independently so regressions can be attributed and disabled without changing feed identity."
+    },
+    {
+      "type": "heading",
+      "text": "Device capability and media budget"
+    },
+    {
+      "type": "text",
+      "text": "Treat media policy as an adaptive client decision rather than one global preload count. A constrained phone may keep the active player, current poster, and one lightweight next candidate, while a capable device on a stable connection can prepare more. Capability evidence includes memory pressure, decoded-frame cost, connection changes, save-data preference, visibility, and recent swipe velocity. Adapt at safe boundaries so one card does not change quality repeatedly during playback. Record why a candidate was selected so field failures can be separated by format, device, and policy."
+    },
+    {
+      "type": "text",
+      "text": "Player reuse also needs explicit hygiene. Before attaching the shared media element to a new item, pause the old source, detach item-specific listeners, invalidate the prior attempt, apply muted and captions preferences, set the new source, and handle the play promise. A late canplay, error, or play resolution from the old attempt is ignored. Posters keep fixed geometry throughout this handoff. This sequence prevents audio overlap, stale controls, decoder accumulation, and layout movement during rapid navigation."
+    },
+    {
+      "type": "text",
+      "text": "Network adaptation should avoid reacting to one noisy sample. Use recent startup, rebuffer, throughput, and device evidence to adjust future candidates at item boundaries. Keep the user-selected captions, mute, and quality preference authoritative. If a lower-quality fallback is chosen, communicate only when that knowledge helps recovery; do not cover every card with transport detail. Test the policy with fast reverse swipes, orientation changes, Bluetooth interruptions, and data-saver transitions. After memory pressure, release inactive decoders and verify that current playback remains continuous."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how Endless Short-Video Feed (TikTok-Style) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN HTMLMediaElement play",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play",
+          "description": "Playback promise and autoplay failure behavior."
+        },
+        {
+          "label": "MDN preload attribute",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#preload",
+          "description": "Browser media preload hints and limitations."
+        }
+      ],
+      "editorialRole": "references"
     }
   ]
 }

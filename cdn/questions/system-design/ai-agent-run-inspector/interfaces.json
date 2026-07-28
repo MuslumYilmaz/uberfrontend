@@ -1,0 +1,212 @@
+{
+  "key": "I",
+  "title": "Interface contracts for UI, API, stream, and actions",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The endpoints below are illustrative contracts between the browser and an abstract trace service. They do not prescribe trace storage, agent execution, queues, or orchestration. The important frontend properties are versioned snapshots, resumable ordered envelopes, stable entity IDs, explicit capabilities, idempotent commands, bounded payload delivery, and errors that distinguish retry from conflict."
+    },
+    {
+      "type": "heading",
+      "text": "Read contracts"
+    },
+    {
+      "type": "table",
+      "title": "Illustrative endpoints",
+      "columns": [
+        "Request",
+        "Returns",
+        "Frontend use"
+      ],
+      "rows": [
+        [
+          "GET /agent-runs?projectId=&cursor=&status=",
+          "Cursor page of compact RunSummary objects",
+          "Run list, stable pagination, empty and partial-error states"
+        ],
+        [
+          "GET /agent-runs/:runId",
+          "RunSnapshot with spans, approvals, capabilities, version, sequence, and cursor",
+          "Coherent base for the detail route"
+        ],
+        [
+          "GET /agent-runs/:runId/events?after=:cursor",
+          "Resumable event stream or bounded delta page",
+          "Live updates and reconnect catch-up"
+        ],
+        [
+          "GET /agent-runs/:runId/spans/:spanId/payload?kind=input",
+          "Redacted bounded payload with content version and truncation metadata",
+          "Lazy inspector content outside the row hot path"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type RunSnapshot = RunSnapshotPayload & {\n  schemaVersion: 1;\n  serverTime: string;\n};\n\ntype PayloadResponse = {\n  payloadId: string;\n  spanId: string;\n  kind: 'input' | 'output';\n  contentType: 'application/json' | 'text/plain';\n  content: unknown;\n  byteSize: number;\n  contentVersion: number;\n  redactionVersion: number;\n  truncated: boolean;\n  nextCursor?: string;\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-agent-run-inspector-contract"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Stream event contract"
+    },
+    {
+      "type": "table",
+      "title": "Required event semantics",
+      "columns": [
+        "Event",
+        "Minimum payload",
+        "Merge behavior"
+      ],
+      "rows": [
+        [
+          "run.snapshot",
+          "Versioned run, summaries, approvals, sequence, and cursor",
+          "Use only for initial load or explicit recovery; atomically rebase the document and reset stream continuity before later deltas"
+        ],
+        [
+          "span.started",
+          "Span identity, parent ID, kind, name, start time, revision",
+          "Insert or update newer start fields; register an orphan if needed"
+        ],
+        [
+          "span.delta",
+          "Span ID, field or channel, chunk index, safe delta, revision",
+          "Append unseen chunks without replacing newer lifecycle fields"
+        ],
+        [
+          "span.completed",
+          "Span ID, terminal status, end time, duration, summary, payload references, error",
+          "Apply newer terminal fields and invalidate matching payload cache versions"
+        ],
+        [
+          "approval.requested",
+          "Approval ID, span ID, safe prompt, allowed decisions, version",
+          "Create or refresh the pending approval and surface one meaningful announcement"
+        ],
+        [
+          "approval.resolved",
+          "Approval ID, outcome, resolver summary, resolved time, version",
+          "Supersede local pending commands and explain cross-tab conflicts"
+        ],
+        [
+          "run.completed, run.failed, or run.stopped",
+          "Run terminal status, ended time, counts, version",
+          "Move forward to terminal, stop reconnecting after the final contiguous state"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "code": "{\n  \"schemaVersion\": 1,\n  \"eventId\": \"evt_01J...\",\n  \"runId\": \"run_42\",\n  \"sequence\": 184,\n  \"cursor\": \"opaque_resume_cursor\",\n  \"occurredAt\": \"2026-07-28T10:15:30.120Z\",\n  \"type\": \"approval.requested\",\n  \"data\": {\n    \"id\": \"approval_9\",\n    \"runId\": \"run_42\",\n    \"spanId\": \"span_tool_17\",\n    \"status\": \"pending\",\n    \"prompt\": \"Approve the prepared support reply?\",\n    \"safeActionSummary\": \"Send the prepared support reply\",\n    \"requestedAt\": \"2026-07-28T10:15:30.120Z\",\n    \"version\": 3,\n    \"capabilities\": { \"canApprove\": true, \"canDeny\": true }\n  }\n}",
+      "validation": {
+        "kind": "data"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Command contracts"
+    },
+    {
+      "type": "table",
+      "title": "Mutating requests",
+      "columns": [
+        "Request",
+        "Body",
+        "Success and conflict"
+      ],
+      "rows": [
+        [
+          "POST /agent-runs/:runId/stop",
+          "idempotencyKey, expectedRunVersion, optional reason",
+          "202 accepted with command ID; 409 returns current terminal or newer run state"
+        ],
+        [
+          "POST /agent-runs/:runId/retry",
+          "idempotencyKey, expectedRunVersion, optional failedSpanId",
+          "202 with new or resumed run reference; 409 explains ineligible current state"
+        ],
+        [
+          "POST /agent-runs/:runId/approvals/:approvalId/decision",
+          "decision, idempotencyKey, expectedApprovalVersion",
+          "202 pending confirmation; 409 returns already resolved approval"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type ApprovalDecisionCommand = {\n  decision: 'approve' | 'deny';\n  idempotencyKey: string;\n  expectedApprovalVersion: number;\n};\n\ntype CommandAccepted = {\n  status: 'accepted';\n  commandId: string;\n  acceptedAt: string;\n};\n\ntype CommandConflict = {\n  status: 'conflict';\n  code: 'RUN_TERMINAL' | 'APPROVAL_RESOLVED' | 'VERSION_MISMATCH';\n  currentRun?: AgentRun;\n  currentApproval?: ApprovalRequest;\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-agent-run-inspector-contract"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Component contracts"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type SpanRowView = {\n  id: string;\n  name: string;\n  kind: SpanKind;\n  status: Span['status'];\n  durationMs?: number;\n  hasChildren: boolean;\n};\n\ntype TraceTreeProps = {\n  rows: readonly VisibleTraceRow[];\n  activeSpanId?: string;\n  selectedSpanId?: string;\n  getSpanSummary: (spanId: string) => SpanRowView;\n  onToggle: (spanId: string) => void;\n  onSelect: (spanId: string) => void;\n  onActiveChange: (spanId: string) => void;\n};\n\ntype SpanInspectorProps = {\n  span?: Span;\n  approval?: ApprovalRequest;\n  payloadState: 'idle' | 'loading' | 'ready' | 'truncated' | 'error';\n  pendingCommand?: TraceStore['actions'][string];\n  onLoadPayload: (kind: 'input' | 'output', signal: AbortSignal) => void;\n  onDecision: (decision: 'approve' | 'deny') => void;\n  onClose: () => void;\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-agent-run-inspector-contract"
+      }
+    },
+    {
+      "type": "text",
+      "text": "Rows receive small view models and stable callbacks, not the whole store. The inspector aborts obsolete payload work when selection, payload tab, authorization version, or route changes. Action callbacks contain intent only; the coordinator reads the latest entity version before submitting. This prevents a component rendered from stale props from approving an already replaced request."
+    },
+    {
+      "type": "heading",
+      "text": "Transport choice is an adapter detail"
+    },
+    {
+      "type": "table",
+      "title": "Stream options",
+      "columns": [
+        "Option",
+        "Strength",
+        "Frontend caveat"
+      ],
+      "rows": [
+        [
+          "Server-sent events",
+          "Simple ordered server-to-client updates and native reconnect behavior",
+          "Headers and cursor behavior may require a fetch-based implementation; browser connection limits matter"
+        ],
+        [
+          "Fetch response stream",
+          "Works with request headers, AbortController, and custom framing",
+          "The adapter must parse frames, reconnect, and detect truncated records"
+        ],
+        [
+          "WebSocket",
+          "Useful when one channel also carries interactive bidirectional events",
+          "More connection lifecycle and application-level resume work than this read-heavy page needs"
+        ],
+        [
+          "Polling",
+          "Universal fallback and easy operational behavior",
+          "Higher staleness and repeated transfer; use visibility-aware intervals and conditional requests"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Preferred interview choice",
+      "text": "Choose server-sent events or a fetch stream for the read-heavy trace, while keeping stop and approval commands as ordinary idempotent HTTP requests. Name the resume and gap contract. The quality of reconciliation matters more than claiming one transport is universally best."
+    }
+  ]
+}

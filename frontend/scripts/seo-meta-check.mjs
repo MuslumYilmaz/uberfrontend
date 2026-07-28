@@ -270,7 +270,7 @@ const criticalRouteContracts = [
       'What gets tested',
       'Question formats',
       'RADIO',
-      'Most asked frontend system design questions',
+      'Core frontend system design patterns',
       'Common mistakes',
       'frontend system design interview preparation',
       'Frontend system design interview rubric',

@@ -1,7 +1,7 @@
 {
   "id": "ai-ux-considerations",
   "title": "AI UX Resilience and Control Patterns",
-  "description": "Design AI response UX with streaming states, cancel/retry controls, and rate-limit handling so users stay in control during slow or failed outputs.",
+  "description": "Design trustworthy AI-assisted UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes.",
   "tags": [
     "ux",
     "error-handling",
@@ -13,32 +13,53 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "openai"
-  ],
-  "updatedAt": "2026-01-31"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "AI UX Considerations Frontend System Design",
+    "description": "Design trustworthy AI UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes."
+  },
+  "premiumPreview": {
+    "summary": "Design reviewable AI proposals that expose evidence and uncertainty before a user confirms a versioned product action.",
+    "learningOutcomes": [
+      "Separate generated proposals, local review state, explicit user decisions, and authoritative outcomes.",
+      "Change available actions when evidence is stale, incomplete, or permission-restricted.",
+      "Reconcile mixed per-item results without turning optimistic state into false success.",
+      "Keep cancellation, provenance, safe rendering, feedback, and accessible status behavior explicit."
+    ],
+    "unlockDescription": "Premium unlocks the destructive-edit example, proposal freshness, capability checks, and mixed-outcome recovery."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/ai-ux-considerations.md",
+    "primaryKeyword": "ai ux considerations frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for AI UX Resilience and Control Patterns.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI UX Resilience and Control Patterns.",
+    "uniqueAngle": "Design trustworthy AI-assisted UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

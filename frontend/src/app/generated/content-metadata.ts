@@ -1531,7 +1531,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 510,
+  "totalQuestions": 511,
   "companyCounts": {
     "airbnb": {
       "all": 3,
@@ -1540,34 +1540,34 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "amazon": {
-      "all": 54,
+      "all": 53,
       "coding": 29,
       "trivia": 24,
-      "system": 1
+      "system": 0
     },
     "apple": {
-      "all": 40,
+      "all": 35,
       "coding": 21,
       "trivia": 14,
-      "system": 5
+      "system": 0
     },
     "bytedance": {
-      "all": 21,
+      "all": 18,
       "coding": 7,
       "trivia": 11,
-      "system": 3
+      "system": 0
     },
     "google": {
-      "all": 49,
+      "all": 46,
       "coding": 13,
       "trivia": 33,
-      "system": 3
+      "system": 0
     },
     "meta": {
-      "all": 55,
+      "all": 51,
       "coding": 17,
       "trivia": 34,
-      "system": 4
+      "system": 0
     },
     "microsoft": {
       "all": 18,
@@ -1576,16 +1576,16 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "netflix": {
-      "all": 15,
+      "all": 12,
       "coding": 6,
       "trivia": 6,
-      "system": 3
+      "system": 0
     },
     "openai": {
-      "all": 12,
+      "all": 8,
       "coding": 3,
       "trivia": 5,
-      "system": 4
+      "system": 0
     },
     "stripe": {
       "all": 1,

@@ -1,185 +1,254 @@
 {
-    "key": "O",
-    "title": "Optimizations & Deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Cover performance (many toasts, frequent updates), timers and cleanup, accessibility details, z-index issues, and how you’d keep the UX sane on different devices."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "In this final step, the interviewer wants to see if you can spot where a toast system might break in a real app and how you’d improve it. You should talk about performance (many toasts, frequent updates), timers and cleanup, accessibility details, z-index issues, and how you’d keep the UX sane on different devices."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Start with a global store, portal, one lifecycle coordinator, and semantic announcements. Measure burst size, action completion, animation cost, and reading opportunity before tuning visible limits, motion, or timed lifetimes."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame optimizations:**\n\"I’d first ship a simple but correct version: global store, portal, timers, basic ARIA. Then I’d look at actual usage: what happens if many toasts fire? How does it feel on slower devices? Based on that, I’d tune max visible toasts, animations, stacking behavior, and accessibility details.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You start from a working baseline and then optimize based on real problems.\n- You know common pain points: too many toasts, janky animations, timer leaks.\n- You can go deeper on at least one topic (e.g. timers, accessibility, responsive layout).\n- You think about both **UX polish** and **technical robustness**."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Pick a few realistic scenarios: \"user triggers many toasts quickly\", \"mobile layout is cramped\", \"screen reader users\", and walk through how you’d detect problems and improve them. Sound like someone who has actually seen toast systems misbehave in production."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Baseline hygiene you should mention",
-                            "items": [
-                                "Limit the **maximum number of visible toasts** (e.g. 3–5) and remove or queue older ones.",
-                                "Ensure timers are always **cleared on unmount** or when toasts are removed.",
-                                "Pause auto-dismiss while the user **hovers** or focuses a toast (so they can read or click).",
-                                "Debounce or collapse identical messages (e.g. repeated \"Network error\" toasts).",
-                                "Make manual close cancel the active timer before removing the toast.",
-                                "Use **CSS transitions** for enter/exit animations instead of heavy JS-based animation loops."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Accessibility and UX deep-dive points",
-                            "items": [
-                                "Use appropriate **ARIA roles**: `status` for non-urgent info, `alert` for critical errors.",
-                                "Announce only the **important text** to screen readers, not decorative content.",
-                                "For interactive toasts with buttons, ensure **focus is visible** and keyboard navigation works.",
-                                "Respect **reduced motion** preferences by disabling or simplifying animations.",
-                                "On mobile, consider **full-width** toasts at top/bottom with larger touch targets."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "checklist",
-            "title": "Explicit edge cases you should cover",
-            "items": [
-                "Many toasts fired quickly: cap visible toasts and decide whether to queue, group, or drop oldest.",
-                "Duplicate messages: dedupe, collapse counts, or let callers provide stable ids.",
-                "Max visible toasts: keep layout bounded and avoid covering primary UI.",
-                "Queue vs drop oldest: queue preserves messages but can feel stale; dropping oldest keeps feedback current.",
-                "Pause on hover/focus: users must have time to read or click actions.",
-                "Manual close cancels timer: no timeout should fire after the toast is gone.",
-                "Route changes: choose whether to keep contextual toasts or clear them on navigation.",
-                "Provider unmount: clear subscriptions, timers, and pending queues.",
-                "Reduced motion: disable or simplify enter/exit animations.",
-                "Screen reader announcement overload: avoid spamming live regions during bursts.",
-                "Z-index conflicts with modals: define the toast layer relative to dialogs and popovers.",
-                "Mobile placement/full-width layout: avoid tiny corner toasts and use larger touch targets."
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Deep-dive topics you can offer",
-            "columns": [
-                "Topic",
-                "Angle",
-                "How you talk about it"
-            ],
-            "rows": [
-                [
-                    "Z-index and layering",
-                    "Toasts vs modals vs dropdowns",
-                    "\"I’d pick a dedicated z-index range for toasts so they appear above normal content but don’t unexpectedly cover modal dialogs unless we explicitly want that. This avoids random layering bugs across the app.\""
-                ],
-                [
-                    "Handling toast storms",
-                    "Too many notifications",
-                    "\"If a feature fires a lot of toasts in a short time, I’d cap the visible count and either drop the oldest ones or group them (e.g. '5 new notifications') instead of flooding the screen.\""
-                ],
-                [
-                    "Route changes",
-                    "Navigation & cleanup",
-                    "\"On navigation, I’d decide whether to keep or clear toasts. For most flows I’d clear them to avoid old messages leaking into a new context, and in all cases I’d ensure timers are cleaned up.\""
-                ],
-                [
-                    "Performance on low-end devices",
-                    "Avoid jank",
-                    "\"I’d keep toast components lightweight, avoid heavy shadows/filters, and reuse layout classes. If profiling shows jank, I’d simplify the toast UI and animations first, before any complex tricks.\""
-                ],
-                [
-                    "Action toasts (Undo)",
-                    "State consistency",
-                    "\"For actions like 'Undo', I’d make sure the toast’s action callback works well with the rest of the app’s state, and that the toast doesn’t disappear before the user has a chance to act if they’re interacting with it.\""
-                ]
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Optimization path you should describe",
-            "steps": [
-                {
-                    "title": "1. Ship a clean baseline",
-                    "text": "Global store, portal-based rendering, maxVisible, basic ARIA roles, auto-dismiss with proper cleanup, simple stacking."
-                },
-                {
-                    "title": "2. Observe usage",
-                    "text": "See how many toasts are typically active, which variants are used most, and whether users trigger bursts of notifications."
-                },
-                {
-                    "title": "3. Fix obvious pain points",
-                    "text": "Cap visible toasts, add hover/focus pause, tweak durations (shorter for success, longer for errors), and reduce noisy duplicates."
-                },
-                {
-                    "title": "4. Polish accessibility & responsiveness",
-                    "text": "Verify keyboard navigation, screen reader announcements, mobile layout, and behavior under reduced-motion settings."
-                },
-                {
-                    "title": "5. Hardening & edge cases",
-                    "text": "Test route changes, app teardown, error boundaries, and ensure there are no timer leaks or orphaned toasts in weird flows."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Biggest UX risk",
-                    "value": "Toast overload",
-                    "helperText": "Too many notifications quickly become background noise."
-                },
-                {
-                    "label": "Biggest tech risk",
-                    "value": "Timer leaks",
-                    "helperText": "Forgetting to clear timeouts on unmount can cause bugs and memory issues."
-                },
-                {
-                    "label": "Strong senior signal",
-                    "value": "Measure → then tune",
-                    "helperText": "You talk about real usage, profiling and trade-offs instead of random micro-optimizations."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A great toast system isn’t just \"it shows notifications\". It behaves well when spammed, respects accessibility and motion preferences, cleans up timers reliably, and stays readable and unobtrusive on both desktop and mobile."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Toast quality checks:\n- Optimization begins from a correct lifecycle and recovery model.\n- Burst handling must not hide distinct actionable or critical outcomes.\n- Timer, announcement, and animation behavior are measured separately.\n- Desktop, mobile, reduced-motion, keyboard, and screen-reader paths remain equivalent."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Baseline safeguards",
+              "items": [
+                "Limit the maximum number of visible toasts (e.g. 3–5) and remove or queue older ones.",
+                "Ensure timers are always cleared on unmount or when toasts are removed.",
+                "Use timing only for low-risk status messages and pause remaining time for focus, hover, page hiding, or applicable user timing preferences.",
+                "Debounce or collapse identical messages (e.g. repeated \"Network error\" toasts).",
+                "Make manual close cancel the active timer before removing the toast.",
+                "Use CSS transitions for enter/exit animations instead of heavy JS-based animation loops."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Accessibility and UX deep-dive points",
+              "items": [
+                "Use status and polite announcement by default; reserve alert for genuinely urgent information.",
+                "Announce only the important text to screen readers, not decorative content.",
+                "For interactive toasts with buttons, ensure focus is visible and keyboard navigation works.",
+                "Respect reduced motion preferences by disabling or simplifying animations.",
+                "On mobile, consider full-width toasts at top/bottom with larger touch targets."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Explicit edge cases",
+      "items": [
+        "Many toasts fired quickly: cap visible toasts, group only safely equivalent statuses, and queue distinct actionable or critical outcomes.",
+        "Duplicate messages: dedupe, collapse counts, or let callers provide stable ids.",
+        "Max visible toasts: keep layout bounded and avoid covering primary UI.",
+        "Overflow policy: low-risk duplicate statuses may collapse, while distinct actionable or critical outcomes stay persistent and recoverable.",
+        "Persistent actions and adjustable timing: users must have enough time to read, understand, and operate every message.",
+        "Manual close cancels timer: no timeout should fire after the toast is gone.",
+        "Route changes: choose whether to keep contextual toasts or clear them on navigation.",
+        "Provider unmount: clear subscriptions, timers, and pending queues.",
+        "Reduced motion: disable or simplify enter/exit animations.",
+        "Screen reader announcement overload: avoid spamming live regions during bursts.",
+        "Z-index conflicts with modals: define the toast layer relative to dialogs and popovers.",
+        "Mobile placement/full-width layout: avoid tiny corner toasts and use larger touch targets."
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Deep-dive topics you can offer",
+      "columns": [
+        "Topic",
+        "Angle",
+        "Decision rationale"
+      ],
+      "rows": [
+        [
+          "Z-index and layering",
+          "Toasts vs modals vs dropdowns",
+          "Reserve an overlay layer for toasts, then define its relationship to dialogs and popovers so transient feedback cannot unexpectedly cover a blocking interaction."
+        ],
+        [
+          "Handling toast storms",
+          "Too many notifications",
+          "Cap the visible stack. Collapse only messages with a safe dedupe key; queue distinct outcomes so overflow never deletes the sole recovery action."
+        ],
+        [
+          "Route changes",
+          "Navigation & cleanup",
+          "Classify each toast as route-scoped or application-scoped. Navigation clears route-scoped entries and the lifetime coordinator cancels every associated timer."
+        ],
+        [
+          "Performance on low-end devices",
+          "Avoid jank",
+          "Keep each item inexpensive to lay out and paint. If profiling shows jank, simplify shadows, filters, and motion before adding scheduling complexity."
+        ],
+        [
+          "Action toasts (Undo)",
+          "State consistency",
+          "Keep recovery actions visible until completion or explicit dismissal. Pause optional timers during interaction and expose action progress and failure through the same lifecycle coordinator."
+        ]
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Toast optimization rollout",
+      "steps": [
+        {
+          "title": "1. Ship a clean baseline",
+          "text": "Global store, top-level rendering, bounded stacking, polite status announcements, persistent action messages, optional timed low-risk feedback, and complete cleanup."
+        },
+        {
+          "title": "2. Observe usage",
+          "text": "See how many toasts are typically active, which variants are used most, and whether users trigger bursts of notifications."
+        },
+        {
+          "title": "3. Fix obvious pain points",
+          "text": "Cap visible toasts, pause remaining time for every applicable reason, keep actionable or critical messages persistent, and collapse noisy duplicates without hiding distinct outcomes."
+        },
+        {
+          "title": "4. Polish accessibility & responsiveness",
+          "text": "Verify keyboard navigation, screen reader announcements, mobile layout, and behavior under reduced-motion settings."
+        },
+        {
+          "title": "5. Hardening & edge cases",
+          "text": "Test route changes, app teardown, error boundaries, and ensure there are no timer leaks or orphaned toasts in weird flows."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Biggest UX risk",
+          "value": "Toast overload",
+          "helperText": "Too many notifications quickly become background noise."
+        },
+        {
+          "label": "Biggest tech risk",
+          "value": "Timer leaks",
+          "helperText": "Forgetting to clear timeouts on unmount can cause bugs and memory issues."
+        },
+        {
+          "label": "Strong senior signal",
+          "value": "Measure → then tune",
+          "helperText": "You talk about real usage, profiling and trade-offs instead of random micro-optimizations."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Transient-feedback invariant",
+      "text": "A great toast system isn’t just \"it shows notifications\". It behaves well when spammed, respects accessibility and motion preferences, cleans up timers reliably, and stays readable and unobtrusive on both desktop and mobile."
+    },
+    {
+      "type": "heading",
+      "text": "Toast lifecycle failures"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Burst of identical errors",
+          "Collapse by safe key and retain the latest useful context.",
+          "The screen is not covered by duplicates."
+        ],
+        [
+          "Action command fails",
+          "Keep the toast persistent and show retryable state.",
+          "User intent remains recoverable."
+        ],
+        [
+          "Route changes",
+          "Remove route-scoped messages and preserve global outcomes by policy.",
+          "Stale context does not linger."
+        ],
+        [
+          "Provider unmounts",
+          "Cancel deadlines and subscriptions before teardown.",
+          "No orphan callback mutates destroyed state."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Use role status and polite announcements for ordinary feedback, with role alert reserved for urgent information that truly warrants interruption. A toast appearing never steals focus. Interactive controls participate in normal tab order, display a strong focus indicator, and remain long enough to operate. Timing pauses for focus, hover, page hiding, and applicable user preferences."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Instrument overflow, duplicate collapse, manual dismissal, action completion, timer pause, and announcement rate. Canary persistent-action behavior before changing default lifetimes, and keep an inline-error fallback for workflows where a toast alone cannot explain recovery."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how Design a Toast Notification System assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "W3C alert pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/alert/",
+          "description": "Appropriate use and focus behavior for alert messages."
+        },
+        {
+          "label": "WCAG timing adjustable",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html",
+          "description": "User control requirements for time limits."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
 }

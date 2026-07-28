@@ -1,78 +1,95 @@
 {
   "key": "D",
-  "title": "Data model",
+  "title": "Data model, identity, and revisions",
   "blocks": [
     {
       "type": "text",
-      "text": "The client data model should be stable, versioned, and optimized for rendering. Keep a clear separation between server data and UI view models."
+      "text": "Separate durable server facts from transient interaction state and optimistic overlays. Row order is a versioned server fact. A card contains display metadata and references progress by title identity. Focus, visible range, and pending commands are client state. Keeping these layers separate lets a failed command disappear without reconstructing the server snapshot and lets a progress delta update one entity without replacing the row."
     },
     {
-      "type": "divider"
-    },
-    {
-      "type": "checklist",
-      "title": "Core client entities",
-      "items": [
-        "FeatureConfig: flags, experiments, rollout percent",
-        "UserContext: region, device, locale, entitlements",
-        "EntityMap: normalized items keyed by id",
-        "ViewModel: ordered list, UI metadata, derived state",
-        "TelemetryEvent: metric name, timing, error payload"
-      ]
+      "type": "code",
+      "language": "typescript",
+      "code": "type Id = string;\n\ntype ArtworkCandidate = {\n  url: string;\n  width: number;\n  height: number;\n  format: 'avif' | 'webp' | 'jpeg';\n};\n\ninterface ContinueWatchingRow {\n  id: Id;\n  titleIds: Id[];\n  revision: number;\n  fetchedAt: string;\n  nextCursor?: string;\n}\n\ninterface TitleCard {\n  id: Id;\n  name: string;\n  artwork: ArtworkCandidate[];\n  resumeTarget: string;\n  maturity?: string;\n  runtimeSeconds?: number;\n}\n\ninterface WatchProgress {\n  titleId: Id;\n  positionSeconds: number;\n  durationSeconds: number;\n  completed: boolean;\n  revision: number;\n  updatedAt: string;\n}\n\ninterface RowViewState {\n  focusedTitleId?: Id;\n  anchorTitleId?: Id;\n  visibleStart: number;\n  visibleEnd: number;\n  inputMode: 'pointer' | 'touch' | 'keyboard' | 'spatial';\n}\n\ninterface PendingRemoval {\n  commandId: string;\n  titleId: Id;\n  basedOnRowRevision: number;\n  phase: 'sending' | 'conflicted' | 'failed';\n}\n\ninterface ContinueWatchingState {\n  rowsById: Record<Id, ContinueWatchingRow>;\n  titlesById: Record<Id, TitleCard>;\n  progressByTitleId: Record<Id, WatchProgress>;\n  viewByRowId: Record<Id, RowViewState>;\n  removalByTitleId: Record<Id, PendingRemoval>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "netflix-scale-expansion-contract"
+      }
     },
     {
       "type": "table",
-      "title": "State you should keep on the client",
+      "title": "Ownership and merge policy",
       "columns": [
         "State",
-        "Why",
-        "Notes"
+        "Authority",
+        "Merge rule",
+        "Persistence"
       ],
       "rows": [
         [
-          "Normalized data",
-          "Avoid duplication and re-renders",
-          "Stable ids and referential equality"
+          "Row order",
+          "Server row revision",
+          "Accept only a newer complete revision or a valid delta based on the current revision.",
+          "Query cache"
         ],
         [
-          "View models",
-          "Render-ready list + UI flags",
-          "Keep derived state explicit"
+          "Watch progress",
+          "Per-title server revision",
+          "Merge independently so a late row response cannot lower fresh progress.",
+          "Query cache"
         ],
         [
-          "Cache metadata",
-          "TTL + versioning",
-          "Invalidate on config change"
+          "Pending removal",
+          "Local intent until acknowledged",
+          "Overlay the base row; clear on success, conflict, or terminal error.",
+          "Memory, optionally short-lived session recovery"
+        ],
+        [
+          "Focus and anchor",
+          "Current client session",
+          "Keep identity, then derive the nearest valid position after row changes.",
+          "Navigation state"
+        ],
+        [
+          "Decoded poster",
+          "Media manager",
+          "Deduplicate by candidate URL and evict by measured memory policy.",
+          "Browser cache plus bounded memory"
+        ],
+        [
+          "Experiment assignment",
+          "Server-provided stable assignment",
+          "Do not switch the visible variant midway through one page session.",
+          "Request or session scope"
         ]
       ]
     },
     {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Common pitfall",
-      "text": "Mixing server payloads directly into the UI state makes performance tuning and caching much harder at scale."
+      "type": "heading",
+      "text": "Derived state"
     },
     {
-      "type": "divider"
+      "type": "text",
+      "text": "The visible title IDs are derived from the authoritative row order minus sending removals. Progress percentage is clamped for display but the raw seconds and revision remain available for resume behavior and diagnostics. Artwork candidates are selected from rendered size, pixel density, format support, and network policy; the selected URL is not duplicated into every view object. A card is considered interactive when its title identity and destination are valid, even if artwork has failed."
     },
     {
       "type": "checklist",
-      "title": "Data considerations to mention",
+      "title": "Data invariants",
       "items": [
-        "Stable IDs for dedupe and ordering.",
-        "Client-side view model for render-ready state.",
-        "Cache metadata (TTL, size cap, eviction).",
-        "Metrics payloads for UX health."
+        "One title identity maps to one title entity within the active profile scope.",
+        "Progress never moves backward solely because an older response arrived later.",
+        "A pending command never overwrites the authoritative row revision.",
+        "Focus is stored by identity and never by a fragile array index alone.",
+        "Large image bytes and decoded bitmaps are not placed in application state.",
+        "Profile, locale, maturity permissions, and experiment assignment participate in cache isolation.",
+        "Telemetry excludes title names and personal viewing details unless an approved measurement contract explicitly requires them."
       ]
-    },
-    {
-      "type": "divider"
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "View model note",
-      "text": "Keep a render-ready view model separate from raw payloads to avoid expensive transforms on every tick."
+      "title": "Why normalization helps here",
+      "text": "Normalization is justified by independent progress deltas, cross-row title reuse, and targeted subscriptions. If a smaller product has one static row and no deltas, a query result plus local view state can be simpler."
     }
   ]
 }

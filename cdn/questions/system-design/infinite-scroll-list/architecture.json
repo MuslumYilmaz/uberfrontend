@@ -55,7 +55,7 @@
         },
         {
           "title": "2. Convert visibility into intent",
-          "text": "When the sentinel enters a prefetch margin, the viewport emits loadNext. The controller ignores the signal when there is no next cursor, the same cursor is already in flight, retry cooldown is active, or the feed generation has changed."
+          "text": "When the sentinel enters a prefetch margin, the viewport emits loadNext. The controller ignores the signal when there is no next cursor, the same cursor is already in flight, the retry delay is active, or the feed generation has changed."
         },
         {
           "title": "3. Start an owned request",
@@ -98,8 +98,53 @@
     {
       "type": "callout",
       "variant": "info",
-      "title": "Architecture checkpoint",
-      "text": "The important arrow is not sentinel to network. It is sentinel to intent, intent to a guarded controller transition, validated response to normalized state, and derived state to the viewport. That boundary contains duplicate triggers, retries, filter races, and rendering complexity."
+      "title": "Query and viewport ownership",
+      "text": "The important arrow is not sentinel to network. It is sentinel to intent, intent to a guarded controller transition, validated response to normalized state, and derived state to the viewport. That boundary contains duplicate triggers, retries, filter races, and rendering complexity.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: filter change during a pending next page"
+    },
+    {
+      "type": "text",
+      "text": "The user has items 1 through 40, the sentinel requests cursor c40, and then the user changes the status filter before that request resolves. Follow identity, generation, and anchor state instead of relying on promise completion order."
+    },
+    {
+      "type": "table",
+      "title": "Scenario walkthrough",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Sentinel requests c40",
+          "Record one pending cursor under filter generation 7.",
+          "Keep the current list and show an inline loading row.",
+          "One cursor has at most one admitted request."
+        ],
+        [
+          "Filter changes",
+          "Abort generation 7, start generation 8, and retain the old view as transitional content.",
+          "Move focus to the refreshed list heading only after explicit submission.",
+          "Old pages cannot join a new query."
+        ],
+        [
+          "Old c40 resolves",
+          "Reject it because its generation and cache key are stale.",
+          "No duplicate or wrong-filter item appears.",
+          "Transport completion is not acceptance."
+        ],
+        [
+          "New first page resolves",
+          "Normalize IDs, replace query order, and derive a new anchor.",
+          "Render the new results and preserve a visible Load More control.",
+          "The URL, list, and announced count agree."
+        ]
+      ]
     }
   ]
 }

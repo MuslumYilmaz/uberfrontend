@@ -1,92 +1,93 @@
 {
   "key": "I",
-  "title": "Interface definition (API)",
+  "title": "Interface contracts for the UI",
   "blocks": [
     {
       "type": "text",
-      "text": "APIs should be UI-friendly: stable, versioned, and optimized for rendering. The BFF contract exists to protect the UI from backend churn."
-    },
-    {
-      "type": "divider"
+      "text": "The server endpoints are abstract contracts viewed from the client. They expose stable identity, explicit revisions, device-appropriate artwork candidates, and idempotent commands. They do not leak recommendation-service topology into components. Obsolete reads and media work are cancellable when route, profile, or intent changes. Once a destructive command may have reached the service, the action coordinator retains its identity until an idempotent retry, response, or refresh confirms the outcome."
     },
     {
       "type": "code",
       "language": "http",
-      "code": "GET /api/ui/feature?region=us-east&device=tv\n\n200 OK\n{\n  \"configVersion\": \"v42\",\n  \"experiments\": { \"hero_variant\": \"B\" },\n  \"items\": [\n    { \"id\": \"item_1\", \"type\": \"card\", \"payload\": { ... } }\n  ],\n  \"cursor\": \"next-page-token\"\n}\n"
+      "code": "GET /ui/home/rows/continue-watching?profile=p_7&locale=en-US\nIf-None-Match: \"cw-p7-20\"\n\n200 OK\nETag: \"cw-p7-21\"\n{\n  \"row\": {\n    \"id\": \"continue-watching\",\n    \"revision\": 21,\n    \"fetchedAt\": \"2026-07-28T08:30:05Z\",\n    \"titleIds\": [\"title_a\", \"title_b\", \"title_c\"]\n  },\n  \"titles\": [{\n    \"id\": \"title_a\",\n    \"name\": \"Example title\",\n    \"resumeTarget\": \"/watch/title_a\",\n    \"artwork\": [{\n      \"url\": \"https://media.example/a-480.webp\",\n      \"width\": 480,\n      \"height\": 270,\n      \"format\": \"webp\"\n    }]\n  }],\n  \"progress\": [{\n    \"titleId\": \"title_a\",\n    \"positionSeconds\": 1530,\n    \"durationSeconds\": 3000,\n    \"completed\": false,\n    \"revision\": 9,\n    \"updatedAt\": \"2026-07-28T08:30:00Z\"\n  }]\n}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "DELETE /ui/home/rows/continue-watching/items/title_b\nIdempotency-Key: remove-2bd6\nIf-Match: \"cw-p7-21\"\n\n200 OK\n{\n  \"rowRevision\": 22,\n  \"removedTitleId\": \"title_b\"\n}\n\n409 Conflict\n{\n  \"code\": \"ROW_REVISION_CHANGED\",\n  \"currentRowRevision\": 22,\n  \"message\": \"The row changed on another device.\"\n}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type DeviceCapabilities = {\n  viewportWidthPx: number;\n  devicePixelRatio: number;\n  inputMode: RowViewState['inputMode'];\n  supportedImageFormats: readonly ArtworkCandidate['format'][];\n};\n\ntype ContinueWatchingPayload = {\n  row: ContinueWatchingRow;\n  titles: readonly TitleCard[];\n  progress: readonly WatchProgress[];\n  etag?: string;\n};\n\ntype RemoveTitleResult =\n  | { status: 'removed'; rowRevision: number; removedTitleId: string }\n  | { status: 'conflict'; currentRowRevision: number };\n\ninterface ContinueWatchingClient {\n  loadRow(input: {\n    profileId: string;\n    locale: string;\n    capabilities: DeviceCapabilities;\n    signal: AbortSignal;\n  }): Promise<ContinueWatchingPayload>;\n\n  removeTitle(input: {\n    rowId: string;\n    titleId: string;\n    basedOnRevision: number;\n    idempotencyKey: string;\n  }): Promise<RemoveTitleResult>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "netflix-scale-expansion-contract"
+      }
     },
     {
       "type": "table",
-      "title": "API design notes",
+      "title": "Contract choices",
       "columns": [
-        "Decision",
-        "Reason"
+        "Choice",
+        "Frontend benefit",
+        "Failure behavior"
       ],
       "rows": [
         [
-          "Versioned response",
-          "Allows safe rollout of UI changes"
+          "Row and progress revisions",
+          "Different facts can reconcile independently.",
+          "A stale response is ignored or triggers a focused refetch."
         ],
         [
-          "Device-aware payloads",
-          "Reduce over-fetching and rendering cost"
+          "ETag and conditional load",
+          "A returning view can validate cached data cheaply.",
+          "A missing cache simply receives a complete payload."
         ],
         [
-          "Experiment config included",
-          "Prevent UI flicker across variants"
+          "Idempotency key",
+          "A lost response can be retried without removing another item.",
+          "The same key resolves to the same command outcome."
+        ],
+        [
+          "If-Match precondition",
+          "Conflicting cross-device changes are explicit.",
+          "The client fetches or accepts the newer row and explains the conflict."
+        ],
+        [
+          "AbortSignal for reads and media",
+          "Obsolete row and artwork work releases resources.",
+          "A dispatched removal stays tracked by idempotency key instead of being mistaken for a cancelled product action."
+        ],
+        [
+          "Capability hints",
+          "The payload can avoid obviously unsuitable assets.",
+          "The UI still has a safe generic candidate fallback."
         ]
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Error semantics"
+    },
+    {
+      "type": "text",
+      "text": "Authentication failure transitions the feature to a signed-out or profile-unavailable state instead of retrying forever. A revision conflict is recoverable and distinct from validation or permission failure. Network uncertainty keeps the base row visible and labels the command outcome as unknown until an idempotent retry or refresh resolves it. Invalid individual title records are quarantined so one malformed card does not remove the entire row. The client records contract violations without rendering raw server details to the member."
     },
     {
       "type": "callout",
-      "variant": "info",
-      "title": "Interview tip",
-      "text": "Emphasize that the UI contract is stable and versioned, even if backend services evolve independently."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "table",
-      "title": "API fields you should call out",
-      "columns": [
-        "Field",
-        "Why it matters"
-      ],
-      "rows": [
-        [
-          "id",
-          "Stable keys for virtualization and diffing"
-        ],
-        [
-          "cursor/next",
-          "Pagination and recovery"
-        ],
-        [
-          "media/metadata",
-          "Render pipeline inputs"
-        ],
-        [
-          "experiment flags",
-          "Safe rollout"
-        ],
-        [
-          "timestamps",
-          "Ordering and latency"
-        ]
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "checklist",
-      "title": "Interface details to mention",
-      "items": [
-        "Cursor or lastSeen for delta fetch.",
-        "Event type or priority for filtering.",
-        "Locale + device hints for payload shaping.",
-        "Experiment flags for safe rollout."
-      ]
+      "variant": "warning",
+      "title": "Avoid endpoint-shaped components",
+      "text": "A card should receive a render-ready title identity and callbacks. It should not know URLs, ETags, idempotency keys, or revision conflict codes."
     }
   ]
 }

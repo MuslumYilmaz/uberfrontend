@@ -10,7 +10,3 @@ export function premiumPreviewForQuestion(
 ): PremiumPreviewContent | undefined {
   return previews[`${technology}/${kind}/${id}`];
 }
-
-export function premiumPreviewForSystemDesign(id: string): PremiumPreviewContent | undefined {
-  return previews[`system-design/${id}`];
-}

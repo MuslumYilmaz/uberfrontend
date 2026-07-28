@@ -1,60 +1,112 @@
 {
-    "key": "D",
-    "title": "Data model",
-    "blocks": [
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Use one normalized model for snapshot and live data. Notification identity, server sequence, opaque cursor, event identity, and the versioned read marker have distinct jobs; unread is derived rather than incremented from transport frames."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "type NotificationKind = 'mention' | 'comment' | 'system';\n\ntype NotificationItem = {\n  id: string;\n  sequence: number;\n  kind: NotificationKind;\n  title?: string;\n  text: string;\n  createdAt: string;\n  actor?: { id: string; name: string; avatarUrl?: string };\n  link?: string;\n};\n\ntype ReadMarker = {\n  lastReadSequence: number;\n  version: number;\n};\n\ntype NotificationsState = {\n  entities: Record<string, NotificationItem>;\n  orderedIds: string[];\n  receivedEventIds: Set<string>;\n  contiguousSequence: number;\n  resumeCursor: string | null;\n  readMarker: ReadMarker;\n  pendingReadCommandId: string | null;\n  freshness: 'fresh' | 'reconnecting' | 'stale';\n  gapAfterSequence: number | null;\n};\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "scalable-notifications-feed-contract"
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Your data model should include **notification entities**, **feed state**, and **cursor/unread tracking** so the UI can stay in sync across sessions and reconnects."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Fields that matter",
+              "items": [
+                "id: entity identity across reconnects",
+                "sequence: canonical ordering and gap detection",
+                "createdAt: display metadata, never transport ordering",
+                "kind: safe presentation and filtering",
+                "readMarker: derived unread boundary rather than an item boolean"
+              ]
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "type Notification = {\n  id: string;\n  type: 'mention' | 'comment' | 'system';\n  title?: string;\n  text: string;\n  createdAt: number;\n  read: boolean;\n  actor?: { id: string; name: string; avatarUrl?: string };\n  link?: string;\n};\n\ntype FeedState = {\n  items: Notification[];\n  unreadCount: number;\n  lastSeenCursor: number | null; // timestamp or server cursor\n  maxItems: number;\n  isConnected: boolean;\n  lastError?: string;\n};\n" 
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Fields that matter",
-                            "items": [
-                                "`id`: dedupe across reconnects",
-                                "`createdAt`: sorting/ordering",
-                                "`read`: unread badge + UI",
-                                "`type`: filtering (mentions vs system)",
-                                "`link`: deep-link into the product"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "State you should track",
-                            "items": [
-                                "`unreadCount` (fast badge render)",
-                                "`lastSeenCursor` for reconciliation",
-                                "`maxItems` to bound memory",
-                                "connection + error state",
-                                "in-flight buffer size (for backpressure)"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "text",
-            "text": "If you mention **server cursors** (e.g., lastSeenId), it shows you can reconcile missed events after reconnect." 
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Tracked client state",
+              "items": [
+                "accepted entity positions plus readMarker for derived unread",
+                "opaque resumeCursor plus contiguous sequence for reconciliation",
+                "maxItems to bound memory",
+                "connection + error state",
+                "in-flight buffer size (for backpressure)"
+              ]
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "text",
+      "text": "A resume cursor is an opaque transport token, not a timestamp or notification ID. Advance it only after the reducer has accepted a contiguous range; otherwise reconnect can skip an unresolved gap."
+    },
+    {
+      "type": "heading",
+      "text": "Notification identity, cursor, and read-marker ownership"
+    },
+    {
+      "type": "text",
+      "text": "Store notification entities, ordered IDs, received event IDs, contiguous cursor, read boundary, and freshness separately. Unread count is derived from authoritative notification position and the user read marker, not incremented blindly per transport frame. View state tracks filters, panel visibility, and anchor identity."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "NotificationItem",
+          "id, sequence, kind, createdAt, read eligibility",
+          "Entity store"
+        ],
+        [
+          "StreamState",
+          "cursor, received IDs, gap, freshness",
+          "Connection store"
+        ],
+        [
+          "ReadMarker",
+          "lastReadSequence, pending command",
+          "Versioned user state"
+        ],
+        [
+          "FeedView",
+          "filters, anchorId, visible range",
+          "Local view"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Unread semantics across surfaces"
+    },
+    {
+      "type": "text",
+      "text": "Unread is a relationship between an ordered notification position and a versioned read marker, not a counter that increments whenever transport data arrives. The header badge, open panel, background tab, and another device may observe the same event at different times. Derive counts from accepted entities and the confirmed marker, overlay a pending mark-read command separately, and converge when a newer marker arrives. Deleting or filtering a notification does not automatically mean it was read."
+    }
+  ]
 }

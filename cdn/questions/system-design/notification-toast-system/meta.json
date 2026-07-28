@@ -1,7 +1,7 @@
 {
   "id": "notification-toast-system",
   "title": "Design a Toast Notification System",
-  "description": "Frontend system design interview example for global toasts, notification APIs, stacking, timers, portals, accessibility, and cleanup.",
+  "description": "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.",
   "tags": [
     "toast",
     "notifications",
@@ -17,34 +17,44 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interfaces",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
   "guideSlug": "architecture",
-  "updatedAt": "2026-07-06",
+  "updatedAt": "2026-07-28",
   "seo": {
-    "title": "Design a Toast Notification System: Frontend System Design",
-    "description": "Practice a frontend system design answer for a toast notification system with toast.success(message, options?), a global API, portals, stacking, timers, accessibility, data model, API contracts, tradeoffs, and interview follow-ups."
+    "title": "Toast Notification System Frontend System Design",
+    "description": "Design a global toast system with typed commands, stacking, deduplication, persistent actions, lifecycle ownership, and accessible announcements."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/notification-toast-system.md",
+    "primaryKeyword": "toast notification system frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Design a Toast Notification System.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Design a Toast Notification System.",
+    "uniqueAngle": "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
   }
 }

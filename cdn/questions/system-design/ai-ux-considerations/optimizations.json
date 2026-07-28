@@ -1,152 +1,241 @@
 {
-    "key": "O",
-    "title": "Optimizations and deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Optimize the review and action path without weakening authority. Preserve local edits, avoid repainting generated text per token, revalidate capabilities at confirmation, and keep mixed-result recovery close to affected items."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "This step is about making the UX feel fast and safe under slow or unreliable conditions."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Render structured proposal fields progressively only when the contract supports stable partial structure. Keep the rest of the product usable during pending work and prioritize review comprehension over decorative streaming."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame optimizations:**\n\"I would optimize for perceived speed with streaming and add guardrails like timeouts, throttling, and retries.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You improve perceived speed.\n- You prevent runaway requests.\n- You reduce user frustration with clear recovery."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Talk about cancellation, retry, and throttling as UX protections, not just technical features."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Optimization levers to mention",
-            "columns": [
-                "Lever",
-                "What it does",
-                "Why it helps"
-            ],
-            "rows": [
-                [
-                    "Streaming",
-                    "Render partial output early",
-                    "Faster perceived response"
-                ],
-                [
-                    "Timeouts",
-                    "Stop hung requests",
-                    "Avoid indefinite waits"
-                ],
-                [
-                    "Rate limits",
-                    "Throttle repeated requests",
-                    "Protects backend and UX"
-                ],
-                [
-                    "Retry backoff",
-                    "Retry after failure",
-                    "Higher success rate"
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Optimizations you should mention",
-                            "items": [
-                                "Use streaming for faster feedback.",
-                                "Add a cancel button with AbortController.",
-                                "Retry with exponential backoff.",
-                                "Throttle input to avoid spam.",
-                                "Preserve partial output on failure."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Failure modes to watch for",
-                            "items": [
-                                "User stuck waiting with no feedback.",
-                                "Requests overlapping and corrupting state.",
-                                "Error messages that erase the prompt.",
-                                "Cancel not actually stopping the stream."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Deep dive scenario you can walk through",
-            "steps": [
-                {
-                    "title": "1. Slow response",
-                    "text": "Show streaming indicator and allow stop."
-                },
-                {
-                    "title": "2. Failure",
-                    "text": "Show error, keep prompt, allow retry."
-                },
-                {
-                    "title": "3. Overuse",
-                    "text": "Throttle requests and show cooldown messaging."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Main UX metric",
-                    "value": "Time to first token",
-                    "helperText": "Streaming improves perception."
-                },
-                {
-                    "label": "Reliability",
-                    "value": "Retry success",
-                    "helperText": "Track how often retries work."
-                },
-                {
-                    "label": "Control",
-                    "value": "Cancel rate",
-                    "helperText": "Ensure stop is responsive."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "AI UX succeeds when users feel in control: fast feedback, safe cancel, and clear recovery."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Review comprehension and action-recovery evidence:\n- Users can identify evidence and affected items.\n- Stale proposals cannot retain apply capability.\n- Edited selections survive safe refresh and navigation.\n- Partial failures expose accurate next actions."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Review-flow optimization controls",
+      "columns": [
+        "Lever",
+        "What it does",
+        "Why it helps"
+      ],
+      "rows": [
+        [
+          "Structured progressive rendering",
+          "Commit stable proposal sections rather than raw tokens",
+          "Improves perceived progress without exposing malformed partial controls"
+        ],
+        [
+          "Capability revalidation",
+          "Check evidence freshness and permission at confirmation",
+          "Prevents stale advice from acting on current state"
+        ],
+        [
+          "Selector isolation",
+          "Update changed evidence and outcomes without rerendering the entire panel",
+          "Preserves selection, focus, and scroll context"
+        ],
+        [
+          "Idempotent recovery",
+          "Query or retry by command identity after an uncertain response",
+          "Avoids duplicate high-impact actions"
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Measured optimizations",
+              "items": [
+                "Measure proposal comprehension and correction before adding progressive rendering.",
+                "Cancel local request work with AbortController while keeping authority honest.",
+                "Memoize evidence rows and outcome items by stable identity.",
+                "Refresh only stale evidence and rederive capabilities.",
+                "Preserve local review edits and focus through reconciliation."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Proposal and action recovery",
+              "items": [
+                "Generated prose shown as if it were a completed action.",
+                "Stale evidence retaining an enabled confirmation button.",
+                "Optimistic success hiding failed records.",
+                "Local abort reported as proof that remote work stopped."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Scenario: stale evidence and mixed outcomes",
+      "steps": [
+        {
+          "title": "1. Slow proposal",
+          "text": "Keep the page usable, show bounded progress, and offer Cancel without discarding request context."
+        },
+        {
+          "title": "2. Evidence changes",
+          "text": "Invalidate apply capability, retain review context, and refresh the affected evidence."
+        },
+        {
+          "title": "3. Mixed command result",
+          "text": "Retain successful outcomes and place retry or conflict recovery beside each failed item."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Comprehension",
+          "value": "review correction",
+          "helperText": "Measure whether users detect and edit incorrect scope."
+        },
+        {
+          "label": "Reliability",
+          "value": "outcome recovery",
+          "helperText": "Track conflict and failed-item resolution."
+        },
+        {
+          "label": "Control",
+          "value": "reversal and abandonment",
+          "helperText": "Detect unsafe acceptance or confusing recovery."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Truthful-action invariant",
+      "text": "AI UX succeeds when generated advice stays inspectable, capabilities stay current, confirmation stays explicit, and every outcome remains truthful."
+    },
+    {
+      "type": "heading",
+      "text": "Stale-proposal and mixed-outcome recovery"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Response is slow",
+          "Keep the task usable and expose Cancel.",
+          "Pending AI does not block unrelated work."
+        ],
+        [
+          "Output is malformed",
+          "Reject unsafe structure and show a bounded fallback.",
+          "Untrusted content never becomes raw HTML."
+        ],
+        [
+          "Proposal becomes stale",
+          "Disable confirmation and request current evidence.",
+          "Old advice cannot act on new state."
+        ],
+        [
+          "Partial command fails",
+          "Show per-item outcome and retry eligibility.",
+          "Users see the true mixed result."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "AI state changes use concise status messages instead of streaming token announcements. Review controls have labels that describe effect, uncertainty is communicated in text rather than color, focus moves only after user-triggered navigation, and Cancel remains keyboard reachable. Generated content supports zoom, selection, copy, and screen-reader reading order."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Start read-only with no destructive actions, evaluate comprehension and correction, then add low-risk commands behind capability flags. Test malformed output, stale proposals, cancellation, partial success, mobile overflow, large text, screen readers, and reduced motion. Monitor reversals, edits before acceptance, abandonment, recovery, and accessibility defects."
+    },
+    {
+      "type": "heading",
+      "text": "Calibrated explanation and user control"
+    },
+    {
+      "type": "text",
+      "text": "An explanation should help the user decide, not imitate certainty. Prefer concrete evidence references, affected objects, constraints, and missing information over a generic confidence percentage whose calibration is unknown. When the service does provide a calibrated score, pair it with the decision threshold and a plain-language limitation. Keep model-generated rationale separate from verified product facts so a later refresh can update one without rewriting the user decision."
+    },
+    {
+      "type": "text",
+      "text": "Feedback is part of the interaction contract. Capture whether the suggestion was accepted as-is, edited, rejected, or abandoned, but do not dark-pattern users into training consent. Explain where feedback goes, avoid recording sensitive free text by default, and keep correction available after an optimistic action. For high-impact flows, provide preview, confirmation, and a durable recovery path outside the transient AI panel."
+    },
+    {
+      "type": "text",
+      "text": "Provenance also needs a freshness model. Evidence can be current, stale, unavailable, or permission-restricted, and those states should change whether confirmation is allowed. Link to the product record the user may inspect rather than displaying opaque source identifiers. If evidence disappears after a proposal is shown, invalidate the action capability while preserving the proposal as historical context. This prevents a visually unchanged recommendation from acting on a materially different world."
+    },
+    {
+      "type": "text",
+      "text": "Streaming output should be buffered into readable updates rather than committing one UI change per token. Preserve the user's selection and scroll intent while text grows, stop scheduling paints when the panel is hidden, and announce only meaningful lifecycle transitions. A cancelled request can still deliver a late chunk, so acceptance is guarded by request identity in addition to AbortSignal. Any action proposed by the model is revalidated against current capabilities immediately before confirmation; display text alone never grants authority. Record rejected late chunks and capability failures without logging sensitive prompt content. Treat model text as untrusted content: render it through safe text or an allowlisted formatter, keep external links visibly identifiable, and require a separate user gesture before navigation or execution. Copy actions preserve provenance labels and exclude hidden instruction or control metadata."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how AI UX Resilience and Control Patterns assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "NIST AI Risk Management Framework",
+          "href": "https://www.nist.gov/itl/ai-risk-management-framework",
+          "description": "Risk framing for trustworthy AI systems."
+        },
+        {
+          "label": "W3C status role",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role",
+          "description": "Non-interruptive status announcement semantics."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
 }

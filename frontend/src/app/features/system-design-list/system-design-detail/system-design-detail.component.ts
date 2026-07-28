@@ -1,6 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
-import { premiumPreviewForSystemDesign } from '../../../core/content/premium-preview-catalog';
 import {
   AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID,
   QueryList, ViewChild, ViewChildren, WritableSignal, computed, inject, signal
@@ -39,10 +38,33 @@ import {
   timelineLabel,
 } from '../../../core/utils/onboarding-personalization.util';
 
-type Block =
+type SystemDesignEditorialRole = 'canonical-model' | 'answer-checkpoint' | 'references';
+
+type SystemDesignCodeValidation =
+  | {
+    kind: 'contract' | 'example';
+    level: 'syntax' | 'typecheck';
+    group?: string;
+  }
+  | {
+    kind: 'protocol';
+    protocol: 'sse' | 'http';
+    dataFormat?: 'json';
+  }
+  | {
+    kind: 'data' | 'diagram' | 'pseudocode';
+  };
+
+type Block = (
   | { type: 'text'; text: string }
   | { type: 'heading'; text: string }
-  | { type: 'code'; language?: string; code: string; height?: number }
+  | {
+    type: 'code';
+    language?: string;
+    code: string;
+    height?: number;
+    validation?: SystemDesignCodeValidation;
+  }
   | {
     type: 'image';
     src: string;
@@ -109,7 +131,10 @@ type Block =
       title: string;
       text?: string;
     }[];
-  };
+  }
+) & {
+  editorialRole?: SystemDesignEditorialRole;
+};
 
 type RadioSection = {
   key: string;
@@ -140,11 +165,6 @@ type SDQuestion = {
 
   radio?: RadioSection[];
 
-  reflect?: string;
-  assumptions?: string;
-  diagram?: string;
-  interface?: string;
-  operations?: string;
 };
 
 type RelatedItem = {
@@ -274,7 +294,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       description: this.sdDescription(q),
       tags: q.tags || [],
       sectionTitles: this.sections().map((s) => s.title),
-      premiumPreview: q.premiumPreview ?? premiumPreviewForSystemDesign(q.id),
+      premiumPreview: q.premiumPreview,
     }, {
       candidates: this.all as any,
     });
@@ -303,15 +323,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       blocks: s.blocks?.length ? s.blocks : s.content ? [{ type: 'text', text: s.content }] : []
     });
 
-    if (item.radio?.length) return item.radio.map(normalize);
-
-    const out: RadioSection[] = [];
-    if (item.reflect) out.push({ key: 'R', title: 'Reflect & Requirements', content: item.reflect });
-    if (item.assumptions) out.push({ key: 'A', title: 'Assumptions & Constraints', content: item.assumptions });
-    if (item.diagram) out.push({ key: 'D', title: 'Diagram / Architecture', content: item.diagram });
-    if (item.interface) out.push({ key: 'I', title: 'Interfaces & APIs', content: item.interface });
-    if (item.operations) out.push({ key: 'O', title: 'Operations & Trade-offs', content: item.operations });
-    return out.map(normalize);
+    return item.radio?.map(normalize) ?? [];
   });
 
   /** Related system design questions based on shared tags (top 4). */

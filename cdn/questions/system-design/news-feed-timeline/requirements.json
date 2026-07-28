@@ -1,10 +1,10 @@
 {
   "key": "R",
-  "title": "Reflect & Requirements",
+  "title": "Requirements",
   "blocks": [
     {
       "type": "text",
-      "text": "This is a high-volume feed UI. The interviewer wants to see how you load content incrementally, keep scrolling smooth, and merge real-time updates without jank or duplicate items."
+      "text": "Design a mixed-media feed that combines cursor paging, server-authoritative ranked order, buffered live updates, optimistic interactions, and stable scrolling on mid-range devices."
     },
     {
       "type": "divider"
@@ -16,7 +16,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**What you are solving:**\nA timeline that mixes text, images, video, and ads with infinite scroll and live updates. The UI must be fast on mid-range devices and resilient to bursty updates."
+              "text": "What you are solving:\nA timeline that mixes text, images, video, and ads with infinite scroll and live updates. The UI must be fast on mid-range devices and resilient to bursty updates."
             }
           ]
         },
@@ -24,7 +24,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**What the interviewer is testing:**\n- Pagination vs cursor-based loading.\n- Virtualization and media lazy-loading.\n- Dedupe + ordering of live updates.\n- Optimistic interactions without re-render storms.\n- Scroll anchoring and UX stability."
+              "text": "Decision surface:\n- Pagination vs cursor-based loading.\n- Virtualization and media lazy-loading.\n- Dedupe + ordering of live updates.\n- Optimistic interactions without re-render storms.\n- Scroll anchoring and UX stability."
             }
           ]
         }
@@ -33,18 +33,18 @@
     {
       "type": "callout",
       "variant": "info",
-      "title": "How to frame your answer",
-      "text": "Start by restating the core UX goal: fast first paint, smooth scroll, and correct ordering despite real-time inserts. Then ask clarifying questions about freshness, ordering rules, and content types."
+      "title": "Ordering and stability goal",
+      "text": "The feed should become useful quickly, preserve the reader's position, and display one server-authoritative ranked projection even when pages, refreshes, and live events overlap."
     },
     {
       "type": "divider"
     },
     {
       "type": "steps",
-      "title": "High-level user flow to describe",
+      "title": "Feed loading and update journey",
       "steps": [
         {
-          "title": "1) Initial load",
+          "title": "1) Load first ranked page",
           "text": "Fetch first page, render above-the-fold quickly with skeletons and placeholders."
         },
         {
@@ -76,7 +76,7 @@
           "blocks": [
             {
               "type": "checklist",
-              "title": "Clarifying questions you should ask",
+              "title": "Clarifying questions",
               "items": [
                 "How fresh must the feed be (seconds vs minutes)?",
                 "Is strict ordering required or is eventual ordering OK?",
@@ -110,7 +110,7 @@
     },
     {
       "type": "table",
-      "title": "Ordering strategies (how to talk about it)",
+      "title": "Ordering strategies",
       "columns": [
         "Strategy",
         "Pros",
@@ -142,19 +142,19 @@
       "type": "stats",
       "items": [
         {
-          "label": "Target scroll FPS",
-          "value": "55-60",
-          "helperText": "Keep frames smooth during fast scroll."
+          "label": "Scroll quality",
+          "value": "Measured per device",
+          "helperText": "Track long tasks, input delay, and visible jumps."
         },
         {
           "label": "Page size",
-          "value": "20-50 items",
-          "helperText": "Enough to reduce requests without bloating DOM."
+          "value": "Product hypothesis",
+          "helperText": "Tune from payload, rendering cost, and pagination behavior."
         },
         {
-          "label": "Realtime batch window",
-          "value": "100-300ms",
-          "helperText": "Batch updates to avoid render storms."
+          "label": "Live presentation",
+          "value": "Buffered affordance",
+          "helperText": "Retain accepted events while coalescing visible updates."
         }
       ]
     },
@@ -163,6 +163,14 @@
       "variant": "warning",
       "title": "Pitfall to avoid",
       "text": "Inserting real-time items directly into the list while the user scrolls can cause jumpy scroll. Use a buffer + banner and let the user choose when to insert."
+    },
+    {
+      "type": "heading",
+      "text": "Frontend boundary"
+    },
+    {
+      "type": "text",
+      "text": "The frontend owns cursor paging, live-update buffering, entity merge, ranked-order revisions, scroll anchoring, media priority, mutations, and accessible feed controls. The ranking service is an abstract contract; fan-out, moderation authority, and durable storage remain outside the client."
     }
   ]
 }

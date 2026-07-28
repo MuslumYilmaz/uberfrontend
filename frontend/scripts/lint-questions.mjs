@@ -885,6 +885,16 @@ for (const [id, { file: indexFile }] of systemDesignIndexById) {
     severity.addError(indexFile, id, `Missing system-design meta.json (${rel(expectedMetaPath)})`);
   } else if (path.resolve(meta.file) !== path.resolve(expectedMetaPath)) {
     severity.addError(indexFile, id, `Unexpected meta path: ${rel(meta.file)} (expected ${rel(expectedMetaPath)})`);
+  } else {
+    const indexEntry = systemDesignIndexById.get(id)?.entry;
+    const sharedFields = ["id", "title", "description", "tags", "companies", "updatedAt"];
+    for (const field of sharedFields) {
+      const indexValue = field === "companies" ? (indexEntry?.[field] || []) : indexEntry?.[field];
+      const metaValue = field === "companies" ? (meta.meta?.[field] || []) : meta.meta?.[field];
+      if (JSON.stringify(indexValue) !== JSON.stringify(metaValue)) {
+        severity.addError(indexFile, id, `system-design index/meta ${field} mismatch.`);
+      }
+    }
   }
 }
 

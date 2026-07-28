@@ -1,154 +1,198 @@
 {
-    "key": "I",
-    "title": "Interface definition (API)",
-    "blocks": [
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Define a simple API contract: create job, fetch status, and deliver image URLs."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Define a simple API contract: create job, fetch status, and deliver image URLs."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Expose a generate endpoint that returns a job id, then a status endpoint for polling or a stream endpoint for realtime updates."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should talk about the API:**\n\"I would expose a generate endpoint that returns a job id, then a status endpoint for polling or a stream endpoint for realtime updates.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Clear job lifecycle endpoints.\n- A simple polling or streaming strategy.\n- Output URLs for CDN delivery."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Keep the contract minimal: POST to create, GET to read status, and return a URL when done."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "POST /api/images/generate\n{ \"prompt\": \"a blue robot\" }\n\n200 OK\n{ \"jobId\": \"job_123\" }\n\nGET /api/images/jobs/job_123\n\n200 OK\n{ \"status\": \"running\", \"progress\": 0.4 }\n\n200 OK\n{ \"status\": \"done\", \"imageUrl\": \"https://cdn.example.com/img/123.png\" }\n\n// Optional streaming\nGET /api/images/jobs/job_123/stream (SSE)\nEVENT: progress\nDATA: { \"progress\": 0.4 }\nEVENT: done\nDATA: { \"imageUrl\": \"...\" }"
-        },
-        {
-            "type": "table",
-            "title": "Core interfaces you should define out loud",
-            "columns": [
-                "Interface / endpoint",
-                "Shape (example)",
-                "How you explain it"
-            ],
-            "rows": [
-                [
-                    "POST /generate",
-                    "returns jobId",
-                    "Creates a long-running job."
-                ],
-                [
-                    "GET /jobs/:id",
-                    "status + progress",
-                    "UI polls until done."
-                ],
-                [
-                    "GET /jobs/:id/stream",
-                    "progress events",
-                    "Optional realtime updates."
-                ],
-                [
-                    "imageUrl",
-                    "CDN URL",
-                    "Result is served from object storage."
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should expose",
-                            "items": [
-                                "jobId and status",
-                                "progress updates",
-                                "imageUrl when done"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should NOT expose",
-                            "items": [
-                                "raw model internals",
-                                "binary image blobs in API responses",
-                                "long-lived polling without backoff"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Typical integration flow you should describe",
-            "steps": [
-                {
-                    "title": "1. Create job",
-                    "text": "Call POST /generate and store jobId."
-                },
-                {
-                    "title": "2. Watch status",
-                    "text": "Poll or stream status until done."
-                },
-                {
-                    "title": "3. Render output",
-                    "text": "Display the image from the CDN URL."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Main endpoint",
-                    "value": "/generate",
-                    "helperText": "Creates the generation job."
-                },
-                {
-                    "label": "Result",
-                    "value": "imageUrl",
-                    "helperText": "CDN-delivered output."
-                },
-                {
-                    "label": "Realtime",
-                    "value": "optional SSE",
-                    "helperText": "Nice-to-have for MVP."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "Keep the contract minimal and job-based. That is the simplest reliable way to ship an MVP quickly."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Contract checks:\n- Create is idempotent before a job ID exists and returns a status URL.\n- Every job transition has a unique monotonic version.\n- Polling and optional streaming expose the same lifecycle model.\n- Cancel and retry require command identity plus the observed job version.\n- Output URLs carry safe display metadata."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "interface CreateGenerationInput {\n  prompt: string;\n  idempotencyKey: string;\n}\n\ninterface VersionedJobCommand {\n  jobId: string;\n  basedOnVersion: number;\n  idempotencyKey: string;\n}\n\ninterface GenerationAdapter {\n  create(input: CreateGenerationInput, signal: AbortSignal): Promise<GenerationJob>;\n  getStatus(statusUrl: string, signal: AbortSignal): Promise<GenerationJob>;\n  retry(input: VersionedJobCommand, signal: AbortSignal): Promise<GenerationJob>;\n  cancel(input: VersionedJobCommand, signal: AbortSignal): Promise<GenerationJob>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-image-generation-mvp-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "POST /api/images/generations\nIdempotency-Key: create-8f31\nContent-Type: application/json\n\n{ \"prompt\": \"a blue robot\" }\n\n202 Accepted\nLocation: /api/images/jobs/job_123\n{\n  \"id\": \"job_123\",\n  \"statusUrl\": \"/api/images/jobs/job_123\",\n  \"prompt\": \"a blue robot\",\n  \"status\": \"queued\",\n  \"version\": 1,\n  \"createdAt\": 1785190000\n}\n\nGET /api/images/jobs/job_123\n\n200 OK\n{\n  \"id\": \"job_123\",\n  \"statusUrl\": \"/api/images/jobs/job_123\",\n  \"prompt\": \"a blue robot\",\n  \"status\": \"running\",\n  \"version\": 2,\n  \"progress\": { \"kind\": \"indeterminate\" },\n  \"createdAt\": 1785190000\n}\n\nPOST /api/images/jobs/job_123/retry\nIdempotency-Key: retry-44bd\nIf-Match: \"job_123-v5\"\n\n202 Accepted\n{ \"status\": \"queued\", \"version\": 6 }\n\nPOST /api/images/jobs/job_123/cancel\nIdempotency-Key: cancel-bd92\nIf-Match: \"job_123-v2\"\n\n202 Accepted\n{ \"status\": \"cancelling\", \"version\": 3 }",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Core interfaces",
+      "columns": [
+        "Contract surface",
+        "Shape (example)",
+        "How you explain it"
+      ],
+      "rows": [
+        [
+          "POST /generate",
+          "202 + Location + statusUrl + job version",
+          "Creates or recovers one long-running job for the idempotency key."
+        ],
+        [
+          "GET /jobs/:id",
+          "versioned status + optional progress",
+          "UI polls with backoff or resumes a stream. Progress can be indeterminate."
+        ],
+        [
+          "GET /jobs/:id/stream",
+          "versioned lifecycle events",
+          "Optional realtime updates that may omit a numeric percentage."
+        ],
+        [
+          "POST /jobs/:id/retry or /cancel",
+          "idempotency key + based-on version",
+          "Retry requeues a confirmed failed job; cancel records intent, and both return a newer job version."
+        ],
+        [
+          "imageUrl",
+          "CDN URL",
+          "Result is served from object storage."
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Public behavior",
+              "items": [
+                "jobId and status",
+                "determinate or indeterminate progress",
+                "versioned output metadata when done",
+                "idempotent create, retry, and cancel commands"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Job-monitor internals",
+              "items": [
+                "raw model internals",
+                "binary image blobs in API responses",
+                "long-lived polling without backoff"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Integration flow",
+      "steps": [
+        {
+          "title": "1. Create job",
+          "text": "Persist the create idempotency key first, accept 202 Accepted, store job ID, statusUrl, and version, and monitor that Location resource."
+        },
+        {
+          "title": "2. Watch status",
+          "text": "Poll with backoff or resume a lifecycle stream. Show a spinner or elapsed state when the service cannot produce trustworthy numeric progress."
+        },
+        {
+          "title": "3. Render output",
+          "text": "Display the image from the CDN URL."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Main endpoint",
+          "value": "/generate",
+          "helperText": "Creates the generation job."
+        },
+        {
+          "label": "Result",
+          "value": "imageUrl",
+          "helperText": "CDN-delivered output."
+        },
+        {
+          "label": "Realtime",
+          "value": "optional SSE",
+          "helperText": "Nice-to-have for MVP."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Contract checkpoint",
+      "text": "Keep the contract minimal and job-based. That is the simplest reliable way to ship an MVP quickly."
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "Create returns 202 Accepted with Location, statusUrl, job ID, and version. Monitoring uses conditional polling or resumable events. Cancel and retry are idempotent versioned commands. The service assigns a unique monotonically increasing version to every transition; equal-version contradictions cause refetch. Job progress may be absent, and image URLs are rendered under a restrictive content policy."
+    },
+    {
+      "type": "steps",
+      "title": "Prompt-to-terminal-job path",
+      "steps": [
+        {
+          "title": "Create idempotent generation job",
+          "text": "Snapshot prompt, allocate an idempotency key, and accept an asynchronous job resource."
+        },
+        {
+          "title": "Monitor versioned status resource",
+          "text": "Poll with backoff or resume events while exposing freshness and honest progress."
+        },
+        {
+          "title": "Reconcile job and command versions",
+          "text": "Apply only newer job versions and resolve command responses in any order."
+        },
+        {
+          "title": "Render capability-safe output",
+          "text": "Reserve image geometry, validate metadata, and expose download or retry according to capability."
+        }
+      ]
+    }
+  ]
 }

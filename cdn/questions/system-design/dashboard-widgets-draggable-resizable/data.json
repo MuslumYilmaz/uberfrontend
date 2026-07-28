@@ -1,6 +1,6 @@
 {
   "key": "D",
-  "title": "Grid data model and persistence",
+  "title": "Data",
   "blocks": [
     {
       "type": "text",
@@ -9,7 +9,12 @@
     {
       "type": "code",
       "language": "ts",
-      "code": "type LayoutVersion = 1 | 2;\n\ntype Breakpoint = 'desktop' | 'tablet' | 'mobile';\n\ninterface GridConfig {\n  columns: number;       // e.g. 12 desktop, 6 tablet, 1 mobile\n  rowHeight: number;     // pixel height per logical row\n  gap: number;           // pixel gap between widgets\n}\n\ninterface WidgetLayout {\n  id: string;\n  x: number;             // column index in logical grid units\n  y: number;             // row index in logical grid units\n  width: number;         // columns occupied\n  height: number;        // rows occupied\n  minWidth: number;\n  minHeight: number;\n  version: LayoutVersion;\n}\n\nconst persistedWidget = {\n  id: 'revenue-chart',\n  x: 0,\n  y: 0,\n  width: 6,\n  height: 3,\n  minWidth: 3,\n  minHeight: 2,\n  version: 2\n};\n\ninterface DashboardSnapshot {\n  version: LayoutVersion;\n  layouts: Partial<Record<Breakpoint, WidgetLayout[]>>;\n  updatedAt: string;\n}\n\ninterface InteractionState {\n  activeId: string | null;\n  mode: 'idle' | 'drag' | 'resize' | 'keyboard-move' | 'keyboard-resize';\n  startRect?: WidgetLayout;\n  candidateRect?: WidgetLayout;\n}\n"
+      "code": "type LayoutSchemaVersion = 2;\ntype Breakpoint = 'desktop' | 'tablet' | 'mobile';\n\ninterface GridConfig {\n  columns: number;\n  rowHeight: number;\n  gap: number;\n}\n\ninterface WidgetLayout {\n  id: string;\n  x: number;\n  y: number;\n  width: number;\n  height: number;\n  minWidth: number;\n  minHeight: number;\n}\n\ninterface DashboardSnapshot {\n  schemaVersion: LayoutSchemaVersion;\n  revision: number;\n  layouts: Partial<Record<Breakpoint, WidgetLayout[]>>;\n  updatedAt: string;\n}\n\ninterface InteractionState {\n  activeId: string | null;\n  mode: 'idle' | 'drag' | 'resize' | 'keyboard-move' | 'keyboard-resize';\n  baseRevision: number;\n  startRect?: WidgetLayout;\n  candidateRect?: WidgetLayout;\n}\n\ninterface PendingLayout {\n  commandId: string;\n  basedOnRevision: number;\n  breakpoint: Breakpoint;\n  patch: WidgetLayout[];\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "dashboard-widgets-draggable-resizable-contract"
+      }
     },
     {
       "type": "table",
@@ -41,9 +46,14 @@
           "Resize handles can create broken or inaccessible widget states."
         ],
         [
-          "version",
-          "Lets the app migrate old snapshots when fields or breakpoints change.",
-          "Old saved layouts either break silently or require risky one-off parsing."
+          "schemaVersion",
+          "Selects the migration for a persisted document format.",
+          "Old saved shapes either break silently or require risky one-off parsing."
+        ],
+        [
+          "revision",
+          "Provides a monotonic concurrency precondition for saves.",
+          "A tab can overwrite a newer layout without detecting conflict."
         ]
       ]
     },
@@ -61,7 +71,7 @@
       "rows": [
         [
           "Persistent layout",
-          "id, x, y, width, height, min constraints, version, breakpoint key.",
+          "schemaVersion, revision, breakpoint key, and widget rectangles.",
           "localStorage or server snapshot; restored on page load."
         ],
         [
@@ -76,7 +86,7 @@
         ],
         [
           "Persistence status",
-          "saving, saved, failed, stale server version.",
+          "saving, saved, failed, or stale authoritative revision.",
           "Dashboard shell or sync adapter; visible to users without blocking drag."
         ]
       ]
@@ -91,7 +101,7 @@
         },
         {
           "title": "2. Migrate",
-          "text": "If snapshot.version is older, transform field names, clamp invalid sizes, and fill missing breakpoint layouts before rendering."
+          "text": "If snapshot.schemaVersion is older, run the matching document migration, clamp invalid sizes, and fill missing breakpoint layouts before rendering."
         },
         {
           "title": "3. Edit locally",
@@ -103,7 +113,7 @@
         },
         {
           "title": "5. Resolve conflict",
-          "text": "If a server layout has a newer version, choose a product rule: last-write-wins, prompt the user, or keep per-device layouts separate."
+          "text": "If the save returns a newer authoritative revision, merge or roll back according to the declared conflict policy; never confuse this concurrency revision with schema migration."
         }
       ]
     },
@@ -138,6 +148,45 @@
       "variant": "warning",
       "title": "Data-model signal",
       "text": "Persist the smallest stable layout contract. Do not persist pointer positions, DOM measurements, isDragging flags, or chart runtime state inside the layout snapshot."
+    },
+    {
+      "type": "heading",
+      "text": "Snapshot, breakpoint, interaction, and pending-save ownership"
+    },
+    {
+      "type": "text",
+      "text": "Represent canonical widget rectangles in logical grid coordinates, separate from transient pixel preview. A DashboardSnapshot carries schemaVersion for format migration and monotonic revision for concurrency. DragSession stores origin, pointer capture, candidate rectangle, and collision result. PendingLayout overlays a command on the authoritative document until reconciliation."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "LayoutDocument",
+          "schemaVersion, revision, widgets, columns, breakpoints",
+          "Server cache"
+        ],
+        [
+          "WidgetRect",
+          "id, x, y, width, height, constraints",
+          "Canonical grid"
+        ],
+        [
+          "DragSession",
+          "widgetId, origin, candidate, pointerId",
+          "Local interaction"
+        ],
+        [
+          "PendingLayout",
+          "commandId, basedOnRevision, breakpoint, patch",
+          "Optimistic overlay"
+        ]
+      ]
     }
   ]
 }

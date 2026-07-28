@@ -1,158 +1,160 @@
 {
-    "key": "R",
-    "title": "Reflect & Requirements",
-    "blocks": [
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Design a frontend flow where an AI-generated proposal remains reviewable advice until the user confirms a permitted product action. Expose evidence freshness and uncertainty, preserve user edits, reconcile versioned outcomes, and never turn generated text into authority."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "This prompt focuses on AI-specific UX: slow responses, partial streaming, cancellations, and failures. You should define a clear request lifecycle and UI states that make the product feel stable."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "What you are solving:\nA proposal-to-action UI for reviewing affected records, inspecting evidence, editing selection, confirming a high-impact command, and recovering from mixed per-item results."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What you are solving:**\nA UI state machine for AI responses that handles streaming, cancellation, retries, and rate limits while keeping the user in control."
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer is testing:**\n- Can you define user-facing states clearly?\n- Do you handle slow or failed responses gracefully?\n- Do you consider cancel/stop and retry flows?\n- Can you balance speed with safety and rate limits?"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Describe the response lifecycle (idle -> sending -> streaming -> done/error/stopped) and map each to UI states."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "High-level user flow to describe",
-            "steps": [
-                {
-                    "title": "1. Submit",
-                    "text": "User sends a prompt; UI shows pending state."
-                },
-                {
-                    "title": "2. Streaming",
-                    "text": "Response streams in; show partial output and Stop control."
-                },
-                {
-                    "title": "3. Completion",
-                    "text": "Mark message as done and re-enable input."
-                },
-                {
-                    "title": "4. Failure",
-                    "text": "Show error with Retry and preserve the prompt."
-                }
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Smart clarifying questions you should ask",
-                            "items": [
-                                "What is the typical response latency?",
-                                "Do we stream tokens or return full responses?",
-                                "What happens if the user navigates away?",
-                                "Do we need rate limits or cooldowns?",
-                                "Should partial responses be saved?",
-                                "How do we communicate safety or moderation blocks?"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Non-functional expectations to confirm",
-                            "items": [
-                                "Users can stop a response quickly.",
-                                "Failures do not erase the user's prompt.",
-                                "UI does not lock up on slow responses.",
-                                "Retry is obvious and safe.",
-                                "Rate limits are communicated clearly."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "title": "AI UX states to mention",
-            "columns": [
-                "State",
-                "UI treatment",
-                "Why it matters"
-            ],
-            "rows": [
-                [
-                    "Pending",
-                    "Show sending indicator",
-                    "Confirms request started"
-                ],
-                [
-                    "Streaming",
-                    "Append partial text + Stop",
-                    "Improves perceived speed"
-                ],
-                [
-                    "Error",
-                    "Inline error + retry",
-                    "Recover without losing input"
-                ],
-                [
-                    "Stopped",
-                    "Keep partial output",
-                    "User stays in control"
-                ]
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary UX goal",
-                    "value": "User control",
-                    "helperText": "Stop and retry must work."
-                },
-                {
-                    "label": "Latency UX",
-                    "value": "Streaming",
-                    "helperText": "Faster perceived response."
-                },
-                {
-                    "label": "Resilience",
-                    "value": "Retryable errors",
-                    "helperText": "No lost prompts."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "AI UX should feel stable even when the model is slow or fails. Clear state transitions and user controls are the core of this prompt."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Decision surface:\n- Which proposal facts and evidence are inspectable?\n- How does stale or incomplete evidence change available actions?\n- Which state is generated, locally edited, optimistic, or authoritative?\n- How are version conflicts and partial outcomes reconciled?\n- How do safe rendering, cancellation, accessibility, and feedback work?"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "Proposal-to-action review lifecycle",
+      "steps": [
+        {
+          "title": "1. Request proposal",
+          "text": "Capture user intent and show cancellable pending work without blocking unrelated product tasks."
+        },
+        {
+          "title": "2. Review evidence",
+          "text": "Render a structured proposal with affected items, evidence freshness, uncertainty, limitations, and allowed capabilities."
+        },
+        {
+          "title": "3. Edit and confirm",
+          "text": "Keep selection and edits in local ReviewState; require explicit confirmation for high-impact actions against the current proposal version."
+        },
+        {
+          "title": "4. Reconcile outcomes",
+          "text": "Merge authoritative per-item success, failure, and conflict results, then keep recovery beside failed items."
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Clarifying questions",
+              "items": [
+                "What product decision is the proposal helping with?",
+                "Which records, evidence, permissions, and versions must be visible?",
+                "Which actions are reversible, destructive, or unavailable?",
+                "Can the user edit scope before confirmation?",
+                "When does a proposal expire or require refreshed evidence?",
+                "How should partial command outcomes be recovered?"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Review safety and user-control expectations",
+              "items": [
+                "Pending AI work does not block unrelated tasks.",
+                "Generated content is rendered as untrusted data.",
+                "Stale evidence disables confirmation without erasing review context.",
+                "Command retry is idempotent and version-aware.",
+                "Uncertainty and mixed results are understandable without color alone."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "AI-assisted workflow states",
+      "columns": [
+        "State",
+        "UI treatment",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "Pending proposal",
+          "Show cancellable progress and preserve request intent",
+          "Slow work does not look like a frozen page"
+        ],
+        [
+          "Reviewable",
+          "Show proposal, evidence, limitations, and editable affected items",
+          "Suggestion remains distinct from user authority"
+        ],
+        [
+          "Stale or blocked",
+          "Explain missing freshness or permission and disable confirmation",
+          "Visible text cannot grant a capability"
+        ],
+        [
+          "Resolving or mixed outcome",
+          "Show pending command followed by per-item results",
+          "A success headline cannot hide failures"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary UX goal",
+          "value": "Review before action",
+          "helperText": "Generated proposals never execute by presentation alone."
+        },
+        {
+          "label": "Latency UX",
+          "value": "Evidence freshness",
+          "helperText": "Capabilities change when evidence becomes stale or unavailable."
+        },
+        {
+          "label": "Resilience",
+          "value": "Per-item outcomes",
+          "helperText": "Mixed results remain accurate and recoverable."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Scope checkpoint",
+      "text": "The core design separates AIProposal, ReviewState, UserDecision, PendingCommand, and authoritative Outcome. Cancellation only stops local waiting unless the action contract confirms otherwise."
+    },
+    {
+      "type": "heading",
+      "text": "Frontend boundary"
+    },
+    {
+      "type": "text",
+      "text": "The frontend owns intent capture, uncertainty presentation, review controls, cancellable pending work, safe defaults, feedback, provenance display, and accessible state changes. Server-side model selection, inference, policy evaluation, and product mutations remain authoritative behind abstract proposal and action contracts."
+    }
+  ]
 }

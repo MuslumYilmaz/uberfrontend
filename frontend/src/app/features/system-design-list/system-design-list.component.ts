@@ -37,6 +37,18 @@ type SystemDesignStats = {
   formatCount: number;
 };
 
+type PriorityQuestionSeed = {
+  id: string;
+  keyword: string;
+  detail: string;
+};
+
+type PriorityQuestion = PriorityQuestionSeed & {
+  title: string;
+  access: 'free' | 'premium';
+  route: string[];
+};
+
 @Component({
   standalone: true,
   selector: 'app-system-design-list',
@@ -132,7 +144,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   readonly premiumSignals = [
     'Full RADIO breakdowns for premium prompts',
     'Tradeoff framing for state, APIs, caching, rendering, and performance',
-    'Free previews explain the prompt while full premium solutions stay protected',
+    'Locked prompt previews explain the case while full premium solutions stay protected',
   ];
 
   readonly relatedFocusLinks = [
@@ -182,61 +194,53 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     },
     {
       step: 'Step 4',
-      title: 'Apply the framework to company-scale tradeoffs',
-      detail: 'Practice constrained-device performance, caching, accessibility, and decision tradeoffs before deeper premium breakdowns.',
-      route: ['/', 'companies', 'netflix', 'preview'],
-      cta: 'Netflix frontend interview questions',
+      title: 'Apply the framework to a representative device-scale case',
+      detail: 'Use the Continue Watching case to practice progress reconciliation, constrained-device performance, spatial focus, and accessible cross-device behavior.',
+      route: ['/', 'system-design', 'netflix-scale-expansion'],
+      cta: 'Netflix Continue Watching frontend system design',
     },
   ];
 
-  readonly priorityQuestions = [
+  private readonly priorityQuestionSeeds: PriorityQuestionSeed[] = [
     {
-      title: 'Infinite Scroll List System Design',
+      id: 'infinite-scroll-list',
       keyword: 'Infinite lists',
       detail: 'Pagination, virtualization, loading states, and scroll performance.',
-      route: ['/', 'system-design', 'infinite-scroll-list'],
     },
     {
-      title: 'Design a Toast Notification System',
+      id: 'notification-toast-system',
       keyword: 'Notification systems',
       detail: 'Global toast APIs, timers, stacking, portals, cleanup, and accessible announcements.',
-      route: ['/', 'system-design', 'notification-toast-system'],
     },
     {
-      title: 'Real-time Search with Debounce & Caching',
+      id: 'realtime-search-debounce-cache',
       keyword: 'Autocomplete and search',
       detail: 'Debounce, cancellation, stale responses, caching, and perceived speed.',
-      route: ['/', 'system-design', 'realtime-search-debounce-cache'],
     },
     {
-      title: 'News Feed / Timeline Front-End System Design',
+      id: 'news-feed-timeline',
       keyword: 'Feeds and timelines',
       detail: 'Feed hydration, cursor pagination, media lazy loading, and realtime updates.',
-      route: ['/', 'system-design', 'news-feed-timeline'],
     },
     {
-      title: 'AI Chat Text Area',
+      id: 'ai-chat-textarea-design',
       keyword: 'Streaming chat',
-      detail: 'Streaming responses, persistence, cancellation, API contracts, and UX control.',
-      route: ['/', 'system-design', 'ai-chat-textarea-design'],
+      detail: 'IME composition, attachments, submit/cancel/retry, and current-turn streaming.',
     },
     {
-      title: 'Component-driven Design System Architecture',
+      id: 'component-design-system-architecture',
       keyword: 'Design systems',
       detail: 'Tokens, component APIs, accessibility contracts, theming, and versioning.',
-      route: ['/', 'system-design', 'component-design-system-architecture'],
     },
     {
-      title: 'Live Comments for Global Streams',
+      id: 'live-comments-global-stream',
       keyword: 'Realtime collaboration',
       detail: 'WebSocket/SSE updates, buffering, moderation UI, and burst control.',
-      route: ['/', 'system-design', 'live-comments-global-stream'],
     },
     {
-      title: 'Dashboard with Draggable & Resizable Widgets',
+      id: 'dashboard-widgets-draggable-resizable',
       keyword: 'Staff-level dashboards',
       detail: 'Layout persistence, drag/resize performance, constraints, and ownership boundaries.',
-      route: ['/', 'system-design', 'dashboard-widgets-draggable-resizable'],
     },
   ];
 
@@ -300,6 +304,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   readonly filtered$: Observable<SystemDesignViewItem[]>;
   readonly tagOptions$: Observable<Array<{ label: string; value: string }>>;
   readonly stats$: Observable<SystemDesignStats>;
+  readonly priorityQuestions$: Observable<PriorityQuestion[]>;
 
   private readonly destroy$ = new Subject<void>();
   private readonly maxItemListItems = 50;
@@ -332,6 +337,10 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
 
     this.stats$ = this.rawQuestions$.pipe(
       map((questions) => this.buildStats(questions ?? [])),
+    );
+
+    this.priorityQuestions$ = this.rawQuestions$.pipe(
+      map((questions) => this.buildPriorityQuestions(questions ?? [])),
     );
   }
 
@@ -415,6 +424,20 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
       premium: questions.filter((item) => item.access === 'premium').length,
       formatCount: new Set(questions.map((item) => item.formatCategory)).size,
     };
+  }
+
+  private buildPriorityQuestions(questions: SystemDesignViewItem[]): PriorityQuestion[] {
+    const byId = new Map(questions.map((question) => [question.id, question]));
+    return this.priorityQuestionSeeds.flatMap((seed) => {
+      const question = byId.get(seed.id);
+      if (!question) return [];
+      return [{
+        ...seed,
+        title: question.title,
+        access: question.access,
+        route: ['/', 'system-design', question.id],
+      }];
+    });
   }
 
   private deriveFormatCategory(id: string, title: string, tags: string[]): FormatCategory {

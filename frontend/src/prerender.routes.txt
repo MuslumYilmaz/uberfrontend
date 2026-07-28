@@ -489,6 +489,7 @@
 /react/trivia/react-why-hooks-have-rules
 /react/trivia/react-why-props-immutable
 /system-design
+/system-design/ai-agent-run-inspector
 /system-design/ai-chat-textarea-design
 /system-design/ai-image-generation-mvp
 /system-design/ai-ux-considerations

@@ -14,7 +14,7 @@
       "type": "callout",
       "variant": "info",
       "title": "Interview-ready opening",
-      "text": "I would render a server-addressable first page, then ask a data controller for cursor-based pages as an IntersectionObserver sentinel approaches the viewport. The controller admits only one request for a cursor, aborts obsolete work, rejects responses from an older filter generation, and merges results through a stable ID map so retries or overlapping pages cannot create duplicates. The view starts as a normal list and adds windowing only after measurement shows that mounted DOM is the bottleneck. For variable-height rows, the window keeps a measurement cache and a small overscan range. Loading, end, and retry states remain in the list flow; aria-busy and polite status announcements explain changes; a visible Load More control provides keyboard, assistive-technology, and recovery access. Before navigation I save an anchor item and intra-item offset, not just a fragile document pixel. I would verify there are no duplicates or gaps, reject stale responses, restore position, bound the DOM, and measure long tasks on a mid-range device."
+      "text": "Render a server-addressable first page, then ask a data controller for cursor-based pages as an IntersectionObserver sentinel approaches the viewport. The controller admits only one request for a cursor, aborts obsolete work, rejects responses from an older filter generation, and merges results through a stable ID map so retries or overlapping pages cannot create duplicates. The view starts as a normal list and adds windowing only after measurement shows that mounted DOM is the bottleneck. For variable-height rows, the window keeps a measurement cache and a small overscan range. Loading, end, and retry states remain in the list flow; aria-busy and polite status announcements explain changes; a visible Load More control provides keyboard, assistive-technology, and recovery access. Before navigation, save an anchor item and intra-item offset instead of only a fragile document pixel. Verification covers duplicates, gaps, stale responses, position restoration, bounded DOM size, and long tasks on a representative mid-range device."
     },
     {
       "type": "heading",
@@ -46,7 +46,7 @@
           "Pagination",
           "Search results, audit trails, and collections that need durable page URLs",
           "Interrupts continuous browsing",
-          "Prefer when position, sharing, crawlability, and back navigation dominate"
+          "Prefer when position, sharing, search discovery, and back navigation dominate"
         ]
       ]
     },
@@ -62,7 +62,7 @@
         "Is the total known or is random access required? Assume an unknown total and forward browsing.",
         "Are rows fixed height? Assume variable text and media, so measurement and anchor correction are required.",
         "Should return navigation restore context? Assume yes, by item identity and intra-item offset.",
-        "Must the collection be crawlable without automatic loading? Assume durable pages and visible sequential links."
+        "Must the collection be discoverable without automatic loading? Assume durable pages and visible sequential links."
       ]
     },
     {
@@ -93,7 +93,7 @@
                 "Bound mounted DOM nodes and retained page data for long sessions.",
                 "Support keyboard and screen-reader operation without relying on the sentinel.",
                 "Expose recoverable failures in context instead of replacing successful content.",
-                "Keep important collection content reachable through crawlable URLs and links."
+                "Keep important collection content reachable through discoverable URLs and links."
               ]
             }
           ]
@@ -116,6 +116,14 @@
       "variant": "warning",
       "title": "Requirement boundary",
       "text": "Do not promise infinite retention, perfect real-time consistency, and constant DOM size at once. State which consistency model the product needs, which historical pages may be evicted, and how users recover content that is no longer mounted."
+    },
+    {
+      "type": "heading",
+      "text": "Frontend boundary"
+    },
+    {
+      "type": "text",
+      "text": "The browser owns observation, request admission, page merging, scroll anchoring, rendering, and accessible fallback controls. The server exposes only an abstract cursor-page and ordering contract; storage, ranking, and service topology remain outside this frontend design and never determine DOM windowing."
     }
   ]
 }

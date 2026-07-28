@@ -1,7 +1,7 @@
 {
   "id": "infinite-scroll-list",
   "title": "Infinite Scroll List System Design",
-  "description": "Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.",
+  "description": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
   "tags": [
     "infinite-scroll",
     "intersection-observer",
@@ -32,15 +32,29 @@
     },
     {
       "key": "I",
-      "title": "Component and API contracts",
+      "title": "Interface contracts for components and pagination",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Virtualization, accessibility, recovery, and verification",
+      "title": "Optimizations for virtualization, accessibility, recovery, and verification",
       "file": "optimizations.json"
     }
   ],
   "publishedAt": "2025-11-22",
-  "updatedAt": "2026-07-27"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "Infinite Scroll List Frontend System Design",
+    "description": "Design infinite scrolling with cursor pagination, request recovery, virtualization, stable scroll anchors, and accessible navigation alternatives."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/infinite-scroll-list.md",
+    "primaryKeyword": "infinite scroll list frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Infinite Scroll List System Design.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Infinite Scroll List System Design.",
+    "uniqueAngle": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

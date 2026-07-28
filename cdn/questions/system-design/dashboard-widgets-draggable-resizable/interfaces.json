@@ -1,6 +1,6 @@
 {
   "key": "I",
-  "title": "Public API and accessible controls",
+  "title": "Interface",
   "blocks": [
     {
       "type": "text",
@@ -9,7 +9,12 @@
     {
       "type": "code",
       "language": "ts",
-      "code": "interface DashboardLayoutProps {\n  grid: GridConfig;\n  layout: WidgetLayout[];\n  editable: boolean;\n  renderWidget: (widget: WidgetLayout) => React.ReactNode;\n  onLayoutCommit: (layout: WidgetLayout[], reason: 'drag' | 'resize' | 'keyboard' | 'reset') => void;\n  onLayoutPreview?: (layout: WidgetLayout[]) => void; // optional, throttled or rAF-batched only\n  onSaveStatusChange?: (status: 'idle' | 'saving' | 'saved' | 'failed') => void;\n}\n\ninterface DashboardLayoutHandle {\n  resetLayout(): void;\n  focusWidget(id: string): void;\n  moveWidgetByKeyboard(id: string, delta: { x: number; y: number }): void;\n  resizeWidgetByKeyboard(id: string, delta: { width: number; height: number }): void;\n}\n"
+      "code": "type LayoutSaveReason = 'drag' | 'resize' | 'keyboard' | 'reset' | 'save' | 'undo';\n\ninterface LayoutCommit {\n  commandId: string;\n  basedOnRevision: number;\n  breakpoint: Breakpoint;\n  layout: WidgetLayout[];\n  reason: LayoutSaveReason;\n}\n\ninterface DashboardLayoutProps {\n  breakpoint: Breakpoint;\n  grid: GridConfig;\n  snapshot: DashboardSnapshot;\n  editable: boolean;\n  renderWidget: (widget: WidgetLayout) => unknown;\n  onLayoutCommit: (commit: LayoutCommit) => void;\n  onLayoutPreview?: (preview: { breakpoint: Breakpoint; layout: WidgetLayout[] }) => void;\n  onSaveStatusChange?: (status: 'idle' | 'saving' | 'saved' | 'failed' | 'conflict') => void;\n}\n\ninterface LayoutClient {\n  saveLayout(input: LayoutCommit & { signal: AbortSignal }): Promise<DashboardSnapshot>;\n  getLayout(input: { signal: AbortSignal }): Promise<DashboardSnapshot>;\n}\n\ninterface DashboardLayoutHandle {\n  resetLayout(): void;\n  undo(): void;\n  focusWidget(id: string): void;\n  moveWidgetByKeyboard(id: string, delta: { x: number; y: number }): void;\n  resizeWidgetByKeyboard(id: string, delta: { width: number; height: number }): void;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "dashboard-widgets-draggable-resizable-contract"
+      }
     },
     {
       "type": "table",
@@ -83,6 +88,36 @@
       "variant": "info",
       "title": "API signal",
       "text": "A strong API makes the hard part look boring: layout in, committed layout out, widget renderer as a slot, and accessible controls included by the layout system."
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "saveLayout accepts a basedOnRevision precondition, command ID, breakpoint, reason, and the complete logical layout for that breakpoint. It returns a complete snapshot with the authoritative revision or a conflict response resolved by fetching that snapshot. schemaVersion is used only to migrate document shape. Components receive grid-to-pixel projections and intent callbacks; they never write storage from pointermove."
+    },
+    {
+      "type": "steps",
+      "title": "From drag intent to revision-aware reconciliation",
+      "steps": [
+        {
+          "title": "Capture",
+          "text": "Start one drag session from pointer or keyboard intent and preserve the authoritative origin."
+        },
+        {
+          "title": "Preview",
+          "text": "Compute transforms and collision feedback without rewriting every widget entity."
+        },
+        {
+          "title": "Commit",
+          "text": "On drop, validate constraints and send one breakpoint-scoped layout command against the base revision."
+        },
+        {
+          "title": "Reconcile",
+          "text": "Replace or remove the overlay from the returned authoritative revision and restore meaningful focus."
+        }
+      ]
     }
   ]
 }

@@ -1,149 +1,188 @@
 {
-    "key": "I",
-    "title": "Interface definition (API)",
-    "blocks": [
+  "key": "I",
+  "title": "Interface",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Define a baseline REST API plus a streaming channel for realtime updates."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Define a baseline REST API plus a streaming channel for realtime updates."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Fetch one coherent run snapshot, then open the metric and log stream from its resume cursor. After disconnect, reconnect from the last safely reduced cursor."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should talk about the API:**\n\"I would fetch the run metadata with REST, then open a stream for metrics and logs. If the stream drops, I reconnect with a cursor.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- A cursor-based resume story.\n- Clear separation between REST and streaming.\n- Small event payloads for frequent updates."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Keep endpoints minimal: GET run, GET history, STREAM updates."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "GET /api/runs/:id\n200 OK\n{ id, status, progress }\n\nGET /api/runs/:id/metrics?cursor=...\n200 OK\n{ items: [...], nextCursor: 'c_123' }\n\nGET /api/runs/:id/stream?cursor=... (SSE)\nEVENT: metric\nDATA: { name: 'loss', t: 171000, value: 0.42 }\nEVENT: log\nDATA: { id: 'l1', t: 171000, level: 'info', message: 'step 10' }\nEVENT: status\nDATA: { status: 'done' }"
-        },
-        {
-            "type": "table",
-            "title": "Core interfaces you should define out loud",
-            "columns": [
-                "Interface / endpoint",
-                "Shape (example)",
-                "How you explain it"
-            ],
-            "rows": [
-                [
-                    "GET /runs/:id",
-                    "run metadata",
-                    "Initial page load."
-                ],
-                [
-                    "GET /runs/:id/stream",
-                    "SSE events",
-                    "Realtime updates for UI."
-                ],
-                [
-                    "cursor",
-                    "sequence token",
-                    "Resume after disconnect."
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should expose",
-                            "items": [
-                                "run status and progress",
-                                "metric and log events",
-                                "cursor for resume"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should NOT expose",
-                            "items": [
-                                "giant payloads per event",
-                                "full history on every update",
-                                "streaming without a resume token"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Typical integration flow you should describe",
-            "steps": [
-                {
-                    "title": "1. Load run",
-                    "text": "Fetch run metadata and initial charts."
-                },
-                {
-                    "title": "2. Stream",
-                    "text": "Open SSE or WebSocket stream."
-                },
-                {
-                    "title": "3. Resume",
-                    "text": "Reconnect with cursor after disconnect."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary channel",
-                    "value": "SSE/WS",
-                    "helperText": "Realtime data delivery."
-                },
-                {
-                    "label": "Resume",
-                    "value": "cursor",
-                    "helperText": "Avoid missing events."
-                },
-                {
-                    "label": "Payload",
-                    "value": "small events",
-                    "helperText": "Protect UI performance."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A simple stream with small events and a resume cursor is enough for a reliable realtime dashboard."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Contract checks:\n- A cursor-based resume story.\n- Clear separation between REST and streaming.\n- Small event payloads for frequent updates."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "interface TrainingDashboardClient {\n  getSnapshot(input: { runId: string; signal: AbortSignal }): Promise<RunSnapshot>;\n  subscribe(input: {\n    runId: string;\n    resumeCursor: string;\n    onEvent: (event: RunEvent) => void;\n    onGap: (afterSequence: number) => void;\n  }): () => void;\n  getMetricRange(input: {\n    runId: string;\n    metric: string;\n    fromStep: number;\n    toStep: number;\n    resolution: number;\n    signal: AbortSignal;\n  }): Promise<MetricPoint[]>;\n  getLogs(input: {\n    runId: string;\n    beforeCursor?: string;\n    signal: AbortSignal;\n  }): Promise<{ items: LogEvent[]; previousCursor?: string }>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "model-training-progress-dashboard-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "event: metric.recorded\nid: evt_839\ndata: {\"eventId\":\"evt_839\",\"sequence\":839,\"cursor\":\"c839\",\"type\":\"metric.recorded\",\"point\":{\"eventId\":\"evt_839\",\"sequence\":839,\"metric\":\"loss\",\"unit\":\"ratio\",\"step\":420,\"timestamp\":\"2026-07-28T10:00:00Z\",\"value\":0.42}}\n\nevent: run.updated\nid: evt_840\ndata: {\"eventId\":\"evt_840\",\"sequence\":840,\"cursor\":\"c840\",\"type\":\"run.updated\",\"run\":{\"id\":\"r9\",\"status\":\"failed\",\"progress\":null,\"lifecycleSequence\":840,\"startedAt\":\"2026-07-28T09:00:00Z\",\"terminalAt\":\"2026-07-28T10:00:01Z\"}}\n\n",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "sse",
+        "dataFormat": "json"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Core interfaces",
+      "columns": [
+        "Training dashboard contract",
+        "Shape (example)",
+        "How you explain it"
+      ],
+      "rows": [
+        [
+          "GET /runs/:id",
+          "run metadata",
+          "Initial page load."
+        ],
+        [
+          "GET /runs/:id/stream",
+          "SSE events",
+          "Realtime updates for UI."
+        ],
+        [
+          "cursor",
+          "sequence token",
+          "Resume after disconnect."
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Public behavior",
+              "items": [
+                "run status and progress",
+                "metric and log events",
+                "cursor for resume"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Transport, buffering, and range-query internals",
+              "items": [
+                "giant payloads per event",
+                "full history on every update",
+                "streaming without a resume token"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Integration flow",
+      "steps": [
+        {
+          "title": "1. Load run",
+          "text": "Fetch run metadata and initial charts."
+        },
+        {
+          "title": "2. Stream",
+          "text": "Open SSE or WebSocket stream."
+        },
+        {
+          "title": "3. Resume",
+          "text": "Reconnect with cursor after disconnect."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary channel",
+          "value": "SSE/WS",
+          "helperText": "Realtime data delivery."
+        },
+        {
+          "label": "Resume",
+          "value": "cursor",
+          "helperText": "Avoid missing events."
+        },
+        {
+          "label": "Payload",
+          "value": "small events",
+          "helperText": "Protect UI performance."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Contract checkpoint",
+      "text": "A simple stream with small events and a resume cursor is enough for a reliable realtime dashboard."
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "The snapshot returns run metadata, metric descriptors, initial samples, and resume cursor. Deltas carry immutable event identity and sequence. Historical metric queries accept time or step range and desired resolution. Components consume normalized selectors and never infer terminal lifecycle from the absence of samples."
+    },
+    {
+      "type": "steps",
+      "title": "From run snapshot to resumable diagnosis",
+      "steps": [
+        {
+          "title": "Load",
+          "text": "Fetch a coherent snapshot and metric descriptors before opening deltas."
+        },
+        {
+          "title": "Resume",
+          "text": "Connect from the last reduced cursor and expose stale or catching-up state."
+        },
+        {
+          "title": "Merge",
+          "text": "Apply lifecycle and series fields by sequence, ignoring duplicate events."
+        },
+        {
+          "title": "Render",
+          "text": "Downsample to visible resolution and update accessible summaries on a restrained cadence."
+        }
+      ]
+    }
+  ]
 }

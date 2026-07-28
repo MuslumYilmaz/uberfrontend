@@ -1,7 +1,7 @@
 {
   "id": "image-upload-preview",
-  "title": "Image Upload & Preview",
-  "description": "Design an Image Upload & Preview flow for a real product (e.g., profile photo). This is a front-end system design prompt: you own the client pipeline from selection to preview to upload, with progress, retry, and graceful failure. Assume a backend can provide a pre-signed upload URL, but your focus is on the frontend architecture.\n\nFunctional requirements:\n- Let the user choose an image via file input (optional drag-and-drop).\n- Validate file type, size, and basic dimensions before previewing.\n- Generate a fast preview with correct orientation (EXIF) and no layout shift.\n- Optionally resize/compress on the client to meet size limits.\n- Upload to a storage URL with progress, cancel, and retry.\n- Return a stable URL/asset id for the uploaded image to the parent form.\n- Allow replacing or removing the selected image at any time.\n\nNon-functional:\n- Main-thread safe: avoid jank during preview/resize on mid-range devices.\n- Resilient on slow or flaky networks (retry with backoff).\n- Bounded memory usage (no base64 blobs in state).\n- Accessible and mobile friendly by default.\n\nData constraints:\n- Single-image upload; max size ~10 MB before compression.\n- Allowed MIME types: image/jpeg, image/png, image/webp.\n- Min dimensions (e.g., 256x256) and aspect ratio rules may apply.\n- Upload uses a backend-provided URL; frontend handles the pipeline.\n",
+  "title": "Image Upload & Preview Component",
+  "description": "Design an image upload flow with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors.",
   "tags": [
     "images",
     "upload",
@@ -10,29 +10,53 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-01-30"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "Image Upload and Preview Frontend System Design",
+    "description": "Design image upload with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors."
+  },
+  "premiumPreview": {
+    "summary": "Design an image selection, preview, and upload pipeline with decoded validation, real transfer progress, cancellation, retry, and bounded local resources.",
+    "learningOutcomes": [
+      "Separate a local preview from a server-confirmed durable asset.",
+      "Model validation, preprocessing, session creation, transfer, and finalization as one attempt.",
+      "Ignore stale callbacks during replace, cancel, retry, and lost-response races.",
+      "Build accessible progress and recovery without inventing percentages or blocking the main thread."
+    ],
+    "unlockDescription": "Premium unlocks the replacement-race example, upload-session contracts, object-URL lifecycle, and finalization recovery."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/image-upload-preview.md",
+    "primaryKeyword": "image upload and preview frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Image Upload & Preview Component.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Image Upload & Preview Component.",
+    "uniqueAngle": "Design an image upload flow with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

@@ -1,10 +1,10 @@
 {
   "key": "R",
-  "title": "Interview framing and requirements",
+  "title": "Requirements",
   "blocks": [
     {
       "type": "text",
-      "text": "Frame this as a frontend layout editor, not as a generic drag-and-drop feature. The interviewer is testing whether you can own the grid model, interaction loop, collision rules, rendering cost, persistence contract, responsive behavior, and accessible alternatives."
+      "text": "Frame this as a frontend layout editor, not as a generic drag-and-drop feature."
     },
     {
       "type": "links",
@@ -18,7 +18,7 @@
         {
           "label": "Frontend system design answer blueprint",
           "href": "/guides/system-design-blueprint/radio-framework",
-          "description": "Structure the answer before diving into layout math."
+          "description": "Structure the design before diving into layout math."
         },
         {
           "label": "Performance optimization guide",
@@ -43,7 +43,7 @@
       "columns": [
         "Area",
         "Question to ask",
-        "Strong answer signal"
+        "Defensible decision signal"
       ],
       "rows": [
         [
@@ -74,7 +74,7 @@
         [
           "Persistence",
           "Save automatically on drop, on explicit Save, or sync to a server per user?",
-          "Clarifies optimistic local layout, conflict handling, and versioned migrations."
+          "Clarifies optimistic local layout, revision conflicts, and schema migrations."
         ],
         [
           "Accessibility",
@@ -87,7 +87,7 @@
       "type": "callout",
       "variant": "info",
       "title": "Interview opening",
-      "text": "A strong opening is: I would model every widget as a rectangle on a logical grid, use a layout engine for snapping and collision resolution, keep pointermove work outside expensive framework rerenders, and persist a versioned layout snapshot after the interaction commits."
+      "text": "A strong opening is: model every widget as a rectangle on a logical grid, use a layout engine for snapping and collision resolution, keep pointermove work outside expensive framework rerenders, and persist one snapshot against its authoritative revision after the interaction commits."
     },
     {
       "type": "divider"
@@ -125,21 +125,24 @@
     {
       "type": "code",
       "language": "text",
-      "code": "Deterministic grid/snap/collision example\n\nGrid: 6 columns, rowHeight = 80px, gap = 8px\nWidget A: { id: 'a', x: 0, y: 0, width: 2, height: 2 }\nWidget B: { id: 'b', x: 2, y: 0, width: 2, height: 2 }\nWidget C: { id: 'c', x: 4, y: 1, width: 2, height: 1 }\n\nBefore\nrow 0: A A B B . .\nrow 1: A A B B C C\nrow 2: . . . . . .\n\nUser drags A right by 2 columns.\nCandidate A: x = 2, y = 0, width = 2, height = 2\nCollision: A overlaps B at columns 2-3, rows 0-1.\nResolution policy: push the blocking widget down, then compact if there is empty space.\n\nAfter\nrow 0: . . A A . .\nrow 1: . . A A C C\nrow 2: . . B B . .\nrow 3: . . B B . ."
+      "code": "Deterministic grid/snap/collision example\n\nGrid: 6 columns, rowHeight = 80px, gap = 8px\nWidget A: { id: 'a', x: 0, y: 0, width: 2, height: 2 }\nWidget B: { id: 'b', x: 2, y: 0, width: 2, height: 2 }\nWidget C: { id: 'c', x: 4, y: 1, width: 2, height: 1 }\n\nBefore\nrow 0: A A B B . .\nrow 1: A A B B C C\nrow 2: . . . . . .\n\nUser drags A right by 2 columns.\nCandidate A: x = 2, y = 0, width = 2, height = 2\nCollision: A overlaps B at columns 2-3, rows 0-1.\nResolution policy: push the blocking widget down, then compact if there is empty space.\n\nAfter\nrow 0: . . A A . .\nrow 1: . . A A C C\nrow 2: . . B B . .\nrow 3: . . B B . .",
+      "validation": {
+        "kind": "pseudocode"
+      }
     },
     {
       "type": "table",
-      "title": "Weak answer vs strong answer",
+      "title": "Unreliable shortcut vs defensible decision",
       "columns": [
         "Evaluation area",
-        "Weak answer",
-        "Strong answer"
+        "Unreliable shortcut",
+        "Defensible decision"
       ],
       "rows": [
         [
           "Scope",
-          "I would use a drag-and-drop library and save positions.",
-          "I first define grid rules, collision policy, resize constraints, persistence timing, keyboard support, and responsive layouts."
+          "Use a drag-and-drop library and save positions.",
+          "Define grid rules, collision policy, resize constraints, persistence timing, keyboard support, and responsive layouts before selecting a library."
         ],
         [
           "State model",
@@ -154,7 +157,7 @@
         [
           "Persistence",
           "Write localStorage whenever anything changes.",
-          "Persist a compact, versioned snapshot on drop/save, handle failed server sync, and migrate older layout versions."
+          "Persist a compact snapshot on drop or Save, using schemaVersion for format migration and revision for save conflicts."
         ],
         [
           "Accessibility",
@@ -169,7 +172,7 @@
         {
           "label": "Model",
           "value": "Grid rectangles",
-          "helperText": "id, x, y, width, height, constraints, version."
+          "helperText": "Widget geometry plus snapshot schemaVersion and revision."
         },
         {
           "label": "Hot path",
@@ -186,8 +189,16 @@
     {
       "type": "callout",
       "variant": "warning",
-      "title": "Key message to land",
+      "title": "Scope checkpoint",
       "text": "This prompt is about frontend interaction architecture: a deterministic grid layout model, explicit collision behavior, smooth rendering boundaries, resilient persistence, and accessible controls."
+    },
+    {
+      "type": "heading",
+      "text": "Frontend boundary"
+    },
+    {
+      "type": "text",
+      "text": "The browser owns pointer and keyboard interaction, preview geometry, collision feedback, optimistic layout overlays, responsive projection, and undo. Server-side layout validation and durable storage stay behind abstract revision-aware snapshot and save contracts, with schemaVersion reserved for format migration."
     }
   ]
 }

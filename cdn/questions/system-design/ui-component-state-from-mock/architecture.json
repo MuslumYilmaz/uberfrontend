@@ -3,125 +3,163 @@
   "title": "Architecture / High-level design",
   "blocks": [
     {
+      "type": "callout",
+      "title": "Canonical client model",
+      "text": "Use a realistic support inbox where URL selection, cached tickets, composer drafts, background updates, and optimistic commands evolve independently.",
+      "variant": "info",
+      "editorialRole": "canonical-model"
+    },
+    {
       "type": "text",
-      "text": "Start from the mock and build a component tree. Identify container components (data fetching) vs presentational components, and define the events that flow upward."
+      "text": "Derive component boundaries from independent responsibilities and update frequency, not from every rectangle in the mock. The route shell coordinates query state and responsive composition. A ticket-query controller owns paginated server data. A selection controller derives the active ticket from the URL. A draft repository owns unsent text by ticket. A mutation coordinator tracks commands and conflicts. Presentational components receive narrow data and emit user intent."
     },
     {
       "type": "code",
       "language": "text",
-      "code": "App\n├─ PageLayout\n│  ├─ Toolbar\n│  ├─ FiltersPanel\n│  └─ ContentArea\n│     ├─ SectionHeader\n│     ├─ ItemsList\n│     │  └─ ItemCard\n│     └─ DetailsPanel"
-    },
-    {
-      "type": "diagram",
-      "title": "State flow (high level)",
-      "description": "Props down, events up. Server data at the container, local UI state in leaves.",
-      "nodes": [
-        {
-          "id": "container",
-          "label": "PageContainer (fetch + store)"
-        },
-        {
-          "id": "filters",
-          "label": "FiltersPanel (local UI)"
-        },
-        {
-          "id": "list",
-          "label": "ItemsList (render)"
-        },
-        {
-          "id": "item",
-          "label": "ItemCard (local UI)"
-        },
-        {
-          "id": "details",
-          "label": "DetailsPanel (view/edit)"
-        }
-      ],
-      "edges": [
-        {
-          "from": "container",
-          "to": "filters"
-        },
-        {
-          "from": "container",
-          "to": "list"
-        },
-        {
-          "from": "list",
-          "to": "item"
-        },
-        {
-          "from": "filters",
-          "to": "container"
-        },
-        {
-          "from": "list",
-          "to": "details"
-        }
-      ]
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "**State placement rules:**\n- Keep state as low as possible.\n- Lift only when multiple siblings need it.\n- Server state belongs in a cache/store layer."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "**Event flow:**\n- User action -> callback -> container updates state -> props update children.\n- Avoid two-way binding; keep flows predictable."
-            }
-          ]
-        }
-      ]
+      "code": "SupportInboxRoute\n├─ InboxToolbar\n│  ├─ TicketSearch\n│  └─ SavedViewControls\n├─ TicketFilterPanel\n├─ TicketListRegion\n│  ├─ TicketListStatus\n│  └─ TicketListItem × visible tickets\n└─ TicketDetailRoute\n   ├─ TicketHeaderActions\n   ├─ ConversationTimeline\n   ├─ TicketProperties\n   └─ ReplyComposer\n\nControllers\nURL state → QueryController → normalized ticket cache\nURL ticket id → SelectionController → detail query\nDraftRepository(ticket id) → ReplyComposer\nMutationCoordinator → pending overlay → server reconciliation",
+      "validation": {
+        "kind": "diagram"
+      }
     },
     {
       "type": "table",
-      "title": "Component boundaries",
+      "title": "Component and controller boundaries",
       "columns": [
-        "Component",
-        "Responsibility",
-        "State"
+        "Boundary",
+        "Inputs",
+        "Outputs",
+        "Reason"
       ],
       "rows": [
         [
-          "PageContainer",
-          "Fetch data and orchestrate",
-          "Server + shared UI"
+          "SupportInboxRoute",
+          "URL query, breakpoint state, permissions",
+          "Pane composition and navigation intent",
+          "Owns page-level coordination without absorbing every ticket field."
         ],
         [
-          "FiltersPanel",
-          "Local filters UI",
-          "Local UI"
+          "TicketQueryController",
+          "Committed search, filters, cursor, AbortSignal",
+          "Ticket IDs, pagination status, retry",
+          "Keeps request and cache policy outside visual list items."
         ],
         [
-          "ItemsList",
-          "Render list",
-          "Stateless"
+          "TicketListRegion",
+          "Visible ticket summaries and selected ID",
+          "Select and load-more intents",
+          "Can change rendering strategy without changing data ownership."
         ],
         [
-          "ItemCard",
-          "Item UI + local interactions",
-          "Local UI"
+          "SelectionController",
+          "Route ticket ID and detail cache",
+          "Selected ticket view and not-found state",
+          "Makes deep links and back navigation deterministic."
         ],
         [
-          "DetailsPanel",
-          "View/edit selected item",
-          "Derived + local UI"
+          "DraftRepository",
+          "Ticket ID and text edits",
+          "Versioned local draft snapshots",
+          "Background server merges cannot overwrite unfinished text."
+        ],
+        [
+          "MutationCoordinator",
+          "Reply, status, assignee commands",
+          "Pending overlays, conflicts, and outcome messages",
+          "Optimistic presentation remains separate from authoritative entities."
         ]
       ]
     },
     {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Pitfall",
-      "text": "Avoid pushing all state into global stores by default; it makes components harder to test and slower to render."
+      "type": "heading",
+      "text": "Data flow"
+    },
+    {
+      "type": "steps",
+      "title": "Read and interaction paths",
+      "steps": [
+        {
+          "title": "Commit query state",
+          "text": "Debounce only the text input; when committed, update the URL and derive a complete cache key from search, filters, sort, and workspace."
+        },
+        {
+          "title": "Load ticket summaries",
+          "text": "Cancel the obsolete request, normalize accepted results, and preserve the previous list when a background refresh starts."
+        },
+        {
+          "title": "Select through navigation",
+          "text": "Update the ticket route and derive selection from it rather than maintaining a competing selected-ticket field."
+        },
+        {
+          "title": "Edit a local draft",
+          "text": "Write text to a ticket-keyed repository; keep draft state independent from messages received from the server."
+        },
+        {
+          "title": "Coordinate commands",
+          "text": "Overlay pending status, assignee, or reply intent, then reconcile against server versions and stream updates."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: background update during an unsent reply"
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "URL: /support/inbox?assignee=me&ticket=1842\nserver ticket 1842: version 17, status open, assignee Maya\nlocal draft 1842: \"I checked your export...\"\n\nbackground event: ticket.updated version 18, assignee Jordan\nlocal command: status pending based on version 17\nserver response: 409 current version 18",
+      "validation": {
+        "kind": "pseudocode"
+      }
+    },
+    {
+      "type": "table",
+      "title": "One scenario through each state layer",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Deep link opens ticket 1842",
+          "The URL supplies selection; summary and detail queries normalize version 17.",
+          "The matching list item is selected and details receive focus only after explicit navigation.",
+          "There is one selection source."
+        ],
+        [
+          "Agent types a reply",
+          "DraftRepository saves text under ticket 1842 with a local draft revision.",
+          "Composer shows saved-local status without changing ticket messages.",
+          "Unsent text is never server entity state."
+        ],
+        [
+          "Background version 18 changes assignee",
+          "Merge the newer assignee while leaving the draft repository untouched.",
+          "Header shows Jordan; composer text remains exactly as typed.",
+          "Server changes cannot erase a local draft."
+        ],
+        [
+          "Agent changes status based on version 17",
+          "Create a pending overlay and send a version precondition.",
+          "Status control says Updating while the base entity remains version 18.",
+          "Optimistic feedback is not authoritative truth."
+        ],
+        [
+          "Server rejects stale command",
+          "Clear the overlay, preserve version 18, and attach a recoverable conflict.",
+          "Show the current status and a concise message; move focus to the message only when the action requires correction.",
+          "The newest server version wins without resetting unrelated UI."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Responsive and focus model"
+    },
+    {
+      "type": "text",
+      "text": "Desktop can keep list and detail visible when each pane retains a useful minimum width. Mobile uses nested routes or an equivalent explicit view state: list navigation opens details, Back returns to the same query and list anchor. Record the initiating ticket identity so focus can return after the list remounts. Use semantic form controls, headings, links, buttons, and lists before introducing composite ARIA widgets. A ticket list with ordinary links usually does not need grid keyboard behavior."
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "key": "O",
-  "title": "Optimizations and deep dive",
+  "title": "Optimizations",
   "blocks": [
     {
       "type": "text",
@@ -20,8 +20,8 @@
       "rows": [
         [
           "Re-render storm",
-          "Batch updates every 100-250ms",
-          "Coalesces many events into a single state update."
+          "Measured burst coalescing",
+          "Coalesces store commits without changing event identity or order."
         ],
         [
           "Huge DOM",
@@ -30,13 +30,13 @@
         ],
         [
           "Unbounded memory",
-          "Trim to last N items / time window",
-          "Prevents feed from growing forever."
+          "Evict payload detail behind a recoverable snapshot boundary",
+          "Bounds memory while retaining ordering, read-marker, and resume evidence."
         ],
         [
           "Burst load",
-          "Backpressure buffer + drop policy",
-          "Avoids flooding UI; can drop low-priority events."
+          "Bound ingest queue + gap recovery",
+          "Stops cursor advancement and refreshes from delta or snapshot rather than losing authoritative events."
         ],
         [
           "Main-thread jank",
@@ -60,7 +60,7 @@
                 "Use requestAnimationFrame for UI updates when visible.",
                 "Memoize row components; avoid rerendering unchanged rows.",
                 "Use stable keys and avoid re-sorting large arrays on every tick.",
-                "Compute unread count incrementally, not by scanning whole list.",
+                "Derive unread from accepted sequence positions and the authoritative read marker.",
                 "Pause list rendering when the panel is closed."
               ]
             }
@@ -87,18 +87,18 @@
       "items": [
         {
           "label": "Interaction budget",
-          "value": "<= 200ms",
-          "helperText": "INP goal for open/close."
+          "value": "Field p75",
+          "helperText": "Measure panel controls by device and input."
         },
         {
           "label": "Batch cadence",
-          "value": "100-250ms",
-          "helperText": "Controls render cost."
+          "value": "Measured",
+          "helperText": "Tune commit coalescing from freshness and rendering evidence."
         },
         {
           "label": "DOM cap",
-          "value": "500-1000",
-          "helperText": "Keeps memory stable."
+          "value": "Profiled bound",
+          "helperText": "Set row and payload bounds from memory and navigation behavior."
         }
       ]
     },
@@ -106,32 +106,119 @@
       "type": "callout",
       "variant": "warning",
       "title": "Common pitfalls",
-      "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
+      "text": "A notification burst should become one bounded store commit. Blind unread increments, perpetual retention, and a full timeline sort on every event create both correctness and responsiveness failures."
     },
     {
       "type": "divider"
     },
     {
       "type": "steps",
-      "title": "Deep dive: preventing jank",
+      "title": "Keeping notification bursts responsive without losing events",
       "steps": [
         {
           "title": "1) Batch updates",
-          "text": "Apply updates on a cadence (100-250ms) instead of per event."
+          "text": "Schedule one store commit for a burst when profiling shows per-event commits are expensive; the reducer still processes every accepted event."
         },
         {
           "title": "2) Bound the DOM",
-          "text": "Virtualize long lists or carousels so DOM size stays small."
+          "text": "Virtualize notification rows while retaining normalized identities, cursor evidence, and the reader's anchor."
         },
         {
-          "title": "3) Cancel stale work",
-          "text": "Abort prefetches or network work when user intent changes."
+          "title": "3) Repair gaps",
+          "text": "Pause cursor advancement and request a delta or coherent snapshot when sequence continuity breaks."
         },
         {
           "title": "4) Measure",
-          "text": "Log LCP/INP and feature-specific KPIs to validate rollout."
+          "text": "Measure snapshot usefulness, interaction latency, burst commit cost, duplicate rejection, gaps, and unread corrections."
         }
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Resume, marker, and burst recovery"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Cursor expires",
+          "Fetch a new snapshot and preserve selection by notification ID.",
+          "The feed recovers without duplicate rows."
+        ],
+        [
+          "Sequence gap persists",
+          "Pause cursor advancement and request a delta or snapshot.",
+          "Known content stays visible but stale."
+        ],
+        [
+          "Read marker conflicts",
+          "Merge the newer server marker and clear stale local intent.",
+          "Unread converges across devices."
+        ],
+        [
+          "Burst exceeds render budget",
+          "Batch store notification and window the measured list.",
+          "Ingestion does not force one render per event."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Use a named feed or list, meaningful notification headings, and explicit read controls. New events do not move focus or auto-scroll a reader away from the current position. Announce a grouped count or connection transition instead of each burst item, and keep retry and Load More keyboard operable."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Begin with snapshots and polling, verify unread semantics, then enable resumable streaming for a cohort. Track duplicate rejection, gaps, unread corrections, reconnect duration, render batches, anchor movement, and assistive-technology announcement volume."
+    },
+    {
+      "type": "heading",
+      "text": "Memory and privacy boundaries"
+    },
+    {
+      "type": "text",
+      "text": "Bound recent entities, received-event identity history, and rendered rows according to the snapshot and resume contract. Payload details that are no longer needed can be evicted while compact ordering and marker metadata remain. Notification text can contain personal data, so telemetry records event class, timing, and reducer outcome rather than message content. Browser storage is optional and scoped by account; signing out clears user-specific cached data before another session can read it."
+    },
+    {
+      "type": "text",
+      "text": "Notification importance must not be inferred from arrival frequency. A quiet security event may deserve a persistent surface while a large batch of low-priority updates may collapse into one summary. Keep delivery state, read state, and presentation urgency separate so reconnects cannot replay alerts or mark unseen items as read. If the active filter excludes a new item, update the relevant count without moving the reader's anchor."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how Scalable Notifications Feed (Real-time) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN Server-sent events",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events",
+          "description": "One-way event-stream behavior and browser API."
+        },
+        {
+          "label": "W3C ARIA feed pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/feed/",
+          "description": "Progressively loaded feed semantics and keyboard considerations."
+        }
+      ],
+      "editorialRole": "references"
     }
   ]
 }

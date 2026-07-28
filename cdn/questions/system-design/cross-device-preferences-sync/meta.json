@@ -1,7 +1,7 @@
 {
   "id": "cross-device-preferences-sync",
   "title": "Cross-device Preferences Sync",
-  "description": "Design a client-side system that keeps user preferences (theme, language, notification settings, etc.) in sync across iPhone, iPad, and web. Focus on the frontend data flow, offline support, and how conflicts are handled when multiple devices update the same preference.\n\nKey considerations:\n- Local-first updates with optimistic UI and a durable sync queue.\n- Offline edits, retry with backoff, and background sync.\n- Conflict resolution (last-write-wins vs per-field merge) and user-visible messaging.\n- Versioning (ETag/revision) and minimal payloads.\n- Clear UX states: synced, saving, offline, conflict.\n\nYou should be prepared to talk about: batching updates, per-field merge strategy, how to store pending changes, and how to expose a clean Preferences API to the rest of the app.",
+  "description": "Design preference synchronization across devices and tabs with versioned values, optimistic edits, offline queues, conflict policy, and stable UI reconciliation.",
   "tags": [
     "state-management",
     "local-storage",
@@ -13,32 +13,54 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interfaces",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "apple"
-  ],
-  "updatedAt": "2026-01-31"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "Cross-Device Preferences Sync Frontend System Design",
+    "description": "Design preference sync across devices and tabs with versioned values, optimistic edits, offline queues, conflict policy, and stable UI reconciliation."
+  },
+  "premiumPreview": {
+    "summary": "Design local-first preference synchronization with per-key revisions, durable offline commands, and deterministic cross-device convergence.",
+    "learningOutcomes": [
+      "Separate confirmed preference values from optimistic overlays and sync state.",
+      "Persist idempotent commands that survive reloads and offline sessions.",
+      "Use per-key revisions and an opaque sync cursor without mixing version scopes.",
+      "Resolve conflicts by product policy instead of unreliable client timestamps.",
+      "Apply remote changes without stealing focus or obscuring overwritten intent."
+    ],
+    "unlockDescription": "Premium unlocks the per-key revision model, offline conflict walkthrough, tab coordination, recovery matrix, and accessibility decisions."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/cross-device-preferences-sync.md",
+    "primaryKeyword": "cross-device preferences sync frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Cross-device Preferences Sync.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Cross-device Preferences Sync.",
+    "uniqueAngle": "Design preference synchronization across devices and tabs with versioned values, optimistic edits, offline queues, conflict policy, and stable UI reconciliation.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

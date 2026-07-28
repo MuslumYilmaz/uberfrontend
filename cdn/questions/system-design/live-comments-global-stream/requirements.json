@@ -1,16 +1,16 @@
 {
   "key": "R",
-  "title": "Reflect & Requirements",
+  "title": "Requirements",
   "blocks": [
     {
       "type": "text",
-      "text": "This is a front-end system design problem about live comments on a global livestream. The interviewer wants to see how you handle high-frequency updates, ordering, readability, and UI performance without overwhelming the DOM."
+      "text": "Design the browser side of a global live-comment stream that preserves resumable sequence order, moderation revisions, and the reader's follow-mode anchor during bursts."
     },
     {
       "type": "callout",
       "variant": "info",
       "title": "Use RADIO",
-      "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, regions, devices), **D**ecide (data flow + rendering), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
+      "text": "Requirements define the audience, peak event shape, ordering and resume guarantees, follow-mode behavior, moderation authority, accessibility, and measurable success criteria."
     },
     {
       "type": "divider"
@@ -22,7 +22,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**What you are solving:**\nA real-time comment stream beside a live video. It must stay readable, ordered, and responsive during spikes (e.g., big moments), while supporting moderation and user interaction."
+              "text": "What you are solving:\nA real-time comment stream beside a live video. It must stay readable, ordered, and responsive during spikes (e.g., big moments), while supporting moderation and user interaction."
             }
           ]
         },
@@ -30,7 +30,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**What the interviewer is testing:**\n- Real-time delivery (WebSocket/SSE)\n- Buffering + batching to avoid re-render storms\n- Virtualized list rendering\n- Ordering + dedupe strategy\n- Auto-scroll vs user scroll behavior\n- Moderation UX and error handling"
+              "text": "Decision surface:\n- Real-time delivery (WebSocket/SSE)\n- Buffering + batching to avoid re-render storms\n- Virtualized list rendering\n- Ordering + dedupe strategy\n- Auto-scroll vs user scroll behavior\n- Moderation UX and error handling"
             }
           ]
         }
@@ -41,7 +41,7 @@
     },
     {
       "type": "steps",
-      "title": "User flow you should describe",
+      "title": "User flow",
       "steps": [
         {
           "title": "1) Open stream",
@@ -49,7 +49,7 @@
         },
         {
           "title": "2) Ingest events",
-          "text": "Buffer incoming comments and batch them into UI state every 100-250ms."
+          "text": "Validate and reduce every authoritative event; coalesce store commits only enough to keep the interface responsive."
         },
         {
           "title": "3) Render safely",
@@ -61,7 +61,7 @@
         },
         {
           "title": "5) Moderation",
-          "text": "Apply hide/mute/delete actions without breaking ordering or unread counts."
+          "text": "Apply hide, mute, and removal updates without breaking sequence order, the reader's anchor, or the pending-new-comment count."
         }
       ]
     },
@@ -79,7 +79,7 @@
                 "Auto-scroll always on, or pause on user scroll?",
                 "Do we show sender badges, avatars, emojis, GIFs?",
                 "What moderation actions are required?",
-                "Acceptable end-to-end delay (e.g., < 500ms)?",
+                "What freshness budget should be tested for each device and network cohort?",
                 "Any slow-mode or rate-limit rules?"
               ]
             }
@@ -91,7 +91,7 @@
               "type": "checklist",
               "title": "Non-functional expectations",
               "items": [
-                "Stable 60 FPS scrolling under bursts.",
+                "Smooth scrolling under bursts, verified with field frame and long-task data.",
                 "DOM size bounded via virtualization.",
                 "Graceful fallback on slow networks.",
                 "Consistent UX across devices.",
@@ -104,7 +104,7 @@
     },
     {
       "type": "table",
-      "title": "Key UI states to call out",
+      "title": "Follow-mode UI states",
       "columns": [
         "State",
         "What the user sees",
@@ -133,18 +133,18 @@
       "items": [
         {
           "label": "End-to-end latency",
-          "value": "<= 500ms",
-          "helperText": "Live feel target."
+          "value": "Cohort budget",
+          "helperText": "Begin with a testable freshness hypothesis and revise from field data."
         },
         {
           "label": "Batch window",
-          "value": "100-250ms",
-          "helperText": "Balances latency vs render cost."
+          "value": "Measured",
+          "helperText": "Tune burst coalescing from freshness and render evidence."
         },
         {
           "label": "DOM cap",
-          "value": "500-1000 rows",
-          "helperText": "Keep UI responsive."
+          "value": "Profiled bound",
+          "helperText": "Choose retained and rendered bounds from memory and navigation tests."
         }
       ]
     },
@@ -159,37 +159,37 @@
     },
     {
       "type": "checklist",
-      "title": "Assumptions you should state",
+      "title": "Explicit assumptions",
       "items": [
-        "Device mix (mid-range mobile, low-end Android, desktop).",
-        "Network mix (Wi-Fi vs 4G/5G, high latency regions).",
-        "Concurrency and burst patterns.",
-        "Latency target for first meaningful UI."
+        "Peak comment rate, burst duration, and how long sequence gaps remain repairable.",
+        "Moderation states, revision ordering, and whether removed bodies become tombstones.",
+        "Follow-mode policy when the reader scrolls away from the live edge.",
+        "Composer slow mode, optimistic echo, and reconnect behavior on constrained devices."
       ]
     },
     {
       "type": "table",
-      "title": "Success metrics to mention",
+      "title": "Stream readability measures",
       "columns": [
         "Metric",
-        "Target",
+        "Evaluation",
         "Why it matters"
       ],
       "rows": [
         [
-          "LCP/TTFF",
-          "<= 2.5s / <= 1.0s",
-          "User-perceived speed"
+          "Snapshot-to-readable-log",
+          "Percentiles by cohort",
+          "Measures initial usefulness"
         ],
         [
           "INP",
-          "<= 200ms",
-          "Responsive interaction"
+          "Field p75 by input",
+          "Validates composer and follow controls"
         ],
         [
           "Dropped frames",
-          "< 2%",
-          "Smooth scroll/animation"
+          "Frame and long-task distribution",
+          "Reveals burst and scroll jank"
         ]
       ]
     },
@@ -198,13 +198,21 @@
     },
     {
       "type": "checklist",
-      "title": "UX constraints to mention",
+      "title": "Follow, moderation, and recovery constraints",
       "items": [
         "Auto-scroll behavior when the user scrolls up.",
         "Visible new-items indicator or badge.",
         "Moderation actions that can remove items without breaking layout.",
         "Clear empty/error states."
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Frontend boundary"
+    },
+    {
+      "type": "text",
+      "text": "The browser owns stream resume, comment merge, moderation overlays, follow mode, viewport anchoring, bounded rendering, and composer feedback. Global distribution, authoritative moderation decisions, and durable comment storage stay behind abstract resumable event and command contracts."
     }
   ]
 }

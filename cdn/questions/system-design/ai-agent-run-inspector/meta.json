@@ -1,0 +1,63 @@
+{
+  "id": "ai-agent-run-inspector",
+  "title": "AI Agent Run Inspector Frontend System Design",
+  "description": "Design an AI agent run inspector for nested spans, live tool calls, approval races, resilient stream state, virtualized navigation, redaction, and accessibility.",
+  "tags": [
+    "real-time",
+    "streams",
+    "state-management",
+    "frontend-architecture",
+    "performance",
+    "virtualization",
+    "accessibility",
+    "error-handling",
+    "security",
+    "events",
+    "api-calls",
+    "ux"
+  ],
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements and interview framing",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture and live trace flow",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Normalized data and event reconciliation",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface contracts for UI, API, stream, and actions",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations for performance, resilience, security, and accessibility",
+      "file": "optimizations.json"
+    }
+  ],
+  "guideSlug": "architecture",
+  "publishedAt": "2026-07-28",
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "AI Agent Run Inspector Frontend System Design",
+    "description": "Design an AI agent trace viewer with nested spans, streamed tool calls, human approvals, reconnects, virtualization, redaction, and accessible navigation."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/ai-agent-run-inspector.md",
+    "primaryKeyword": "AI agent run inspector frontend system design",
+    "searchIntent": "Prepare a senior-level frontend system design answer for an AI agent run inspector or trace viewer.",
+    "readerPromise": "The reader can explain how to stream, normalize, virtualize, inspect, and safely act on a hierarchical AI-agent trace in the browser.",
+    "uniqueAngle": "Treat the inspector as a live, partially ordered trace document with human approval actions, not as a chat transcript or a static logs table.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "Codex research and editorial pass",
+    "companyEvidence": []
+  }
+}

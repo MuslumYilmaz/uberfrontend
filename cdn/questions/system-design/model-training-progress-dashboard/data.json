@@ -1,137 +1,175 @@
 {
-    "key": "D",
-    "title": "Data model",
-    "blocks": [
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Model the training run, metrics, and logs so the UI can render a stable dashboard."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Model the training run, metrics, and logs so the UI can render a stable dashboard."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "TrainingRun owns lifecycle with its latest accepted sequence. MetricPoint and LogEvent retain event identity and sequence. MonitorState keeps the last contiguous sequence, opaque resume cursor, freshness, and unresolved gap."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame it:**\n\"I keep a TrainingRun entity with status, progress, and a metrics map. Logs are a bounded list with a cursor for pagination.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Clear metric point structure.\n- Bounded log storage.\n- Status and progress fields.\n- Cursors or sequence ids for resume."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Keep the data model lean: run metadata, metrics arrays, and logs with a cursor."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Core entities you should define",
-            "columns": [
-                "Entity",
-                "What it represents",
-                "Why it matters"
-            ],
-            "rows": [
-                [
-                    "TrainingRun",
-                    "Metadata and status of a run",
-                    "Entry point for the dashboard"
-                ],
-                [
-                    "MetricPoint",
-                    "Time series data point",
-                    "Used for charts"
-                ],
-                [
-                    "LogEvent",
-                    "A single log line",
-                    "Displayed in the log list"
-                ],
-                [
-                    "Cursor",
-                    "Sequence token",
-                    "Resume streaming from last point"
-                ]
-            ]
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "interface TrainingRun {\n  id: string;\n  status: 'running' | 'done' | 'failed';\n  progress: number;\n  startedAt: number;\n  finishedAt?: number;\n}\n\ninterface MetricPoint {\n  t: number;\n  value: number;\n}\n\ninterface LogEvent {\n  id: string;\n  t: number;\n  level: 'info' | 'warn' | 'error';\n  message: string;\n}\n\ninterface RunStreamState {\n  metrics: Record<string, MetricPoint[]>;\n  logs: LogEvent[];\n  nextCursor?: string;\n}"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should model explicitly",
-                            "items": [
-                                "Run status and progress.",
-                                "Metric points with timestamps.",
-                                "Logs with ids and timestamps.",
-                                "Cursor for resume."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Common data model gaps",
-                            "items": [
-                                "Unbounded logs stored in memory.",
-                                "No cursor or sequence id for resume.",
-                                "Mixing UI flags into backend model."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary entity",
-                    "value": "TrainingRun",
-                    "helperText": "Top-level status and progress."
-                },
-                {
-                    "label": "Realtime data",
-                    "value": "MetricPoint",
-                    "helperText": "Feeds charts."
-                },
-                {
-                    "label": "Logs",
-                    "value": "Bounded list",
-                    "helperText": "Protects memory and DOM."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A good data model makes realtime updates predictable: small metric points, bounded logs, and a cursor for resume."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "State-model checks:\n- Clear metric point structure.\n- Bounded log storage.\n- Status and progress fields.\n- Cursors or sequence ids for resume."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Core entities",
+      "columns": [
+        "Entity",
+        "What it represents",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "TrainingRun",
+          "Metadata and status of a run",
+          "Entry point for the dashboard"
+        ],
+        [
+          "MetricPoint",
+          "Time series data point",
+          "Used for charts"
+        ],
+        [
+          "LogEvent",
+          "A single log line",
+          "Displayed in the log list"
+        ],
+        [
+          "Cursor",
+          "Sequence token",
+          "Resume streaming from last point"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "type RunStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';\n\ntype TrainingRun = {\n  id: string;\n  status: RunStatus;\n  progress: number | null;\n  lifecycleSequence: number;\n  startedAt: string | null;\n  terminalAt: string | null;\n};\n\ntype MetricPoint = {\n  eventId: string;\n  sequence: number;\n  metric: string;\n  unit: string;\n  step: number;\n  timestamp: string;\n  value: number;\n};\n\ntype LogEvent = {\n  eventId: string;\n  sequence: number;\n  timestamp: string;\n  level: 'info' | 'warn' | 'error';\n  message: string;\n};\n\ntype RunEvent =\n  | { eventId: string; sequence: number; cursor: string; type: 'run.updated'; run: TrainingRun }\n  | { eventId: string; sequence: number; cursor: string; type: 'metric.recorded'; point: MetricPoint }\n  | { eventId: string; sequence: number; cursor: string; type: 'log.appended'; log: LogEvent };\n\ntype RunSnapshot = {\n  schemaVersion: 1;\n  run: TrainingRun;\n  metrics: Record<string, MetricPoint[]>;\n  logs: LogEvent[];\n  contiguousSequence: number;\n  resumeCursor: string;\n};\n\ntype MonitorState = {\n  contiguousSequence: number;\n  resumeCursor: string | null;\n  freshness: 'fresh' | 'reconnecting' | 'stale';\n  gapAfterSequence: number | null;\n  receivedEventIds: Set<string>;\n};\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "model-training-progress-dashboard-contract"
+      }
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Explicit state",
+              "items": [
+                "Run status and progress.",
+                "Metric points with timestamps.",
+                "Logs with ids and timestamps.",
+                "Cursor for resume."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Training-state pitfalls",
+              "items": [
+                "Unbounded logs stored in memory.",
+                "No cursor or sequence id for resume.",
+                "Mixing UI flags into backend model."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary entity",
+          "value": "TrainingRun",
+          "helperText": "Top-level status and progress."
+        },
+        {
+          "label": "Realtime data",
+          "value": "MetricPoint",
+          "helperText": "Feeds charts."
+        },
+        {
+          "label": "Logs",
+          "value": "Bounded list",
+          "helperText": "Protects memory and DOM."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "State checkpoint",
+      "text": "A good data model makes realtime updates predictable: small metric points, bounded logs, and a cursor for resume."
+    },
+    {
+      "type": "heading",
+      "text": "Run lifecycle, sequence, metric, and log ownership"
+    },
+    {
+      "type": "text",
+      "text": "Separate RunSummary lifecycle from MetricSeries samples, EventCursor, ChartViewWindow, and ComparisonSelection. Metric buffers preserve timestamp, step, value, and sequence. Derived summaries include latest accepted value, range, freshness, and gap state. Large histories are fetched or downsampled by visible range rather than copied into every component."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "TrainingRun",
+          "id, status, lifecycleSequence, startedAt, terminalAt",
+          "Entity store"
+        ],
+        [
+          "MetricSeries",
+          "runId, name, unit, bounded samples",
+          "Metric cache"
+        ],
+        [
+          "MonitorState",
+          "cursor, gap, freshness, reconnect",
+          "Stream adapter"
+        ],
+        [
+          "ChartView",
+          "range, resolution, selected runs",
+          "View state"
+        ]
+      ]
+    }
+  ]
 }

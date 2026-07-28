@@ -1,152 +1,237 @@
 {
-    "key": "O",
-    "title": "Optimizations and deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "This step is about protecting UI performance under high update rates and large log volume."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "This step is about protecting UI performance under high update rates and large log volume."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Start with idempotent reduction, bounded metric and log caches, virtualized logs, and chart downsampling. Coalesce visual commits only after measuring draw cost; never discard lifecycle, error, log identity, or gap evidence."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame optimizations:**\n\"First I would batch updates and virtualize logs. Then I would downsample charts and add backpressure if update rates spike.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You can reduce re-renders.\n- You can handle bursts of events.\n- You consider memory bounds."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Mention buffering and throttling first, then virtualization and downsampling."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Optimization levers to mention",
-            "columns": [
-                "Lever",
-                "What it does",
-                "Why it helps"
-            ],
-            "rows": [
-                [
-                    "Batching",
-                    "Apply updates every 100-250ms",
-                    "Avoids render storms"
-                ],
-                [
-                    "Downsampling",
-                    "Reduce metric points",
-                    "Keeps charts fast"
-                ],
-                [
-                    "Virtualized logs",
-                    "Render only visible lines",
-                    "Prevents huge DOM"
-                ],
-                [
-                    "Backpressure",
-                    "Drop or coalesce events",
-                    "Protects UI under spikes"
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Optimizations you should mention",
-                            "items": [
-                                "Throttle chart redraws.",
-                                "Window metric data to last N points.",
-                                "Virtualize log list.",
-                                "Use requestAnimationFrame for heavy UI updates.",
-                                "Persist last cursor for reconnect."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Failure modes to watch for",
-                            "items": [
-                                "Charts freezing during spikes.",
-                                "Logs growing without bounds.",
-                                "Reconnect loops without backoff.",
-                                "Out-of-order events corrupting UI."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Deep dive scenario you can walk through",
-            "steps": [
-                {
-                    "title": "1. Burst of events",
-                    "text": "Buffer and coalesce updates before rendering."
-                },
-                {
-                    "title": "2. Long run",
-                    "text": "Window metrics and trim logs to keep memory bounded."
-                },
-                {
-                    "title": "3. Disconnect",
-                    "text": "Reconnect with cursor and show a subtle warning."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Target cadence",
-                    "value": "100-250ms",
-                    "helperText": "Batch updates to protect UI."
-                },
-                {
-                    "label": "Memory guardrail",
-                    "value": "windowed data",
-                    "helperText": "Bound chart and log size."
-                },
-                {
-                    "label": "Stability",
-                    "value": "reconnect + backoff",
-                    "helperText": "Avoid rapid reconnect loops."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "Streaming is easy; streaming smoothly is the hard part. Buffer and batch first, then optimize charts and logs."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Monitoring freshness and recovery evidence:\n- Burst ingestion does not require one paint per event.\n- Terminal state survives late samples and reconnect replay.\n- Metric and log retention have recoverable bounds.\n- Gaps and stale views remain visible."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Dashboard performance controls",
+      "columns": [
+        "Lever",
+        "What it does",
+        "Why it helps"
+      ],
+      "rows": [
+        [
+          "Batching",
+          "Coalesce visual commits by measured cost",
+          "Avoids render storms without changing accepted event semantics"
+        ],
+        [
+          "Downsampling",
+          "Reduce metric points",
+          "Keeps charts fast"
+        ],
+        [
+          "Virtualized logs",
+          "Render only visible lines",
+          "Prevents huge DOM"
+        ],
+        [
+          "Backpressure",
+          "Coalesce replaceable chart paints; repair event gaps",
+          "Protects UI without losing terminal, log, error, or cursor evidence"
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Measured optimizations",
+              "items": [
+                "Throttle chart redraws.",
+                "Window metric data to last N points.",
+                "Virtualize log list.",
+                "Use requestAnimationFrame for heavy UI updates.",
+                "Persist last cursor for reconnect."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Stream failure and recovery",
+              "items": [
+                "Charts freezing during spikes.",
+                "Logs growing without bounds.",
+                "Reconnect loops without backoff.",
+                "Out-of-order events corrupting UI."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Scenario: burst, long run, and reconnect",
+      "steps": [
+        {
+          "title": "1. Burst of events",
+          "text": "Buffer and coalesce updates before rendering."
+        },
+        {
+          "title": "2. Long run",
+          "text": "Window metrics and trim logs to keep memory bounded."
+        },
+        {
+          "title": "3. Disconnect",
+          "text": "Reconnect with cursor and show a subtle warning."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Target cadence",
+          "value": "Measured cadence",
+          "helperText": "Tune chart and log paints by device and event volume."
+        },
+        {
+          "label": "Memory guardrail",
+          "value": "windowed data",
+          "helperText": "Bound chart and log size."
+        },
+        {
+          "label": "Stability",
+          "value": "reconnect + backoff",
+          "helperText": "Avoid rapid reconnect loops."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Dashboard continuity invariant",
+      "text": "Streaming is easy; streaming smoothly is the hard part. Buffer and batch first, then optimize charts and logs."
+    },
+    {
+      "type": "heading",
+      "text": "Gap, terminal-state, and history recovery"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Cursor is invalid",
+          "Fetch a new snapshot and preserve selected runs by ID.",
+          "The view recovers without false continuity."
+        ],
+        [
+          "Metric gap persists",
+          "Mark the affected series incomplete and request a range.",
+          "Other metrics remain usable."
+        ],
+        [
+          "One run has different units",
+          "Reject invalid comparison or normalize only with an explicit rule.",
+          "Charts do not compare incompatible values."
+        ],
+        [
+          "Tab backgrounds",
+          "Pause paints and resume from cursor on return.",
+          "A hidden dashboard does not waste frames."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Every chart has a visible title, units, freshness, textual trend summary, and access to tabular samples or key checkpoints. Color is not the only series distinction. Keyboard users can select runs and time ranges, focus is not moved by live updates, and failures or completion are announced once rather than every metric tick."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Begin with completed-run snapshots, then add one live run, resume, and comparison. Validate long histories, missing samples, unit mismatch, terminal races, background tabs, mobile charts, and screen-reader summaries. Track gap repair, stale duration, draw cost, downsampling error, and diagnosis success."
+    },
+    {
+      "type": "heading",
+      "text": "Comparison semantics"
+    },
+    {
+      "type": "text",
+      "text": "Comparing runs is meaningful only when the x-axis and units have compatible definitions. Step, epoch, wall-clock time, and sample count are not interchangeable. Store the selected alignment mode in view state, label it beside the chart, and reject series whose units cannot be normalized explicitly. Downsample each series over the same visible domain so apparent differences are not artifacts of unequal bucket boundaries. When one run ends earlier, leave the absent range empty instead of carrying its final value forward."
+    },
+    {
+      "type": "text",
+      "text": "Diagnosis views should link a suspicious point to nearby lifecycle events, configuration summaries, and checkpoint identity without placing full logs in the hot chart model. Selection by run and timestamp can live in the URL for shareable investigation, while zoom and hover remain local. Preserve the selected point by identity when new samples arrive and provide the same values through keyboard inspection and a compact table."
+    },
+    {
+      "type": "text",
+      "text": "Freshness is part of every comparison. Show the last accepted sequence and update time for each run, distinguish paused ingestion from an actually paused training job, and avoid connecting a line across an unresolved sample gap. When the user returns to a backgrounded tab, ingest the resumed range before scheduling one paint. If a requested historical range is unavailable, retain the visible window, mark its incomplete boundary, and offer a narrower retry instead of replacing the chart with a generic error. Downsampling retains extrema and terminal transitions, not only arithmetic averages. Validate the compact series against raw samples at several zoom levels, record the chosen aggregation, and keep the selected raw point inspectable. Exported views include the alignment mode, units, freshness boundary, and aggregation method."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how Real-time Model Training Dashboard assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN Server-sent events",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events",
+          "description": "Browser event-stream API and reconnection context."
+        },
+        {
+          "label": "W3C complex images tutorial",
+          "href": "https://www.w3.org/WAI/tutorials/images/complex/",
+          "description": "Accessible alternatives for charts and graphs."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
 }

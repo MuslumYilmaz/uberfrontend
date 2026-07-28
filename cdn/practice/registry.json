@@ -8598,13 +8598,41 @@
     "assetRef": "questions/react/trivia.json#react-usestate-purpose"
   },
   {
+    "id": "ai-agent-run-inspector",
+    "family": "question",
+    "title": "AI Agent Run Inspector Frontend System Design",
+    "route": "/system-design/ai-agent-run-inspector",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design an AI agent run inspector for nested spans, live tool calls, approval races, resilient stream state, virtualized navigation, redaction, and accessibility.",
+    "tags": [
+      "real-time",
+      "streams",
+      "state-management",
+      "frontend-architecture",
+      "performance",
+      "virtualization",
+      "accessibility",
+      "error-handling",
+      "security",
+      "events",
+      "api-calls",
+      "ux"
+    ],
+    "access": "free",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-07-28",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/ai-agent-run-inspector/meta.json"
+  },
+  {
     "id": "ai-chat-textarea-design",
     "family": "question",
     "title": "AI Chat Text Area (ChatGPT-Style)",
     "route": "/system-design/ai-chat-textarea-design",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design a streaming conversational interface with responsive composition, cancellable output, and durable conversation history.",
+    "summary": "Design an AI chat composer and current-turn experience with IME-safe input, attachment readiness, idempotent send, streaming, stop, and draft recovery.",
     "tags": [
       "real-time",
       "streams",
@@ -8615,7 +8643,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/ai-chat-textarea-design/meta.json"
   },
@@ -8626,7 +8654,7 @@
     "route": "/system-design/ai-image-generation-mvp",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design a focused image-generation product flow that can ship quickly while handling long-running jobs and failures honestly.",
+    "summary": "Design a focused image-generation flow that represents long-running jobs honestly and survives uncertain create, retry, and cancel outcomes.",
     "tags": [
       "ux",
       "api-calls",
@@ -8637,7 +8665,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/ai-image-generation-mvp/meta.json"
   },
@@ -8648,7 +8676,7 @@
     "route": "/system-design/ai-ux-considerations",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design AI response states that keep users informed and in control during streaming, delays, limits, and failures.",
+    "summary": "Design reviewable AI proposals that expose evidence and uncertainty before a user confirms a versioned product action.",
     "tags": [
       "ux",
       "error-handling",
@@ -8658,7 +8686,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/ai-ux-considerations/meta.json"
   },
@@ -8669,7 +8697,7 @@
     "route": "/system-design/component-design-system-architecture",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design a component system that gives product teams consistent, accessible building blocks without blocking safe evolution.",
+    "summary": "Design a component system that gives product teams consistent accessible behavior while themes, direction, packages, and APIs evolve safely.",
     "tags": [
       "design-system",
       "theming",
@@ -8679,7 +8707,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/component-design-system-architecture/meta.json"
   },
@@ -8690,7 +8718,7 @@
     "route": "/system-design/cross-device-preferences-sync",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design local-first preference synchronization across devices with offline updates, retries, and explicit conflict handling.",
+    "summary": "Design local-first preference synchronization with per-key revisions, durable offline commands, and deterministic cross-device convergence.",
     "tags": [
       "state-management",
       "local-storage",
@@ -8700,7 +8728,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/cross-device-preferences-sync/meta.json"
   },
@@ -8711,7 +8739,7 @@
     "route": "/system-design/notification-toast-system",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": ")`, portal-based rendering, stacking, timers, dismissal, responsive placement, accessibility, data model, API contracts, edge cases, and tradeoffs.",
+    "summary": "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.",
     "tags": [
       "toast",
       "notifications",
@@ -8726,7 +8754,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-06",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/notification-toast-system/meta.json"
   },
@@ -8737,7 +8765,7 @@
     "route": "/system-design/dashboard-widgets-draggable-resizable",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design a customizable frontend dashboard where widgets can be dragged, snapped to a grid, resized within constraints, and restored from a saved layout.",
+    "summary": "Design a customizable dashboard with pointer and keyboard movement, grid constraints, optimistic layout persistence, versioned migrations, and responsive reflow.",
     "tags": [
       "dashboard",
       "drag-drop",
@@ -8746,7 +8774,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/dashboard-widgets-draggable-resizable/meta.json"
   },
@@ -8757,7 +8785,7 @@
     "route": "/system-design/endless-short-video-feed",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design an endless short-video feed that starts playback quickly, scrolls smoothly, and controls network and memory use over long sessions.",
+    "summary": "Design an endless short-video feed that starts playback quickly, follows settled viewport intent, and controls bandwidth and media memory over long sessions.",
     "tags": [
       "infinite-scroll",
       "virtualization",
@@ -8771,7 +8799,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/endless-short-video-feed/meta.json"
   },
@@ -8782,7 +8810,7 @@
     "route": "/system-design/flashcard-language-trainer",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design a cross-device flashcard trainer with low-latency study sessions, durable progress, and accessible card interactions.",
+    "summary": "Design an accessible flashcard trainer whose study flow stays instant while every answer is durably queued and reconciled across devices.",
     "tags": [
       "flashcards",
       "language-learning",
@@ -8790,7 +8818,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/flashcard-language-trainer/meta.json"
   },
@@ -8801,7 +8829,7 @@
     "route": "/system-design/image-upload-preview",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design an image selection, preview, and upload pipeline with validation, progress, cancellation, retry, and bounded memory use.",
+    "summary": "Design an image selection, preview, and upload pipeline with decoded validation, real transfer progress, cancellation, retry, and bounded local resources.",
     "tags": [
       "images",
       "upload",
@@ -8809,7 +8837,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/image-upload-preview/meta.json"
   },
@@ -8820,7 +8848,7 @@
     "route": "/system-design/infinite-scroll-list",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.",
+    "summary": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
     "tags": [
       "infinite-scroll",
       "intersection-observer",
@@ -8835,7 +8863,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-27",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/infinite-scroll-list/meta.json"
   },
@@ -8846,7 +8874,7 @@
     "route": "/system-design/live-chart-high-frequency-updates",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design a live chart that absorbs frequent data updates while keeping rendering smooth and memory bounded.",
+    "summary": "Design a live chart that separates sample retention from visual paint scheduling while keeping memory bounded during long sessions.",
     "tags": [
       "charts",
       "real-time",
@@ -8854,7 +8882,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/live-chart-high-frequency-updates/meta.json"
   },
@@ -8865,7 +8893,7 @@
     "route": "/system-design/live-comments-global-stream",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design a global live-comments experience that preserves useful ordering and moderation behavior under high update volume.",
+    "summary": "Design global live comments with resumable ordering, moderation revisions, readable follow mode, and burst-safe rendering without client-side event loss.",
     "tags": [
       "real-time",
       "streams",
@@ -8879,7 +8907,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/live-comments-global-stream/meta.json"
   },
@@ -8890,7 +8918,7 @@
     "route": "/system-design/multi-step-form-autosave",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design a multi-step form that preserves progress without interrupting input or losing draft state. The challenge focuses on validation boundaries, autosave cadence, safe restoration, and clear completion behavior.",
+    "summary": "Design a multi-step form that keeps a durable local draft, optionally synchronizes a versioned remote draft, and never interrupts editing.",
     "tags": [
       "forms",
       "autosave",
@@ -8899,18 +8927,18 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/multi-step-form-autosave/meta.json"
   },
   {
     "id": "netflix-scale-expansion",
     "family": "question",
-    "title": "Netflix-Scale Expansion (Front-End System Design)",
+    "title": "Netflix Continue Watching Frontend System Design",
     "route": "/system-design/netflix-scale-expansion",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Scale a personalized media carousel across regions and device classes while preserving layout stability and interaction speed.",
+    "summary": "Design a cross-device Continue Watching row that reconciles progress and optimistic removal without losing carousel position or spatial focus.",
     "tags": [
       "frontend-architecture",
       "architecture",
@@ -8922,7 +8950,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/netflix-scale-expansion/meta.json"
   },
@@ -8933,7 +8961,7 @@
     "route": "/system-design/news-feed-timeline",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design a media-rich news feed with stable pagination, optimistic interactions, real-time updates, and bounded rendering cost.",
+    "summary": "Design a media-rich ranked feed that combines cursor pages and live events without recreating ranking or moving the reader unexpectedly.",
     "tags": [
       "infinite-scroll",
       "virtualization",
@@ -8949,7 +8977,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/news-feed-timeline/meta.json"
   },
@@ -8960,7 +8988,7 @@
     "route": "/system-design/model-training-progress-dashboard",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design a real-time training dashboard that renders metrics, logs, and run state without becoming unresponsive during update bursts.",
+    "summary": "Design a real-time training dashboard that merges run lifecycle, metrics, and logs without losing terminal evidence during bursts or reconnects.",
     "tags": [
       "real-time",
       "streams",
@@ -8971,7 +8999,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/model-training-progress-dashboard/meta.json"
   },
@@ -8982,7 +9010,7 @@
     "route": "/system-design/realtime-search-debounce-cache",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design a responsive search experience with debounced requests, cached results, and protection from stale asynchronous responses.",
+    "summary": "Design responsive search with debounced intent, complete cache identity, real cancellation, and an independent stale-response guard.",
     "tags": [
       "search",
       "debounce",
@@ -8992,7 +9020,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/realtime-search-debounce-cache/meta.json"
   },
@@ -9003,7 +9031,7 @@
     "route": "/system-design/scalable-notifications-feed",
     "tech": "system-design",
     "difficulty": "hard",
-    "summary": "Design a real-time notifications feed that remains responsive during event bursts and keeps read state consistent across reconnects.",
+    "summary": "Design a real-time notifications feed that remains responsive during bursts without losing authoritative events or corrupting unread state.",
     "tags": [
       "notifications",
       "real-time",
@@ -9013,18 +9041,18 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/scalable-notifications-feed/meta.json"
   },
   {
     "id": "ui-component-state-from-mock",
     "family": "question",
-    "title": "UI Component & State Design From a Mock (Frontend System Design)",
+    "title": "UI Component and State Design From a Mock",
     "route": "/system-design/ui-component-state-from-mock",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Translate a visual mock into reusable component boundaries, explicit state ownership, and a maintainable data-flow model.",
+    "summary": "Turn a customer-support inbox mock into component boundaries and explicit URL, server, draft, mutation, and responsive view state.",
     "tags": [
       "components",
       "state-management",
@@ -9034,7 +9062,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/ui-component-state-from-mock/meta.json"
   },

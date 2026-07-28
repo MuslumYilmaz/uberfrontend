@@ -1,128 +1,96 @@
 {
   "key": "R",
-  "title": "Reflect & Requirements",
+  "title": "Requirements from the mock",
   "blocks": [
     {
       "type": "text",
-      "text": "The prompt gives you a UI mock. Your job is to turn it into a component tree with clear state ownership and data flow."
+      "text": "A mock is visual evidence, not a complete specification. Begin by naming the user, primary task, responsive states, and data that the picture cannot reveal. For this case, design a customer-support inbox used by an agent who filters tickets, opens a deep link, reads a conversation, drafts a reply, changes status or assignee, and continues working while background updates arrive. The backend ticket system remains an abstract service contract; the task is to design frontend ownership, composition, asynchronous behavior, and recovery."
     },
     {
-      "type": "divider"
+      "type": "code",
+      "language": "text",
+      "code": "Desktop mock\n┌──────────────────────────────────────────────────────────────────────┐\n│ Support inbox        Search tickets...       Agent: Maya            │\n├───────────────┬─────────────────────────┬────────────────────────────┤\n│ Filters       │ Ticket list             │ Ticket #1842              │\n│ ○ All         │ [Open] Login broken     │ Customer and message      │\n│ ● Mine        │ [Pending] Refund issue  │ Activity timeline          │\n│ Status        │ [Open] Export timeout   │ Assignee [Maya ▾]         │\n│ Assignee      │                         │ Status   [Open ▾]          │\n│               │                         │ Reply composer             │\n│               │                         │ [Send reply]               │\n└───────────────┴─────────────────────────┴────────────────────────────┘\n\nMobile mock\n┌──────────────────────────┐\n│ ← Mine       Search      │\n├──────────────────────────┤\n│ Ticket list or details   │\n│ uses a nested route      │\n└──────────────────────────┘",
+      "validation": {
+        "kind": "diagram"
+      }
     },
     {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "**What you are solving:**\nTranslate a static mock into reusable components and a state model that can support real data, user interactions, and errors."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "**What the interviewer is testing:**\n- Component boundaries and reusability.\n- State ownership and data flow.\n- Placement of async effects and caching.\n- Ability to avoid overly coupled components."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "info",
-      "title": "How to start",
-      "text": "Narrate your approach: identify major regions, list interactive elements, then decide which state is local, shared, or server-driven."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "steps",
-      "title": "Methodical approach to a mock",
-      "steps": [
-        {
-          "title": "1) Identify regions",
-          "text": "Group the mock into large UI regions (header, filters, list, details)."
-        },
-        {
-          "title": "2) Find interactions",
-          "text": "List clickable and editable elements and what state they affect."
-        },
-        {
-          "title": "3) Decide state ownership",
-          "text": "Place state where it is used by the fewest components."
-        },
-        {
-          "title": "4) Define data flow",
-          "text": "Props down, events up. Avoid circular dependencies."
-        },
-        {
-          "title": "5) Plan async data",
-          "text": "Choose where fetching/caching happens and how loading/error states appear."
-        },
-        {
-          "title": "6) Check accessibility",
-          "text": "Ensure keyboard flow and ARIA for interactive components."
-        }
-      ]
-    },
-    {
-      "type": "checklist",
-      "title": "Clarifying questions you should ask",
-      "items": [
-        "Which parts are reusable vs one-off?",
-        "What data is server-driven vs purely UI state?",
-        "Any performance constraints (large lists, frequent updates)?",
-        "Do we need offline or caching behavior?",
-        "Any accessibility requirements (keyboard, ARIA)?",
-        "What error and empty states should look like?",
-        "Are there feature flags or experiments that change the UI?"
-      ]
+      "type": "heading",
+      "text": "Turn pixels into questions"
     },
     {
       "type": "table",
-      "title": "State placement cheat sheet",
+      "title": "Ambiguities in the mock",
       "columns": [
-        "State type",
-        "Examples",
-        "Where to keep it"
+        "Visible clue",
+        "Question",
+        "Starting decision"
       ],
       "rows": [
         [
-          "Local UI",
-          "Hover, input focus",
-          "Component state"
+          "Three desktop panes",
+          "Must all panes stay visible on narrow screens?",
+          "Desktop uses a split workspace; mobile navigates between list and details."
         ],
         [
-          "Shared UI",
-          "Selected row, filters",
-          "Nearest common ancestor"
+          "Selected ticket",
+          "Should refresh and sharing preserve selection?",
+          "Ticket identity lives in the URL as a route or query parameter."
         ],
         [
-          "Server state",
-          "List data, counts",
-          "Data store or query cache"
+          "Search and filters",
+          "Are they shareable or temporary?",
+          "Committed query state lives in the URL; incomplete input can remain local."
         ],
         [
-          "Derived",
-          "Filtered list",
-          "Selectors/memoized helpers"
+          "Reply composer",
+          "Can a draft survive ticket changes or reload?",
+          "Drafts are keyed by ticket and saved separately from server entities."
+        ],
+        [
+          "Status and assignee controls",
+          "Can another agent update the ticket concurrently?",
+          "Commands use ticket versions and reconcile conflicts explicitly."
+        ],
+        [
+          "Live timeline",
+          "How are background messages merged?",
+          "Stable event IDs and versions prevent duplicate or stale replacement."
         ]
       ]
     },
     {
+      "type": "heading",
+      "text": "Functional requirements"
+    },
+    {
       "type": "checklist",
-      "title": "Evaluation criteria",
+      "title": "Core workflow",
       "items": [
-        "Component boundaries are clear and reusable.",
-        "State is placed as low as possible.",
-        "Data flow is predictable and testable.",
-        "Performance risks are addressed early.",
-        "Accessibility is not an afterthought."
+        "Load a paginated ticket list with loading, empty, partial, error, and retry states.",
+        "Filter by status and assignee, search by supported fields, and preserve committed query state in a shareable URL.",
+        "Open a selected ticket through direct navigation, browser back and forward, or pointer and keyboard input.",
+        "Render ticket messages and activity without allowing one malformed event to break the entire details pane.",
+        "Keep one reply draft per ticket while background ticket updates continue to merge.",
+        "Send a reply and change status or assignee with immediate pending feedback and server-confirmed reconciliation.",
+        "Reflect an update made in another tab or by another agent without overwriting unsent local text.",
+        "Respect ticket permissions by hiding or disabling unavailable actions while still showing an understandable read-only state.",
+        "Move between list and details on mobile without losing query, scroll position, draft, or a meaningful return focus target."
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Non-functional requirements"
+    },
+    {
+      "type": "text",
+      "text": "The list should stay responsive for the measured ticket volume and device mix. Virtualization is a profiling decision, not an item-count rule. Search requests are cancellable and stale responses cannot replace the current query. Components expose predictable loading and recovery states. Keyboard users can traverse filters, list items, details actions, and composer controls in a logical order. Screen-reader announcements cover meaningful events such as reply sent, conflict detected, or connection lost instead of every background activity item."
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "Requirement checkpoint",
+      "text": "Before drawing a component tree, explain which state must survive refresh, which state must be shareable, which state belongs to the server cache, and which state must remain local to one unfinished interaction."
     }
   ]
 }

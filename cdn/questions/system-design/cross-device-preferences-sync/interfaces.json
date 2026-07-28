@@ -1,165 +1,198 @@
 {
-    "key": "I",
-    "title": "Interface definition (API)",
-    "blocks": [
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Expose a small, clear client API (hook/service) and outline the server endpoints used for sync."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Here the interviewer wants to see how the rest of the app and the backend interact with your preferences system. You should expose a small, clear client API (hook/service) and outline the server endpoints used for sync."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Expose a usePreferences controller that returns projected values, sync status, pending keys, and typed update and refresh commands. Queueing stays private, but a conflict remains visible enough for the settings screen to explain overwritten intent."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should talk about the API:**\n\"I would expose a `usePreferences()` hook (or a PreferencesService) that returns current values, a `setPreference` method, and a sync status. The hook hides queueing and retries; it only exposes the current values and whether they are synced.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Small, ergonomic surface for UI integration.\n- A clear server contract: fetch current preferences, submit patches, handle conflicts.\n- Revision tokens or ETags for conflict detection.\n- Batching support for multiple quick edits."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Think like a library author: keep the hook simple and let the sync engine do the hard work. Then show what the REST contract looks like, including conflict responses."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "// Client-facing hook\ninterface UsePreferencesResult {\n  values: Record<string, string | boolean>;\n  syncStatus: 'synced' | 'saving' | 'offline' | 'conflict';\n  setPreference: (key: string, value: string | boolean) => void;\n  refresh: () => Promise<void>;\n}\n\nfunction usePreferences(): UsePreferencesResult {\n  // returns local values + sync status; hides queueing and retries\n}\n\n// Server contract (example)\nGET /api/preferences\n200 OK\n{ values: { theme: 'dark' }, revision: 'rev_42' }\n\nPATCH /api/preferences\nIf-Match: rev_42\n{ changes: { theme: 'light' } }\n200 OK\n{ values: { theme: 'light' }, revision: 'rev_43' }\n\n409 Conflict\n{ values: { theme: 'dark' }, revision: 'rev_44' }\n\nPOST /api/preferences/sync\n{ baseRevision: 'rev_43', patches: [ ... ] }\n200 OK\n{ values: { ... }, revision: 'rev_45' }"
-        },
-        {
-            "type": "table",
-            "title": "Core interfaces you should define out loud",
-            "columns": [
-                "Interface / endpoint",
-                "Shape (example)",
-                "How you explain it"
-            ],
-            "rows": [
-                [
-                    "usePreferences",
-                    "{ values, syncStatus, setPreference }",
-                    "\"UI uses this hook, not raw API calls.\""
-                ],
-                [
-                    "GET /api/preferences",
-                    "returns values + revision",
-                    "\"Fetch the latest settings and the server revision token.\""
-                ],
-                [
-                    "PATCH /api/preferences",
-                    "changes + If-Match",
-                    "\"Send only changed fields and use If-Match to detect conflicts.\""
-                ],
-                [
-                    "POST /api/preferences/sync",
-                    "batch patches",
-                    "\"Allows batching multiple quick edits into one request.\""
-                ],
-                [
-                    "409 Conflict",
-                    "server values + revision",
-                    "\"Client resolves or re-applies local changes.\""
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should expose",
-                            "items": [
-                                "Current values and a **syncStatus** for UI.",
-                                "A **setPreference** method that is local-first.",
-                                "A **refresh** method for manual re-sync.",
-                                "A clear contract for conflicts and retries."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should NOT expose",
-                            "items": [
-                                "Queue internals or retry timers in the UI layer.",
-                                "Raw network errors that leak transport details.",
-                                "Direct fetch calls sprinkled across settings screens.",
-                                "Low-level conflict resolution details in every component."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Typical integration flow you should describe",
-            "steps": [
-                {
-                    "title": "1. Initialize",
-                    "text": "Settings page calls `usePreferences()` and renders current values immediately."
-                },
-                {
-                    "title": "2. Update",
-                    "text": "User toggles a setting; `setPreference` updates local state and queues a patch."
-                },
-                {
-                    "title": "3. Sync",
-                    "text": "Background engine batches patches and sends them with the latest revision."
-                },
-                {
-                    "title": "4. Resolve",
-                    "text": "On success, update revision. On conflict, merge or prompt, then retry."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary API",
-                    "value": "usePreferences",
-                    "helperText": "Simple hook or service for UI."
-                },
-                {
-                    "label": "Conflict signal",
-                    "value": "If-Match / ETag",
-                    "helperText": "Detects stale updates."
-                },
-                {
-                    "label": "Sync shape",
-                    "value": "Batch patches",
-                    "helperText": "Reduces network chatter."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "The app should feel like it reads from and writes to a simple preferences store, while sync happens behind the scenes. If your API keeps UI code clean, you are solving the right problem."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Contract checks:\n- Reads return confirmed per-key revisions plus an opaque sync cursor.\n- Updates are idempotent commands with a key-specific base revision.\n- Batch responses contain one outcome per command.\n- Conflicts return the current confirmed value and revision.\n- Transport cancellation and retry timers remain private."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "interface PreferenceSnapshot {\n  values: ConfirmedPreference[];\n  syncCursor: string | null;\n}\n\ntype PreferenceCommandOutcome =\n  | { commandId: string; status: 'applied'; confirmed: ConfirmedPreference }\n  | { commandId: string; status: 'conflict'; current: ConfirmedPreference }\n  | { commandId: string; status: 'rejected'; reason: string };\n\ninterface PreferencesAdapter {\n  read(signal: AbortSignal): Promise<PreferenceSnapshot>;\n  sync(input: {\n    commands: PreferenceCommand[];\n    syncCursor: string | null;\n    signal: AbortSignal;\n  }): Promise<{ outcomes: PreferenceCommandOutcome[]; syncCursor: string }>;\n}\n\ninterface UsePreferencesResult {\n  values: Record<PreferenceKey, PreferenceValue>;\n  syncStatus: SyncStatus;\n  pendingKeys: PreferenceKey[];\n  setPreference(key: PreferenceKey, value: PreferenceValue): void;\n  refresh(): Promise<void>;\n}\n\ndeclare function usePreferences(adapter: PreferencesAdapter): UsePreferencesResult;",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "cross-device-preferences-sync-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "GET /api/preferences\n\n200 OK\n{\n  \"values\": [\n    { \"key\": \"theme\", \"value\": \"dark\", \"revision\": \"theme-r8\", \"updatedAt\": 1785190000 }\n  ],\n  \"syncCursor\": \"cursor-41\"\n}\n\nPOST /api/preferences/sync\nContent-Type: application/json\n\n{\n  \"syncCursor\": \"cursor-41\",\n  \"commands\": [\n    {\n      \"commandId\": \"cmd-7\",\n      \"key\": \"theme\",\n      \"value\": \"system\",\n      \"baseRevision\": \"theme-r8\",\n      \"createdAt\": 1785190042\n    }\n  ]\n}\n\n200 OK\n{\n  \"outcomes\": [\n    {\n      \"commandId\": \"cmd-7\",\n      \"status\": \"applied\",\n      \"confirmed\": { \"key\": \"theme\", \"value\": \"system\", \"revision\": \"theme-r9\", \"updatedAt\": 1785190043 }\n    }\n  ],\n  \"syncCursor\": \"cursor-42\"\n}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Core interfaces",
+      "columns": [
+        "Preference contract",
+        "Shape (example)",
+        "How you explain it"
+      ],
+      "rows": [
+        [
+          "usePreferences",
+          "{ values, syncStatus, setPreference }",
+          "\"UI uses this hook, not raw API calls.\""
+        ],
+        [
+          "GET /api/preferences",
+          "values with per-key revisions + syncCursor",
+          "Fetch confirmed values and a cursor for later change delivery."
+        ],
+        [
+          "POST /api/preferences/sync",
+          "commands + syncCursor",
+          "Batch independent idempotent commands without replacing their key-specific base revisions."
+        ],
+        [
+          "409 Conflict",
+          "current confirmed value + key revision",
+          "The UI retains local intent while product policy chooses accept, retry, or explicit review."
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Public behavior",
+              "items": [
+                "Current values and a syncStatus for UI.",
+                "A setPreference method that is local-first.",
+                "A refresh method for manual re-sync.",
+                "A clear contract for conflicts and retries."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Sync-engine internals",
+              "items": [
+                "Queue internals or retry timers in the UI layer.",
+                "Raw network errors that leak transport details.",
+                "Direct fetch calls sprinkled across settings screens.",
+                "Low-level conflict resolution details in every component."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Integration flow",
+      "steps": [
+        {
+          "title": "1. Initialize",
+          "text": "Settings page calls usePreferences() and renders current values immediately."
+        },
+        {
+          "title": "2. Update",
+          "text": "User toggles a setting; setPreference applies an overlay and durably queues one command based on that key's confirmed revision."
+        },
+        {
+          "title": "3. Send version-aware command batch",
+          "text": "The engine batches commands without changing their per-key base revisions and includes the latest sync cursor."
+        },
+        {
+          "title": "4. Resolve",
+          "text": "Reconcile each outcome independently: advance confirmed key revisions, retain conflicts for policy or review, and clear only acknowledged commands."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary API",
+          "value": "usePreferences",
+          "helperText": "Simple hook or service for UI."
+        },
+        {
+          "label": "Conflict signal",
+          "value": "If-Match / ETag",
+          "helperText": "Detects stale updates."
+        },
+        {
+          "label": "Sync shape",
+          "value": "Batch commands",
+          "helperText": "Reduces network chatter."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Contract checkpoint",
+      "text": "The app should feel like it reads from and writes to a simple preferences store, while sync happens behind the scenes. If your API keeps UI code clean, you are solving the right problem."
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "Read returns a versioned preference document and sync cursor. Update accepts key, typed value, base revision, and idempotency key. A conflict returns the current value and version. BroadcastChannel may coordinate same-origin tabs, but server confirmation remains authoritative across devices."
+    },
+    {
+      "type": "steps",
+      "title": "Edit-to-reconciliation path",
+      "steps": [
+        {
+          "title": "Create preference command",
+          "text": "Validate locally, apply an overlay, and create one command."
+        },
+        {
+          "title": "Coordinate tabs",
+          "text": "Broadcast intent or confirmed values while deduplicating command identity."
+        },
+        {
+          "title": "Flush durable preference commands",
+          "text": "Send queued commands in a stable order and stop on policy-relevant conflicts."
+        },
+        {
+          "title": "Converge",
+          "text": "Merge server revisions, remove matching overlays, and announce meaningful changes."
+        }
+      ]
+    }
+  ]
 }

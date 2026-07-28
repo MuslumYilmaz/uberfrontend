@@ -1,53 +1,96 @@
 {
-    "key": "I",
-    "title": "Interface definition (API)",
-    "blocks": [
+  "key": "I",
+  "title": "Interface",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Define a small client‑side API that the rest of the app can use. It should support subscribe, mark read, and filters, without exposing internal buffering details."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "type NotificationEventEnvelope = {\n  schemaVersion: 1;\n  eventId: string;\n  sequence: number;\n  cursor: string;\n};\n\ntype NotificationEvent =\n  | (NotificationEventEnvelope & {\n      type: 'notification.upserted';\n      notification: NotificationItem;\n    })\n  | (NotificationEventEnvelope & {\n      type: 'notification.removed';\n      notificationId: string;\n    })\n  | (NotificationEventEnvelope & {\n      type: 'read-marker.updated';\n      readMarker: ReadMarker;\n    });\n\ntype NotificationsSnapshot = {\n  schemaVersion: 1;\n  notifications: NotificationItem[];\n  readMarker: ReadMarker;\n  contiguousSequence: number;\n  resumeCursor: string;\n  nextPageCursor?: string;\n};\n\ninterface NotificationsClient {\n  getSnapshot(input: { pageCursor?: string; signal: AbortSignal }): Promise<NotificationsSnapshot>;\n  subscribe(input: {\n    resumeCursor: string;\n    onEvent: (event: NotificationEvent) => void;\n    onGap: (afterSequence: number) => void;\n  }): () => void;\n  markRead(input: {\n    throughSequence: number;\n    basedOnMarkerVersion: number;\n    commandId: string;\n    signal: AbortSignal;\n  }): Promise<ReadMarker>;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "scalable-notifications-feed-contract"
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Define a small client‑side API that the rest of the app can use. It should support **subscribe**, **mark read**, and **filters**, without exposing internal buffering details."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Notification-client behavior",
+              "items": [
+                "Subscription returns an unsubscribe cleanup fn.",
+                "Live stream only pushes deltas, not full list.",
+                "markRead overlays one pending marker command and reconciles the returned marker version.",
+                "Filters should not mutate the raw store (derive view)."
+              ]
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "// Client-side feed API\ninterface NotificationsClient {\n  connect(): void;\n  disconnect(): void;\n  subscribe(cb: (batch: Notification[]) => void): () => void;\n  markRead(ids: string[]): Promise<void>;\n  markAllRead(): Promise<void>;\n  setFilter(filter: 'all' | 'mentions' | 'system'): void;\n}\n\n// REST + realtime example\nGET /api/notifications?limit=50&cursor=...\nPOST /api/notifications/read { ids: [...] }\nGET /api/notifications/stream (SSE)\nWS /notifications (WebSocket)\n" 
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "API behaviors to call out",
-                            "items": [
-                                "Subscription returns an **unsubscribe** cleanup fn.",
-                                "Live stream only pushes deltas, not full list.",
-                                "`markAllRead` updates local state optimistically.",
-                                "Filters should not mutate the raw store (derive view)."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Error and reconnect behavior",
-                            "items": [
-                                "Reconnect with exponential backoff.",
-                                "On reconnect, fetch deltas since `lastSeenCursor`.",
-                                "If stream unavailable, fall back to polling."
-                            ]
-                        }
-                    ]
-                }
-            ]
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Error and reconnect behavior",
+              "items": [
+                "Reconnect with exponential backoff.",
+                "On reconnect, resume from the last safely reduced cursor; repair gaps before advancing it.",
+                "If stream unavailable, fall back to polling."
+              ]
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "The snapshot supplies ordered notifications, read marker, contiguous cursor, and optional next-page cursor. Each stream variant carries exactly its required payload: an upsert has a notification, a removal has notificationId, and a read-marker update has readMarker. Mark-read is an idempotent command with a version precondition. Components receive normalized selectors and never interpret transport frames directly."
+    },
+    {
+      "type": "steps",
+      "title": "From snapshot to converged unread state",
+      "steps": [
+        {
+          "title": "Load snapshot",
+          "text": "Validate and normalize one coherent base before opening the stream."
+        },
+        {
+          "title": "Resume",
+          "text": "Connect from the last reduced cursor and expose freshness."
+        },
+        {
+          "title": "Reduce",
+          "text": "Ignore duplicates, detect gaps, and merge a burst in one store transaction."
+        },
+        {
+          "title": "Read",
+          "text": "Advance the marker only from explicit policy and reconcile cross-device versions."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Snapshot and command compatibility"
+    },
+    {
+      "type": "text",
+      "text": "Version the envelope rather than making components branch on endpoint generations. Unknown optional notification kinds render a generic safe row; an unsupported required envelope version triggers a snapshot fallback. Mark-read accepts a highest contiguous sequence or explicit IDs according to product semantics and returns the authoritative marker version. The stream can confirm the same command before or after the HTTP response, so both paths reduce through one reconciliation function."
+    }
+  ]
 }

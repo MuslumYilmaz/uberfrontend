@@ -1,6 +1,6 @@
 {
   "key": "I",
-  "title": "Interface definition (API)",
+  "title": "Interfaces",
   "blocks": [
     {
       "type": "text",
@@ -8,13 +8,13 @@
     },
     {
       "type": "code",
-      "language": "ts",
-      "code": "interface FeedAPI {\n  loadNextPage(): Promise<void>;\n  refresh(): Promise<void>;\n  markSeen(ids: string[]): void;\n  subscribeToStream(onItems: (items: FeedItem[]) => void): () => void;\n  like(id: string, value: boolean): Promise<void>;\n  addComment(id: string, text: string): Promise<void>;\n  hide(id: string): Promise<void>;\n}\n"
-    },
-    {
-      "type": "code",
-      "language": "ts",
-      "code": "// Realtime message shape (SSE/WebSocket)\ninterface FeedEvent {\n  type: 'insert' | 'update' | 'delete';\n  items: FeedItem[];\n  cursor?: string;\n}\n"
+      "language": "typescript",
+      "code": "interface FeedQuery {\n  accountId: string;\n  locale: string;\n  filters: Record<string, string[]>;\n  experimentKey: string;\n}\n\ninterface FeedPage {\n  posts: Post[];\n  order: FeedOrder;\n}\n\ninterface ReactionCommand {\n  commandId: string;\n  postId: PostId;\n  desiredLiked: boolean;\n  basedOnVersion: number;\n}\n\ninterface FeedAdapter {\n  loadFeed(query: FeedQuery, cursor: string | null, signal: AbortSignal): Promise<FeedPage>;\n  refreshFeed(query: FeedQuery, signal: AbortSignal): Promise<FeedPage>;\n  subscribeFeed(\n    query: FeedQuery,\n    resumeCursor: string | null,\n    onEvent: (event: LiveFeedEvent) => void,\n  ): () => void;\n  react(command: ReactionCommand, signal: AbortSignal): Promise<Post>;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "news-feed-timeline-contract"
+      }
     },
     {
       "type": "table",
@@ -52,6 +52,48 @@
       "variant": "warning",
       "title": "Dedupe rule",
       "text": "All sources must de-duplicate by id before updating state. The UI should never show the same item twice even if it arrives from paging + realtime."
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "Paged responses carry an opaque cursor and server-authoritative rank revision. Live events carry event ID, sequence, resume cursor, entity version, and optional rank invalidation. A refresh returns a complete ordered projection; the client applies it with anchor correction. Reaction commands use idempotency and post version without changing rank order."
+    },
+    {
+      "type": "steps",
+      "title": "Page-and-event-to-feed path",
+      "steps": [
+        {
+          "title": "Page",
+          "text": "Load the first order, normalize posts, and request later cursors once."
+        },
+        {
+          "title": "Buffer live",
+          "text": "Validate events and show a pending count unless the user is at the live edge."
+        },
+        {
+          "title": "Refresh order",
+          "text": "Accept a newer rank revision and compute the anchor-preserving projection."
+        },
+        {
+          "title": "Mutate",
+          "text": "Overlay reactions or hides and reconcile the authoritative post version."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Versioned read and mutation contracts"
+    },
+    {
+      "type": "text",
+      "text": "loadFeed accepts a complete query, opaque cursor, and AbortSignal, then returns posts plus one server-authoritative FeedOrder. refreshFeed may return a newer complete order. subscribeFeed resumes from a cursor and emits event ID, sequence, entity version, rank revision, and the next resume cursor. react accepts desired state, based-on entity version, and command identity; hiding or reporting uses a separate capability-checked command."
+    },
+    {
+      "type": "text",
+      "text": "The adapter validates required fields and quarantines one malformed post rather than rejecting an otherwise useful page. Unknown optional post modules render a safe unsupported block. Components never concatenate cursor strings, infer ranking scores, or issue fetch calls directly. All accepted reads and events enter the same normalization and version checks, which keeps pagination, refresh, and live delivery from creating competing stores."
     }
   ]
 }
