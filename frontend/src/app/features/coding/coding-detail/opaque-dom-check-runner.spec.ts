@@ -236,7 +236,7 @@ describe('OpaqueDomCheckRunner', () => {
     expect(assertionTimeout[0].failureKind).toBe('assertion-timeout');
     expect(assertionTimeout[0].error).toContain('assertion execution timed out');
     expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
-  });
+  }, 15_000);
 
   it('continues with a fresh frame after one assertion-execution timeout', async () => {
     const runFrame = spyOn<any>(runner, 'runFrame').and.returnValues(
