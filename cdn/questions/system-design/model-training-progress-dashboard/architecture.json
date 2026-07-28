@@ -1,163 +1,205 @@
 {
-    "key": "A",
-    "title": "Architecture / High-level design",
-    "blocks": [
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Explain how streaming updates flow from the backend into a buffered store, then into UI components on a controlled cadence."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Explain how streaming updates flow from the backend into a buffered store, then into UI components on a controlled cadence."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "A StreamClient ingests events into a buffer. A DashboardStore coalesces updates and exposes derived state to UI widgets like ProgressBar, MetricChart, and LogList."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame it:**\n\"A StreamClient ingests events into a buffer. A DashboardStore coalesces updates and exposes derived state to UI widgets like ProgressBar, MetricChart, and LogList.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Buffering before rendering.\n- A single store for realtime state.\n- Clear widget boundaries.\n- Reconnect and error handling."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Draw a pipeline: Stream -> Buffer -> Store -> Widgets. Mention throttling so charts redraw at a sane rate."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Core building blocks you should mention",
-            "columns": [
-                "Piece",
-                "Responsibility",
-                "What you say out loud"
-            ],
-            "rows": [
-                [
-                    "StreamClient",
-                    "Connects to WS/SSE",
-                    "Ingests realtime events."
-                ],
-                [
-                    "Buffer",
-                    "Queues events for batching",
-                    "Prevents render storms."
-                ],
-                [
-                    "DashboardStore",
-                    "Holds latest metrics and logs",
-                    "Single source of truth for UI."
-                ],
-                [
-                    "Widgets",
-                    "Progress bar, charts, logs",
-                    "Render derived state."
-                ]
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "interface MetricPoint {\n  t: number;\n  value: number;\n}\n\ninterface TrainingState {\n  status: 'running' | 'done' | 'failed';\n  progress: number;\n  metrics: Record<string, MetricPoint[]>;\n  logs: string[];\n}\n\ninterface StreamEvent {\n  type: 'progress' | 'metric' | 'log' | 'status';\n  payload: any;\n}"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should explicitly say",
-                            "items": [
-                                "Buffer events before updating charts.",
-                                "Render logs with virtualization.",
-                                "Handle reconnect and resume from last cursor.",
-                                "Keep widget renders cheap."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Architecture red flags to avoid",
-                            "items": [
-                                "Updating React state per log line.",
-                                "Redrawing charts for every event.",
-                                "No handling for disconnects.",
-                                "Unbounded log memory growth."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "High-level flow you should walk through",
-            "steps": [
-                {
-                    "title": "1. Initial load",
-                    "text": "Fetch run metadata and last N metric points."
-                },
-                {
-                    "title": "2. Connect stream",
-                    "text": "Subscribe to realtime updates and push into buffer."
-                },
-                {
-                    "title": "3. Batch render",
-                    "text": "Flush buffer every 100-250ms to update charts/logs."
-                },
-                {
-                    "title": "4. Disconnect",
-                    "text": "Show reconnect UI and resume using a cursor."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Update cadence",
-                    "value": "100-250ms",
-                    "helperText": "Batch updates to protect UI."
-                },
-                {
-                    "label": "Store",
-                    "value": "DashboardStore",
-                    "helperText": "Single source for widgets."
-                },
-                {
-                    "label": "Rendering",
-                    "value": "Virtualized logs",
-                    "helperText": "Avoid huge DOM lists."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A realtime dashboard is about buffering and batching. If you can explain how to avoid per-event re-renders, you are answering the core of this question."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Boundary checks:\n- Validate event identity and sequence before updating any projection.\n- One normalized TrainingRun store separates authoritative lifecycle, bounded metrics and logs, and connection state.\n- Summary, chart, phase, and log widgets subscribe to derived slices instead of owning copies.\n- Reconnect resumes from the acknowledged contiguous cursor; a gap triggers replay or snapshot recovery before that cursor advances."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Core building blocks",
+      "columns": [
+        "Piece",
+        "Responsibility",
+        "Design rationale"
+      ],
+      "rows": [
+        [
+          "StreamClient",
+          "Connects to WS/SSE",
+          "Ingests realtime events."
+        ],
+        [
+          "Buffer",
+          "Queues events for batching",
+          "Prevents render storms."
+        ],
+        [
+          "DashboardStore",
+          "Holds latest metrics and logs",
+          "Single source of truth for UI."
+        ],
+        [
+          "Widgets",
+          "Progress bar, charts, logs",
+          "Render derived state."
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "Run snapshot (through sequence N, resume cursor C)\n  -> StreamAdapter\n  -> event validator + replay dedupe + gap detector\n  -> RunReducer\n       -> lifecycle entity\n       -> bounded metric-series cache\n       -> bounded log cache\n       -> freshness and cursor state\n  -> selectors\n       -> summary and progress\n       -> downsampled charts\n       -> virtualized logs\n       -> accessible text/table alternatives",
+      "validation": {
+        "kind": "pseudocode"
+      }
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Stream, retention, and chart decisions",
+              "items": [
+                "Buffer events before updating charts.",
+                "Render logs with virtualization.",
+                "Handle reconnect and resume from last cursor.",
+                "Keep widget renders cheap."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Monitoring-state and rendering failure patterns",
+              "items": [
+                "Updating React state per log line.",
+                "Redrawing charts for every event.",
+                "No handling for disconnects.",
+                "Unbounded log memory growth."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "High-level flow",
+      "steps": [
+        {
+          "title": "1. Initial load",
+          "text": "Fetch run metadata and last N metric points."
+        },
+        {
+          "title": "2. Connect stream",
+          "text": "Subscribe to realtime updates and push into buffer."
+        },
+        {
+          "title": "3. Batch render",
+          "text": "Reduce authoritative events in order, then coalesce chart and log paints according to measured cost. Terminal, error, and gap events are never discarded."
+        },
+        {
+          "title": "4. Disconnect",
+          "text": "Show reconnect UI and resume using a cursor."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Update cadence",
+          "value": "Measured",
+          "helperText": "Tune visual coalescing by device, event volume, and freshness needs."
+        },
+        {
+          "label": "Store",
+          "value": "DashboardStore",
+          "helperText": "Single source for widgets."
+        },
+        {
+          "label": "Rendering",
+          "value": "Virtualized logs",
+          "helperText": "Avoid huge DOM lists."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Stream and projection ownership",
+      "text": "A realtime dashboard is about buffering and batching. If you can explain how to avoid per-event re-renders, you are answering the core of this question.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: late metric after run failure"
+    },
+    {
+      "type": "text",
+      "text": "Run r9 reports failed at sequence 840, then a delayed loss sample with sequence 839 arrives after reconnect. The dashboard must retain the terminal fact without discarding valid historical evidence or implying training resumed."
+    },
+    {
+      "type": "table",
+      "title": "Scenario walkthrough",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Snapshot loads through 838",
+          "Normalize run and bounded metric series with cursor c838.",
+          "Charts and summary render as live.",
+          "One coherent base starts monitoring."
+        ],
+        [
+          "Failure 840 arrives",
+          "Mark run terminal with field sequence 840.",
+          "Header shows failed and stops live elapsed time.",
+          "Terminal lifecycle is authoritative."
+        ],
+        [
+          "Late metric 839 arrives",
+          "Insert historical sample if unseen but do not lower lifecycle sequence.",
+          "Chart gains one earlier point; header stays failed.",
+          "Fields merge by their own revision."
+        ],
+        [
+          "Reconnect replays 840",
+          "Ignore duplicate event identity.",
+          "No duplicate error or announcement appears.",
+          "Resume is idempotent."
+        ]
+      ]
+    }
+  ]
 }

@@ -1,172 +1,210 @@
 {
-    "key": "A",
-    "title": "Architecture / High-level design",
-    "blocks": [
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Here the interviewer wants to see a clean separation between UI, state, and streaming transport. You should show how messages flow from the text area to the server and back to the UI, while history is persisted in a database."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "ComposerView captures text and composition events. DraftStore persists scoped unsent input. AttachmentCoordinator exposes finalized asset IDs. TurnCoordinator snapshots one send command and reduces echoed message plus stream events. MessageList consumes current-turn selectors and an abstract paged history source."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame it:**\n\"I would have a ChatPage with a MessageList and Composer. A ChatStore owns messages and streaming status. A StreamClient handles SSE/fetch streaming and pushes chunks into the store. A HistoryService loads and paginates conversation history from the backend.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- One source of truth for message state.\n- A streaming layer that can be cancelled.\n- Clear separation of UI vs network logic.\n- A path for pagination and resume.\n- Awareness of storage (database) on the backend side."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Draw 4 to 5 boxes: Composer -> ChatStore -> StreamClient -> API. Add HistoryService and DB on the backend side so you can explain persistence and resume."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Core building blocks you should mention",
-            "columns": [
-                "Piece",
-                "Responsibility",
-                "What you say out loud"
-            ],
-            "rows": [
-                [
-                    "ChatPage",
-                    "Layout and composition of list + composer",
-                    "The view layer that binds to store state."
-                ],
-                [
-                    "ChatStore",
-                    "Holds messages, statuses, and streaming state",
-                    "Single source of truth for UI updates."
-                ],
-                [
-                    "StreamClient",
-                    "Opens streaming connection and emits chunks",
-                    "Handles SSE/fetch stream and cancel."
-                ],
-                [
-                    "HistoryService",
-                    "Loads paged history and resumes conversation",
-                    "Fetches past messages by conversation id."
-                ],
-                [
-                    "Backend + DB",
-                    "Stores conversation history and metadata",
-                    "Document or relational DB depending on needs."
-                ]
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "type MessageStatus = 'pending' | 'streaming' | 'done' | 'error' | 'stopped';\n\ninterface ChatMessage {\n  id: string;\n  role: 'user' | 'assistant' | 'system';\n  text: string;\n  status: MessageStatus;\n  createdAt: number;\n}\n\ninterface ChatState {\n  conversationId: string | null;\n  messages: ChatMessage[];\n  isStreaming: boolean;\n  error: string | null;\n}\n\ninterface StreamClient {\n  start(prompt: string, onChunk: (chunk: string) => void): () => void;\n  stop(): void;\n}"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should explicitly say",
-                            "items": [
-                                "The store owns the messages array and streaming flag.",
-                                "Streaming appends to a single assistant message.",
-                                "History is fetched in pages to avoid huge payloads.",
-                                "Stop cancels the stream and keeps partial text."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Architecture red flags to avoid",
-                            "items": [
-                                "Multiple components mutating message state independently.",
-                                "Streaming chunks appended to a new message each time.",
-                                "No cancel path for long responses.",
-                                "Loading the full history every time without pagination."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "High-level flow you should walk through",
-            "steps": [
-                {
-                    "title": "1. Initialize",
-                    "text": "Load conversation metadata and a first page of messages into the store."
-                },
-                {
-                    "title": "2. Send",
-                    "text": "Optimistically add the user message and create an assistant placeholder."
-                },
-                {
-                    "title": "3. Stream",
-                    "text": "Open the stream, append chunks to the assistant message, and update status."
-                },
-                {
-                    "title": "4. Persist",
-                    "text": "Backend writes messages to the DB and returns ids/revisions."
-                },
-                {
-                    "title": "5. Resume",
-                    "text": "On reload, request the latest messages and continue where the user left off."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "State ownership",
-                    "value": "ChatStore",
-                    "helperText": "Single source of truth for message state."
-                },
-                {
-                    "label": "Streaming control",
-                    "value": "StreamClient",
-                    "helperText": "Encapsulates SSE or fetch streaming."
-                },
-                {
-                    "label": "Persistence",
-                    "value": "HistoryService + DB",
-                    "helperText": "Keeps conversation history durable."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "Keep the UI simple and the state centralized. The streaming client should be a thin layer that pushes chunks into the store, while the backend handles durable storage and pagination."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Boundary checks:\n- Draft state never masquerades as a sent message.\n- One command correlates optimistic user row and assistant stream.\n- Attachment readiness is explicit.\n- AbortSignal stops local transport work; terminal truth still reconciles.\n- History remains a UI-facing paged contract."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Core building blocks",
+      "columns": [
+        "Piece",
+        "Responsibility",
+        "Design rationale"
+      ],
+      "rows": [
+        [
+          "ComposerView",
+          "Text, IME events, shortcuts, autosize, and focus",
+          "Keeps native input semantics at the interaction boundary."
+        ],
+        [
+          "DraftStore",
+          "Scopes and persists unsent text",
+          "Allows navigation recovery without writing conversation history."
+        ],
+        [
+          "TurnCoordinator",
+          "Owns send command, optimistic row, stream sequence, and terminal reconciliation",
+          "Prevents late data from crossing turns."
+        ],
+        [
+          "AttachmentCoordinator",
+          "Tracks local, uploading, ready, and failed attachments",
+          "Send includes only finalized asset IDs."
+        ],
+        [
+          "StreamAdapter",
+          "Parses lowercase SSE fields and exposes typed sequenced events",
+          "Transport parsing stays outside components."
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "ComposerView\n  -> DraftStore (text revision + IME composition)\n  -> AttachmentCoordinator (local file -> finalized asset ID)\n  -> TurnCoordinator (command ID + client message ID)\n  -> ChatTurnClient\n  -> StreamAdapter (stream ID + message ID + sequence)\n  -> Current-turn reducer\n  -> MessageList and restrained status announcements",
+      "validation": {
+        "kind": "pseudocode"
+      }
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Composer and stream decisions",
+              "items": [
+                "DraftStore owns unsent text and composition state.",
+                "TurnCoordinator owns one command and assistant placeholder.",
+                "Streaming deltas append only when stream identity and sequence match.",
+                "Stop preserves partial text and reconciles the authoritative terminal phase."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Composer and current-turn failure patterns",
+              "items": [
+                "Multiple components mutating message state independently.",
+                "Streaming chunks appended to a new message each time.",
+                "No cancel path for long responses.",
+                "Loading the full history every time without pagination."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "High-level flow",
+      "steps": [
+        {
+          "title": "1. Restore",
+          "text": "Render recent messages and restore the scoped draft independently."
+        },
+        {
+          "title": "2. Send",
+          "text": "Snapshot a composition-complete draft, finalized attachment IDs, command ID, and client message ID."
+        },
+        {
+          "title": "3. Stream",
+          "text": "Open the stream, append chunks to the assistant message, and update status."
+        },
+        {
+          "title": "4. Reconcile",
+          "text": "Merge echoed message identity and terminal stream state through the current-turn reducer."
+        },
+        {
+          "title": "5. Resume",
+          "text": "On reload, request the latest messages and continue where the user left off."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "State ownership",
+          "value": "DraftStore + TurnCoordinator",
+          "helperText": "Unsent intent and sent turn have different owners."
+        },
+        {
+          "label": "Streaming control",
+          "value": "StreamClient",
+          "helperText": "Encapsulates SSE or fetch streaming."
+        },
+        {
+          "label": "Persistence",
+          "value": "Paged history contract",
+          "helperText": "History implementation stays outside the frontend design."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Composer and stream ownership",
+      "text": "Keep native composition behavior in the view, local intent in DraftStore, asynchronous turn identity in TurnCoordinator, and raw protocol parsing in StreamAdapter.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: Enter during IME composition followed by cancel"
+    },
+    {
+      "type": "text",
+      "text": "A Japanese input method is composing text when Enter is pressed, then the user submits the completed prompt with an attachment and cancels the streaming response. Keyboard shortcuts must respect composition and cancellation must not erase the sent turn."
+    },
+    {
+      "type": "table",
+      "title": "Scenario walkthrough",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Enter during composition",
+          "Observe composition state and do not submit.",
+          "The IME commits or selects text normally.",
+          "Shortcut does not corrupt input."
+        ],
+        [
+          "Composition ends",
+          "Update the draft and validated attachment references.",
+          "Autosize follows measured content within bounds.",
+          "Draft is one coherent value."
+        ],
+        [
+          "User sends",
+          "Create a client message ID and pending send command, then clear only after local snapshot.",
+          "Message appears pending and composer resets safely.",
+          "Sent content remains recoverable."
+        ],
+        [
+          "User stops stream",
+          "Abort the active response command and retain received text as partial.",
+          "Stop becomes Retry or Continue by product policy.",
+          "Cancellation is not message deletion."
+        ]
+      ]
+    }
+  ]
 }

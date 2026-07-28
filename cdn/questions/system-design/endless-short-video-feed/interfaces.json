@@ -1,18 +1,32 @@
 {
   "key": "I",
-  "title": "Interface definition (API)",
+  "title": "Interface",
   "blocks": [
     {
       "type": "text",
-      "text": "The API should be cursor-based and optimized for video playback. Include CDN-backed URLs, poster images, and bitrate options."
+      "text": "The cursor-based feed contract returns stable item identity, poster geometry, duration, and CDN-backed MP4 renditions. The client chooses a compatible rendition before playback; segmented HLS/DASH adaptation would require a different manifest and player contract."
     },
     {
       "type": "divider"
     },
     {
       "type": "code",
+      "language": "ts",
+      "code": "interface FeedClient {\n  getPage(input: {\n    cursor?: string;\n    deviceClass: 'mobile' | 'desktop' | 'tv';\n    signal: AbortSignal;\n  }): Promise<FeedPage>;\n}\n\ninterface RenditionEvidence {\n  saveData: boolean;\n  viewportWidth: number;\n  recentStartupMs: number | null;\n  recentRebufferRatio: number | null;\n}\n\ninterface MediaSelector {\n  select(item: VideoItem, evidence: RenditionEvidence): MediaRendition;\n}\n\ninterface PreloadManager {\n  prepare(input: {\n    item: VideoItem;\n    rendition: MediaRendition;\n    priority: 'active' | 'directional-neighbor';\n    signal: AbortSignal;\n  }): Promise<void>;\n  release(itemId: string): void;\n}\n\ninterface PlaybackController {\n  activate(input: {\n    item: VideoItem;\n    rendition: MediaRendition;\n    attemptId: string;\n  }): Promise<void>;\n  pause(itemId: string): void;\n  release(itemId: string): void;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "endless-short-video-feed-contract"
+      }
+    },
+    {
+      "type": "code",
       "language": "http",
-      "code": "GET /api/feed?cursor=next&device=mobile\n\n200 OK\n{\n  \"items\": [\n    {\n      \"id\": \"vid_123\",\n      \"poster\": \"https://cdn.example.com/posters/vid_123.jpg\",\n      \"sources\": [\n        { \"url\": \"https://cdn.example.com/vid_123_360p.mp4\", \"bitrate\": 800 },\n        { \"url\": \"https://cdn.example.com/vid_123_720p.mp4\", \"bitrate\": 2000 }\n      ],\n      \"durationMs\": 18000\n    }\n  ],\n  \"nextCursor\": \"...\"\n}\n"
+      "code": "GET /api/feed?cursor=next&device=mobile\n\n200 OK\n{\n  \"items\": [\n    {\n      \"id\": \"vid_123\",\n      \"posterUrl\": \"https://cdn.example.com/posters/vid_123.jpg\",\n      \"posterAspectRatio\": 0.5625,\n      \"durationMs\": 18000,\n      \"renditions\": [\n        {\n          \"url\": \"https://cdn.example.com/vid_123_360p.mp4\",\n          \"mimeType\": \"video/mp4\",\n          \"width\": 360,\n          \"height\": 640,\n          \"bitrateKbps\": 800\n        },\n        {\n          \"url\": \"https://cdn.example.com/vid_123_720p.mp4\",\n          \"mimeType\": \"video/mp4\",\n          \"width\": 720,\n          \"height\": 1280,\n          \"bitrateKbps\": 2000\n        }\n      ]\n    }\n  ],\n  \"nextCursor\": \"feed_c2\"\n}\n",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
     },
     {
       "type": "table",
@@ -31,8 +45,8 @@
           "Low-latency media delivery"
         ],
         [
-          "Multiple bitrates",
-          "Adaptive playback under slow networks"
+          "Multiple MP4 renditions",
+          "Choose a lower-cost source for the next playback attempt without implying mid-stream ABR"
         ]
       ]
     },
@@ -41,7 +55,7 @@
     },
     {
       "type": "table",
-      "title": "API fields you should call out",
+      "title": "UI-facing API fields",
       "columns": [
         "Field",
         "Why it matters"
@@ -56,17 +70,47 @@
           "Pagination and recovery"
         ],
         [
-          "media/metadata",
-          "Render pipeline inputs"
+          "posterUrl/posterAspectRatio",
+          "Stable reserved geometry before media is ready"
         ],
         [
-          "experiment flags",
-          "Safe rollout"
+          "renditions",
+          "Supported source candidates for the media selector"
         ],
         [
-          "timestamps",
-          "Ordering and latency"
+          "durationMs",
+          "Progress, seek bounds, and accessibility metadata"
         ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "The feed contract returns stable IDs, poster and media candidates, duration metadata, and an opaque cursor. A media selector chooses a supported candidate from device and connection evidence. All fetch and preload work accepts AbortSignal; the player controller also guards play-promise resolution with the active attempt identity."
+    },
+    {
+      "type": "steps",
+      "title": "From feed page to released media session",
+      "steps": [
+        {
+          "title": "Page",
+          "text": "Prefetch the next cursor near the measured threshold and merge unseen IDs."
+        },
+        {
+          "title": "Prioritize",
+          "text": "Load the settled card first, then one measured neighbor in the direction of travel."
+        },
+        {
+          "title": "Activate",
+          "text": "Transfer the single player only after viewport intent settles and visibility policy passes."
+        },
+        {
+          "title": "Release",
+          "text": "Pause detached items, clear sources when appropriate, and evict distant session resources."
+        }
       ]
     }
   ]

@@ -1,6 +1,6 @@
 {
   "key": "O",
-  "title": "Optimizations and deep dive",
+  "title": "Optimizations",
   "blocks": [
     {
       "type": "text",
@@ -13,9 +13,9 @@
       "type": "checklist",
       "title": "Frontend performance strategies",
       "items": [
-        "Batch updates every 100-250ms.",
+        "Coalesce accepted event bursts according to measured freshness and rendering cost.",
         "Virtualize list to cap DOM size.",
-        "Collapse spam bursts or rate-limit duplicates.",
+        "Deduplicate replayed event IDs; any sampling or slow-mode policy remains explicit and server-owned.",
         "Pause auto-scroll when the user scrolls up.",
         "Lazy-render avatars and badges."
       ]
@@ -27,7 +27,7 @@
         "Reconnect with exponential backoff + jitter.",
         "Fallback to polling if stream fails.",
         "Use feature flags for moderation UI.",
-        "Monitor latency + drop rate.",
+        "Monitor freshness, gap repair, duplicate rejection, and render latency.",
         "Rollback if UX degrades."
       ]
     },
@@ -36,24 +36,24 @@
       "title": "Metrics you can quote",
       "columns": [
         "Metric",
-        "Target",
+        "Evaluation",
         "Why it matters"
       ],
       "rows": [
         [
           "End-to-end latency",
-          "<= 500ms",
-          "Live feel"
+          "Percentiles by cohort",
+          "Measures live freshness"
         ],
         [
           "Dropped frames",
-          "< 2%",
-          "Smooth scrolling"
+          "Frame and long-task distribution",
+          "Measures scrolling quality"
         ],
         [
           "DOM cap",
-          "500-1000",
-          "Avoid memory growth"
+          "Profiled projection bound",
+          "Bounds rendering and retained bodies"
         ]
       ]
     },
@@ -62,18 +62,18 @@
       "items": [
         {
           "label": "Batch window",
-          "value": "100-250ms",
-          "helperText": "Balances latency vs render cost."
+          "value": "Measured",
+          "helperText": "Tune coalescing without losing authoritative events."
         },
         {
           "label": "Render budget",
-          "value": "16ms",
-          "helperText": "Keep 60 FPS during spikes."
+          "value": "Profiled",
+          "helperText": "Measure frame delivery and long tasks by device class."
         },
         {
           "label": "Reconnect",
-          "value": "<= 5s",
-          "helperText": "Fast recovery target."
+          "value": "Visible freshness",
+          "helperText": "Measure reconnect and gap repair separately."
         }
       ]
     },
@@ -81,30 +81,30 @@
       "type": "callout",
       "variant": "warning",
       "title": "Common pitfalls",
-      "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
+      "text": "A live-comment burst should be reduced in batches while stable sequence indexes preserve order. Per-message rendering, unbounded bodies, and repeated global sorting make the viewer lose both responsiveness and reading context."
     },
     {
       "type": "divider"
     },
     {
       "type": "steps",
-      "title": "Deep dive: preventing jank",
+      "title": "Keeping bursty comment streams readable",
       "steps": [
         {
           "title": "1) Batch updates",
-          "text": "Apply updates on a cadence (100-250ms) instead of per event."
+          "text": "Coalesce a burst into one reducer transaction when needed; every accepted event still participates in ordering and gap detection."
         },
         {
           "title": "2) Bound the DOM",
-          "text": "Virtualize long lists or carousels so DOM size stays small."
+          "text": "Virtualize visible comment rows while retaining compact sequence, moderation, and anchor metadata."
         },
         {
-          "title": "3) Cancel stale work",
-          "text": "Abort prefetches or network work when user intent changes."
+          "title": "3) Separate reduction from paint",
+          "text": "Continue accepting ordered events when the log is paused or hidden, while deferring nonessential paints."
         },
         {
           "title": "4) Measure",
-          "text": "Log LCP/INP and feature-specific KPIs to validate rollout."
+          "text": "Measure freshness, gap repair, duplicate rejection, anchor shifts, composer recovery, frame delivery, and interaction latency."
         }
       ]
     },
@@ -122,13 +122,13 @@
       "rows": [
         [
           "Burst spikes",
-          "Batch + drop low-priority",
-          "Protect FPS"
+          "Bound the queue and request server delta or sampling",
+          "Protect responsiveness without silently losing authoritative comments"
         ],
         [
           "Slow device",
-          "Lower render cadence",
-          "Keep UI responsive"
+          "Reduce paint cadence while continuing reduction",
+          "Keep UI responsive and state complete"
         ],
         [
           "User paused",
@@ -136,6 +136,97 @@
           "Avoid wasted work"
         ]
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Gap, moderation, and follow-mode recovery"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Reconnect replays data",
+          "Ignore known event identities and resume cursor safely.",
+          "No repeated comments appear."
+        ],
+        [
+          "Moderation races a render",
+          "Apply the newest moderation revision before deriving the row.",
+          "Removed content does not flash back."
+        ],
+        [
+          "Composer response is lost",
+          "Retain client command identity and reconcile the echoed event.",
+          "Retry cannot double-post."
+        ],
+        [
+          "Long session grows",
+          "Evict distant bodies by policy while retaining anchor metadata.",
+          "Memory remains bounded."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Use a named log or list with explicit controls for jumping to live and loading older comments. Paused readers keep focus and anchor. Announce a grouped new-comment count, moderation outcome, or connection state rather than each message. The composer has a persistent label, safe error association, and keyboard submission that does not conflict with text composition. Treat comment bodies as untrusted: render text safely, allow only product-approved formatting, and apply an explicit external-link policy."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Validate chronological merge and moderation with recorded event fixtures before enabling the live transport. Observe gap frequency, duplicate rejection, pending-count accuracy, anchor shifts, composer reconciliation, long-session memory, and announcement rate."
+    },
+    {
+      "type": "heading",
+      "text": "Moderation and composer convergence"
+    },
+    {
+      "type": "text",
+      "text": "Moderation is a versioned change to an existing comment identity, not a second unrelated message. The reducer can replace visible body content with a tombstone, retain sequence and height metadata for anchoring, and remove interactive actions that are no longer permitted. A late unmoderated replay cannot restore the body because its moderation revision is older. This model also supports author deletion without treating client-side hiding as the security boundary."
+    },
+    {
+      "type": "text",
+      "text": "For authored comments, allocate a client command ID before sending. The pending row can show local intent, but it remains visually distinct until an authoritative event echoes the command identity. If the response is lost, reconnect may still reconcile the row. A rejected message keeps the composer text or provides a recoverable draft rather than disappearing. Rate-limit and permission errors need different instructions, and focus stays near the composer after a user-triggered failure."
+    },
+    {
+      "type": "text",
+      "text": "Follow mode is a user-visible state, not a scroll-position guess recalculated on every frame. Enter it only when the viewer reaches the live edge or activates Jump to live, and leave it when intentional upward movement crosses a measured boundary. Preserve the anchor through font loading, deleted comments, and composer resizing. On mobile, keep video controls and comment composer reachable without turning the whole document into a horizontally overflowing split view. Verify this behavior with keyboard, touch, zoom, and large text. Reconnect tests also cover duplicate acknowledgements and permission changes while an unsent draft exists."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how Live Comments for Global Streams (Real-time) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN WebSocket API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket",
+          "description": "Browser bidirectional transport behavior and backpressure caveat."
+        },
+        {
+          "label": "MDN ARIA log role",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/log_role",
+          "description": "Semantics for ordered live additions such as chat messages."
+        }
+      ],
+      "editorialRole": "references"
     }
   ]
 }

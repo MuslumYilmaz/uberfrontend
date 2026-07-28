@@ -1,152 +1,221 @@
 {
-    "key": "O",
-    "title": "Optimizations and deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Discuss how you would improve the MVP once it works: faster perceived latency, better reliability, and more efficient storage."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Discuss how you would improve the MVP once it works: faster perceived latency, better reliability, and more efficient storage."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "After the MVP ships, measure completion distributions, cancellation outcomes, retry duplication, and error recovery. Add resumable lifecycle streaming only when it improves freshness; never invent a percentage when the service exposes only queued or running."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame optimizations:**\n\"After the MVP ships, I would measure generation time and error rates, then add streaming progress, caching, and a richer history view.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You optimize based on metrics.\n- You improve perceived speed.\n- You reduce bandwidth and storage costs.\n- You handle failures gracefully."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Mention a small set of measurable improvements like faster time-to-first-preview and lower error rate."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Optimization levers to mention",
-            "columns": [
-                "Lever",
-                "What it does",
-                "Why it helps"
-            ],
-            "rows": [
-                [
-                    "Progress events",
-                    "Show incremental status",
-                    "Improves perceived latency"
-                ],
-                [
-                    "Thumbnail previews",
-                    "Load low-res first",
-                    "Faster visual feedback"
-                ],
-                [
-                    "Result caching",
-                    "Cache recent generations",
-                    "Avoids re-fetching"
-                ],
-                [
-                    "Retry/backoff",
-                    "Retry failed jobs",
-                    "Higher success rate"
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Optimizations you should mention",
-                            "items": [
-                                "Show a low-res preview first.",
-                                "Limit concurrency per user.",
-                                "Cache recent results and thumbnails.",
-                                "Add retry with backoff for failures.",
-                                "Use CDN with cache headers for images."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Failure modes to watch for",
-                            "items": [
-                                "Jobs stuck in running state.",
-                                "Large image payloads slowing the UI.",
-                                "No retry path after errors.",
-                                "Duplicate submissions creating multiple jobs."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Deep dive scenario you can walk through",
-            "steps": [
-                {
-                    "title": "1. Slow generation",
-                    "text": "Add progress events and show a clear waiting state."
-                },
-                {
-                    "title": "2. Large outputs",
-                    "text": "Render a thumbnail first, then load full image."
-                },
-                {
-                    "title": "3. Errors",
-                    "text": "Use retry with backoff and keep the prompt for resubmission."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary metric",
-                    "value": "Time to first preview",
-                    "helperText": "Users feel the feature is fast."
-                },
-                {
-                    "label": "Reliability",
-                    "value": "Job success rate",
-                    "helperText": "Track errors and retries."
-                },
-                {
-                    "label": "Cost",
-                    "value": "Image bandwidth",
-                    "helperText": "Optimize with caching."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "Ship a simple, reliable MVP first. Then optimize perceived speed and reliability based on real metrics."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Generation quality checks:\n- Completion, cancellation, retry, and recovery outcomes drive optimization.\n- Perceived progress remains honest when numeric progress is unavailable.\n- Thumbnail and cache policies bound bandwidth, memory, and storage.\n- Every uncertain command retains an idempotent recovery path."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Job lifecycle optimizations",
+      "columns": [
+        "Lever",
+        "What it does",
+        "Why it helps"
+      ],
+      "rows": [
+        [
+          "Progress events",
+          "Show incremental status",
+          "Improves perceived latency"
+        ],
+        [
+          "Thumbnail previews",
+          "Load low-res first",
+          "Faster visual feedback"
+        ],
+        [
+          "Result caching",
+          "Cache recent generations",
+          "Avoids re-fetching"
+        ],
+        [
+          "Retry/backoff",
+          "Retry failed jobs",
+          "Higher success rate"
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Measured optimizations",
+              "items": [
+                "Show a low-res preview first.",
+                "Limit concurrency per user.",
+                "Cache recent results and thumbnails.",
+                "Add retry with backoff for failures.",
+                "Use CDN with cache headers for images."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Generation failure and recovery",
+              "items": [
+                "Jobs stuck in running state.",
+                "Large image payloads slowing the UI.",
+                "No retry path after errors.",
+                "Duplicate submissions creating multiple jobs."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Scenario: slow, large, or uncertain generation",
+      "steps": [
+        {
+          "title": "1. Slow generation",
+          "text": "Add versioned lifecycle events and show either trustworthy determinate progress or a clear indeterminate waiting state."
+        },
+        {
+          "title": "2. Large outputs",
+          "text": "Render a thumbnail first, then load full image."
+        },
+        {
+          "title": "3. Errors",
+          "text": "Keep the prompt, reuse an idempotency key when retrying an uncertain create response, and use a new explicit retry command only after a confirmed terminal failure."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary metric",
+          "value": "Time to first preview",
+          "helperText": "Users feel the feature is fast."
+        },
+        {
+          "label": "Reliability",
+          "value": "Job success rate",
+          "helperText": "Track errors and retries."
+        },
+        {
+          "label": "Cost",
+          "value": "Image bandwidth",
+          "helperText": "Optimize with caching."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "MVP reliability invariant",
+      "text": "Ship a simple, reliable MVP first. Then optimize perceived speed and reliability based on real metrics."
+    },
+    {
+      "type": "heading",
+      "text": "Job and media recovery failures"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Create times out",
+          "Retry the same key and query the returned Location.",
+          "No duplicate generation is created."
+        ],
+        [
+          "Progress is unknown",
+          "Use an indeterminate state and elapsed context.",
+          "The UI stays truthful."
+        ],
+        [
+          "Image fails to load",
+          "Keep job metadata and provide retry or download recovery.",
+          "A broken preview does not erase output."
+        ],
+        [
+          "Permission expires",
+          "Hide protected output and reauthenticate before refetch.",
+          "Client cache is not an authorization boundary."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Prompt and option controls have persistent labels, errors link to the relevant control, and submission status is announced once. Progress exposes determinate values only when real and otherwise uses readable indeterminate text. Generated images have user-editable alternative text or an appropriate description workflow, while animation and skeleton motion respect reduced-motion settings."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Ship polling and a compact job history before optional streaming. Test lost responses, duplicate retries, cancel-complete races, long queues, unsafe output, image failures, auth expiry, mobile overflow, and reduced motion. Observe duplicate-job prevention, terminal convergence, cancellation outcome, and recovery."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how AI Image Generation MVP (Two-Week Design) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN 202 Accepted",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202",
+          "description": "Semantics for accepted but incomplete asynchronous work."
+        },
+        {
+          "label": "MDN AbortController",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+          "description": "Browser cancellation for monitoring and obsolete requests."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
 }

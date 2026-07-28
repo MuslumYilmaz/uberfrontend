@@ -1,7 +1,7 @@
 {
   "id": "model-training-progress-dashboard",
   "title": "Real-time Model Training Dashboard",
-  "description": "Design a dashboard that updates in real time with model training progress: metrics, logs, and run status. Focus on streaming data into the UI, keeping it responsive under frequent updates, and handling reconnects or backpressure.\n\nKey considerations:\n- Live progress bars, charts, and logs.\n- WebSocket/SSE vs polling and update cadence.\n- Buffering, throttling, and list virtualization.\n- Error states, reconnect logic, and stale data handling.\n\nYou should be prepared to talk about: data flow from stream to UI, data model for metrics/logs, and how you keep the interface fast during bursts.",
+  "description": "Design a model-training progress dashboard with resumable metrics, run comparison, chart downsampling, stale-state signaling, failure diagnosis, and accessibility.",
   "tags": [
     "real-time",
     "streams",
@@ -14,32 +14,53 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "openai"
-  ],
-  "updatedAt": "2026-01-31"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "Model Training Dashboard Frontend System Design",
+    "description": "Design a model-training dashboard with resumable metrics, run comparison, chart downsampling, stale-state signals, failure diagnosis, and accessibility."
+  },
+  "premiumPreview": {
+    "summary": "Design a real-time training dashboard that merges run lifecycle, metrics, and logs without losing terminal evidence during bursts or reconnects.",
+    "learningOutcomes": [
+      "Bridge a coherent snapshot to a sequenced, resumable event stream.",
+      "Merge lifecycle, metric, and log fields without allowing late samples to reopen a run.",
+      "Bound chart and log rendering while preserving gaps and terminal events.",
+      "Provide comparable units, freshness, diagnosis context, and accessible chart alternatives."
+    ],
+    "unlockDescription": "Premium unlocks the late-metric example, contiguous resume model, chart trade-offs, and terminal-state diagnosis."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/model-training-progress-dashboard.md",
+    "primaryKeyword": "model training dashboard frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Real-time Model Training Dashboard.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Real-time Model Training Dashboard.",
+    "uniqueAngle": "Design a model-training progress dashboard with resumable metrics, run comparison, chart downsampling, stale-state signaling, failure diagnosis, and accessibility.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

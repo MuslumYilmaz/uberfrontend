@@ -1,6 +1,6 @@
 {
   "key": "I",
-  "title": "Interface definition (API)",
+  "title": "Interface",
   "blocks": [
     {
       "type": "text",
@@ -11,8 +11,22 @@
     },
     {
       "type": "code",
+      "language": "ts",
+      "code": "interface CommentsSnapshot {\n  schemaVersion: 1;\n  items: Comment[];\n  contiguousSequence: number;\n  resumeCursor: string;\n  olderPageCursor?: string;\n}\n\ninterface SendCommentCommand {\n  commandId: string;\n  clientCommentId: string;\n  body: string;\n}\n\ninterface CommentsClient {\n  getSnapshot(input: {\n    streamId: string;\n    position: 'latest' | string;\n    signal: AbortSignal;\n  }): Promise<CommentsSnapshot>;\n  subscribe(input: {\n    streamId: string;\n    resumeCursor: string;\n    onEvent: (event: CommentEvent) => void;\n    onGap: (afterSequence: number) => void;\n  }): () => void;\n  send(input: {\n    streamId: string;\n    command: SendCommentCommand;\n    signal: AbortSignal;\n  }): Promise<{ acceptedCommandId: string }>;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "live-comments-global-stream-contract"
+      }
+    },
+    {
+      "type": "code",
       "language": "http",
-      "code": "GET /api/comments?cursor=latest\n\n200 OK\n{\n  \"items\": [\n    { \"id\": \"c1\", \"userId\": \"u1\", \"text\": \"Nice!\", \"createdAt\": 1710000000 }\n  ],\n  \"nextCursor\": \"...\"\n}\n\nWS /comments/stream\n{ \"id\": \"c2\", \"userId\": \"u2\", \"text\": \"🔥\", \"createdAt\": 1710000001 }\n"
+      "code": "GET /api/streams/s1/comments?position=latest\n\n200 OK\n{\n  \"schemaVersion\": 1,\n  \"items\": [\n    {\n      \"id\": \"c1\",\n      \"sequence\": 418,\n      \"author\": { \"id\": \"u1\", \"label\": \"Mina\" },\n      \"body\": \"Nice!\",\n      \"createdAt\": \"2026-07-28T10:00:00Z\",\n      \"moderation\": { \"kind\": \"visible\", \"revision\": 0 }\n    }\n  ],\n  \"contiguousSequence\": 418,\n  \"resumeCursor\": \"rc_418\",\n  \"olderPageCursor\": \"older_400\"\n}\n\nWS /api/streams/s1/comments/live?cursor=rc_418\n{\n  \"schemaVersion\": 1,\n  \"eventId\": \"evt_419\",\n  \"sequence\": 419,\n  \"cursor\": \"rc_419\",\n  \"type\": \"comment.upserted\",\n  \"comment\": {\n    \"id\": \"c2\",\n    \"sequence\": 419,\n    \"author\": { \"id\": \"u2\", \"label\": \"Sam\" },\n    \"body\": \"Great moment\",\n    \"createdAt\": \"2026-07-28T10:00:01Z\",\n    \"moderation\": { \"kind\": \"visible\", \"revision\": 0 }\n  }\n}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
     },
     {
       "type": "table",
@@ -31,8 +45,8 @@
           "Backfill + live updates"
         ],
         [
-          "Server timestamps",
-          "Consistent ordering across regions"
+          "Sequence + event ID",
+          "Deterministic order, gap detection, and replay deduplication"
         ]
       ]
     },
@@ -41,7 +55,7 @@
     },
     {
       "type": "table",
-      "title": "API fields you should call out",
+      "title": "UI-facing API fields",
       "columns": [
         "Field",
         "Why it matters"
@@ -56,16 +70,16 @@
           "Pagination and recovery"
         ],
         [
-          "media/metadata",
-          "Render pipeline inputs"
+          "sequence/moderation.revision",
+          "Ordering and authoritative tombstone protection"
         ],
         [
-          "experiment flags",
-          "Safe rollout"
+          "schemaVersion/capabilities",
+          "Compatible parsing and explicit feature support"
         ],
         [
-          "timestamps",
-          "Ordering and latency"
+          "createdAt",
+          "Display and latency telemetry, not canonical ordering"
         ]
       ]
     },
@@ -74,12 +88,42 @@
     },
     {
       "type": "checklist",
-      "title": "Interface details to mention",
+      "title": "Resume and schema details",
       "items": [
         "Cursor or lastSeen for delta fetch.",
         "Event type or priority for filtering.",
         "Locale + device hints for payload shaping.",
-        "Experiment flags for safe rollout."
+        "Schema version and capabilities for compatible rollout."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "Snapshot and delta events carry immutable comment IDs, sequence, cursor, and moderation revision. Send-comment accepts a client-generated idempotency key so an uncertain response can reconcile with the echoed event. Removed content is omitted or redacted by the server contract; client hiding is not the security boundary."
+    },
+    {
+      "type": "steps",
+      "title": "From resumable snapshot to visible comment",
+      "steps": [
+        {
+          "title": "Open",
+          "text": "Normalize a snapshot and establish the last contiguous cursor."
+        },
+        {
+          "title": "Receive",
+          "text": "Validate frames, ignore duplicate IDs, detect gaps, and batch store commits."
+        },
+        {
+          "title": "Place",
+          "text": "Insert at the live edge only in follow mode; otherwise update the pending count."
+        },
+        {
+          "title": "Command",
+          "text": "Overlay a pending local comment and reconcile it with the authoritative event."
+        }
       ]
     }
   ]

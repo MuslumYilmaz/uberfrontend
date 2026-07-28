@@ -1,7 +1,7 @@
 {
   "id": "ai-chat-textarea-design",
   "title": "AI Chat Text Area (ChatGPT-Style)",
-  "description": "Design a minimal ChatGPT-like experience in a text area: a user types a prompt and receives a streaming response. Cover the frontend UI, the client-side state model, and how the server stores conversation history (database choice and trade-offs).\n\nKey considerations:\n- Message list + composer UX with streaming updates.\n- Optimistic rendering for the user message.\n- Streaming transport (SSE/WebSocket/fetch stream) and cancel/stop.\n- Persistence: where conversation history lives (database options) and how the client paginates it.\n- Error handling, retries, and fallback for slow responses.\n\nYou should be prepared to talk about: state shape, message status, how to avoid stale streaming updates, and how the frontend requests or resumes a conversation by id.",
+  "description": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
   "tags": [
     "real-time",
     "streams",
@@ -14,32 +14,53 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "openai"
-  ],
-  "updatedAt": "2026-01-31"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "AI Chat Textarea Frontend System Design",
+    "description": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming, and accessible keyboard behavior."
+  },
+  "premiumPreview": {
+    "summary": "Design an AI chat composer and current-turn experience with IME-safe input, attachment readiness, idempotent send, streaming, stop, and draft recovery.",
+    "learningOutcomes": [
+      "Separate composer draft, attachment work, pending send, and streamed message state.",
+      "Preserve text across IME composition, navigation, upload failure, and uncertain sends.",
+      "Correlate lowercase SSE events with one message and stream command.",
+      "Keep Stop, retry, focus, and live announcements accessible without entering model orchestration."
+    ],
+    "unlockDescription": "Premium unlocks the IME-and-cancel example, command reconciliation, stream ordering, and draft-recovery analysis."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/ai-chat-textarea-design.md",
+    "primaryKeyword": "ai chat textarea frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for AI Chat Text Area (ChatGPT-Style).",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI Chat Text Area (ChatGPT-Style).",
+    "uniqueAngle": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

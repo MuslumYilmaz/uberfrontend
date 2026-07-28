@@ -1,146 +1,149 @@
 {
   "key": "O",
-  "title": "Optimizations and deep dive",
+  "title": "Optimizations for resilience, performance, and accessibility",
   "blocks": [
     {
-      "type": "text",
-      "text": "Your answer should show you can keep the UI fast and resilient at scale. Focus on rendering budgets, cache strategy, and safe rollout."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "checklist",
-      "title": "Frontend performance strategies",
-      "items": [
-        "Route-level code splitting + prefetch on idle.",
-        "Virtualization for large carousels.",
-        "Memoization to avoid re-render storms.",
-        "Batch UI updates (100-250ms).",
-        "Priority loading for above-the-fold content."
-      ]
-    },
-    {
-      "type": "checklist",
-      "title": "Reliability and rollout",
-      "items": [
-        "Feature flags with gradual rollout.",
-        "Fallback UI when data is slow or missing.",
-        "Regional rollouts + fast rollback.",
-        "Monitoring Web Vitals + custom UX metrics.",
-        "Error boundaries to isolate failures."
-      ]
+      "type": "heading",
+      "text": "Failure and recovery"
     },
     {
       "type": "table",
-      "title": "Metrics to report",
+      "title": "Failure modes",
       "columns": [
-        "Metric",
-        "Target",
-        "Why it matters"
+        "Failure",
+        "User-visible response",
+        "Recovery"
       ],
       "rows": [
         [
-          "LCP",
-          "<= 2.5s",
-          "Core page load health"
+          "Row request is slow",
+          "Keep a validated cached row or stable skeleton geometry; do not block the whole home page.",
+          "Retry with backoff only while the route and profile remain active."
         ],
         [
-          "INP",
-          "<= 200ms",
-          "Interaction quality"
+          "Poster fails",
+          "Show a branded neutral placeholder and keep the title control operable.",
+          "Try a lower-cost candidate only when the failure policy permits it."
         ],
         [
-          "Error rate",
-          "< 0.5%",
-          "Reliability"
+          "Progress response is stale",
+          "Keep the newer per-title revision already in the store.",
+          "Record the rejected revision and request a focused refresh if gaps persist."
         ],
         [
-          "Carousel FPS",
-          "60 FPS",
-          "Smooth interaction"
+          "Removal is resolved elsewhere",
+          "Merge the newer row, clear local pending state, and announce the outcome once.",
+          "Restore focus by title identity or nearest surviving neighbor."
+        ],
+        [
+          "Authentication expires",
+          "Disable member-specific actions and show a non-destructive sign-in path.",
+          "After sign-in succeeds again, reload under the new profile scope."
+        ],
+        [
+          "Low-memory device evicts media",
+          "Cards retain dimensions and labels while artwork reloads.",
+          "Reduce preload distance and decoded-image retention based on observed pressure."
+        ],
+        [
+          "Locale text overflows",
+          "Allow intentional wrapping or truncation with an accessible full name.",
+          "Test long translations, bidirectional text, and enlarged text in CI."
+        ],
+        [
+          "Experiment configuration disagrees",
+          "Keep the page-session assignment stable rather than flickering variants.",
+          "Refresh the assignment on the next safe navigation boundary."
         ]
       ]
     },
     {
-      "type": "stats",
+      "type": "heading",
+      "text": "Measured rendering strategy"
+    },
+    {
+      "type": "text",
+      "text": "A typical Continue Watching row is not automatically large enough to justify virtualization. Start with semantic controls and lazy artwork. Profile DOM count, focus-navigation cost, decoded-image memory, and return-navigation behavior on representative TV and mobile hardware. Introduce windowing only when measured limits require it, because unmounting cards complicates accessibility, browser find behavior, focus restoration, and image reuse. When windowing is justified, overscan in the direction of travel and pin the focused item until focus moves safely."
+    },
+    {
+      "type": "checklist",
+      "title": "Media and render priorities",
       "items": [
+        "Reserve aspect-ratio geometry before artwork loads to protect layout stability.",
+        "Fetch the first useful visible images before speculative offscreen candidates.",
+        "Cancel obsolete requests when profile, route, size class, or travel direction changes.",
+        "Decode near-future artwork without retaining every decoded bitmap from a long session.",
+        "Subscribe cards to their own title and progress entities instead of the entire row object.",
+        "Avoid decorative hover scaling as the only focus indicator; provide a durable visible focus style.",
+        "Treat smooth scrolling and animation as optional presentation that respects reduced-motion preferences."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility and input"
+    },
+    {
+      "type": "text",
+      "text": "Give the region a visible heading and accessible name. Previous and next controls use native buttons with action-oriented labels. Each title is a link or button with a useful title and progress label; decorative artwork gets empty alternative text when the control name already communicates the title. Do not auto-rotate. On pointer and keyboard web layouts, preserve normal Tab behavior and avoid forcing every card into an ARIA carousel pattern. On spatial-focus platforms, arrow movement, row boundaries, focus persistence, and escape behavior are explicit and tested. Status announcements are limited to meaningful action outcomes rather than every progress update."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and diagnosis"
+    },
+    {
+      "type": "steps",
+      "title": "Safe release sequence",
+      "steps": [
         {
-          "label": "Frame budget",
-          "value": "16ms",
-          "helperText": "Avoid dropped frames during updates."
+          "title": "Instrument the current row",
+          "text": "Establish field baselines for first usable row, artwork failures, focus movement, removals, and return-navigation restoration."
         },
         {
-          "label": "Cache TTL",
-          "value": "30-120s",
-          "helperText": "Short-lived for dynamic data."
+          "title": "Ship contract compatibility",
+          "text": "Validate old and new payload revisions, malformed records, and unknown optional fields before changing presentation."
         },
         {
-          "label": "Rollback goal",
-          "value": "< 5 minutes",
-          "helperText": "Fast disable if metrics regress."
+          "title": "Canary by capability",
+          "text": "Start with a controlled device and app cohort so low-memory, spatial-focus, and touch regressions remain separable."
+        },
+        {
+          "title": "Compare user outcomes",
+          "text": "Watch resume success, removal conflict, abandonment, field Web Vitals, and error recovery rather than only request latency."
+        },
+        {
+          "title": "Rollback presentation safely",
+          "text": "Keep compatible stored entities and disable only the new view or command path when its guardrails regress."
         }
       ]
     },
     {
       "type": "callout",
-      "variant": "warning",
-      "title": "What sinks candidates",
-      "text": "Vague answers like 'just scale servers.' You must show concrete frontend trade-offs: rendering, caching, and rollout control."
+      "variant": "success",
+      "title": "Interview answer checkpoint",
+      "text": "Be ready to defend five decisions: separate row and progress revisions, overlay rather than overwrite optimistic removal, restore focus by identity, schedule media by intent and capability, and gate rollout with field outcomes.",
+      "editorialRole": "answer-checkpoint"
     },
     {
-      "type": "divider"
-    },
-    {
-      "type": "steps",
-      "title": "Deep dive: preventing jank",
-      "steps": [
+      "type": "links",
+      "title": "Technical references",
+      "items": [
         {
-          "title": "1) Batch updates",
-          "text": "Apply updates on a cadence (100-250ms) instead of per event."
+          "label": "Netflix Help: remove titles from Continue Watching",
+          "href": "https://help.netflix.com/en/node/115312",
+          "description": "Public product behavior across computers, TVs, and mobile devices."
         },
         {
-          "title": "2) Bound the DOM",
-          "text": "Virtualize long lists or carousels so DOM size stays small."
+          "label": "W3C WAI-ARIA carousel pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/carousel/",
+          "description": "Keyboard, control, labeling, and rotation guidance for carousel-like interfaces."
         },
         {
-          "title": "3) Cancel stale work",
-          "text": "Abort prefetches or network work when user intent changes."
-        },
-        {
-          "title": "4) Measure",
-          "text": "Log LCP/INP and feature-specific KPIs to validate rollout."
+          "label": "web.dev: Web Vitals",
+          "href": "https://web.dev/articles/vitals",
+          "description": "Field measurement guidance and percentile context for LCP, INP, and CLS."
         }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "table",
-      "title": "Backpressure policy",
-      "columns": [
-        "Scenario",
-        "Policy",
-        "Why"
       ],
-      "rows": [
-        [
-          "Burst spikes",
-          "Batch + drop low-priority",
-          "Protect FPS"
-        ],
-        [
-          "Slow device",
-          "Lower render cadence",
-          "Keep UI responsive"
-        ],
-        [
-          "User paused",
-          "Render badge only",
-          "Avoid wasted work"
-        ]
-      ]
+      "editorialRole": "references"
     }
   ]
 }

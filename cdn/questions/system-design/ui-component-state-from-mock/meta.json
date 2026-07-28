@@ -1,7 +1,7 @@
 {
   "id": "ui-component-state-from-mock",
-  "title": "UI Component & State Design From a Mock (Frontend System Design)",
-  "description": "Given a UI mock or diagram, design the component tree and state model. Break the UI into reusable components, decide where state lives (local vs shared), and describe data flow (props, callbacks, derived state).\n\nKey considerations:\n- Component boundaries and reusability.\n- State ownership and data flow.\n- Async data fetching and caching placement.\n- Performance (memoization, avoiding re-renders).\n\nBe prepared to discuss separation of concerns, scalability, and how you keep the UI maintainable as requirements grow.",
+  "title": "UI Component and State Design From a Mock",
+  "description": "Turn a support-inbox mock into clear component boundaries, URL and server state, local drafts, optimistic mutations, responsive behavior, and accessible focus.",
   "tags": [
     "components",
     "state-management",
@@ -9,36 +9,57 @@
     "ux",
     "performance"
   ],
-  "type": "system-design",
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements from the mock",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Component and state architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data model for URL, server, draft, and mutation state",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface contracts for components and services",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations for recovery, performance, and accessibility",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "meta"
-  ],
-  "updatedAt": "2026-02-01"
+  "guideSlug": "architecture",
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "UI Component and State Design From a Mock",
+    "description": "Turn a support-inbox mock into component boundaries, URL and server state, local drafts, optimistic updates, responsive behavior, and accessible focus."
+  },
+  "premiumPreview": {
+    "summary": "Turn a customer-support inbox mock into component boundaries and explicit URL, server, draft, mutation, and responsive view state.",
+    "learningOutcomes": [
+      "Derive product questions and responsive behavior from incomplete visual evidence.",
+      "Separate shareable URL state, versioned server entities, ticket drafts, and optimistic command overlays.",
+      "Preserve an unsent reply while background updates and failed mutations reconcile.",
+      "Restore meaningful focus as the workspace moves between desktop panes and mobile routes."
+    ],
+    "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/ui-component-state-from-mock.md",
+    "primaryKeyword": "UI component and state design from a mock",
+    "searchIntent": "Learn how to translate a concrete UI mock into component boundaries and an explicit frontend state model.",
+    "readerPromise": "The reader can derive component boundaries, classify state, reconcile background data, preserve drafts, and design responsive focus behavior from a mock.",
+    "uniqueAngle": "Use a realistic support inbox where URL selection, cached tickets, composer drafts, background updates, and optimistic commands evolve independently.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

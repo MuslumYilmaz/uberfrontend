@@ -1,158 +1,197 @@
 {
-    "key": "I",
-    "title": "Interface definition (API)",
-    "blocks": [
+  "key": "I",
+  "title": "Interface",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Expose a composer-oriented client contract: draft state, attachment readiness, send, Stop, retry, and the current turn. Keep raw transport parsing and history implementation outside view components."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Here the interviewer wants to see a small, clear client API plus the server endpoints that support streaming and history."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "A useChatComposer adapter returns the draft, current turn, and intent methods. send accepts finalized attachment IDs plus stable command and client message identities. The stream contract correlates every event with streamId, messageId, and sequence."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should talk about the API:**\n\"I would expose a useChat hook that returns messages, sendMessage, stop, and status. On the backend, I need endpoints to fetch history and a streaming endpoint to deliver tokens.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Small UI surface (messages + send + stop).\n- Streaming endpoint with a clear protocol.\n- Pagination for history.\n- Conflict-free ids for optimistic UI."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Think like a library author: the UI should call a simple hook/service, while the streaming and history details stay hidden behind it."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "// Client-facing API\ninterface UseChatResult {\n  messages: ChatMessage[];\n  isStreaming: boolean;\n  sendMessage: (text: string) => void;\n  stop: () => void;\n  loadMore: () => Promise<void>;\n}\n\nfunction useChat(conversationId?: string): UseChatResult {\n  // hides streaming + pagination\n}\n\n// Server endpoints (example)\nGET /api/conversations/:id/messages?cursor=...\nPOST /api/conversations/:id/messages\nPOST /api/conversations/:id/stream  // SSE or chunked response\n\n// Streaming response format (SSE)\nEVENT: chunk\nDATA: { messageId: 'm_123', delta: 'hello' }\n\nEVENT: done\nDATA: { messageId: 'm_123' }"
-        },
-        {
-            "type": "table",
-            "title": "Core interfaces you should define out loud",
-            "columns": [
-                "Interface / endpoint",
-                "Shape (example)",
-                "How you explain it"
-            ],
-            "rows": [
-                [
-                    "useChat",
-                    "{ messages, sendMessage, stop }",
-                    "Simple UI API; streaming is hidden."
-                ],
-                [
-                    "GET /messages",
-                    "paged list + cursor",
-                    "Fetch history without loading everything."
-                ],
-                [
-                    "POST /stream",
-                    "SSE or chunked response",
-                    "Incrementally delivers assistant tokens."
-                ],
-                [
-                    "POST /messages",
-                    "creates user message",
-                    "Returns ids for optimistic UI reconciliation."
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should expose",
-                            "items": [
-                                "messages list and streaming status",
-                                "sendMessage and stop",
-                                "loadMore for pagination"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should NOT expose",
-                            "items": [
-                                "raw SSE parsing in the UI",
-                                "streaming timers or internal buffers",
-                                "database details leaking into components"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Typical integration flow you should describe",
-            "steps": [
-                {
-                    "title": "1. Initialize",
-                    "text": "Hook loads latest messages by conversation id."
-                },
-                {
-                    "title": "2. Send",
-                    "text": "UI calls sendMessage, store adds user + assistant placeholder."
-                },
-                {
-                    "title": "3. Stream",
-                    "text": "Stream endpoint delivers chunks; hook appends text."
-                },
-                {
-                    "title": "4. Stop",
-                    "text": "User clicks Stop; hook cancels stream and updates status."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary endpoint",
-                    "value": "/stream",
-                    "helperText": "Drives incremental UI updates."
-                },
-                {
-                    "label": "Paging",
-                    "value": "cursor",
-                    "helperText": "Loads history in chunks."
-                },
-                {
-                    "label": "Client API",
-                    "value": "useChat",
-                    "helperText": "Keeps UI clean and focused."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A good API hides streaming complexity and exposes a small surface for the UI. If the UI only deals with messages and send/stop, you did it right."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Contract checks:\n- Draft, attachment readiness, current turn, Send, Stop, and retry form the composer surface.\n- Stream events use one lowercase SSE protocol with streamId, messageId, and sequence.\n- Stable command and client-message identities make retries idempotent.\n- Conversation-history loading remains outside this composer contract."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "interface SendCommand {\n  commandId: string;\n  clientMessageId: string;\n  text: string;\n  attachmentIds: string[];\n}\n\ninterface UseChatComposerResult {\n  draft: ComposerDraft;\n  attachments: AttachmentDraft[];\n  activeTurn: StreamMessage | null;\n  updateText(text: string): void;\n  send(command: SendCommand): Promise<void>;\n  stop(): Promise<void>;\n  retry(commandId: string): Promise<void>;\n}\n\ninterface ChatTurnClient {\n  send(input: SendCommand & { conversationId: string; signal: AbortSignal }): Promise<{\n    messageId: string;\n    assistantMessageId: string;\n    streamId: string;\n  }>;\n  stop(input: { streamId: string; commandId: string; signal: AbortSignal }): Promise<void>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-chat-textarea-design-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "event: message.delta\ndata: {\"streamId\":\"s_123\",\"messageId\":\"m_123\",\"sequence\":1,\"delta\":\"hello\"}\n\nevent: message.completed\ndata: {\"streamId\":\"s_123\",\"messageId\":\"m_123\",\"sequence\":2}\n\n",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "sse",
+        "dataFormat": "json"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Core interfaces",
+      "columns": [
+        "Contract surface",
+        "Shape (example)",
+        "How you explain it"
+      ],
+      "rows": [
+        [
+          "useChatComposer",
+          "{ draft, attachments, activeTurn, send, stop, retry }",
+          "Keeps composition and turn intent separate from transport parsing."
+        ],
+        [
+          "send",
+          "commandId, clientMessageId, text, attachmentIds",
+          "Snapshots one composition-complete turn for idempotent reconciliation."
+        ],
+        [
+          "stream events",
+          "streamId, messageId, sequence, delta or terminal phase",
+          "Incrementally updates exactly one assistant resource."
+        ],
+        [
+          "stop",
+          "streamId + commandId",
+          "Requests authoritative stop while local AbortSignal closes transport work."
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Public behavior",
+              "items": [
+                "draft text, composition state, and attachment phases",
+                "send, stop, and retry intents",
+                "current turn identity, partial text, and terminal phase"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Transport and buffering behind the adapter",
+              "items": [
+                "raw SSE parsing in the UI",
+                "streaming timers or internal buffers",
+                "database details leaking into components"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Integration flow",
+      "steps": [
+        {
+          "title": "1. Restore",
+          "text": "Adapter restores the scoped draft independently from recent messages."
+        },
+        {
+          "title": "2. Send",
+          "text": "After composition and attachment validation, UI calls send with stable command and client message IDs."
+        },
+        {
+          "title": "3. Stream",
+          "text": "Adapter accepts only matching, next-sequence events and batches visual text commits when measured."
+        },
+        {
+          "title": "4. Stop",
+          "text": "User activates Stop; local transport closes, a stop command is sent, and terminal status still reconciles."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary endpoint",
+          "value": "send + stream",
+          "helperText": "Correlated command and event identities drive the current turn."
+        },
+        {
+          "label": "Paging",
+          "value": "sequence",
+          "helperText": "Rejects duplicate and stale stream deltas."
+        },
+        {
+          "label": "Client API",
+          "value": "useChatComposer",
+          "helperText": "Keeps the view focused on draft and turn intent."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Contract checkpoint",
+      "text": "A good API makes draft ownership, attachment readiness, command identity, stream identity, Stop, and retry visible while hiding raw SSE parsing."
+    },
+    {
+      "type": "heading",
+      "text": "UI-facing contract"
+    },
+    {
+      "type": "text",
+      "text": "send accepts text, finalized attachment IDs, command ID, client message ID, and AbortSignal at the client boundary. The stream adapter exposes sequenced deltas and terminal state. Stop is an idempotent command while AbortSignal closes local transport work; the UI still reconciles authoritative message status after cancellation races."
+    },
+    {
+      "type": "steps",
+      "title": "From composition-safe draft to terminal turn",
+      "steps": [
+        {
+          "title": "Compose",
+          "text": "Honor beforeinput and composition events, update draft, and autosize within a measured maximum."
+        },
+        {
+          "title": "Prepare",
+          "text": "Wait for required attachment finalization and preserve accessible error links."
+        },
+        {
+          "title": "Send",
+          "text": "Snapshot content under one client ID and reconcile the echoed server message."
+        },
+        {
+          "title": "Stream",
+          "text": "Batch visual deltas, expose Stop, and keep partial content on recoverable interruption."
+        }
+      ]
+    }
+  ]
 }

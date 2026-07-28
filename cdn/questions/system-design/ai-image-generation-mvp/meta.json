@@ -1,7 +1,7 @@
 {
   "id": "ai-image-generation-mvp",
   "title": "AI Image Generation MVP (Two-Week Design)",
-  "description": "Design a two-week MVP for integrating an image-generating AI into a mobile or web app. Focus on the frontend UX, the async backend workflow, and how you would ship a usable feature quickly with clear trade-offs.\n\nKey considerations:\n- Prompt input, generation states, and error handling.\n- Long-running job flow (polling, WebSocket, or SSE).\n- Storage of generated images (object storage + metadata DB).\n- Minimal scope for a two-week delivery: core flow over polish.\n- Safety and retries when the model fails or times out.\n\nYou should be prepared to talk about: UX states, API contract, job status, and what you would defer to a later iteration.",
+  "description": "Design an AI image generation frontend with prompt state, accepted async jobs, indeterminate progress, idempotent retry and cancel, safe media, and recovery.",
   "tags": [
     "ux",
     "api-calls",
@@ -14,32 +14,54 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interfaces",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "openai"
-  ],
-  "updatedAt": "2026-01-31"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "AI Image Generation Frontend System Design",
+    "description": "Design an AI image generation UI with accepted async jobs, indeterminate progress, idempotent retry and cancel, safe media rendering, and recovery."
+  },
+  "premiumPreview": {
+    "summary": "Design a focused image-generation flow that represents long-running jobs honestly and survives uncertain create, retry, and cancel outcomes.",
+    "learningOutcomes": [
+      "Model queued, running, cancelling, cancelled, done, and failed job states.",
+      "Create idempotency records before a server job ID exists.",
+      "Monitor 202 Accepted resources with polling or resumable lifecycle events.",
+      "Reconcile versioned terminal states without inventing progress or precedence.",
+      "Present generated media safely with accessible status and recovery."
+    ],
+    "unlockDescription": "Premium unlocks the versioned job model, lost-response and cancel-race example, HTTP contracts, failure recovery, and rollout plan."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/ai-image-generation-mvp.md",
+    "primaryKeyword": "ai image generation frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for AI Image Generation MVP (Two-Week Design).",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI Image Generation MVP (Two-Week Design).",
+    "uniqueAngle": "Design an AI image generation frontend with prompt state, accepted async jobs, indeterminate progress, idempotent retry and cancel, safe media, and recovery.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

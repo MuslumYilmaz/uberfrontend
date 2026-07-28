@@ -1,6 +1,6 @@
 {
   "key": "D",
-  "title": "Data model",
+  "title": "Data",
   "blocks": [
     {
       "type": "text",
@@ -14,8 +14,13 @@
     },
     {
       "type": "code",
-      "language": "ts",
-      "code": "type FeedItemId = string;\n\ninterface FeedItem {\n  id: FeedItemId;\n  type: 'text' | 'image' | 'video' | 'ad';\n  authorId: string;\n  createdAt: number;\n  rankScore?: number;\n  likeCount: number;\n  commentCount: number;\n  mediaUrl?: string;\n  isSponsored?: boolean;\n}\n\ninterface FeedState {\n  ids: FeedItemId[];\n  entities: Record<FeedItemId, FeedItem>;\n  nextCursor: string | null;\n  loading: boolean;\n  error: string | null;\n  realtimeBuffer: FeedItemId[];\n  optimistic: Record<FeedItemId, { liked?: boolean; commentDelta?: number }>;\n  seenIds: Set<FeedItemId>;\n  sortKey: 'createdAt' | 'rankScore';\n}\n"
+      "language": "typescript",
+      "code": "type PostId = string;\n\ninterface Post {\n  id: PostId;\n  entityVersion: number;\n  type: 'text' | 'image' | 'video' | 'ad';\n  authorId: string;\n  body: string;\n  createdAt: number;\n  likeCount: number;\n  viewerLiked: boolean;\n  mediaUrl?: string;\n}\n\ninterface FeedOrder {\n  queryKey: string;\n  rankRevision: number;\n  orderedIds: PostId[];\n  nextCursor: string | null;\n}\n\ninterface LiveFeedEvent {\n  eventId: string;\n  sequence: number;\n  resumeCursor: string;\n  type: 'post-upserted' | 'post-deleted' | 'rank-invalidated';\n  post?: Post;\n  postId?: PostId;\n  rankRevision?: number;\n}\n\ninterface PendingReaction {\n  commandId: string;\n  postId: PostId;\n  desiredLiked: boolean;\n  basedOnVersion: number;\n}\n\ninterface FeedState {\n  entities: Record<PostId, Post>;\n  order: FeedOrder | null;\n  pendingLiveIds: PostId[];\n  acceptedEventIds: Record<string, true>;\n  resumeCursor: string | null;\n  optimisticReactions: Record<PostId, PendingReaction>;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "news-feed-timeline-contract"
+      }
     },
     {
       "type": "table",
@@ -47,11 +52,62 @@
       "type": "checklist",
       "title": "Data invariants",
       "items": [
-        "ids are unique and ordered by sortKey.",
-        "entities contain latest version per id.",
-        "buffered items are not yet inserted into ids.",
-        "optimistic data can be rolled back on failure."
+        "FeedOrder IDs are unique and retain server-authoritative ranked order.",
+        "Entities accept only newer entityVersion values.",
+        "Buffered live IDs do not gain ranked placement until an order revision includes them.",
+        "Optimistic reactions overlay one entity and reconcile by command identity."
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Entity, order, and view ownership"
+    },
+    {
+      "type": "text",
+      "text": "Store Post entities separately from FeedOrder documents. A FeedOrder has rank revision, ordered IDs, page cursors, and freshness. Pending live IDs are a view overlay until the reader applies them. FeedViewState stores anchor identity, offset, filters, and visible range. Optimistic reaction commands overlay one post entity."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "Post",
+          "id, author, body, media, version",
+          "Entity cache"
+        ],
+        [
+          "FeedOrder",
+          "rankRevision, orderedIds, cursors",
+          "Query cache"
+        ],
+        [
+          "LiveBuffer",
+          "pendingIds, resumeCursor, gap",
+          "Stream state"
+        ],
+        [
+          "FeedView",
+          "anchorId, offset, visibleRange",
+          "Local view"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Entity freshness and media state"
+    },
+    {
+      "type": "text",
+      "text": "Post content, reaction counts, viewer reaction, moderation visibility, and ranked position can change on different revisions. Record field or entity version where the contract provides it, and keep a pending reaction overlay separate from confirmed counts. Media load phase, selected candidate, and decoded resource are local view resources; they do not belong in the durable Post entity. This separation lets a media retry occur without replacing textual content or rank order."
+    },
+    {
+      "type": "text",
+      "text": "A compact LiveBuffer stores event IDs already accepted, resume cursor, pending post IDs, and any detected sequence gap. Its pending IDs are not automatically appended to ranked order. The visible new-post count is derived from the pending set after deduplication. FeedView stores anchor ID, intra-item offset, filters, visible range, and whether the reader has requested placement of new material."
     }
   ]
 }

@@ -1,138 +1,176 @@
 {
-    "key": "D",
-    "title": "Data model",
-    "blocks": [
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Model the composer and current turn explicitly. Unsent text, attachment work, a pending send command, the optimistic message, and sequenced assistant output have different lifetimes and failure paths."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "In this step, the interviewer wants to see a compact, explicit model for conversations, messages, and sync metadata. Keep it small and focused on what the UI needs."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "ComposerDraft is scoped by conversation and stores text revision plus composition state. AttachmentDraft tracks local upload readiness. PendingSend correlates the optimistic user message. StreamMessage accepts deltas only from its stream identity and next sequence."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame it:**\n\"I model a Conversation with an id and a list of Message objects. Each message has role, text, status, and timestamps. I also keep a server revision or cursor for pagination.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Clear message status fields.\n- A way to paginate or resume history.\n- Stable ids for optimistic UI.\n- Minimal metadata for streaming and errors."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Keep the schema small: conversation, messages, status, and pagination cursor. Avoid adding fields you do not need for the UI."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Core entities you should define",
-            "columns": [
-                "Entity",
-                "What it represents",
-                "Why it matters"
-            ],
-            "rows": [
-                [
-                    "Conversation",
-                    "A chat session owned by a user",
-                    "Allows resume and pagination"
-                ],
-                [
-                    "Message",
-                    "A single user or assistant turn",
-                    "UI renders from this list"
-                ],
-                [
-                    "MessageStatus",
-                    "pending/streaming/done/error",
-                    "Drives loading and error UI"
-                ],
-                [
-                    "Cursor/Revision",
-                    "Paging marker or version token",
-                    "Supports fetching older history"
-                ]
-            ]
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "type MessageStatus = 'pending' | 'streaming' | 'done' | 'error' | 'stopped';\n\ninterface Conversation {\n  id: string;\n  title?: string;\n  createdAt: number;\n  updatedAt: number;\n}\n\ninterface Message {\n  id: string;\n  conversationId: string;\n  role: 'user' | 'assistant' | 'system';\n  text: string;\n  status: MessageStatus;\n  createdAt: number;\n}\n\ninterface ConversationPage {\n  items: Message[];\n  nextCursor?: string;\n}\n"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Things you should model explicitly",
-                            "items": [
-                                "Stable ids for each message.",
-                                "Message status for streaming and errors.",
-                                "A cursor or page token for older history.",
-                                "Timestamps for ordering and display."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Common data model gaps",
-                            "items": [
-                                "No status field for streaming states.",
-                                "No way to fetch history incrementally.",
-                                "No id to reconcile optimistic UI with server data.",
-                                "Mixing UI-only flags into the stored schema."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary entity",
-                    "value": "Message",
-                    "helperText": "Everything in the UI is derived from messages."
-                },
-                {
-                    "label": "Paging",
-                    "value": "Cursor",
-                    "helperText": "Load history in chunks."
-                },
-                {
-                    "label": "Status",
-                    "value": "MessageStatus",
-                    "helperText": "Drives streaming and error UI."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A clean message model with statuses and pagination is enough to power a solid ChatGPT-style UI. Keep the schema lean and UI-driven."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "State-model checks:\n- Draft revision and IME composition are explicit.\n- Attachment readiness cannot be inferred from a URL.\n- Client message and command IDs make uncertain send retry idempotent.\n- Stream identity and sequence reject stale or duplicate deltas."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Core entities",
+      "columns": [
+        "Entity",
+        "What it represents",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "ComposerDraft",
+          "Scoped unsent text and composition state",
+          "Prevents navigation or IME events from losing intent"
+        ],
+        [
+          "AttachmentDraft",
+          "Local file-to-asset lifecycle",
+          "Only ready asset IDs may be sent"
+        ],
+        [
+          "PendingSend",
+          "Command and optimistic message identity",
+          "Makes uncertain retries and echoed messages converge"
+        ],
+        [
+          "StreamMessage",
+          "Assistant identity, stream ID, sequence, text, and terminal phase",
+          "Prevents stale or duplicate chunks from corrupting the turn"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "type AttachmentPhase = 'local' | 'uploading' | 'ready' | 'error';\ntype StreamPhase = 'pending' | 'streaming' | 'complete' | 'stopped' | 'error';\n\ninterface ComposerDraft {\n  conversationId: string;\n  text: string;\n  revision: number;\n  savedAt: number;\n  isComposing: boolean;\n  attachmentLocalIds: string[];\n}\n\ninterface AttachmentDraft {\n  localId: string;\n  phase: AttachmentPhase;\n  assetId: string | null;\n  error: string | null;\n}\n\ninterface PendingSend {\n  commandId: string;\n  clientMessageId: string;\n  draftRevision: number;\n  phase: 'sending' | 'acknowledged' | 'error';\n}\n\ninterface StreamMessage {\n  messageId: string;\n  streamId: string;\n  lastSequence: number;\n  text: string;\n  phase: StreamPhase;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-chat-textarea-design-contract"
+      }
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Explicit state",
+              "items": [
+                "Draft revision and composition state.",
+                "Attachment phase and finalized asset identity.",
+                "Command and client message IDs for send reconciliation.",
+                "Stream ID, last accepted sequence, partial text, and terminal phase."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Conversation-state pitfalls",
+              "items": [
+                "No status field for streaming states.",
+                "No way to fetch history incrementally.",
+                "No id to reconcile optimistic UI with server data.",
+                "Mixing UI-only flags into the stored schema."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary entity",
+          "value": "ComposerDraft",
+          "helperText": "Unsent user intent remains independently recoverable."
+        },
+        {
+          "label": "Paging",
+          "value": "Command identity",
+          "helperText": "Retry and acknowledgement converge without duplicate turns."
+        },
+        {
+          "label": "Status",
+          "value": "Stream sequence",
+          "helperText": "Rejects stale and duplicate deltas."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "State checkpoint",
+      "text": "The model is trustworthy when unsent intent, attachment readiness, send acknowledgement, and assistant streaming cannot overwrite one another."
+    },
+    {
+      "type": "heading",
+      "text": "Draft, send-command, and stream ownership"
+    },
+    {
+      "type": "text",
+      "text": "Keep ComposerDraft, AttachmentDraft, composition state, and PendingSend separate from conversation messages. A sent user message gets a client ID for idempotent reconciliation. Streaming assistant text is a versioned or sequenced message resource, while the local composer draft can persist independently across navigation."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "ComposerDraft",
+          "text, revision, savedAt",
+          "Local draft"
+        ],
+        [
+          "AttachmentDraft",
+          "localId, phase, assetId, error",
+          "Upload state"
+        ],
+        [
+          "PendingSend",
+          "clientMessageId, commandId, phase",
+          "Action overlay"
+        ],
+        [
+          "StreamMessage",
+          "messageId, sequence, text, terminal",
+          "Conversation cache"
+        ]
+      ]
+    }
+  ]
 }

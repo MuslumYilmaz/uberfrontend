@@ -1,178 +1,221 @@
 {
-    "key": "D",
-    "title": "Data model",
-    "blocks": [
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Model the upload as a finite client workflow with separate configuration, local file resources, transfer session, authoritative asset result, progress, and recoverable error. This prevents a preview from being mistaken for an uploaded asset and makes replace, cancel, retry, and cleanup behavior explicit."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "Here the interviewer wants to see that your Image Upload & Preview component is driven by a small, clean data model: config, current file, preview URL, status, and error. If you can describe those as simple types, the whole behavior (validation, upload simulation, errors) becomes easier to reason about and test."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Configuration contains validation and preprocessing rules. Runtime state contains the selected File, object URL, current phase, transfer progress, upload-session identity, completed asset, and a safe error. The File and object URL remain local resources and are released when replaced or removed."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should talk about data:**\n\"I’ll model this component with: a config object (allowed types, max size, fake upload duration), a state object (file, previewUrl, status, error), and a few derived booleans for convenience. Everything else – validation, upload simulation, UI – just reads and updates this state.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- A clear **config vs runtime state** separation.\n- A simple **status enum** instead of many booleans.\n- Explicit fields for **file**, **preview URL**, and **error message**.\n- Awareness that object URLs are part of state and must be cleaned up.\n- The ability to extend the model later (e.g. drag-and-drop, upload result)."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Name the key types: `UploadStatus`, `ImageUploadState`, and `ImageUploadConfig`. For each field, explain what it controls in the UI and how it changes over time when the user selects, uploads, replaces, or removes an image."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "// Upload status as a simple finite set of states\nexport type UploadStatus =\n  | 'idle'\n  | 'validating'\n  | 'uploading'\n  | 'uploaded'\n  | 'error';\n\n// Component configuration (could come from props)\nexport interface ImageUploadConfig {\n  maxSizeBytes: number;          // e.g. 2 * 1024 * 1024\n  allowedMimeTypes: string[];    // e.g. ['image/jpeg', 'image/png']\n  fakeUploadMs: number;          // e.g. 1500\n  label?: string;                // e.g. 'Upload profile picture'\n}\n\n// Runtime state\nexport interface ImageUploadState {\n  file: File | null;\n  previewUrl: string | null;     // created via URL.createObjectURL\n  status: UploadStatus;\n  error: string | null;          // human-readable error message\n}\n"
-        },
-        {
-            "type": "code",
-            "language": "ts",
-            "code": "// Optional: derived view model helpers\nexport interface ImageUploadViewModel {\n  canShowPreview: boolean;\n  isIdle: boolean;\n  isUploading: boolean;\n  isUploaded: boolean;\n  hasError: boolean;\n}\n\nexport function toViewModel(state: ImageUploadState): ImageUploadViewModel {\n  return {\n    canShowPreview: !!state.previewUrl && state.status !== 'error',\n    isIdle: state.status === 'idle',\n    isUploading: state.status === 'uploading',\n    isUploaded: state.status === 'uploaded',\n    hasError: state.status === 'error' && !!state.error\n  };\n}\n\n// Validation result is also just data\nexport interface ValidationResult {\n  ok: boolean;\n  error?: string; // e.g. 'File too large' or 'Unsupported file type'\n}\n"
-        },
-        {
-            "type": "table",
-            "title": "Core entities you should define out loud",
-            "columns": [
-                "Entity",
-                "Fields (example)",
-                "How you explain it"
-            ],
-            "rows": [
-                [
-                    "ImageUploadConfig",
-                    "maxSizeBytes, allowedMimeTypes, fakeUploadMs, label",
-                    "\"`ImageUploadConfig` holds all configurable rules: which types are allowed, how large the file can be, and how long we simulate uploading. This makes the component reusable across contexts.\""
-                ],
-                [
-                    "UploadStatus",
-                    "'idle' | 'validating' | 'uploading' | 'uploaded' | 'error'",
-                    "\"`UploadStatus` is a small enum that drives the UI. Every visual state maps to one of these values instead of juggling multiple booleans.\""
-                ],
-                [
-                    "ImageUploadState",
-                    "file, previewUrl, status, error",
-                    "\"`ImageUploadState` is the single source of truth: which file is selected, what its preview URL is, what status we’re in, and what error (if any) should be shown.\""
-                ],
-                [
-                    "ValidationResult",
-                    "ok, error",
-                    "\"`ValidationResult` is a simple object returned by a helper function so we can clearly separate validation from UI, and provide a consistent error message when something is wrong.\""
-                ],
-                [
-                    "ImageUploadViewModel",
-                    "canShowPreview, isIdle, isUploading, isUploaded, hasError",
-                    "\"`ImageUploadViewModel` is an optional helper that derives convenient booleans from state, making the template/JSX logic easier to read and test.\""
-                ]
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Data you should explicitly include",
-                            "items": [
-                                "A **config object** for max size, allowed MIME types, and fake upload duration.",
-                                "A **status field** that covers all states (idle, validating, uploading, uploaded, error).",
-                                "A **File reference** for the currently selected image (or `null` when none).",
-                                "A **preview URL** string for `img src`, managed via `URL.createObjectURL`.",
-                                "An **error message** string that is shown and announced to the user.",
-                                "Optional **derived booleans** to simplify conditional rendering."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Data-model mistakes to avoid",
-                            "items": [
-                                "No single status field; instead, many booleans like `isLoading`, `isDone`, `hasError` that can conflict.",
-                                "Storing **raw DOM nodes** or event objects in state instead of serializable data.",
-                                "Holding multiple preview URLs without revoking or tracking which is active.",
-                                "Baking max size/type limits directly into logic instead of a config object.",
-                                "Using only a boolean like `invalid` with no actual **error message** explaining why.",
-                                "Not representing the difference between **idle** and **error** states in your model."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "How state evolves over time",
-            "steps": [
-                {
-                    "title": "1. Initial state",
-                    "text": "`state = { file: null, previewUrl: null, status: 'idle', error: null }` and config is set from props or defaults."
-                },
-                {
-                    "title": "2. User selects a file",
-                    "text": "You keep `config` the same, read the `File`, and pass it to a validator that returns a `ValidationResult`."
-                },
-                {
-                    "title": "3. Validation outcome",
-                    "text": "If `ok === false`, you set `status = 'error'`, `error = result.error`, and keep `file`/`previewUrl` null. If `ok === true`, you set `file = selectedFile`, generate a new `previewUrl`, and move `status` to `'uploading'`."
-                },
-                {
-                    "title": "4. Fake upload completes",
-                    "text": "After `fakeUploadMs`, you update `status` to `'uploaded'`, leave `file` and `previewUrl` as-is, and ensure `error = null`."
-                },
-                {
-                    "title": "5. Replace or remove",
-                    "text": "On replace, you revoke the old `previewUrl`, clear `file`/`error` if needed, and then repeat from step 2 with the new file. On remove, you revoke `previewUrl` and reset back to the initial state."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Config vs state",
-                    "value": "2 objects",
-                    "helperText": "Config (rules) + State (current selection/status)."
-                },
-                {
-                    "label": "Core fields in state",
-                    "value": "4",
-                    "helperText": "`file`, `previewUrl`, `status`, `error` cover all behaviors."
-                },
-                {
-                    "label": "Status values",
-                    "value": "5",
-                    "helperText": "idle, validating, uploading, uploaded, error."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "If you can describe this component as: `config + { file, previewUrl, status, error }`, you show that you’re treating it as a small state machine driven by data — which makes validation, upload simulation, accessibility, and future extensions (drag-and-drop, multiple files) much easier to reason about."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "The important distinctions are configuration versus runtime state, local preview versus durable asset, client phase versus transfer progress, and recoverable error versus cancellation. An explicit state machine prevents incompatible booleans, while upload session and attempt identity keep late callbacks from an obsolete file from mutating the current selection."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "export type UploadStatus =\n  | 'idle'\n  | 'validating'\n  | 'preprocessing'\n  | 'requesting-upload'\n  | 'uploading'\n  | 'finalizing'\n  | 'complete'\n  | 'cancelled'\n  | 'error';\n\nexport interface ImageUploadConfig {\n  maxSizeBytes: number;\n  allowedMimeTypes: string[];\n  minWidth?: number;\n  minHeight?: number;\n  preprocess?: { maxWidth: number; quality: number };\n  label?: string;\n}\n\nexport interface UploadSession {\n  sessionId: string;\n  uploadUrl: string;\n  expiresAt: string;\n}\n\nexport interface UploadedAsset {\n  assetId: string;\n  url: string;\n  width: number;\n  height: number;\n}\n\nexport interface UploadError {\n  code: string;\n  message: string;\n  retryable: boolean;\n}\n\nexport interface ImageUploadState {\n  attemptId: string | null;\n  file: File | null;\n  previewUrl: string | null;\n  status: UploadStatus;\n  progress: { loaded: number; total?: number } | null;\n  session: UploadSession | null;\n  asset: UploadedAsset | null;\n  error: UploadError | null;\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "image-upload-preview-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "export interface ImageUploadViewModel {\n  canShowPreview: boolean;\n  isIdle: boolean;\n  isTransferring: boolean;\n  isComplete: boolean;\n  hasError: boolean;\n}\n\nexport function toViewModel(state: ImageUploadState): ImageUploadViewModel {\n  return {\n    canShowPreview: Boolean(state.previewUrl),\n    isIdle: state.status === 'idle',\n    isTransferring: state.status === 'uploading',\n    isComplete: state.status === 'complete' && state.asset !== null,\n    hasError: state.status === 'error' && state.error !== null\n  };\n}\n\nexport type ValidationResult =\n  | { ok: true; width: number; height: number }\n  | { ok: false; error: UploadError };\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "image-upload-preview-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Core entities",
+      "columns": [
+        "Entity",
+        "Fields (example)",
+        "How you explain it"
+      ],
+      "rows": [
+        [
+          "ImageUploadConfig",
+          "maxSizeBytes, allowedMimeTypes, dimensions, preprocess",
+          "ImageUploadConfig contains product rules and optional preprocessing policy without embedding transport timing."
+        ],
+        [
+          "UploadStatus",
+          "idle through complete, cancelled, or error",
+          "UploadStatus distinguishes validation, preprocessing, session creation, transfer, and finalization."
+        ],
+        [
+          "ImageUploadState",
+          "attemptId, file, previewUrl, status, progress, session, asset, error",
+          "ImageUploadState makes local resources, the active attempt, durable result, and recovery information explicit."
+        ],
+        [
+          "ValidationResult",
+          "ok, error",
+          "\"ValidationResult is a simple object returned by a helper function so we can clearly separate validation from UI, and provide a consistent error message when something is wrong.\""
+        ],
+        [
+          "ImageUploadViewModel",
+          "canShowPreview, isIdle, isTransferring, isComplete, hasError",
+          "The view model derives display flags from the canonical status without introducing a second lifecycle."
+        ]
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Required data",
+              "items": [
+                "A config object for type, size, dimension, and optional preprocessing rules.",
+                "A status field that distinguishes validation, preprocessing, transfer, finalization, completion, cancellation, and error.",
+                "A File reference for the currently selected image (or null when none).",
+                "A preview URL string for img src, managed via URL.createObjectURL.",
+                "An error message string that is shown and announced to the user.",
+                "Optional derived booleans to simplify conditional rendering."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Upload-state modeling traps",
+              "items": [
+                "No single status field; instead, many booleans like isLoading, isDone, hasError that can conflict.",
+                "Storing raw DOM nodes or event objects in state instead of serializable data.",
+                "Holding multiple preview URLs without revoking or tracking which is active.",
+                "Baking max size/type limits directly into logic instead of a config object.",
+                "Using only a boolean like invalid with no actual error message explaining why.",
+                "Not representing the difference between idle and error states in your model."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "How state evolves over time",
+      "steps": [
+        {
+          "title": "1. Initial state",
+          "text": "state = { file: null, previewUrl: null, status: 'idle', error: null } and config is set from props or defaults."
+        },
+        {
+          "title": "2. User selects a file",
+          "text": "You keep config the same, read the File, and pass it to a validator that returns a ValidationResult."
+        },
+        {
+          "title": "3. Validation outcome",
+          "text": "If validation fails, retain the attempt identity, enter error, and expose the typed recovery message. If it succeeds, record decoded dimensions, create one object URL, then move through preprocessing and requesting-upload before transfer."
+        },
+        {
+          "title": "4. Transfer and finalize",
+          "text": "Create an upload session, transfer the processed Blob with abort support, update progress from real bytes when available, and finalize the session into an UploadedAsset. Ignore callbacks whose attemptId no longer matches."
+        },
+        {
+          "title": "5. Replace or remove",
+          "text": "On replace, you revoke the old previewUrl, clear file/error if needed, and then repeat from step 2 with the new file. On remove, you revoke previewUrl and reset back to the initial state."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Config vs state",
+          "value": "2 objects",
+          "helperText": "Config (rules) + State (current selection/status)."
+        },
+        {
+          "label": "Core fields in state",
+          "value": "Explicit attempt",
+          "helperText": "Identity, local resources, status, progress, session, asset, and error stay separate."
+        },
+        {
+          "label": "Status values",
+          "value": "9",
+          "helperText": "Idle through complete, plus explicit cancelled and error paths."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "State checkpoint",
+      "text": "A trustworthy model distinguishes local preview resources from a server-confirmed asset and ties every asynchronous callback to one upload attempt. That makes validation, real transfer progress, cancellation, retry, cleanup, and future multi-file extensions easier to reason about."
+    },
+    {
+      "type": "heading",
+      "text": "Attempt, session, preview, and asset ownership"
+    },
+    {
+      "type": "text",
+      "text": "Keep the selected File and object URL as local resources, not durable form values. UploadState includes attempt identity, finite phase, byte progress, session, completed asset, and retryable error. The parent form receives only a finalized asset or null, while the component reports transient status separately."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "UploadConfig",
+          "type, size, dimensions, preprocess policy",
+          "Props"
+        ],
+        [
+          "UploadAttempt",
+          "attemptId, File, previewUrl, phase",
+          "Local state"
+        ],
+        [
+          "UploadSession",
+          "sessionId, URL, expiry",
+          "Transport state"
+        ],
+        [
+          "UploadedAsset",
+          "assetId, URL, dimensions",
+          "Durable form value"
+        ]
+      ]
+    }
+  ]
 }

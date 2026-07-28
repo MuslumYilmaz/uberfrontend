@@ -127,6 +127,55 @@
       "variant": "info",
       "title": "Correctness test",
       "text": "After any sequence of duplicate observer events, failures, retries, filter changes, and out-of-order responses, the visible order must contain no duplicate IDs, no page committed from an old generation, and no cursor advanced without its page."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type FeedItemId = string;\n\ntype FeedPage = {\n  requestedCursor?: string;\n  itemIds: readonly FeedItemId[];\n  nextCursor?: string;\n  orderingVersion?: string;\n};\n\ntype FeedRequestState = {\n  requestId: string;\n  generation: number;\n  requestedCursor?: string;\n  controller: AbortController;\n};\n\ntype FeedState<T extends { id: FeedItemId }> = {\n  queryKey: string;\n  filters: Readonly<Record<string, string | readonly string[]>>;\n  sort: string;\n  generation: number;\n  entitiesById: Readonly<Record<FeedItemId, T>>;\n  orderedIds: readonly FeedItemId[];\n  pages: readonly FeedPage[];\n  nextCursor?: string;\n  hasMore: boolean;\n  activeRequest?: FeedRequestState;\n  failedCursor?: string;\n  anchor?: { itemId: FeedItemId; offsetPx: number };\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "infinite-scroll-list-contract"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Cursor pages, query state, and viewport invariants"
+    },
+    {
+      "type": "text",
+      "text": "Model PageRecord by complete query key, with ordered IDs, next cursor, admitted cursors, freshness, and request generation. Keep entities normalized by stable ID. View state stores an anchor item and intra-item offset, not only a document pixel that becomes invalid when row height changes."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "PageRecord",
+          "queryKey, ids, nextCursor, admittedCursors",
+          "Server-page cache"
+        ],
+        [
+          "EntityMap",
+          "id to validated item",
+          "Normalized cache"
+        ],
+        [
+          "ListViewState",
+          "anchorId, offset, visibleRange",
+          "Route session"
+        ],
+        [
+          "RequestState",
+          "generation, cursor, AbortController",
+          "Controller runtime"
+        ]
+      ]
     }
   ]
 }

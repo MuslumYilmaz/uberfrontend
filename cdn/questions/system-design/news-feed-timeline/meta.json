@@ -1,7 +1,7 @@
 {
   "id": "news-feed-timeline",
   "title": "News Feed / Timeline Front-End System Design",
-  "description": "Design a social news feed (Facebook/Instagram style) from the front-end perspective. Cover initial load, pagination/infinite scroll, virtualization, media lazy-loading, real-time updates, and smooth interactions (likes/comments) with optimistic UI.\n\nKey considerations:\n- Fetch strategy: initial load vs incremental pages and refresh.\n- Virtualized rendering to keep DOM size bounded.\n- Media handling (images/video), placeholders, and caching.\n- Real-time updates (polling/stream) and how you merge new items.\n- State and interaction design (like/comment) without jank.\n\nBe prepared to discuss: dedupe, ordering, cache invalidation, scroll anchoring, and how to keep performance stable at scale.",
+  "description": "Design a news-feed timeline with cursor pagination, ranked and live updates, deterministic merge rules, stable scroll anchors, media loading, and recovery.",
   "tags": [
     "infinite-scroll",
     "virtualization",
@@ -19,32 +19,54 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interfaces",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "meta"
-  ],
-  "updatedAt": "2026-02-01"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "News Feed Timeline Frontend System Design",
+    "description": "Design a news feed with cursor pagination, ranked and live updates, deterministic merge rules, stable scroll anchors, media loading, and recovery."
+  },
+  "premiumPreview": {
+    "summary": "Design a media-rich ranked feed that combines cursor pages and live events without recreating ranking or moving the reader unexpectedly.",
+    "learningOutcomes": [
+      "Separate normalized post entities from a server-versioned ordered projection.",
+      "Merge pages and live events with event identity, entity versions, and resume cursors.",
+      "Preserve a stable content anchor across rank refreshes and variable-height media.",
+      "Reconcile optimistic reactions without changing authoritative order.",
+      "Bound rendering and media work while preserving keyboard reachability."
+    ],
+    "unlockDescription": "Premium unlocks the ranked projection model, anchor-preserving worked example, stream contracts, recovery matrix, and performance plan."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/news-feed-timeline.md",
+    "primaryKeyword": "news feed timeline frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for News Feed / Timeline Front-End System Design.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for News Feed / Timeline Front-End System Design.",
+    "uniqueAngle": "Design a news-feed timeline with cursor pagination, ranked and live updates, deterministic merge rules, stable scroll anchors, media loading, and recovery.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

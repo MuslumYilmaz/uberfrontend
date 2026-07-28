@@ -1,10 +1,10 @@
 {
   "key": "A",
-  "title": "Architecture / High-level design",
+  "title": "Architecture",
   "blocks": [
     {
       "type": "text",
-      "text": "The architecture must keep playback fast and scrolling smooth. Treat this as a client pipeline: feed shell + visibility tracking + prefetch manager + media loader + playback controller. The UI should be driven by a single active player and a bounded cache."
+      "text": "The architecture must keep playback fast and scrolling smooth. Treat this as a client pipeline: feed shell + visibility tracking + prefetch manager + media adapter + playback controller. The media adapter translates feed rendition metadata into browser-supported source selection and preload work; it does not pretend MP4 files provide segmented ABR. The UI is driven by a single active player and a bounded session cache."
     },
     {
       "type": "divider"
@@ -16,7 +16,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**Client architecture**\n- Feed shell + virtualized list\n- Visibility observer (viewport + direction)\n- Video card component with lifecycle hooks\n- Prefetch manager (next 2-3)\n- Playback controller (single active player)"
+              "text": "Client architecture\n- Feed shell + virtualized list\n- Visibility observer (viewport + direction)\n- Video card component with lifecycle hooks\n- Prefetch manager with a measured directional window\n- Playback controller (single active player)"
             }
           ]
         },
@@ -24,7 +24,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**Delivery pipeline**\n- CDN for segmented media\n- Adaptive bitrate (ABR) selection\n- Client cache with TTL + LRU\n- Retry + fallback for slow networks\n- Analytics hooks for playback health"
+              "text": "Delivery pipeline\n- CDN-hosted MP4 rendition candidates\n- Choose one supported rendition before an item starts\n- Bounded poster and media-session cache\n- Retry or choose a lower rendition for a future attempt\n- Analytics hooks for playback health"
             }
           ]
         }
@@ -32,7 +32,7 @@
     },
     {
       "type": "table",
-      "title": "Core modules to mention",
+      "title": "Client media modules",
       "columns": [
         "Module",
         "Responsibility",
@@ -60,9 +60,9 @@
           "Prevents multiple decoders running"
         ],
         [
-          "MediaCache",
-          "Caches poster + segments (TTL/LRU)",
-          "Reduces network churn"
+          "MediaAdapter",
+          "Selects supported MP4 rendition and coordinates bounded preload resources",
+          "Separates feed metadata from browser media behavior without claiming segmented ABR"
         ]
       ]
     },
@@ -83,11 +83,11 @@
         },
         {
           "title": "3) Prefetch",
-          "text": "PrefetchManager schedules the next 2-3 videos based on scroll direction and idle time."
+          "text": "PrefetchManager schedules a measured directional neighbor window from settled intent, scroll velocity, cache evidence, device memory, and network signals."
         },
         {
           "title": "4) Adapt quality",
-          "text": "ABR chooses a lower bitrate on slow networks; upgrade when stable."
+          "text": "Before an item starts, the media selector chooses a supported MP4 rendition from device, Save-Data, and recent session evidence. This contract does not claim mid-stream adaptive switching."
         },
         {
           "title": "5) Cleanup",
@@ -98,7 +98,7 @@
     {
       "type": "callout",
       "variant": "success",
-      "title": "Key message",
+      "title": "Playback has one owner",
       "text": "You win by controlling the pipeline: visibility drives playback, a small prefetch window drives instant play, and a bounded cache keeps memory predictable."
     },
     {
@@ -106,31 +106,76 @@
     },
     {
       "type": "table",
-      "title": "Component boundaries to call out",
+      "title": "Media pipeline boundaries",
       "columns": [
         "Boundary",
         "Reason"
       ],
       "rows": [
         [
-          "UI shell vs feature module",
-          "Independent deploys and safe rollouts"
+          "Viewport intent vs playback controller",
+          "Only the settled card can activate the shared player"
         ],
         [
-          "Ingest vs render",
-          "Prevents re-render storms"
+          "Feed entities vs media sessions",
+          "Decoded resources can be evicted without losing card identity or anchor"
         ],
         [
-          "Cache vs view model",
-          "Keeps UI deterministic"
+          "Rendition selection vs activation",
+          "One attempt identity guards source choice, preload completion, and play promises"
         ]
       ]
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "Explain the data flow",
-      "text": "State the pipeline explicitly: fetch -> normalize -> cache -> view model -> render. This shows you understand front-end architecture beyond UI widgets."
+      "title": "Viewport-to-playback flow",
+      "text": "Make the media path explicit: page intent becomes normalized feed entities, a settled viewport identity, one active playback session, prioritized media work, and finally the rendered card.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: three fast swipes on a constrained connection"
+    },
+    {
+      "type": "text",
+      "text": "Video A is playing, B is partially buffered, and the user swipes rapidly through B toward C. The frontend must follow the final viewport intent without allowing three decoders, stale autoplay, or abandoned preloads to consume the session."
+    },
+    {
+      "type": "table",
+      "title": "Scenario walkthrough",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "B crosses activation threshold",
+          "Mark B as candidate but wait for settled intent.",
+          "A keeps playing during the short gesture.",
+          "Only one player owns audible playback."
+        ],
+        [
+          "User continues to C",
+          "Cancel B priority work and promote C preload.",
+          "B poster remains; no stale playback starts.",
+          "Preload follows current intent."
+        ],
+        [
+          "C settles",
+          "Pause A, attach the reusable player to C, and attempt play from user gesture context.",
+          "C shows honest buffering or playback state.",
+          "A failed play promise is handled."
+        ],
+        [
+          "Memory pressure rises",
+          "Release distant decoded media and shrink preload distance.",
+          "Nearby posters remain stable.",
+          "Long sessions keep bounded resources."
+        ]
+      ]
     }
   ]
 }

@@ -1,25 +1,24 @@
 {
   "key": "D",
-  "title": "Data model",
+  "title": "Data model for URL, server, draft, and mutation state",
   "blocks": [
     {
       "type": "text",
-      "text": "Define which state is global, shared, or local. Keep derived state computed in selectors or memoized helpers."
-    },
-    {
-      "type": "callout",
-      "variant": "info",
-      "title": "Separate server vs UI state",
-      "text": "Server data changes via API; UI state changes via user interactions. Mixing them makes components hard to reason about."
+      "text": "Classify state by authority, lifetime, and addressability. Server entities are normalized by ticket identity and protected by versions. Committed URL state carries the shareable query and selected ticket; incomplete search input can remain local until committed. Draft text is local, keyed by ticket, and versioned independently. Pending commands are overlays with idempotency keys. Ephemeral UI details such as an open menu remain local to the component that renders them."
     },
     {
       "type": "code",
-      "language": "ts",
-      "code": "interface PageState {\n  items: Item[];\n  filters: FilterState;\n  selectedId: string | null;\n  loading: boolean;\n  error: string | null;\n}\n\ninterface FilterState {\n  query: string;\n  tags: string[];\n}\n\ninterface UIState {\n  isModalOpen: boolean;\n  hoveredId: string | null;\n}\n"
+      "language": "typescript",
+      "code": "type TicketStatus = 'open' | 'pending' | 'resolved';\n\ninterface TicketQuery {\n  workspaceId: string;\n  search: string;\n  statuses: TicketStatus[];\n  assignee: 'me' | 'unassigned' | string;\n  sort: 'updated-desc' | 'priority-desc';\n  cursor?: string;\n}\n\ninterface Ticket {\n  id: string;\n  subject: string;\n  status: TicketStatus;\n  assigneeId?: string;\n  priority: 'low' | 'normal' | 'high';\n  messageIds: string[];\n  version: number;\n  updatedAt: string;\n  capabilities: Array<'reply' | 'assign' | 'change-status'>;\n}\n\ntype TicketMessage = {\n  id: string;\n  ticketId: string;\n  authorLabel: string;\n  safeBody: string;\n  createdAt: string;\n};\n\ntype TicketPage = {\n  items: readonly Ticket[];\n  nextCursor?: string;\n};\n\ntype TicketDetail = {\n  ticket: Ticket;\n  messages: readonly TicketMessage[];\n};\n\ntype TicketCommandResult =\n  | { status: 'accepted'; commandId: string; ticket: Ticket }\n  | { status: 'conflict'; ticket: Ticket };\n\ntype ReplyResult = TicketCommandResult;\ntype UpdateTicketResult = TicketCommandResult;\n\ntype TicketEvent = {\n  eventId: string;\n  workspaceId: string;\n  cursor: string;\n  ticket: Ticket;\n};\n\ninterface ComposerDraft {\n  ticketId: string;\n  text: string;\n  attachmentIds: string[];\n  localRevision: number;\n  savedAt: string;\n}\n\ninterface PendingMutation {\n  commandId: string;\n  ticketId: string;\n  kind: 'reply' | 'assign' | 'change-status';\n  basedOnVersion: number;\n  phase: 'sending' | 'conflicted' | 'failed';\n  optimisticPatch?: Partial<Ticket>;\n}\n\ninterface InboxViewState {\n  listAnchorTicketId?: string;\n  mobilePane: 'list' | 'detail';\n  openMenu?: { ticketId: string; name: string };\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ui-component-state-from-mock-contract"
+      }
     },
     {
       "type": "table",
-      "title": "What belongs where",
+      "title": "State placement",
       "columns": [
         "State",
         "Owner",
@@ -27,39 +26,56 @@
       ],
       "rows": [
         [
-          "items",
-          "Container",
-          "Shared across list and details"
+          "Search, filters, sort, selected ticket",
+          "URL and route parser",
+          "Shareable, refresh-safe, and compatible with browser history."
         ],
         [
-          "filters",
-          "Container",
-          "Used by multiple components"
+          "Ticket summaries and details",
+          "Normalized server cache",
+          "Multiple panes can subscribe to one versioned entity."
         ],
         [
-          "hover/expanded",
-          "ItemCard",
-          "Local UI only"
+          "Reply drafts",
+          "Ticket-keyed draft repository",
+          "Their lifetime differs from server messages and selection."
         ],
         [
-          "selectedId",
-          "Container",
-          "Controls list + detail"
+          "Pending status or assignee",
+          "Mutation coordinator overlay",
+          "Rollback and conflicts do not rewrite the base entity."
         ],
         [
-          "modal open",
-          "PageLayout",
-          "Global overlay state"
+          "Open menu and transient validation",
+          "Nearest rendering component",
+          "No other consumer needs it and it should disappear with the view."
+        ],
+        [
+          "List anchor and return focus",
+          "Route-session view state",
+          "Responsive navigation can remount the list without losing context."
         ]
       ]
     },
     {
+      "type": "heading",
+      "text": "Cache keys and derived values"
+    },
+    {
+      "type": "text",
+      "text": "A stable list-query key includes workspace, committed search, filters, sort, and locale-sensitive behavior when relevant; it never includes the page cursor. Each page request key pairs that query key with its opaque cursor, using an explicit first-page sentinel when no cursor exists. Pages then append to one query record without changing its identity. The selected list item is derived from the route ticket ID. Permission flags are server facts and actions are derived from them plus local pending state. Do not store filtered arrays, unread labels, or status display text when selectors can derive them cheaply from stable inputs."
+    },
+    {
       "type": "checklist",
-      "title": "Data rules",
+      "title": "Invariants",
       "items": [
-        "Derived data should be computed, not stored.",
-        "Keep server cache separate from UI state.",
-        "Avoid duplicating the same source of truth across components."
+        "One ticket ID resolves to one newest accepted server entity in a workspace scope.",
+        "An older fetch or event cannot replace a newer ticket version.",
+        "Changing selection does not delete or submit a ticket-keyed draft.",
+        "A failed optimistic command removes only its overlay and keeps the server entity intact.",
+        "Browser Back restores a URL-defined query and selection without a second hidden selection state.",
+        "Permissions are rechecked after every authoritative update before rendering actions.",
+        "Untrusted message content is rendered as escaped or sanitized content according to its contract."
       ]
     }
   ]

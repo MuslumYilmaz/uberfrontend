@@ -1,7 +1,7 @@
 {
   "id": "live-chart-high-frequency-updates",
-  "title": "Live Chart Rendering",
-  "description": "Design a live line chart that updates roughly every 500ms (e.g. streaming metrics, stock prices, telemetry). Focus purely on the frontend side: how to feed data into the chart, render updates efficiently, and keep the UI smooth over time.\n\nKey considerations:\n- Decide between incremental updates (append/shift points) vs full redraw for each tick.\n- Understand the trade-offs between using a charting library (ECharts, Chart.js, etc.) and custom canvas/WebGL rendering.\n- Design a requestAnimationFrame loop (or equivalent) so rendering stays smooth without over-drawing.\n- Consider using OffscreenCanvas and/or Web Workers to offload heavy work away from the main thread.\n\nYou should be prepared to talk about: memory management as data grows (windowing / sliding buffer), how to handle bursts of updates (queueing vs dropping frames), how to avoid blocking the main thread, and strategies like downsampling/aggregation for very large datasets so the chart stays responsive even after running for a long time.",
+  "title": "Live Chart Rendering (High Frequency Updates)",
+  "description": "Design a live chart that ingests bursty samples, renders on demand, bounds memory, downsamples by viewport, recovers from gaps, and remains accessible.",
   "tags": [
     "charts",
     "real-time",
@@ -11,32 +11,54 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interfaces",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "apple"
-  ],
-  "updatedAt": "2026-01-31"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "Live Chart Rendering Frontend System Design",
+    "description": "Design a live chart with burst buffering, on-demand rendering, bounded memory, viewport downsampling, gap recovery, and accessible summaries."
+  },
+  "premiumPreview": {
+    "summary": "Design a live chart that separates sample retention from visual paint scheduling while keeping memory bounded during long sessions.",
+    "learningOutcomes": [
+      "Separate data arrival cadence, accepted sample retention, and paint cadence.",
+      "Coalesce visual frames without silently discarding authoritative samples.",
+      "Choose SVG, Canvas, WebGL, or workers from profile evidence.",
+      "Recover from sequence gaps, background suspension, resize races, and renderer failure.",
+      "Provide a keyboard-accessible inspection path and semantic data summary."
+    ],
+    "unlockDescription": "Premium unlocks the bounded data model, on-demand scheduler, burst worked example, renderer trade-offs, and failure recovery."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/live-chart-high-frequency-updates.md",
+    "primaryKeyword": "live chart rendering frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Live Chart Rendering (High Frequency Updates).",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Live Chart Rendering (High Frequency Updates).",
+    "uniqueAngle": "Design a live chart that ingests bursty samples, renders on demand, bounds memory, downsamples by viewport, recovers from gaps, and remains accessible.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

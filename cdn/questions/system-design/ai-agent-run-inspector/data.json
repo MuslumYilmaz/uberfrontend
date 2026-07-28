@@ -1,0 +1,146 @@
+{
+  "key": "D",
+  "title": "Normalized data and event reconciliation",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Model the browser state as a live trace document plus independent view and command state. Span summaries belong in normalized maps because the same entity appears in the tree, search results, aggregate counts, breadcrumbs, and inspector. Payload bodies are references, not fields on every row. The exact backend schema is abstract; these types describe the minimum stable contract the frontend needs."
+    },
+    {
+      "type": "heading",
+      "text": "Core entities"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type RunStatus =\n  | 'queued' | 'running'\n  | 'completed' | 'failed' | 'stopped';\n\ntype RunViewStatus = RunStatus | 'waiting_approval';\n\ntype SpanKind =\n  | 'agent' | 'model' | 'tool' | 'retrieval'\n  | 'handoff' | 'guardrail' | 'approval' | 'custom';\n\ntype AgentRun = {\n  id: string;\n  workflowName: string;\n  status: RunStatus;\n  startedAt: string;\n  endedAt?: string;\n  version: number;\n  rootSpanIds: string[];\n  counts: { spans: number; errors: number; pendingApprovals: number };\n  capabilities: { canStop: boolean; canRetry: boolean };\n};\n\ntype Span = {\n  id: string;\n  runId: string;\n  parentSpanId?: string;\n  kind: SpanKind;\n  originalKind?: string;\n  name: string;\n  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';\n  startedAt?: string;\n  endedAt?: string;\n  durationMs?: number;\n  safeSummary?: string;\n  attributes: Record<string, string | number | boolean>;\n  inputRef?: PayloadRef;\n  outputRef?: PayloadRef;\n  error?: { code?: string; message: string; retryable: boolean };\n  revision: number;\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-agent-run-inspector-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type ApprovalRequest = {\n  id: string;\n  runId: string;\n  spanId: string;\n  status: 'pending' | 'approved' | 'denied' | 'expired';\n  prompt: string;\n  safeActionSummary: string;\n  requestedAt: string;\n  resolvedAt?: string;\n  version: number;\n  capabilities: { canApprove: boolean; canDeny: boolean };\n};\n\ntype PayloadRef = {\n  payloadId: string;\n  contentType: 'application/json' | 'text/plain';\n  byteSize: number;\n  redaction: 'redacted' | 'partial' | 'unavailable';\n  contentVersion: number;\n  truncated: boolean;\n};\n\ntype PayloadCacheEntry = {\n  state: 'loading' | 'ready' | 'truncated' | 'error';\n  content?: unknown;\n  byteSize: number;\n  contentVersion: number;\n  redactionVersion: number;\n};\n\ntype VisibleTraceRow = {\n  spanId: string;\n  depth: number;\n  posInSet: number;\n  setSize: number;\n  expanded: boolean | undefined;\n  matched: boolean;\n};\n\ntype RunSnapshotPayload = {\n  run: AgentRun;\n  spans: Span[];\n  approvals: ApprovalRequest[];\n  snapshotVersion: number;\n  latestContiguousSequence: number;\n  resumeCursor: string;\n};\n\ntype SpanDelta = {\n  spanId: string;\n  revision: number;\n  fields: Partial<Pick<\n    Span,\n    | 'name' | 'status' | 'startedAt' | 'endedAt' | 'durationMs'\n    | 'safeSummary' | 'attributes' | 'inputRef' | 'outputRef' | 'error'\n  >>;\n};\n\ntype TraceEventDataByType = {\n  'run.snapshot': RunSnapshotPayload;\n  'span.started': Span & { status: 'pending' | 'running' };\n  'span.delta': SpanDelta;\n  'span.completed': Span & { status: 'completed' | 'failed' | 'cancelled' };\n  'approval.requested': ApprovalRequest & { status: 'pending' };\n  'approval.resolved': ApprovalRequest & { status: 'approved' | 'denied' | 'expired' };\n  'run.completed': AgentRun & { status: 'completed' };\n  'run.failed': AgentRun & { status: 'failed' };\n  'run.stopped': AgentRun & { status: 'stopped' };\n};\n\ntype TraceEventType = keyof TraceEventDataByType;\n\ntype TraceEventBase = {\n  schemaVersion: 1;\n  eventId: string;\n  runId: string;\n  sequence: number;\n  cursor: string;\n  occurredAt: string;\n};\n\ntype TraceEventEnvelope = {\n  [Type in TraceEventType]: TraceEventBase & {\n    type: Type;\n    data: TraceEventDataByType[Type];\n  }\n}[TraceEventType];",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-agent-run-inspector-contract"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Store shape"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type TraceStore = {\n  document: {\n    run?: AgentRun;\n    spansById: Record<string, Span>;\n    childIdsByParentId: Record<string, string[]>;\n    orphanIdsByParentId: Record<string, string[]>;\n    approvalsById: Record<string, ApprovalRequest>;\n    seenEventIds: Set<string>;\n    fieldSequenceByKey: Record<string, number>;\n    contiguousSequence: number;\n    observedSequence: number;\n    acknowledgedCursor?: string;\n    connection: 'offline' | 'connecting' | 'live' | 'stale' | 'gap';\n  };\n  view: {\n    selectedSpanId?: string;\n    expandedIds: Set<string>;\n    query: string;\n    kinds: Set<SpanKind>;\n    statuses: Set<Span['status']>;\n    inspectorTab: 'overview' | 'input' | 'output' | 'error';\n  };\n  actions: Record<string, {\n    command: 'stop' | 'retry' | 'approve' | 'deny';\n    idempotencyKey: string;\n    expectedVersion: number;\n    status: 'submitting' | 'awaiting_event' | 'conflict' | 'failed';\n  }>;\n  payloadCache: Map<string, PayloadCacheEntry>;\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-agent-run-inspector-contract"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Invariants that prevent corrupt UI"
+    },
+    {
+      "type": "table",
+      "title": "State invariants",
+      "columns": [
+        "Invariant",
+        "Why it matters",
+        "Enforcement"
+      ],
+      "rows": [
+        [
+          "One entity per run, span, or approval ID",
+          "Duplicate replay cannot create duplicate rows or actions",
+          "Maps keyed by immutable ID and idempotent event IDs"
+        ],
+        [
+          "Terminal lifecycle never moves backward",
+          "A late started event cannot revive a completed or failed span",
+          "Field sequence or entity revision guards"
+        ],
+        [
+          "Child identity is preserved without a parent",
+          "Out-of-order delivery remains available for inspection and recoverable",
+          "Orphan index keyed by the expected parent ID"
+        ],
+        [
+          "Acknowledged cursor represents contiguous history",
+          "Reconnect does not skip a missing event because a later one arrived",
+          "Gap tracker advances only when all earlier sequences exist"
+        ],
+        [
+          "Payload content is not part of the row entity",
+          "Large JSON cannot make every stream update expensive",
+          "Lazy payload cache keyed by ID, kind, redaction, and version"
+        ],
+        [
+          "Pending commands do not become server truth",
+          "Stop or approval races converge on the authoritative outcome",
+          "Separate action slice plus expected version"
+        ],
+        [
+          "Waiting for approval is a derived display state",
+          "A run can have pending approvals without inventing a second authoritative lifecycle",
+          "Derive the label from a running run plus pending ApprovalRequest entities"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Idempotent merge algorithm"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type SnapshotTraceEvent = Extract<TraceEventEnvelope, { type: 'run.snapshot' }>;\ntype SpanTraceEvent = Extract<\n  TraceEventEnvelope,\n  { type: 'span.started' | 'span.delta' | 'span.completed' }\n>;\ntype ApprovalTraceEvent = Extract<\n  TraceEventEnvelope,\n  { type: 'approval.requested' | 'approval.resolved' }\n>;\ntype TerminalRunTraceEvent = Extract<\n  TraceEventEnvelope,\n  { type: 'run.completed' | 'run.failed' | 'run.stopped' }\n>;\ntype IncrementalTraceEvent = Exclude<TraceEventEnvelope, SnapshotTraceEvent>;\n\ndeclare function rebaseFromInitialOrRecoverySnapshot(\n  store: TraceStore,\n  event: SnapshotTraceEvent,\n): void;\ndeclare function recordEventIdentityAndObservedSequence(\n  store: TraceStore,\n  event: IncrementalTraceEvent,\n): void;\ndeclare function mergeSpanFieldsBySequence(store: TraceStore, event: SpanTraceEvent): void;\ndeclare function attachKnownParentOrRecordOrphan(store: TraceStore, event: SpanTraceEvent): void;\ndeclare function mergeApprovalByVersion(store: TraceStore, event: ApprovalTraceEvent): void;\ndeclare function mergeRunTerminalState(store: TraceStore, event: TerminalRunTraceEvent): void;\ndeclare function recordReceivedSequence(\n  store: TraceStore,\n  sequence: number,\n  cursor: string,\n): void;\ndeclare function advanceContiguousCursor(store: TraceStore): void;\n\nfunction assertNever(value: never): never {\n  throw new Error(`Unsupported trace event: ${String(value)}`);\n}\n\nfunction applyTraceEvent(\n  store: TraceStore,\n  event: TraceEventEnvelope,\n  routeRunId: string,\n): void {\n  if (event.runId !== routeRunId) return;\n\n  if (event.type === 'run.snapshot') {\n    rebaseFromInitialOrRecoverySnapshot(store, event);\n    return;\n  }\n\n  if (event.runId !== store.document.run?.id) return;\n  if (store.document.seenEventIds.has(event.eventId)) return;\n  recordEventIdentityAndObservedSequence(store, event);\n\n  switch (event.type) {\n    case 'span.started':\n    case 'span.delta':\n    case 'span.completed':\n      mergeSpanFieldsBySequence(store, event);\n      attachKnownParentOrRecordOrphan(store, event);\n      break;\n    case 'approval.requested':\n    case 'approval.resolved':\n      mergeApprovalByVersion(store, event);\n      break;\n    case 'run.completed':\n    case 'run.failed':\n    case 'run.stopped':\n      mergeRunTerminalState(store, event);\n      break;\n    default:\n      assertNever(event);\n  }\n\n  recordReceivedSequence(store, event.sequence, event.cursor);\n  advanceContiguousCursor(store);\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-agent-run-inspector-contract"
+      }
+    },
+    {
+      "type": "text",
+      "text": "The pseudocode separates deduplication from field freshness. Event ID answers whether this exact fact was already processed; sequence or revision answers whether the fact is newer than the value currently shown. If an event is beyond a gap, the reducer may retain its entity update for visibility but cannot advance the safe resume cursor past missing history. A timed gap policy asks for missing deltas or replaces the snapshot rather than guessing."
+    },
+    {
+      "type": "heading",
+      "text": "Streaming deltas and bounded memory"
+    },
+    {
+      "type": "checklist",
+      "title": "Delta rules",
+      "items": [
+        "Give each appendable text or structured delta a stable chunk index; ignore a repeated index after reconnect.",
+        "Compact many small chunks into a larger immutable buffer during idle work, not on every token.",
+        "Retain complete summaries for all spans but evict closed payload bodies with a least-recently-used byte budget.",
+        "Keep search indexing limited to safe summary fields unless the user explicitly loads an authorized payload.",
+        "Persist no sensitive payload in local storage, analytics events, error reporting breadcrumbs, or URL parameters.",
+        "Represent truncation and unavailable content explicitly so absence is not mistaken for an empty tool result."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Selectors and URL state"
+    },
+    {
+      "type": "text",
+      "text": "The selected span ID may live in the query string so a support link can reopen a specific operation. Validate it against the loaded run and fall back to the failed span or first root when it is missing. Search, filters, and expansion are local view state because indexing every combination would create noisy URLs. The flattened row selector returns depth, sibling position, child count, match state, and expansion state for treegrid semantics. Aggregate counts should derive incrementally from entity transitions rather than scanning ten thousand spans on every event."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Redaction is data modeling, not decoration",
+      "text": "A masked CSS layer over a secret still sends the secret to the browser. Payload references must describe server-side redaction or omission, and caches must be partitioned by authorization and redaction version. The frontend escapes text and masks defensively, but it cannot turn delivered private data into secure data."
+    }
+  ]
+}

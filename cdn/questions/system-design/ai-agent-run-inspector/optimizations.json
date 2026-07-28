@@ -1,0 +1,302 @@
+{
+  "key": "O",
+  "title": "Optimizations for performance, resilience, security, and accessibility",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Optimize from measured bottlenecks while protecting correctness. The dominant risks are bursts of entity updates, an unbounded trace tree, huge structured payloads, reconnect ambiguity, conflicting human actions, sensitive content, and an interaction model that works visually but fails with a keyboard or screen reader."
+    },
+    {
+      "type": "heading",
+      "text": "Rendering and memory budgets"
+    },
+    {
+      "type": "table",
+      "title": "Technique and trigger",
+      "columns": [
+        "Technique",
+        "Use it when",
+        "Tradeoff and guardrail"
+      ],
+      "rows": [
+        [
+          "Virtualized flat tree",
+          "Visible and expanded rows can reach thousands",
+          "Use stable row keys, overscan, and active-row pinning so focus is never silently unmounted"
+        ],
+        [
+          "Animation-frame event batches",
+          "A stream burst creates many ordinary deltas",
+          "Flush important approval and terminal transitions promptly; measure event-to-visible latency"
+        ],
+        [
+          "Entity-level subscriptions",
+          "One changing span rerenders unrelated rows",
+          "Keep selectors stable and avoid passing the entire map through every component"
+        ],
+        [
+          "Lazy payload cache",
+          "Inputs or outputs are large and rarely opened",
+          "Bound by bytes, evict least-recently-used closed entries, and include redaction version in the key"
+        ],
+        [
+          "Web Worker parsing or search",
+          "Profiling shows JSON parsing or safe-summary indexing blocks the main thread",
+          "Structured cloning has a cost; do not add a worker before measurement"
+        ],
+        [
+          "Fixed or estimated row height",
+          "Trace rows have predictable compact summaries",
+          "Keep expanded payloads out of rows; variable measurement complicates scroll anchoring"
+        ]
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Performance details worth naming",
+      "items": [
+        "Share one low-frequency clock for elapsed labels instead of creating a timer for each running row.",
+        "Do not syntax-highlight megabytes of JSON synchronously; show a capped preview and progressively render or download when allowed.",
+        "Debounce text search briefly, but apply kind and status filters immediately; cancel obsolete worker or payload requests.",
+        "Preserve scroll position by stable span identity when rows above change, expand, collapse, or attach to a late parent.",
+        "Pause visual batching and reduce reconnect work while the page is hidden, then catch up from the acknowledged cursor.",
+        "Measure DOM nodes, long tasks, frame drops, selector duration, retained payload bytes, and event-to-visible latency on a mid-range device."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Reconnect and partial-order failure modes"
+    },
+    {
+      "type": "table",
+      "title": "Failure response matrix",
+      "columns": [
+        "Failure",
+        "User experience",
+        "Correctness response"
+      ],
+      "rows": [
+        [
+          "Connection drops",
+          "Keep the trace visible, show reconnecting and last-updated time, offer manual retry",
+          "Abort the old reader, back off with jitter, and resume from the last contiguous cursor"
+        ],
+        [
+          "Cursor expired",
+          "Show catching up without clearing selection",
+          "Request a fresh snapshot, rebase view state by stable IDs, and discard obsolete transport state"
+        ],
+        [
+          "Sequence gap persists",
+          "Mark data as incomplete rather than live",
+          "Fetch a bounded delta range or replace the snapshot; never guess that missing events were irrelevant"
+        ],
+        [
+          "Child arrives before parent",
+          "Optionally show an unresolved root group so the span remains available for inspection",
+          "Store the child once under an orphan index and attach it when the parent appears"
+        ],
+        [
+          "Completed event arrives after newer failure",
+          "Keep the newer terminal evidence",
+          "Field sequence or revision rejects lifecycle regression"
+        ],
+        [
+          "Malformed or unknown event",
+          "Continue known history and surface degraded freshness if continuity is affected",
+          "Validate envelope, log schema-safe diagnostics, and request recovery when required"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Human-in-the-loop approval UI races"
+    },
+    {
+      "type": "table",
+      "title": "Race handling",
+      "columns": [
+        "Race",
+        "Resolution"
+      ],
+      "rows": [
+        [
+          "User stops while the run completes",
+          "Completion is authoritative. Clear stopping, show that the run completed before stop took effect, and do not rewrite it as stopped."
+        ],
+        [
+          "Two tabs decide one approval",
+          "The first accepted server version wins. The losing tab consumes the resolved event or 409 body and explains who or what resolved it when safe."
+        ],
+        [
+          "Command response is lost but action succeeded",
+          "Retry with the same idempotency key or await the stream; duplicate confirmation converges without executing twice."
+        ],
+        [
+          "Approval becomes unavailable while the dialog is open",
+          "Disable the stale form after the newer event, preserve any typed reason only locally, and move focus to the outcome message."
+        ],
+        [
+          "Route changes during a command",
+          "Do not cancel a request if cancellation could hide an accepted consequence; track command identity outside the component and reconcile on return."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Security and privacy"
+    },
+    {
+      "type": "checklist",
+      "title": "Defense in depth",
+      "items": [
+        "Redact or omit secrets on the server before delivery. Client masking is presentation, never the access-control boundary.",
+        "Render tool output, prompts, attributes, and errors as escaped text or a safe structured JSON tree; never inject raw HTML.",
+        "Do not display hidden reasoning or imply that generated summaries are private chain-of-thought.",
+        "Partition caches by project, user authorization context, payload ID, content version, and redaction version; clear sensitive memory on logout or project change.",
+        "Keep payload values out of URLs, local storage, analytics, console logs, crash breadcrumbs, copied support diagnostics, and DOM data attributes.",
+        "Enforce response-size and nesting limits, detect cyclic client objects, and offer a server-prepared download only when capability allows it.",
+        "Treat capability flags as UI hints. Every stop, retry, approve, deny, and payload request still requires server authorization."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessible virtualized treegrid"
+    },
+    {
+      "type": "text",
+      "text": "Use a tree when each row is mainly a label and status; use a treegrid only if rows expose meaningful interactive columns such as kind, duration, tokens, and status. Follow the WAI-ARIA interaction model consistently. The active row supports Up and Down movement through visible rows, Right to expand or enter the first child, Left to collapse or move to the parent, Home and End for boundaries, and Enter to open details. Expose expanded state and hierarchy with aria-expanded, aria-level, aria-posinset, and aria-setsize where the chosen pattern requires them."
+    },
+    {
+      "type": "checklist",
+      "title": "Focus and announcement rules",
+      "items": [
+        "Keep one predictable tab stop for the tree and manage active-row focus without trapping the user.",
+        "Pin or overscan the focused row so virtualization does not remove it; restore by span ID after filter or hierarchy changes.",
+        "When a filter hides the active row, move to the nearest visible ancestor or first result and announce the change once.",
+        "Move focus to the inspector heading when a mobile drawer opens and return it to the triggering row when the drawer closes.",
+        "Use a polite live region for approval requested, run failed, run completed, run stopped, reconnecting, and caught up; deduplicate by semantic transition.",
+        "Do not announce token deltas, timers, every new span, or continuously changing counts. Provide a manual new-activity summary when volume is high.",
+        "Never use color alone for running, failed, or waiting states; retain text labels and visible focus at 200 percent zoom."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Mobile and overflow resilience"
+    },
+    {
+      "type": "text",
+      "text": "At narrow widths, hide secondary trace columns behind the inspector rather than compressing the name into one word per line. Long run and span IDs may wrap with overflow-wrap anywhere or be truncated with an accessible copy control. Tables and code samples receive their own horizontal scroll containers. JSON uses a bounded viewport with wrapping optional, and the detail drawer cannot exceed the visual viewport. Test 320 and 390 pixels, browser zoom, large text, safe-area insets, an unbroken 200-character identifier, deeply nested spans, and a payload with wide keys."
+    },
+    {
+      "type": "heading",
+      "text": "Metrics, testing, and rollout"
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Product and reliability metrics",
+              "items": [
+                "Snapshot-to-useful-trace and stream event-to-visible latency.",
+                "Reconnect success, time stale, cursor expiry, and unresolved gap rate.",
+                "Stop and approval success, conflict, duplicate-submit, and confirmation latency.",
+                "Search-to-selection time and failed-span discovery time.",
+                "Payload error, truncation, and unauthorized request rate."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Client health metrics",
+              "items": [
+                "Long tasks, interaction latency, dropped frames, and row-selector duration.",
+                "Mounted rows, retained entities, payload-cache bytes, and worker queue depth.",
+                "Schema rejection and unknown span-kind rate without sensitive payload values.",
+                "Accessibility regression results for keyboard navigation, focus, names, and live regions.",
+                "Horizontal overflow checks across trace tables, code, payloads, and long identifiers."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Safe rollout",
+      "steps": [
+        {
+          "title": "Static completed runs",
+          "text": "Ship normalized snapshots, tree navigation, lazy redacted payloads, responsive layout, and accessibility before adding live mutation."
+        },
+        {
+          "title": "Read-only live runs",
+          "text": "Add resumable streaming behind a flag, shadow-check event reduction against refreshed snapshots, and instrument gaps and memory."
+        },
+        {
+          "title": "Stop and retry",
+          "text": "Introduce idempotent run commands with visible pending and conflict states, then test completion races and navigation."
+        },
+        {
+          "title": "Human approvals",
+          "text": "Gate approval controls by explicit capabilities, audit cross-tab conflicts, verify focus and announcements, and roll out per project."
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Interview answer checkpoint",
+      "items": [
+        "Why a snapshot plus resumable deltas gives the browser a coherent base without replaying an unbounded history.",
+        "Why event ID, sequence or revision, and cursor solve different duplicate, freshness, and recovery problems.",
+        "Why normalized span entities and a derived flat tree make orphan attachment, search, and virtualization safer than a mutable nested object.",
+        "Why payloads stay lazy and server-redacted while trace rows remain compact, escaped, and permission-aware.",
+        "Why stop and approval controls need separate pending state, idempotency keys, version conflicts, predictable focus, and restrained announcements."
+      ],
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "OpenAI Agents tracing model",
+          "href": "https://openai.github.io/openai-agents-python/tracing/",
+          "description": "Reference terminology for traces and spans while keeping the UI provider-neutral."
+        },
+        {
+          "label": "OpenAI Agents human-in-the-loop",
+          "href": "https://openai.github.io/openai-agents-python/human_in_the_loop/",
+          "description": "Ground approval, rejection, interruption, and resume behavior in a concrete agent run model."
+        },
+        {
+          "label": "OpenTelemetry GenAI spans",
+          "href": "https://opentelemetry.io/docs/specs/semconv/registry/attributes/gen-ai/",
+          "description": "Review standardized generative AI attribute names and their evolving stability."
+        },
+        {
+          "label": "WAI-ARIA treegrid pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/treegrid/",
+          "description": "Use the keyboard and semantic expectations for an interactive hierarchical grid."
+        },
+        {
+          "label": "WAI-ARIA log role technique",
+          "href": "https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA23",
+          "description": "Understand live-region behavior before announcing meaningful appended status messages."
+        },
+        {
+          "label": "MDN AbortController",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+          "description": "Cancel obsolete snapshot, stream, search, and payload work when route or selection changes."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}

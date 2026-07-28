@@ -1,6 +1,6 @@
 {
   "key": "O",
-  "title": "Virtualization, accessibility, recovery, and verification",
+  "title": "Optimizations for virtualization, accessibility, recovery, and verification",
   "blocks": [
     {
       "type": "text",
@@ -135,7 +135,7 @@
     },
     {
       "type": "heading",
-      "text": "Recovery and crawlability"
+      "text": "Recovery and search discovery"
     },
     {
       "type": "text",
@@ -143,7 +143,7 @@
     },
     {
       "type": "text",
-      "text": "For crawlability, render a useful first page on a stable URL, then expose persistent page URLs through ordinary sequential links. Each page remains addressable while JavaScript appends it into the experience. Do not rely on fragments, IntersectionObserver, or synthetic scrolling for discovery."
+      "text": "For search discovery, render a useful first page on a stable URL, then expose persistent page URLs through ordinary sequential links. Each page remains addressable while JavaScript appends it into the experience. Do not rely on fragments, IntersectionObserver, or synthetic scrolling for discovery."
     },
     {
       "type": "heading",
@@ -218,8 +218,83 @@
     {
       "type": "callout",
       "variant": "info",
+      "title": "Optimization checkpoint",
+      "text": "Ship the guarded semantic flow before adding windowing and cache limits. Measure the rendered list, retained data, position restoration, focus, and recovery so each optimization answers observed evidence."
+    },
+    {
+      "type": "heading",
+      "text": "Pagination failure and viewport recovery"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Observer fires repeatedly",
+          "Coalesce by cursor and query generation.",
+          "No duplicate network or commit work."
+        ],
+        [
+          "Page fails",
+          "Keep committed items and render retry in list order.",
+          "Retry reuses the failed cursor."
+        ],
+        [
+          "Row height changes",
+          "Recompute from anchor identity and measured offset.",
+          "Reading position stays stable."
+        ],
+        [
+          "Windowing breaks focus",
+          "Mount the target before moving focus and retain a Load More path.",
+          "Keyboard navigation remains predictable."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Use a semantic list and expose loading with aria-busy plus a concise polite status. Infinite loading is never the only path: a keyboard-operable Load More control supports recovery and user pacing. Restored focus targets a real item or the list heading, and offscreen virtual rows are not represented as simultaneously focusable."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "First prove pagination correctness without windowing, then measure DOM and interaction cost on representative content. Enable windowing only for cohorts where it improves long-session performance, while tracking duplicate IDs, missing pages, anchor restoration, retry success, and accessibility regressions."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
       "title": "Final interview close",
-      "text": "Ship the guarded semantic flow, measure it, then add windowing and cache limits where evidence points. Re-test items, position, focus, and recovery."
+      "text": "Use one query-aware PageLoader, commit every opaque cursor atomically with its page, reject stale generations, and preserve an identity-based scroll anchor. Begin with a semantic list and add windowing only when representative measurements justify its focus and restoration costs.",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN IntersectionObserver",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API",
+          "description": "Observer semantics and asynchronous visibility changes."
+        },
+        {
+          "label": "W3C ARIA feed pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/feed/",
+          "description": "Keyboard and loading considerations for progressively loaded article feeds."
+        }
+      ],
+      "editorialRole": "references"
     }
   ]
 }

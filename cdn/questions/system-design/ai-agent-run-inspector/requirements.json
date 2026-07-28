@@ -1,0 +1,240 @@
+{
+  "key": "R",
+  "title": "Requirements and interview framing",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Design the frontend for an AI agent run inspector used by developers and operators to understand a live or completed execution. This is an AI agent observability UI: a run can contain nested agent turns, model generations, retrievals, tool calls, handoffs, guardrails, approval requests, retries, and errors. The page must stream updates, expose a navigable trace tree, filter and search spans, inspect redacted payloads, and coordinate stop, retry, approve, or deny actions. Treat the agent runtime, trace database, authorization service, and tool execution as backend black boxes. The interview scope is the browser architecture, state model, rendering strategy, accessibility, resilience, and abstract client contracts."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "A strong 60-second answer",
+      "text": "Fetch a versioned run snapshot, normalize run, span, and approval entities, and resume a server stream from the snapshot cursor. A deterministic reducer deduplicates immutable event IDs, applies each field only from a newer sequence, tracks gaps, and tolerates a child arriving before its parent. Selectors turn the normalized hierarchy into only the expanded, filtered rows needed by a virtualized trace tree. Large payloads load into a separate cache when the inspector opens, so streaming deltas do not rerender JSON. Stop and approval controls use idempotency keys and remain pending until authoritative events confirm the outcome. Reconnect state, redaction, keyboard navigation, focus return, mobile containment, and restrained live-region announcements are first-class requirements."
+    },
+    {
+      "type": "heading",
+      "text": "A compact mental model"
+    },
+    {
+      "type": "table",
+      "title": "Six concepts to keep separate",
+      "columns": [
+        "Concept",
+        "Meaning in this design",
+        "Frontend responsibility"
+      ],
+      "rows": [
+        [
+          "Run",
+          "One end-to-end attempt with lifecycle, aggregates, and capabilities",
+          "Own the route, summary, freshness, and run-level actions"
+        ],
+        [
+          "Trace",
+          "The hierarchy available for inspection for one agent execution trace",
+          "Present a coherent tree and tool call inspector without inventing missing facts"
+        ],
+        [
+          "Span",
+          "One agent, model, retrieval, tool, handoff, guardrail, or approval operation",
+          "Store a small normalized summary and lazy payload references"
+        ],
+        [
+          "Event",
+          "An immutable streamed fact about a run, span, or approval",
+          "Validate, deduplicate, order, and merge it through one reducer"
+        ],
+        [
+          "Cursor",
+          "An opaque resume position for contiguous history",
+          "Reconnect from the last safely reduced position, never the largest observed sequence"
+        ],
+        [
+          "Approval",
+          "A versioned request that pauses a sensitive action for a human decision",
+          "Show safe context and pending intent while the server remains authoritative"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "AI agent trace viewer vs chat transcript"
+    },
+    {
+      "type": "text",
+      "text": "A chat transcript is mostly linear. An agent run is a hierarchical and sometimes concurrent execution document. One parent can start two tools in parallel, a span can stream partial output while a sibling waits for approval, and a child event can reach the browser before its parent. The default view should answer four questions quickly: Is the run still active? Where did it fail or pause? Which operation consumed time or tokens? What input and output may this user safely inspect?"
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Functional requirements",
+              "items": [
+                "Open a route-addressable live or completed run and show status, freshness, duration, span counts, errors, and authorized usage totals.",
+                "Navigate parent-child spans, expand or collapse branches, search labels and safe summaries, and filter by span kind or lifecycle status.",
+                "Inspect timing, attributes, errors, and redacted input or output without placing large payloads in every trace row.",
+                "Stop an active run, retry an eligible failure, and approve or deny a pending request with explicit confirmation and progress states.",
+                "Resume after disconnection, expose stale or gap states, and keep already loaded evidence visible during recoverable errors."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Quality requirements",
+              "items": [
+                "Keep selection, expansion, and scrolling responsive for hundreds of spans and usable for runs with ten thousand or more.",
+                "Merge duplicate and out-of-order events without changing an already applied result instead of treating network arrival order as authority.",
+                "Prevent secrets, unsafe HTML, or inaccessible private reasoning from leaking through payload rendering or client logs.",
+                "Support keyboard tree navigation, predictable focus, readable zoom, meaningful status announcements, and reduced motion.",
+                "Contain tables, long identifiers, and payload blocks on a 390-pixel viewport without widening the document."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Clarifying questions that change the design"
+    },
+    {
+      "type": "table",
+      "title": "Questions, assumptions, and consequences",
+      "columns": [
+        "Question",
+        "MVP assumption",
+        "Frontend consequence"
+      ],
+      "rows": [
+        [
+          "Who uses it?",
+          "An authenticated developer inspecting runs in one authorized project",
+          "Permission-aware controls and payload capabilities arrive with the snapshot; the client never derives access from role labels"
+        ],
+        [
+          "How large is a run?",
+          "Usually hundreds of spans, occasionally tens of thousands",
+          "Normalize summaries, virtualize visible rows, lazy-load payloads, and bound caches"
+        ],
+        [
+          "How live is live?",
+          "Visible lifecycle changes appear within a few hundred milliseconds of receipt",
+          "Buffer bursts until an animation frame, but do not delay approval or terminal states behind a long batch"
+        ],
+        [
+          "Can events repeat or reorder?",
+          "Yes; each envelope has event ID, run ID, sequence, timestamp, and resume cursor",
+          "Deduplicate, merge by sequence, track gaps, and hold children whose parent is not yet known"
+        ],
+        [
+          "Which actions exist?",
+          "Stop, retry, approve, and deny only when advertised by server capabilities",
+          "Keep actions in a separate state slice and reconcile conflicts with authoritative stream events"
+        ],
+        [
+          "What is searchable?",
+          "Safe summaries, names, IDs, kinds, status, and redacted attributes",
+          "Do not silently download every private payload to power browser search"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Scope boundaries"
+    },
+    {
+      "type": "checklist",
+      "title": "Deliberately out of scope",
+      "items": [
+        "Model selection, prompt execution, planning loops, tool scheduling, queues, and distributed agent orchestration.",
+        "Trace storage schema, ingestion pipelines, cross-service sampling, and backend authorization implementation.",
+        "Editing workflows, executing arbitrary tools in the browser, or exposing hidden chain-of-thought.",
+        "Cross-run analytics, evaluation dashboards, and trace comparison beyond links from a paginated run list.",
+        "Inventing a universal transport: the design works with a resumable fetch stream, server-sent events, or WebSocket adapter."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Critical states and acceptance criteria"
+    },
+    {
+      "type": "table",
+      "title": "State coverage",
+      "columns": [
+        "State",
+        "Expected experience",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Initial loading",
+          "Run shell and labeled skeletons appear; retry is available if the snapshot fails",
+          "No stream connects before the snapshot establishes version and cursor"
+        ],
+        [
+          "Live and caught up",
+          "Freshness is visible, new spans merge in place, and user selection does not jump",
+          "One logical span has one entity regardless of duplicate events"
+        ],
+        [
+          "Reconnecting or sequence gap",
+          "Existing trace remains readable with a stale banner and manual retry",
+          "The page never claims live freshness while continuity is unknown"
+        ],
+        [
+          "Approval pending",
+          "The relevant row and inspector expose safe context and allowed decisions",
+          "Only one local decision is in flight; another tab's resolution supersedes it"
+        ],
+        [
+          "Run terminal",
+          "Streaming stops after final reconciliation and terminal status is announced once",
+          "A late stop response cannot change completed back to stopped"
+        ],
+        [
+          "Huge or unavailable payload",
+          "The inspector shows metadata, truncation, download permission, or a recoverable error",
+          "Payload size cannot block trace navigation or widen the page"
+        ]
+      ]
+    },
+    {
+      "type": "links",
+      "title": "Continue the frontend system design path",
+      "items": [
+        {
+          "label": "Frontend system design questions",
+          "href": "/system-design",
+          "description": "Browse the full set of frontend architecture cases."
+        },
+        {
+          "label": "RADIO framework",
+          "href": "/guides/system-design-blueprint/radio-framework",
+          "description": "Structure requirements, architecture, data, interfaces, and optimizations during an interview."
+        },
+        {
+          "label": "Frontend performance guide",
+          "href": "/guides/system-design-blueprint/performance",
+          "description": "Build explicit rendering, memory, network, and measurement budgets."
+        },
+        {
+          "label": "AI chat textarea design",
+          "href": "/system-design/ai-chat-textarea-design",
+          "description": "Compare a linear streamed conversation with this hierarchical trace document."
+        },
+        {
+          "label": "Real-time model training dashboard",
+          "href": "/system-design/model-training-progress-dashboard",
+          "description": "Compare high-frequency metric rendering with entity-based run inspection."
+        }
+      ]
+    }
+  ]
+}

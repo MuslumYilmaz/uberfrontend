@@ -1,11 +1,7 @@
 {
   "key": "A",
-  "title": "Architecture / High-level design",
+  "title": "Architecture",
   "blocks": [
-    {
-      "type": "text",
-      "text": "You should show a clean pipeline: Realtime source -> Ingest buffer -> Store -> Virtualized UI. The key is decoupling ingestion from rendering so bursts do not trigger a repaint per event."
-    },
     {
       "type": "divider"
     },
@@ -16,7 +12,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**Suggested framing:**\n\"I’d subscribe to a WebSocket/SSE stream and push events into a short in-memory queue. A scheduler drains the queue every 100-250ms, merges into the feed store, updates unread counts, and then the UI renders a virtualized list from that store.\""
+              "text": "A snapshot establishes ordered notification identities, the authoritative read marker, and a resume cursor. A stream adapter validates sequenced events, an idempotent reducer merges them in bounded transactions, and selectors derive the badge and virtualized rows without coupling correctness to paint timing."
             }
           ]
         },
@@ -24,7 +20,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**What the interviewer listens for:**\n- Clear separation of ingest vs render.\n- Bounded list + virtualization.\n- Reconnect strategy and fallback.\n- Deduping by id + ordering by timestamp.\n- Backpressure / batching decisions."
+              "text": "Boundary checks:\n- Clear separation of transport, reduction, and render.\n- Event identity, monotonic sequence, and opaque resume cursor.\n- One read-marker model shared by badge and panel.\n- Gap recovery before cursor advancement.\n- Batching that coalesces store commits without losing events."
             }
           ]
         }
@@ -33,8 +29,8 @@
     {
       "type": "callout",
       "variant": "info",
-      "title": "Diagram you should draw",
-      "text": "Source (WS/SSE) -> Buffer/Queue -> FeedStore (bounded list + unread state) -> VirtualizedList -> UI. Add a Scheduler that drains the buffer on an interval or rAF."
+      "title": "Snapshot-to-projection path",
+      "text": "Snapshot + resumable stream -> validator -> short ingest queue -> idempotent reducer -> normalized entities/read marker -> selectors -> virtualized list and badge. The scheduler controls commit frequency, not event retention."
     },
     {
       "type": "divider"
@@ -61,12 +57,12 @@
         [
           "Scheduler",
           "Drains the buffer on a cadence.",
-          "Every 100-250ms we merge queued items into state, so we don’t re-render per event."
+          "Drain a burst in one measured transaction while preserving every accepted event identity and sequence."
         ],
         [
           "Feed store",
           "Owns the canonical list + unread state.",
-          "Keeps only the last N items, dedupes by id, tracks unreadCount and lastSeenCursor."
+          "Owns normalized entities, ordered IDs, received event IDs, the contiguous cursor, and the versioned read marker."
         ],
         [
           "Virtualized list",
@@ -84,11 +80,11 @@
       "steps": [
         {
           "title": "Panel open",
-          "text": "Render the virtualized list, batch apply updates, update unread counts in state."
+          "text": "Render the virtualized list, batch accepted events, and project unread from entities plus the confirmed marker."
         },
         {
           "title": "Panel closed",
-          "text": "Stop rendering the list; only increment badge counts and store events."
+          "text": "Stop rendering the list; keep reducing accepted events and derive the badge from entities plus the confirmed read marker."
         }
       ]
     },
@@ -101,31 +97,76 @@
     },
     {
       "type": "table",
-      "title": "Component boundaries to call out",
+      "title": "Delivery, state, and projection boundaries",
       "columns": [
         "Boundary",
         "Reason"
       ],
       "rows": [
         [
-          "UI shell vs feature module",
-          "Independent deploys and safe rollouts"
+          "Transport adapter vs reducer",
+          "Protocol frames become validated variants before normalized state changes"
         ],
         [
-          "Ingest vs render",
-          "Prevents re-render storms"
+          "Entity positions vs read marker",
+          "Unread derives from accepted sequence positions rather than render timing"
         ],
         [
-          "Cache vs view model",
-          "Keeps UI deterministic"
+          "Normalized store vs feed projection",
+          "Filters, panel visibility, and virtualization never mutate notification authority"
         ]
       ]
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "Explain the data flow",
-      "text": "State the pipeline explicitly: fetch -> normalize -> cache -> view model -> render. This shows you understand front-end architecture beyond UI widgets."
+      "title": "Ordered notification projection",
+      "text": "Make the notification path explicit: snapshot and resumable events enter one reducer, normalized entities and read markers produce a bounded visible feed, and components subscribe to stable selectors.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: reconnect across an unread boundary"
+    },
+    {
+      "type": "text",
+      "text": "The panel last reduced cursor c120 and the member read through notification n118. While offline, the server emits n121 through n124. Reconnect may replay n120 and deliver the new events in a burst."
+    },
+    {
+      "type": "table",
+      "title": "Scenario walkthrough",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Connection drops",
+          "Keep entities and read boundary; mark freshness stale.",
+          "The existing feed remains usable.",
+          "Loss of transport does not erase evidence."
+        ],
+        [
+          "Resume from c120",
+          "Open one stream with the last safely reduced cursor.",
+          "Show reconnecting without a blocking spinner.",
+          "Cursor advances only after reduction."
+        ],
+        [
+          "Replay n120 arrives",
+          "Ignore the known event identity.",
+          "Counts and rows do not change.",
+          "Replay is idempotent."
+        ],
+        [
+          "n121 to n124 arrive",
+          "Batch normalize, order by server sequence, then compute unread from the stable boundary.",
+          "One update and a concise new-items affordance appear.",
+          "Unread does not depend on render timing."
+        ]
+      ]
     }
   ]
 }

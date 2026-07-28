@@ -1,10 +1,7 @@
 {
   "id": "endless-short-video-feed",
   "title": "Endless Short-Video Feed (TikTok-Style)",
-  "description": "Design a TikTok-style endless short-video feed for a front-end system design interview. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on fast first play, smooth scrolling, preloading the next videos, adaptive quality, and graceful handling of slow networks. Discuss caching, CDN delivery, memory control, playback lifecycle, and UI performance budgets.\n\nFunctional requirements:\n- Autoplay the current video with minimal startup delay.\n- Preload the next 1-3 videos without exhausting memory.\n- Support pause/resume, mute, and basic controls.\n- Handle variable network conditions (Wi-Fi vs 4G).\n- Keep the feed responsive during rapid scrolling.\n\nNon-functional:\n- Time-to-first-frame <= 1.0s on Wi-Fi, <= 2.0s on 4G.\n- Stable frame rate (no jank during scroll).\n- Bounded memory usage across long sessions.\n- Graceful degradation on slow networks.\n- Strong observability for playback success and UX.\n\nAdditional constraints to mention: autoplay policies on mobile, memory limits for long sessions, and cancellation of in-flight prefetches during rapid swipes. Call out telemetry such as TTFF, rebuffer rate, and dropped frames so the interviewer sees concrete success metrics.",
-  "companies": [
-    "bytedance"
-  ],
+  "description": "Design an endless short-video feed with fast first playback, one active player, intent-aware preloading, bounded media memory, and network-aware recovery.",
   "tags": [
     "infinite-scroll",
     "virtualization",
@@ -19,29 +16,53 @@
   "sections": [
     {
       "key": "R",
-      "title": "Reflect & Requirements",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-01-30"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "Endless Short-Video Feed Frontend System Design",
+    "description": "Design a short-video feed with one active player, intent-aware preload, bounded media memory, adaptive delivery, and resilient scrolling."
+  },
+  "premiumPreview": {
+    "summary": "Design an endless short-video feed that starts playback quickly, follows settled viewport intent, and controls bandwidth and media memory over long sessions.",
+    "learningOutcomes": [
+      "Define ownership for viewport intent, one active player, and per-item media sessions.",
+      "Choose MP4 renditions honestly without claiming mid-stream adaptive bitrate behavior.",
+      "Recover from rapid swipes, autoplay rejection, network stalls, and memory pressure.",
+      "Set playback and interaction budgets as measured hypotheses by device and network class."
+    ],
+    "unlockDescription": "Premium unlocks the player handoff, rendition-selection example, preload trade-offs, and playback recovery analysis."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/endless-short-video-feed.md",
+    "primaryKeyword": "endless short-video feed frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Endless Short-Video Feed (TikTok-Style).",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Endless Short-Video Feed (TikTok-Style).",
+    "uniqueAngle": "Design an endless short-video feed with fast first playback, one active player, intent-aware preloading, bounded media memory, and network-aware recovery.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }

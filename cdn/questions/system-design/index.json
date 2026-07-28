@@ -1,11 +1,32 @@
 [
   {
+    "id": "ai-agent-run-inspector",
+    "title": "AI Agent Run Inspector Frontend System Design",
+    "description": "Design an AI agent run inspector for nested spans, live tool calls, approval races, resilient stream state, virtualized navigation, redaction, and accessibility.",
+    "tags": [
+      "real-time",
+      "streams",
+      "state-management",
+      "frontend-architecture",
+      "performance",
+      "virtualization",
+      "accessibility",
+      "error-handling",
+      "security",
+      "events",
+      "api-calls",
+      "ux"
+    ],
+    "type": "system-design",
+    "access": "free",
+    "publishedAt": "2026-07-28",
+    "updatedAt": "2026-07-28",
+    "difficulty": "hard"
+  },
+  {
     "id": "infinite-scroll-list",
     "title": "Infinite Scroll List System Design",
-    "companies": [
-      "google"
-    ],
-    "description": "Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.",
+    "description": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
     "tags": [
       "infinite-scroll",
       "intersection-observer",
@@ -21,16 +42,13 @@
     "type": "system-design",
     "access": "free",
     "publishedAt": "2025-11-22",
-    "updatedAt": "2026-07-27",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "endless-short-video-feed",
     "title": "Endless Short-Video Feed (TikTok-Style)",
-    "companies": [
-      "apple"
-    ],
-    "description": "Design a TikTok-style endless short-video feed for a front-end system design interview. Focus on fast first play, smooth scrolling, preloading the next videos, and handling variable network conditions.\n\nKey considerations include: CDN delivery, adaptive quality, caching strategy, viewport-based prefetching, memory control, and graceful degradation on slow networks.",
+    "description": "Design an endless short-video feed with fast first playback, one active player, intent-aware preloading, bounded media memory, and network-aware recovery.",
     "tags": [
       "infinite-scroll",
       "virtualization",
@@ -44,17 +62,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "notification-toast-system",
     "title": "Design a Toast Notification System",
-    "companies": [
-      "google",
-      "netflix"
-    ],
-    "description": "Frontend system design interview example for a Toast Notification System with a global API like `toast.success(message, options?)`, portal-based rendering, stacking, timers, dismissal, responsive placement, accessibility, data model, API contracts, edge cases, and tradeoffs.",
+    "description": "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.",
     "tags": [
       "toast",
       "notifications",
@@ -69,13 +83,13 @@
     ],
     "type": "system-design",
     "access": "free",
-    "updatedAt": "2026-07-06",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "scalable-notifications-feed",
     "title": "Scalable Notifications Feed (Real-time)",
-    "description": "Design a real-time notifications feed that can handle very high update volume without overwhelming the UI. Focus on ingestion strategy (WebSocket/SSE/polling), buffering + batching, unread count logic, list virtualization, and smooth rendering under bursts.\n\nKey considerations include: deduping by id, ordering by timestamp, keeping memory bounded (latest N), avoiding re-render storms, reconnect + backoff logic, and fallbacks when realtime is unavailable.",
+    "description": "Design a real-time notifications feed with resumable delivery, deduplication, unread semantics, burst batching, bounded storage, virtualization, and recovery.",
     "tags": [
       "notifications",
       "real-time",
@@ -85,20 +99,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "netflix",
-      "meta"
-    ],
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "live-comments-global-stream",
     "title": "Live Comments for Global Streams (Real-time)",
-    "companies": [
-      "bytedance"
-    ],
-    "description": "Design a real-time live comments system for a global livestream. This is a front-end system design interview question: how to render comments with low latency, handle bursts, and keep the UI responsive.\n\nKey considerations include: WebSocket/SSE updates, buffering and batching, virtualization, moderation UI, and graceful degradation under load.",
+    "description": "Design a live-comment stream with ordered resumable events, moderation-aware rendering, burst control, readable auto-follow behavior, and accessible interaction.",
     "tags": [
       "real-time",
       "streams",
@@ -112,17 +119,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "netflix-scale-expansion",
-    "title": "Netflix-Scale Expansion (Front-End System Design)",
-    "companies": [
-      "netflix",
-      "bytedance"
-    ],
-    "description": "Expand a working feature to Netflix scale in a front-end system design interview. Discuss UI architecture, microfrontends, caching, performance budgets, and safe rollout.\n\nKey considerations include: module boundaries, rendering strategy, edge/client caching, experiment flags, observability, and graceful fallback.",
+    "title": "Netflix Continue Watching Frontend System Design",
+    "description": "Design a resilient Continue Watching row across web, mobile, and TV with progress reconciliation, focus-safe actions, media loading, and measurable performance.",
     "tags": [
       "frontend-architecture",
       "architecture",
@@ -134,24 +137,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "multi-step-form-autosave",
     "title": "Multi-step Form with Autosave",
-    "description": "Design a 4-step form with validation, step transitions, a progress bar, and automatic autosave to localStorage. Users should be able to refresh or leave the page and continue where they left off. Key considerations include form architecture, throttled/debounced autosave, inline vs submit validation, dirty-state tracking, and restoring from saved drafts.",
-    "premiumPreview": {
-      "summary": "Design a multi-step form that preserves progress without interrupting input or losing draft state. The challenge focuses on validation boundaries, autosave cadence, safe restoration, and clear completion behavior.",
-      "learningOutcomes": [
-        "Define ownership for step state, field values, and validation status.",
-        "Choose a save cadence that avoids blocking user interaction.",
-        "Restore versioned drafts while handling invalid or outdated data.",
-        "Keep validation behavior predictable across step transitions.",
-        "Define how discard and successful submission clear saved state."
-      ],
-      "unlockDescription": "Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis."
-    },
+    "description": "Design a multi-step form with versioned drafts, validation boundaries, autosave scheduling, conflict-safe restoration, submission recovery, and accessible navigation.",
     "tags": [
       "forms",
       "autosave",
@@ -160,13 +152,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "realtime-search-debounce-cache",
     "title": "Real-time Search with Debounce & Caching",
-    "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query → results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
+    "description": "Design real-time search with debounced intent, true request cancellation, stale-result suppression, complete cache keys, predictable UI states, and keyboard access.",
     "tags": [
       "search",
       "debounce",
@@ -176,21 +168,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "bytedance",
-      "apple",
-      "meta"
-    ],
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "dashboard-widgets-draggable-resizable",
     "title": "Drag-and-Drop Dashboard Frontend System Design",
-    "companies": [
-      "google"
-    ],
-    "description": "Design a customizable frontend dashboard where widgets can be dragged, snapped to a grid, resized within constraints, and restored from a saved layout.\n\nKey considerations include: a logical grid data model, pointer-event drag and resize ownership, collision and snapping strategy, requestAnimationFrame rendering boundaries, optimistic local layout vs persisted server layout, versioned layout migrations, keyboard accessibility, and responsive behavior across devices.",
+    "description": "Design a customizable dashboard with pointer and keyboard movement, grid constraints, optimistic layout persistence, versioned migrations, and responsive reflow.",
     "tags": [
       "dashboard",
       "drag-drop",
@@ -199,13 +183,13 @@
     ],
     "type": "system-design",
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "live-chart-high-frequency-updates",
     "title": "Live Chart Rendering (High Frequency Updates)",
-    "description": "Design a live line chart that updates roughly every 500ms (e.g. streaming metrics, stock prices, telemetry). Focus purely on the frontend side: how to feed data into the chart, render updates efficiently, and keep the UI smooth over time.\n\nKey considerations include: choosing between incremental updates (append/shift points) vs full redraw per tick, understanding the trade-offs between using a charting library (ECharts, Chart.js, etc.) and custom canvas/WebGL rendering, and designing a requestAnimationFrame-driven render loop so the chart stays smooth without over-drawing.\n\nYou should be prepared to talk about: memory management as data grows (sliding window, bounded buffers), how to handle bursts of updates (queueing vs dropping frames), when to use OffscreenCanvas or Web Workers to offload work from the main thread, and strategies like downsampling/aggregation for very large datasets so the chart stays responsive even after running for a long time.",
+    "description": "Design a live chart that ingests bursty samples, renders on demand, bounds memory, downsamples by viewport, recovers from gaps, and remains accessible.",
     "tags": [
       "charts",
       "real-time",
@@ -213,16 +197,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "apple"
-    ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "component-design-system-architecture",
     "title": "Component-driven Design System Architecture",
-    "description": "Design a component-based design system for a mid-to-large scale product: buttons, inputs, tabs, banners, dialogs, and more. Focus on how the system is structured, how teams consume it, and how it evolves safely over time.\n\nKey considerations include: token-driven theming (semantic tokens, color scales, dark/high-contrast variants), CSS architecture decisions (CSS variables, utility classes, BEM, or Tailwind-style tokens), accessibility-first component APIs (keyboard behavior, ARIA attributes, focus management), and support for dark mode, high contrast, and RTL from day one.\n\nYou should be prepared to talk about: consistent component APIs (props, events, slots), how to ensure long-term maintainability, versioning and breaking-change strategy, tree-shaking-friendly structure, and bundle-size optimizations like dynamic imports and granular code splitting.",
+    "description": "Design a component library with semantic tokens, accessible interaction contracts, composable APIs, release governance, migration paths, and measurable adoption.",
     "tags": [
       "design-system",
       "theming",
@@ -232,16 +213,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "apple"
-    ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "image-upload-preview",
     "title": "Image Upload & Preview Component",
-    "description": "Design a component that lets users upload an image, instantly preview it, validate its size and type, and simulate a short upload process. Focus purely on the frontend side: handling file inputs, using URL.createObjectURL for previewing, validation flows, accessible error messaging, mobile-friendly layout, drag-and-drop (optional), and smooth state transitions.\n\nKey considerations include: file type + max-size validation, immediate preview, upload skeleton/loading state, allowing users to replace/remove the image, managing object URLs safely, and addressing accessibility concerns like keyboard navigation and ARIA error roles.",
+    "description": "Design an image upload flow with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors.",
     "tags": [
       "images",
       "upload",
@@ -249,16 +227,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-30",
-    "difficulty": "easy"
+    "updatedAt": "2026-07-28",
+    "difficulty": "intermediate"
   },
   {
     "id": "flashcard-language-trainer",
     "title": "Flashcard-based Language Learning App",
-    "companies": [
-      "amazon"
-    ],
-    "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server–client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
+    "description": "Design a flashcard study experience with session state, offline progress, conflict-safe sync, input-independent reveal, reduced motion, and accessible feedback.",
     "tags": [
       "flashcards",
       "language-learning",
@@ -266,13 +241,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "cross-device-preferences-sync",
     "title": "Cross-device Preferences Sync",
-    "description": "Design a client-side system that keeps user preferences (theme, language, notification settings, etc.) in sync across devices. Focus on local-first updates, offline support, conflict resolution, and how the UI stays responsive while sync happens in the background.\n\nKey considerations include: a durable sync queue, revision or ETag-based conflict detection, per-field merge strategy, background retries with backoff, and minimal payloads (send only changed fields).",
+    "description": "Design preference synchronization across devices and tabs with versioned values, optimistic edits, offline queues, conflict policy, and stable UI reconciliation.",
     "tags": [
       "state-management",
       "local-storage",
@@ -282,16 +257,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "apple"
-    ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "ai-chat-textarea-design",
     "title": "AI Chat Text Area (ChatGPT-Style)",
-    "description": "Design a minimal ChatGPT-like experience in a text area: the user submits a prompt, the assistant streams a response, and the conversation is persisted for resume. Include frontend architecture plus database considerations for storing chat history.",
+    "description": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
     "tags": [
       "real-time",
       "streams",
@@ -302,16 +274,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "openai"
-    ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "ai-image-generation-mvp",
     "title": "AI Image Generation MVP (Two-Week Design)",
-    "description": "Design a two-week MVP for integrating image generation into an app. Cover prompt input, async job handling (polling or streaming), error states, and how generated images are stored and delivered (object storage + CDN).",
+    "description": "Design an AI image generation frontend with prompt state, accepted async jobs, indeterminate progress, idempotent retry and cancel, safe media, and recovery.",
     "tags": [
       "ux",
       "api-calls",
@@ -322,16 +291,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "openai"
-    ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "model-training-progress-dashboard",
     "title": "Real-time Model Training Dashboard",
-    "description": "Design a dashboard that updates in real time with training progress, metrics, and logs. Discuss streaming updates, buffering/throttling, and UI performance under high-frequency events.",
+    "description": "Design a model-training progress dashboard with resumable metrics, run comparison, chart downsampling, stale-state signaling, failure diagnosis, and accessibility.",
     "tags": [
       "real-time",
       "streams",
@@ -342,16 +308,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "openai"
-    ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "ai-ux-considerations",
     "title": "AI UX Resilience and Control Patterns",
-    "description": "Design AI response UX with streaming states, cancel/retry controls, and rate-limit handling so users stay in control during slow or failed outputs.",
+    "description": "Design trustworthy AI-assisted UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes.",
     "tags": [
       "ux",
       "error-handling",
@@ -361,19 +324,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "companies": [
-      "openai"
-    ],
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   },
   {
     "id": "news-feed-timeline",
     "title": "News Feed / Timeline Front-End System Design",
-    "companies": [
-      "meta"
-    ],
-    "description": "Design a social news feed/timeline UI with pagination, virtualization, media lazy-loading, realtime updates, and smooth interactions.",
+    "description": "Design a news-feed timeline with cursor pagination, ranked and live updates, deterministic merge rules, stable scroll anchors, media loading, and recovery.",
     "tags": [
       "infinite-scroll",
       "virtualization",
@@ -389,16 +346,13 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "difficulty": "hard"
   },
   {
     "id": "ui-component-state-from-mock",
-    "title": "UI Component & State Design From a Mock (Frontend System Design)",
-    "companies": [
-      "meta"
-    ],
-    "description": "Given a UI mock, describe the component tree, state ownership, and data flow while keeping the UI scalable and maintainable.",
+    "title": "UI Component and State Design From a Mock",
+    "description": "Turn a support-inbox mock into clear component boundaries, URL and server state, local drafts, optimistic mutations, responsive behavior, and accessible focus.",
     "tags": [
       "components",
       "state-management",
@@ -408,7 +362,7 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-07-28",
     "difficulty": "intermediate"
   }
 ]

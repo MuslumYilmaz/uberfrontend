@@ -1,6 +1,6 @@
 {
   "key": "D",
-  "title": "Data model",
+  "title": "Data",
   "blocks": [
     {
       "type": "text",
@@ -10,10 +10,20 @@
       "type": "divider"
     },
     {
+      "type": "code",
+      "language": "ts",
+      "code": "type MediaReadiness = 'poster' | 'loading' | 'ready' | 'buffering' | 'error';\ntype PlaybackPhase = 'idle' | 'starting' | 'playing' | 'paused' | 'blocked' | 'error';\n\ninterface MediaRendition {\n  url: string;\n  mimeType: string;\n  width: number;\n  height: number;\n  bitrateKbps: number;\n}\n\ninterface VideoItem {\n  id: string;\n  posterUrl: string;\n  posterAspectRatio: number;\n  durationMs: number;\n  renditions: MediaRendition[];\n  captionsUrl?: string;\n}\n\ninterface FeedPage {\n  items: VideoItem[];\n  nextCursor: string | null;\n}\n\ninterface MediaSession {\n  itemId: string;\n  selectedRenditionUrl: string | null;\n  readiness: MediaReadiness;\n  bufferedSeconds: number;\n  errorCode: string | null;\n}\n\ninterface ActivePlayback {\n  itemId: string | null;\n  attemptId: string | null;\n  phase: PlaybackPhase;\n  muted: boolean;\n}\n\ninterface ViewportIntent {\n  candidateId: string | null;\n  settledId: string | null;\n  direction: 'forward' | 'backward' | 'none';\n}\n",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "endless-short-video-feed-contract"
+      }
+    },
+    {
       "type": "checklist",
       "title": "Core entities",
       "items": [
-        "VideoItem: id, src, poster, duration, bitrate options",
+        "VideoItem: id, poster, duration, and supported MP4 rendition candidates",
         "FeedState: ordered ids, cursor, hasMore",
         "PlaybackState: isPlaying, progress, muted",
         "NetworkState: bandwidth class, connection type",
@@ -22,7 +32,7 @@
     },
     {
       "type": "table",
-      "title": "State you should keep on the client",
+      "title": "Client-owned state",
       "columns": [
         "State",
         "Why",
@@ -40,9 +50,9 @@
           "IntersectionObserver"
         ],
         [
-          "Playback buffer",
-          "Smooth playback on scroll",
-          "Drop oldest when moving"
+          "Media session cache",
+          "Keep playback resources bounded",
+          "Release distant decoded resources while retaining feed identity"
         ]
       ]
     },
@@ -51,12 +61,51 @@
     },
     {
       "type": "checklist",
-      "title": "Data considerations to mention",
+      "title": "Media-data integrity checks",
       "items": [
         "Stable IDs for dedupe and ordering.",
-        "Client-side view model for render-ready state.",
+        "Derive card readiness and controls from normalized metadata plus the media session.",
         "Cache metadata (TTL, size cap, eviction).",
         "Metrics payloads for UX health."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Media identity, readiness, and active-player ownership"
+    },
+    {
+      "type": "text",
+      "text": "Represent each feed item as immutable metadata plus a MediaSession record for local readiness, playback phase, buffered ranges, and recoverable error. A single ActivePlayback record owns the attached media element and attempt generation. Viewport state stores candidate and settled item identities so a fast gesture cannot activate every crossed card."
+    },
+    {
+      "type": "table",
+      "title": "Client model",
+      "columns": [
+        "Record",
+        "Key fields",
+        "Owner"
+      ],
+      "rows": [
+        [
+          "FeedPage",
+          "ordered IDs, cursor, generation",
+          "Query cache"
+        ],
+        [
+          "MediaSession",
+          "itemId, readiness, buffered, error",
+          "Bounded session cache"
+        ],
+        [
+          "ActivePlayback",
+          "itemId, attemptId, muted, phase",
+          "Player controller"
+        ],
+        [
+          "ViewportIntent",
+          "candidateId, settledId, direction",
+          "View state"
+        ]
       ]
     }
   ]

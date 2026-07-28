@@ -1,157 +1,159 @@
 {
-    "key": "R",
-    "title": "Reflect & Requirements",
-    "blocks": [
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Scope the case to the composer and current turn: composition-safe text input, autosizing, attachment readiness, local draft persistence, one idempotent send command, streamed assistant state, Stop, retry, and focus recovery. Older history is an abstract paged input, not a database-design exercise."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "In this step, the interviewer wants to see whether you can define a clear scope for a ChatGPT-style text area: message flow, streaming response behavior, and what data must be persisted. You should show product thinking (fast, safe UX) plus system thinking (history storage and retrieval)."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "What you are solving:\nA composer where text input survives IME composition, attachments expose readiness, the sent turn appears immediately, and one correlated assistant response streams without stale chunks changing a newer turn."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What you are solving:**\nA minimal chat interface where a user types into a text area, sees their message immediately, and receives a streaming assistant response. The UI must stay responsive while the backend stores conversation history for later retrieval."
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer is testing:**\n- Can you design a clean streaming UX with cancel/stop?\n- Do you model message state clearly (pending, streaming, done, error)?\n- Do you understand persistence and database choices for chat history?\n- Can you define simple APIs and pagination?\n- Do you consider latency, retries, and failure states?"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Restate the core UX: \"User sends a prompt, UI shows it instantly, assistant streams back, and conversation is saved so the user can resume later.\" Then ask clarifying questions about persistence, streaming, and limits."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "High-level user flow to describe",
-            "steps": [
-                {
-                    "title": "1. Load conversation",
-                    "text": "Open an existing conversation by id or start a new one. Load recent messages (paged) and render immediately."
-                },
-                {
-                    "title": "2. User submits prompt",
-                    "text": "Optimistically add the user message to the list and clear the text area."
-                },
-                {
-                    "title": "3. Stream assistant reply",
-                    "text": "Create an assistant placeholder and append chunks as they arrive. Show a streaming indicator and a Stop button."
-                },
-                {
-                    "title": "4. End or cancel",
-                    "text": "On completion, mark the assistant message as done. If the user stops, keep partial text and mark status as stopped."
-                },
-                {
-                    "title": "5. Persist history",
-                    "text": "Backend stores messages and returns ids/revisions so the client can refresh or resume later."
-                }
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Smart clarifying questions you should ask",
-                            "items": [
-                                "Is this a single conversation or many conversations per user?",
-                                "How long should history be retained (days, weeks, forever)?",
-                                "Do we need real-time streaming or is a full response acceptable?",
-                                "What is the max prompt/response size the UI should handle?",
-                                "Do we need pagination or search for past messages?",
-                                "Should the user be able to stop/cancel generation?"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Non-functional expectations to confirm",
-                            "items": [
-                                "Latency should feel low with streaming chunks.",
-                                "UI remains responsive even with long conversations.",
-                                "Stale responses should not overwrite newer ones.",
-                                "Data is stored safely and can be retrieved reliably.",
-                                "Errors show a clear retry state without losing the prompt."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Database options to mention",
-            "columns": [
-                "Option",
-                "Why teams pick it",
-                "Trade-offs"
-            ],
-            "rows": [
-                [
-                    "Document store",
-                    "Flexible schema for messages and metadata",
-                    "Harder joins, consistency can vary"
-                ],
-                [
-                    "Relational DB",
-                    "Strong consistency, easy user/message relations",
-                    "Schema changes are more rigid"
-                ],
-                [
-                    "Key-value + cache",
-                    "Fast recent history and session state",
-                    "Not ideal for long-term history"
-                ]
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Primary transport",
-                    "value": "Streaming (SSE or fetch stream)",
-                    "helperText": "Keeps the UI responsive during long replies."
-                },
-                {
-                    "label": "Persistence",
-                    "value": "Conversation + message store",
-                    "helperText": "Allows resume and pagination."
-                },
-                {
-                    "label": "Key UX controls",
-                    "value": "Stop + retry",
-                    "helperText": "Users can cancel or recover on failure."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A strong answer combines a fast streaming UI with a simple, reliable history store. If you can explain how messages are rendered, streamed, and persisted, you are covering the core of this question."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Decision surface:\n- Composition and keyboard semantics across desktop and mobile.\n- Draft, attachment, pending-send, and stream state ownership.\n- Idempotent send and correlated sequence handling.\n- Stop versus transport abort and authoritative terminal status.\n- Draft loss, attachment failure, uncertain send, and focus recovery."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "Composer and current-turn lifecycle",
+      "steps": [
+        {
+          "title": "1. Restore composer",
+          "text": "Load the current conversation shell, recent messages, and a scoped local draft without blocking the input."
+        },
+        {
+          "title": "2. User submits prompt",
+          "text": "After composition ends and required attachments are ready, snapshot text under a client message ID, create a pending command, and clear only the active draft revision."
+        },
+        {
+          "title": "3. Stream assistant reply",
+          "text": "Create an assistant placeholder and append chunks as they arrive. Show a streaming indicator and a Stop button."
+        },
+        {
+          "title": "4. End or cancel",
+          "text": "On completion, mark the assistant message phase as complete. If the user stops, keep partial text and reconcile the stopped terminal phase."
+        },
+        {
+          "title": "5. Reconcile current turn",
+          "text": "Merge the echoed user message and authoritative assistant terminal state by command, message, and stream identity."
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Clarifying questions",
+              "items": [
+                "Is this a single conversation or many conversations per user?",
+                "Is the draft scoped to conversation, account, tab, or device?",
+                "Do we need real-time streaming or is a full response acceptable?",
+                "What is the max prompt/response size the UI should handle?",
+                "Which attachment phases block send, and which can be removed independently?",
+                "Should the user be able to stop/cancel generation?"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Composer reliability and accessibility expectations",
+              "items": [
+                "Latency should feel low with streaming chunks.",
+                "UI remains responsive even with long conversations.",
+                "Stale responses should not overwrite newer ones.",
+                "Data is stored safely and can be retrieved reliably.",
+                "Errors show a clear retry state without losing the prompt."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Composer and turn state boundaries",
+      "columns": [
+        "State",
+        "Owner",
+        "Important invariant"
+      ],
+      "rows": [
+        [
+          "Composer draft",
+          "Local draft store",
+          "IME composition and unsent text never become conversation messages"
+        ],
+        [
+          "Attachment draft",
+          "Upload coordinator",
+          "Send references only finalized attachment IDs"
+        ],
+        [
+          "Pending send and stream",
+          "Current-turn coordinator",
+          "Late acknowledgements and deltas cannot cross command identity"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Primary transport",
+          "value": "Streaming (SSE or fetch stream)",
+          "helperText": "Keeps the UI responsive during long replies."
+        },
+        {
+          "label": "Persistence",
+          "value": "Conversation + message store",
+          "helperText": "Allows resume and pagination."
+        },
+        {
+          "label": "Key UX controls",
+          "value": "Stop + retry",
+          "helperText": "Users can cancel or recover on failure."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Scope checkpoint",
+      "text": "The design is coherent when composition-safe input, recoverable local intent, one send identity, sequenced stream updates, and honest Stop or retry behavior use the same turn model."
+    },
+    {
+      "type": "heading",
+      "text": "Frontend boundary"
+    },
+    {
+      "type": "text",
+      "text": "The browser owns composition-safe input, autosizing, attachment state, draft persistence, send commands, stream presentation, cancellation, and focus recovery. Server-side model execution and durable conversation history stay behind abstract current-turn and paged-history contracts; this design stops at composer, message, and stream behavior."
+    }
+  ]
 }

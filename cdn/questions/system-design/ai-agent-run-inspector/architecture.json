@@ -1,0 +1,233 @@
+{
+  "key": "A",
+  "title": "Architecture and live trace flow",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Treat real-time trace streaming as a one-way read pipeline: route snapshot, transport adapter, validated event envelopes, normalized store, memoized selectors, and focused components. Components dispatch view intent or action commands; they do not own sockets, mutate span objects, or rebuild the trace recursively. This separation lets transport recovery, document reconciliation, and rendering evolve independently."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "Run route\n  -> snapshot loader\n  -> normalized entity store\n  -> stream adapter(after = snapshot.cursor)\n  -> envelope validation + idempotent reducer\n  -> visible flat-tree selector\n  -> virtualized treegrid\n  -> span inspector + action coordinator",
+      "validation": {
+        "kind": "pseudocode"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Page composition and ownership"
+    },
+    {
+      "type": "table",
+      "title": "Frontend modules",
+      "columns": [
+        "Module",
+        "Owns",
+        "Must not own"
+      ],
+      "rows": [
+        [
+          "RunRoute",
+          "Route ID, snapshot lifecycle, document title, and teardown",
+          "Span merge logic or individual row state"
+        ],
+        [
+          "RunHeader",
+          "Summary, freshness, elapsed time, terminal state, and allowed run actions",
+          "Transport retries or optimistic authority"
+        ],
+        [
+          "TraceToolbar",
+          "Search, kind and status filters, errors-only mode, and expansion commands",
+          "A copied filtered span collection"
+        ],
+        [
+          "TraceTree",
+          "Virtual window, active row, tree semantics, expansion intent, and selection intent",
+          "Payload JSON or a nested mutable run object"
+        ],
+        [
+          "SpanInspector",
+          "Selected span view, inspector tab, payload request, and approval form",
+          "Global stream subscription"
+        ],
+        [
+          "ConnectionStatus",
+          "Caught-up, reconnecting, stale, gap, and manual recovery presentation",
+          "Hidden automatic recovery without user feedback"
+        ],
+        [
+          "LiveAnnouncements",
+          "Deduplicated meaningful lifecycle messages",
+          "Raw token, timestamp, or span-delta announcements"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Snapshot first, resumable stream second"
+    },
+    {
+      "type": "steps",
+      "title": "Opening a run",
+      "steps": [
+        {
+          "title": "Load one coherent base",
+          "text": "Fetch the run summary, span summaries, pending approvals, server capabilities, snapshot version, latest contiguous sequence, and resume cursor. An AbortController cancels the request if the route changes."
+        },
+        {
+          "title": "Normalize before rendering",
+          "text": "Insert entities into maps, build parent-to-child indexes, register unresolved parents, and choose a valid initial selection. The route can now render completed history even if the live connection is slow."
+        },
+        {
+          "title": "Resume after the cursor",
+          "text": "Open the chosen stream transport with the snapshot cursor. The adapter parses frames and validates envelope shape, run identity, size, and supported version before dispatch."
+        },
+        {
+          "title": "Reconcile and acknowledge",
+          "text": "The reducer ignores seen event IDs, applies newer field versions, advances only a contiguous sequence watermark, records the latest safe cursor, and exposes gaps without discarding useful later entities."
+        },
+        {
+          "title": "Recover explicitly",
+          "text": "On interruption, reconnect with bounded exponential backoff and jitter. Resume from the last acknowledged cursor; request a delta or replacement snapshot when the server reports cursor expiry or an unresolved gap."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Do not subscribe before establishing a base",
+      "text": "A stream-only boot requires replaying an unknown amount of history and complicates permissions, payload policies, and loading UX. A snapshot-only poll makes live approvals and failures feel stale. Snapshot plus resumable deltas provides a coherent base and bounded recovery contract."
+    },
+    {
+      "type": "heading",
+      "text": "Reducer responsibilities"
+    },
+    {
+      "type": "checklist",
+      "title": "Deterministic event application",
+      "items": [
+        "Reject an envelope for another run and quarantine unsupported schema versions rather than partially applying them.",
+        "Ignore an immutable event ID already seen, even if reconnect delivers it with a different cursor.",
+        "Record a sequence per mutable field or entity revision; a late started event cannot overwrite a completed span.",
+        "Append streamed text or structured deltas only when their delta index is new, and compact chunks outside the hot render path.",
+        "Keep a child entity when its parent is missing and index it under the unresolved parent ID until that parent appears.",
+        "Advance the acknowledged cursor only through a contiguous range; a larger observed sequence is not proof that the gap is safe.",
+        "Preserve unknown span kinds as generic custom rows with escaped labels so an older client remains usable."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: follow one run through the reducer"
+    },
+    {
+      "type": "text",
+      "text": "Start with run_42 at contiguous sequence 40. The snapshot contains root span_agent_10 and cursor c40. The next network frame is sequence 42 for tool span_tool_17, whose parent span_handoff_12 is not known yet. The frontend may show useful partial evidence, but it must not claim that the stream is caught up. Then sequence 41 arrives, reconnect repeats sequence 42, and a human decision races with another tab. One reducer and one version rule make every view converge."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "run_42 [running]\n└─ span_agent_10 [running]\n   └─ span_handoff_12 [running]\n      └─ span_tool_17 [waiting for approval]\n         └─ approval_9 [denied in another tab]",
+      "validation": {
+        "kind": "diagram"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Event-by-event reconciliation",
+      "columns": [
+        "Event",
+        "Store update",
+        "Visible UI result",
+        "Invariant preserved"
+      ],
+      "rows": [
+        [
+          "Snapshot through seq 40, cursor c40",
+          "Normalize run_42 and span_agent_10; set contiguousSequence to 40",
+          "The header and known root render immediately",
+          "The stream starts from one coherent base"
+        ],
+        [
+          "seq 42: span.started for span_tool_17, parent span_handoff_12",
+          "Insert the tool once under orphanIdsByParentId and record a gap at 41",
+          "Show an unresolved item and a catching-up status",
+          "Arrival order does not become tree authority"
+        ],
+        [
+          "seq 41: span.started for span_handoff_12",
+          "Insert the parent, attach the orphan, and advance the contiguous cursor through c42",
+          "The tool moves under its parent without losing selection",
+          "One span ID still maps to one entity"
+        ],
+        [
+          "Reconnect repeats the seq 42 event ID",
+          "seenEventIds rejects it without appending another child",
+          "The tree and counts do not change",
+          "Replay is idempotent"
+        ],
+        [
+          "seq 43: approval.requested v3; local Approve becomes pending",
+          "Store approval_9 separately from the pending command and its idempotency key",
+          "The inspector says Submitting, not Approved",
+          "Optimistic feedback is not server truth"
+        ],
+        [
+          "seq 44: approval.resolved denied v4 from another tab",
+          "The newer server version wins and clears the stale local command",
+          "Controls disable, focus moves to the resolved message, and the outcome is announced once",
+          "All tabs converge on one authoritative decision"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Normalized trace projection",
+      "text": "Event identity prevents duplicate work, sequence protects field freshness, the contiguous cursor protects resume correctness, normalized entities preserve partial evidence, and separate action state keeps a responsive control from fabricating an outcome.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "heading",
+      "text": "Derived visible tree, not a second source of truth"
+    },
+    {
+      "type": "text",
+      "text": "The store keeps normalized entities and stable child ID arrays. A memoized selector performs a depth-first walk over roots, expansion state, filters, and match ancestry to create flat row descriptors such as span ID, depth, position, sibling count, and expansion state. Virtualization consumes that flat array. The rows are derived and disposable: no component writes status or selection back into them. When search matches a descendant, the selector may include its ancestors as context without permanently changing the user's expansion set."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type VisibleTraceRow = {\n  spanId: string;\n  depth: number;\n  posInSet: number;\n  setSize: number;\n  expanded: boolean | undefined;\n  matched: boolean;\n};\n\nconst rows = selectVisibleRows({\n  spansById,\n  childIdsByParentId,\n  rootIds,\n  expandedIds,\n  searchQuery,\n  filters\n});",
+      "validation": {
+        "kind": "example",
+        "level": "syntax"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Keep the streaming hot path small"
+    },
+    {
+      "type": "text",
+      "text": "The adapter can receive many small deltas in one network turn. Queue ordinary updates and flush them once per animation frame, while terminal run states and approval resolutions can take a higher-priority path. Entity-specific selectors ensure that changing span A does not rerender every row or the open inspector for span B. Duration labels for running spans derive from a shared low-frequency clock rather than one interval per row. Large input and output bodies live in a payload cache keyed by span ID, payload kind, redaction version, and content version."
+    },
+    {
+      "type": "heading",
+      "text": "Action coordination is a separate write path"
+    },
+    {
+      "type": "text",
+      "text": "Render a command only when the latest entity advertises the capability, then submit an idempotency key and expected version. Show stopping or submitting locally without rewriting the authoritative outcome. The command response and matching stream event may arrive in either order; both merge into the same entity version. A conflict clears pending intent, preserves the newer server fact, and explains that the run completed or the approval was resolved elsewhere."
+    },
+    {
+      "type": "heading",
+      "text": "Responsive composition"
+    },
+    {
+      "type": "text",
+      "text": "On a wide screen, the trace and inspector can share a split view with sensible minimum widths. On tablet, collapse optional columns before squeezing labels. On mobile, keep the trace as the primary view and open the selected span in a full-height drawer or nested route. Focus moves to the inspector heading on open and returns to the triggering trace row on close. Payloads and comparison tables scroll inside bounded containers; the document itself must not gain horizontal overflow."
+    }
+  ]
+}

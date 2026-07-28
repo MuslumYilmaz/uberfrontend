@@ -1,10 +1,10 @@
 {
   "key": "A",
-  "title": "Architecture / High-level design",
+  "title": "Architecture",
   "blocks": [
     {
       "type": "text",
-      "text": "The architecture should prevent re-render storms while keeping comments near real time. Use a streaming transport, a client buffer, a scheduler, and a virtualized list to keep DOM size bounded."
+      "text": "Use a snapshot plus resumable event stream, a validator, a short ingest queue, an idempotent reducer, and a virtualized projection. Scheduling controls store and paint frequency; it never decides which authoritative comments survive."
     },
     {
       "type": "divider"
@@ -16,7 +16,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**Client architecture**\n- Comment stream manager (WebSocket/SSE)\n- Buffer queue + batch scheduler\n- Feed store (bounded list + dedupe)\n- Virtualized list\n- Moderation layer (mute/delete/report)"
+              "text": "Client architecture\n- Comment stream manager (WebSocket/SSE)\n- Buffer queue + batch scheduler\n- Feed store (bounded list + dedupe)\n- Virtualized list\n- Moderation layer (mute/delete/report)"
             }
           ]
         },
@@ -24,7 +24,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**Delivery pipeline**\n- Real-time transport with reconnect\n- Server timestamps for ordering\n- Backpressure signals when overwhelmed\n- Optional slow-mode controls"
+              "text": "Delivery pipeline\n- Real-time transport with cursor resume\n- Monotonic sequence for ordering and gap detection\n- Immutable event identity for replay deduplication\n- Versioned moderation changes\n- Optional server-owned slow mode or sampling policy"
             }
           ]
         }
@@ -33,7 +33,7 @@
     {
       "type": "callout",
       "variant": "info",
-      "title": "Diagram you should draw",
+      "title": "Snapshot-to-live projection",
       "text": "WS/SSE -> Buffer/Queue -> Scheduler -> CommentStore (bounded) -> VirtualizedList -> UI. Add a Moderation Filter between Store and UI."
     },
     {
@@ -79,7 +79,7 @@
         },
         {
           "title": "3) Batch apply",
-          "text": "Every 100-250ms, drain the queue, dedupe, and append to the store."
+          "text": "Drain an accepted burst in one measured store transaction, preserving event identity, sequence, and gaps."
         },
         {
           "title": "4) Render",
@@ -94,7 +94,7 @@
     {
       "type": "callout",
       "variant": "success",
-      "title": "Key message",
+      "title": "Persist before deriving the viewport",
       "text": "Buffering + virtualization is the difference between smooth UX and a frozen page when chat spikes."
     },
     {
@@ -102,31 +102,32 @@
     },
     {
       "type": "table",
-      "title": "Component boundaries to call out",
+      "title": "Stream and follow-mode boundaries",
       "columns": [
         "Boundary",
         "Reason"
       ],
       "rows": [
         [
-          "UI shell vs feature module",
-          "Independent deploys and safe rollouts"
+          "Stream validator vs timeline reducer",
+          "Only schema-valid, deduplicated events may advance the contiguous cursor"
         ],
         [
-          "Ingest vs render",
-          "Prevents re-render storms"
+          "Timeline order vs follow mode",
+          "Accepted comments can update pending count without moving the reader's anchor"
         ],
         [
-          "Cache vs view model",
-          "Keeps UI deterministic"
+          "Authoritative moderation vs local mute",
+          "Server tombstones preserve revision while personal hiding remains a projection"
         ]
       ]
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "Explain the data flow",
-      "text": "State the pipeline explicitly: fetch -> normalize -> cache -> view model -> render. This shows you understand front-end architecture beyond UI widgets."
+      "title": "Gap-aware comment projection",
+      "text": "Make the comment path explicit: snapshot and live frames pass validation, deduplication, ordering, moderation, and follow-mode placement before the visible list changes.",
+      "editorialRole": "canonical-model"
     },
     {
       "type": "divider"
@@ -138,7 +139,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**Ordering strategy**\nUse server timestamps and stable IDs; resolve minor out-of-order arrivals with a small client buffer before rendering."
+              "text": "Ordering strategy\nUse server-issued sequence for timeline order, event identity for replay deduplication, and an opaque cursor for resume. Timestamps remain display metadata, not the ordering contract."
             }
           ]
         },
@@ -146,10 +147,54 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**Auto-scroll rules**\nIf the user scrolls up, pause auto-scroll and show a badge; resume only when they return to the bottom."
+              "text": "Auto-scroll rules\nIf the user scrolls up, pause auto-scroll and show a badge; resume only when they return to the bottom."
             }
           ]
         }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: burst while the viewer reads older comments"
+    },
+    {
+      "type": "text",
+      "text": "The viewer has moved upward and disabled follow mode when a popular moment produces two hundred comments, including a later moderation removal. The UI must preserve reading position, process authority, and avoid one announcement per comment."
+    },
+    {
+      "type": "table",
+      "title": "Scenario walkthrough",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Viewer leaves the live edge",
+          "Set follow mode paused and record the first visible anchor.",
+          "Current comments remain stable.",
+          "New data cannot steal reading position."
+        ],
+        [
+          "Burst arrives",
+          "Deduplicate and batch accepted events into the normalized store.",
+          "A new-comments count appears instead of inserting above the anchor.",
+          "Ingestion is decoupled from placement."
+        ],
+        [
+          "Moderator removes one item",
+          "Apply a versioned tombstone to that comment identity.",
+          "The row becomes a compact removed state without collapsing the anchor.",
+          "Moderation authority wins."
+        ],
+        [
+          "Viewer returns live",
+          "Merge pending ordered IDs and clear the count after placement.",
+          "Scroll once to the live edge by explicit action.",
+          "Auto-follow resumes only by user intent."
+        ]
       ]
     }
   ]

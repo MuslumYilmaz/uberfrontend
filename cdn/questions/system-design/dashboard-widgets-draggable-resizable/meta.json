@@ -1,7 +1,7 @@
 {
   "id": "dashboard-widgets-draggable-resizable",
   "title": "Drag-and-Drop Dashboard Frontend System Design",
-  "description": "Design a customizable frontend dashboard where widgets can be dragged, snapped to a grid, resized within constraints, and restored from a saved layout. Focus on the client-side layout model, pointer interaction ownership, collision resolution, rendering performance, persistence, accessibility, and responsive behavior.\n\nKey considerations:\n- Grid-based layout data model with logical coordinates instead of raw pixels.\n- Drag and resize controllers that use pointer events, pointer capture, snapping, and min-size constraints.\n- Collision strategies for rejecting, pushing, swapping, compacting, or allowing overlap.\n- requestAnimationFrame-driven visual updates that avoid framework rerenders on every pointermove.\n- Optimistic local layout while persisting versioned snapshots to localStorage or a server.\n- Keyboard drag/resize affordances and multi-device responsive layout behavior.\n\nYou should be prepared to explain the frontend ownership boundary: the layout engine owns grid math and collisions, the interaction layer translates pointer or keyboard input into grid deltas, widget content stays mostly isolated, and persistence commits a versioned layout after interaction end.",
+  "description": "Design a customizable dashboard with pointer and keyboard movement, grid constraints, optimistic layout persistence, versioned migrations, and responsive reflow.",
   "tags": [
     "dashboard",
     "drag-drop",
@@ -12,33 +12,43 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements exploration",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-01-30",
+  "updatedAt": "2026-07-28",
   "seo": {
-    "title": "Drag-and-Drop Dashboard Frontend System Design: Grid Layout, Resize, Collision and Persistence",
-    "description": "Practice draggable dashboard frontend system design with a grid data model, pointer interactions, collision snapping, rAF rendering, persistence migrations, responsive behavior, and accessibility."
+    "title": "Drag-and-Drop Dashboard Frontend System Design",
+    "description": "Design dashboard widgets with pointer and keyboard movement, grid constraints, optimistic persistence, versioned layouts, and responsive reflow."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/dashboard-widgets-draggable-resizable.md",
+    "primaryKeyword": "drag-and-drop dashboard frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Drag-and-Drop Dashboard Frontend System Design.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Drag-and-Drop Dashboard Frontend System Design.",
+    "uniqueAngle": "Design a customizable dashboard with pointer and keyboard movement, grid constraints, optimistic layout persistence, versioned migrations, and responsive reflow.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
   }
 }

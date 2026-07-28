@@ -1,166 +1,235 @@
 {
-    "key": "O",
-    "title": "Optimizations & Deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Cover how you keep updates smooth, how you control memory, and how you behave under overload (bursts of data or big datasets)."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "In this step, the interviewer wants to see if you understand what breaks in a live chart after it runs for minutes: FPS drops, memory slowly creeping up, the main thread getting blocked, and data arriving faster than you can draw. You should talk about how you keep updates smooth, how you control memory, and how you behave under overload (bursts of data or big datasets)."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Begin with bounded buffers, the simplest suitable renderer, and one pending paint scheduled only when dirty. Measure interaction latency, draw cost, memory, and CPU over long sessions before tuning window size, downsampling, workers, or renderer choice."
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**How you should frame optimizations:**\n\"First I’d get a correct, simple version: bounded buffer, Canvas-based renderer, rAF loop that redraws when there’s new data. Then I’d measure: FPS, memory, and CPU when the chart runs for several minutes. Based on that I’d tune window size, max points, and potentially move heavy work (downsampling, layout) off the main thread.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- You optimize **after** you have a correct baseline.\n- You know when full redraw is fine vs when you need **incremental updates**.\n- You can explain **queue vs drop** when data outpaces rendering.\n- You think about **memory growth** and sliding windows.\n- You know when to bring in **OffscreenCanvas / Web Workers**.\n- You consider **downsampling/aggregation** for big datasets."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "How you should act here",
-            "text": "Pick a concrete scenario in your answer: for example, \"one line, 10 samples/sec, running for 10 minutes\" and talk through how much data that produces, how many points you actually keep, and what you do when frame time or memory starts to hurt."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Baseline performance hygiene you should mention",
-                            "items": [
-                                "Use **Canvas** (or WebGL) instead of SVG for frequently updating, point-heavy charts.",
-                                "Keep a **bounded sliding window** (by time and/or `maxPoints`) instead of storing all history.",
-                                "Drive painting via **requestAnimationFrame**, not `setInterval`, so you never render more often than the display refreshes.",
-                                "Avoid heavy work inside the render loop: precompute as much as possible outside rAF.",
-                                "Reuse the same chart/canvas instance; avoid re-creating the chart object on every update."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Deep-dive topics that impress",
-                            "items": [
-                                "Explain when **full redraw per frame** is fine (e.g. ≤ 1–2k points) vs when you’d switch to incremental updates or WebGL.",
-                                "Describe a **downsampling** strategy (e.g. keep min/max in buckets) when there are more points than pixels.",
-                                "Mention using a **ring buffer** instead of shifting arrays to avoid GC pressure.",
-                                "Discuss moving data processing (and maybe rendering) to a **Web Worker + OffscreenCanvas** under heavy load.",
-                                "Show you’re okay with **dropping intermediate frames** as long as the user always sees the most recent state."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Deep-dive angles and how to explain them",
-            "columns": [
-                "Topic",
-                "Angle",
-                "How you talk about it"
-            ],
-            "rows": [
-                [
-                    "Incremental vs full redraw",
-                    "Trade-offs by point count",
-                    "\"For a few hundred or a couple of thousand points, a full Canvas redraw each frame is fine. If the dataset grows beyond that, I’d either limit `maxPoints` or switch to an incremental technique (scrolling the viewport and drawing only new segments).\""
-                ],
-                [
-                    "Queue vs dropping frames",
-                    "What happens under bursts",
-                    "\"If new data arrives while we’re still rendering, I’d prefer to coalesce updates: keep only the latest buffer and drop intermediate batches. The user doesn’t need to see every micro-step; they care about the current live state staying up to date.\""
-                ],
-                [
-                    "Memory management",
-                    "Sliding window & caps",
-                    "\"I’d store only a sliding window of recent points (e.g. last 60s or last 1k points). On every insert, I trim old points so the buffer never grows unbounded. This keeps both memory usage and draw time predictable over long runs.\""
-                ],
-                [
-                    "Downsampling",
-                    "Too many points per pixel",
-                    "\"If we have more data points than horizontal pixels, drawing every point is pointless and slow. I’d aggregate into buckets per pixel or per small time slice and keep only representative values (min/max/avg) for rendering.\""
-                ],
-                [
-                    "OffscreenCanvas / Workers",
-                    "Offloading heavy work",
-                    "\"If profiling shows the main thread is busy with chart math, I’d move transformation/downsampling to a Web Worker. With `OffscreenCanvas`, we can even render in the worker so the main thread stays responsive for user interactions.\""
-                ]
-            ]
-        },
-        {
-            "type": "steps",
-            "title": "Optimization path you should describe",
-            "steps": [
-                {
-                    "title": "1. Ship a correct, bounded baseline",
-                    "text": "Implement a sliding window with `windowMs` + `maxPoints`, use Canvas, and drive updates via requestAnimationFrame. Run it for several minutes to ensure it doesn’t leak or freeze."
-                },
-                {
-                    "title": "2. Profile real usage",
-                    "text": "Use performance tools to record a few minutes of activity. Look at frame time, CPU hotspots, GC pauses, and memory usage as the chart runs."
-                },
-                {
-                    "title": "3. Tweak window & caps",
-                    "text": "Adjust `windowMs` and `maxPoints` so you balance \"enough history\" with \"cheap redraws\". Often you don’t need minute-level detail for a live strip chart."
-                },
-                {
-                    "title": "4. Introduce downsampling",
-                    "text": "If you still have too many points, apply a downsampling strategy (e.g. per-pixel min/max) before drawing, so the renderer sees fewer points without losing visual shape."
-                },
-                {
-                    "title": "5. Offload work if needed",
-                    "text": "If the main thread is still overloaded, move transformations to a Worker and consider OffscreenCanvas so rendering doesn’t block input, hover states, or other UI."
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Key performance lever",
-                    "value": "Bounded points",
-                    "helperText": "Cap how much you draw each frame."
-                },
-                {
-                    "label": "Key smoothness lever",
-                    "value": "rAF-driven redraw",
-                    "helperText": "Aligns rendering with screen refresh."
-                },
-                {
-                    "label": "Key scalability lever",
-                    "value": "Downsampling + Workers",
-                    "helperText": "Keeps charts responsive on large or long-running streams."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Key message to land",
-            "text": "A strong live-chart answer is not \"I redraw every 500ms\". It’s: \"I keep a bounded window, redraw via rAF, coalesce updates, downsample when needed, and move heavy work off the main thread if profiling shows it’s a bottleneck.\""
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Chart quality checks:\n- Correct sample retention precedes rendering optimization.\n- Full redraw and incremental paths are compared with representative data.\n- Paint coalescing is not described as sample dropping.\n- Ring buffers and time windows bound long-session memory.\n- Workers, OffscreenCanvas, Canvas, and WebGL require measured justification."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Baseline performance safeguards",
+              "items": [
+                "Choose SVG, Canvas, WebGL, or a chart library from measured draw cost, point count, interaction, and accessibility requirements.",
+                "Keep a bounded sliding window (by time and/or maxPoints) instead of storing all history.",
+                "Keep at most one pending requestAnimationFrame and schedule it only when data or interaction makes the view dirty.",
+                "Keep the animation-frame callback small; prepare bounded visible data before paint or in measured background work.",
+                "Reuse the same chart/canvas instance; avoid re-creating the chart object on every update."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Deep-dive topics that impress",
+              "items": [
+                "Profile full redraw and incremental update strategies with representative series counts and viewport sizes before choosing a renderer.",
+                "Describe a downsampling strategy (e.g. keep min/max in buckets) when there are more points than pixels.",
+                "Mention using a ring buffer instead of shifting arrays to avoid GC pressure.",
+                "Discuss moving data processing (and maybe rendering) to a Web Worker + OffscreenCanvas under heavy load.",
+                "Explain that render notifications may coalesce while retained samples remain governed by an explicit data contract."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Deep-dive decisions",
+      "columns": [
+        "Topic",
+        "Angle",
+        "Decision rationale"
+      ],
+      "rows": [
+        [
+          "Incremental vs full redraw",
+          "Trade-offs by point count",
+          "Profile bounded full redraw and incremental updates with representative series, viewport, interaction, and device conditions; choose the simpler path that meets the product budget."
+        ],
+        [
+          "Paint coalescing under bursts",
+          "What happens under bursts",
+          "Coalesce multiple dirty notifications into one paint of the latest retained buffer. Any aggregation or sample loss must come from the explicit data-retention contract, not the frame scheduler."
+        ],
+        [
+          "Memory management",
+          "Sliding window & caps",
+          "Configure a measured time or point retention budget and enforce it on insertion. The buffer remains bounded over long sessions without pretending the chosen budget fits every workload."
+        ],
+        [
+          "Downsampling",
+          "Too many points per pixel",
+          "When several retained points map to one horizontal pixel, create a derived display series using an explicit min/max/average or domain-specific aggregation. Keep the retained source window separate from this visual projection."
+        ],
+        [
+          "OffscreenCanvas / Workers",
+          "Offloading heavy work",
+          "If representative profiles attribute interaction delay to chart transforms, move eligible work to a Web Worker. OffscreenCanvas is a further measured option when browser support and transfer costs fit the product."
+        ]
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Rendering optimization rollout",
+      "steps": [
+        {
+          "title": "1. Ship a correct, bounded baseline",
+          "text": "Implement a sliding time window with bounded ring buffers and an on-demand render scheduler. Begin with the simplest renderer that meets interaction needs, then run long sessions to measure memory, CPU, gaps, and background-tab recovery."
+        },
+        {
+          "title": "2. Profile real usage",
+          "text": "Use performance tools to record a few minutes of activity. Look at frame time, CPU hotspots, GC pauses, and memory usage as the chart runs."
+        },
+        {
+          "title": "3. Tweak window & caps",
+          "text": "Adjust windowMs and maxPoints so you balance \"enough history\" with \"cheap redraws\". Often you don’t need minute-level detail for a live strip chart."
+        },
+        {
+          "title": "4. Introduce downsampling",
+          "text": "If you still have too many points, apply a downsampling strategy (e.g. per-pixel min/max) before drawing, so the renderer sees fewer points without losing visual shape."
+        },
+        {
+          "title": "5. Offload work if needed",
+          "text": "If the main thread is still overloaded, move transformations to a Worker and consider OffscreenCanvas so rendering doesn’t block input, hover states, or other UI."
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Key performance lever",
+          "value": "Bounded points",
+          "helperText": "Cap how much you draw each frame."
+        },
+        {
+          "label": "Key smoothness lever",
+          "value": "rAF-driven redraw",
+          "helperText": "Aligns rendering with screen refresh."
+        },
+        {
+          "label": "Key scalability lever",
+          "value": "Downsampling + Workers",
+          "helperText": "Keeps charts responsive on large or long-running streams."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Bounded rendering invariant",
+      "text": "The robust design keeps bounded ring buffers, schedules paint only when dirty, coalesces bursts, downsamples to visible resolution, resumes after background suspension, and moves proven heavy work off the main thread."
+    },
+    {
+      "type": "heading",
+      "text": "Stream and renderer failures"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Sequence gap appears",
+          "Mark freshness and request a repair range.",
+          "Known data remains inspectable."
+        ],
+        [
+          "Renderer throws",
+          "Isolate the chart view and keep the semantic summary.",
+          "One canvas failure does not remove context."
+        ],
+        [
+          "Resize races paint",
+          "Invalidate the view window and coalesce one new paint.",
+          "Axes match the current viewport."
+        ],
+        [
+          "Worker stalls",
+          "Fall back to bounded main-thread processing or a reduced summary.",
+          "Interaction remains available."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "A chart needs a named figure, textual summary, units, current freshness, and a data-table or inspection alternative appropriate to the product. Pointer hover is never the only way to inspect a point. Keyboard navigation and focus indicators are explicit, motion can be reduced, and burst updates are summarized rather than announced sample by sample."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Baseline the simplest renderer with representative series, points, viewport sizes, refresh rates, and hardware. Add downsampling, worker transforms, Canvas, or WebGL only after profile evidence. Monitor long tasks, input delay, buffer evictions, gaps, paint count per accepted sample, memory, and summary freshness."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how Live Chart Rendering (High Frequency Updates) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN requestAnimationFrame",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame",
+          "description": "Frame scheduling behavior and background-tab pausing."
+        },
+        {
+          "label": "W3C complex images tutorial",
+          "href": "https://www.w3.org/WAI/tutorials/images/complex/",
+          "description": "Text alternatives for charts and other complex images."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
 }

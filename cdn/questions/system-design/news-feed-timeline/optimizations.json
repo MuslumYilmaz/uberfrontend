@@ -1,6 +1,6 @@
 {
   "key": "O",
-  "title": "Optimizations and deep dive",
+  "title": "Optimizations",
   "blocks": [
     {
       "type": "text",
@@ -11,11 +11,11 @@
       "title": "Performance techniques",
       "items": [
         "Virtualize the list; cap DOM nodes.",
-        "Batch realtime updates (e.g., every 100-300ms).",
+        "Retain accepted events and coalesce visible projection updates at a measured cadence.",
         "Lazy-load media and use placeholders to avoid layout shifts.",
         "Memoize row components to reduce re-rendering.",
         "Prefetch the next page when near the end.",
-        "Use requestIdleCallback for low-priority work (if available)."
+        "Schedule deferrable work during measured idle periods only when the platform capability and product priority permit it."
       ]
     },
     {
@@ -45,7 +45,7 @@
         [
           "Stale ordering",
           "Out-of-order arrivals",
-          "Sort by createdAt + stable tiebreaker"
+          "Accept only a newer server-authoritative FeedOrder revision"
         ]
       ]
     },
@@ -53,19 +53,19 @@
       "type": "stats",
       "items": [
         {
-          "label": "Max DOM nodes",
-          "value": "150-300",
-          "helperText": "Keep it bounded with virtualization."
+          "label": "Mounted content",
+          "value": "Measured bound",
+          "helperText": "Window only when DOM and layout evidence justify it."
         },
         {
-          "label": "Image prefetch",
-          "value": "1-2 screens ahead",
-          "helperText": "Balance bandwidth vs perceived speed."
+          "label": "Media prefetch",
+          "value": "Viewport evidence",
+          "helperText": "Balance direction, connection, decoding cost, and waste."
         },
         {
-          "label": "Update batch size",
-          "value": "10-50 items",
-          "helperText": "Prevent re-render storms."
+          "label": "Projection cadence",
+          "value": "Measured hypothesis",
+          "helperText": "Coalesce paint without losing accepted events."
         }
       ]
     },
@@ -83,6 +83,93 @@
         "Measure drop-off at page boundaries.",
         "Log dedupe rate and buffer size to detect stream bursts."
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Paging, ranking, and mutation failures"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Page overlaps previous IDs",
+          "Deduplicate without reordering committed earlier pages.",
+          "No repeated card appears."
+        ],
+        [
+          "Rank refresh drops anchor",
+          "Choose the nearest surviving neighbor and explain major filter changes.",
+          "Navigation remains meaningful."
+        ],
+        [
+          "Media fails",
+          "Keep text, dimensions, and controls with a fallback.",
+          "One asset does not collapse the card."
+        ],
+        [
+          "Stream gap persists",
+          "Mark live freshness and request snapshot repair.",
+          "Paged reading remains usable."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Use a feed or semantic list with named articles and a visible Load More path. New ranked or live items never steal focus or auto-scroll a reader. Media has appropriate alternatives, reaction controls expose state, and grouped loading or new-item status avoids a stream of announcements. Windowing must preserve reachable focus and article context."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Prove paging, deduplication, and anchor restoration before enabling live inserts or aggressive windowing. Test overlapping pages, rank revisions, removed anchors, media failures, offline retry, mobile layout, keyboard navigation, and long sessions. Track jumps, duplicate IDs, missing pages, and recovery."
+    },
+    {
+      "type": "heading",
+      "text": "Long-session performance and content stability"
+    },
+    {
+      "type": "text",
+      "text": "Prioritize text and geometry for the first useful cards, then schedule media from viewport direction and connection evidence. Reserve image aspect ratios, cancel obsolete preloads, and cap decoded resources. Measure mounted DOM, layout work, memory, and focus behavior before adding windowing. When windowing is justified, keep the anchor and focused article mounted until a safe handoff, and test variable-height corrections caused by translated text, media, and moderation changes."
+    },
+    {
+      "type": "text",
+      "text": "Cache isolation includes account, locale, filters, and experiment assignment when they affect content. Signing out clears personal feed state. Telemetry records cursor, rank revision, merge outcome, gap, layout shift, and user-visible recovery without copying post bodies. Rollout can separate new rank projection, live buffering, media policy, and windowing behind independent flags so a scroll-jump regression does not require disabling basic pagination."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how News Feed / Timeline Front-End System Design assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "W3C ARIA feed pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/feed/",
+          "description": "Feed semantics and progressive loading interaction."
+        },
+        {
+          "label": "MDN IntersectionObserver",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API",
+          "description": "Asynchronous viewport observation for prefetch hints."
+        }
+      ],
+      "editorialRole": "references"
     }
   ]
 }

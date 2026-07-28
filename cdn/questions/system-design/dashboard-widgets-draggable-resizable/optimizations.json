@@ -1,6 +1,6 @@
 {
   "key": "O",
-  "title": "Performance, sync, and edge cases",
+  "title": "Optimizations",
   "blocks": [
     {
       "type": "text",
@@ -95,7 +95,7 @@
           "Optimistic local layout",
           "The dashboard feels instant after drop.",
           "Server save can fail or another device can have a newer layout.",
-          "Show save status, retry, and keep a serverVersion or updatedAt in the snapshot."
+          "Show save status, retry, and keep an authoritative monotonic revision in the snapshot."
         ],
         [
           "Wait for server before applying",
@@ -113,7 +113,7 @@
           "Server-backed per-user layout",
           "Cross-device restore and team/device policy support.",
           "Needs conflicts, auth, migrations, and failure states.",
-          "Persist on commit, not per frame; include layout version and conflict policy."
+          "Persist on commit, not per frame; include schemaVersion for migration, revision for conflicts, and one declared conflict policy."
         ]
       ]
     },
@@ -145,7 +145,7 @@
     },
     {
       "type": "table",
-      "title": "Edge cases to mention",
+      "title": "Layout interaction and synchronization edge cases",
       "columns": [
         "Edge case",
         "Frontend behavior"
@@ -177,7 +177,82 @@
       "type": "callout",
       "variant": "warning",
       "title": "Performance signal",
-      "text": "Say exactly which update boundary is expensive. A strong answer keeps pointer input cheap, batches visual work in rAF, commits durable layout intentionally, and persists after interaction end."
+      "text": "Identify the exact expensive update boundary. Keep pointer input cheap, batch visual work in rAF, commit durable layout intentionally, and persist only after interaction end."
+    },
+    {
+      "type": "heading",
+      "text": "Conflict, viewport, and interaction recovery"
+    },
+    {
+      "type": "table",
+      "title": "Failure modes",
+      "columns": [
+        "Failure",
+        "Response",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Pointer capture is lost",
+          "Cancel preview and restore origin.",
+          "No half-dragged state remains."
+        ],
+        [
+          "Save response is uncertain",
+          "Retain command identity and query the authoritative layout.",
+          "Retry cannot double-apply."
+        ],
+        [
+          "Breakpoint changes",
+          "Project the logical layout through explicit responsive policy.",
+          "Stored desktop pixels are not reused blindly."
+        ],
+        [
+          "Keyboard move collides",
+          "Announce the blocked position and preserve focus.",
+          "Pointer and keyboard share constraints."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility behavior"
+    },
+    {
+      "type": "text",
+      "text": "Every widget has a visible handle and keyboard move and resize commands with understandable increments. Announce the candidate position and successful placement through a restrained status region. Drag is never the only path; focus remains on the widget, and reduced motion removes decorative movement without hiding collision or selection state."
+    },
+    {
+      "type": "heading",
+      "text": "Rollout and measurement"
+    },
+    {
+      "type": "text",
+      "text": "Ship read-only layout projection, then pointer preview, keyboard operations, and persistence as separate flags. Profile pointer latency with real widget contents and monitor failed saves, conflict recovery, undo success, clipped layouts, focus loss, and mobile reflow."
+    },
+    {
+      "type": "callout",
+      "title": "Interview answer checkpoint",
+      "text": "Before finishing, explain how Drag-and-Drop Dashboard Frontend System Design assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
+      "variant": "info",
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN Pointer Events",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events",
+          "description": "Unified pointer input and pointer capture concepts."
+        },
+        {
+          "label": "W3C grid pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/grid/",
+          "description": "Keyboard interaction considerations for composite grids."
+        }
+      ],
+      "editorialRole": "references"
     }
   ]
 }

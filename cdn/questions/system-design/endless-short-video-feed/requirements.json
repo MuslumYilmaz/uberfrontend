@@ -1,16 +1,16 @@
 {
   "key": "R",
-  "title": "Reflect & Requirements",
+  "title": "Requirements",
   "blocks": [
     {
       "type": "text",
-      "text": "This is a front-end system design question about a TikTok-style short-video feed. The interviewer wants to see how you deliver fast first play, smooth scroll, and reliable playback while keeping memory, CPU, and network usage under control."
+      "text": "Design the browser side of a short-video feed where one settled card owns playback, directional preload stays bounded, and rapid swipes cannot leak media work."
     },
     {
       "type": "callout",
       "variant": "info",
       "title": "Use RADIO",
-      "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, devices, networks), **D**ecide (architecture + caching), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
+      "text": "Requirements define the user journey, device and network constraints, playback policy, failure behavior, and measurable success criteria before architecture decisions are made."
     },
     {
       "type": "divider"
@@ -22,7 +22,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**What you are solving:**\nAn endless short-video feed with instant playback, responsive scrolling, and predictable controls. The UI must stay smooth across device classes while handling variable networks, long sessions, and bursty user behavior (fast swipes)."
+              "text": "What you are solving:\nAn endless short-video feed with instant playback, responsive scrolling, and predictable controls. The UI must stay smooth across device classes while handling variable networks, long sessions, and bursty user behavior (fast swipes)."
             }
           ]
         },
@@ -30,7 +30,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "**What the interviewer is testing:**\n- Fast first play and prefetch strategy\n- Handling variable networks and devices\n- Virtualization + memory control\n- Playback lifecycle (only one active player)\n- CDN/ABR awareness and caching\n- UI performance budgets and observability"
+              "text": "Decision surface:\n- Fast first play and prefetch strategy\n- Handling variable networks and devices\n- Virtualization + memory control\n- Playback lifecycle (only one active player)\n- CDN rendition selection and caching\n- UI performance budgets and observability"
             }
           ]
         }
@@ -41,7 +41,7 @@
     },
     {
       "type": "steps",
-      "title": "User flow you should describe",
+      "title": "User flow",
       "steps": [
         {
           "title": "1) Open feed",
@@ -53,7 +53,7 @@
         },
         {
           "title": "3) Prefetch next items",
-          "text": "Queue the next 1-3 videos based on scroll direction and viewport proximity."
+          "text": "Prepare a measured directional neighbor window based on settled intent, swipe velocity, cache evidence, device memory, and network or Save-Data signals."
         },
         {
           "title": "4) Rapid scroll",
@@ -91,8 +91,8 @@
               "type": "checklist",
               "title": "Non-functional expectations",
               "items": [
-                "Stable 60 FPS scroll on mid-range devices.",
-                "Time-to-first-frame <= 1.0s on Wi-Fi, <= 2.0s on 4G.",
+                "A smooth scroll and snap experience on the supported device matrix, verified with field frame data.",
+                "Time-to-first-frame budgets segmented by device and network class, then revised from production percentiles.",
                 "Bounded memory usage over long sessions.",
                 "Graceful fallback on slow networks.",
                 "Consistent UI across regions and devices.",
@@ -105,7 +105,7 @@
     },
     {
       "type": "table",
-      "title": "Key UI states to call out",
+      "title": "Playback-facing UI states",
       "columns": [
         "State",
         "What the user sees",
@@ -139,18 +139,18 @@
       "items": [
         {
           "label": "Time to first frame",
-          "value": "<= 1.0s",
-          "helperText": "Primary perceived performance goal."
+          "value": "Measured by cohort",
+          "helperText": "Set a starting hypothesis per device and network class."
         },
         {
           "label": "Prefetch window",
-          "value": "2-3 videos",
-          "helperText": "Balance speed vs memory."
+          "value": "Adaptive",
+          "helperText": "Tune from swipe velocity, memory, Save-Data, and connection evidence."
         },
         {
           "label": "Scroll budget",
-          "value": "16ms",
-          "helperText": "Keep UI responsive under load."
+          "value": "Field frame data",
+          "helperText": "Profile interaction work instead of assuming one universal frame budget."
         }
       ]
     },
@@ -158,46 +158,54 @@
       "type": "callout",
       "variant": "warning",
       "title": "Critical trade-off",
-      "text": "More prefetching improves instant playback but increases memory and bandwidth. You should justify the prefetch window and show how you cancel downloads on rapid scroll."
+      "text": "More prefetching can improve the next start, but it increases memory and bandwidth. Justify the policy with measured startup and abandonment data, and cancel obsolete priority work after rapid scroll."
     },
     {
       "type": "divider"
     },
     {
       "type": "checklist",
-      "title": "Assumptions you should state",
+      "title": "Explicit assumptions",
       "items": [
-        "Device mix (mid-range mobile, low-end Android, desktop).",
-        "Network mix (Wi-Fi vs 4G/5G, high latency regions).",
-        "Concurrency and burst patterns.",
-        "Latency target for first meaningful UI."
+        "Autoplay, codec, reduced-motion, and inline-playback support across target devices.",
+        "Rendition coverage for viewport sizes, Save-Data users, and constrained connections.",
+        "Swipe velocity, session length, and low-memory pressure that shape the preload window.",
+        "First-frame, rebuffer, and interaction budgets segmented by device and network cohort."
       ]
     },
     {
       "type": "table",
-      "title": "Success metrics to mention",
+      "title": "Playback success measures",
       "columns": [
         "Metric",
-        "Target",
+        "Evaluation",
         "Why it matters"
       ],
       "rows": [
         [
           "LCP/TTFF",
-          "<= 2.5s / <= 1.0s",
-          "User-perceived speed"
+          "Segment LCP and media TTFF",
+          "Separates page rendering from playback startup"
         ],
         [
           "INP",
-          "<= 200ms",
-          "Responsive interaction"
+          "Field p75 by device class",
+          "Validates responsive interaction"
         ],
         [
           "Dropped frames",
-          "< 2%",
-          "Smooth scroll/animation"
+          "Frame distribution and long tasks",
+          "Reveals scroll and snap jank"
         ]
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Frontend boundary"
+    },
+    {
+      "type": "text",
+      "text": "The client controls viewport intent, active-player ownership, media element reuse, preload cancellation, memory pressure, and playback UI. Server-side ranking, encoding, and recommendation stay behind abstract feed contracts; CDN topology and origin selection stay behind abstract media-delivery contracts."
     }
   ]
 }

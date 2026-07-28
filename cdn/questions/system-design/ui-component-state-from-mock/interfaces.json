@@ -1,47 +1,96 @@
 {
   "key": "I",
-  "title": "Interface definition (API)",
+  "title": "Interface contracts for components and services",
   "blocks": [
     {
       "type": "text",
-      "text": "Describe minimal component interfaces: inputs (props) and outputs (callbacks)."
+      "text": "Define UI-facing service interfaces around cancellable reads and versioned commands. The route and controllers depend on these contracts rather than endpoint details. Every accepted response is validated before entering the cache. Cancellation means the result is no longer wanted; request generation and entity version checks still prevent a response that could not be aborted from replacing current state."
     },
     {
       "type": "code",
-      "language": "ts",
-      "code": "interface ItemsListProps {\n  items: Item[];\n  selectedId: string | null;\n  onSelect: (id: string) => void;\n}\n\ninterface FiltersPanelProps {\n  value: FilterState;\n  onChange: (next: FilterState) => void;\n}\n\ninterface ItemCardProps {\n  item: Item;\n  onLike: (id: string) => void;\n}\n"
+      "language": "typescript",
+      "code": "interface TicketClient {\n  listTickets(query: TicketQuery, signal: AbortSignal): Promise<TicketPage>;\n  getTicket(ticketId: string, signal: AbortSignal): Promise<TicketDetail>;\n  sendReply(input: {\n    ticketId: string;\n    body: string;\n    basedOnVersion: number;\n    idempotencyKey: string;\n  }): Promise<ReplyResult>;\n  updateTicket(input: {\n    ticketId: string;\n    patch: { status?: TicketStatus; assigneeId?: string };\n    basedOnVersion: number;\n    idempotencyKey: string;\n  }): Promise<UpdateTicketResult>;\n  subscribe(input: {\n    workspaceId: string;\n    cursor?: string;\n    signal: AbortSignal;\n  }): AsyncIterable<TicketEvent>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ui-component-state-from-mock-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "PATCH /ui/tickets/1842\nIdempotency-Key: status-cf21\nIf-Match: \"ticket-1842-v18\"\nContent-Type: application/json\n\n{ \"status\": \"pending\" }\n\n409 Conflict\n{\n  \"code\": \"TICKET_VERSION_CHANGED\",\n  \"currentVersion\": 19,\n  \"ticket\": {\n    \"id\": \"1842\",\n    \"subject\": \"Refund issue\",\n    \"status\": \"open\",\n    \"assigneeId\": \"agent-jordan\",\n    \"priority\": \"high\",\n    \"messageIds\": [\"message-91\", \"message-94\"],\n    \"version\": 19,\n    \"updatedAt\": \"2026-07-28T10:12:00Z\",\n    \"capabilities\": [\"reply\", \"assign\", \"change-status\"]\n  }\n}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
     },
     {
       "type": "table",
-      "title": "Props and events (example mapping)",
+      "title": "Controller-facing results",
       "columns": [
-        "Component",
-        "Inputs",
-        "Outputs"
+        "Result",
+        "UI interpretation",
+        "State transition"
       ],
       "rows": [
         [
-          "FiltersPanel",
-          "filters",
-          "onChange"
+          "Cancelled read",
+          "No error message because user intent changed.",
+          "Leave current query state alone."
         ],
         [
-          "ItemsList",
-          "items, selectedId",
-          "onSelect"
+          "Offline or network failure",
+          "Keep useful cached tickets and expose retry.",
+          "Mark freshness or command outcome as uncertain."
         ],
         [
-          "ItemCard",
-          "item",
-          "onLike, onOpen"
+          "Version conflict",
+          "Explain that the ticket changed elsewhere.",
+          "Merge the returned newer entity and clear only the stale overlay."
+        ],
+        [
+          "Permission denied",
+          "Remove the unavailable action and preserve readable context when allowed.",
+          "Refresh capabilities from authoritative data."
+        ],
+        [
+          "Validation failure",
+          "Associate safe field-level feedback with the composer or property control.",
+          "Keep the draft and focus the first correctable field."
+        ],
+        [
+          "Duplicate event",
+          "No visible change.",
+          "Ignore by event identity or entity version."
         ]
       ]
     },
     {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Common pitfall",
-      "text": "Avoid passing huge objects through many layers. Keep props small and stable to prevent re-render cascades."
+      "type": "heading",
+      "text": "URL adapter"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "interface InboxLocation {\n  query: Omit<TicketQuery, 'cursor'>;\n  selectedTicketId?: string;\n}\n\ndeclare function parseInboxLocation(url: URL): InboxLocation;\ndeclare function updateInboxLocation(\n  current: URL,\n  next: Partial<InboxLocation>,\n  mode: 'push' | 'replace',\n): URL;",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ui-component-state-from-mock-contract"
+      }
+    },
+    {
+      "type": "text",
+      "text": "Typing can replace the current history entry after debounce so each character does not create a Back stop. Explicit filter submission or ticket selection can push an entry because the user expects to navigate back. Parsing applies defaults and rejects unknown values without crashing. The route owns serialization so components do not assemble query strings independently."
+    },
+    {
+      "type": "heading",
+      "text": "Component contracts"
+    },
+    {
+      "type": "text",
+      "text": "TicketList receives ticket summary IDs or render-ready summaries, selected identity, paging status, and selection intent. ReplyComposer receives a draft snapshot, validation state, send capability, and explicit edit and submit callbacks. Neither component imports the server client. This separation allows the same components to render cached, live, or fixture data and makes loading, failure, permission, and conflict states testable without network timing."
     }
   ]
 }

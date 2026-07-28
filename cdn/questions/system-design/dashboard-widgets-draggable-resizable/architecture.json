@@ -1,6 +1,6 @@
 {
   "key": "A",
-  "title": "Architecture and ownership",
+  "title": "Architecture",
   "blocks": [
     {
       "type": "text",
@@ -37,7 +37,7 @@
         ],
         [
           "Persistence adapter",
-          "Serializes versioned snapshots to localStorage or an API and handles save failures or migrations.",
+          "Serializes snapshots with schemaVersion and revision, then handles save failures, conflicts, and format migrations.",
           "Per-frame visual updates."
         ]
       ]
@@ -93,7 +93,7 @@
         },
         {
           "title": "4. Commit",
-          "text": "Pointerup releases capture, finalizes the layout array, emits one layout change, and persists the versioned snapshot."
+          "text": "Pointerup releases capture, finalizes the layout array, emits one commit against the base revision, and persists a snapshot whose schemaVersion is independent."
         },
         {
           "title": "5. Recover",
@@ -140,8 +140,53 @@
     {
       "type": "callout",
       "variant": "warning",
-      "title": "Architecture signal",
-      "text": "Do not describe a backend dashboard service. The important frontend design is the client layout engine, interaction controller, render boundary, persisted snapshot, and accessible editing surface."
+      "title": "Versioned layout ownership",
+      "text": "Do not describe a backend dashboard service. The important frontend design is the client layout engine, interaction controller, render boundary, persisted snapshot, and accessible editing surface.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: remote layout update during a drag"
+    },
+    {
+      "type": "text",
+      "text": "A user drags widget w7 from column one to column three based on layout revision 12 while another tab saves revision 13. Pointer movement must stay local and fast, then the final command must reconcile the conflict."
+    },
+    {
+      "type": "table",
+      "title": "Scenario walkthrough",
+      "columns": [
+        "Event",
+        "Store change",
+        "Visible UI",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Drag starts",
+          "Snapshot revision 12 and create a transient preview geometry.",
+          "The widget follows a transform preview with clear drop targets.",
+          "Pointermove does not persist."
+        ],
+        [
+          "Remote revision 13 arrives",
+          "Queue the server base without replacing the active preview.",
+          "The drag does not jump under the pointer.",
+          "Interaction state stays coherent."
+        ],
+        [
+          "Drop occurs",
+          "Solve constraints against the newest known base and send one command.",
+          "Show pending placement while keeping undo available.",
+          "Only settled geometry is persisted."
+        ],
+        [
+          "Server conflicts",
+          "Merge revision 13 and recompute or roll back the overlay.",
+          "Explain the changed layout and restore focus to w7.",
+          "Authoritative revision wins without losing context."
+        ]
+      ]
     }
   ]
 }

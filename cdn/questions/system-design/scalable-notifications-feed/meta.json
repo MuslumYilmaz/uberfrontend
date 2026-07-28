@@ -1,49 +1,64 @@
 {
   "id": "scalable-notifications-feed",
-  "title": "Real-Time Notifications Feed System Design (WebSocket/SSE)",
-  "description": "Design a real-time notifications feed for a front-end system design interview. Cover feed architecture, WebSocket/SSE/polling subscriptions, buffering and batching to avoid re-render storms, virtualized list rendering for large feeds, and unread state consistency. Explain how the UI stays fast under bursty traffic, reconnects, and slow devices.\n\nFunctional requirements:\n- Receive new notifications in real time (push or polling).\n- Render a scrollable feed with new items appearing at the top.\n- Support read/unread state, clear-all, and basic filtering (e.g., only mentions).\n- Show a badge/count for unseen notifications.\n- Handle network errors and reconnects gracefully.\n\nNon-functional:\n- Avoid re-render storms when bursts of events arrive.\n- Keep memory and DOM size bounded (virtualization, trimming).\n- Maintain smooth scrolling (60 FPS target).\n- Be resilient to slow devices and unstable networks.\n- INP <= 200ms for panel interactions.\n\nData / state considerations:\n- Notification objects include id, type, content, timestamp, read/unread, and optional actions.\n- A small client-side buffer queues incoming events before render.\n- A view model layer maintains a bounded list (latest N) plus metadata like unreadCount and lastSeenCursor.\n",
+  "title": "Scalable Notifications Feed (Real-time)",
+  "description": "Design a real-time notifications feed with resumable delivery, deduplication, unread semantics, burst batching, bounded storage, virtualization, and recovery.",
   "tags": [
     "notifications",
     "real-time",
-    "streams",
     "performance",
     "virtualization",
-    "caching",
-    "backpressure",
-    "state-management",
-    "frontend-architecture",
-    "system-design"
+    "streams"
   ],
   "sections": [
     {
       "key": "R",
-      "title": "Reflect & Requirements",
+      "title": "Requirements",
       "file": "requirements.json"
     },
     {
       "key": "A",
-      "title": "Architecture / High-level design",
+      "title": "Architecture",
       "file": "architecture.json"
     },
     {
       "key": "D",
-      "title": "Data model",
+      "title": "Data",
       "file": "data.json"
     },
     {
       "key": "I",
-      "title": "Interface definition (API)",
+      "title": "Interface",
       "file": "interfaces.json"
     },
     {
       "key": "O",
-      "title": "Optimizations and deep dive",
+      "title": "Optimizations",
       "file": "optimizations.json"
     }
   ],
-  "companies": [
-    "netflix",
-    "meta"
-  ],
-  "updatedAt": "2026-02-01"
+  "updatedAt": "2026-07-28",
+  "seo": {
+    "title": "Real-Time Notifications Feed Frontend System Design",
+    "description": "Design a notifications feed with resumable updates, deduplication, unread semantics, burst batching, bounded storage, virtualization, and recovery."
+  },
+  "premiumPreview": {
+    "summary": "Design a real-time notifications feed that remains responsive during bursts without losing authoritative events or corrupting unread state.",
+    "learningOutcomes": [
+      "Merge snapshots and resumable events through one idempotent reducer.",
+      "Separate delivery, read markers, unread derivation, and presentation urgency.",
+      "Bound rendered rows and payload memory without dropping notification identities.",
+      "Recover from gaps, cursor expiry, replay, and cross-device read conflicts."
+    ],
+    "unlockDescription": "Premium unlocks the ordered-resume example, read-marker reconciliation, burst trade-offs, and degraded-feed recovery."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/scalable-notifications-feed.md",
+    "primaryKeyword": "real-time notifications feed frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for Scalable Notifications Feed (Real-time).",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Scalable Notifications Feed (Real-time).",
+    "uniqueAngle": "Design a real-time notifications feed with resumable delivery, deduplication, unread semantics, burst batching, bounded storage, virtualization, and recovery.",
+    "factCheckedAt": "2026-07-28",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
 }
