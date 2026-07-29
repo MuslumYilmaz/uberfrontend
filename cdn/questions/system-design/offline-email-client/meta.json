@@ -1,0 +1,63 @@
+{
+  "id": "offline-email-client",
+  "title": "Gmail-Style Offline Email Client Frontend System Design",
+  "description": "Design an offline-first web email client with normalized mailbox state, incremental sync, durable drafts, idempotent sending, safe message rendering, and accessible navigation.",
+  "tags": [
+    "email",
+    "offline-first",
+    "state-management",
+    "frontend-architecture",
+    "caching",
+    "storage",
+    "virtualization",
+    "accessibility",
+    "security",
+    "api-calls",
+    "error-handling",
+    "autosave"
+  ],
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements and offline scope",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture and mailbox synchronization",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model, drafts, and queued intent",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface contracts for sync and sending",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations for performance, security, and accessibility",
+      "file": "optimizations.json"
+    }
+  ],
+  "guideSlug": "state-data",
+  "publishedAt": "2026-07-29",
+  "updatedAt": "2026-07-29",
+  "seo": {
+    "title": "Gmail Frontend System Design: Offline Email Client",
+    "description": "Design an offline email client with incremental mailbox sync, IndexedDB caching, durable drafts, idempotent sends, safe HTML, and accessible navigation."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/offline-email-client.md",
+    "primaryKeyword": "Gmail frontend system design",
+    "searchIntent": "Learn how to design an offline-first web email client that reconciles mailbox sync, local drafts, and send outcomes.",
+    "readerPromise": "The reader can design a normalized, offline-capable email UI with explicit cache, outbox, security, and accessibility boundaries.",
+    "uniqueAngle": "Treat the mailbox as a server-authoritative projection cached locally while drafts and outbox commands remain durable user intent until they reconcile with sync.",
+    "factCheckedAt": "2026-07-29",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  }
+}

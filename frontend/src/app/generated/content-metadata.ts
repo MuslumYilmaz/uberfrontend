@@ -1169,6 +1169,7 @@ export const TAG_REGISTRY = {
     "edge-cases",
     "effects",
     "elements",
+    "email",
     "embedding",
     "emits",
     "encapsulation",
@@ -1311,6 +1312,7 @@ export const TAG_REGISTRY = {
     "objects",
     "observables",
     "offsets",
+    "offline-first",
     "onpush",
     "oop",
     "operators",
@@ -1531,7 +1533,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 511,
+  "totalQuestions": 512,
   "companyCounts": {
     "airbnb": {
       "all": 3,

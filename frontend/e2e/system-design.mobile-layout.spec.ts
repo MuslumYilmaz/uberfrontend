@@ -219,6 +219,44 @@ test.describe('system design mobile layout guardrail', () => {
     await assertSystemDesignNoOverflow(page);
   });
 
+  test('offline email client - free answer and wide worked example stay contained at 320 and 390 pixels', async ({ page }) => {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      const response = await page.goto('/system-design/offline-email-client');
+
+      expect(response?.status()).toBe(200);
+      await expect(page.locator('h1')).toHaveText('Gmail-Style Offline Email Client Frontend System Design');
+      await expect(page.locator('.locked-card')).toHaveCount(0);
+
+      const workedExampleHeading = page.getByText(
+        'Worked example: the send succeeds and the response disappears',
+        { exact: true },
+      );
+      const workedExampleTable = page.locator('.sd-table').filter({
+        hasText: 'One reply across cache, outbox, and mailbox sync',
+      });
+      await expect(workedExampleHeading).toBeVisible();
+      await expect(workedExampleTable).toHaveCount(1);
+      await expect(page.locator('.sd-code')).not.toHaveCount(0);
+
+      await workedExampleHeading.scrollIntoViewIfNeeded();
+      const tableScroll = workedExampleTable.locator('.sd-table-scroll');
+      const tableMetrics = await tableScroll.evaluate((el) => ({
+        clientWidth: el.clientWidth,
+        scrollWidth: el.scrollWidth,
+        overflowX: getComputedStyle(el).overflowX,
+      }));
+      expect(tableMetrics.clientWidth, `worked example table has a viewport at ${width}px`).toBeGreaterThan(0);
+      expect(tableMetrics.scrollWidth, `worked example table contains its columns at ${width}px`).toBeGreaterThan(
+        tableMetrics.clientWidth,
+      );
+      expect(['auto', 'scroll']).toContain(tableMetrics.overflowX);
+
+      await stabilize(page);
+      await assertSystemDesignNoOverflow(page);
+    }
+  });
+
   test('premium Netflix and mock-design worked examples stay contained on mobile', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     await seedPremiumSession(page);

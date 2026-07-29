@@ -1,0 +1,146 @@
+{
+  "key": "D",
+  "title": "Data model, drafts, and queued intent",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "An offline email client needs more than a cached array of inbox rows. The same message can appear in an inbox, search result, starred view, and thread, while a label can belong to many messages. Normalize shared entities by immutable identity, then separate server-confirmed mailbox data from local user intent. A full synchronization may replace the mailbox projection, but it must never erase an unconfirmed draft or send command. Selection and scroll position are view state; downloaded bodies, previews, and search indexes are disposable resources."
+    },
+    {
+      "type": "heading",
+      "text": "Email client state management entities"
+    },
+    {
+      "type": "table",
+      "title": "Identity, ownership, and revision rules",
+      "columns": [
+        "Record",
+        "Stable identity and relationships",
+        "Mutation rule"
+      ],
+      "rows": [
+        [
+          "Thread",
+          "One thread ID references ordered message IDs and summarizes subject, snippet, participants, labels, unread count, and latest activity.",
+          "A newer server revision replaces summary fields. The client derives its row from normalized messages instead of copying complete messages into every list."
+        ],
+        [
+          "Message",
+          "One immutable message ID belongs to a thread and references any number of label IDs. One label can therefore appear on any number of messages.",
+          "Treat delivered content as immutable. A newer representation is an upsert by the same identity and revision, not an in-place composer edit."
+        ],
+        [
+          "Label",
+          "One label ID describes a system or user label. Message-to-label references model the many-to-many relationship.",
+          "Label updates can rename or recolor a user label without rewriting every stored row. Membership changes arrive through message or thread deltas."
+        ],
+        [
+          "DraftDocument",
+          "A stable draft ID owns the evolving composer document and may reference a thread. Its content revision is local; its server revision is optional.",
+          "Saving replaces the draft content revision while preserving the container identity. A failed or superseded save never turns a draft into an immutable delivered message."
+        ],
+        [
+          "OutboxCommand",
+          "A stable command ID and idempotency key describe one save, send, or label intent based on a known revision.",
+          "Retry the same command identity until an authoritative delta or command outcome reconciles it. Do not mint a new key after an ambiguous response."
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type MailboxAddress = {\n  name?: string;\n  address: string;\n};\n\ntype Thread = {\n  id: string;\n  messageIds: readonly string[];\n  labelIds: readonly string[];\n  subject: string;\n  snippet: string;\n  participants: readonly MailboxAddress[];\n  lastMessageAt: string;\n  unreadMessageCount: number;\n  revision: string;\n};\n\ntype Message = {\n  readonly id: string;\n  readonly threadId: string;\n  readonly labelIds: readonly string[];\n  readonly from: MailboxAddress;\n  readonly to: readonly MailboxAddress[];\n  readonly sentAt: string;\n  readonly subject: string;\n  readonly snippet: string;\n  readonly bodyResourceId: string;\n  readonly attachmentIds: readonly string[];\n  readonly revision: string;\n  readonly clientCommandId?: string;\n};\n\ntype Label = {\n  id: string;\n  name: string;\n  kind: 'system' | 'user';\n  color?: string;\n  revision: string;\n};\n\ntype MailboxSnapshot = {\n  mailboxId: string;\n  syncCursor: string;\n  threads: readonly Thread[];\n  messages: readonly Message[];\n  labels: readonly Label[];\n  capturedAt: string;\n};\n\ntype DraftContent = {\n  to: readonly MailboxAddress[];\n  cc: readonly MailboxAddress[];\n  bcc: readonly MailboxAddress[];\n  subject: string;\n  bodyHtml: string;\n  attachmentIds: readonly string[];\n};\n\ntype DraftDocument = {\n  draftId: string;\n  mailboxId: string;\n  threadId?: string;\n  content: DraftContent;\n  contentRevision: number;\n  baseRemoteRevision: string | null;\n  remoteRevision?: string;\n  updatedAt: string;\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "offline-email-client-contract"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Frontend email outbox pattern and durable intent"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type CommandBase = {\n  commandId: string;\n  idempotencyKey: string;\n  baseRevision: string | null;\n  createdAt: string;\n};\n\ntype OutboxCommand =\n  | (CommandBase & {\n      kind: 'draft.save';\n      draftId: string;\n      document: DraftDocument;\n    })\n  | (CommandBase & {\n      kind: 'draft.send';\n      draftId: string;\n      expectedContentRevision: number;\n    })\n  | (CommandBase & {\n      kind: 'thread.labels.set';\n      threadId: string;\n      addLabelIds: readonly string[];\n      removeLabelIds: readonly string[];\n    });\n\ntype PendingCommand = {\n  command: OutboxCommand;\n  status: 'queued' | 'submitting' | 'awaiting-delta' | 'conflict' | 'failed';\n  attemptCount: number;\n  retryAfter?: string;\n  lastErrorCode?: string;\n};\n\ntype MailboxClientState = {\n  mailbox: {\n    threadsById: Record<string, Thread>;\n    messagesById: Record<string, Message>;\n    labelsById: Record<string, Label>;\n    syncCursor: string | null;\n    phase: 'empty' | 'cached' | 'syncing' | 'fresh' | 'stale' | 'recovering';\n  };\n  localIntent: {\n    draftsById: Record<string, DraftDocument>;\n    commandsById: Record<string, PendingCommand>;\n  };\n  view: {\n    selectedThreadId?: string;\n    activeLabelId?: string;\n    query: string;\n  };\n  resources: {\n    bodyCacheKeys: readonly string[];\n    attachmentCacheKeys: readonly string[];\n    localSearchVersion?: string;\n  };\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "offline-email-client-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Five state layers and their retention policy",
+      "columns": [
+        "Layer",
+        "Examples",
+        "Recovery behavior"
+      ],
+      "rows": [
+        [
+          "Server document cache",
+          "Normalized threads, immutable messages, labels, entity revisions, and the opaque sync cursor.",
+          "Merge only from snapshot and delta contracts. An expired cursor permits a new snapshot because this layer projects server truth."
+        ],
+        [
+          "Durable local intent",
+          "Draft documents, draft revisions, outbox commands, idempotency keys, attempt counts, and ambiguous send state.",
+          "Persist it in one transaction before optimistic UI. Preserve it across reload, offline periods, cursor recovery, and cache eviction."
+        ],
+        [
+          "Cache policy metadata",
+          "Last access time, byte estimates, account partition, schema version, and eviction class.",
+          "Use it to remove old bodies and previews without removing drafts or commands."
+        ],
+        [
+          "Ephemeral view state",
+          "Current route, selected thread, expanded composer, keyboard focus target, filters, and scroll anchor.",
+          "Recreate from the URL and defaults. Stable IDs preserve selection and virtual-list anchoring across deltas."
+        ],
+        [
+          "Disposable resources",
+          "Sanitized body fragments, remote-image decisions, attachment previews, decoded blobs, and the local cached-mail search index.",
+          "Rebuild on demand when source revision, sanitizer version, account, or authorization changes."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Revision and deletion semantics"
+    },
+    {
+      "type": "steps",
+      "title": "Applying a mailbox change safely",
+      "steps": [
+        {
+          "title": "Compare entity revision",
+          "text": "Ignore an older replay, accept a newer upsert, and make equal revisions idempotent. The cursor cannot replace per-entity revision checks."
+        },
+        {
+          "title": "Update normalized relationships",
+          "text": "Merge the message once, then update thread and label indexes from authoritative events. Search and inbox rows read the same entities."
+        },
+        {
+          "title": "Reconcile matching intent",
+          "text": "When an event echoes clientCommandId, confirm that outbox command. Remove a sent draft only after the authoritative outcome, even if the send response disappeared."
+        },
+        {
+          "title": "Handle removal explicitly",
+          "text": "A message.removed event changes the server projection, not unrelated drafts or commands awaiting conflict resolution."
+        },
+        {
+          "title": "Commit cursor with the merge",
+          "text": "Commit entity changes and cursor in one transaction. On abort, replay from the previous cursor instead of exposing partial state."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Account partition is part of every key",
+      "text": "Prefix or structurally partition IndexedDB records by authenticated mailbox ID. On account switch, close active readers, clear view and resource state, and open the new partition before rendering cached rows. Never show one account's subject lines while another account is loading, and never coalesce commands across accounts even if their draft IDs happen to match."
+    }
+  ]
+}

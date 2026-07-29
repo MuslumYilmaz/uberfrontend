@@ -1,0 +1,178 @@
+{
+  "key": "A",
+  "title": "Architecture and mailbox synchronization",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Use one reconciliation pipeline for online responses, mailbox deltas, cache hydration, and multi-tab wake-ups. Components express read or write intent through a mailbox facade; they do not call transport, edit revisions, or insert message HTML. Version-aware reducers keep network arrival order from creating a second mailbox."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "Mailbox route and responsive panes\n  -> normalized selectors\n  -> mailbox facade\n       -> snapshot and delta coordinator\n       -> durable draft repository\n       -> idempotent outbox coordinator\n       -> safe body and attachment cache\n  -> account-scoped IndexedDB\n  -> versioned mailbox service\n\nPush, SSE, or BroadcastChannel\n  -> invalidation hint only\n  -> fetch authoritative delta\n  -> reconcile through one reducer",
+      "validation": {
+        "kind": "diagram"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Four-part canonical model",
+      "text": "Separate the normalized server-authoritative mailbox projection; durable local intent containing drafts and outbox commands; ephemeral selection, focus, filters, and request state; and a safe-render boundary for untrusted bodies. A full sync may replace the projection but cannot erase local intent. Neither server content nor cached markup bypasses the render boundary.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "table",
+      "title": "Frontend modules",
+      "columns": [
+        "Module",
+        "Owns",
+        "Boundary"
+      ],
+      "rows": [
+        [
+          "MailboxStore",
+          "Normalized entities, query IDs, revisions, cursor, overlays, and freshness.",
+          "Bodies are not copied into inbox rows."
+        ],
+        [
+          "IndexedDbRepository",
+          "Account-scoped cache generations, drafts, commands, and migrations.",
+          "It stores revisions but does not decide authority."
+        ],
+        [
+          "SyncCoordinator",
+          "Hydration, snapshot or delta, cursor advancement, cancellation, and recovery.",
+          "It never infers success from connectivity."
+        ],
+        [
+          "OutboxCoordinator",
+          "Durable scheduling, idempotency, retry, and command reconciliation.",
+          "It never fabricates a Sent message."
+        ],
+        [
+          "BodyRenderBoundary",
+          "Sanitization, URL policy, remote-image consent, and resource teardown.",
+          "Sender markup never reaches the DOM directly."
+        ],
+        [
+          "MailboxViewport and TabCoordinator",
+          "Virtual range, stable focus, advisory wake-ups, and a preferred flusher lease.",
+          "BroadcastChannel is not durable authority."
+        ]
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Boot and synchronization flow",
+      "steps": [
+        {
+          "title": "Hydrate one account",
+          "text": "Open the authenticated account namespace and read cached entities, query IDs, cursor, drafts, and outbox. Render cached summaries with freshness while keeping account switches isolated."
+        },
+        {
+          "title": "Establish authority",
+          "text": "Request changes after a valid opaque sync cursor, otherwise fetch a snapshot. A cursor locates history; it is not an entity or draft revision."
+        },
+        {
+          "title": "Commit reconciliation",
+          "text": "Validate account and schema, apply only newer revisions, update query membership, and persist entities with the replacement cursor in one transaction. Stable IDs preserve selection and scroll anchor."
+        },
+        {
+          "title": "Flush intent",
+          "text": "Submit persisted commands after authentication and capabilities are known. Command responses and matching events can arrive in either order and converge through identity and revision."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Offline email client architecture invariants"
+    },
+    {
+      "type": "text",
+      "text": "Threads, immutable messages, labels, and draft references live in maps keyed by stable server identity. Ordered inbox results store IDs plus query metadata, not copied entities. Message bodies, attachment bytes, and local search indexes remain disposable resources with independent version and eviction metadata."
+    },
+    {
+      "type": "checklist",
+      "title": "Applying a mailbox checkpoint",
+      "items": [
+        "Require snapshot pages to share a declared checkpoint; restart instead of combining pages from incompatible generations.",
+        "Validate event kind, account, schema version, entity revision, and payload limits before changing visible state.",
+        "Ignore replayed identities and older entity revisions while still accepting a newer thread summary after a message update.",
+        "Recompute label and search-query membership from event semantics without scanning or cloning every cached entity.",
+        "Advance syncCursor only in the transaction that persists its corresponding events, so a crash replays safe work.",
+        "Keep pending command overlays separate and remove one only after an authoritative response or matching event reconciles it."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Invalidation is not mailbox truth",
+      "text": "Push or SSE marks the mailbox stale and schedules a delta fetch; it does not authoritatively add a message or update a count. BroadcastChannel only wakes another same-origin tab to reread durable state or fetch changes. Browser online events may accelerate retry but prove neither reachability nor command outcome."
+    },
+    {
+      "type": "heading",
+      "text": "Expired cursor recovery"
+    },
+    {
+      "type": "text",
+      "text": "When the changes endpoint rejects an expired cursor, fetch a snapshot into a staging cache generation, validate it, and atomically replace only server-derived entities and query indexes. Preserve local drafts, outbox commands, idempotency keys, and attachment staging in separate stores. Reapply pending presentation overlays, reconcile command identities already visible in the snapshot, and resume from its new cursor."
+    },
+    {
+      "type": "heading",
+      "text": "Worked example: the send succeeds and the response disappears"
+    },
+    {
+      "type": "text",
+      "text": "The user sends draft d-19 offline. One IndexedDB transaction saves the draft and cmd-73, whose clientCommandId and idempotency key remain stable. After reconnect, the service accepts cmd-73 and creates m-205, but the response is lost. The client retains Unknown or Retrying state and creates no Sent row. A later mailbox delta carries m-205 with clientCommandId cmd-73, allowing one transaction to upsert the message, update its thread, acknowledge the command, and remove the draft only after authoritative confirmation."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "offline: persist d-19 + cmd-73 -> show Queued\nreconnect: POST send(cmd-73) -> server creates m-205\nnetwork: response disappears\nsync: message.upserted(m-205, clientCommandId = cmd-73)\nreconcile: add m-205 once -> acknowledge cmd-73 -> retire d-19",
+      "validation": {
+        "kind": "diagram"
+      }
+    },
+    {
+      "type": "table",
+      "title": "One reply across cache, outbox, and mailbox sync",
+      "columns": [
+        "Moment",
+        "Durable result",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Send pressed offline",
+          "Commit d-19 and cmd-73 before showing Queued.",
+          "A crash cannot erase acknowledged local intent."
+        ],
+        [
+          "Response disappears",
+          "Keep cmd-73 pending and reuse its original identity.",
+          "Silence is not evidence of failure or success."
+        ],
+        [
+          "Retry reaches the service",
+          "The idempotency key maps to the existing result.",
+          "One command creates at most one message."
+        ],
+        [
+          "Delta echoes cmd-73",
+          "Upsert m-205, update the thread, acknowledge the command, and retire d-19 together.",
+          "Local intent converges with one server fact."
+        ],
+        [
+          "Cursor expires first",
+          "Replace mailbox cache, preserve d-19 and cmd-73, then reconcile the fresh snapshot.",
+          "Full sync cannot delete unresolved intent."
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Route changes abort obsolete reads but not persisted draft or send intent. Narrow selectors keep body fetches from rerendering the inbox. Wide tables and code scroll inside their containers; mobile list, thread, and compose panes reuse the same store and restore focus by stable identity."
+    }
+  ]
+}
