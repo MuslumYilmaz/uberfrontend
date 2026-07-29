@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-streaming-text-frame-reassembly-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "streaming-text-frame-reassembly",
+    "prompt": "A `fetch` response streams UTF-8 newline-delimited JSON. Network chunks can split a multibyte character or one JSON line, and the final line may omit a newline. Which consumer preserves both decoding and protocol framing?",
+    "options": [
+      {
+        "id": "choice-51e7a0bf0c",
+        "label": "Pipe through `TextDecoderStream`, retain the incomplete text tail, parse complete lines, then process the final tail."
+      },
+      {
+        "id": "choice-bf4e061259",
+        "label": "Create a new `TextDecoder` for each byte chunk, decode it independently, and parse that decoded chunk as JSON."
+      },
+      {
+        "id": "choice-06c4c3ec77",
+        "label": "Pipe through `TextDecoderStream`, parse each emitted string as one JSON record, and discard strings without a newline."
+      }
+    ],
+    "estimatedSeconds": 175
+  },
+  "private": {
+    "correctOptionId": "choice-51e7a0bf0c",
+    "answerProof": {
+      "summary": "`TextDecoderStream` carries encoding state across byte chunks, while an application buffer separately carries incomplete newline-delimited records across decoded string chunks and flushes a valid final remainder.",
+      "decisiveConstraints": [
+        "A UTF-8 code point may span raw byte chunks.",
+        "A JSON record may span decoded string chunks.",
+        "The last valid record may end at stream completion rather than a delimiter."
+      ],
+      "claims": [
+        {
+          "statement": "`TextDecoderStream` converts a stream of encoded bytes into a stream of strings through the transform-stream interface.",
+          "sourceIds": [
+            "mdn-textdecoderstream"
+          ]
+        },
+        {
+          "statement": "MDN's streamed line-processing pattern carries a remainder into the next decoded chunk and yields a final unterminated line.",
+          "sourceIds": [
+            "mdn-using-fetch-streams"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-51e7a0bf0c",
+        "verdict": "correct",
+        "explanation": "It maintains decoder state for split bytes and a separate text buffer for split or unterminated protocol records.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-bf4e061259",
+        "verdict": "incorrect",
+        "explanation": "Independent decoders lose cross-chunk byte state, and a network chunk has no required relationship to a JSON boundary.",
+        "plausibility": "Each read returns a byte chunk, so decoding and parsing it immediately seems to minimize buffering.",
+        "misconceptionTag": "network-chunks-are-text-records",
+        "falsifyingConstraint": "Both encoded characters and newline-delimited records may cross chunk boundaries."
+      },
+      {
+        "optionId": "choice-06c4c3ec77",
+        "verdict": "incorrect",
+        "explanation": "Streaming decoding solves split characters, but its output chunks still need not align with complete newline-delimited records.",
+        "plausibility": "A decoder stream emits strings, which can look like application-level messages rather than transport chunks.",
+        "misconceptionTag": "decoded-chunks-are-protocol-frames",
+        "falsifyingConstraint": "Record framing must retain partial text until a delimiter or stream completion."
+      }
+    ],
+    "remediationTopics": [
+      "textdecoderstream",
+      "stream-framing",
+      "ndjson-buffering"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: TextDecoderStream",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/TextDecoderStream",
+        "sourceId": "mdn-textdecoderstream"
+      },
+      {
+        "title": "MDN: Using the Fetch API",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch",
+        "sourceId": "mdn-using-fetch-streams"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-textdecoderstream",
+          "title": "MDN: TextDecoderStream",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/TextDecoderStream",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-using-fetch-streams",
+          "title": "MDN: Using the Fetch API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

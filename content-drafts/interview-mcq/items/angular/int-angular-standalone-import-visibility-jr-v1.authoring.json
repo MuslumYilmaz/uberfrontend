@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-standalone-import-visibility-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "standalone-import-visibility",
+    "prompt": "A standalone order component injects `PricingService`, but its template cannot resolve the standalone `<app-price>` component or `CurrencyPipe`. Both symbols are imported at the top of the TypeScript file. Which metadata change makes them available to this template?",
+    "options": [
+      {
+        "id": "choice-2d08a53b50",
+        "label": "Register both template symbols as dependency-injection providers in the component metadata."
+      },
+      {
+        "id": "choice-3f48e3d234",
+        "label": "Declare the component and pipe as template dependencies in the standalone component's `imports` array."
+      },
+      {
+        "id": "choice-4f8a0dffb1",
+        "label": "Add `PricingService` to the component's `imports` array beside both template symbols."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-3f48e3d234",
+    "answerProof": {
+      "summary": "Standalone component metadata explicitly imports the components, directives, and pipes its template uses; dependency-injection providers and TypeScript imports serve different visibility contracts.",
+      "decisiveConstraints": [
+        "The unresolved symbols are a component and a pipe used by the template.",
+        "The consuming component is standalone.",
+        "The service is already available through dependency injection."
+      ],
+      "claims": [
+        {
+          "statement": "Standalone Angular components directly list template-used components, directives, and pipes in their component `imports` metadata.",
+          "sourceIds": [
+            "angular22-importing-components"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-2d08a53b50",
+        "verdict": "incorrect",
+        "explanation": "Providers configure dependency injection; they do not add component selectors or pipe names to a standalone component's template scope.",
+        "plausibility": "Both arrays appear in component metadata and can contain class references.",
+        "misconceptionTag": "providers-define-template-scope",
+        "falsifyingConstraint": "The compiler needs template dependencies rather than injectable service instances."
+      },
+      {
+        "optionId": "choice-3f48e3d234",
+        "verdict": "correct",
+        "explanation": "The standalone component's imports metadata establishes template visibility for both the child component and pipe.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-4f8a0dffb1",
+        "verdict": "incorrect",
+        "explanation": "A regular injected service does not belong in template imports, and adding it there does not replace the existing provider arrangement.",
+        "plausibility": "The file's JavaScript imports include all three classes, which can make one metadata list seem sufficient.",
+        "misconceptionTag": "injectable-service-is-template-dependency",
+        "falsifyingConstraint": "`PricingService` is consumed through dependency injection rather than through template syntax."
+      }
+    ],
+    "remediationTopics": [
+      "standalone component imports",
+      "template compilation scope",
+      "imports versus providers"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Importing and using components",
+        "url": "https://angular.dev/guide/components#using-components",
+        "sourceId": "angular22-importing-components"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-importing-components",
+          "title": "Angular: Importing and using components",
+          "url": "https://angular.dev/guide/components#using-components",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

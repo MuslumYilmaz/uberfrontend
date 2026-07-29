@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-ssr-state-safe-serialization-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "ssr-state-safe-serialization",
+    "prompt": "A Vue 3.5 SSR server embeds a request-local Pinia snapshot in an inline script so the client can hydrate the same state. A user display name can contain `</script>`, which breaks out of the script raw-text boundary when inserted through plain `JSON.stringify`. Which handoff preserves the exact hydration data without treating user content as executable markup?",
+    "code": {
+      "language": "javascript",
+      "runtime": "vue-3.5",
+      "source": "const state = JSON.stringify(pinia.state.value)\nconst shell = `<script>window.__STATE__ = ${state}</script>`"
+    },
+    "options": [
+      {
+        "id": "choice-ed06682752",
+        "label": "Escape quotation marks as HTML entities, then keep interpolating the JSON into the script assignment."
+      },
+      {
+        "id": "choice-4cfbeadcdd",
+        "label": "Use an HTML-embedding-safe data serializer, then parse that request snapshot before client hydration."
+      },
+      {
+        "id": "choice-480c2b55cf",
+        "label": "Keep the raw JSON in a nonce-bearing script and rely on CSP to contain every state value."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-4cfbeadcdd",
+    "answerProof": {
+      "summary": "The state must be serialized as inert data with script-breaking characters escaped for its HTML embedding context, then parsed into the request-local client store before hydration.",
+      "decisiveConstraints": [
+        "The snapshot includes user-controlled strings.",
+        "The HTML parser must not interpret state bytes as closing tags or executable markup.",
+        "The client must reconstruct the same request-scoped state used by the server render."
+      ],
+      "claims": [
+        {
+          "statement": "Vue's security guidance warns that allowing unsanitized user-controlled HTML or JavaScript to execute is dangerous, while ordinary template content is automatically escaped.",
+          "sourceIds": [
+            "vue35-ssr-security"
+          ]
+        },
+        {
+          "statement": "Pinia's SSR guide says root state embedded in HTML should be escaped for security and hydrated before any client-side `useStore()` call.",
+          "sourceIds": [
+            "pinia3-ssr-state-hydration"
+          ]
+        },
+        {
+          "statement": "Vue SSR hydration recreates the same application on the client, while server guidance requires global stores to be isolated per request.",
+          "sourceIds": [
+            "vue35-ssr-state"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ed06682752",
+        "verdict": "incorrect",
+        "explanation": "Script elements use a raw-text parsing context, so quote entities do not neutralize the literal closing-tag sequence that ends the script.",
+        "misconceptionTag": "attribute-escaping-protects-script-data",
+        "plausibility": "HTML entity escaping is appropriate for user-controlled values in several normal markup contexts.",
+        "falsifyingConstraint": "The serialized payload must be safe specifically inside a script raw-text boundary."
+      },
+      {
+        "optionId": "choice-4cfbeadcdd",
+        "verdict": "correct",
+        "explanation": "A context-aware serializer escapes script-breaking characters while preserving data semantics, and client parsing restores the exact isolated snapshot.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-480c2b55cf",
+        "verdict": "incorrect",
+        "explanation": "A nonce authorizes the intended script but does not stop state text from terminating that element or corrupting the surrounding HTML.",
+        "misconceptionTag": "csp-nonce-is-data-serialization",
+        "plausibility": "A strict CSP nonce can block execution of separate unauthorized script elements.",
+        "falsifyingConstraint": "The payload must remain syntactically contained and reconstructable even before CSP enforcement."
+      }
+    ],
+    "remediationTopics": [
+      "Vue SSR state transfer",
+      "safe inline serialization",
+      "script raw-text boundaries",
+      "request-scoped stores"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Security",
+        "url": "https://vuejs.org/guide/best-practices/security.html",
+        "sourceId": "vue35-ssr-security"
+      },
+      {
+        "title": "Vue: Server-Side Rendering",
+        "url": "https://vuejs.org/guide/scaling-up/ssr.html",
+        "sourceId": "vue35-ssr-state"
+      },
+      {
+        "title": "Pinia: Server-Side Rendering",
+        "url": "https://pinia.vuejs.org/ssr/",
+        "sourceId": "pinia3-ssr-state-hydration"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-ssr-security",
+          "title": "Vue: Security",
+          "url": "https://vuejs.org/guide/best-practices/security.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "vue35-ssr-state",
+          "title": "Vue: Server-Side Rendering",
+          "url": "https://vuejs.org/guide/scaling-up/ssr.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "pinia3-ssr-state-hydration",
+          "title": "Pinia: Server-Side Rendering",
+          "url": "https://pinia.vuejs.org/ssr/",
+          "role": "technical-verification",
+          "licenseId": "MIT",
+          "licenseUrl": "https://github.com/vuejs/pinia/blob/v3/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Pinia 3.x documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

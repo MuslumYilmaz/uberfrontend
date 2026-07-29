@@ -27,6 +27,7 @@ import { MonacoEditorComponent } from '../../monaco-editor.component';
 import { FaButtonComponent, FaCardComponent } from '../../shared/ui';
 import { CodingFrameworkPanelComponent } from '../coding/coding-detail/coding-framework-panel/coding-framework-panel';
 import { InterviewDeadlineTimerComponent } from './interview-deadline-timer.component';
+import { InterviewSystemDesignRoundComponent } from './interview-system-design-round.component';
 
 type DraftSyncState = 'idle' | 'saving' | 'saved' | 'offline' | 'error';
 type LocalCodingDraft = {
@@ -34,12 +35,24 @@ type LocalCodingDraft = {
   taskId: string;
   files: Array<Pick<InterviewCodingFile, 'path' | 'content'>>;
   updatedAt: string;
+  activeFilePath: string | null;
+  dirty: boolean;
+  baseHash: string | null;
+};
+type PendingMcqAnswer = {
+  questionId: string;
+  optionId: string;
+  baseOptionId: string | null;
+  responseDurationMs: number;
 };
 type LocalMcqTiming = {
   sessionId: string;
   elapsedByQuestion: Record<string, number>;
   activeQuestionId: string | null;
   activeSinceMs: number | null;
+  viewQuestionId: string | null;
+  reviewing: boolean;
+  pendingAnswer: PendingMcqAnswer | null;
 };
 
 @Component({
@@ -53,6 +66,7 @@ type LocalMcqTiming = {
     FaButtonComponent,
     FaCardComponent,
     InterviewDeadlineTimerComponent,
+    InterviewSystemDesignRoundComponent,
   ],
   templateUrl: './interview-session.component.html',
   styleUrls: ['./interview-session.component.scss'],
@@ -66,6 +80,8 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   @ViewChild('frameworkPanel') private frameworkPanel?: CodingFrameworkPanelComponent;
+  @ViewChild(InterviewSystemDesignRoundComponent)
+  private systemDesignRound?: InterviewSystemDesignRoundComponent;
 
   readonly session = signal<InterviewSession | null>(null);
   readonly loading = signal(true);
@@ -85,6 +101,10 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   readonly frameworkQuestion = signal<Question | null>(null);
   readonly syncedDraftHash = signal<string | null>(null);
   readonly submittingCoding = signal(false);
+  readonly systemDesignRoundFrozen = signal(false);
+  readonly codingRoundFrozen = signal(false);
+  readonly codingDraftConflict = signal(false);
+  readonly localCodingPersistenceAvailable = signal(true);
 
   readonly currentQuestion = computed<InterviewMcqQuestion | null>(() => {
     const session = this.session();
@@ -106,12 +126,22 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   private draftSaveInFlight = false;
   private draftChangedWhileSaving = false;
   private codingInitializedForTask: string | null = null;
+  private codingLocalDirty = false;
+  private codingLocalBaseHash: string | null = null;
+  private conflictingCodingDraft: LocalCodingDraft | null = null;
+  private observedCodingLocalRaw: string | null | undefined;
   private mcqTimingInitializedForSession: string | null = null;
   private readonly mcqElapsedByQuestion = new Map<string, number>();
   private mcqActiveQuestionId: string | null = null;
   private mcqActiveSinceMs: number | null = null;
+  private pendingMcqAnswer: PendingMcqAnswer | null = null;
   private readonly maxMcqResponseDurationMs = 10 * 60 * 1000;
   private ending = false;
+  private systemDesignDeadlineExpired = false;
+  private codingDeadlineExpired = false;
+  private loadEpoch = 0;
+  private codingAsyncEpoch = 0;
+  private destroyed = false;
 
   private readonly onOnline = () => {
     if (this.draftSync() === 'offline' || this.draftSync() === 'error') {
@@ -131,6 +161,9 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
+    this.loadEpoch += 1;
+    this.codingAsyncEpoch += 1;
     if (this.isBrowser) window.removeEventListener('online', this.onOnline);
     if (this.draftTimer !== null) clearTimeout(this.draftTimer);
     if (this.session()?.status === 'mcq_active') {
@@ -142,15 +175,34 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   }
 
   load(): void {
+    const requestEpoch = ++this.loadEpoch;
     this.loading.set(true);
     this.error.set(null);
     this.interviews.getSession(this.sessionId).subscribe({
       next: (session) => {
+        if (this.destroyed || requestEpoch !== this.loadEpoch) return;
         this.loading.set(false);
         this.applySession(session);
+        const remainsFrozen = (
+          this.systemDesignDeadlineExpired
+          && session.status === 'system_design_active'
+        );
+        this.systemDesignRoundFrozen.set(remainsFrozen);
+        if (!remainsFrozen) this.systemDesignDeadlineExpired = false;
+        const codingRemainsFrozen = (
+          this.codingDeadlineExpired
+          && (session.status === 'coding_ready' || session.status === 'coding_active')
+        );
+        this.codingRoundFrozen.set(codingRemainsFrozen);
+        if (!codingRemainsFrozen) this.codingDeadlineExpired = false;
       },
       error: (error) => {
+        if (this.destroyed || requestEpoch !== this.loadEpoch) return;
         this.loading.set(false);
+        if (!this.systemDesignDeadlineExpired) {
+          this.systemDesignRoundFrozen.set(false);
+        }
+        if (!this.codingDeadlineExpired) this.codingRoundFrozen.set(false);
         this.error.set(
           error?.status === 404
             ? 'This interview could not be found.'
@@ -172,7 +224,14 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     }
     const previous = question.selectedOptionId;
     const responseDurationMs = this.snapshotQuestionDuration(question.id);
+    this.pendingMcqAnswer = {
+      questionId: question.id,
+      optionId,
+      baseOptionId: previous,
+      responseDurationMs,
+    };
     this.patchQuestionAnswer(question.id, optionId);
+    this.persistMcqTiming();
     this.savingAnswerFor.set(question.id);
     this.error.set(null);
     this.interviews.saveAnswer(
@@ -181,7 +240,9 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       session.version,
     ).subscribe({
       next: (ack) => {
+        if (this.destroyed) return;
         this.savingAnswerFor.set(null);
+        this.clearPendingMcqAnswer(question.id, optionId);
         if (ack.session) {
           this.applySession(ack.session, { keepQuestionIndex: true });
         } else if (ack.version !== null) {
@@ -189,12 +250,14 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
+        if (this.destroyed) return;
         this.savingAnswerFor.set(null);
         this.patchQuestionAnswer(question.id, previous);
         if (error?.status === 409) {
           this.error.set('This interview changed in another tab. Reloading the latest answers…');
           this.load();
         } else {
+          this.clearPendingMcqAnswer(question.id, optionId);
           this.error.set('Your answer was not saved. Please select it again.');
         }
       },
@@ -208,6 +271,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     this.activateQuestionTiming(questions[index].id);
     this.currentIndex.set(index);
     this.reviewing.set(false);
+    this.persistMcqTiming();
     if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -215,6 +279,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     if (this.savingAnswerFor()) return;
     this.pauseQuestionTiming();
     this.reviewing.set(true);
+    this.persistMcqTiming();
   }
 
   submitMcq(fromTimer = false): void {
@@ -244,15 +309,23 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
 
   startCoding(): void {
     const session = this.session();
-    if (!session || session.status !== 'coding_ready' || this.transitioning()) return;
+    if (
+      !session
+      || session.status !== 'coding_ready'
+      || this.transitioning()
+      || this.codingRoundFrozen()
+    ) return;
     this.transitioning.set(true);
     this.error.set(null);
+    const requestEpoch = this.codingAsyncEpoch;
     this.interviews.startCoding(session.id, session.version).subscribe({
       next: (updated) => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.transitioning.set(false);
         this.applySession(updated);
       },
       error: (error) => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.transitioning.set(false);
         if (error?.status === 409) this.load();
         else this.error.set('The coding workspace could not be started. Please try again.');
@@ -261,12 +334,15 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   }
 
   selectFile(path: string): void {
+    if (this.codingRoundFrozen() || this.codingDraftConflict()) return;
     if (this.codingFiles().some((file) => file.path === path)) {
       this.activeFilePath.set(path);
+      this.persistLocalDraft();
     }
   }
 
   onCodeChange(content: string): void {
+    if (this.codingRoundFrozen() || this.codingDraftConflict()) return;
     const activePath = this.activeFilePath();
     const file = this.codingFiles().find((candidate) => candidate.path === activePath);
     if (!file || file.readOnly || file.content === content) return;
@@ -291,6 +367,8 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       || this.runningChecks()
       || this.submittingCoding()
       || this.draftSaveInFlight
+      || this.codingRoundFrozen()
+      || this.codingDraftConflict()
     ) {
       return;
     }
@@ -301,9 +379,14 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     }
     this.runningChecks.set(true);
     this.error.set(null);
+    const requestEpoch = this.codingAsyncEpoch;
     this.interviews.prepareCodingCheckRun(session.id, draftHash, session.version).subscribe({
-      next: (prepared) => void this.executePreparedChecks(session, prepared),
+      next: (prepared) => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
+        void this.executePreparedChecks(session, prepared, requestEpoch);
+      },
       error: (error) => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.runningChecks.set(false);
         if (error?.status === 409) {
           this.error.set('The session or draft changed. Your local draft is safe; reload before running checks.');
@@ -317,7 +400,13 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   submitCoding(): void {
     const session = this.session();
     const draftHash = this.syncedDraftHash();
-    if (!session || session.status !== 'coding_active' || this.submittingCoding()) return;
+    if (
+      !session
+      || session.status !== 'coding_active'
+      || this.submittingCoding()
+      || this.codingRoundFrozen()
+      || this.codingDraftConflict()
+    ) return;
     if (!draftHash || this.draftSaveInFlight) {
       this.error.set('Wait for the latest draft to finish syncing before submitting.');
       this.scheduleDraftSave(0);
@@ -326,19 +415,23 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     this.submittingCoding.set(true);
     this.error.set(null);
     this.persistLocalDraft();
+    const requestEpoch = this.codingAsyncEpoch;
     this.interviews.submitCoding(
       session.id,
       draftHash,
       session.version,
     ).subscribe({
       next: () => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.submittingCoding.set(false);
         this.clearLocalDraft();
         void this.router.navigate(['/interview', session.id, 'results']);
       },
       error: (error) => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.submittingCoding.set(false);
         if (error?.status === 409) {
+          this.codingInitializedForTask = null;
           this.load();
         } else {
           this.error.set('The coding task could not be submitted. Your local draft is safe.');
@@ -347,12 +440,38 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     });
   }
 
-  reconcileAfterCodingDeadline(): void {
+  reconcileAfterCodingDeadline(deadlineExpired = false): void {
+    if (deadlineExpired) {
+      this.codingDeadlineExpired = true;
+      this.codingRoundFrozen.set(true);
+      this.codingAsyncEpoch += 1;
+      if (this.draftTimer !== null) {
+        clearTimeout(this.draftTimer);
+        this.draftTimer = null;
+      }
+      this.syncedDraftHash.set(null);
+    }
     this.error.set(null);
     this.load();
   }
 
+  reconcileAfterSystemDesignDeadline(deadlineExpired = false): void {
+    if (deadlineExpired) this.systemDesignDeadlineExpired = true;
+    this.systemDesignRoundFrozen.set(true);
+    this.error.set(null);
+    this.load();
+  }
+
+  onSystemDesignSessionUpdated(session: InterviewSession): void {
+    this.applySession(session);
+  }
+
+  onSystemDesignCompleted(sessionId: string): void {
+    void this.router.navigate(['/interview', sessionId, 'results']);
+  }
+
   onFrameworkFilesChanged(files: Record<string, string>): void {
+    if (this.codingRoundFrozen() || this.codingDraftConflict()) return;
     const current = this.codingFiles();
     const currentByPath = new Map(
       current.map((file) => [file.path.replace(/^\/+/, ''), file]),
@@ -391,6 +510,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         this.ending = false;
         this.clearMcqTiming();
         this.clearLocalDraft();
+        this.clearSystemDesignLocalDraft(session.id);
         void this.router.navigate(['/interview', session.id, 'results']);
       },
       error: (error) => {
@@ -402,18 +522,69 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   }
 
   draftStatusLabel(): string {
+    if (this.codingDraftConflict()) return 'Draft choice required';
     switch (this.draftSync()) {
       case 'saving': return 'Saving draft…';
       case 'saved': return 'Draft saved';
-      case 'offline': return 'Offline · saved on this device';
-      case 'error': return 'Local draft safe · sync pending';
+      case 'offline':
+        return this.localCodingPersistenceAvailable()
+          ? 'Offline · saved on this device'
+          : 'Offline · kept in this tab only';
+      case 'error':
+        return this.localCodingPersistenceAvailable()
+          ? 'Local draft safe · sync pending'
+          : 'Draft kept in this tab only · sync pending';
       default: return 'Autosave ready';
     }
+  }
+
+  useServerCodingDraft(): void {
+    if (!this.codingDraftConflict() || this.codingRoundFrozen()) return;
+    const discarded = this.conflictingCodingDraft;
+    this.conflictingCodingDraft = null;
+    this.codingDraftConflict.set(false);
+    this.codingLocalDirty = false;
+    this.codingLocalBaseHash = this.session()?.coding?.draft?.hash ?? null;
+    if (discarded) this.removeStoredCodingDraftIfMatches(discarded);
+    this.initializeCodingFromCurrentSession(true);
+  }
+
+  restoreCodingDeviceDraft(): void {
+    const local = this.conflictingCodingDraft;
+    const session = this.session();
+    const task = session?.coding?.task;
+    if (
+      !local
+      || !session
+      || !task
+      || !this.codingDraftConflict()
+      || this.codingRoundFrozen()
+    ) return;
+    const serverFiles = session.coding?.draft?.files?.length
+      ? session.coding.draft.files
+      : task.files;
+    const files = this.mergeLocalFiles(serverFiles, local.files);
+    this.conflictingCodingDraft = null;
+    this.codingDraftConflict.set(false);
+    this.codingLocalDirty = true;
+    this.codingLocalBaseHash = session.coding?.draft?.hash ?? null;
+    this.codingFiles.set(files);
+    this.frameworkStarterFiles.set(this.filesAsFrameworkStarter(files));
+    this.activeFilePath.set(
+      files.some((file) => file.path === local.activeFilePath)
+        ? local.activeFilePath || ''
+        : files.find((file) => !file.readOnly)?.path ?? files[0]?.path ?? '',
+    );
+    this.syncedDraftHash.set(null);
+    this.draftSync.set(this.isOnline() ? 'idle' : 'offline');
+    this.persistLocalDraft();
+    this.scheduleDraftSave(0);
   }
 
   private async executePreparedChecks(
     preparedFor: InterviewSession,
     prepared: InterviewPreparedCheckRun,
+    requestEpoch: number,
   ): Promise<void> {
     try {
       const runnerResults = prepared.runnerConfig.kind === 'javascript'
@@ -421,6 +592,8 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         : await this.runFrameworkChecks(prepared.runnerConfig, prepared);
       const current = this.session();
       if (
+        this.ignoreCodingAsyncResult(requestEpoch)
+        ||
         !current
         || current.id !== preparedFor.id
         || current.status !== 'coding_active'
@@ -435,11 +608,13 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         current.version,
       ).subscribe({
         next: (completed) => {
+          if (this.ignoreCodingAsyncResult(requestEpoch)) return;
           this.runningChecks.set(false);
           this.checkResults.set(runnerResults);
           if (completed.version !== null) this.patchSessionVersion(completed.version);
         },
         error: (error) => {
+          if (this.ignoreCodingAsyncResult(requestEpoch)) return;
           this.runningChecks.set(false);
           this.error.set(
             error?.status === 409
@@ -449,6 +624,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         },
       });
     } catch (error) {
+      if (this.ignoreCodingAsyncResult(requestEpoch)) return;
       this.runningChecks.set(false);
       this.error.set(
         error instanceof Error && error.message
@@ -604,24 +780,37 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     options: { keepQuestionIndex?: boolean } = {},
   ): void {
     this.session.set(session);
+    const mcqResume = session.status === 'mcq_active'
+      ? this.initializeMcqTiming(session)
+      : null;
     if (!options.keepQuestionIndex) {
+      const resumedQuestionIndex = mcqResume?.viewQuestionId
+        ? session.questions.findIndex(
+          (question) => question.id === mcqResume.viewQuestionId,
+        )
+        : -1;
       this.currentIndex.set(
-        Math.min(session.currentQuestionIndex, Math.max(0, session.questions.length - 1)),
+        resumedQuestionIndex >= 0
+          ? resumedQuestionIndex
+          : Math.min(session.currentQuestionIndex, Math.max(0, session.questions.length - 1)),
       );
+      this.reviewing.set(mcqResume?.reviewing === true);
     }
     if (session.status === 'mcq_active') {
-      this.initializeMcqTiming(session);
       if (!this.reviewing()) {
         this.activateQuestionTiming(
           session.questions[this.currentIndex()]?.id || null,
         );
       }
+      this.reconcilePendingMcqAnswer(session);
     } else {
       this.clearMcqTiming();
     }
     if (session.status === 'coding_active') this.initializeCoding(session);
     if (['completed', 'abandoned', 'voided_technical'].includes(session.status)) {
+      this.codingAsyncEpoch += 1;
       this.clearLocalDraft();
+      this.clearSystemDesignLocalDraft(session.id);
     }
     if (session.status === 'completed') {
       void this.router.navigate(['/interview', session.id, 'results']);
@@ -632,14 +821,34 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     const task = session.coding?.task;
     if (!task || this.codingInitializedForTask === task.id) return;
     this.codingInitializedForTask = task.id;
+    this.initializeCodingFromCurrentSession();
+  }
+
+  private initializeCodingFromCurrentSession(ignoreLocalRecovery = false): void {
+    const session = this.session();
+    const task = session?.coding?.task;
+    if (!session || !task) return;
     const serverFiles = session.coding?.draft?.files?.length
       ? session.coding.draft.files
       : task.files;
-    const local = this.readLocalDraft();
+    const preservedConflict = ignoreLocalRecovery ? null : this.conflictingCodingDraft;
+    const local = ignoreLocalRecovery
+      ? null
+      : preservedConflict ?? this.readLocalDraft(true);
+    const serverHash = session.coding?.draft?.hash ?? null;
     const serverUpdatedAt = session.coding?.draft?.updatedAt;
     const localUpdatedMs = local?.updatedAt ? Date.parse(local.updatedAt) : Number.NaN;
     const serverUpdatedMs = serverUpdatedAt ? Date.parse(serverUpdatedAt) : Number.NaN;
-    const useLocal = local?.taskId === task.id
+    const matchingLocal = local?.taskId === task.id ? local : null;
+    const localMatchesServer = matchingLocal?.dirty === true
+      && Boolean(serverHash)
+      && this.sameCodingFiles(serverFiles, matchingLocal.files);
+    const causalLocal = matchingLocal?.dirty === true
+      && !localMatchesServer
+      && matchingLocal.baseHash === serverHash;
+    const legacyLocal = matchingLocal
+      && !matchingLocal.dirty
+      && matchingLocal.baseHash === null
       && (
         !session.coding?.draft
         || (
@@ -648,31 +857,52 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
           && localUpdatedMs > serverUpdatedMs
         )
       );
+    const mismatchedDirtyLocal = matchingLocal?.dirty === true
+      && !localMatchesServer
+      && matchingLocal.baseHash !== serverHash;
+    const useLocal = Boolean(causalLocal || legacyLocal);
     const files = useLocal
-      ? this.mergeLocalFiles(serverFiles, local.files)
+      ? this.mergeLocalFiles(serverFiles, matchingLocal!.files)
       : serverFiles.map((file) => ({ ...file }));
-    if (local?.taskId === task.id && !useLocal) this.clearLocalDraft();
+    this.conflictingCodingDraft = mismatchedDirtyLocal ? matchingLocal : null;
+    this.codingDraftConflict.set(Boolean(mismatchedDirtyLocal));
+    this.codingLocalDirty = useLocal;
+    this.codingLocalBaseHash = useLocal ? matchingLocal!.baseHash : serverHash;
+    if (matchingLocal && !useLocal && !mismatchedDirtyLocal) {
+      this.removeStoredCodingDraftIfMatches(matchingLocal);
+    }
     this.codingFiles.set(files);
-    this.frameworkStarterFiles.set(files.length
-      ? Object.fromEntries(
-        files.map((file) => [file.path.replace(/^\/+/, ''), file.content]),
-      )
-      : null);
+    this.frameworkStarterFiles.set(this.filesAsFrameworkStarter(files));
     this.frameworkQuestion.set(this.buildFrameworkQuestion(session));
     this.activeFilePath.set(
-      files.find((file) => !file.readOnly)?.path ?? files[0]?.path ?? '',
+      matchingLocal?.activeFilePath
+        && files.some((file) => file.path === matchingLocal.activeFilePath)
+        ? matchingLocal.activeFilePath
+        : files.find((file) => !file.readOnly)?.path ?? files[0]?.path ?? '',
     );
     this.checkResults.set(session.coding?.checkResults ?? []);
     this.syncedDraftHash.set(
-      useLocal ? null : session.coding?.draft?.hash || null,
+      useLocal || mismatchedDirtyLocal ? null : serverHash,
     );
     if (useLocal) {
       this.draftSync.set(this.isOnline() ? 'idle' : 'offline');
       this.scheduleDraftSave(0);
+    } else if (mismatchedDirtyLocal) {
+      this.draftSync.set('error');
     } else {
       this.draftSync.set(this.syncedDraftHash() ? 'saved' : 'idle');
       if (!this.syncedDraftHash()) this.scheduleDraftSave(0);
     }
+  }
+
+  private filesAsFrameworkStarter(
+    files: InterviewCodingFile[],
+  ): Record<string, string> | null {
+    return files.length
+      ? Object.fromEntries(
+        files.map((file) => [file.path.replace(/^\/+/, ''), file.content]),
+      )
+      : null;
   }
 
   private patchQuestionAnswer(questionId: string, optionId: string | null): void {
@@ -691,6 +921,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   }
 
   private scheduleDraftSave(delayMs = 800): void {
+    if (this.codingRoundFrozen() || this.codingDraftConflict() || this.destroyed) return;
     if (this.draftTimer !== null) clearTimeout(this.draftTimer);
     this.draftTimer = setTimeout(() => {
       this.draftTimer = null;
@@ -700,7 +931,14 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
 
   private saveDraftNow(): void {
     const session = this.session();
-    if (!session || session.status !== 'coding_active' || !this.codingFiles().length) return;
+    if (
+      !session
+      || session.status !== 'coding_active'
+      || !this.codingFiles().length
+      || this.codingRoundFrozen()
+      || this.codingDraftConflict()
+      || this.destroyed
+    ) return;
     if (!this.isOnline()) {
       this.draftSync.set('offline');
       return;
@@ -712,6 +950,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     this.draftSaveInFlight = true;
     this.draftChangedWhileSaving = false;
     this.draftSync.set('saving');
+    const requestEpoch = this.codingAsyncEpoch;
     this.interviews.saveCodingDraft(
       session.id,
       {
@@ -721,27 +960,39 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       session.version,
     ).subscribe({
       next: (saved) => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.draftSaveInFlight = false;
         if (saved.version !== null) this.patchSessionVersion(saved.version);
+        const hash = saved.draft?.hash || null;
         if (this.draftChangedWhileSaving) {
+          this.codingLocalDirty = true;
+          if (hash) this.codingLocalBaseHash = hash;
           this.syncedDraftHash.set(null);
           this.draftSync.set('idle');
+          this.persistLocalDraft();
           this.scheduleDraftSave(0);
           return;
         }
-        const hash = saved.draft?.hash || null;
+        this.codingLocalDirty = !hash;
+        if (hash) this.codingLocalBaseHash = hash;
         this.syncedDraftHash.set(hash);
         this.draftSync.set(hash ? 'saved' : 'error');
+        this.persistLocalDraft();
         if (!hash) {
           this.error.set('The draft synced, but its verification hash was missing. Reload before submitting.');
         }
       },
       error: (error) => {
+        if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.draftSaveInFlight = false;
+        this.codingLocalDirty = true;
         this.syncedDraftHash.set(null);
         this.draftSync.set(this.isOnline() ? 'error' : 'offline');
         if (error?.status === 409) {
           this.error.set('Draft sync paused because this interview changed in another tab.');
+          this.conflictingCodingDraft = this.localCodingDraftSnapshot(true);
+          this.codingInitializedForTask = null;
+          this.load();
         }
       },
     });
@@ -752,6 +1003,10 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   }
 
   private markDraftChanged(): void {
+    if (this.codingRoundFrozen() || this.codingDraftConflict()) return;
+    if (!this.codingLocalDirty) this.codingLocalBaseHash = this.syncedDraftHash();
+    this.codingLocalDirty = true;
+    if (this.draftSaveInFlight) this.draftChangedWhileSaving = true;
     this.syncedDraftHash.set(null);
     this.checkResults.set([]);
     this.persistLocalDraft();
@@ -803,19 +1058,27 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     return 'plaintext';
   }
 
-  private initializeMcqTiming(session: InterviewSession): void {
-    if (this.mcqTimingInitializedForSession === session.id) return;
+  private initializeMcqTiming(
+    session: InterviewSession,
+  ): { viewQuestionId: string | null; reviewing: boolean } | null {
+    if (this.mcqTimingInitializedForSession === session.id) {
+      return {
+        viewQuestionId: this.currentQuestion()?.id ?? null,
+        reviewing: this.reviewing(),
+      };
+    }
     this.mcqElapsedByQuestion.clear();
     this.mcqActiveQuestionId = null;
     this.mcqActiveSinceMs = null;
+    this.pendingMcqAnswer = null;
     this.mcqTimingInitializedForSession = session.id;
-    if (!this.isBrowser) return;
+    if (!this.isBrowser) return null;
 
     try {
       const raw = localStorage.getItem(this.mcqTimingKey());
-      if (!raw) return;
+      if (!raw) return null;
       const parsed = JSON.parse(raw) as Partial<LocalMcqTiming>;
-      if (parsed.sessionId !== session.id || !parsed.elapsedByQuestion) return;
+      if (parsed.sessionId !== session.id || !parsed.elapsedByQuestion) return null;
       const validQuestionIds = new Set(session.questions.map((question) => question.id));
       Object.entries(parsed.elapsedByQuestion).forEach(([questionId, duration]) => {
         const parsedDuration = Number(duration);
@@ -844,8 +1107,41 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
           ),
         );
       }
+      const viewQuestionId = typeof parsed.viewQuestionId === 'string'
+        && validQuestionIds.has(parsed.viewQuestionId)
+        ? parsed.viewQuestionId
+        : activeQuestionId;
+      const pending = parsed.pendingAnswer;
+      if (pending && validQuestionIds.has(String(pending.questionId || ''))) {
+        const question = session.questions.find(
+          (candidate) => candidate.id === pending.questionId,
+        );
+        const optionIds = new Set(question?.options.map((option) => option.id) ?? []);
+        const baseOptionId = pending.baseOptionId == null
+          ? null
+          : String(pending.baseOptionId);
+        if (
+          optionIds.has(String(pending.optionId || ''))
+          && (baseOptionId === null || optionIds.has(baseOptionId))
+        ) {
+          this.pendingMcqAnswer = {
+            questionId: String(pending.questionId),
+            optionId: String(pending.optionId),
+            baseOptionId,
+            responseDurationMs: Math.min(
+              this.maxMcqResponseDurationMs,
+              Math.max(0, Math.round(Number(pending.responseDurationMs) || 0)),
+            ),
+          };
+        }
+      }
+      return {
+        viewQuestionId,
+        reviewing: parsed.reviewing === true,
+      };
     } catch {
       // A malformed local timing record must never block the interview.
+      return null;
     }
   }
 
@@ -895,6 +1191,9 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       elapsedByQuestion: Object.fromEntries(this.mcqElapsedByQuestion),
       activeQuestionId: this.mcqActiveQuestionId,
       activeSinceMs: this.mcqActiveSinceMs,
+      viewQuestionId: this.currentQuestion()?.id ?? null,
+      reviewing: this.reviewing(),
+      pendingAnswer: this.pendingMcqAnswer,
     };
     try {
       localStorage.setItem(this.mcqTimingKey(), JSON.stringify(payload));
@@ -906,6 +1205,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   private clearMcqTiming(): void {
     this.mcqActiveQuestionId = null;
     this.mcqActiveSinceMs = null;
+    this.pendingMcqAnswer = null;
     this.mcqElapsedByQuestion.clear();
     this.mcqTimingInitializedForSession = null;
     if (!this.isBrowser || !this.sessionId) return;
@@ -920,27 +1220,119 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     return `fa:interview:mcq-timing:v1:${this.sessionId}`;
   }
 
+  private clearPendingMcqAnswer(questionId: string, optionId: string): void {
+    if (
+      this.pendingMcqAnswer?.questionId !== questionId
+      || this.pendingMcqAnswer.optionId !== optionId
+    ) return;
+    this.pendingMcqAnswer = null;
+    this.persistMcqTiming();
+  }
+
+  private reconcilePendingMcqAnswer(session: InterviewSession): void {
+    const pending = this.pendingMcqAnswer;
+    if (!pending || this.savingAnswerFor() || session.status !== 'mcq_active') return;
+    const question = session.questions.find(
+      (candidate) => candidate.id === pending.questionId,
+    );
+    if (!question) {
+      this.pendingMcqAnswer = null;
+      this.persistMcqTiming();
+      return;
+    }
+    if (question.selectedOptionId === pending.optionId) {
+      this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+      return;
+    }
+    if (question.selectedOptionId !== pending.baseOptionId) {
+      this.pendingMcqAnswer = null;
+      this.persistMcqTiming();
+      this.error.set(
+        'This answer changed in another tab. The server answer was kept so no work was overwritten.',
+      );
+      return;
+    }
+
+    this.patchQuestionAnswer(pending.questionId, pending.optionId);
+    this.savingAnswerFor.set(pending.questionId);
+    this.interviews.saveAnswer(
+      session.id,
+      {
+        questionId: pending.questionId,
+        optionId: pending.optionId,
+        responseDurationMs: pending.responseDurationMs,
+      },
+      session.version,
+    ).subscribe({
+      next: (ack) => {
+        if (this.destroyed) return;
+        this.savingAnswerFor.set(null);
+        this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+        if (ack.session) {
+          this.applySession(ack.session, { keepQuestionIndex: true });
+        } else if (ack.version !== null) {
+          this.patchSessionVersion(ack.version);
+        }
+      },
+      error: (error) => {
+        if (this.destroyed) return;
+        this.savingAnswerFor.set(null);
+        this.patchQuestionAnswer(pending.questionId, pending.baseOptionId);
+        if (error?.status === 409) {
+          this.load();
+        } else {
+          this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+          this.error.set('Your pending answer could not be restored. Please select it again.');
+        }
+      },
+    });
+  }
+
   private persistLocalDraft(): void {
+    if (!this.isBrowser) return;
+    const draft = this.localCodingDraftSnapshot();
+    if (!draft) return;
+    try {
+      const storageKey = this.localDraftKey();
+      const currentRaw = localStorage.getItem(storageKey);
+      if (
+        this.observedCodingLocalRaw !== undefined
+        && currentRaw !== this.observedCodingLocalRaw
+      ) {
+        this.localCodingPersistenceAvailable.set(false);
+        return;
+      }
+      const serialized = JSON.stringify(draft);
+      localStorage.setItem(storageKey, serialized);
+      this.observedCodingLocalRaw = serialized;
+      this.localCodingPersistenceAvailable.set(true);
+    } catch {
+      this.localCodingPersistenceAvailable.set(false);
+    }
+  }
+
+  private localCodingDraftSnapshot(
+    dirty = this.codingLocalDirty,
+  ): LocalCodingDraft | null {
     const session = this.session();
     const task = session?.coding?.task;
-    if (!this.isBrowser || !session || !task) return;
-    const draft: LocalCodingDraft = {
+    if (!session || !task) return null;
+    return {
       sessionId: session.id,
       taskId: task.id,
       files: this.projectFiles(),
       updatedAt: new Date().toISOString(),
+      activeFilePath: this.activeFilePath() || null,
+      dirty,
+      baseHash: this.codingLocalBaseHash,
     };
-    try {
-      localStorage.setItem(this.localDraftKey(), JSON.stringify(draft));
-    } catch {
-      // Server autosave can still succeed when storage is unavailable.
-    }
   }
 
-  private readLocalDraft(): LocalCodingDraft | null {
+  private readLocalDraft(observe = false): LocalCodingDraft | null {
     if (!this.isBrowser) return null;
     try {
       const raw = localStorage.getItem(this.localDraftKey());
+      if (observe) this.observedCodingLocalRaw = raw;
       if (!raw) return null;
       const parsed = JSON.parse(raw) as Partial<LocalCodingDraft>;
       if (
@@ -959,6 +1351,11 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         taskId: parsed.taskId,
         files,
         updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : '',
+        activeFilePath: typeof parsed.activeFilePath === 'string'
+          ? parsed.activeFilePath
+          : null,
+        dirty: parsed.dirty === true,
+        baseHash: typeof parsed.baseHash === 'string' ? parsed.baseHash : null,
       };
     } catch {
       return null;
@@ -1002,12 +1399,48 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     return merged;
   }
 
+  private sameCodingFiles(
+    serverFiles: Array<Pick<InterviewCodingFile, 'path' | 'content'>>,
+    localFiles: Array<Pick<InterviewCodingFile, 'path' | 'content'>>,
+  ): boolean {
+    const canonicalize = (
+      files: Array<Pick<InterviewCodingFile, 'path' | 'content'>>,
+    ) => files
+      .map((file) => ({
+        path: file.path.replace(/\\/g, '/').replace(/^\/+/, ''),
+        content: file.content,
+      }))
+      .sort((left, right) => (
+        left.path.localeCompare(right.path)
+        || left.content.localeCompare(right.content)
+      ));
+    return JSON.stringify(canonicalize(serverFiles))
+      === JSON.stringify(canonicalize(localFiles));
+  }
+
   private clearLocalDraft(): void {
     if (!this.isBrowser) return;
     try {
       localStorage.removeItem(this.localDraftKey());
+      this.observedCodingLocalRaw = null;
     } catch {
       // Ignore unavailable storage.
+    }
+  }
+
+  private removeStoredCodingDraftIfMatches(expected: LocalCodingDraft): void {
+    const current = this.readLocalDraft();
+    if (!current || JSON.stringify(current) !== JSON.stringify(expected)) return;
+    this.clearLocalDraft();
+  }
+
+  private clearSystemDesignLocalDraft(sessionId: string): void {
+    this.systemDesignRound?.discardLocalDraft();
+    if (!this.isBrowser || !sessionId) return;
+    try {
+      localStorage.removeItem(`fa:interview:system-design-draft:v1:${sessionId}`);
+    } catch {
+      // Ignore unavailable storage after an authoritative terminal transition.
     }
   }
 
@@ -1017,5 +1450,13 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
 
   private isOnline(): boolean {
     return !this.isBrowser || navigator.onLine !== false;
+  }
+
+  private ignoreCodingAsyncResult(requestEpoch: number): boolean {
+    return (
+      this.destroyed
+      || this.codingRoundFrozen()
+      || requestEpoch !== this.codingAsyncEpoch
+    );
   }
 }

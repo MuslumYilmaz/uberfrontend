@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-template-ref-keyed-registry-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "template-ref-keyed-registry",
+    "prompt": "A reorderable Vue 3.5 card list feeds element measurements into an external layout engine. Callbacks need the current element by stable card ID, including after moves and removals. The current `v-for` ref produces an array. Which ref strategy maintains the required keyed registry?",
+    "code": {
+      "language": "vue",
+      "runtime": "vue-3.5",
+      "source": "<article\n  v-for=\"card in cards\"\n  :key=\"card.id\"\n  ref=\"cardElements\"\n>\n  {{ card.title }}\n</article>"
+    },
+    "options": [
+      {
+        "id": "choice-3f48476585",
+        "label": "Zip the ref array to the current cards array after updates and assume both orders stay equal."
+      },
+      {
+        "id": "choice-6f174ce7f4",
+        "label": "Copy the mounted ref array into a card-ID map once and retain that map through later updates."
+      },
+      {
+        "id": "choice-4e37a56cf1",
+        "label": "Bind a function ref per card that stores its element by ID and deletes that ID when passed `null`."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-4e37a56cf1",
+    "answerProof": {
+      "summary": "A function ref receives each current element during updates and `null` at unmount, so it can maintain an ID-keyed registry without relying on positional ref-array ordering.",
+      "decisiveConstraints": [
+        "Element lookup is keyed by stable card ID rather than visual position.",
+        "Moved cards must retain correct associations and removed cards must leave no stale entry."
+      ],
+      "claims": [
+        {
+          "statement": "Vue does not guarantee that a template-ref array inside `v-for` matches source order, while function refs run on updates and receive `null` when their element unmounts.",
+          "sourceIds": [
+            "vue35-template-function-refs"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-3f48476585",
+        "verdict": "incorrect",
+        "explanation": "Vue does not guarantee that the ref array follows source-array order, so zipping can associate a card ID with the wrong element after reordering.",
+        "misconceptionTag": "v-for-ref-order-matches-source-order",
+        "plausibility": "Both arrays contain one entry for every currently rendered card.",
+        "falsifyingConstraint": "The registry must remain correct even when positional orders do not align."
+      },
+      {
+        "optionId": "choice-6f174ce7f4",
+        "verdict": "incorrect",
+        "explanation": "A mount-only snapshot never processes later replacements or null unmount values, leaving moved and removed cards associated with stale elements.",
+        "misconceptionTag": "mounted-dom-registry-is-static",
+        "plausibility": "The initial mounted list exposes all elements needed to seed an ID map.",
+        "falsifyingConstraint": "The card collection can move, replace, and remove elements after mount."
+      },
+      {
+        "optionId": "choice-4e37a56cf1",
+        "verdict": "correct",
+        "explanation": "Each callback closes over the card ID, updates that exact association, and removes it when Vue reports the element's unmount.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Vue function refs",
+      "v-for template refs",
+      "keyed DOM registries"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Template Refs",
+        "url": "https://vuejs.org/guide/essentials/template-refs.html",
+        "sourceId": "vue35-template-function-refs"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-template-function-refs",
+          "title": "Vue: Template Refs",
+          "url": "https://vuejs.org/guide/essentials/template-refs.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

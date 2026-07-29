@@ -20,13 +20,17 @@ const PUBLIC_FORBIDDEN_KEYS = new Set([
   'remediationTopics',
   'review',
   'rubric',
+  'sourceEvidence',
   'solution',
   'solutionAsset',
   'solutionBlock',
   'tests',
+  'twist',
+  'validationFixtures',
 ]);
 
 let artifactCache = null;
+let systemDesignArtifactCache = null;
 
 class InterviewContentError extends Error {
   constructor(message) {
@@ -144,6 +148,36 @@ function requiredRevision(value, label) {
   return revision;
 }
 
+function normalizeQuestionCode(rawCode, rawLanguage, label) {
+  if (rawCode == null || rawCode === '') return {};
+  if (typeof rawCode === 'string') {
+    const codeLanguage = typeof rawLanguage === 'string' ? rawLanguage.trim() : '';
+    return {
+      code: rawCode,
+      ...(codeLanguage ? { codeLanguage } : {}),
+    };
+  }
+  if (!rawCode || typeof rawCode !== 'object' || Array.isArray(rawCode)) {
+    fail(`${label} must be a string or a structured snippet`);
+  }
+  const source = typeof rawCode.source === 'string' ? rawCode.source : '';
+  if (!source.trim()) fail(`${label}.source is required`);
+  if (typeof rawCode.language !== 'string' || !rawCode.language.trim()) {
+    fail(`${label}.language must be a non-empty string`);
+  }
+  const language = rawCode.language.trim();
+  if (!/^[a-z][a-z0-9-]*$/.test(language)) {
+    fail(`${label}.language must be a lowercase language identifier`);
+  }
+  if (typeof rawCode.runtime !== 'string' || !rawCode.runtime.trim()) {
+    fail(`${label}.runtime must be a non-empty string`);
+  }
+  return {
+    code: source,
+    codeLanguage: language,
+  };
+}
+
 function normalizeQuestion(raw, index) {
   const label = `bank question[${index}]`;
   const optionsRaw = Array.isArray(raw?.options) ? raw.options : [];
@@ -185,7 +219,7 @@ function normalizeQuestion(raw, index) {
     format,
     competency: requiredString(raw?.competency, `${label}.competency`),
     prompt: requiredString(raw?.prompt, `${label}.prompt`),
-    ...(typeof raw?.code === 'string' && raw.code ? { code: raw.code } : {}),
+    ...normalizeQuestionCode(raw?.code, raw?.codeLanguage || raw?.language, `${label}.code`),
     estimatedSeconds: Math.floor(estimatedSeconds),
     options,
   };
@@ -478,6 +512,433 @@ function normalizeCodingRegistry(publicArtifact, privateArtifact, releaseArtifac
   };
 }
 
+function normalizedUniqueIds(items, label) {
+  const ids = items.map((item) => item.id);
+  if (ids.some((id) => !id) || new Set(ids).size !== ids.length) {
+    fail(`${label} contains missing or duplicate ids`);
+  }
+}
+
+function normalizeSystemDesignScenario(raw, index) {
+  const label = `system design scenario[${index}]`;
+  const level = requiredString(raw?.level, `${label}.level`);
+  if (!['junior', 'mid', 'senior'].includes(level)) {
+    fail(`${label} has an unsupported level`);
+  }
+  const timeLimitSeconds = Number(raw?.timeLimitSeconds);
+  if (!Number.isInteger(timeLimitSeconds) || timeLimitSeconds < 60) {
+    fail(`${label}.timeLimitSeconds must be at least 60`);
+  }
+  const limitsRaw = raw?.selectionLimits || {};
+  const limits = {
+    clarifications: Number(limitsRaw.clarifications),
+    priorities: Number(limitsRaw.priorities),
+    connections: Number(limitsRaw.connections),
+    rationalesPerDecision: Number(limitsRaw.rationalesPerDecision),
+    twistActions: Number(limitsRaw.twistActions),
+    scratchpadChars: Number(limitsRaw.scratchpadChars),
+  };
+  if (Object.values(limits).some((value) => !Number.isInteger(value) || value < 0)) {
+    fail(`${label}.selectionLimits must contain non-negative integers`);
+  }
+  if (
+    limits.clarifications > 10
+    || limits.priorities > 10
+    || limits.connections > 100
+    || limits.rationalesPerDecision > 3
+    || limits.twistActions > 10
+    || limits.scratchpadChars > 200
+  ) {
+    fail(`${label}.selectionLimits exceeds the runtime bounds`);
+  }
+
+  const normalizeEntries = (rawItems, field, mapper) => {
+    const values = Array.isArray(rawItems) ? rawItems.map(mapper) : [];
+    normalizedUniqueIds(values, `${label}.${field}`);
+    return values;
+  };
+  const steps = normalizeEntries(raw?.steps, 'steps', (entry, itemIndex) => ({
+    id: requiredString(entry?.id, `${label}.steps[${itemIndex}].id`),
+    title: requiredString(entry?.title, `${label}.steps[${itemIndex}].title`),
+  }));
+  const lanes = normalizeEntries(raw?.lanes, 'lanes', (entry, itemIndex) => ({
+    id: requiredString(entry?.id, `${label}.lanes[${itemIndex}].id`),
+    title: requiredString(entry?.title, `${label}.lanes[${itemIndex}].title`),
+    description: String(entry?.description || '').trim(),
+  }));
+  const clarifications = normalizeEntries(
+    raw?.clarifications,
+    'clarifications',
+    (entry, itemIndex) => ({
+      id: requiredString(entry?.id, `${label}.clarifications[${itemIndex}].id`),
+      prompt: requiredString(entry?.prompt, `${label}.clarifications[${itemIndex}].prompt`),
+    })
+  );
+  const requirements = normalizeEntries(
+    raw?.requirements,
+    'requirements',
+    (entry, itemIndex) => ({
+      id: requiredString(entry?.id, `${label}.requirements[${itemIndex}].id`),
+      title: requiredString(entry?.title, `${label}.requirements[${itemIndex}].title`),
+      description: String(entry?.description || '').trim(),
+    })
+  );
+  const cards = normalizeEntries(raw?.cards, 'cards', (entry, itemIndex) => ({
+    id: requiredString(entry?.id, `${label}.cards[${itemIndex}].id`),
+    title: requiredString(entry?.title, `${label}.cards[${itemIndex}].title`),
+    description: String(entry?.description || '').trim(),
+  }));
+  const connectionTypes = normalizeEntries(
+    raw?.connectionTypes,
+    'connectionTypes',
+    (entry, itemIndex) => ({
+      id: requiredString(entry?.id, `${label}.connectionTypes[${itemIndex}].id`),
+      title: requiredString(entry?.title, `${label}.connectionTypes[${itemIndex}].title`),
+      description: String(entry?.description || '').trim(),
+    })
+  );
+  const decisions = normalizeEntries(raw?.decisions, 'decisions', (entry, itemIndex) => {
+    const decisionLabel = `${label}.decisions[${itemIndex}]`;
+    const options = normalizeEntries(entry?.options, 'decision options', (option, optionIndex) => ({
+      id: requiredString(option?.id, `${decisionLabel}.options[${optionIndex}].id`),
+      label: requiredString(option?.label, `${decisionLabel}.options[${optionIndex}].label`),
+      description: String(option?.description || '').trim(),
+    }));
+    const rationales = normalizeEntries(
+      entry?.rationales,
+      'decision rationales',
+      (rationale, rationaleIndex) => ({
+        id: requiredString(
+          rationale?.id,
+          `${decisionLabel}.rationales[${rationaleIndex}].id`
+        ),
+        label: requiredString(
+          rationale?.label,
+          `${decisionLabel}.rationales[${rationaleIndex}].label`
+        ),
+      })
+    );
+    return {
+      id: requiredString(entry?.id, `${decisionLabel}.id`),
+      title: requiredString(entry?.title, `${decisionLabel}.title`),
+      prompt: requiredString(entry?.prompt, `${decisionLabel}.prompt`),
+      options,
+      rationales,
+    };
+  });
+  const frameworkLenses = {};
+  for (const track of ['core-web', 'react', 'angular', 'vue']) {
+    const lens = raw?.frameworkLenses?.[track];
+    frameworkLenses[track] = {
+      title: requiredString(lens?.title, `${label}.frameworkLenses.${track}.title`),
+      prompt: requiredString(lens?.prompt, `${label}.frameworkLenses.${track}.prompt`),
+    };
+  }
+
+  if (
+    steps.length !== 5
+    || clarifications.length < limits.clarifications
+    || requirements.length < limits.priorities
+  ) {
+    fail(`${label} does not satisfy its guided-round limits`);
+  }
+  return {
+    id: requiredString(raw?.id, `${label}.id`),
+    revision: requiredRevision(raw?.revision, `${label}.revision`),
+    contentHash: requiredString(raw?.contentHash, `${label}.contentHash`),
+    enabled: raw?.enabled === true,
+    level,
+    title: requiredString(raw?.title, `${label}.title`),
+    prompt: requiredString(raw?.prompt, `${label}.prompt`),
+    timeLimitSeconds,
+    steps,
+    selectionLimits: limits,
+    lanes,
+    clarifications,
+    requirements,
+    cards,
+    connectionTypes,
+    decisions,
+    frameworkLenses,
+  };
+}
+
+const SYSTEM_DESIGN_RULE_KEYS = new Set(['allOf', 'anyOf', 'not', 'when', 'predicate']);
+const SYSTEM_DESIGN_PREDICATES = new Set([
+  'clarificationSelected',
+  'requirementPrioritized',
+  'cardInLane',
+  'connectionExists',
+  'decisionSelected',
+  'rationaleSelected',
+  'twistActionSelected',
+  'changedFromBaseline',
+]);
+
+function assertSystemDesignRule(rule, label, depth = 0) {
+  if (!rule || typeof rule !== 'object' || Array.isArray(rule) || depth > 12) {
+    fail(`${label} contains an invalid rule`);
+  }
+  const operatorKeys = Object.keys(rule).filter((key) => SYSTEM_DESIGN_RULE_KEYS.has(key));
+  if (operatorKeys.length !== 1) fail(`${label} must contain exactly one rule operator`);
+  const operator = operatorKeys[0];
+  if (operator === 'allOf' || operator === 'anyOf') {
+    if (Object.keys(rule).some((key) => key !== operator)) {
+      fail(`${label} contains an unsupported rule field`);
+    }
+    if (!Array.isArray(rule[operator]) || !rule[operator].length) {
+      fail(`${label}.${operator} must be a non-empty array`);
+    }
+    rule[operator].forEach((child, index) => (
+      assertSystemDesignRule(child, `${label}.${operator}[${index}]`, depth + 1)
+    ));
+    return;
+  }
+  if (operator === 'not') {
+    if (Object.keys(rule).some((key) => key !== 'not')) {
+      fail(`${label} contains an unsupported rule field`);
+    }
+    assertSystemDesignRule(rule.not, `${label}.not`, depth + 1);
+    return;
+  }
+  if (operator === 'when') {
+    if (
+      Object.keys(rule).some((key) => key !== 'when')
+      || !rule.when
+      || typeof rule.when !== 'object'
+      || Array.isArray(rule.when)
+      || Object.keys(rule.when).some((key) => !['if', 'then'].includes(key))
+    ) {
+      fail(`${label} contains an unsupported when field`);
+    }
+    assertSystemDesignRule(rule.when?.if, `${label}.when.if`, depth + 1);
+    assertSystemDesignRule(rule.when?.then, `${label}.when.then`, depth + 1);
+    return;
+  }
+  const predicate = String(rule.predicate || '');
+  if (!SYSTEM_DESIGN_PREDICATES.has(predicate)) {
+    fail(`${label} contains an unsupported predicate`);
+  }
+  const fieldsByPredicate = {
+    clarificationSelected: ['predicate', 'clarificationId'],
+    requirementPrioritized: ['predicate', 'requirementId', 'maxRank'],
+    cardInLane: ['predicate', 'cardId', 'laneId'],
+    connectionExists: ['predicate', 'fromCardId', 'toCardId', 'typeId'],
+    decisionSelected: ['predicate', 'decisionId', 'optionId'],
+    rationaleSelected: ['predicate', 'decisionId', 'rationaleId'],
+    twistActionSelected: ['predicate', 'actionId'],
+    changedFromBaseline: ['predicate', 'target', 'id'],
+  };
+  const allowedFields = new Set(fieldsByPredicate[predicate]);
+  if (Object.keys(rule).some((key) => !allowedFields.has(key))) {
+    fail(`${label} contains an unsupported predicate field`);
+  }
+  const requiredFields = fieldsByPredicate[predicate]
+    .filter((key) => !['predicate', 'maxRank', 'id'].includes(key));
+  if (requiredFields.some((key) => !String(rule[key] || '').trim())) {
+    fail(`${label} is missing a predicate field`);
+  }
+  if (
+    predicate === 'requirementPrioritized'
+    && rule.maxRank != null
+    && (!Number.isInteger(Number(rule.maxRank)) || Number(rule.maxRank) < 1)
+  ) {
+    fail(`${label}.maxRank is invalid`);
+  }
+  if (
+    predicate === 'changedFromBaseline'
+    && !['placement', 'connections', 'decision'].includes(rule.target)
+  ) {
+    fail(`${label}.target is invalid`);
+  }
+}
+
+function normalizeSystemDesignPrivate(raw, index) {
+  const label = `system design private scenario[${index}]`;
+  const twistActions = Array.isArray(raw?.twist?.responseActions)
+    ? raw.twist.responseActions.map((entry, actionIndex) => ({
+      id: requiredString(entry?.id, `${label}.twist.responseActions[${actionIndex}].id`),
+      label: requiredString(entry?.label, `${label}.twist.responseActions[${actionIndex}].label`),
+      description: String(entry?.description || '').trim(),
+    }))
+    : [];
+  normalizedUniqueIds(twistActions, `${label}.twist.responseActions`);
+  const axes = Array.isArray(raw?.rubric?.axes)
+    ? raw.rubric.axes.map((axis, axisIndex) => {
+      const axisLabel = `${label}.rubric.axes[${axisIndex}]`;
+      const criteria = Array.isArray(axis?.criteria)
+        ? axis.criteria.map((criterion, criterionIndex) => {
+          const criterionLabel = `${axisLabel}.criteria[${criterionIndex}]`;
+          const weight = Number(criterion?.weight);
+          if (!Number.isFinite(weight) || weight <= 0 || weight > 100) {
+            fail(`${criterionLabel}.weight is invalid`);
+          }
+          assertSystemDesignRule(criterion?.rule, `${criterionLabel}.rule`);
+          return {
+            id: requiredString(criterion?.id, `${criterionLabel}.id`),
+            weight,
+            evidence: requiredString(criterion?.evidence, `${criterionLabel}.evidence`),
+            rule: JSON.parse(JSON.stringify(criterion.rule)),
+          };
+        })
+        : [];
+      normalizedUniqueIds(criteria, `${axisLabel}.criteria`);
+      return {
+        id: requiredString(axis?.id, `${axisLabel}.id`),
+        title: requiredString(axis?.title, `${axisLabel}.title`),
+        remediationTopics: Array.isArray(axis?.remediationTopics)
+          ? axis.remediationTopics.map((topic) => String(topic || '').trim()).filter(Boolean)
+          : [],
+        criteria,
+      };
+    })
+    : [];
+  normalizedUniqueIds(axes, `${label}.rubric.axes`);
+  const contradictions = Array.isArray(raw?.rubric?.contradictions)
+    ? raw.rubric.contradictions.map((entry, contradictionIndex) => {
+      const contradictionLabel = `${label}.rubric.contradictions[${contradictionIndex}]`;
+      const severity = String(entry?.severity || '').trim();
+      if (!['major', 'critical'].includes(severity)) {
+        fail(`${contradictionLabel}.severity is invalid`);
+      }
+      assertSystemDesignRule(entry?.rule, `${contradictionLabel}.rule`);
+      return {
+        id: requiredString(entry?.id, `${contradictionLabel}.id`),
+        severity,
+        axisIds: Array.isArray(entry?.axisIds)
+          ? entry.axisIds.map((id) => requiredString(id, `${contradictionLabel}.axisIds`))
+          : [],
+        summary: requiredString(entry?.summary, `${contradictionLabel}.summary`),
+        rule: JSON.parse(JSON.stringify(entry.rule)),
+      };
+    })
+    : [];
+  normalizedUniqueIds(contradictions, `${label}.rubric.contradictions`);
+  return {
+    id: requiredString(raw?.id, `${label}.id`),
+    revision: requiredRevision(raw?.revision, `${label}.revision`),
+    contentHash: requiredString(raw?.contentHash, `${label}.contentHash`),
+    clarificationAnswers: Array.isArray(raw?.clarificationAnswers)
+      ? raw.clarificationAnswers.map((entry, answerIndex) => ({
+        clarificationId: requiredString(
+          entry?.clarificationId,
+          `${label}.clarificationAnswers[${answerIndex}].clarificationId`
+        ),
+        answer: requiredString(
+          entry?.answer,
+          `${label}.clarificationAnswers[${answerIndex}].answer`
+        ),
+      }))
+      : [],
+    twist: {
+      id: requiredString(raw?.twist?.id, `${label}.twist.id`),
+      title: requiredString(raw?.twist?.title, `${label}.twist.title`),
+      prompt: requiredString(raw?.twist?.prompt, `${label}.twist.prompt`),
+      responseActions: twistActions,
+    },
+    rubric: { axes, contradictions },
+    sourceEvidence: raw?.sourceEvidence && typeof raw.sourceEvidence === 'object'
+      ? JSON.parse(JSON.stringify(raw.sourceEvidence))
+      : {},
+  };
+}
+
+function normalizeSystemDesignRegistry(
+  publicArtifact,
+  privateArtifact,
+  releaseArtifact,
+  config
+) {
+  const publicDoc = publicArtifact.json;
+  const privateDoc = privateArtifact.json;
+  const release = releaseArtifact.json;
+  const status = requiredString(release?.status, 'system design release.status');
+  assertSafeStatus(status, 'system design registry', config);
+  assertArtifactHash(release, 'public', publicArtifact, 'system design registry');
+  assertArtifactHash(release, 'private', privateArtifact, 'system design registry');
+  const publicForbidden = findForbiddenKey(publicDoc);
+  if (publicForbidden) {
+    fail(`system design public artifact contains a private field at ${publicForbidden}`);
+  }
+  const registryId = requiredString(release?.registryId, 'system design release.registryId');
+  const registryVersion = requiredString(
+    release?.registryVersion,
+    'system design release.registryVersion'
+  );
+  const contentHash = requiredString(
+    release?.registryContentHash || release?.contentHash,
+    'system design release.registryContentHash'
+  );
+  assertFinalApproval({
+    release,
+    privateDoc,
+    label: 'system design registry',
+    versionField: 'registryVersion',
+    expectedVersion: registryVersion,
+    hashField: 'registryContentHash',
+    expectedHash: contentHash,
+  });
+  for (const [label, document] of [['public', publicDoc], ['private', privateDoc]]) {
+    if (document?.registryId !== registryId || document?.registryVersion !== registryVersion) {
+      fail(`system design ${label} identity does not match its release`);
+    }
+    if (document?.status !== status) {
+      fail(`system design ${label} status does not match its release`);
+    }
+  }
+  const publicScenarios = Array.isArray(publicDoc?.scenarios) ? publicDoc.scenarios : [];
+  const privateScenarios = Array.isArray(privateDoc?.scenarios) ? privateDoc.scenarios : [];
+  if (
+    publicScenarios.length !== Number(release?.scenarioCount)
+    || privateScenarios.length !== publicScenarios.length
+  ) {
+    fail('system design registry artifact counts do not match');
+  }
+  const scenarios = publicScenarios.map(normalizeSystemDesignScenario);
+  normalizedUniqueIds(scenarios, 'system design scenarios');
+  const privateByKey = new Map(
+    privateScenarios.map((scenario, index) => {
+      const normalized = normalizeSystemDesignPrivate(scenario, index);
+      return [`${normalized.id}@${normalized.revision}`, normalized];
+    })
+  );
+  const refs = Array.isArray(release?.scenarioRefs) ? release.scenarioRefs : [];
+  if (refs.length !== scenarios.length) fail('system design release refs do not match registry');
+  for (const scenario of scenarios) {
+    const key = `${scenario.id}@${scenario.revision}`;
+    const privateScenario = privateByKey.get(key);
+    if (!privateScenario || privateScenario.contentHash !== scenario.contentHash) {
+      fail(`system design private scenario does not match ${key}`);
+    }
+    const ref = refs.find((entry) => (
+      entry?.id === scenario.id
+      && Number(entry?.revision) === scenario.revision
+    ));
+    if (
+      !ref
+      || ref.contentHash !== scenario.contentHash
+      || ref.level !== scenario.level
+      || Boolean(ref.enabled) !== scenario.enabled
+    ) {
+      fail(`system design release does not pin ${scenario.id}`);
+    }
+    const answerIds = new Set(
+      privateScenario.clarificationAnswers.map((entry) => entry.clarificationId)
+    );
+    if (scenario.clarifications.some((entry) => !answerIds.has(entry.id))) {
+      fail(`system design private clarification answers do not cover ${scenario.id}`);
+    }
+  }
+  return {
+    id: registryId,
+    version: registryVersion,
+    contentHash,
+    status,
+    scenarios,
+    privateByKey,
+  };
+}
+
 function loadInterviewArtifacts({
   force = false,
   allowInternalCandidate = false,
@@ -518,13 +979,64 @@ function loadInterviewArtifacts({
   return value;
 }
 
+function loadSystemDesignArtifacts({
+  force = false,
+  allowInternalCandidate = false,
+} = {}) {
+  const baseConfig = interviewConfig();
+  const config = {
+    ...baseConfig,
+    allowCandidate: (
+      baseConfig.allowCandidate
+      || (
+        allowInternalCandidate === true
+        && baseConfig.systemDesignAccessMode === 'internal'
+      )
+    ),
+  };
+  const publicArtifact = readJsonWithRaw(
+    config.systemDesignPaths.public,
+    'system design public'
+  );
+  const privateArtifact = readJsonWithRaw(
+    config.systemDesignPaths.private,
+    'system design private'
+  );
+  const releaseArtifact = readJsonWithRaw(
+    config.systemDesignPaths.release,
+    'system design release'
+  );
+  const signature = [
+    publicArtifact.signature,
+    privateArtifact.signature,
+    releaseArtifact.signature,
+    config.allowCandidate,
+  ].join('|');
+  if (
+    !force
+    && systemDesignArtifactCache?.signature === signature
+  ) {
+    return systemDesignArtifactCache.value;
+  }
+  const value = normalizeSystemDesignRegistry(
+    publicArtifact,
+    privateArtifact,
+    releaseArtifact,
+    config
+  );
+  systemDesignArtifactCache = { signature, value };
+  return value;
+}
+
 function resetInterviewArtifactsCache() {
   artifactCache = null;
+  systemDesignArtifactCache = null;
 }
 
 module.exports = {
   GOLD_STATUSES,
   InterviewContentError,
   loadInterviewArtifacts,
+  loadSystemDesignArtifacts,
   resetInterviewArtifactsCache,
 };

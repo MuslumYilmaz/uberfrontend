@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-provide-inject-mutation-boundary-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "provide-inject-mutation-boundary",
+    "prompt": "A settings provider owns a reactive theme. Deep descendants must display it and request changes, but they must not mutate the theme ref directly. Which provided contract keeps updates reactive and preserves that ownership?",
+    "options": [
+      {
+        "id": "choice-f8d3e46535",
+        "label": "Provide a readonly theme ref together with a provider-owned `setTheme` function."
+      },
+      {
+        "id": "choice-5c0423e09f",
+        "label": "Provide the writable theme ref and let each injecting component assign its value."
+      },
+      {
+        "id": "choice-b9a521f673",
+        "label": "Provide the current theme string and let descendants replace that injected value."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-f8d3e46535",
+    "answerProof": {
+      "summary": "Providing a readonly reactive value plus an explicit mutation function keeps descendants synchronized while the provider remains the sole owner of state writes.",
+      "decisiveConstraints": [
+        "Injected consumers need a live reactive connection to the provider's theme.",
+        "All theme mutations must remain co-located with the provider."
+      ],
+      "claims": [
+        {
+          "statement": "Vue recommends keeping mutations of provided reactive state in the provider, providing mutation functions when injectors need updates, and using `readonly()` to prevent injector-side writes.",
+          "sourceIds": [
+            "vue35-provide-inject-reactivity"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-f8d3e46535",
+        "verdict": "correct",
+        "explanation": "The readonly ref preserves reactive reads, while the provider-owned function is the single explicit path for changing the theme.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-5c0423e09f",
+        "verdict": "incorrect",
+        "explanation": "The writable ref stays reactive, but every injector can now bypass the provider's mutation policy and change shared state directly.",
+        "misconceptionTag": "reactive-injection-implies-shared-write-ownership",
+        "plausibility": "Vue injects a provided ref as the same ref, so direct assignments would update every connected consumer.",
+        "falsifyingConstraint": "Only the provider may own writes to the theme."
+      },
+      {
+        "optionId": "choice-b9a521f673",
+        "verdict": "incorrect",
+        "explanation": "A provided primitive is a snapshot rather than the provider's reactive ref, and replacing the local injected binding does not update provider state.",
+        "misconceptionTag": "injected-primitive-is-two-way-binding",
+        "plausibility": "Injecting the current string gives descendants the expected initial theme value.",
+        "falsifyingConstraint": "Consumers must remain reactively linked and send changes back through the provider."
+      }
+    ],
+    "remediationTopics": [
+      "Vue provide and inject",
+      "readonly reactive state",
+      "provider-owned mutations"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Provide / Inject",
+        "url": "https://vuejs.org/guide/components/provide-inject.html",
+        "sourceId": "vue35-provide-inject-reactivity"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-provide-inject-reactivity",
+          "title": "Vue: Provide / Inject",
+          "url": "https://vuejs.org/guide/components/provide-inject.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

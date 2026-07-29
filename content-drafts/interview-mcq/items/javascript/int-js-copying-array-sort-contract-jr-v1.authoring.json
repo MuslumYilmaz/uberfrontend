@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-copying-array-sort-contract-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "copying-array-sort-contract",
+    "prompt": "A table receives a shared `orders` array from a cache. One view needs a price-sorted sequence, but changing the cached array would silently reorder another view. Which expression gives the table its own sorted array?",
+    "options": [
+      {
+        "id": "choice-31c71647af",
+        "label": "Sort `orders` in place, then store that result under a second variable owned by this table."
+      },
+      {
+        "id": "choice-d39b83cb59",
+        "label": "Use `orders.toSorted(comparePrice)` and assign the returned array to the table's local variable."
+      },
+      {
+        "id": "choice-b64281eeb8",
+        "label": "Reverse the shared list before sorting it, then restore the original order after the table renders."
+      }
+    ],
+    "estimatedSeconds": 65
+  },
+  "private": {
+    "correctOptionId": "choice-d39b83cb59",
+    "answerProof": {
+      "summary": "`toSorted` applies the comparator to a copied array and returns that new array, leaving the shared source ordering unchanged.",
+      "decisiveConstraints": [
+        "The cache-owned array must retain its element order.",
+        "The table still needs a comparator-defined sorted result.",
+        "Assigning a returned alias does not create a copy."
+      ],
+      "claims": [
+        {
+          "statement": "`Array.prototype.toSorted` returns a new sorted array without modifying the source array.",
+          "sourceIds": [
+            "mdn-array-tosorted"
+          ]
+        },
+        {
+          "statement": "`Array.prototype.sort` sorts an array in place and returns the same array reference.",
+          "sourceIds": [
+            "mdn-array-sort"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-31c71647af",
+        "verdict": "incorrect",
+        "explanation": "`sort` mutates `orders`; storing its return value under another variable still aliases the cache-owned array.",
+        "plausibility": "The method returns an array and the new variable name can look like an independent result.",
+        "misconceptionTag": "sort-return-is-copy",
+        "falsifyingConstraint": "The cache-owned sequence must keep its original order for other consumers."
+      },
+      {
+        "optionId": "choice-d39b83cb59",
+        "verdict": "correct",
+        "explanation": "`toSorted` creates the independent sorted sequence required by the view and does not reorder `orders`.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b64281eeb8",
+        "verdict": "incorrect",
+        "explanation": "The shared list is still mutated during rendering, and restoring it later cannot protect concurrent consumers from observing the temporary order.",
+        "plausibility": "A restore step can make the cached sequence look unchanged once this view has finished its work.",
+        "misconceptionTag": "chained-array-methods-copy-source",
+        "falsifyingConstraint": "Other consumers must not observe any intermediate mutation of the shared source array."
+      }
+    ],
+    "remediationTopics": [
+      "copying-array-methods",
+      "array-mutation",
+      "shared-data-ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Array.prototype.toSorted()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted",
+        "sourceId": "mdn-array-tosorted"
+      },
+      {
+        "title": "MDN: Array.prototype.sort()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort",
+        "sourceId": "mdn-array-sort"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-array-tosorted",
+          "title": "MDN: Array.prototype.toSorted()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-array-sort",
+          "title": "MDN: Array.prototype.sort()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-autofill-purpose-metadata-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "html",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "autofill-purpose-metadata",
+    "prompt": "A checkout shows separate shipping and billing address fields. Labels and input types are correct, but the browser sometimes copies one section's ZIP into both. Which markup policy gives autofill the missing purpose distinction?",
+    "options": [
+      {
+        "id": "choice-39ff7258ed",
+        "label": "Give named controls ordered `autocomplete` tokens such as `shipping postal-code` and `billing postal-code`."
+      },
+      {
+        "id": "choice-b7bba33832",
+        "label": "Give each control a different placeholder and CSS class while leaving its `autocomplete` value unspecified."
+      },
+      {
+        "id": "choice-1e657caf2d",
+        "label": "Set `autocomplete=\"on\"` on the form and use the same `postal-code` token for both address sections."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-39ff7258ed",
+    "answerProof": {
+      "summary": "Autocomplete accepts an ordered token list that can identify shipping or billing context before the field-detail token, allowing two postal-code controls to express distinct autofill purposes.",
+      "decisiveConstraints": [
+        "Both controls collect the same data type.",
+        "The controls belong to different address groups.",
+        "Browser-facing purpose metadata must distinguish those groups."
+      ],
+      "claims": [
+        {
+          "statement": "The HTML `autocomplete` token list supports `shipping` and `billing` grouping identifiers followed by detail tokens such as `postal-code`.",
+          "sourceIds": [
+            "mdn-html-autocomplete"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-39ff7258ed",
+        "verdict": "correct",
+        "explanation": "The grouping and detail tokens describe two distinct autofill fields even though both accept postal codes.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b7bba33832",
+        "verdict": "incorrect",
+        "explanation": "Placeholder text and CSS classes are presentation hooks, not the standardized autofill purpose contract.",
+        "plausibility": "Browsers use heuristics, and visible field wording can appear to influence those heuristics.",
+        "misconceptionTag": "presentation-metadata-defines-autofill-purpose",
+        "falsifyingConstraint": "The solution must expose a standardized shipping-versus-billing distinction to the user agent."
+      },
+      {
+        "optionId": "choice-1e657caf2d",
+        "verdict": "incorrect",
+        "explanation": "Enabling autofill without distinct grouping tokens leaves both controls with the same autofill field name.",
+        "plausibility": "The detail token accurately describes the value type, and the surrounding section is visually clear.",
+        "misconceptionTag": "field-detail-token-implies-address-group",
+        "falsifyingConstraint": "Two controls with the same value type must still advertise separate address groups."
+      }
+    ],
+    "remediationTopics": [
+      "html-autocomplete",
+      "autofill-field-names",
+      "form-purpose-metadata"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: autocomplete attribute",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete",
+        "sourceId": "mdn-html-autocomplete"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-html-autocomplete",
+          "title": "MDN: autocomplete attribute",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

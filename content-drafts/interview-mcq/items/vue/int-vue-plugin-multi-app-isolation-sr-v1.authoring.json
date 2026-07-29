@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-plugin-multi-app-isolation-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "plugin-multi-app-isolation",
+    "prompt": "One page mounts two independent Vue 3.5 applications. Both install the same analytics plugin, but each passes a different tenant client. The plugin stores the latest client in module scope, so installing the second app silently redirects events from the first. Descendants already consume the client through `inject`. Which plugin design restores application-level isolation?",
+    "code": {
+      "language": "javascript",
+      "runtime": "vue-3.5",
+      "source": "let currentClient\n\nexport const analyticsPlugin = {\n  install(app, client) {\n    currentClient = client\n  }\n}"
+    },
+    "options": [
+      {
+        "id": "choice-dab31181df",
+        "label": "Keep one module client and reinstall the plugin on the intended app before sending each event."
+      },
+      {
+        "id": "choice-163924f4cc",
+        "label": "Store both clients on `window` by mount element and let injectors discover their nearest root."
+      },
+      {
+        "id": "choice-1aa4c7d516",
+        "label": "Use a shared Symbol key and call `app.provide(key, client)` inside each plugin installation."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-1aa4c7d516",
+    "answerProof": {
+      "summary": "Each plugin installation receives its owning app instance, and app-level provide stores the tenant client in that app's injection context instead of a process-wide module slot.",
+      "decisiveConstraints": [
+        "Both Vue applications coexist and use the plugin concurrently.",
+        "Every descendant must resolve the client installed for its own application.",
+        "The solution must not depend on global DOM or window lookups."
+      ],
+      "claims": [
+        {
+          "statement": "Vue plugins receive the application instance during `install`, and plugins can expose app-scoped resources to descendants with `app.provide()`.",
+          "sourceIds": [
+            "vue35-plugins",
+            "vue35-app-provide"
+          ]
+        },
+        {
+          "statement": "App-level provided values are available to components rendered inside that application, giving separate app roots separate injection contexts.",
+          "sourceIds": [
+            "vue35-app-provide"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-dab31181df",
+        "verdict": "incorrect",
+        "explanation": "Reinstallation still mutates one shared slot, so interleaved events from two mounted apps can observe whichever client was assigned most recently.",
+        "misconceptionTag": "reinstallation-makes-module-state-app-scoped",
+        "plausibility": "Installing immediately before use appears to select the intended tenant client.",
+        "falsifyingConstraint": "Both applications may emit concurrently without coordinating their event order."
+      },
+      {
+        "optionId": "choice-163924f4cc",
+        "verdict": "incorrect",
+        "explanation": "A window registry creates another global owner and couples component resolution to DOM ancestry instead of Vue's application context.",
+        "misconceptionTag": "global-map-is-application-context",
+        "plausibility": "Mount elements provide distinct identifiers for the two visible app roots.",
+        "falsifyingConstraint": "Descendants must resolve dependencies through their owning Vue app without global lookup."
+      },
+      {
+        "optionId": "choice-1aa4c7d516",
+        "verdict": "correct",
+        "explanation": "The same injection key can map to a different client in each app, so descendant injection follows its own application boundary.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Vue plugin installation",
+      "app-level provide",
+      "multiple Vue applications",
+      "module singleton leakage"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Plugins",
+        "url": "https://vuejs.org/guide/reusability/plugins.html",
+        "sourceId": "vue35-plugins"
+      },
+      {
+        "title": "Vue: Provide / Inject",
+        "url": "https://vuejs.org/guide/components/provide-inject.html#app-level-provide",
+        "sourceId": "vue35-app-provide"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-plugins",
+          "title": "Vue: Plugins",
+          "url": "https://vuejs.org/guide/reusability/plugins.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "vue35-app-provide",
+          "title": "Vue: Provide / Inject",
+          "url": "https://vuejs.org/guide/components/provide-inject.html#app-level-provide",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

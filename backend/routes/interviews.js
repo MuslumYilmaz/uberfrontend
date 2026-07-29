@@ -6,7 +6,11 @@ const router = express.Router();
 const { requireAuth } = require('../middleware/Auth');
 const { requireAdmin } = require('../middleware/RequireAdmin');
 const { rateLimit } = require('../middleware/rateLimit');
-const { interviewConfig, interviewModeAccess } = require('../services/interview/config');
+const {
+  interviewConfig,
+  interviewModeAccess,
+  interviewSystemDesignAccess,
+} = require('../services/interview/config');
 const { isPhoneUserAgent } = require('../services/interview/user-agent');
 const {
   abandonSession,
@@ -17,12 +21,15 @@ const {
   getSession,
   prepareCodingCheckRun,
   recordCodingCheckRun,
+  revealSystemDesignTwist,
   saveCodingDraft,
   saveMcqAnswer,
+  saveSystemDesignDraft,
   serializeSession,
   startCoding,
   submitCoding,
   submitMcq,
+  submitSystemDesign,
   voidSessionTechnicalByAdmin,
 } = require('../services/interview/session-service');
 
@@ -81,7 +88,16 @@ function disabledAvailability() {
     timingModes: ['standard'],
     timing: null,
     quota: null,
+    quotas: {
+      coding: null,
+      systemDesign: null,
+    },
+    formats: [
+      { id: 'coding', available: false },
+      { id: 'system-design', available: false },
+    ],
     availability: [],
+    systemDesignAvailability: [],
     activeSession: null,
     lastResults: [],
     minViewportWidth: 768,
@@ -91,6 +107,10 @@ function disabledAvailability() {
 
 function accessForRequest(req) {
   return interviewModeAccess(req.auth?.role || 'user');
+}
+
+function systemDesignAccessForRequest(req) {
+  return interviewSystemDesignAccess(req.auth?.role || 'user');
 }
 
 function assertDesktopPreflight(req) {
@@ -117,8 +137,10 @@ router.get(
   asyncRoute(async (req, res) => {
     const access = accessForRequest(req);
     if (!access.enabled) return res.json(disabledAvailability());
+    const systemDesignAccess = systemDesignAccessForRequest(req);
     const config = await getConfigForUser(req.auth.userId, {
-      allowCandidateArtifacts: access.internalPreview,
+      allowCandidateArtifacts: access.internalPreview || systemDesignAccess.internalPreview,
+      allowSystemDesign: systemDesignAccess.enabled,
     });
     return res.json({
       ...config,
@@ -132,8 +154,10 @@ router.get(
   asyncRoute(async (req, res) => {
     const access = accessForRequest(req);
     if (!access.enabled) return res.json(disabledAvailability());
+    const systemDesignAccess = systemDesignAccessForRequest(req);
     const config = await getConfigForUser(req.auth.userId, {
-      allowCandidateArtifacts: access.internalPreview,
+      allowCandidateArtifacts: access.internalPreview || systemDesignAccess.internalPreview,
+      allowSystemDesign: systemDesignAccess.enabled,
     });
     return res.json({
       ...config,
@@ -179,11 +203,13 @@ router.post(
   asyncRoute(async (req, res) => {
     assertDesktopPreflight(req);
     const access = accessForRequest(req);
+    const systemDesignAccess = systemDesignAccessForRequest(req);
     const result = await createSession(req.auth.userId, {
       ...(req.body || {}),
       requestId: req.get('Idempotency-Key') || req.body?.requestId,
     }, {
-      allowCandidateArtifacts: access.internalPreview,
+      allowCandidateArtifacts: access.internalPreview || systemDesignAccess.internalPreview,
+      allowSystemDesign: systemDesignAccess.enabled,
     });
     return res.status(result.created ? 201 : 200).json({
       session: serializeSession(result.session),
@@ -208,6 +234,54 @@ router.put(
       req.auth.userId,
       req.params.sessionId,
       req.params.questionId,
+      req.body || {}
+    );
+    return res.json({
+      session: serializeSession(result.session),
+      replayed: result.replayed,
+    });
+  })
+);
+
+router.put(
+  '/:sessionId/system-design/draft',
+  mutationLimiter,
+  asyncRoute(async (req, res) => {
+    const result = await saveSystemDesignDraft(
+      req.auth.userId,
+      req.params.sessionId,
+      req.body || {}
+    );
+    return res.json({
+      session: serializeSession(result.session),
+      replayed: result.replayed,
+    });
+  })
+);
+
+router.post(
+  '/:sessionId/system-design/twist/reveal',
+  mutationLimiter,
+  asyncRoute(async (req, res) => {
+    const result = await revealSystemDesignTwist(
+      req.auth.userId,
+      req.params.sessionId,
+      req.body || {}
+    );
+    return res.json({
+      session: serializeSession(result.session),
+      replayed: result.replayed,
+    });
+  })
+);
+
+router.post(
+  '/:sessionId/system-design/submit',
+  mutationLimiter,
+  asyncRoute(async (req, res) => {
+    const result = await submitSystemDesign(
+      req.auth.userId,
+      req.params.sessionId,
       req.body || {}
     );
     return res.json({

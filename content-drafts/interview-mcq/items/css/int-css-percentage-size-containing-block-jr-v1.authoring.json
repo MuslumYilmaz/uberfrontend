@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-percentage-size-containing-block-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "css",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "percentage-size-containing-block",
+    "prompt": "A preview pane is required to be exactly `20rem` tall. It currently has only `min-height: 20rem`; its normal-flow child uses `height: 100%; overflow: auto` but stays at content height when nearly empty. Which change gives the percentage a definite basis?",
+    "options": [
+      {
+        "id": "choice-448d038867",
+        "label": "Change the child to `min-height: 100%` while leaving the pane's height dependent on its content."
+      },
+      {
+        "id": "choice-b86d435e64",
+        "label": "Set `height: 20rem` on the pane so the descendant's `height: 100%` resolves against it."
+      },
+      {
+        "id": "choice-d89b461ba6",
+        "label": "Set `height: 100vh` on the child so its percentage no longer depends on the preview pane."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-b86d435e64",
+    "answerProof": {
+      "summary": "A normal-flow percentage height needs the containing block's height to be explicitly specified. Replacing the pane's content-dependent height with the required definite 20rem height gives the child's 100% a resolvable basis.",
+      "decisiveConstraints": [
+        "The design contract specifies a fixed 20rem pane.",
+        "The child is not absolutely positioned.",
+        "The current containing-block height depends on content."
+      ],
+      "claims": [
+        {
+          "statement": "A normal-flow percentage height computes to auto when the containing block's height is not explicitly specified and depends on content.",
+          "sourceIds": [
+            "mdn-css-height"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-448d038867",
+        "verdict": "incorrect",
+        "explanation": "Changing the child to a percentage minimum does not supply the missing definite containing-block height.",
+        "plausibility": "Matching the parent's minimum-height with a child minimum-height sounds like it should propagate the lower bound.",
+        "misconceptionTag": "percentage-min-height-inherits-parent-minimum",
+        "falsifyingConstraint": "The percentage calculation needs an explicitly specified containing-block height."
+      },
+      {
+        "optionId": "choice-b86d435e64",
+        "verdict": "correct",
+        "explanation": "The fixed pane height satisfies the product requirement and resolves the child's percentage against 20rem.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d89b461ba6",
+        "verdict": "incorrect",
+        "explanation": "Viewport height ignores the pane contract and can make the child much taller than its containing block.",
+        "plausibility": "Viewport units provide a definite size and avoid percentage resolution through ancestor boxes.",
+        "misconceptionTag": "viewport-height-substitutes-component-height",
+        "falsifyingConstraint": "The child must fill the 20rem pane rather than the viewport."
+      }
+    ],
+    "remediationTopics": [
+      "percentage-height",
+      "containing-block",
+      "definite-sizing"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: height",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/height",
+        "sourceId": "mdn-css-height"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-css-height",
+          "title": "MDN: height",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/height",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,3291 @@
+{
+  "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+  "finalApproval": null,
+  "registryId": "interview-system-design-registry-v1",
+  "registryVersion": "1.0.0",
+  "scenarios": [
+    {
+      "clarificationAnswers": [
+        {
+          "answer": "Locale, normalized filters, permission scope, and result type can all change the result set.",
+          "clarificationId": "search-identity"
+        },
+        {
+          "answer": "Yes. Cached and network responses can resolve out of order, and cancellation is not guaranteed to stop completion.",
+          "clarificationId": "search-order"
+        },
+        {
+          "answer": "Use a combobox-style contract with arrow navigation, Enter selection, Escape dismissal, and stable active-option identity.",
+          "clarificationId": "search-keyboard"
+        },
+        {
+          "answer": "Previous results may stay visible if clearly marked as stale and cannot be selected under the wrong query identity.",
+          "clarificationId": "search-stale-ui"
+        },
+        {
+          "answer": "Traffic is high enough to justify debounce and a bounded cache; correctness cannot depend on either optimization.",
+          "clarificationId": "search-volume"
+        },
+        {
+          "answer": "The term belongs in route state, but transient open, focus, and active-option state do not survive a full reload.",
+          "clarificationId": "search-navigation"
+        }
+      ],
+      "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
+      "id": "int-sd-autocomplete-race-mid-v1",
+      "provenance": {
+        "authoredAt": "2026-07-29",
+        "copiedText": false,
+        "references": [
+          {
+            "accessedAt": "2026-07-29",
+            "license": "CC BY-SA 2.5 or later",
+            "role": "Validate cancellation mechanics and their ownership boundary",
+            "title": "MDN AbortController",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
+          },
+          {
+            "accessedAt": "2026-07-29",
+            "license": "W3C Document License",
+            "role": "Validate keyboard and active-option interaction expectations",
+            "title": "WAI-ARIA Authoring Practices Combobox Pattern",
+            "url": "https://www.w3.org/WAI/ARIA/apg/patterns/combobox/"
+          }
+        ],
+        "sourceRole": "Technical validation and topic coverage only; prompt and choices are original."
+      },
+      "review": {
+        "blind": {
+          "notes": [
+            "Prompts, visible cards, and decision choices were reviewed without the private rubric.",
+            "The scenarios permit more than one coherent architecture and do not expose a single answer-shaped clue.",
+            "Candidate-facing alternatives use parallel length and avoid conspicuous absolute-language distractors."
+          ],
+          "reviewer": "codex-system-design-blind-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
+        "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+        "editorial": {
+          "notes": [
+            "All interview prompts, labels, choices, and distractor-like alternatives are original wording.",
+            "The guided interactions test ownership, failure behavior, accessibility, and adaptation without requiring essay-length input.",
+            "Cards can be placed in any public lane; placement quality is evaluated only by private ID-based rules."
+          ],
+          "reviewer": "codex-system-design-editorial-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "reviewedAt": "2026-07-29",
+        "reviewedRevision": 3,
+        "technical": {
+          "notes": [
+            "Each scoring claim is bound to an allowlisted rule tree and a pinned source-content bundle.",
+            "Two distinct strong paths, one developing path, and one critical-conflict path are executable for every scenario.",
+            "Lane placement and rationale limits preserve scoreable evidence without exposing the private rubric."
+          ],
+          "reviewer": "codex-system-design-technical-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        }
+      },
+      "revision": 3,
+      "rubric": {
+        "axes": [
+          {
+            "criteria": [
+              {
+                "evidence": "Clarified every input that changes result meaning.",
+                "id": "search-discover-identity",
+                "rule": {
+                  "clarificationId": "search-identity",
+                  "predicate": "clarificationSelected"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Prioritized latest-intent correctness.",
+                "id": "search-prioritize-latest",
+                "rule": {
+                  "maxRank": 2,
+                  "predicate": "requirementPrioritized",
+                  "requirementId": "search-latest-intent"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "requirement-discovery",
+            "remediationTopics": [
+              "Complete query identity",
+              "Out-of-order response constraints"
+            ],
+            "title": "Requirement discovery"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Placed query coordination in the state lane.",
+                "id": "search-place-controller",
+                "rule": {
+                  "cardId": "search-controller",
+                  "laneId": "state",
+                  "predicate": "cardInLane"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Selected one controller as the transition owner.",
+                "id": "search-owner-choice",
+                "rule": {
+                  "decisionId": "search-state-owner",
+                  "optionId": "search-owner-controller",
+                  "predicate": "decisionSelected"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "architecture-ownership",
+            "remediationTopics": [
+              "Query-controller ownership",
+              "Render-only component boundaries"
+            ],
+            "title": "Architecture and ownership"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected complete semantic cache identity.",
+                "id": "search-complete-cache",
+                "rule": {
+                  "decisionId": "search-cache-identity",
+                  "optionId": "search-key-complete",
+                  "predicate": "decisionSelected"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Connected the request adapter to its external API.",
+                "id": "search-client-api",
+                "rule": {
+                  "fromCardId": "search-client",
+                  "predicate": "connectionExists",
+                  "toCardId": "search-api",
+                  "typeId": "data-flow"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "data-interface-contracts",
+            "remediationTopics": [
+              "Semantic cache keys",
+              "Request adapter contracts"
+            ],
+            "title": "Data and interface contracts"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected a generation-based correctness boundary.",
+                "id": "search-race-safe",
+                "rule": {
+                  "anyOf": [
+                    {
+                      "decisionId": "search-async-control",
+                      "optionId": "search-async-abort-generation",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "decisionId": "search-async-control",
+                      "optionId": "search-async-generation",
+                      "predicate": "decisionSelected"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Connected query intent to the request adapter.",
+                "id": "search-controller-client",
+                "rule": {
+                  "fromCardId": "search-controller",
+                  "predicate": "connectionExists",
+                  "toCardId": "search-client",
+                  "typeId": "event-flow"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "resilience-performance",
+            "remediationTopics": [
+              "Generation acceptance guards",
+              "Cancellation as an optimization"
+            ],
+            "title": "Resilience and performance"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Prioritized the keyboard interaction contract.",
+                "id": "search-keyboard-priority",
+                "rule": {
+                  "predicate": "requirementPrioritized",
+                  "requirementId": "search-keyboard-contract"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Included a UI status announcer.",
+                "id": "search-status-boundary",
+                "rule": {
+                  "cardId": "search-status",
+                  "laneId": "ui",
+                  "predicate": "cardInLane"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "accessibility-product-ux",
+            "remediationTopics": [
+              "Combobox keyboard state",
+              "Async status announcements"
+            ],
+            "title": "Accessibility and product UX"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Responded with generation or locale identity protection.",
+                "id": "search-twist-correctness",
+                "rule": {
+                  "allOf": [
+                    {
+                      "actionId": "search-twist-generation",
+                      "predicate": "twistActionSelected"
+                    },
+                    {
+                      "actionId": "search-twist-locale-key",
+                      "predicate": "twistActionSelected"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Changed cache identity or async ownership after the locale constraint.",
+                "id": "search-change-key",
+                "rule": {
+                  "anyOf": [
+                    {
+                      "allOf": [
+                        {
+                          "id": "search-cache-identity",
+                          "predicate": "changedFromBaseline",
+                          "target": "decision"
+                        },
+                        {
+                          "decisionId": "search-cache-identity",
+                          "optionId": "search-key-complete",
+                          "predicate": "decisionSelected"
+                        },
+                        {
+                          "decisionId": "search-cache-identity",
+                          "predicate": "rationaleSelected",
+                          "rationaleId": "search-rationale-semantic-key"
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "id": "search-async-control",
+                          "predicate": "changedFromBaseline",
+                          "target": "decision"
+                        },
+                        {
+                          "decisionId": "search-async-control",
+                          "optionId": "search-async-generation",
+                          "predicate": "decisionSelected"
+                        },
+                        {
+                          "decisionId": "search-async-control",
+                          "predicate": "rationaleSelected",
+                          "rationaleId": "search-rationale-correctness"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "weight": 2
+              }
+            ],
+            "id": "adaptation-tradeoffs",
+            "remediationTopics": [
+              "Locale-aware invalidation",
+              "Post-constraint architecture changes"
+            ],
+            "title": "Adaptation and trade-offs"
+          }
+        ],
+        "contradictions": [
+          {
+            "axisIds": [
+              "data-interface-contracts",
+              "resilience-performance"
+            ],
+            "id": "search-critical-debounce-commit",
+            "rule": {
+              "allOf": [
+                {
+                  "decisionId": "search-async-control",
+                  "optionId": "search-async-debounce",
+                  "predicate": "decisionSelected"
+                },
+                {
+                  "decisionId": "search-cache-identity",
+                  "optionId": "search-key-term",
+                  "predicate": "decisionSelected"
+                }
+              ]
+            },
+            "severity": "critical",
+            "summary": "Debounce and term-only identity cannot prevent an old locale response from committing."
+          },
+          {
+            "axisIds": [
+              "resilience-performance",
+              "accessibility-product-ux"
+            ],
+            "id": "search-major-any-response",
+            "rule": {
+              "decisionId": "search-render-policy",
+              "optionId": "search-render-any-response",
+              "predicate": "decisionSelected"
+            },
+            "severity": "major",
+            "summary": "Replacing the list with any completion breaks query and active-option identity."
+          }
+        ]
+      },
+      "sourceEvidence": {
+        "bundleHash": "46e9e5bb8daf0372d8638d2aef97f5a1299b1d071bcba0dc3c2b42599f0b967e",
+        "files": [
+          {
+            "file": "cdn/questions/system-design/realtime-search-debounce-cache/meta.json",
+            "sha256": "e22a034865a5ca1e6c7191209fb818617eb27e4b52b5ca6229b92101de251e8f"
+          },
+          {
+            "file": "cdn/questions/system-design/realtime-search-debounce-cache/requirements.json",
+            "sha256": "87b3c4c9f92d8db77b7f094f099521889e391630e15ec5b02562d4169fcb991c"
+          },
+          {
+            "file": "cdn/questions/system-design/realtime-search-debounce-cache/architecture.json",
+            "sha256": "7199315edd0796950f0e7f0b8e0a709ace24f06ef1035faa2a98bd53f5f67125"
+          },
+          {
+            "file": "cdn/questions/system-design/realtime-search-debounce-cache/data.json",
+            "sha256": "0fdc48f51bf75bad5e60bbe0244a5b66431d784f349c60cb8eb049794a55ae83"
+          },
+          {
+            "file": "cdn/questions/system-design/realtime-search-debounce-cache/interfaces.json",
+            "sha256": "c3c525ae8a04d36432fda7af2827c293ab95393dcb9178c5398c951fcd2677c4"
+          },
+          {
+            "file": "cdn/questions/system-design/realtime-search-debounce-cache/optimizations.json",
+            "sha256": "2e8b3c9c758897ffdbaed6f8a5cd3ec68633a6d216e882bd6a03d1cec8e0e262"
+          }
+        ],
+        "sourceContentId": "realtime-search-debounce-cache",
+        "sourceUpdatedAt": "2026-07-28"
+      },
+      "twist": {
+        "id": "search-locale-race",
+        "prompt": "A user changes locale while a request for the same visible term is in flight. The old transport ignores cancellation and resolves last. Adapt the design so the result language and keyboard state remain coherent.",
+        "responseActions": [
+          {
+            "description": "Commit a completion when it matches the current query identity.",
+            "id": "search-twist-generation",
+            "label": "Advance and verify query generation"
+          },
+          {
+            "description": "Separate entries whose visible term maps to different locales.",
+            "id": "search-twist-locale-key",
+            "label": "Include locale in cache identity"
+          },
+          {
+            "description": "Delay request admission after a change to query identity.",
+            "id": "search-twist-longer-debounce",
+            "label": "Extend input debounce"
+          },
+          {
+            "description": "Discard existing entries before the next locale-specific request starts.",
+            "id": "search-twist-clear-all",
+            "label": "Reset the shared query cache"
+          }
+        ],
+        "title": "Production change: locale switches mid-request"
+      },
+      "validationFixtures": [
+        {
+          "baseline": {
+            "clarificationIds": [
+              "search-identity",
+              "search-order",
+              "search-keyboard"
+            ],
+            "connections": [
+              {
+                "fromCardId": "search-controller",
+                "toCardId": "search-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "search-client",
+                "toCardId": "search-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-abort-generation",
+                "rationaleIds": [
+                  "search-rationale-correctness",
+                  "search-rationale-efficiency"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-term",
+                "rationaleIds": [
+                  "search-rationale-hit-rate"
+                ]
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-controller",
+                "rationaleIds": [
+                  "search-rationale-one-owner"
+                ]
+              },
+              {
+                "decisionId": "search-render-policy",
+                "optionId": "search-render-labelled-stale",
+                "rationaleIds": [
+                  "search-rationale-continuity"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-abort",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "search-cache",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "search-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-latest-intent",
+              "search-keyboard-contract",
+              "search-complete-key"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "search-identity",
+              "search-order",
+              "search-keyboard"
+            ],
+            "connections": [
+              {
+                "fromCardId": "search-controller",
+                "toCardId": "search-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "search-client",
+                "toCardId": "search-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-abort-generation",
+                "rationaleIds": [
+                  "search-rationale-correctness",
+                  "search-rationale-efficiency"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-complete",
+                "rationaleIds": [
+                  "search-rationale-semantic-key"
+                ]
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-controller",
+                "rationaleIds": [
+                  "search-rationale-one-owner"
+                ]
+              },
+              {
+                "decisionId": "search-render-policy",
+                "optionId": "search-render-labelled-stale",
+                "rationaleIds": [
+                  "search-rationale-continuity"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-abort",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "search-cache",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "search-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-latest-intent",
+              "search-keyboard-contract",
+              "search-complete-key"
+            ],
+            "scratchpad": "Abort saves work; identity verification remains required.",
+            "twistResponseActionIds": [
+              "search-twist-generation",
+              "search-twist-locale-key"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "search-strong-abort",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "search-identity",
+              "search-stale-ui",
+              "search-keyboard"
+            ],
+            "connections": [
+              {
+                "fromCardId": "search-controller",
+                "toCardId": "search-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "search-client",
+                "toCardId": "search-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-debounce",
+                "rationaleIds": [
+                  "search-rationale-fewer-starts"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-complete",
+                "rationaleIds": [
+                  "search-rationale-semantic-key"
+                ]
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-controller",
+                "rationaleIds": [
+                  "search-rationale-one-owner"
+                ]
+              },
+              {
+                "decisionId": "search-render-policy",
+                "optionId": "search-render-labelled-stale",
+                "rationaleIds": [
+                  "search-rationale-continuity"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-input",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-cache",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "search-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-complete-key",
+              "search-latest-intent",
+              "search-keyboard-contract"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "search-identity",
+              "search-stale-ui",
+              "search-keyboard"
+            ],
+            "connections": [
+              {
+                "fromCardId": "search-controller",
+                "toCardId": "search-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "search-client",
+                "toCardId": "search-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-generation",
+                "rationaleIds": [
+                  "search-rationale-correctness"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-complete",
+                "rationaleIds": [
+                  "search-rationale-semantic-key"
+                ]
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-controller",
+                "rationaleIds": [
+                  "search-rationale-one-owner"
+                ]
+              },
+              {
+                "decisionId": "search-render-policy",
+                "optionId": "search-render-labelled-stale",
+                "rationaleIds": [
+                  "search-rationale-continuity"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-input",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-cache",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "search-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-complete-key",
+              "search-latest-intent",
+              "search-keyboard-contract"
+            ],
+            "scratchpad": "Generation protects correctness even without cancellation.",
+            "twistResponseActionIds": [
+              "search-twist-generation",
+              "search-twist-locale-key"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "search-strong-generation",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "search-order",
+              "search-keyboard"
+            ],
+            "connections": [
+              {
+                "fromCardId": "search-controller",
+                "toCardId": "search-client",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-generation",
+                "rationaleIds": [
+                  "search-rationale-correctness"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-term",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-controller",
+                "rationaleIds": []
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-latest-intent",
+              "search-keyboard-contract"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "search-order",
+              "search-keyboard"
+            ],
+            "connections": [],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-generation",
+                "rationaleIds": [
+                  "search-rationale-correctness"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-complete",
+                "rationaleIds": [
+                  "search-rationale-semantic-key"
+                ]
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-input",
+                "rationaleIds": [
+                  "search-rationale-near-event"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-latest-intent",
+              "search-keyboard-contract"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": [
+              "search-twist-generation"
+            ]
+          },
+          "expectedSignal": "On Track",
+          "id": "search-developing",
+          "kind": "developing"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "search-identity",
+              "search-order",
+              "search-keyboard"
+            ],
+            "connections": [
+              {
+                "fromCardId": "search-controller",
+                "toCardId": "search-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "search-client",
+                "toCardId": "search-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-debounce",
+                "rationaleIds": [
+                  "search-rationale-fewer-starts"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-term",
+                "rationaleIds": [
+                  "search-rationale-hit-rate"
+                ]
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-controller",
+                "rationaleIds": [
+                  "search-rationale-one-owner"
+                ]
+              },
+              {
+                "decisionId": "search-render-policy",
+                "optionId": "search-render-labelled-stale",
+                "rationaleIds": [
+                  "search-rationale-continuity"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "search-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-latest-intent",
+              "search-keyboard-contract",
+              "search-complete-key"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "search-identity",
+              "search-order",
+              "search-keyboard"
+            ],
+            "connections": [
+              {
+                "fromCardId": "search-controller",
+                "toCardId": "search-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "search-client",
+                "toCardId": "search-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "search-async-control",
+                "optionId": "search-async-debounce",
+                "rationaleIds": [
+                  "search-rationale-fewer-starts"
+                ]
+              },
+              {
+                "decisionId": "search-cache-identity",
+                "optionId": "search-key-term",
+                "rationaleIds": [
+                  "search-rationale-hit-rate"
+                ]
+              },
+              {
+                "decisionId": "search-state-owner",
+                "optionId": "search-owner-controller",
+                "rationaleIds": [
+                  "search-rationale-one-owner"
+                ]
+              },
+              {
+                "decisionId": "search-render-policy",
+                "optionId": "search-render-labelled-stale",
+                "rationaleIds": [
+                  "search-rationale-continuity"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "search-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "search-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "search-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "search-latest-intent",
+              "search-keyboard-contract",
+              "search-complete-key"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": [
+              "search-twist-longer-debounce"
+            ]
+          },
+          "expectedSignal": "Needs Focus",
+          "id": "search-critical",
+          "kind": "critical-conflict"
+        }
+      ]
+    },
+    {
+      "clarificationAnswers": [
+        {
+          "answer": "The server owns ranked order and emits ordering versions; live updates may change items above and below the reader.",
+          "clarificationId": "feed-order-authority"
+        },
+        {
+          "answer": "The API uses opaque cursors, can return overlapping stable IDs, and may repeat a cursor when its contract is violated.",
+          "clarificationId": "feed-pagination"
+        },
+        {
+          "answer": "Back navigation should restore the first visible item identity, its viewport offset, and prior focus when still available.",
+          "clarificationId": "feed-restoration"
+        },
+        {
+          "answer": "Text wraps, media loads late, and user font settings make heights variable.",
+          "clarificationId": "feed-row-geometry"
+        },
+        {
+          "answer": "A long session can load thousands of items; both mounted DOM and retained media payloads require explicit budgets.",
+          "clarificationId": "feed-memory-budget"
+        },
+        {
+          "answer": "Automatic loading must have an equivalent visible Load More path, preserve focus, and announce concise outcomes.",
+          "clarificationId": "feed-accessibility"
+        }
+      ],
+      "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",
+      "id": "int-sd-ranked-feed-sr-v1",
+      "provenance": {
+        "authoredAt": "2026-07-29",
+        "copiedText": false,
+        "references": [
+          {
+            "accessedAt": "2026-07-29",
+            "license": "CC BY-SA 2.5 or later",
+            "role": "Validate observation as a loading signal rather than an ownership boundary",
+            "title": "MDN Intersection Observer API",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API"
+          },
+          {
+            "accessedAt": "2026-07-29",
+            "license": "W3C Document License",
+            "role": "Validate focus, loading, and feed accessibility considerations",
+            "title": "WAI-ARIA Authoring Practices Feed Pattern",
+            "url": "https://www.w3.org/WAI/ARIA/apg/patterns/feed/"
+          }
+        ],
+        "sourceRole": "Technical validation and topic coverage only; prompt and choices are original."
+      },
+      "review": {
+        "blind": {
+          "notes": [
+            "Prompts, visible cards, and decision choices were reviewed without the private rubric.",
+            "The scenarios permit more than one coherent architecture and do not expose a single answer-shaped clue.",
+            "Candidate-facing alternatives use parallel length and avoid conspicuous absolute-language distractors."
+          ],
+          "reviewer": "codex-system-design-blind-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",
+        "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+        "editorial": {
+          "notes": [
+            "All interview prompts, labels, choices, and distractor-like alternatives are original wording.",
+            "The guided interactions test ownership, failure behavior, accessibility, and adaptation without requiring essay-length input.",
+            "Cards can be placed in any public lane; placement quality is evaluated only by private ID-based rules."
+          ],
+          "reviewer": "codex-system-design-editorial-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "reviewedAt": "2026-07-29",
+        "reviewedRevision": 3,
+        "technical": {
+          "notes": [
+            "Each scoring claim is bound to an allowlisted rule tree and a pinned source-content bundle.",
+            "Two distinct strong paths, one developing path, and one critical-conflict path are executable for every scenario.",
+            "Lane placement and rationale limits preserve scoreable evidence without exposing the private rubric."
+          ],
+          "reviewer": "codex-system-design-technical-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        }
+      },
+      "revision": 3,
+      "rubric": {
+        "axes": [
+          {
+            "criteria": [
+              {
+                "evidence": "Clarified who owns ordering and whether it changes.",
+                "id": "feed-discover-order",
+                "rule": {
+                  "clarificationId": "feed-order-authority",
+                  "predicate": "clarificationSelected"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "When variable geometry was investigated, reading-anchor preservation was prioritized.",
+                "id": "feed-conditional-geometry",
+                "rule": {
+                  "when": {
+                    "if": {
+                      "clarificationId": "feed-row-geometry",
+                      "predicate": "clarificationSelected"
+                    },
+                    "then": {
+                      "predicate": "requirementPrioritized",
+                      "requirementId": "feed-reading-anchor"
+                    }
+                  }
+                },
+                "weight": 1
+              }
+            ],
+            "id": "requirement-discovery",
+            "remediationTopics": [
+              "Ordering authority",
+              "Reading-context constraints"
+            ],
+            "title": "Requirement discovery"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Placed request admission in the state boundary.",
+                "id": "feed-place-controller",
+                "rule": {
+                  "cardId": "feed-controller",
+                  "laneId": "state",
+                  "predicate": "cardInLane"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Connected feed intent to a dedicated request gate.",
+                "id": "feed-controller-gate",
+                "rule": {
+                  "fromCardId": "feed-controller",
+                  "predicate": "connectionExists",
+                  "toCardId": "feed-request-gate",
+                  "typeId": "event-flow"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "architecture-ownership",
+            "remediationTopics": [
+              "Feed-controller admission",
+              "Viewport versus data ownership"
+            ],
+            "title": "Architecture and ownership"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected an opaque cursor committed with its page.",
+                "id": "feed-cursor-contract",
+                "rule": {
+                  "decisionId": "feed-pagination-model",
+                  "optionId": "feed-page-cursor",
+                  "predicate": "decisionSelected"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Selected normalized identity and page membership.",
+                "id": "feed-normalized-merge",
+                "rule": {
+                  "decisionId": "feed-merge-model",
+                  "optionId": "feed-merge-normalized",
+                  "predicate": "decisionSelected"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "data-interface-contracts",
+            "remediationTopics": [
+              "Cursor-page atomicity",
+              "Normalized entity identity"
+            ],
+            "title": "Data and interface contracts"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected a bounded measured or page-window strategy.",
+                "id": "feed-bounded-window",
+                "rule": {
+                  "anyOf": [
+                    {
+                      "decisionId": "feed-window-model",
+                      "optionId": "feed-window-measured",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "decisionId": "feed-window-model",
+                      "optionId": "feed-window-pages",
+                      "predicate": "decisionSelected"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Connected admitted requests to the ranked API.",
+                "id": "feed-gate-api",
+                "rule": {
+                  "fromCardId": "feed-request-gate",
+                  "predicate": "connectionExists",
+                  "toCardId": "feed-api",
+                  "typeId": "data-flow"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "resilience-performance",
+            "remediationTopics": [
+              "Bounded DOM and data retention",
+              "Duplicate request admission"
+            ],
+            "title": "Resilience and performance"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Prioritized an accessible loading path.",
+                "id": "feed-prioritize-access",
+                "rule": {
+                  "predicate": "requirementPrioritized",
+                  "requirementId": "feed-accessible-loading"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Included a visible load control in the UI boundary.",
+                "id": "feed-place-load-control",
+                "rule": {
+                  "cardId": "feed-load-control",
+                  "laneId": "ui",
+                  "predicate": "cardInLane"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "accessibility-product-ux",
+            "remediationTopics": [
+              "Visible Load More parity",
+              "Identity-based focus and anchor restoration"
+            ],
+            "title": "Accessibility and product UX"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Preserved the anchor and staged live ordering.",
+                "id": "feed-twist-safe",
+                "rule": {
+                  "allOf": [
+                    {
+                      "actionId": "feed-twist-anchor",
+                      "predicate": "twistActionSelected"
+                    },
+                    {
+                      "actionId": "feed-twist-stage",
+                      "predicate": "twistActionSelected"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Changed ranking policy after the live-update constraint.",
+                "id": "feed-change-order",
+                "rule": {
+                  "allOf": [
+                    {
+                      "id": "feed-order-change",
+                      "predicate": "changedFromBaseline",
+                      "target": "decision"
+                    },
+                    {
+                      "decisionId": "feed-order-change",
+                      "optionId": "feed-order-stage",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "decisionId": "feed-order-change",
+                      "predicate": "rationaleSelected",
+                      "rationaleId": "feed-rationale-reading-context"
+                    }
+                  ]
+                },
+                "weight": 2
+              }
+            ],
+            "id": "adaptation-tradeoffs",
+            "remediationTopics": [
+              "Live-rank staging",
+              "Stable anchors under geometry change"
+            ],
+            "title": "Adaptation and trade-offs"
+          }
+        ],
+        "contradictions": [
+          {
+            "axisIds": [
+              "data-interface-contracts",
+              "resilience-performance"
+            ],
+            "id": "feed-critical-offset-append",
+            "rule": {
+              "allOf": [
+                {
+                  "decisionId": "feed-pagination-model",
+                  "optionId": "feed-page-offset",
+                  "predicate": "decisionSelected"
+                },
+                {
+                  "decisionId": "feed-merge-model",
+                  "optionId": "feed-merge-append",
+                  "predicate": "decisionSelected"
+                }
+              ]
+            },
+            "severity": "critical",
+            "summary": "List-length offsets plus blind append cannot preserve ranked page identity under overlap or reordering."
+          },
+          {
+            "axisIds": [
+              "resilience-performance"
+            ],
+            "id": "feed-major-unbounded",
+            "rule": {
+              "decisionId": "feed-window-model",
+              "optionId": "feed-window-unbounded",
+              "predicate": "decisionSelected"
+            },
+            "severity": "major",
+            "summary": "Keeping every row mounted conflicts with the explicit long-session rendering budget."
+          }
+        ]
+      },
+      "sourceEvidence": {
+        "bundleHash": "91af05647649a4376a23918df83f14bf944be9c93d655940535a9a43691409e3",
+        "files": [
+          {
+            "file": "cdn/questions/system-design/news-feed-timeline/meta.json",
+            "sha256": "52d3f8294cc6119c89da764ca60f5969c954e7dbdb6ad19789f038d360f64e63"
+          },
+          {
+            "file": "cdn/questions/system-design/news-feed-timeline/requirements.json",
+            "sha256": "0ded86236cbbc03f0772f3d9845b794ed9f15f7da20355c843090c0b1031876a"
+          },
+          {
+            "file": "cdn/questions/system-design/news-feed-timeline/architecture.json",
+            "sha256": "04f605999732624e084fbd91983fad15fb9faf1fe63ceb9f3c30355971496e9a"
+          },
+          {
+            "file": "cdn/questions/system-design/news-feed-timeline/data.json",
+            "sha256": "a46fa222dc7ef71ef11b7e2db856bc9c69ced65f4295a4fc0d3aec8bddaeb12e"
+          },
+          {
+            "file": "cdn/questions/system-design/news-feed-timeline/interfaces.json",
+            "sha256": "50a938901ad40ba769cbb3ab3cf51800fc7a066b31e6fa15dce7a1d7409ee9b4"
+          },
+          {
+            "file": "cdn/questions/system-design/news-feed-timeline/optimizations.json",
+            "sha256": "b91fc7bd45866e38bd13e4d2bfc01ab91b3a849fec71e4a6a59f5ca63f0fdc57"
+          }
+        ],
+        "sourceContentId": "news-feed-timeline",
+        "sourceUpdatedAt": "2026-07-28"
+      },
+      "twist": {
+        "id": "feed-live-rerank",
+        "prompt": "A live ranking version inserts and removes items above the current viewport while images are still changing height. Adapt the design so fresh content is discoverable without moving the reader or corrupting pagination.",
+        "responseActions": [
+          {
+            "description": "Correct geometry relative to the anchored item after measurements change.",
+            "id": "feed-twist-anchor",
+            "label": "Preserve item identity and offset"
+          },
+          {
+            "description": "Offer a controlled reveal while preserving the active reading window.",
+            "id": "feed-twist-stage",
+            "label": "Stage the incoming ordering version"
+          },
+          {
+            "description": "Reconcile visible order when each ranking event reaches the client.",
+            "id": "feed-twist-immediate",
+            "label": "Apply ranking moves as received"
+          },
+          {
+            "description": "Start from the newest version when ordering changes.",
+            "id": "feed-twist-reset",
+            "label": "Reset reading position to top"
+          }
+        ],
+        "title": "Production change: live ranking while reading"
+      },
+      "validationFixtures": [
+        {
+          "baseline": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry",
+              "feed-accessibility"
+            ],
+            "connections": [
+              {
+                "fromCardId": "feed-controller",
+                "toCardId": "feed-request-gate",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "feed-request-gate",
+                "toCardId": "feed-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-cursor",
+                "rationaleIds": [
+                  "feed-rationale-order-contract"
+                ]
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-normalized",
+                "rationaleIds": [
+                  "feed-rationale-stable-id"
+                ]
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-measured",
+                "rationaleIds": [
+                  "feed-rationale-profiled-window"
+                ]
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-immediate",
+                "rationaleIds": [
+                  "feed-rationale-freshness"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "feed-viewport",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "feed-load-control",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "feed-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "feed-measurements",
+                "laneId": "data",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-reading-anchor",
+              "feed-accessible-loading",
+              "feed-atomic-cursor"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry",
+              "feed-accessibility"
+            ],
+            "connections": [
+              {
+                "fromCardId": "feed-controller",
+                "toCardId": "feed-request-gate",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "feed-request-gate",
+                "toCardId": "feed-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-cursor",
+                "rationaleIds": [
+                  "feed-rationale-order-contract"
+                ]
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-normalized",
+                "rationaleIds": [
+                  "feed-rationale-stable-id"
+                ]
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-measured",
+                "rationaleIds": [
+                  "feed-rationale-profiled-window"
+                ]
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-stage",
+                "rationaleIds": [
+                  "feed-rationale-reading-context"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "feed-viewport",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "feed-load-control",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "feed-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "feed-measurements",
+                "laneId": "data",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-reading-anchor",
+              "feed-accessible-loading",
+              "feed-atomic-cursor"
+            ],
+            "scratchpad": "Apply the new version only behind the current anchor.",
+            "twistResponseActionIds": [
+              "feed-twist-anchor",
+              "feed-twist-stage"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "feed-strong-measured",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry",
+              "feed-memory-budget"
+            ],
+            "connections": [
+              {
+                "fromCardId": "feed-controller",
+                "toCardId": "feed-request-gate",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "feed-request-gate",
+                "toCardId": "feed-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-cursor",
+                "rationaleIds": [
+                  "feed-rationale-order-contract"
+                ]
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-normalized",
+                "rationaleIds": [
+                  "feed-rationale-stable-id"
+                ]
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-pages",
+                "rationaleIds": [
+                  "feed-rationale-page-boundary"
+                ]
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-arrival",
+                "rationaleIds": [
+                  "feed-rationale-no-version"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "feed-load-control",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "feed-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "feed-pages",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "feed-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-reading-anchor",
+              "feed-bounded-rendering",
+              "feed-accessible-loading"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry",
+              "feed-memory-budget"
+            ],
+            "connections": [
+              {
+                "fromCardId": "feed-controller",
+                "toCardId": "feed-request-gate",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "feed-request-gate",
+                "toCardId": "feed-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-cursor",
+                "rationaleIds": [
+                  "feed-rationale-order-contract"
+                ]
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-normalized",
+                "rationaleIds": [
+                  "feed-rationale-stable-id"
+                ]
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-pages",
+                "rationaleIds": [
+                  "feed-rationale-page-boundary"
+                ]
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-stage",
+                "rationaleIds": [
+                  "feed-rationale-reading-context"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "feed-load-control",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "feed-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "feed-pages",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "feed-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-reading-anchor",
+              "feed-bounded-rendering",
+              "feed-accessible-loading"
+            ],
+            "scratchpad": "Reload evicted pages from a known cursor boundary.",
+            "twistResponseActionIds": [
+              "feed-twist-anchor",
+              "feed-twist-stage"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "feed-strong-page-window",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry"
+            ],
+            "connections": [
+              {
+                "fromCardId": "feed-controller",
+                "toCardId": "feed-request-gate",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-cursor",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-normalized",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-pages",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-immediate",
+                "rationaleIds": []
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-load-control",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-bounded-rendering",
+              "feed-accessible-loading"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry"
+            ],
+            "connections": [],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-cursor",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-append",
+                "rationaleIds": [
+                  "feed-rationale-response-order"
+                ]
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-pages",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-stage",
+                "rationaleIds": [
+                  "feed-rationale-reading-context"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-bounded-rendering",
+              "feed-accessible-loading"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": [
+              "feed-twist-anchor"
+            ]
+          },
+          "expectedSignal": "On Track",
+          "id": "feed-developing",
+          "kind": "developing"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry",
+              "feed-accessibility"
+            ],
+            "connections": [
+              {
+                "fromCardId": "feed-controller",
+                "toCardId": "feed-request-gate",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "feed-request-gate",
+                "toCardId": "feed-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-offset",
+                "rationaleIds": [
+                  "feed-rationale-simple-offset"
+                ]
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-append",
+                "rationaleIds": [
+                  "feed-rationale-response-order"
+                ]
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-measured",
+                "rationaleIds": [
+                  "feed-rationale-profiled-window"
+                ]
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-immediate",
+                "rationaleIds": [
+                  "feed-rationale-freshness"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "feed-load-control",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "feed-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-reading-anchor",
+              "feed-accessible-loading",
+              "feed-atomic-cursor"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "feed-order-authority",
+              "feed-row-geometry",
+              "feed-accessibility"
+            ],
+            "connections": [
+              {
+                "fromCardId": "feed-controller",
+                "toCardId": "feed-request-gate",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "feed-request-gate",
+                "toCardId": "feed-api",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "feed-pagination-model",
+                "optionId": "feed-page-offset",
+                "rationaleIds": [
+                  "feed-rationale-simple-offset"
+                ]
+              },
+              {
+                "decisionId": "feed-merge-model",
+                "optionId": "feed-merge-append",
+                "rationaleIds": [
+                  "feed-rationale-response-order"
+                ]
+              },
+              {
+                "decisionId": "feed-window-model",
+                "optionId": "feed-window-measured",
+                "rationaleIds": [
+                  "feed-rationale-profiled-window"
+                ]
+              },
+              {
+                "decisionId": "feed-order-change",
+                "optionId": "feed-order-stage",
+                "rationaleIds": [
+                  "feed-rationale-reading-context"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "feed-controller",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "feed-request-gate",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "feed-load-control",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "feed-api",
+                "laneId": "external",
+                "order": 0
+              }
+            ],
+            "priorityRequirementIds": [
+              "feed-reading-anchor",
+              "feed-accessible-loading",
+              "feed-atomic-cursor"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": [
+              "feed-twist-anchor",
+              "feed-twist-stage"
+            ]
+          },
+          "expectedSignal": "Needs Focus",
+          "id": "feed-critical",
+          "kind": "critical-conflict"
+        }
+      ]
+    },
+    {
+      "clarificationAnswers": [
+        {
+          "answer": "Components and non-visual client services may emit a typed command; callers do not render containers.",
+          "clarificationId": "toast-callers"
+        },
+        {
+          "answer": "Some messages contain Undo or Review actions and must remain available while the action is valid.",
+          "clarificationId": "toast-actions"
+        },
+        {
+          "answer": "Low-risk status may be timed; actionable, critical, and user-decision messages remain persistent.",
+          "clarificationId": "toast-lifetime"
+        },
+        {
+          "answer": "A background synchronization can create dozens of related outcomes within a few seconds.",
+          "clarificationId": "toast-volume"
+        },
+        {
+          "answer": "Most updates are ordinary status. Only a rare blocking failure is urgent enough to interrupt.",
+          "clarificationId": "toast-announcement"
+        },
+        {
+          "answer": "Messages belong to the application shell and normally survive client-side navigation.",
+          "clarificationId": "toast-navigation"
+        }
+      ],
+      "contentHash": "b8dc020ac24d90e5f92e729cf10dc80874afe9771be0f973d59e941b0c5c1b7b",
+      "id": "int-sd-toast-lifecycle-jr-v1",
+      "provenance": {
+        "authoredAt": "2026-07-29",
+        "copiedText": false,
+        "references": [
+          {
+            "accessedAt": "2026-07-29",
+            "license": "CC BY-SA 2.5 or later",
+            "role": "Validate polite status semantics and focus behavior",
+            "title": "MDN ARIA status role",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role"
+          },
+          {
+            "accessedAt": "2026-07-29",
+            "license": "W3C Document License",
+            "role": "Validate user-time and adjustable timing considerations",
+            "title": "W3C WCAG Understanding Timing Adjustable",
+            "url": "https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html"
+          }
+        ],
+        "sourceRole": "Technical validation and topic coverage only; prompt and choices are original."
+      },
+      "review": {
+        "blind": {
+          "notes": [
+            "Prompts, visible cards, and decision choices were reviewed without the private rubric.",
+            "The scenarios permit more than one coherent architecture and do not expose a single answer-shaped clue.",
+            "Candidate-facing alternatives use parallel length and avoid conspicuous absolute-language distractors."
+          ],
+          "reviewer": "codex-system-design-blind-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "contentHash": "b8dc020ac24d90e5f92e729cf10dc80874afe9771be0f973d59e941b0c5c1b7b",
+        "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+        "editorial": {
+          "notes": [
+            "All interview prompts, labels, choices, and distractor-like alternatives are original wording.",
+            "The guided interactions test ownership, failure behavior, accessibility, and adaptation without requiring essay-length input.",
+            "Cards can be placed in any public lane; placement quality is evaluated only by private ID-based rules."
+          ],
+          "reviewer": "codex-system-design-editorial-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "reviewedAt": "2026-07-29",
+        "reviewedRevision": 3,
+        "technical": {
+          "notes": [
+            "Each scoring claim is bound to an allowlisted rule tree and a pinned source-content bundle.",
+            "Two distinct strong paths, one developing path, and one critical-conflict path are executable for every scenario.",
+            "Lane placement and rationale limits preserve scoreable evidence without exposing the private rubric."
+          ],
+          "reviewer": "codex-system-design-technical-v1",
+          "reviewerType": "ai",
+          "status": "passed"
+        }
+      },
+      "revision": 3,
+      "rubric": {
+        "axes": [
+          {
+            "criteria": [
+              {
+                "evidence": "Clarified whether messages contain recovery actions.",
+                "id": "toast-discover-actions",
+                "rule": {
+                  "clarificationId": "toast-actions",
+                  "predicate": "clarificationSelected"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Prioritized persistent actions or accessible status delivery.",
+                "id": "toast-prioritize-access",
+                "rule": {
+                  "anyOf": [
+                    {
+                      "predicate": "requirementPrioritized",
+                      "requirementId": "toast-persistent-actions"
+                    },
+                    {
+                      "predicate": "requirementPrioritized",
+                      "requirementId": "toast-accessible-status"
+                    }
+                  ]
+                },
+                "weight": 1
+              }
+            ],
+            "id": "requirement-discovery",
+            "remediationTopics": [
+              "Actionable versus informational feedback",
+              "Burst and lifetime constraints"
+            ],
+            "title": "Requirement discovery"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Placed the store in the state boundary.",
+                "id": "toast-place-owner",
+                "rule": {
+                  "cardId": "toast-store",
+                  "laneId": "state",
+                  "predicate": "cardInLane"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Connected the store snapshot to the provider.",
+                "id": "toast-connect-renderer",
+                "rule": {
+                  "fromCardId": "toast-store",
+                  "predicate": "connectionExists",
+                  "toCardId": "toast-provider",
+                  "typeId": "data-flow"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "architecture-ownership",
+            "remediationTopics": [
+              "Single-owner state transitions",
+              "Application-shell rendering"
+            ],
+            "title": "Architecture and ownership"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Connected normalized commands to the record owner.",
+                "id": "toast-command-store",
+                "rule": {
+                  "fromCardId": "toast-command-api",
+                  "predicate": "connectionExists",
+                  "toCardId": "toast-store",
+                  "typeId": "event-flow"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Connected lifecycle coordination back to the store.",
+                "id": "toast-lifecycle-events",
+                "rule": {
+                  "fromCardId": "toast-lifecycle",
+                  "predicate": "connectionExists",
+                  "toCardId": "toast-store",
+                  "typeId": "event-flow"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "data-interface-contracts",
+            "remediationTopics": [
+              "Typed toast commands",
+              "Lifecycle event contracts"
+            ],
+            "title": "Data and interface contracts"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected bounded, deduplicated burst handling.",
+                "id": "toast-bound-overflow",
+                "rule": {
+                  "decisionId": "toast-overflow",
+                  "optionId": "toast-overflow-queue",
+                  "predicate": "decisionSelected"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Selected remaining-time ownership for eligible timers.",
+                "id": "toast-safe-timing",
+                "rule": {
+                  "decisionId": "toast-timing",
+                  "optionId": "toast-time-remaining",
+                  "predicate": "decisionSelected"
+                },
+                "weight": 1
+              }
+            ],
+            "id": "resilience-performance",
+            "remediationTopics": [
+              "Bounded toast queues",
+              "Pause-aware timer cleanup"
+            ],
+            "title": "Resilience and performance"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Included a dedicated announcement boundary.",
+                "id": "toast-place-announcer",
+                "rule": {
+                  "cardId": "toast-live-region",
+                  "laneId": "ui",
+                  "predicate": "cardInLane"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Selected polite announcements with urgency reserved for exceptional events.",
+                "id": "toast-polite-policy",
+                "rule": {
+                  "allOf": [
+                    {
+                      "decisionId": "toast-announcer",
+                      "optionId": "toast-announce-polite",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "decisionId": "toast-announcer",
+                      "predicate": "rationaleSelected",
+                      "rationaleId": "toast-rationale-restraint"
+                    }
+                  ]
+                },
+                "weight": 1
+              }
+            ],
+            "id": "accessibility-product-ux",
+            "remediationTopics": [
+              "Live-region restraint",
+              "Keyboard-reachable toast actions"
+            ],
+            "title": "Accessibility and product UX"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected a bounded response to the hidden-tab burst.",
+                "id": "toast-adapt-burst",
+                "rule": {
+                  "anyOf": [
+                    {
+                      "actionId": "toast-twist-pause-clock",
+                      "predicate": "twistActionSelected"
+                    },
+                    {
+                      "actionId": "toast-twist-coalesce",
+                      "predicate": "twistActionSelected"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Changed a relevant lifecycle or overflow decision after the production change.",
+                "id": "toast-change-design",
+                "rule": {
+                  "anyOf": [
+                    {
+                      "allOf": [
+                        {
+                          "id": "toast-timing",
+                          "predicate": "changedFromBaseline",
+                          "target": "decision"
+                        },
+                        {
+                          "decisionId": "toast-timing",
+                          "optionId": "toast-time-remaining",
+                          "predicate": "decisionSelected"
+                        },
+                        {
+                          "decisionId": "toast-timing",
+                          "predicate": "rationaleSelected",
+                          "rationaleId": "toast-rationale-user-time"
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "id": "toast-overflow",
+                          "predicate": "changedFromBaseline",
+                          "target": "decision"
+                        },
+                        {
+                          "decisionId": "toast-overflow",
+                          "optionId": "toast-overflow-queue",
+                          "predicate": "decisionSelected"
+                        },
+                        {
+                          "decisionId": "toast-overflow",
+                          "predicate": "rationaleSelected",
+                          "rationaleId": "toast-rationale-bounded"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "weight": 2
+              }
+            ],
+            "id": "adaptation-tradeoffs",
+            "remediationTopics": [
+              "Visibility-aware lifetimes",
+              "Burst announcement policy"
+            ],
+            "title": "Adaptation and trade-offs"
+          }
+        ],
+        "contradictions": [
+          {
+            "axisIds": [
+              "architecture-ownership",
+              "resilience-performance"
+            ],
+            "id": "toast-critical-item-reset",
+            "rule": {
+              "allOf": [
+                {
+                  "decisionId": "toast-ownership",
+                  "optionId": "toast-owner-item",
+                  "predicate": "decisionSelected"
+                },
+                {
+                  "decisionId": "toast-timing",
+                  "optionId": "toast-time-reset",
+                  "predicate": "decisionSelected"
+                }
+              ]
+            },
+            "severity": "critical",
+            "summary": "Independent item timers that restart on interaction cannot preserve one observable lifetime or reliable cleanup policy."
+          },
+          {
+            "axisIds": [
+              "accessibility-product-ux"
+            ],
+            "id": "toast-major-assert-all",
+            "rule": {
+              "allOf": [
+                {
+                  "decisionId": "toast-announcer",
+                  "optionId": "toast-announce-assertive",
+                  "predicate": "decisionSelected"
+                },
+                {
+                  "not": {
+                    "clarificationId": "toast-announcement",
+                    "predicate": "clarificationSelected"
+                  }
+                }
+              ]
+            },
+            "severity": "major",
+            "summary": "Interrupting for every routine status conflicts with restrained, non-blocking feedback."
+          }
+        ]
+      },
+      "sourceEvidence": {
+        "bundleHash": "8e169018732ac16d02e516d529deb1e96b1b99cdc30e1cc9f08f00c6c09d7d94",
+        "files": [
+          {
+            "file": "cdn/questions/system-design/notification-toast-system/meta.json",
+            "sha256": "ad412f4247dbcd7a4e58ce1929219c9c421651f80c9e5ebf649946489be541c8"
+          },
+          {
+            "file": "cdn/questions/system-design/notification-toast-system/requirements.json",
+            "sha256": "baa0ab4282b6b23d2db817aec44c0c5f2d7f759b00c679dfd5630cfe5be14b35"
+          },
+          {
+            "file": "cdn/questions/system-design/notification-toast-system/architecture.json",
+            "sha256": "a7ecae100f9c60ffc1285ad668d00969347fdbb1f5833791a8e7cc1c0ed4dec4"
+          },
+          {
+            "file": "cdn/questions/system-design/notification-toast-system/data.json",
+            "sha256": "760325be0f526edeb5743926b0a98869b9c4659b4c056b42087cf6cd5e83b80c"
+          },
+          {
+            "file": "cdn/questions/system-design/notification-toast-system/interfaces.json",
+            "sha256": "85897496eee2bbdd0e6e8030216e134b4688d1861e00677f691a4fcc5385fdbd"
+          },
+          {
+            "file": "cdn/questions/system-design/notification-toast-system/optimizations.json",
+            "sha256": "10455925736954282c53dca41e4f5a899aea6274136c61b2cbde5d643045b4e7"
+          }
+        ],
+        "sourceContentId": "notification-toast-system",
+        "sourceUpdatedAt": "2026-07-28"
+      },
+      "twist": {
+        "id": "toast-hidden-tab-burst",
+        "prompt": "While the tab is hidden, thirty background saves finish. When the user returns, several timers have elapsed and each completion could create an announcement. Adapt the design without hiding an unresolved action.",
+        "responseActions": [
+          {
+            "description": "Store remaining exposure time and resume when visibility returns.",
+            "id": "toast-twist-pause-clock",
+            "label": "Pause eligible lifetimes while hidden"
+          },
+          {
+            "description": "Summarize repeated low-risk outcomes while preserving distinct recovery actions.",
+            "id": "toast-twist-coalesce",
+            "label": "Coalesce equivalent status outcomes"
+          },
+          {
+            "description": "Render the backlog and announce each stored completion.",
+            "id": "toast-twist-flush",
+            "label": "Replay queued outcomes on return"
+          },
+          {
+            "description": "Assign a fresh duration when the page becomes visible.",
+            "id": "toast-twist-restart-all",
+            "label": "Rebase queued message lifetimes"
+          }
+        ],
+        "title": "Production change: a hidden-tab burst"
+      },
+      "validationFixtures": [
+        {
+          "baseline": {
+            "clarificationIds": [
+              "toast-actions",
+              "toast-volume",
+              "toast-announcement"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-command-api",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "toast-store",
+                "toCardId": "toast-provider",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "toast-lifecycle",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "toast-ownership",
+                "optionId": "toast-owner-central",
+                "rationaleIds": [
+                  "toast-rationale-single-owner"
+                ]
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-wall-clock",
+                "rationaleIds": [
+                  "toast-rationale-fixed-deadline"
+                ]
+              },
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-queue",
+                "rationaleIds": [
+                  "toast-rationale-bounded"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": [
+                  "toast-rationale-restraint"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 2
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-persistent-actions",
+              "toast-accessible-status",
+              "toast-bounded-stack"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "toast-actions",
+              "toast-volume",
+              "toast-announcement"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-command-api",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "toast-store",
+                "toCardId": "toast-provider",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "toast-lifecycle",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "toast-ownership",
+                "optionId": "toast-owner-central",
+                "rationaleIds": [
+                  "toast-rationale-single-owner"
+                ]
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-remaining",
+                "rationaleIds": [
+                  "toast-rationale-user-time"
+                ]
+              },
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-queue",
+                "rationaleIds": [
+                  "toast-rationale-bounded"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": [
+                  "toast-rationale-restraint"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 2
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-persistent-actions",
+              "toast-accessible-status",
+              "toast-bounded-stack"
+            ],
+            "scratchpad": "Keep distinct recovery actions persistent.",
+            "twistResponseActionIds": [
+              "toast-twist-pause-clock",
+              "toast-twist-coalesce"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "toast-strong-central",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "toast-actions",
+              "toast-lifetime",
+              "toast-volume"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-command-api",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "toast-store",
+                "toCardId": "toast-provider",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "toast-lifecycle",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "toast-ownership",
+                "optionId": "toast-owner-central",
+                "rationaleIds": [
+                  "toast-rationale-single-owner"
+                ]
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-remaining",
+                "rationaleIds": [
+                  "toast-rationale-user-time"
+                ]
+              },
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-drop",
+                "rationaleIds": [
+                  "toast-rationale-newest"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": [
+                  "toast-rationale-restraint"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "toast-telemetry",
+                "laneId": "data",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-persistent-actions",
+              "toast-bounded-stack",
+              "toast-accessible-status"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "toast-actions",
+              "toast-lifetime",
+              "toast-volume"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-command-api",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "toast-store",
+                "toCardId": "toast-provider",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "toast-lifecycle",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "toast-ownership",
+                "optionId": "toast-owner-central",
+                "rationaleIds": [
+                  "toast-rationale-single-owner"
+                ]
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-remaining",
+                "rationaleIds": [
+                  "toast-rationale-user-time"
+                ]
+              },
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-queue",
+                "rationaleIds": [
+                  "toast-rationale-bounded"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": [
+                  "toast-rationale-restraint"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "toast-telemetry",
+                "laneId": "data",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-persistent-actions",
+              "toast-bounded-stack",
+              "toast-accessible-status"
+            ],
+            "scratchpad": "Queue status, retain actions.",
+            "twistResponseActionIds": [
+              "toast-twist-coalesce"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "toast-strong-persistent",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "toast-actions"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-store",
+                "toCardId": "toast-provider",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-queue",
+                "rationaleIds": [
+                  "toast-rationale-bounded"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-wall-clock",
+                "rationaleIds": []
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-bounded-stack",
+              "toast-cleanup"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "toast-actions"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-lifecycle",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-queue",
+                "rationaleIds": [
+                  "toast-rationale-bounded"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": []
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-wall-clock",
+                "rationaleIds": []
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-bounded-stack",
+              "toast-cleanup"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": [
+              "toast-twist-pause-clock"
+            ]
+          },
+          "expectedSignal": "On Track",
+          "id": "toast-developing",
+          "kind": "developing"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "toast-volume",
+              "toast-announcement"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-command-api",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "toast-store",
+                "toCardId": "toast-provider",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "toast-lifecycle",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "toast-ownership",
+                "optionId": "toast-owner-item",
+                "rationaleIds": [
+                  "toast-rationale-local-simplicity"
+                ]
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-reset",
+                "rationaleIds": [
+                  "toast-rationale-easy-reset"
+                ]
+              },
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-queue",
+                "rationaleIds": [
+                  "toast-rationale-bounded"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": [
+                  "toast-rationale-restraint"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-bounded-stack",
+              "toast-accessible-status",
+              "toast-cleanup"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "toast-volume",
+              "toast-announcement"
+            ],
+            "connections": [
+              {
+                "fromCardId": "toast-command-api",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "toast-store",
+                "toCardId": "toast-provider",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "toast-lifecycle",
+                "toCardId": "toast-store",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "toast-ownership",
+                "optionId": "toast-owner-item",
+                "rationaleIds": [
+                  "toast-rationale-local-simplicity"
+                ]
+              },
+              {
+                "decisionId": "toast-timing",
+                "optionId": "toast-time-reset",
+                "rationaleIds": [
+                  "toast-rationale-easy-reset"
+                ]
+              },
+              {
+                "decisionId": "toast-overflow",
+                "optionId": "toast-overflow-queue",
+                "rationaleIds": [
+                  "toast-rationale-bounded"
+                ]
+              },
+              {
+                "decisionId": "toast-announcer",
+                "optionId": "toast-announce-polite",
+                "rationaleIds": [
+                  "toast-rationale-restraint"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "toast-command-api",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "toast-store",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "toast-lifecycle",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "toast-provider",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "toast-live-region",
+                "laneId": "ui",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "toast-bounded-stack",
+              "toast-accessible-status",
+              "toast-cleanup"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": [
+              "toast-twist-coalesce"
+            ]
+          },
+          "expectedSignal": "Needs Focus",
+          "id": "toast-critical",
+          "kind": "critical-conflict"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": "1.0.0",
+  "status": "candidate"
+}

@@ -9,6 +9,7 @@ const InterviewMonthlyQuotaSchema = new Schema(
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     monthKey: { type: String, required: true, trim: true },
     requestIds: { type: [String], default: [] },
+    systemDesignRequestIds: { type: [String], default: [] },
     expiresAt: { type: Date, required: true },
   },
   { timestamps: true }

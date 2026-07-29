@@ -8632,7 +8632,7 @@
     "route": "/system-design/ai-chat-textarea-design",
     "tech": "system-design",
     "difficulty": "intermediate",
-    "summary": "Design an AI chat composer and current-turn experience with IME-safe input, attachment readiness, idempotent send, streaming, stop, and draft recovery.",
+    "summary": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
     "tags": [
       "real-time",
       "streams",
@@ -8641,9 +8641,9 @@
       "api-calls",
       "storage"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-07-29",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/ai-chat-textarea-design/meta.json"
   },

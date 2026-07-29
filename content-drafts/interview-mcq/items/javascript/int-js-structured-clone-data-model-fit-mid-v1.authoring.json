@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-structured-clone-data-model-fit-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "structured-clone-data-model-fit",
+    "prompt": "An editor creates an undo checkpoint, then asynchronously posts it to a persistence worker while editing continues. The graph contains nested objects, `Date`, `Map`, a cycle, and an `ArrayBuffer`. Both the live graph and the main-thread checkpoint must stay readable until the worker acknowledges persistence, and the saved copies must not reflect later edits. No uncloneable values are present. Which ownership policy fits?",
+    "options": [
+      {
+        "id": "choice-faf2e93ea5",
+        "label": "Clone with a transfer list containing the live buffer, post that checkpoint without transfers, and keep reading the original buffer."
+      },
+      {
+        "id": "choice-1c36bd2dbd",
+        "label": "Clone with `structuredClone` without transfers, post that checkpoint without transfers, and retain both independent main-thread graphs."
+      },
+      {
+        "id": "choice-729cb41a9d",
+        "label": "Copy the root with object spread, post it without transfers, and treat the new root as independent during later edits."
+      }
+    ],
+    "estimatedSeconds": 125
+  },
+  "private": {
+    "correctOptionId": "choice-1c36bd2dbd",
+    "answerProof": {
+      "summary": "A transfer-free structured clone preserves the supported graph while creating an independent checkpoint; posting it without transfers creates the worker copy without detaching the live buffer or the retained main-thread checkpoint.",
+      "decisiveConstraints": [
+        "The object graph contains a cycle.",
+        "Date and Map semantics must survive the copy.",
+        "Nested references must not remain shared.",
+        "The live buffer and main-thread checkpoint must remain usable until acknowledgement."
+      ],
+      "claims": [
+        {
+          "statement": "The structured clone algorithm tracks visited references to clone cycles and supports built-in types including Date and Map.",
+          "sourceIds": [
+            "mdn-structured-clone-algorithm"
+          ]
+        },
+        {
+          "statement": "Functions and DOM nodes are outside the structured-clone data model and cause a `DataCloneError`.",
+          "sourceIds": [
+            "mdn-structured-clone-algorithm"
+          ]
+        },
+        {
+          "statement": "Putting an `ArrayBuffer` in a `structuredClone` transfer list moves it to the clone and detaches it from the original graph.",
+          "sourceIds": [
+            "mdn-window-structured-clone"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-faf2e93ea5",
+        "verdict": "incorrect",
+        "explanation": "Transferring the live graph's buffer detaches that buffer from the editor state as soon as the checkpoint is created.",
+        "plausibility": "Transfer can avoid copying a large buffer when the sender intentionally relinquishes ownership.",
+        "misconceptionTag": "transfer-preserves-sender-buffer-ownership",
+        "falsifyingConstraint": "The editor must keep using its live buffer until the worker acknowledges persistence."
+      },
+      {
+        "optionId": "choice-1c36bd2dbd",
+        "verdict": "correct",
+        "explanation": "The first clone isolates the retained checkpoint, and the transfer-free post preserves both main-thread graphs while creating the worker copy.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-729cb41a9d",
+        "verdict": "incorrect",
+        "explanation": "Object spread leaves the main-thread checkpoint's nested values and cycle connected to the live source graph.",
+        "plausibility": "Posting without transfers gives the worker its own cloned payload at send time.",
+        "misconceptionTag": "new-root-means-deep-independence",
+        "falsifyingConstraint": "The retained main-thread checkpoint must remain independent throughout the asynchronous lifetime."
+      }
+    ],
+    "remediationTopics": [
+      "structured-clone",
+      "deep-copy-boundaries",
+      "cloneable-data-models",
+      "transferable-ownership",
+      "worker-snapshot-lifetimes"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: The structured clone algorithm",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm",
+        "sourceId": "mdn-structured-clone-algorithm"
+      },
+      {
+        "title": "MDN: Window structuredClone()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone",
+        "sourceId": "mdn-window-structured-clone"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-structured-clone-algorithm",
+          "title": "MDN: The structured clone algorithm",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-window-structured-clone",
+          "title": "MDN: Window structuredClone()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

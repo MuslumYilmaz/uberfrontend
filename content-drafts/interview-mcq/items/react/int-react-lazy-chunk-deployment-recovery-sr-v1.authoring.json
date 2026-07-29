@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-lazy-chunk-deployment-recovery-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "lazy-chunk-deployment-recovery",
+    "prompt": "After a deployment, a production analytics route's `lazy` import Promise rejects while the component is inside Suspense. The route must leave the loading state, show an explicit failure surface, and avoid a Retry control that merely remounts the same declaration. Which UI boundary matches React's contract?",
+    "options": [
+      {
+        "id": "choice-0ae563b32d",
+        "label": "Change the component key and rerender the same lazy declaration, expecting its loader to run again."
+      },
+      {
+        "id": "choice-2d0a481e75",
+        "label": "Keep only Suspense and change its loading fallback into the error view for rejected loader Promises."
+      },
+      {
+        "id": "choice-1609d59a4f",
+        "label": "Wrap Suspense and the lazy route in an Error Boundary that renders failure UI for the rejection."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-1609d59a4f",
+    "answerProof": {
+      "summary": "Suspense supplies the pending-load UI, but a rejected lazy loader is thrown to an Error Boundary; remounting the same declaration does not create a fresh loader call because React caches its Promise.",
+      "decisiveConstraints": [
+        "The lazy loader Promise has rejected rather than remaining pending.",
+        "The same lazy declaration caches its loading result.",
+        "The route needs an explicit failure surface instead of a misleading remount retry."
+      ],
+      "claims": [
+        {
+          "statement": "React caches both the Promise returned by a `lazy` loader and that Promise's resolved value.",
+          "sourceIds": [
+            "react19-lazy"
+          ]
+        },
+        {
+          "statement": "When a lazy loader Promise rejects, React throws the reason for the nearest Error Boundary to handle.",
+          "sourceIds": [
+            "react19-lazy"
+          ]
+        },
+        {
+          "statement": "A React Error Boundary can render fallback UI when a descendant throws during rendering.",
+          "sourceIds": [
+            "react19-component-error-boundary"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-0ae563b32d",
+        "verdict": "incorrect",
+        "explanation": "A key recreates mounted component state, but it does not replace the lazy declaration or clear the loader Promise React cached for it.",
+        "plausibility": "Changing a key commonly remounts a React subtree and retries setup owned by that subtree.",
+        "misconceptionTag": "key-resets-lazy-loader-cache",
+        "falsifyingConstraint": "The rejected loader belongs to the lazy component declaration rather than to the mounted instance key."
+      },
+      {
+        "optionId": "choice-2d0a481e75",
+        "verdict": "incorrect",
+        "explanation": "Suspense displays fallback content while loading is pending, but a rejected lazy Promise is thrown instead of becoming a Suspense error state.",
+        "plausibility": "The loading fallback already owns the route's visible state while the lazy module is unresolved.",
+        "misconceptionTag": "suspense-fallback-handles-rejection",
+        "falsifyingConstraint": "React routes the rejection to an Error Boundary rather than to the Suspense loading fallback."
+      },
+      {
+        "optionId": "choice-1609d59a4f",
+        "verdict": "correct",
+        "explanation": "The boundary receives the thrown rejection and can replace the route with explicit failure UI while Suspense remains responsible for pending loading.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "React lazy",
+      "lazy loader Promise caching",
+      "Suspense pending states",
+      "Error Boundary failure states"
+    ],
+    "learnMore": [
+      {
+        "title": "React: lazy",
+        "url": "https://react.dev/reference/react/lazy",
+        "sourceId": "react19-lazy"
+      },
+      {
+        "title": "React: Component — Catching rendering errors with an Error Boundary",
+        "url": "https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary",
+        "sourceId": "react19-component-error-boundary"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-lazy",
+          "title": "React: lazy",
+          "url": "https://react.dev/reference/react/lazy",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "react19-component-error-boundary",
+          "title": "React: Component — Catching rendering errors with an Error Boundary",
+          "url": "https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -33,34 +33,34 @@ const V1_FIXTURE_HASHES = Object.freeze({
 });
 const LEVELS = ["junior", "mid", "senior"];
 const NON_OUTPUT_TECHNOLOGIES = [
-  "javascript", "javascript",
-  "html", "html",
-  "css", "css",
-  "react", "react", "react", "react",
-  "angular", "angular", "angular", "angular",
-  "vue", "vue", "vue", "vue",
+  ...Array(6).fill("javascript"),
+  ...Array(4).fill("html"),
+  ...Array(4).fill("css"),
+  ...Array(8).fill("react"),
+  ...Array(8).fill("angular"),
+  ...Array(8).fill("vue"),
 ];
 const FORMATS_BY_LEVEL = {
   junior: [
     "code-output", "code-output",
-    ...Array(11).fill("conceptual"),
-    ...Array(7).fill("production-scenario"),
+    ...Array(15).fill("conceptual"),
+    ...Array(23).fill("production-scenario"),
   ],
   mid: [
     "code-output", "code-output",
-    ...Array(8).fill("conceptual"),
-    ...Array(10).fill("production-scenario"),
+    ...Array(11).fill("conceptual"),
+    ...Array(27).fill("production-scenario"),
   ],
   senior: [
     "code-output", "code-output",
     ...Array(5).fill("conceptual"),
-    ...Array(13).fill("production-scenario"),
+    ...Array(33).fill("production-scenario"),
   ],
 };
 const BANDS = [
-  ...Array(5).fill("foundation"),
-  ...Array(10).fill("core"),
-  ...Array(5).fill("stretch"),
+  ...Array(10).fill("foundation"),
+  ...Array(20).fill("core"),
+  ...Array(10).fill("stretch"),
 ];
 
 {
@@ -272,7 +272,7 @@ function makeCandidateContext() {
     schemaVersion: "2.0.0",
     manifestId: "bank-v1",
     bankId: blueprint.bankId,
-    bankVersion: "1.0.0",
+    bankVersion: "1.1.0",
     status: "candidate",
     language: "en",
     blueprintId: blueprint.blueprintId,
@@ -364,7 +364,7 @@ function expectError(result, expected) {
 }
 
 const candidate = makeCandidateContext();
-assert.equal(candidate.itemEntries.length, 60);
+assert.equal(candidate.itemEntries.length, 120);
 assert.deepEqual((await validate(candidate)).errors, []);
 expectError(await validate(candidate, { requireGold: true }), /gold lint requires/);
 
@@ -380,6 +380,15 @@ expectError(await validate(candidate, { requireGold: true }), /gold lint require
   expectError(
     await validate(weakenedWithoutChecklistBump),
     /relativeDeviationFromDistractorMedian: must remain exactly 0\.15/,
+  );
+}
+
+{
+  const incompleteChecklist = copy(candidate);
+  incompleteChecklist.policies.quality.checklistScope.blind = [];
+  expectError(
+    await validate(incompleteChecklist),
+    /quality\.checklistScope\.blind: must contain at least three non-empty checks/,
   );
 }
 
@@ -417,6 +426,11 @@ expectError(await validate(candidate, { requireGold: true }), /gold lint require
   weakenedSources.policies.sources.allowedLicenseIds.push("Proprietary");
   weakenedSources.policies.sources.officialDomains[0].licenseRules[0].licenseId = "MIT";
   weakenedSources.policies.sources.officialDomains[0].freshnessDays = 366;
+  const piniaSourceDomain = weakenedSources.policies.sources.officialDomains.find(
+    (domain) => domain.hostname === "pinia.vuejs.org",
+  );
+  assert.ok(piniaSourceDomain);
+  piniaSourceDomain.licenseRules[0].licenseUrl = "https://pinia.vuejs.org/license";
   weakenedSources.policies.sources.officialDomains.push({
     hostname: "unapproved.example",
     sourceClass: "framework",
@@ -429,9 +443,10 @@ expectError(await validate(candidate, { requireGold: true }), /gold lint require
   const result = await validate(weakenedSources);
   expectError(result, /minimumOfficialTechnicalSourcesPerItem: must remain at least 1/);
   expectError(result, /allowedLicenseIds: must contain exactly the approved open-license identifiers/);
-  expectError(result, /must contain exactly the approved MDN, React, Angular, Angular v17, and Vue hosts/);
+  expectError(result, /must contain exactly the approved MDN, React, Angular, Angular v17, Vue, and Pinia hosts/);
   expectError(result, /developer\.mozilla\.org\.licenseRules: must match the approved official license mapping exactly/);
   expectError(result, /developer\.mozilla\.org\.freshnessDays: must be a positive integer no greater than 365/);
+  expectError(result, /pinia\.vuejs\.org\.licenseRules: must match the approved official license mapping exactly/);
 }
 
 {

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-lazy-state-initialization-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "lazy-state-initialization",
+    "prompt": "A client-only preferences panel parses a large `localStorage` record during every render even though React uses the value only to initialize state. The reader is pure, and development Strict Mode probes are acceptable. Which initialization removes the repeated render cost without showing an empty first state?",
+    "code": {
+      "language": "jsx",
+      "runtime": "react-19.2",
+      "source": "function Preferences() {\n  const [settings, setSettings] = useState(readPreferences());\n  // ...\n}"
+    },
+    "options": [
+      {
+        "id": "choice-f4e8c64f8d",
+        "label": "Pass the reader as the initializer: `useState(readPreferences)`."
+      },
+      {
+        "id": "choice-14c0ea24ed",
+        "label": "Wrap the reader without calling it: `useState(() => readPreferences)`."
+      },
+      {
+        "id": "choice-363e25597e",
+        "label": "Start with empty state, then call the reader from a mount Effect."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-f4e8c64f8d",
+    "answerProof": {
+      "summary": "Passing the pure reader function gives `useState` a lazy initializer, so React invokes it for initialization instead of evaluating it before every render call.",
+      "decisiveConstraints": [
+        "The stored preferences must supply the initial rendered state.",
+        "Parsing should occur for initialization rather than for every rerender.",
+        "The initializer has no side effects."
+      ],
+      "claims": [
+        {
+          "statement": "When a function is passed to `useState`, React treats it as an initializer and calls it during initialization.",
+          "sourceIds": [
+            "react19-use-state"
+          ]
+        },
+        {
+          "statement": "Development Strict Mode can call an initializer twice to expose impurities, so initializer functions should be pure.",
+          "sourceIds": [
+            "react19-use-state"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-f4e8c64f8d",
+        "verdict": "correct",
+        "explanation": "React receives an initializer function and can obtain the first state without evaluating the expensive reader on later renders.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-14c0ea24ed",
+        "verdict": "incorrect",
+        "explanation": "The outer initializer returns the `readPreferences` function itself instead of calling it, so the state value is a function rather than parsed settings.",
+        "plausibility": "Adding a function wrapper is a common way to defer evaluation and resembles React's lazy-initializer examples.",
+        "misconceptionTag": "initializer-returns-reader-function",
+        "falsifyingConstraint": "The initializer must return the parsed preferences object rather than the reader function."
+      },
+      {
+        "optionId": "choice-363e25597e",
+        "verdict": "incorrect",
+        "explanation": "An Effect runs after the initial render, so the panel first commits placeholder state and then performs an additional state update.",
+        "plausibility": "Moving browser storage access into an Effect removes it from the render function and runs it after mount.",
+        "misconceptionTag": "effect-preserves-initial-state",
+        "falsifyingConstraint": "The stored preferences must be present in the component's initial client render."
+      }
+    ],
+    "remediationTopics": [
+      "React useState initializer functions",
+      "pure initialization",
+      "Strict Mode development probes"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useState",
+        "url": "https://react.dev/reference/react/useState",
+        "sourceId": "react19-use-state"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-state",
+          "title": "React: useState",
+          "url": "https://react.dev/reference/react/useState",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

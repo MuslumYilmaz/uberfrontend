@@ -58,8 +58,379 @@ function practiceRubric(codingVariant) {
   });
 }
 
+function designCollections(draft) {
+  const value = draft || {};
+  return {
+    clarificationIds: new Set(value.clarificationIds || []),
+    priorityRanks: new Map(
+      (value.priorityRequirementIds || []).map((id, index) => [id, index + 1])
+    ),
+    placements: new Map(
+      (value.placements || []).map((entry) => [entry.cardId, entry])
+    ),
+    connections: value.connections || [],
+    decisions: new Map(
+      (value.decisions || []).map((entry) => [entry.decisionId, entry])
+    ),
+    twistActionIds: new Set(value.twistResponseActionIds || []),
+  };
+}
+
+function stableComparable(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map(stableComparable)
+      .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
+  }
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.keys(value).sort().map((key) => [key, stableComparable(value[key])])
+  );
+}
+
+function changedFromBaseline(target, id, draft, baseline) {
+  if (!baseline) return false;
+  const current = designCollections(draft);
+  const previous = designCollections(baseline);
+  if (target === 'placement') {
+    const currentPlacement = current.placements.get(id);
+    if (!currentPlacement) return false;
+    return JSON.stringify(stableComparable(currentPlacement))
+      !== JSON.stringify(stableComparable(previous.placements.get(id) || null));
+  }
+  if (target === 'decision') {
+    const currentDecision = current.decisions.get(id);
+    if (!currentDecision) return false;
+    return currentDecision.optionId !== previous.decisions.get(id)?.optionId;
+  }
+  if (target === 'connections') {
+    const relevant = (values) => {
+      if (!id) return values;
+      return values.filter((entry) => (
+        entry.fromCardId === id
+        || entry.toCardId === id
+        || `${entry.fromCardId}>${entry.toCardId}:${entry.typeId}` === id
+      ));
+    };
+    return JSON.stringify(stableComparable(relevant(current.connections)))
+      !== JSON.stringify(stableComparable(relevant(previous.connections)));
+  }
+  return false;
+}
+
+function evaluateDesignRule(rule, draft, baseline) {
+  if (!rule || typeof rule !== 'object') return { active: true, matched: false };
+  if (Array.isArray(rule.allOf)) {
+    const children = rule.allOf.map((child) => evaluateDesignRule(child, draft, baseline));
+    const active = children.filter((child) => child.active);
+    return {
+      active: active.length > 0,
+      matched: active.length > 0 && active.every((child) => child.matched),
+    };
+  }
+  if (Array.isArray(rule.anyOf)) {
+    const children = rule.anyOf.map((child) => evaluateDesignRule(child, draft, baseline));
+    const active = children.filter((child) => child.active);
+    return {
+      active: active.length > 0,
+      matched: active.some((child) => child.matched),
+    };
+  }
+  if (rule.not) {
+    const child = evaluateDesignRule(rule.not, draft, baseline);
+    return { active: child.active, matched: child.active && !child.matched };
+  }
+  if (rule.when) {
+    const condition = evaluateDesignRule(rule.when.if, draft, baseline);
+    if (!condition.active || !condition.matched) return { active: false, matched: false };
+    return evaluateDesignRule(rule.when.then, draft, baseline);
+  }
+
+  const collections = designCollections(draft);
+  let matched = false;
+  switch (rule.predicate) {
+    case 'clarificationSelected':
+      matched = collections.clarificationIds.has(rule.clarificationId);
+      break;
+    case 'requirementPrioritized': {
+      const rank = collections.priorityRanks.get(rule.requirementId);
+      matched = Boolean(rank) && (
+        rule.maxRank == null
+        || rank <= Number(rule.maxRank)
+      );
+      break;
+    }
+    case 'cardInLane':
+      matched = collections.placements.get(rule.cardId)?.laneId === rule.laneId;
+      break;
+    case 'connectionExists':
+      matched = collections.connections.some((entry) => (
+        entry.fromCardId === rule.fromCardId
+        && entry.toCardId === rule.toCardId
+        && entry.typeId === rule.typeId
+      ));
+      break;
+    case 'decisionSelected':
+      matched = collections.decisions.get(rule.decisionId)?.optionId === rule.optionId;
+      break;
+    case 'rationaleSelected':
+      matched = (
+        collections.decisions.get(rule.decisionId)?.rationaleIds || []
+      ).includes(rule.rationaleId);
+      break;
+    case 'twistActionSelected':
+      matched = collections.twistActionIds.has(rule.actionId);
+      break;
+    case 'changedFromBaseline':
+      matched = changedFromBaseline(rule.target, rule.id, draft, baseline);
+      break;
+    default:
+      matched = false;
+  }
+  return { active: true, matched };
+}
+
+function axisStatus(earnedWeight, activeWeight) {
+  if (activeWeight <= 0) return 'not-evaluated';
+  const ratio = earnedWeight / activeWeight;
+  if (ratio >= 0.75) return 'strong-evidence';
+  if (ratio >= 0.4) return 'developing';
+  return 'needs-focus';
+}
+
+function capAxisStatus(status, cap) {
+  const order = ['not-evaluated', 'needs-focus', 'developing', 'strong-evidence'];
+  return order[Math.min(order.indexOf(status), order.indexOf(cap))];
+}
+
+function designPracticeSignal(axes, contradictions) {
+  const evidenced = axes.filter((axis) => axis.earnedWeight > 0).length;
+  if (evidenced < 3) return 'not-enough-evidence';
+  const strong = axes.filter((axis) => axis.status === 'strong-evidence').length;
+  const developingOrBetter = axes.filter(
+    (axis) => ['developing', 'strong-evidence'].includes(axis.status)
+  ).length;
+  const needsFocus = axes.filter((axis) => axis.status === 'needs-focus').length;
+  const critical = contradictions.some((entry) => entry.severity === 'critical');
+  if (strong >= 4 && needsFocus === 0 && !critical) {
+    return 'strong-system-design-session';
+  }
+  if (developingOrBetter >= 4 && needsFocus <= 1 && !critical) return 'on-track';
+  return 'needs-focus';
+}
+
+function publicDesignDraft(draft) {
+  if (!draft) return null;
+  return {
+    currentStep: String(draft.currentStep || 'clarifications'),
+    clarificationIds: [...(draft.clarificationIds || [])],
+    priorityRequirementIds: [...(draft.priorityRequirementIds || [])],
+    placements: (draft.placements || []).map((entry) => ({
+      cardId: entry.cardId,
+      laneId: entry.laneId,
+      order: entry.order,
+    })),
+    connections: (draft.connections || []).map((entry) => ({
+      fromCardId: entry.fromCardId,
+      toCardId: entry.toCardId,
+      typeId: entry.typeId,
+    })),
+    decisions: (draft.decisions || []).map((entry) => ({
+      decisionId: entry.decisionId,
+      optionId: entry.optionId,
+      rationaleIds: [...(entry.rationaleIds || [])],
+    })),
+    twistResponseActionIds: [...(draft.twistResponseActionIds || [])],
+  };
+}
+
+function systemDesignSummary(scenario, privateScenario, draft) {
+  const requirementById = new Map(
+    (scenario.requirements || []).map((entry) => [entry.id, entry])
+  );
+  const cardById = new Map((scenario.cards || []).map((entry) => [entry.id, entry]));
+  const connectionTypeById = new Map(
+    (scenario.connectionTypes || []).map((entry) => [entry.id, entry])
+  );
+  const decisionById = new Map(
+    (scenario.decisions || []).map((entry) => [entry.id, entry])
+  );
+  const twistActionById = new Map(
+    (privateScenario.twist?.responseActions || []).map((entry) => [entry.id, entry])
+  );
+  return {
+    priorities: draft.priorityRequirementIds.map((requirementId, index) => ({
+      id: requirementId,
+      title: requirementById.get(requirementId)?.title || requirementId,
+      rank: index + 1,
+    })),
+    lanes: (scenario.lanes || []).map((lane) => ({
+      id: lane.id,
+      title: lane.title,
+      cards: draft.placements
+        .filter((placement) => placement.laneId === lane.id)
+        .sort((left, right) => left.order - right.order)
+        .map((placement) => ({
+          id: placement.cardId,
+          title: cardById.get(placement.cardId)?.title || placement.cardId,
+          order: placement.order,
+        })),
+    })).filter((lane) => lane.cards.length > 0),
+    connections: draft.connections.map((connection) => ({
+      fromCardId: connection.fromCardId,
+      fromTitle: cardById.get(connection.fromCardId)?.title || connection.fromCardId,
+      toCardId: connection.toCardId,
+      toTitle: cardById.get(connection.toCardId)?.title || connection.toCardId,
+      typeId: connection.typeId,
+      typeTitle: connectionTypeById.get(connection.typeId)?.title || connection.typeId,
+    })),
+    decisions: draft.decisions.map((selection) => {
+      const decision = decisionById.get(selection.decisionId);
+      const option = decision?.options?.find((entry) => entry.id === selection.optionId);
+      const rationaleById = new Map(
+        (decision?.rationales || []).map((entry) => [entry.id, entry])
+      );
+      return {
+        id: selection.decisionId,
+        title: decision?.title || selection.decisionId,
+        option: {
+          id: selection.optionId,
+          label: option?.label || selection.optionId,
+        },
+        rationales: selection.rationaleIds.map((rationaleId) => ({
+          id: rationaleId,
+          label: rationaleById.get(rationaleId)?.label || rationaleId,
+        })),
+      };
+    }),
+    twistActions: draft.twistResponseActionIds.map((actionId) => ({
+      id: actionId,
+      label: twistActionById.get(actionId)?.label || actionId,
+    })),
+  };
+}
+
+function buildSystemDesignResult(plain, finalizedAt) {
+  const scenario = plain.systemDesignScenario || {};
+  const privateScenario = plain.systemDesignPrivate || {};
+  const draft = publicDesignDraft(plain.systemDesignDraft) || publicDesignDraft({});
+  const baseline = publicDesignDraft(plain.systemDesignBaseline);
+  const axes = (privateScenario.rubric?.axes || []).map((axis) => {
+    let activeWeight = 0;
+    let earnedWeight = 0;
+    const evidence = [];
+    for (const criterion of axis.criteria || []) {
+      const result = evaluateDesignRule(criterion.rule, draft, baseline);
+      if (!result.active) continue;
+      activeWeight += Number(criterion.weight || 0);
+      if (result.matched) {
+        earnedWeight += Number(criterion.weight || 0);
+        evidence.push(criterion.evidence);
+      }
+    }
+    return {
+      id: axis.id,
+      title: axis.title,
+      status: axisStatus(earnedWeight, activeWeight),
+      evidence,
+      activeWeight,
+      earnedWeight,
+      remediationTopics: [...(axis.remediationTopics || [])],
+    };
+  });
+  const contradictions = (privateScenario.rubric?.contradictions || [])
+    .filter((entry) => evaluateDesignRule(entry.rule, draft, baseline).matched)
+    .map((entry) => ({
+      id: entry.id,
+      severity: entry.severity,
+      axisIds: [...(entry.axisIds || [])],
+      summary: entry.summary,
+    }));
+  for (const contradiction of contradictions) {
+    for (const axis of axes) {
+      if (contradiction.axisIds.includes(axis.id)) {
+        axis.status = contradiction.severity === 'critical'
+          ? 'needs-focus'
+          : capAxisStatus(axis.status, 'developing');
+      }
+    }
+  }
+  const remediation = aggregateRemediation(
+    axes
+      .filter((axis) => axis.status !== 'strong-evidence')
+      .flatMap((axis) => axis.remediationTopics)
+  );
+  const allowedSeconds = Number(
+    plain.timingPolicy?.systemDesignSeconds
+    || scenario.timeLimitSeconds
+    || 0
+  );
+  const endedAt = plain.systemDesignSubmittedAt
+    || plain.completedAt
+    || plain.abandonedAt
+    || plain.systemDesignDeadlineAt
+    || finalizedAt;
+  const incomplete = (
+    draft.clarificationIds.length === 0
+    || draft.priorityRequirementIds.length < Number(scenario.selectionLimits?.priorities || 0)
+    || draft.placements.length === 0
+    || draft.connections.length === 0
+    || draft.decisions.length < (scenario.decisions || []).length
+    || draft.decisions.some((decision) => decision.rationaleIds.length === 0)
+    || draft.twistResponseActionIds.length === 0
+    || !plain.systemDesignTwistRevealedAt
+  );
+  const practiceSignal = designPracticeSignal(axes, contradictions);
+  const publicAxes = axes.map((axis) => ({
+    id: axis.id,
+    title: axis.title,
+    status: axis.status,
+    evidence: axis.evidence,
+    remediationTopics: axis.remediationTopics,
+  }));
+  return {
+    schemaVersion: '1.0.0',
+    sessionId: String(plain._id),
+    finalizedAt: new Date(finalizedAt).toISOString(),
+    interviewFormat: 'system-design',
+    level: plain.level,
+    track: plain.track,
+    timingMode: plain.timingMode,
+    xpAwarded: 0,
+    mcq: null,
+    coding: null,
+    systemDesign: {
+      scenarioId: scenario.id || null,
+      scenarioTitle: scenario.title || '',
+      sourceContentId: privateScenario.sourceEvidence?.sourceContentId || null,
+      outcome: plain.systemDesignOutcome,
+      practiceSignal,
+      timing: {
+        usedSeconds: durationSeconds(plain.systemDesignStartedAt, endedAt, allowedSeconds),
+        allowedSeconds,
+      },
+      frameworkLens: scenario.frameworkLenses?.[plain.track] || null,
+      axes: publicAxes,
+      contradictions,
+      remediation,
+      design: draft,
+      summary: systemDesignSummary(scenario, privateScenario, draft),
+      partialEvidence: incomplete || plain.systemDesignOutcome !== 'submitted',
+    },
+    reviewNext: remediation,
+    employmentPrediction: null,
+    evidenceNotice: (
+      'This guided mock reports deterministic practice evidence, not an '
+      + 'employment prediction or a calibrated hiring decision.'
+    ),
+  };
+}
+
 function buildResultSnapshot(session, { finalizedAt = new Date() } = {}) {
   const plain = asPlain(session);
+  if ((plain.format || 'coding') === 'system-design') {
+    return buildSystemDesignResult(plain, finalizedAt);
+  }
   const responses = new Map(
     (plain.mcqResponses || []).map((entry) => [entry.questionId, entry.selectedOptionId || null])
   );
@@ -102,6 +473,9 @@ function buildResultSnapshot(session, { finalizedAt = new Date() } = {}) {
       competency: question.competency,
       prompt: question.prompt,
       ...(question.code ? { code: question.code } : {}),
+      ...(question.code && question.codeLanguage
+        ? { codeLanguage: question.codeLanguage }
+        : {}),
       options: question.options,
       selectedOptionId,
       correctOptionId: answer.correctOptionId,
@@ -140,6 +514,7 @@ function buildResultSnapshot(session, { finalizedAt = new Date() } = {}) {
     schemaVersion: '1.0.0',
     sessionId: String(plain._id),
     finalizedAt: new Date(finalizedAt).toISOString(),
+    interviewFormat: 'coding',
     level: plain.level,
     track: plain.track,
     timingMode: plain.timingMode,
@@ -190,6 +565,7 @@ function buildResultSnapshot(session, { finalizedAt = new Date() } = {}) {
         : null,
       rubric: codingRubric,
     },
+    systemDesign: null,
     reviewNext: aggregateRemediation(missedTopics),
     employmentPrediction: null,
     evidenceNotice: (
@@ -202,4 +578,5 @@ function buildResultSnapshot(session, { finalizedAt = new Date() } = {}) {
 module.exports = {
   aggregateRemediation,
   buildResultSnapshot,
+  evaluateDesignRule,
 };

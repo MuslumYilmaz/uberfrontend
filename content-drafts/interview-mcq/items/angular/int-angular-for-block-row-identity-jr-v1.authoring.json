@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-for-block-row-identity-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "for-block-row-identity",
+    "prompt": "An editable Angular table receives a newly allocated array after each server refresh and can reorder its rows. Each record has a stable unique `id`; focused inputs and child state should follow the same record while DOM churn stays low. Which `@for` tracking expression fits?",
+    "options": [
+      {
+        "id": "choice-495704a46c",
+        "label": "Track `$index` so each rendered position keeps its existing row view after a reorder."
+      },
+      {
+        "id": "choice-bbf44ef6f9",
+        "label": "Track `record.id` so each logical record retains its row identity across arrays and reorders."
+      },
+      {
+        "id": "choice-1464b8e19a",
+        "label": "Track `record` so each freshly allocated object reference defines the next row identity."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-bbf44ef6f9",
+    "answerProof": {
+      "summary": "A stable unique record ID gives Angular the same logical identity across new object instances and position changes, enabling row views to move with their records.",
+      "decisiveConstraints": [
+        "The server refresh replaces object references.",
+        "Rows can move to different indices.",
+        "Each record exposes a stable unique identifier."
+      ],
+      "claims": [
+        {
+          "statement": "Angular's `@for` track expression associates data items with DOM nodes and should use a uniquely identifying property when one exists.",
+          "sourceIds": [
+            "angular22-template-control-flow"
+          ]
+        },
+        {
+          "statement": "Tracking by object identity uses reference equality, which changes when refreshed records are newly allocated.",
+          "sourceIds": [
+            "angular22-template-control-flow"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-495704a46c",
+        "verdict": "incorrect",
+        "explanation": "An index identifies a position, so a reorder can associate an existing row view and its local state with a different record.",
+        "plausibility": "Index tracking can be efficient for collections whose membership and order remain static.",
+        "misconceptionTag": "index-is-record-identity",
+        "falsifyingConstraint": "Records can move between positions while their state must follow the record."
+      },
+      {
+        "optionId": "choice-bbf44ef6f9",
+        "verdict": "correct",
+        "explanation": "The ID survives both object replacement and reordering, allowing Angular to retain the row view that belongs to each logical record.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-1464b8e19a",
+        "verdict": "incorrect",
+        "explanation": "Reference identity changes for every refreshed object, so Angular cannot match the new records to their previous row views.",
+        "plausibility": "Object identity can work when the same instances remain in memory and only their order changes.",
+        "misconceptionTag": "fresh-object-retains-reference-identity",
+        "falsifyingConstraint": "Every server refresh allocates replacement record objects."
+      }
+    ],
+    "remediationTopics": [
+      "Angular @for tracking",
+      "stable collection identity",
+      "row state across reorders"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Control flow",
+        "url": "https://angular.dev/guide/templates/control-flow",
+        "sourceId": "angular22-template-control-flow"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-template-control-flow",
+          "title": "Angular: Control flow",
+          "url": "https://angular.dev/guide/templates/control-flow",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

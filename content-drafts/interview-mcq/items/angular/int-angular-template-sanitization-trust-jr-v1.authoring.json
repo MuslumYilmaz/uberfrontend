@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-template-sanitization-trust-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "template-sanitization-trust",
+    "prompt": "A CMS description is untrusted but should preserve harmless formatting such as `<strong>`. Test content can also include an image error handler. The application has no separate reviewed sanitizer. Which Angular rendering path preserves safe HTML without declaring the whole value trusted?",
+    "options": [
+      {
+        "id": "choice-9bdc1b1132",
+        "label": "Render `{{ description }}` so Angular interprets the string as formatted HTML."
+      },
+      {
+        "id": "choice-fd1a06c19a",
+        "label": "Call `bypassSecurityTrustHtml(description)` and bind that trusted result to `[innerHTML]`."
+      },
+      {
+        "id": "choice-0978d53180",
+        "label": "Bind the untrusted string directly to `[innerHTML]` and retain Angular's HTML sanitization."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-0978d53180",
+    "answerProof": {
+      "summary": "Angular treats a plain value bound to `innerHTML` as untrusted HTML and sanitizes unsafe content while allowing safe markup; bypassing trust disables that protection.",
+      "decisiveConstraints": [
+        "Harmless markup should be interpreted instead of displayed as text.",
+        "The source can contain attacker-controlled HTML.",
+        "No independent review has established the complete value as trusted."
+      ],
+      "claims": [
+        {
+          "statement": "Angular escapes interpolation text rather than interpreting it as HTML.",
+          "sourceIds": [
+            "angular22-security"
+          ]
+        },
+        {
+          "statement": "Angular sanitizes untrusted values bound in the HTML security context, including `innerHTML`, while bypass trust APIs skip that sanitization.",
+          "sourceIds": [
+            "angular22-security"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-9bdc1b1132",
+        "verdict": "incorrect",
+        "explanation": "Interpolation safely escapes the value but displays markup characters as text, so the required formatting is lost.",
+        "plausibility": "Interpolation is the standard safe way to display an untrusted string in an Angular template.",
+        "misconceptionTag": "interpolation-renders-html-markup",
+        "falsifyingConstraint": "Safe tags such as `<strong>` must produce formatted content."
+      },
+      {
+        "optionId": "choice-fd1a06c19a",
+        "verdict": "incorrect",
+        "explanation": "The bypass call tells Angular not to sanitize the value and can therefore admit the attacker's executable markup.",
+        "plausibility": "The trusted wrapper makes Angular accept HTML that its normal security processing might otherwise alter.",
+        "misconceptionTag": "bypass-api-sanitizes-input",
+        "falsifyingConstraint": "The CMS value has not been established as safe by a separate review boundary."
+      },
+      {
+        "optionId": "choice-0978d53180",
+        "verdict": "correct",
+        "explanation": "The HTML property binding interprets markup while Angular's HTML security context removes unsafe parts from the untrusted string.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular sanitization",
+      "innerHTML security context",
+      "interpolation escaping",
+      "bypassSecurityTrust risks"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Security",
+        "url": "https://angular.dev/best-practices/security",
+        "sourceId": "angular22-security"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-security",
+          "title": "Angular: Security",
+          "url": "https://angular.dev/best-practices/security",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

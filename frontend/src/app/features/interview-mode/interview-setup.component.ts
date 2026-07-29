@@ -13,7 +13,9 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
   InterviewAvailability,
+  InterviewFormat,
   InterviewLevel,
+  InterviewSystemDesignPracticeSignal,
   InterviewTrack,
 } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
@@ -52,20 +54,39 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   readonly viewportWidth = signal(this.isBrowser ? window.innerWidth : 1366);
   readonly selectedLevel = signal<InterviewLevel>('mid');
   readonly selectedTrack = signal<InterviewTrack>('core-web');
+  readonly selectedFormat = signal<InterviewFormat>('coding');
   private createIdempotencyKey: string | null = null;
 
   readonly viewportBlocked = computed(() => {
     const minimum = this.availability()?.minViewportWidth ?? 768;
     return this.viewportWidth() < minimum;
   });
+  readonly selectedQuota = computed(() => {
+    const availability = this.availability();
+    if (!availability) return null;
+    return this.selectedFormat() === 'coding'
+      ? availability.quota ?? availability.quotas.coding
+      : availability.quotas['system-design'];
+  });
   readonly quotaExhausted = computed(() => {
-    const quota = this.availability()?.quota;
+    const quota = this.selectedQuota();
     return !!quota && !quota.unlimited && quota.remaining === 0;
+  });
+  readonly formatUnavailable = computed(() => {
+    const availability = this.availability();
+    const entry = availability?.formatAvailability.find(
+      (candidate) => candidate.format === this.selectedFormat(),
+    );
+    return entry ? !entry.enabled : this.selectedFormat() !== 'coding';
   });
   readonly targetUnavailable = computed(() => {
     const availability = this.availability();
     if (!availability?.targets.length) return false;
-    return !availability.targets.some((target) =>
+    const matchingTargets = availability.targets.filter(
+      (target) => target.format === this.selectedFormat(),
+    );
+    if (!matchingTargets.length) return false;
+    return !matchingTargets.some((target) =>
       target.level === this.selectedLevel()
       && target.track === this.selectedTrack()
       && target.available
@@ -75,7 +96,9 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
     const availability = this.availability();
     return !!availability
       && availability.enabled
+      && !this.loading()
       && !availability.activeSession
+      && !this.formatUnavailable()
       && !this.quotaExhausted()
       && !this.targetUnavailable()
       && !this.viewportBlocked()
@@ -83,6 +106,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   });
 
   private readonly onResize = () => this.viewportWidth.set(window.innerWidth);
+  private availabilityRequestEpoch = 0;
 
   ngOnInit(): void {
     if (this.isBrowser) window.addEventListener('resize', this.onResize, { passive: true });
@@ -90,19 +114,23 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.availabilityRequestEpoch += 1;
     if (this.isBrowser) window.removeEventListener('resize', this.onResize);
   }
 
   load(): void {
+    const requestEpoch = ++this.availabilityRequestEpoch;
     this.loading.set(true);
     this.error.set(null);
     this.interviews.getAvailability().subscribe({
       next: (availability) => {
+        if (requestEpoch !== this.availabilityRequestEpoch) return;
         this.availability.set(availability);
         this.applyAvailableDefaults(availability);
         this.loading.set(false);
       },
       error: () => {
+        if (requestEpoch !== this.availabilityRequestEpoch) return;
         this.loading.set(false);
         this.error.set('Interview setup could not be loaded. Please try again.');
       },
@@ -119,6 +147,9 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
         level: this.selectedLevel(),
         track: this.selectedTrack(),
         viewportWidth: Math.floor(this.viewportWidth()),
+        ...(this.selectedFormat() === 'system-design'
+          ? { format: 'system-design' as const }
+          : {}),
       },
       this.createIdempotencyKey,
     ).subscribe({
@@ -156,6 +187,13 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
     }
   }
 
+  onFormatChange(value: unknown): void {
+    if (value !== 'coding' && value !== 'system-design') return;
+    this.selectedFormat.set(value);
+    this.createIdempotencyKey = null;
+    this.applyAvailableTargetDefault();
+  }
+
   codingMinutes(): number {
     return this.selectedLevel() === 'junior' ? 25 : this.selectedLevel() === 'senior' ? 45 : 35;
   }
@@ -172,6 +210,33 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
       : `1 JavaScript/browser + 1 HTML/accessibility + 1 CSS/layout + 2 ${this.selectedTrack()} questions`;
   }
 
+  systemDesignMinutes(): number {
+    const seconds = this.availability()?.timing.systemDesignSeconds[this.selectedLevel()]
+      ?? (this.selectedLevel() === 'junior' ? 600 : this.selectedLevel() === 'senior' ? 1200 : 900);
+    return Math.max(1, Math.round(seconds / 60));
+  }
+
+  formatDescription(format: InterviewFormat): string {
+    return format === 'coding'
+      ? 'Five MCQs followed by one coding task.'
+      : 'A guided architecture case with a production twist.';
+  }
+
+  formatEnabled(format: InterviewFormat): boolean {
+    return this.availability()?.formatAvailability.some(
+      (entry) => entry.format === format && entry.enabled,
+    ) ?? format === 'coding';
+  }
+
+  practiceSignalLabel(signal: InterviewSystemDesignPracticeSignal): string {
+    switch (signal) {
+      case 'strong-system-design-session': return 'Strong System Design Session';
+      case 'on-track': return 'On Track';
+      case 'needs-focus': return 'Needs Focus';
+      default: return 'Not enough evidence';
+    }
+  }
+
   private applyAvailableDefaults(availability: InterviewAvailability): void {
     const firstLevel = availability.levels.find((choice) => !choice.disabled);
     const firstTrack = availability.tracks.find((choice) => !choice.disabled);
@@ -181,16 +246,33 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
     if (!availability.tracks.some((choice) => choice.value === this.selectedTrack() && !choice.disabled) && firstTrack) {
       this.selectedTrack.set(firstTrack.value);
     }
-    if (availability.targets.length && this.targetUnavailable()) {
-      const firstTarget = availability.targets.find((target) =>
-        target.available
-        && availability.levels.some((choice) => choice.value === target.level && !choice.disabled)
-        && availability.tracks.some((choice) => choice.value === target.track && !choice.disabled)
+    const selectedFormatAvailable = availability.formatAvailability.some(
+      (entry) => entry.format === this.selectedFormat() && entry.enabled,
+    );
+    if (!selectedFormatAvailable) {
+      const firstFormat = availability.formats.find((choice) =>
+        !choice.disabled
+        && availability.formatAvailability.some(
+          (entry) => entry.format === choice.value && entry.enabled,
+        )
       );
-      if (firstTarget) {
-        this.selectedLevel.set(firstTarget.level);
-        this.selectedTrack.set(firstTarget.track);
-      }
+      if (firstFormat) this.selectedFormat.set(firstFormat.value);
+    }
+    this.applyAvailableTargetDefault();
+  }
+
+  private applyAvailableTargetDefault(): void {
+    const availability = this.availability();
+    if (!availability?.targets.length || !this.targetUnavailable()) return;
+    const firstTarget = availability.targets.find((target) =>
+      target.format === this.selectedFormat()
+      && target.available
+      && availability.levels.some((choice) => choice.value === target.level && !choice.disabled)
+      && availability.tracks.some((choice) => choice.value === target.track && !choice.disabled)
+    );
+    if (firstTarget) {
+      this.selectedLevel.set(firstTarget.level);
+      this.selectedTrack.set(firstTarget.track);
     }
   }
 

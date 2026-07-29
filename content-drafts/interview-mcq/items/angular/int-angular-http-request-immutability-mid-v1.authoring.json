@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-http-request-immutability-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "http-request-immutability",
+    "prompt": "An Angular interceptor adds a request ID header and an audit field to a JSON body. Requests may pass through the interceptor again during retry, so the original request and its nested body must remain unchanged. Which transformation is retry-safe?",
+    "code": {
+      "language": "typescript",
+      "runtime": "angular-22",
+      "source": "export function auditInterceptor(\n  req: HttpRequest<Record<string, unknown>>,\n  next: HttpHandlerFn\n) {\n  // transform, then call next(transformed)\n}"
+    },
+    "options": [
+      {
+        "id": "choice-cb2b4d0ff1",
+        "label": "Assign the header and audit field directly onto `req.headers` and `req.body` before forwarding `req`."
+      },
+      {
+        "id": "choice-3d5d7ac79e",
+        "label": "Clone the header, but append audit data into the original body's nested array before forwarding the clone."
+      },
+      {
+        "id": "choice-dcdbc2bc3d",
+        "label": "Clone the request with the new header and a newly constructed body containing the audit field."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-dcdbc2bc3d",
+    "answerProof": {
+      "summary": "Angular request metadata is changed through `clone`, but body objects are not protected from deep mutation; replacing the body immutably keeps repeat interceptor runs idempotent.",
+      "decisiveConstraints": [
+        "The same request can traverse the interceptor during a retry.",
+        "Both the request metadata and nested application payload must preserve their original values.",
+        "Each pass should produce one equivalent transformed request."
+      ],
+      "claims": [
+        {
+          "statement": "Most Angular `HttpRequest` properties are immutable and interceptors modify them by cloning the request.",
+          "sourceIds": [
+            "angular22-http-interceptors"
+          ]
+        },
+        {
+          "statement": "Angular does not protect request or response bodies from deep mutation, which can make repeated interceptor execution non-idempotent.",
+          "sourceIds": [
+            "angular22-http-interceptors"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-cb2b4d0ff1",
+        "verdict": "incorrect",
+        "explanation": "Request metadata is immutable, while directly changing the body also violates the requirement that the original nested payload remain unchanged.",
+        "plausibility": "Ordinary JavaScript objects are often augmented in place before being passed to another function.",
+        "misconceptionTag": "http-request-is-mutable-payload",
+        "falsifyingConstraint": "Angular requires metadata cloning and the scenario forbids mutation of the original body."
+      },
+      {
+        "optionId": "choice-3d5d7ac79e",
+        "verdict": "incorrect",
+        "explanation": "Cloning the request does not deep-clone its body, so appending to the nested array mutates shared data and can append again on retry.",
+        "plausibility": "Using `req.clone` correctly creates a new request wrapper and can make the header update look isolated.",
+        "misconceptionTag": "request-clone-deep-clones-body",
+        "falsifyingConstraint": "The body reference remains shared unless the interceptor constructs replacement body data."
+      },
+      {
+        "optionId": "choice-dcdbc2bc3d",
+        "verdict": "correct",
+        "explanation": "The clone owns updated request metadata and a replacement body, leaving the input request reusable for another interceptor pass.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular HttpRequest immutability",
+      "interceptor idempotence",
+      "deep body mutation",
+      "retry-safe transformations"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Intercepting requests and responses",
+        "url": "https://angular.dev/guide/http/interceptors",
+        "sourceId": "angular22-http-interceptors"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-http-interceptors",
+          "title": "Angular: Intercepting requests and responses",
+          "url": "https://angular.dev/guide/http/interceptors",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

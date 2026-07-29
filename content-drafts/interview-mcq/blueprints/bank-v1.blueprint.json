@@ -2,95 +2,95 @@
   "schemaVersion": "2.0.0",
   "blueprintId": "frontend-interview-bank-v1",
   "bankId": "frontend-interview-gold-bank",
-  "questionCount": 60,
+  "questionCount": 120,
   "distributions": {
     "level": {
-      "junior": 20,
-      "mid": 20,
-      "senior": 20
+      "junior": 40,
+      "mid": 40,
+      "senior": 40
     },
     "technology": {
-      "javascript": 12,
-      "html": 6,
-      "css": 6,
-      "react": 12,
-      "angular": 12,
-      "vue": 12
+      "javascript": 24,
+      "html": 12,
+      "css": 12,
+      "react": 24,
+      "angular": 24,
+      "vue": 24
     },
     "technologyByLevel": {
       "junior": {
-        "javascript": 4,
-        "html": 2,
-        "css": 2,
-        "react": 4,
-        "angular": 4,
-        "vue": 4
+        "javascript": 8,
+        "html": 4,
+        "css": 4,
+        "react": 8,
+        "angular": 8,
+        "vue": 8
       },
       "mid": {
-        "javascript": 4,
-        "html": 2,
-        "css": 2,
-        "react": 4,
-        "angular": 4,
-        "vue": 4
+        "javascript": 8,
+        "html": 4,
+        "css": 4,
+        "react": 8,
+        "angular": 8,
+        "vue": 8
       },
       "senior": {
-        "javascript": 4,
-        "html": 2,
-        "css": 2,
-        "react": 4,
-        "angular": 4,
-        "vue": 4
+        "javascript": 8,
+        "html": 4,
+        "css": 4,
+        "react": 8,
+        "angular": 8,
+        "vue": 8
       }
     },
     "difficultyBandByLevel": {
       "junior": {
-        "foundation": 5,
-        "core": 10,
-        "stretch": 5
+        "foundation": 10,
+        "core": 20,
+        "stretch": 10
       },
       "mid": {
-        "foundation": 5,
-        "core": 10,
-        "stretch": 5
+        "foundation": 10,
+        "core": 20,
+        "stretch": 10
       },
       "senior": {
-        "foundation": 5,
-        "core": 10,
-        "stretch": 5
+        "foundation": 10,
+        "core": 20,
+        "stretch": 10
       }
     },
     "formatByLevel": {
       "junior": {
-        "conceptual": 11,
+        "conceptual": 15,
         "code-output": 2,
-        "production-scenario": 7
+        "production-scenario": 23
       },
       "mid": {
-        "conceptual": 8,
+        "conceptual": 11,
         "code-output": 2,
-        "production-scenario": 10
+        "production-scenario": 27
       },
       "senior": {
         "conceptual": 5,
         "code-output": 2,
-        "production-scenario": 13
+        "production-scenario": 33
       }
     },
     "correctOptionPosition": {
-      "first": 20,
-      "second": 20,
-      "third": 20
+      "first": 40,
+      "second": 40,
+      "third": 40
     }
   },
   "competencyConstraint": {
     "distinctByTechnology": {
-      "javascript": 12,
-      "html": 6,
-      "css": 6,
-      "react": 12,
-      "angular": 12,
-      "vue": 12
+      "javascript": 24,
+      "html": 12,
+      "css": 12,
+      "react": 24,
+      "angular": 24,
+      "vue": 24
     }
   },
   "selectionPolicy": {
@@ -108,9 +108,9 @@
       "vue"
     ],
     "eligiblePoolPerLevel": {
-      "core": 8,
-      "selectedFramework": 4,
-      "total": 12
+      "core": 16,
+      "selectedFramework": 8,
+      "total": 24
     }
   },
   "codeOutputConstraint": {

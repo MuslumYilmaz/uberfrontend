@@ -28,6 +28,7 @@ let UserAchievement;
 let WeeklyGoalBonusCredit;
 let WeeklyGoalState;
 let voidSessionTechnical;
+let voidSessionTechnicalByAdmin;
 
 function authHeader(userId) {
   return `Bearer ${jwt.sign(
@@ -142,8 +143,10 @@ beforeAll(async () => {
   process.env.JWT_SECRET = JWT_SECRET;
   process.env.SENTRY_ENABLED = 'false';
   process.env.INTERVIEW_MODE_ACCESS = 'public';
+  process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = 'public';
   process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
   process.env.INTERVIEW_FREE_MONTHLY_LIMIT = '1';
+  process.env.INTERVIEW_SYSTEM_DESIGN_FREE_MONTHLY_LIMIT = '1';
   process.env.API_RATE_LIMIT_MAX = '100000';
 
   jest.resetModules();
@@ -164,7 +167,10 @@ beforeAll(async () => {
   UserAchievement = require('../models/UserAchievement');
   WeeklyGoalBonusCredit = require('../models/WeeklyGoalBonusCredit');
   WeeklyGoalState = require('../models/WeeklyGoalState');
-  ({ voidSessionTechnical } = require('../services/interview/session-service'));
+  ({
+    voidSessionTechnical,
+    voidSessionTechnicalByAdmin,
+  } = require('../services/interview/session-service'));
 
   await connectToMongo(process.env.MONGO_URL_TEST);
   await Promise.all([
@@ -200,6 +206,96 @@ beforeEach(async () => {
 });
 
 describe('Interview Mode API', () => {
+  test('a disabled System Design sub-flag does not affect Coding Mock', async () => {
+    const user = await createUser('design_flag_isolation', { premium: true });
+    const originalDesignAccess = process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS;
+    process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = 'off';
+    try {
+      const availability = await request(app)
+        .get('/api/interviews/availability')
+        .set('Authorization', authHeader(user._id));
+      expect(availability.status).toBe(200);
+      expect(availability.body.formats).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: 'coding', available: true }),
+        expect.objectContaining({ id: 'system-design', available: false }),
+      ]));
+
+      const denied = await request(app)
+        .post('/api/interviews')
+        .set('Authorization', authHeader(user._id))
+        .set('Idempotency-Key', 'design-flag-denied-0001')
+        .send({
+          format: 'system-design',
+          level: 'mid',
+          track: 'react',
+          timingMode: 'standard',
+          viewportWidth: 1366,
+        });
+      expect(denied.status).toBe(404);
+      expect(denied.body.code).toBe('INTERVIEW_SYSTEM_DESIGN_DISABLED');
+
+      const coding = await createInterview(user, {
+        requestId: 'coding-while-design-off-0001',
+      });
+      expect(coding.status).toBe(201);
+      expect(coding.body.session.format).toBe('coding');
+    } finally {
+      process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = originalDesignAccess;
+    }
+  });
+
+  test('an active System Design round remains resumable when only its sub-flag turns off', async () => {
+    const user = await createUser('design_flag_resume', { premium: true });
+    const created = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'design-flag-resume-0001')
+      .send({
+        format: 'system-design',
+        level: 'junior',
+        track: 'vue',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+      });
+    expect(created.status).toBe(201);
+    const originalDesignAccess = process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS;
+    process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = 'off';
+    try {
+      const active = await request(app)
+        .get('/api/interviews/active')
+        .set('Authorization', authHeader(user._id));
+      expect(active.status).toBe(200);
+      expect(active.body.session).toEqual(expect.objectContaining({
+        id: created.body.session.id,
+        format: 'system-design',
+        status: 'system_design_active',
+      }));
+
+      const saved = await request(app)
+        .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+        .set('Authorization', authHeader(user._id))
+        .send({
+          mutationId: 'design-flag-resume-draft-0001',
+          expectedVersion: active.body.session.version,
+          currentStep: 'clarifications',
+          clarificationIds: [],
+          priorityRequirementIds: [],
+          placements: [],
+          connections: [],
+          decisions: [],
+          twistResponseActionIds: [],
+          scratchpad: '',
+        });
+      expect(saved.status).toBe(200);
+      expect(saved.body.session.systemDesign.draft).toEqual(expect.objectContaining({
+        currentStep: 'clarifications',
+        hash: expect.any(String),
+      }));
+    } finally {
+      process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = originalDesignAccess;
+    }
+  });
+
   test('availability exposes safe setup state, Istanbul quota, and resumable session only', async () => {
     const user = await createUser('availability');
 
@@ -316,11 +412,17 @@ describe('Interview Mode API', () => {
     }, {});
     expect(bands).toEqual({ foundation: 1, core: 2, stretch: 2 });
 
-    const replay = await createInterview(user, {
-      requestId: 'create-idempotent-0001',
-      level: 'senior',
-      track: 'angular',
-    });
+    const replay = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'create-idempotent-0001')
+      .send({
+        format: 'coding',
+        level: 'senior',
+        track: 'angular',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+      });
     expect(replay.status).toBe(200);
     expect(replay.body.replayed).toBe(true);
     expect(replay.body.session.id).toBe(session.id);
@@ -704,6 +806,753 @@ describe('Interview Mode API', () => {
     expect(await gamificationSnapshot(user._id)).toEqual(gamificationBefore);
   });
 
+  test('runs a private-safe Guided System Design round with a separate free quota', async () => {
+    const user = await createUser('system_design_flow');
+    const gamificationBefore = await gamificationSnapshot(user._id);
+    const created = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'system-design-flow-0001')
+      .send({
+        format: 'system-design',
+        level: 'mid',
+        track: 'react',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+      });
+
+    expect(created.status).toBe(201);
+    expect(created.body.session).toEqual(expect.objectContaining({
+      format: 'system-design',
+      status: 'system_design_active',
+      questions: [],
+      responses: [],
+      coding: null,
+      xpAwarded: 0,
+      systemDesign: expect.objectContaining({
+        twist: null,
+        twistRevealed: false,
+        baselineCaptured: false,
+        outcome: 'pending',
+      }),
+    }));
+    expect(created.body.session.deadlines).toEqual(expect.objectContaining({
+      mcq: null,
+      coding: null,
+      systemDesign: expect.any(String),
+    }));
+    expect(created.body.session.systemDesign.clarificationAnswers).toEqual([]);
+    expect(created.body.session.systemDesign.revealedClarificationIds).toEqual([]);
+    expect(JSON.stringify(created.body)).not.toContain('rubric');
+    expect(JSON.stringify(created.body)).not.toContain('sourceEvidence');
+    const replayedCreate = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'system-design-flow-0001')
+      .send({
+        format: 'system-design',
+        level: 'mid',
+        track: 'react',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+      });
+    expect(replayedCreate.status).toBe(200);
+    expect(replayedCreate.body.replayed).toBe(true);
+    expect(replayedCreate.body.session.systemDesign.scenario)
+      .toEqual(created.body.session.systemDesign.scenario);
+    expect(replayedCreate.body.session.deadlines.systemDesign)
+      .toBe(created.body.session.deadlines.systemDesign);
+    const scenario = created.body.session.systemDesign.scenario;
+    const authoredScenario = require(
+      '../content/interview/interview-system-design-registry-v1.public.json'
+    ).scenarios.find((entry) => entry.id === scenario.id);
+    const pinnedDesignSession = await InterviewSession.findById(
+      created.body.session.id
+    ).lean();
+    expect(pinnedDesignSession.systemDesignScenario).toEqual(authoredScenario);
+    expect(pinnedDesignSession.systemDesignPresentationOrder).toEqual(
+      expect.objectContaining({
+        schemaVersion: '1.0.0',
+        clarificationIds: expect.any(Array),
+        requirementIds: expect.any(Array),
+        cardIds: expect.any(Array),
+        decisions: expect.any(Array),
+        twistActionIds: expect.any(Array),
+      })
+    );
+    expect(created.body.session.systemDesign.scenario.clarifications.map((entry) => entry.id))
+      .toEqual(pinnedDesignSession.systemDesignPresentationOrder.clarificationIds);
+    expect(created.body.session.systemDesign.scenario.requirements.map((entry) => entry.id))
+      .toEqual(pinnedDesignSession.systemDesignPresentationOrder.requirementIds);
+    expect(created.body.session.systemDesign.scenario.cards.map((entry) => entry.id))
+      .toEqual(pinnedDesignSession.systemDesignPresentationOrder.cardIds);
+    expect(created.body.session.systemDesign.scenario.steps).toEqual(authoredScenario.steps);
+    expect(created.body.session.systemDesign.scenario.lanes).toEqual(authoredScenario.lanes);
+    expect(created.body.session.systemDesign.scenario.connectionTypes)
+      .toEqual(authoredScenario.connectionTypes);
+    for (const decision of created.body.session.systemDesign.scenario.decisions) {
+      const pinnedDecision = pinnedDesignSession.systemDesignPresentationOrder.decisions
+        .find((entry) => entry.decisionId === decision.id);
+      expect(decision.options.map((entry) => entry.id)).toEqual(pinnedDecision.optionIds);
+      expect(decision.rationales.map((entry) => entry.id)).toEqual(
+        pinnedDecision.rationaleIds
+      );
+    }
+    expect(JSON.stringify(created.body)).not.toContain('selectionSeed');
+    expect(JSON.stringify(created.body)).not.toContain('systemDesignPresentationOrder');
+    expect(pinnedDesignSession.timingPolicy.systemDesignSeconds)
+      .toBe(authoredScenario.timeLimitSeconds);
+    expect(scenario.frameworkLens).toBeUndefined();
+    expect(scenario.frameworkLenses).toBeUndefined();
+
+    const resumedPresentation = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(resumedPresentation.status).toBe(200);
+    expect(resumedPresentation.body.session.systemDesign.scenario)
+      .toEqual(created.body.session.systemDesign.scenario);
+
+    await InterviewSession.updateOne(
+      { _id: created.body.session.id },
+      { $unset: { systemDesignPresentationOrder: '' } }
+    );
+    const legacyPresentation = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(legacyPresentation.status).toBe(200);
+    expect(legacyPresentation.body.session.systemDesign.scenario.clarifications)
+      .toEqual(authoredScenario.clarifications);
+    expect(legacyPresentation.body.session.systemDesign.scenario.requirements)
+      .toEqual(authoredScenario.requirements);
+    expect(legacyPresentation.body.session.systemDesign.scenario.cards)
+      .toEqual(authoredScenario.cards);
+    expect(legacyPresentation.body.session.systemDesign.scenario.decisions)
+      .toEqual(authoredScenario.decisions);
+    await InterviewSession.updateOne(
+      { _id: created.body.session.id },
+      { $set: {
+        systemDesignPresentationOrder: pinnedDesignSession.systemDesignPresentationOrder,
+      } }
+    );
+
+    const laneOrder = new Map();
+    const placements = scenario.cards.map((card, index) => {
+      const laneId = scenario.lanes[index % scenario.lanes.length].id;
+      const order = laneOrder.get(laneId) || 0;
+      laneOrder.set(laneId, order + 1);
+      return { cardId: card.id, laneId, order };
+    });
+    const initialDraft = {
+      currentStep: 'decisions',
+      clarificationIds: scenario.clarifications
+        .slice(0, scenario.selectionLimits.clarifications)
+        .map((entry) => entry.id),
+      priorityRequirementIds: scenario.requirements
+        .slice(0, scenario.selectionLimits.priorities)
+        .map((entry) => entry.id),
+      placements,
+      connections: [],
+      decisions: scenario.decisions.map((decision) => ({
+        decisionId: decision.id,
+        optionId: decision.options[0].id,
+        rationaleIds: [decision.rationales[0].id],
+      })),
+      twistResponseActionIds: [],
+      scratchpad: 'Keep ownership explicit.',
+    };
+    let version = created.body.session.version;
+    const storedDesign = await InterviewSession.findById(created.body.session.id)
+      .select('+systemDesignPrivate')
+      .lean();
+    const privateTwistActionId = storedDesign.systemDesignPrivate.twist.responseActions[0].id;
+    const lockedTwistPayloads = [
+      {
+        mutationId: 'system-design-locked-valid-twist-action-0001',
+        actionId: privateTwistActionId,
+      },
+      {
+        mutationId: 'system-design-locked-unknown-twist-action-0001',
+        actionId: 'unknown-private-twist-action',
+      },
+    ];
+    const lockedTwistResponses = [];
+    for (const lockedPayload of lockedTwistPayloads) {
+      const response = await request(app)
+        .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+        .set('Authorization', authHeader(user._id))
+        .send({
+          mutationId: lockedPayload.mutationId,
+          expectedVersion: version,
+          ...initialDraft,
+          twistResponseActionIds: [lockedPayload.actionId],
+        });
+      lockedTwistResponses.push(response);
+    }
+    expect(lockedTwistResponses.map((response) => ({
+      status: response.status,
+      code: response.body.code,
+      error: response.body.error,
+      details: response.body.details,
+    }))).toEqual([
+      {
+        status: 409,
+        code: 'INTERVIEW_SYSTEM_DESIGN_TWIST_LOCKED',
+        error: 'Reveal the production twist before selecting a response',
+        details: undefined,
+      },
+      {
+        status: 409,
+        code: 'INTERVIEW_SYSTEM_DESIGN_TWIST_LOCKED',
+        error: 'Reveal the production twist before selecting a response',
+        details: undefined,
+      },
+    ]);
+
+    const validConnection = {
+      fromCardId: placements[0].cardId,
+      toCardId: placements[1].cardId,
+      typeId: scenario.connectionTypes[0].id,
+    };
+    const unplacedConnection = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-invalid-edge-0001',
+        expectedVersion: version,
+        ...initialDraft,
+        placements: [placements[0]],
+        connections: [validConnection],
+      });
+    expect(unplacedConnection.status).toBe(400);
+    expect(unplacedConnection.body.code).toBe('INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT');
+
+    const selfEdge = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-self-edge-0001',
+        expectedVersion: version,
+        ...initialDraft,
+        connections: [{
+          ...validConnection,
+          toCardId: validConnection.fromCardId,
+        }],
+      });
+    expect(selfEdge.status).toBe(400);
+    expect(selfEdge.body.code).toBe('INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT');
+
+    const duplicateEdge = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-duplicate-edge-0001',
+        expectedVersion: version,
+        ...initialDraft,
+        connections: [validConnection, validConnection],
+      });
+    expect(duplicateEdge.status).toBe(400);
+    expect(duplicateEdge.body.code).toBe('INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT');
+
+    const nonContiguousLane = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-invalid-order-0001',
+        expectedVersion: version,
+        ...initialDraft,
+        placements: [{ ...placements[0], order: 1 }],
+      });
+    expect(nonContiguousLane.status).toBe(400);
+    expect(nonContiguousLane.body.code).toBe('INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT');
+
+    const initialSavePayload = {
+      mutationId: 'system-design-draft-0001',
+      expectedVersion: version,
+      ...initialDraft,
+    };
+    const saved = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send(initialSavePayload);
+    expect(saved.status).toBe(200);
+    const versionBeforeInitialSave = version;
+    version = saved.body.session.version;
+    let initialHash = saved.body.session.systemDesign.draft.hash;
+    expect(initialHash).toMatch(/^[a-f0-9]{64}$/);
+    expect(saved.body.session.systemDesign.clarificationAnswers).toHaveLength(3);
+    expect(saved.body.session.systemDesign.revealedClarificationIds).toEqual(
+      initialDraft.clarificationIds
+    );
+    expect(saved.body.session.systemDesign.clarificationAnswers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          clarificationId: initialDraft.clarificationIds[0],
+          answer: expect.any(String),
+        }),
+      ])
+    );
+
+    const resumedAfterWindowClose = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(resumedAfterWindowClose.status).toBe(200);
+    expect(resumedAfterWindowClose.body.session.deadlines.systemDesign)
+      .toBe(created.body.session.deadlines.systemDesign);
+    expect(resumedAfterWindowClose.body.session.systemDesign.draft.hash).toBe(initialHash);
+    expect(resumedAfterWindowClose.body.session.systemDesign.scenario)
+      .toEqual(created.body.session.systemDesign.scenario);
+
+    const replayedDraft = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send(initialSavePayload);
+    expect(replayedDraft.status).toBe(200);
+    expect(replayedDraft.body.replayed).toBe(true);
+    expect(replayedDraft.body.session.version).toBe(version);
+
+    const staleDraft = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-stale-version-0001',
+        expectedVersion: versionBeforeInitialSave,
+        ...initialDraft,
+        scratchpad: 'Stale tab update.',
+      });
+    expect(staleDraft.status).toBe(409);
+    expect(staleDraft.body.code).toBe('INTERVIEW_VERSION_CONFLICT');
+
+    const malformedCollections = [
+      { field: 'clarificationIds', value: {} },
+      { field: 'priorityRequirementIds', value: 'not-an-array' },
+      { field: 'placements', value: {} },
+      { field: 'connections', value: 'not-an-array' },
+      { field: 'decisions', value: {} },
+      {
+        field: 'decisions',
+        value: initialDraft.decisions.map((decision, index) => (
+          index === 0 ? { ...decision, rationaleIds: {} } : decision
+        )),
+      },
+      {
+        field: 'decisions',
+        value: initialDraft.decisions.map((decision, index) => (
+          index === 0
+            ? {
+              ...decision,
+              rationaleIds: scenario.decisions
+                .find((definition) => definition.id === decision.decisionId)
+                .rationales
+                .map((rationale) => rationale.id),
+            }
+            : decision
+        )),
+      },
+    ];
+    for (const [index, malformed] of malformedCollections.entries()) {
+      const malformedDraft = await request(app)
+        .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+        .set('Authorization', authHeader(user._id))
+        .send({
+          mutationId: `system-design-malformed-collection-${index}`,
+          expectedVersion: version,
+          ...initialDraft,
+          [malformed.field]: malformed.value,
+        });
+      expect(malformedDraft.status).toBe(400);
+      expect(malformedDraft.body.code).toBe('INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT');
+    }
+    const afterMalformedCollections = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(afterMalformedCollections.body.session.version).toBe(version);
+    expect(afterMalformedCollections.body.session.systemDesign.draft.hash).toBe(initialHash);
+
+    await InterviewSession.updateOne(
+      { _id: created.body.session.id },
+      { $unset: { systemDesignRevealedClarificationIds: '' } }
+    );
+    const legacyDraftSession = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(legacyDraftSession.status).toBe(200);
+    expect(legacyDraftSession.body.session.systemDesign.revealedClarificationIds)
+      .toEqual(initialDraft.clarificationIds);
+
+    const retainedClarificationIds = initialDraft.clarificationIds.slice(0, 2);
+    const reduced = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-draft-clarifications-reduced-0001',
+        expectedVersion: version,
+        ...initialDraft,
+        clarificationIds: retainedClarificationIds,
+      });
+    expect(reduced.status).toBe(200);
+    version = reduced.body.session.version;
+    expect(reduced.body.session.systemDesign.clarificationAnswers.map(
+      (entry) => entry.clarificationId
+    )).toEqual(retainedClarificationIds);
+    expect(reduced.body.session.systemDesign.revealedClarificationIds).toEqual(
+      initialDraft.clarificationIds
+    );
+
+    const unseenClarificationId = scenario.clarifications[3].id;
+    const harvestAttempt = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-draft-clarification-harvest-0001',
+        expectedVersion: version,
+        ...initialDraft,
+        clarificationIds: [...retainedClarificationIds, unseenClarificationId],
+      });
+    expect(harvestAttempt.status).toBe(400);
+    expect(harvestAttempt.body.code)
+      .toBe('INTERVIEW_SYSTEM_DESIGN_CLARIFICATION_LIMIT_REACHED');
+
+    const afterHarvestAttempt = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(afterHarvestAttempt.status).toBe(200);
+    expect(afterHarvestAttempt.body.session.version).toBe(version);
+    expect(afterHarvestAttempt.body.session.systemDesign.clarificationAnswers.map(
+      (entry) => entry.clarificationId
+    )).toEqual(retainedClarificationIds);
+    expect(afterHarvestAttempt.body.session.systemDesign.clarificationAnswers)
+      .not.toEqual(expect.arrayContaining([
+        expect.objectContaining({ clarificationId: unseenClarificationId }),
+      ]));
+    expect(afterHarvestAttempt.body.session.systemDesign.revealedClarificationIds)
+      .toEqual(initialDraft.clarificationIds);
+
+    const restored = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-draft-clarifications-restored-0001',
+        expectedVersion: version,
+        ...initialDraft,
+      });
+    expect(restored.status).toBe(200);
+    version = restored.body.session.version;
+    initialHash = restored.body.session.systemDesign.draft.hash;
+    expect(restored.body.session.systemDesign.clarificationAnswers).toHaveLength(3);
+
+    const staleReveal = await request(app)
+      .post(`/api/interviews/${created.body.session.id}/system-design/twist/reveal`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-reveal-stale-0001',
+        expectedVersion: version,
+        draftHash: 'stale-hash',
+      });
+    expect(staleReveal.status).toBe(409);
+    expect(staleReveal.body.code).toBe('INTERVIEW_DRAFT_HASH_MISMATCH');
+
+    const revealed = await request(app)
+      .post(`/api/interviews/${created.body.session.id}/system-design/twist/reveal`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-reveal-0001',
+        expectedVersion: version,
+        draftHash: initialHash,
+      });
+    expect(revealed.status).toBe(200);
+    version = revealed.body.session.version;
+    expect(revealed.body.session.systemDesign).toEqual(expect.objectContaining({
+      twistRevealed: true,
+      baselineCaptured: true,
+      twist: expect.objectContaining({
+        id: expect.any(String),
+        prompt: expect.any(String),
+        responseActions: expect.any(Array),
+      }),
+    }));
+    expect(revealed.body.session.systemDesign.baseline).toBeUndefined();
+    expect(revealed.body.session.systemDesign.twist.responseActions.map((entry) => entry.id))
+      .toEqual(pinnedDesignSession.systemDesignPresentationOrder.twistActionIds);
+    const resumedTwist = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(resumedTwist.status).toBe(200);
+    expect(resumedTwist.body.session.systemDesign.twist.responseActions)
+      .toEqual(revealed.body.session.systemDesign.twist.responseActions);
+
+    const capturedDesign = await InterviewSession.findById(created.body.session.id)
+      .select('+systemDesignBaseline')
+      .lean();
+    const capturedBaseline = JSON.parse(JSON.stringify(capturedDesign.systemDesignBaseline));
+    const lockedDiscoveryPayloads = [
+      {
+        mutationId: 'system-design-locked-clarification-change-0001',
+        clarificationIds: initialDraft.clarificationIds.slice(0, 2),
+        priorityRequirementIds: initialDraft.priorityRequirementIds,
+      },
+      {
+        mutationId: 'system-design-locked-priority-change-0001',
+        clarificationIds: initialDraft.clarificationIds,
+        priorityRequirementIds: [...initialDraft.priorityRequirementIds].reverse(),
+      },
+    ];
+    for (const lockedPayload of lockedDiscoveryPayloads) {
+      const lockedDiscovery = await request(app)
+        .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+        .set('Authorization', authHeader(user._id))
+        .send({
+          mutationId: lockedPayload.mutationId,
+          expectedVersion: version,
+          ...initialDraft,
+          clarificationIds: lockedPayload.clarificationIds,
+          priorityRequirementIds: lockedPayload.priorityRequirementIds,
+        });
+      expect(lockedDiscovery.status).toBe(409);
+      expect(lockedDiscovery.body.code).toBe('INTERVIEW_SYSTEM_DESIGN_DISCOVERY_LOCKED');
+    }
+    const afterLockedDiscovery = await InterviewSession.findById(created.body.session.id)
+      .select('+systemDesignBaseline')
+      .lean();
+    expect(afterLockedDiscovery.__v).toBe(version);
+    expect(afterLockedDiscovery.systemDesignDraft.hash).toBe(initialHash);
+    expect(JSON.parse(JSON.stringify(afterLockedDiscovery.systemDesignBaseline)))
+      .toEqual(capturedBaseline);
+
+    const malformedTwistActions = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-malformed-twist-actions-0001',
+        expectedVersion: version,
+        ...initialDraft,
+        currentStep: 'twist',
+        twistResponseActionIds: {},
+      });
+    expect(malformedTwistActions.status).toBe(400);
+    expect(malformedTwistActions.body.code).toBe(
+      'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT'
+    );
+    const afterMalformedTwist = await InterviewSession.findById(
+      created.body.session.id
+    ).lean();
+    expect(afterMalformedTwist.__v).toBe(version);
+    expect(afterMalformedTwist.systemDesignDraft.hash).toBe(initialHash);
+
+    const twistAction = revealed.body.session.systemDesign.twist.responseActions[0].id;
+    const adapted = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-draft-0002',
+        expectedVersion: version,
+        ...initialDraft,
+        currentStep: 'twist',
+        twistResponseActionIds: [twistAction],
+      });
+    expect(adapted.status).toBe(200);
+    version = adapted.body.session.version;
+    const adaptedHash = adapted.body.session.systemDesign.draft.hash;
+
+    const submitted = await request(app)
+      .post(`/api/interviews/${created.body.session.id}/system-design/submit`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-submit-0001',
+        expectedVersion: version,
+        draftHash: adaptedHash,
+      });
+    expect(submitted.status).toBe(200);
+    expect(submitted.body.session.status).toBe('completed');
+    expect(submitted.body.session.systemDesign.outcome).toBe('submitted');
+
+    const results = await request(app)
+      .get(`/api/interviews/${created.body.session.id}/results`)
+      .set('Authorization', authHeader(user._id));
+    expect(results.status).toBe(200);
+    expect(results.body.results).toEqual(expect.objectContaining({
+      interviewFormat: 'system-design',
+      xpAwarded: 0,
+      employmentPrediction: null,
+      mcq: null,
+      coding: null,
+      systemDesign: expect.objectContaining({
+        scenarioId: scenario.id,
+        scenarioTitle: scenario.title,
+        outcome: 'submitted',
+        practiceSignal: expect.stringMatching(
+          /^(not-enough-evidence|needs-focus|on-track|strong-system-design-session)$/
+        ),
+        axes: expect.any(Array),
+        contradictions: expect.any(Array),
+        remediation: expect.any(Array),
+        summary: expect.objectContaining({
+          priorities: expect.any(Array),
+          lanes: expect.any(Array),
+          connections: expect.any(Array),
+          decisions: expect.any(Array),
+          twistActions: expect.any(Array),
+        }),
+      }),
+    }));
+    expect(JSON.stringify(results.body)).not.toContain('activeWeight');
+    expect(JSON.stringify(results.body)).not.toContain('earnedWeight');
+    expect(JSON.stringify(results.body)).not.toContain('predicate');
+    expect(JSON.stringify(results.body)).not.toContain('rule');
+    expect(JSON.stringify(results.body)).not.toContain('Keep ownership explicit.');
+    expect(results.body.results.systemDesign.design.scratchpad).toBeUndefined();
+
+    const coding = await createInterview(user, {
+      requestId: 'coding-after-design-0001',
+      level: 'mid',
+      track: 'react',
+    });
+    expect(coding.status).toBe(201);
+    await request(app)
+      .post(`/api/interviews/${coding.body.session.id}/end`)
+      .set('Authorization', authHeader(user._id))
+      .send({ expectedVersion: coding.body.session.version })
+      .expect(200);
+
+    const quota = await InterviewMonthlyQuota.findOne({ userId: user._id }).lean();
+    expect(quota.requestIds).toEqual(['coding-after-design-0001']);
+    expect(quota.systemDesignRequestIds).toEqual(['system-design-flow-0001']);
+    expect(await gamificationSnapshot(user._id)).toEqual(gamificationBefore);
+
+    const verifier = await createUser('system_design_void_admin', { role: 'admin' });
+    await voidSessionTechnicalByAdmin(created.body.session.id, {
+      verifiedBy: verifier._id,
+      reasonCode: 'platform_outage',
+    });
+    const afterDesignVoid = await InterviewMonthlyQuota.findOne({ userId: user._id }).lean();
+    expect(afterDesignVoid.requestIds).toEqual(['coding-after-design-0001']);
+    expect(afterDesignVoid.systemDesignRequestIds).toEqual([]);
+  });
+
+  test('reconciles a System Design timeout into a partial 0 XP result', async () => {
+    const user = await createUser('system_design_timeout', { premium: true });
+    const created = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'system-design-timeout-0001')
+      .send({
+        format: 'system-design',
+        level: 'senior',
+        track: 'core-web',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+      });
+    expect(created.status).toBe(201);
+    const deadline = new Date(Date.now() - 1_000);
+    await InterviewSession.updateOne(
+      { _id: created.body.session.id },
+      {
+        $set: {
+          systemDesignStartedAt: new Date(deadline.getTime() - 60_000),
+          systemDesignDeadlineAt: deadline,
+        },
+      }
+    );
+
+    const reconciled = await request(app)
+      .get(`/api/interviews/${created.body.session.id}`)
+      .set('Authorization', authHeader(user._id));
+    expect(reconciled.status).toBe(200);
+    expect(reconciled.body.session).toEqual(expect.objectContaining({
+      format: 'system-design',
+      status: 'completed',
+      active: false,
+    }));
+    expect(reconciled.body.session.systemDesign.outcome).toBe('timed_out');
+
+    const results = await request(app)
+      .get(`/api/interviews/${created.body.session.id}/results`)
+      .set('Authorization', authHeader(user._id));
+    expect(results.status).toBe(200);
+    expect(results.body.results).toEqual(expect.objectContaining({
+      interviewFormat: 'system-design',
+      xpAwarded: 0,
+      systemDesign: expect.objectContaining({
+        outcome: 'timed_out',
+        partialEvidence: true,
+        timing: {
+          usedSeconds: 60,
+          allowedSeconds: 1200,
+        },
+      }),
+    }));
+
+    const lateDraft = await request(app)
+      .put(`/api/interviews/${created.body.session.id}/system-design/draft`)
+      .set('Authorization', authHeader(user._id))
+      .send({
+        mutationId: 'system-design-late-draft-0001',
+        expectedVersion: reconciled.body.session.version,
+        currentStep: 'clarifications',
+        clarificationIds: [],
+        priorityRequirementIds: [],
+        placements: [],
+        connections: [],
+        decisions: [],
+        twistResponseActionIds: [],
+        scratchpad: '',
+      });
+    expect(lateDraft.status).toBe(409);
+    expect(lateDraft.body.code).toBe('INTERVIEW_INVALID_STATE');
+  });
+
+  test('abandoning a free System Design round consumes only the design quota', async () => {
+    const user = await createUser('system_design_abandon_quota');
+    const firstDesign = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'system-design-abandon-first-0001')
+      .send({
+        format: 'system-design',
+        level: 'junior',
+        track: 'core-web',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+      });
+    expect(firstDesign.status).toBe(201);
+
+    const ended = await request(app)
+      .post(`/api/interviews/${firstDesign.body.session.id}/end`)
+      .set('Authorization', authHeader(user._id))
+      .send({ expectedVersion: firstDesign.body.session.version });
+    expect(ended.status).toBe(200);
+    expect(ended.body.session).toEqual(expect.objectContaining({
+      format: 'system-design',
+      status: 'abandoned',
+      xpAwarded: 0,
+    }));
+
+    const exhaustedDesign = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'system-design-abandon-second-0002')
+      .send({
+        format: 'system-design',
+        level: 'junior',
+        track: 'core-web',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+      });
+    expect(exhaustedDesign.status).toBe(403);
+    expect(exhaustedDesign.body.code).toBe('INTERVIEW_MONTHLY_QUOTA_EXHAUSTED');
+
+    const coding = await createInterview(user, {
+      requestId: 'coding-after-design-abandon-0001',
+      level: 'junior',
+      track: 'core-web',
+    });
+    expect(coding.status).toBe(201);
+    expect(coding.body.session.format).toBe('coding');
+
+    const quota = await InterviewMonthlyQuota.findOne({ userId: user._id }).lean();
+    expect(quota.requestIds).toEqual(['coding-after-design-abandon-0001']);
+    expect(quota.systemDesignRequestIds).toEqual(['system-design-abandon-first-0001']);
+  });
+
   test('free quota is consumed by an ended session while effective premium is unlimited', async () => {
     const freeUser = await createUser('quota_free');
     const first = await createInterview(freeUser, { requestId: 'free-quota-first-0001' });
@@ -759,6 +1608,56 @@ describe('Interview Mode API', () => {
     expect(await InterviewSession.countDocuments({ userId: user._id })).toBe(1);
     const quota = await InterviewMonthlyQuota.findOne({ userId: user._id }).lean();
     expect(quota.requestIds).toEqual([requestId]);
+  });
+
+  test('a cross-format idempotency race compensates the losing quota reservation', async () => {
+    const mongoose = require('mongoose');
+    const user = await createUser('cross_format_key_race');
+    const requestId = 'cross-format-key-race-0001';
+    const unsupportedTransactions = jest.spyOn(mongoose, 'startSession')
+      .mockImplementation(async () => ({
+        withTransaction: async () => {
+          throw new Error(
+            'Transaction numbers are only allowed on a replica set member or mongos'
+          );
+        },
+        endSession: async () => {},
+      }));
+    const warned = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    let responses;
+    try {
+      const start = (format) => request(app)
+        .post('/api/interviews')
+        .set('Authorization', authHeader(user._id))
+        .set('Idempotency-Key', requestId)
+        .send({
+          format,
+          level: 'mid',
+          track: 'react',
+          timingMode: 'standard',
+          viewportWidth: 1366,
+        });
+      responses = await Promise.all([
+        start('coding'),
+        start('system-design'),
+      ]);
+    } finally {
+      unsupportedTransactions.mockRestore();
+      warned.mockRestore();
+    }
+
+    expect(responses.map((response) => response.status).sort()).toEqual([201, 409]);
+    const winner = responses.find((response) => response.status === 201);
+    const loser = responses.find((response) => response.status === 409);
+    expect(loser.body.code).toBe('INTERVIEW_IDEMPOTENCY_CONFLICT');
+    expect(await InterviewSession.countDocuments({ userId: user._id })).toBe(1);
+    const quota = await InterviewMonthlyQuota.findOne({ userId: user._id }).lean();
+    expect(quota.requestIds).toEqual(
+      winner.body.session.format === 'coding' ? [requestId] : []
+    );
+    expect(quota.systemDesignRequestIds).toEqual(
+      winner.body.session.format === 'system-design' ? [requestId] : []
+    );
   });
 
   test('concurrent distinct starts cannot overdraw the single free quota slot', async () => {

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-raw-html-trust-boundary-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "raw-html-trust-boundary",
+    "prompt": "A Vue web app displays CMS article excerpts with a small allowlist of formatting tags. The trusted backend can sanitize submitted HTML before its article API returns it; the browser has no reviewed sanitizer. The template currently passes the raw API field to `v-html`. Which change preserves approved formatting without sending raw user HTML to that sink?",
+    "code": {
+      "language": "vue",
+      "runtime": "vue-3.5",
+      "source": "<template>\n  <article class=\"excerpt\" v-html=\"article.body\" />\n</template>"
+    },
+    "options": [
+      {
+        "id": "choice-c87ef2a326",
+        "label": "Interpolate the raw API field as text, then reconstruct approved tags inside the component."
+      },
+      {
+        "id": "choice-6844223b97",
+        "label": "Apply the allowlist on the trusted backend, return a sanitized API field, and bind only that field to `v-html`."
+      },
+      {
+        "id": "choice-9efb032021",
+        "label": "Strip script tags with a browser regex immediately before passing the raw API field to `v-html`."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-6844223b97",
+    "answerProof": {
+      "summary": "Given the scenario's reviewed backend sanitizer, the API can establish a dedicated allowlisted representation and the Vue app can restrict `v-html` to that field instead of raw submitted content.",
+      "decisiveConstraints": [
+        "The feature must retain a limited set of formatting markup.",
+        "The source is user controlled and the browser has no reviewed HTML sanitizer.",
+        "`v-html` must receive only the trusted backend's allowlist-sanitized API field."
+      ],
+      "claims": [
+        {
+          "statement": "Vue automatically escapes interpolated HTML content, while `v-html` explicitly renders HTML in cases where the content is known to be safe.",
+          "sourceIds": [
+            "vue35-html-security"
+          ]
+        },
+        {
+          "statement": "Vue warns that allowing unsanitized user-provided content to execute as HTML is potentially dangerous and should be avoided wherever possible.",
+          "sourceIds": [
+            "vue35-html-security"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-c87ef2a326",
+        "verdict": "incorrect",
+        "explanation": "Interpolation safely escapes the input, but rebuilding markup in the component either loses required formatting or recreates an unreviewed browser-side HTML parser.",
+        "misconceptionTag": "escaping-fulfills-formatted-html-contract",
+        "plausibility": "Vue's normal interpolation prevents the stored string from becoming executable HTML.",
+        "falsifyingConstraint": "Approved formatting must remain, and the browser has no reviewed sanitizer."
+      },
+      {
+        "optionId": "choice-6844223b97",
+        "verdict": "correct",
+        "explanation": "The trusted backend's reviewed allowlist removes disallowed markup, and the Vue app limits `v-html` to the dedicated sanitized API field.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-9efb032021",
+        "verdict": "incorrect",
+        "explanation": "A script-tag regex misses executable attributes, dangerous URLs, malformed markup, and other cases a reviewed HTML sanitizer must handle.",
+        "misconceptionTag": "script-tag-removal-sanitizes-html",
+        "plausibility": "Removing explicit script elements appears to block the most recognizable HTML injection payload.",
+        "falsifyingConstraint": "The rendering sink may receive only output from the reviewed allowlist boundary."
+      }
+    ],
+    "remediationTopics": [
+      "Vue v-html security",
+      "HTML allowlist sanitization",
+      "server-side trust boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Security",
+        "url": "https://vuejs.org/guide/best-practices/security.html",
+        "sourceId": "vue35-html-security"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-html-security",
+          "title": "Vue: Security",
+          "url": "https://vuejs.org/guide/best-practices/security.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

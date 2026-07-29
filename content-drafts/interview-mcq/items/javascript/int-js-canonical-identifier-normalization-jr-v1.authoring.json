@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-canonical-identifier-normalization-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "canonical-identifier-normalization",
+    "prompt": "A case-sensitive tag editor accepts Unicode names. Users can paste visually identical accented tags whose code points use composed or decomposed forms, and those tags must share one identifier without changing letter case. Which comparison policy fits?",
+    "options": [
+      {
+        "id": "choice-0110818a58",
+        "label": "Normalize both candidate and stored names to NFC, then compare the normalized strings with case preserved."
+      },
+      {
+        "id": "choice-35a2c0faf5",
+        "label": "Lowercase both candidate and stored names, then compare their original unnormalized code-unit sequences."
+      },
+      {
+        "id": "choice-63803539fc",
+        "label": "Encode both candidate and stored names with `encodeURIComponent`, then compare the resulting encoded strings."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-0110818a58",
+    "answerProof": {
+      "summary": "NFC converts canonically equivalent composed and decomposed sequences to the same composed normalization form while leaving the product's separate case-sensitive identity rule intact.",
+      "decisiveConstraints": [
+        "Canonical Unicode equivalents must map to one stored identity.",
+        "Uppercase and lowercase names remain distinct by product policy.",
+        "Transport encoding is not an identity normalization rule."
+      ],
+      "claims": [
+        {
+          "statement": "`String.prototype.normalize` with NFC produces the same normalized string for canonically equivalent character sequences.",
+          "sourceIds": [
+            "mdn-string-normalize"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-0110818a58",
+        "verdict": "correct",
+        "explanation": "NFC resolves the composed-versus-decomposed representation difference without merging names that differ only by case.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-35a2c0faf5",
+        "verdict": "incorrect",
+        "explanation": "Lowercasing violates case-sensitive identity and still leaves canonically equivalent code-point sequences potentially unequal.",
+        "plausibility": "Case folding is commonly used for case-insensitive usernames and search keys.",
+        "misconceptionTag": "case-folding-is-unicode-normalization",
+        "falsifyingConstraint": "Case must remain significant while canonical representations collapse to one identity."
+      },
+      {
+        "optionId": "choice-63803539fc",
+        "verdict": "incorrect",
+        "explanation": "URI encoding preserves the underlying code-point sequence, so different canonical representations produce different encodings.",
+        "plausibility": "Encoding creates stable ASCII strings that are convenient to store and compare.",
+        "misconceptionTag": "transport-encoding-canonicalizes-text",
+        "falsifyingConstraint": "The identity rule must equate canonically equivalent Unicode sequences before transport encoding."
+      }
+    ],
+    "remediationTopics": [
+      "unicode-normalization",
+      "canonical-equivalence",
+      "identifier-policy"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: String.prototype.normalize()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize",
+        "sourceId": "mdn-string-normalize"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-string-normalize",
+          "title": "MDN: String.prototype.normalize()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

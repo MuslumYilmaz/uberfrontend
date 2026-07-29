@@ -1,0 +1,48 @@
+{
+  "artifacts": {
+    "private": {
+      "file": "interview-system-design-registry-v1.private.json",
+      "sha256": "1e9761ae4d7f6660ccb4604c97d9155d453d4c859d5ced0b99012bd76022291e"
+    },
+    "public": {
+      "file": "interview-system-design-registry-v1.public.json",
+      "sha256": "202798ba53e5e892da73dff64060ce871112f488d80407d52152084012e1b4f9"
+    }
+  },
+  "contentHash": "9ae5e0a6ef7abff27b707310142765e7c8e9eb508f7ba04bd3a5b7208eb36f75",
+  "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+  "enabledScenarioCount": 3,
+  "finalApproval": null,
+  "registryContentHash": "9ae5e0a6ef7abff27b707310142765e7c8e9eb508f7ba04bd3a5b7208eb36f75",
+  "registryId": "interview-system-design-registry-v1",
+  "registryVersion": "1.0.0",
+  "scenarioCount": 3,
+  "scenarioRefs": [
+    {
+      "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
+      "enabled": true,
+      "id": "int-sd-autocomplete-race-mid-v1",
+      "level": "mid",
+      "revision": 3,
+      "sourceBundleHash": "46e9e5bb8daf0372d8638d2aef97f5a1299b1d071bcba0dc3c2b42599f0b967e"
+    },
+    {
+      "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",
+      "enabled": true,
+      "id": "int-sd-ranked-feed-sr-v1",
+      "level": "senior",
+      "revision": 3,
+      "sourceBundleHash": "91af05647649a4376a23918df83f14bf944be9c93d655940535a9a43691409e3"
+    },
+    {
+      "contentHash": "b8dc020ac24d90e5f92e729cf10dc80874afe9771be0f973d59e941b0c5c1b7b",
+      "enabled": true,
+      "id": "int-sd-toast-lifecycle-jr-v1",
+      "level": "junior",
+      "revision": 3,
+      "sourceBundleHash": "8e169018732ac16d02e516d529deb1e96b1b99cdc30e1cc9f08f00c6c09d7d94"
+    }
+  ],
+  "schemaVersion": "1.0.0",
+  "status": "candidate"
+}

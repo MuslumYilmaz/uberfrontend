@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-fetch-http-status-handling-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "fetch-http-status-handling",
+    "prompt": "A profile loader uses `fetch` and its catch block for the error UI. During a `404` response, the promise follows the success path and the code tries to render the server's error document as a profile. Which response boundary fixes the classification?",
+    "options": [
+      {
+        "id": "choice-1e541bcbce",
+        "label": "After `fetch` resolves, check `response.ok`; throw a typed HTTP error before parsing the success body."
+      },
+      {
+        "id": "choice-b1080d314f",
+        "label": "Parse the body first, then treat any JSON object as a successful profile regardless of its response status."
+      },
+      {
+        "id": "choice-c5a41d3c61",
+        "label": "Move the request into `try...catch` and rely on `fetch` to reject each response outside the 200 range."
+      }
+    ],
+    "estimatedSeconds": 95
+  },
+  "private": {
+    "correctOptionId": "choice-1e541bcbce",
+    "answerProof": {
+      "summary": "`fetch` distinguishes network failure from HTTP status failure. Checking `Response.ok` at the response boundary converts a non-2xx response into the application's error path before success parsing.",
+      "decisiveConstraints": [
+        "The server returned a valid HTTP response rather than a network failure.",
+        "Only 2xx responses may enter the profile success parser.",
+        "The error path needs access to HTTP status context."
+      ],
+      "claims": [
+        {
+          "statement": "A fetch promise can fulfill for HTTP error statuses, so callers must inspect `Response.ok` or `Response.status`.",
+          "sourceIds": [
+            "mdn-window-fetch"
+          ]
+        },
+        {
+          "statement": "`Response.ok` is true for response statuses in the 200 through 299 range.",
+          "sourceIds": [
+            "mdn-response-ok"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-1e541bcbce",
+        "verdict": "correct",
+        "explanation": "The explicit status guard separates HTTP failure from success before the body reaches the profile parser.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b1080d314f",
+        "verdict": "incorrect",
+        "explanation": "An error response may contain valid JSON, but its shape and status do not satisfy the successful profile contract.",
+        "plausibility": "Many APIs return structured JSON for both success and errors, so parsing can succeed in either case.",
+        "misconceptionTag": "parse-success-means-http-success",
+        "falsifyingConstraint": "Response status, not parseability, determines whether the success model is valid."
+      },
+      {
+        "optionId": "choice-c5a41d3c61",
+        "verdict": "incorrect",
+        "explanation": "A try block catches promise rejection, but `fetch` does not reject solely because the server returned `404`.",
+        "plausibility": "Try and catch correctly handles network errors and exceptions thrown during asynchronous parsing.",
+        "misconceptionTag": "fetch-rejects-non-2xx",
+        "falsifyingConstraint": "The error classifier must explicitly inspect fulfilled HTTP responses."
+      }
+    ],
+    "remediationTopics": [
+      "fetch-error-semantics",
+      "response-ok",
+      "http-error-modeling"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Window.fetch()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch",
+        "sourceId": "mdn-window-fetch"
+      },
+      {
+        "title": "MDN: Response.ok",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Response/ok",
+        "sourceId": "mdn-response-ok"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-window-fetch",
+          "title": "MDN: Window.fetch()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-response-ok",
+          "title": "MDN: Response.ok",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Response/ok",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

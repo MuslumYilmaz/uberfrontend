@@ -5,8 +5,8 @@
     </p>
     <h1>Frontend mock interview</h1>
     <p>
-      Complete five multiple-choice questions, then move to one coding task.
-      Answers stay locked until the final report.
+      Choose a coding simulation or a guided system design case.
+      Both formats use server-controlled timing and award 0 XP.
     </p>
   </header>
 
@@ -28,7 +28,7 @@
       data-testid="interview-mobile-block">
       <h2>A larger screen is required to start</h2>
       <p>
-        The coding workspace needs at least {{ available.minViewportWidth }}px.
+        The interview workspace needs at least {{ available.minViewportWidth }}px.
         You can return on a tablet or desktop without using an attempt.
       </p>
     </section>
@@ -36,7 +36,7 @@
     <section *ngIf="available.activeSession as active" class="resume-card" faCard elevated>
       <div>
         <p class="eyebrow">Active interview</p>
-        <h2>Continue your {{ active.track || 'frontend' }} interview</h2>
+        <h2>Continue your {{ active.format === 'system-design' ? 'system design' : (active.track || 'frontend') }} interview</h2>
         <p>Your server timer continues while the interview is active.</p>
       </div>
       <button faButton variant="primary" type="button" (click)="resume(active.id)">
@@ -54,8 +54,8 @@
     </section>
 
     <section *ngIf="quotaExhausted()" class="status-card status-card--warning" faCard role="status">
-      <h2>No attempts remaining</h2>
-      <p *ngIf="available.quota?.resetAt as resetAt">
+      <h2>No {{ selectedFormat() === 'system-design' ? 'system design' : 'coding' }} attempts remaining</h2>
+      <p *ngIf="selectedQuota()?.resetAt as resetAt">
         Your quota resets {{ resetAt | date:'medium' }}.
       </p>
     </section>
@@ -67,7 +67,7 @@
             <p class="eyebrow">Interview target</p>
             <h2>Choose the role you are preparing for</h2>
           </div>
-          <span *ngIf="available.quota as quota" class="quota">
+          <span *ngIf="selectedQuota() as quota" class="quota">
             <ng-container *ngIf="quota.unlimited; else boundedQuota">Unlimited attempts</ng-container>
             <ng-template #boundedQuota>
               {{ quota.remaining }}<ng-container *ngIf="quota.limit !== null"> / {{ quota.limit }}</ng-container>
@@ -75,6 +75,27 @@
             </ng-template>
           </span>
         </div>
+
+        <fieldset class="format-picker" [disabled]="starting()">
+          <legend>Interview format</legend>
+          <label
+            *ngFor="let format of available.formats"
+            class="format-option"
+            [class.format-option--selected]="selectedFormat() === format.value"
+            [class.format-option--disabled]="format.disabled || !formatEnabled(format.value)">
+            <input
+              type="radio"
+              name="interview-format"
+              [value]="format.value"
+              [checked]="selectedFormat() === format.value"
+              [disabled]="format.disabled || !formatEnabled(format.value)"
+              (change)="onFormatChange(format.value)">
+            <span>
+              <strong>{{ format.label }}</strong>
+              <small>{{ format.description || formatDescription(format.value) }}</small>
+            </span>
+          </label>
+        </fieldset>
 
         <div class="fields">
           <fa-field label="Level" hint="Controls scenario depth and coding expectations.">
@@ -88,7 +109,11 @@
             </fa-select>
           </fa-field>
 
-          <fa-field label="Track" [hint]="questionMix()">
+          <fa-field
+            label="Track"
+            [hint]="selectedFormat() === 'coding'
+              ? questionMix()
+              : 'Used for the final implementation lens; the architecture case stays framework-independent.'">
             <fa-select
               [options]="available.tracks"
               [value]="selectedTrack()"
@@ -103,8 +128,21 @@
 
         <div class="duration-summary">
           <strong>Fixed interview timing</strong>
-          <span>{{ mcqDurationLabel() }} MCQ · {{ codingMinutes() }} minutes coding</span>
+          <span *ngIf="selectedFormat() === 'coding'; else designTiming">
+            {{ mcqDurationLabel() }} MCQ · {{ codingMinutes() }} minutes coding
+          </span>
+          <ng-template #designTiming>
+            <span>{{ systemDesignMinutes() }} minutes guided system design</span>
+          </ng-template>
         </div>
+
+        <p
+          *ngIf="formatUnavailable()"
+          class="target-warning"
+          role="status"
+          data-testid="interview-format-unavailable">
+          This interview format is not available yet.
+        </p>
 
         <p
           *ngIf="targetUnavailable()"
@@ -116,12 +154,20 @@
 
         <div class="rules" aria-label="Interview rules">
           <h3>Before you begin</h3>
-          <ul>
+          <ul *ngIf="selectedFormat() === 'coding'; else designRules">
             <li>The MCQ section comes first; coding is always the final stage.</li>
             <li>Leaving or refreshing does not pause the server-controlled timer.</li>
             <li>No answer feedback or solutions appear before submission.</li>
             <li>Interview Mode awards 0 XP and does not update solved progress.</li>
           </ul>
+          <ng-template #designRules>
+            <ul>
+              <li>Work through requirements, priorities, architecture, decisions, and a production twist.</li>
+              <li>Your draft saves to this device immediately and syncs to the server.</li>
+              <li>There is no single model answer; feedback evaluates evidence and consistency.</li>
+              <li>Interview Mode awards 0 XP and does not update solved progress.</li>
+            </ul>
+          </ng-template>
         </div>
 
         <button
@@ -132,7 +178,7 @@
           [loading]="starting()"
           [disabled]="!canStart()"
           data-testid="interview-start">
-          Start timed interview
+          Start {{ selectedFormat() === 'system-design' ? 'system design mock' : 'timed interview' }}
         </button>
       </section>
     </form>
@@ -145,8 +191,16 @@
           faCard
           interactive
           [routerLink]="['/interview', result.sessionId, 'results']">
-          <strong>{{ result.track || 'Frontend' | titlecase }} · {{ result.level || 'Interview' | titlecase }}</strong>
-          <span *ngIf="result.total !== undefined">{{ result.correct || 0 }}/{{ result.total }} MCQ correct</span>
+          <strong>
+            {{ result.format === 'system-design' ? 'System design' : (result.track || 'Frontend' | titlecase) }}
+            · {{ result.level || 'Interview' | titlecase }}
+          </strong>
+          <span *ngIf="result.format === 'coding' && result.total !== undefined">
+            {{ result.correct || 0 }}/{{ result.total }} MCQ correct
+          </span>
+          <span *ngIf="result.format === 'system-design' && result.practiceSignal">
+            {{ practiceSignalLabel(result.practiceSignal) }}
+          </span>
           <span *ngIf="result.completedAt">{{ result.completedAt | date:'mediumDate' }}</span>
         </a>
       </div>

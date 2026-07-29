@@ -5,8 +5,14 @@ const path = require('path');
 const CONTENT_DIR = path.resolve(__dirname, '../../content/interview');
 const DEFAULT_BANK_PREFIX = 'frontend-interview-bank-v1';
 const DEFAULT_CODING_PREFIX = 'interview-coding-registry-v1';
+const DEFAULT_SYSTEM_DESIGN_PREFIX = 'interview-system-design-registry-v1';
 const INTERVIEW_ACCESS_MODES = Object.freeze(['off', 'internal', 'public']);
 const CANDIDATE_ARTIFACT_ENVIRONMENTS = new Set(['development', 'test']);
+const SYSTEM_DESIGN_SECONDS = Object.freeze({
+  junior: 10 * 60,
+  mid: 15 * 60,
+  senior: 20 * 60,
+});
 
 function envPositiveInt(name, fallback, { min = 1, max = Number.MAX_SAFE_INTEGER } = {}) {
   const parsed = Number(process.env[name]);
@@ -43,8 +49,31 @@ function interviewModeEnabled() {
   return interviewModeAccessMode() !== 'off';
 }
 
+function interviewSystemDesignAccessMode() {
+  const configured = String(process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS || 'off')
+    .trim()
+    .toLowerCase();
+  return INTERVIEW_ACCESS_MODES.includes(configured) ? configured : 'off';
+}
+
+function interviewSystemDesignAccess(role) {
+  const interviewAccess = interviewModeAccess(role);
+  const mode = interviewSystemDesignAccessMode();
+  const internalPreview = (
+    interviewAccess.enabled
+    && mode === 'internal'
+    && role === 'admin'
+  );
+  return {
+    mode,
+    enabled: interviewAccess.enabled && (mode === 'public' || internalPreview),
+    internalPreview,
+  };
+}
+
 function interviewConfig() {
   const accessMode = interviewModeAccessMode();
+  const systemDesignAccessMode = interviewSystemDesignAccessMode();
   const nodeEnv = String(process.env.NODE_ENV || '').trim().toLowerCase();
   const maxDraftTotalBytes = envPositiveInt(
     'INTERVIEW_MAX_DRAFT_TOTAL_BYTES',
@@ -84,11 +113,31 @@ function interviewConfig() {
           || path.join(CONTENT_DIR, `${DEFAULT_CODING_PREFIX}.release.json`)
       ),
     },
+    systemDesignAccessMode,
+    systemDesignPaths: {
+      public: path.resolve(
+        process.env.INTERVIEW_SYSTEM_DESIGN_PUBLIC_PATH
+          || path.join(CONTENT_DIR, `${DEFAULT_SYSTEM_DESIGN_PREFIX}.public.json`)
+      ),
+      private: path.resolve(
+        process.env.INTERVIEW_SYSTEM_DESIGN_PRIVATE_PATH
+          || path.join(CONTENT_DIR, `${DEFAULT_SYSTEM_DESIGN_PREFIX}.private.json`)
+      ),
+      release: path.resolve(
+        process.env.INTERVIEW_SYSTEM_DESIGN_RELEASE_PATH
+          || path.join(CONTENT_DIR, `${DEFAULT_SYSTEM_DESIGN_PREFIX}.release.json`)
+      ),
+    },
     allowCandidate: (
       CANDIDATE_ARTIFACT_ENVIRONMENTS.has(nodeEnv)
       && String(process.env.INTERVIEW_ALLOW_CANDIDATE_BANK || '').trim().toLowerCase() === 'true'
     ),
     freeMonthlyLimit: envPositiveInt('INTERVIEW_FREE_MONTHLY_LIMIT', 1, { max: 20 }),
+    systemDesignFreeMonthlyLimit: envPositiveInt(
+      'INTERVIEW_SYSTEM_DESIGN_FREE_MONTHLY_LIMIT',
+      1,
+      { max: 20 }
+    ),
     mcqSeconds: envPositiveInt('INTERVIEW_MCQ_SECONDS', 10 * 60, { min: 60, max: 60 * 60 }),
     codingReadySeconds: envPositiveInt(
       'INTERVIEW_CODING_READY_SECONDS',
@@ -107,6 +156,9 @@ function interviewConfig() {
     // bounded envelope also leaves room for paths and request metadata.
     httpBodyLimitBytes: (maxDraftTotalBytes * 6) + (64 * 1024),
     maxCheckRuns: envPositiveInt('INTERVIEW_MAX_CHECK_RUNS', 50, { max: 200 }),
+    systemDesignSeconds: { ...SYSTEM_DESIGN_SECONDS },
+    maxSystemDesignScratchpadChars: 200,
+    maxSystemDesignConnections: 40,
   };
 }
 
@@ -116,4 +168,6 @@ module.exports = {
   interviewModeAccess,
   interviewModeAccessMode,
   interviewModeEnabled,
+  interviewSystemDesignAccess,
+  interviewSystemDesignAccessMode,
 };

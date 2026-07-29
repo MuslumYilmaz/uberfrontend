@@ -12,7 +12,10 @@
     <header class="session-header">
       <div>
         <p class="eyebrow">Frontend mock interview</p>
-        <h1>{{ active.track | titlecase }} · {{ active.level | titlecase }}</h1>
+        <h1>
+          {{ active.format === 'system-design' ? 'System design' : (active.track | titlecase) }}
+          · {{ active.level | titlecase }}
+        </h1>
       </div>
       <div class="session-header__actions">
         <app-interview-deadline-timer
@@ -23,24 +26,40 @@
           (expired)="submitMcq(true)">
         </app-interview-deadline-timer>
         <app-interview-deadline-timer
+          *ngIf="active.status === 'system_design_active'"
+          label="System design time"
+          [serverNow]="active.serverNow"
+          [deadlineAt]="active.systemDesign?.deadlineAt || null"
+          (expired)="reconcileAfterSystemDesignDeadline(true)">
+        </app-interview-deadline-timer>
+        <app-interview-deadline-timer
           *ngIf="active.status === 'coding_ready'"
           label="Start coding within"
           [serverNow]="active.serverNow"
           [deadlineAt]="active.codingReadyDeadlineAt || active.coding?.readyDeadlineAt || null"
-          (expired)="reconcileAfterCodingDeadline()">
+          (expired)="reconcileAfterCodingDeadline(true)">
         </app-interview-deadline-timer>
         <app-interview-deadline-timer
           *ngIf="active.status === 'coding_active'"
           label="Coding time"
           [serverNow]="active.serverNow"
           [deadlineAt]="active.coding?.deadlineAt || null"
-          (expired)="reconcileAfterCodingDeadline()">
+          (expired)="reconcileAfterCodingDeadline(true)">
         </app-interview-deadline-timer>
         <button faButton variant="ghost" size="sm" type="button" (click)="abandon()">
           End interview
         </button>
       </div>
     </header>
+
+    <app-interview-system-design-round
+      *ngIf="active.status === 'system_design_active' && active.systemDesign?.scenario"
+      [session]="active"
+      [reconciling]="systemDesignRoundFrozen()"
+      (sessionUpdated)="onSystemDesignSessionUpdated($event)"
+      (completed)="onSystemDesignCompleted(active.id)"
+      (reconcileRequested)="reconcileAfterSystemDesignDeadline(false)">
+    </app-interview-system-design-round>
 
     <section *ngIf="active.status === 'mcq_active'" class="mcq-layout">
       <aside class="progress-card" faCard aria-label="Question progress">
@@ -154,7 +173,13 @@
       </section>
     </section>
 
-    <section *ngIf="active.status === 'coding_ready'" class="transition-card" faCard elevated>
+    <section
+      *ngIf="active.status === 'coding_ready'"
+      class="transition-card"
+      faCard
+      elevated
+      [attr.inert]="codingRoundFrozen() ? '' : null"
+      [attr.aria-busy]="codingRoundFrozen()">
       <p class="eyebrow">MCQ answers locked</p>
       <h2>Your coding task is next</h2>
       <p>
@@ -172,13 +197,49 @@
         size="lg"
         type="button"
         [loading]="transitioning()"
+        [disabled]="codingRoundFrozen()"
         (click)="startCoding()"
         data-testid="start-coding">
         Start coding task
       </button>
     </section>
 
-    <section *ngIf="active.status === 'coding_active' && active.coding?.task as task" class="coding-layout">
+    <section
+      *ngIf="active.status === 'coding_active' && codingDraftConflict()"
+      class="coding-draft-recovery"
+      faCard
+      role="alert"
+      data-testid="coding-draft-conflict">
+      <h2>Choose which coding draft to continue with</h2>
+      <p>
+        This device draft was based on another server version. Nothing will be
+        overwritten until you choose.
+      </p>
+      <div>
+        <button
+          faButton
+          variant="primary"
+          type="button"
+          [disabled]="codingRoundFrozen()"
+          (click)="useServerCodingDraft()">
+          Use server version
+        </button>
+        <button
+          faButton
+          variant="ghost"
+          type="button"
+          [disabled]="codingRoundFrozen()"
+          (click)="restoreCodingDeviceDraft()">
+          Restore this device draft
+        </button>
+      </div>
+    </section>
+
+    <section
+      *ngIf="active.status === 'coding_active' && active.coding?.task as task"
+      class="coding-layout"
+      [attr.inert]="codingRoundFrozen() || codingDraftConflict() ? '' : null"
+      [attr.aria-busy]="codingRoundFrozen()">
       <aside class="coding-brief" faCard>
         <p class="eyebrow">Final stage</p>
         <h2>{{ task.title }}</h2>

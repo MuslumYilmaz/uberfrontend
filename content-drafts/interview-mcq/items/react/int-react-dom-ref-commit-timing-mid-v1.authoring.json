@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-dom-ref-commit-timing-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "dom-ref-commit-timing",
+    "prompt": "A client-side data grid renders a header and a separately positioned selection overlay. The overlay needs the committed header cells' widths before the browser's first paint; otherwise it flashes under the wrong columns. A ref points to the header row. Where should measurement and overlay-state update run?",
+    "code": {
+      "language": "jsx",
+      "runtime": "react-19.2",
+      "source": "const headerRef = useRef(null);\nconst [columnRects, setColumnRects] = useState([]);"
+    },
+    "options": [
+      {
+        "id": "choice-66496f38ba",
+        "label": "Read the ref in `useLayoutEffect` and update the overlay from that committed measurement."
+      },
+      {
+        "id": "choice-456a57f953",
+        "label": "Read the ref during render and update the overlay before returning the data-grid JSX."
+      },
+      {
+        "id": "choice-ed56c20a52",
+        "label": "Read the ref in `useEffect` and update the overlay after the browser's first paint."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-66496f38ba",
+    "answerProof": {
+      "summary": "`useLayoutEffect` runs after React places the header in the DOM but before repaint, providing committed cell geometry and a pre-paint opportunity to align the overlay.",
+      "decisiveConstraints": [
+        "A real DOM node must exist before it can be measured.",
+        "The corrected overlay geometry must be committed before the browser displays the grid."
+      ],
+      "claims": [
+        {
+          "statement": "React runs `useLayoutEffect` after placing content in the DOM and processes its updates before the browser repaints.",
+          "sourceIds": [
+            "react19-use-layout-effect"
+          ]
+        },
+        {
+          "statement": "Refs that point to DOM nodes are set during React's commit phase rather than while rendering.",
+          "sourceIds": [
+            "react19-manipulating-dom-refs"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-66496f38ba",
+        "verdict": "correct",
+        "explanation": "The ref identifies committed header DOM during the layout Effect, and React can process the overlay correction before repaint.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-456a57f953",
+        "verdict": "incorrect",
+        "explanation": "Rendering occurs before the new DOM commit, and setting state while rendering to react to a measurement also violates the required render boundary.",
+        "plausibility": "The render function chooses the final grid JSX and appears to be the earliest place to calculate overlay geometry.",
+        "misconceptionTag": "dom-ref-ready-during-render",
+        "falsifyingConstraint": "The measurement requires geometry from the DOM produced by the current commit."
+      },
+      {
+        "optionId": "choice-ed56c20a52",
+        "verdict": "incorrect",
+        "explanation": "A passive Effect can read the header, but the browser may paint the initial overlay before its correction becomes visible.",
+        "plausibility": "`useEffect` is the preferred synchronization primitive when work does not need to block paint.",
+        "misconceptionTag": "passive-effect-precedes-paint",
+        "falsifyingConstraint": "Users must not see the overlay aligned to intermediate column geometry."
+      }
+    ],
+    "remediationTopics": [
+      "React commit phase",
+      "DOM refs",
+      "useLayoutEffect versus useEffect",
+      "pre-paint layout measurement"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useLayoutEffect",
+        "url": "https://react.dev/reference/react/useLayoutEffect",
+        "sourceId": "react19-use-layout-effect"
+      },
+      {
+        "title": "React: Manipulating the DOM with Refs",
+        "url": "https://react.dev/learn/manipulating-the-dom-with-refs",
+        "sourceId": "react19-manipulating-dom-refs"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-layout-effect",
+          "title": "React: useLayoutEffect",
+          "url": "https://react.dev/reference/react/useLayoutEffect",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "react19-manipulating-dom-refs",
+          "title": "React: Manipulating the DOM with Refs",
+          "url": "https://react.dev/learn/manipulating-the-dom-with-refs",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-stateful-regexp-validation-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "stateful-regexp-validation",
+    "prompt": "A module reuses `const skuPattern = /^[A-Z]{3}-\\d{4}$/g` and calls `skuPattern.test(value)` for each field. The same valid SKU passes once and fails on the next call. The validator only needs a whole-string yes/no result. Which correction removes the hidden state?",
+    "options": [
+      {
+        "id": "choice-cb898261b0",
+        "label": "Keep the global flag and increment `lastIndex` before each call so the next search starts later."
+      },
+      {
+        "id": "choice-abc9f6918e",
+        "label": "Keep the global flag and retry `test` after a failure so its internal index cycles back to zero."
+      },
+      {
+        "id": "choice-93a3ad003b",
+        "label": "Remove `g` and reuse the anchored expression because validation does not enumerate matches."
+      }
+    ],
+    "estimatedSeconds": 95
+  },
+  "private": {
+    "correctOptionId": "choice-93a3ad003b",
+    "answerProof": {
+      "summary": "Global and sticky regular expressions update `lastIndex` across match operations. A whole-string validation expression needs neither flag, so removing `g` makes repeated `test` calls independent.",
+      "decisiveConstraints": [
+        "Each field validation must start at the beginning of its own string.",
+        "The expression already anchors both ends of the accepted value.",
+        "No caller needs to enumerate multiple matches."
+      ],
+      "claims": [
+        {
+          "statement": "Regular expressions with `g` or `y` use and update `lastIndex`, including when invoked through `test`.",
+          "sourceIds": [
+            "mdn-regexp-lastindex"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-cb898261b0",
+        "verdict": "incorrect",
+        "explanation": "Advancing `lastIndex` moves the next anchored search away from index zero and preserves the stateful failure.",
+        "plausibility": "The property controls where the next global search begins, so managing it looks like the direct repair.",
+        "misconceptionTag": "advancing-lastindex-resets-validation",
+        "falsifyingConstraint": "Every independent whole-string validation must begin at index zero."
+      },
+      {
+        "optionId": "choice-abc9f6918e",
+        "verdict": "incorrect",
+        "explanation": "A hidden retry can reset state after one failure but produces inconsistent work and obscures the first incorrect result.",
+        "plausibility": "A failed global match resets `lastIndex`, so a second call can appear to stabilize alternating results.",
+        "misconceptionTag": "retry-is-stateless-regexp-policy",
+        "falsifyingConstraint": "One call must produce the correct result without depending on a prior or follow-up call."
+      },
+      {
+        "optionId": "choice-93a3ad003b",
+        "verdict": "correct",
+        "explanation": "Without `g`, the anchored validator has no progressive match index and each call evaluates the entire input independently.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "regexp-lastindex",
+      "global-regexp-state",
+      "validation-patterns"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: RegExp.lastIndex",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex",
+        "sourceId": "mdn-regexp-lastindex"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-regexp-lastindex",
+          "title": "MDN: RegExp.lastIndex",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

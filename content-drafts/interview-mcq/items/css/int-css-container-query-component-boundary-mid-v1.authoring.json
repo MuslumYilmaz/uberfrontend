@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-container-query-component-boundary-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "css",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "container-query-component-boundary",
+    "prompt": "The same product card appears in a narrow sidebar and a wide results column at the same viewport width. Its internal layout should switch according to the space assigned by each host, without host-specific card classes. Where should the size-query boundary live?",
+    "options": [
+      {
+        "id": "choice-0c7b71d309",
+        "label": "Keep a viewport media query on the card and add selector exceptions for every sidebar and results placement."
+      },
+      {
+        "id": "choice-4c6dddf33f",
+        "label": "Make the host wrapper an inline-size query container and style card descendants inside a matching `@container` rule."
+      },
+      {
+        "id": "choice-aa1d788270",
+        "label": "Make the card itself an inline-size query container and use its query to change that same card's outer display."
+      }
+    ],
+    "estimatedSeconds": 130
+  },
+  "private": {
+    "correctOptionId": "choice-4c6dddf33f",
+    "answerProof": {
+      "summary": "The host wrapper owns the available inline size, so it establishes the containment context. A container query can then adapt descendant card layout to that local size independently of viewport or placement names.",
+      "decisiveConstraints": [
+        "Two instances differ in allocated width at one viewport width.",
+        "The component should not know semantic host names.",
+        "Size queries apply conditional styles to descendants of a query container."
+      ],
+      "claims": [
+        {
+          "statement": "Container queries style elements according to attributes of a containing element rather than viewport characteristics.",
+          "sourceIds": [
+            "mdn-container-queries"
+          ]
+        },
+        {
+          "statement": "`container-type: inline-size` establishes a size-query context whose qualifying rules apply to descendant elements.",
+          "sourceIds": [
+            "mdn-container-type"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-0c7b71d309",
+        "verdict": "incorrect",
+        "explanation": "One viewport condition cannot distinguish simultaneous narrow and wide hosts, and placement exceptions couple the card to page structure.",
+        "plausibility": "Media queries are widely supported and work when component width tracks viewport width closely.",
+        "misconceptionTag": "viewport-width-represents-component-space",
+        "falsifyingConstraint": "Both card widths exist at the same viewport width without host-specific selectors."
+      },
+      {
+        "optionId": "choice-4c6dddf33f",
+        "verdict": "correct",
+        "explanation": "The wrapper exposes the actual local width, and the query changes only the card content that depends on it.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-aa1d788270",
+        "verdict": "incorrect",
+        "explanation": "A size container's query targets descendants; using the card's own size query to restyle that same principal box creates the wrong boundary.",
+        "plausibility": "The card is the reusable unit and appears to be the most natural owner of its responsive behavior.",
+        "misconceptionTag": "size-container-queries-itself",
+        "falsifyingConstraint": "The queried size owner must be an ancestor of the elements receiving the conditional layout."
+      }
+    ],
+    "remediationTopics": [
+      "container-queries",
+      "inline-size-containment",
+      "responsive-component-boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: CSS container queries",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries",
+        "sourceId": "mdn-container-queries"
+      },
+      {
+        "title": "MDN: container-type",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/container-type",
+        "sourceId": "mdn-container-type"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-container-queries",
+          "title": "MDN: CSS container queries",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-container-type",
+          "title": "MDN: container-type",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/container-type",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

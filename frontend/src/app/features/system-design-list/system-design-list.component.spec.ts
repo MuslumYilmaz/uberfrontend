@@ -37,9 +37,19 @@ describe('SystemDesignListComponent', () => {
       description: 'Design an AI chat composer with streaming responses, cancellation, and resilient UX.',
       tags: ['ai', 'state-management', 'real-time', 'streams', 'ux'],
       type: 'system-design',
-      access: 'premium',
-      difficulty: 'hard',
+      access: 'free',
+      difficulty: 'intermediate',
       companies: ['openai'],
+    },
+    {
+      id: 'image-upload-preview',
+      title: 'Image Upload & Preview Component',
+      description: 'Design image selection, preview, upload progress, retry, and accessible errors.',
+      tags: ['upload', 'forms', 'validation', 'ux'],
+      type: 'system-design',
+      access: 'premium',
+      difficulty: 'intermediate',
+      companies: [],
     },
   ];
 
@@ -120,8 +130,8 @@ describe('SystemDesignListComponent', () => {
 
     expect(premiumCard).not.toBeNull();
     expect(premiumCard?.textContent || '').toContain('AI product workflows');
-    expect(premiumCard?.textContent || '').toContain('hard');
-    expect(premiumCard?.textContent || '').toContain('Premium');
+    expect(premiumCard?.textContent || '').toContain('intermediate');
+    expect(premiumCard?.textContent || '').toContain('Free');
     expect(premiumCard?.textContent || '').toContain('State');
     expect(premiumCard?.textContent || '').toContain('Realtime');
     expect(premiumCard?.textContent || '').toContain('UX');
@@ -150,15 +160,15 @@ describe('SystemDesignListComponent', () => {
   it('shows premium value copy while locked prompts still link to detail previews', async () => {
     const { fixture } = await createComponent();
     const host = fixture.nativeElement as HTMLElement;
-    const premiumCard = host.querySelector('[data-testid="system-design-prompt-card-ai-chat-textarea-design"]') as HTMLElement | null;
-    const detailLink = host.querySelector('[data-testid="system-design-card-link-ai-chat-textarea-design"]') as HTMLAnchorElement | null;
+    const premiumCard = host.querySelector('[data-testid="system-design-prompt-card-image-upload-preview"]') as HTMLElement | null;
+    const detailLink = host.querySelector('[data-testid="system-design-card-link-image-upload-preview"]') as HTMLAnchorElement | null;
 
     expect(text(fixture)).toContain('Locked prompts still show the interview shape before upgrade');
     expect(text(fixture)).toContain('Full RADIO breakdowns for premium prompts');
     expect(premiumCard?.classList.contains('is-locked')).toBeTrue();
     expect(premiumCard?.textContent || '').toContain('View prompt preview');
     expect(detailLink).not.toBeNull();
-    expect(detailLink?.textContent || '').toContain('AI Chat Textarea Design');
+    expect(detailLink?.textContent || '').toContain('Image Upload & Preview Component');
   });
 
   it('uses keyword-focused performance guide anchors for cluster prompts', async () => {
@@ -260,7 +270,7 @@ describe('SystemDesignListComponent', () => {
     expect(
       mostAskedSection?.querySelector('a[href="/system-design/ai-chat-textarea-design"]')
         ?.getAttribute('data-access'),
-    ).toBe('premium');
+    ).toBe('free');
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/machine-coding"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
   });

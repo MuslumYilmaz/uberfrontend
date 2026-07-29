@@ -2,7 +2,7 @@
   "schemaVersion": "2.0.0",
   "manifestId": "frontend-interview-bank-v1",
   "bankId": "frontend-interview-gold-bank",
-  "bankVersion": "1.0.0",
+  "bankVersion": "1.1.0",
   "status": "editorial-gold",
   "language": "en",
   "blueprintId": "frontend-interview-bank-v1",
@@ -12,20 +12,44 @@
       "revision": 3
     },
     {
+      "id": "int-angular-auth-refresh-single-flight-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-angular-binding-direction-jr-v1",
       "revision": 2
+    },
+    {
+      "id": "int-angular-control-value-accessor-contract-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-deferred-view-resource-ownership-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-environment-injector-teardown-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-for-block-row-identity-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-http-request-immutability-mid-v1",
+      "revision": 1
     },
     {
       "id": "int-angular-hydration-dom-mismatch-sr-v1",
       "revision": 2
     },
     {
-      "id": "int-angular-output-nonbubbling-jr-v1",
-      "revision": 1
-    },
-    {
       "id": "int-angular-onpush-reference-sr-v1",
       "revision": 4
+    },
+    {
+      "id": "int-angular-output-nonbubbling-jr-v1",
+      "revision": 1
     },
     {
       "id": "int-angular-provider-scope-jr-v1",
@@ -36,12 +60,36 @@
       "revision": 2
     },
     {
+      "id": "int-angular-route-parameter-reuse-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-service-worker-version-coherency-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-signal-derivation-boundary-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-angular-ssr-platform-service-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-ssr-transfer-cache-sensitivity-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-standalone-import-visibility-jr-v1",
       "revision": 1
     },
     {
       "id": "int-angular-switchmap-search-mid-v1",
       "revision": 2
+    },
+    {
+      "id": "int-angular-template-sanitization-trust-jr-v1",
+      "revision": 1
     },
     {
       "id": "int-angular-tosignal-lifetime-mid-v1",
@@ -60,12 +108,32 @@
       "revision": 1
     },
     {
+      "id": "int-css-cascade-layer-precedence-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-css-container-query-component-boundary-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-css-flex-min-width-jr-v1",
       "revision": 3
     },
     {
       "id": "int-css-image-intrinsic-ratio-sr-v1",
-      "revision": 3
+      "revision": 4
+    },
+    {
+      "id": "int-css-layout-animation-invalidation-budget-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-css-logical-axis-localization-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-css-percentage-size-containing-block-jr-v1",
+      "revision": 1
     },
     {
       "id": "int-css-responsive-grid-overflow-mid-v1",
@@ -76,8 +144,20 @@
       "revision": 2
     },
     {
+      "id": "int-css-sticky-scrollport-ownership-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-css-user-preferences-containment-sr-v1",
       "revision": 2
+    },
+    {
+      "id": "int-html-autofill-purpose-metadata-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-html-data-table-header-association-mid-v1",
+      "revision": 1
     },
     {
       "id": "int-html-defer-order-mid-v1",
@@ -92,12 +172,28 @@
       "revision": 3
     },
     {
+      "id": "int-html-iframe-capability-isolation-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-html-label-submit-jr-v1",
       "revision": 2
     },
     {
       "id": "int-html-native-button-jr-v1",
       "revision": 3
+    },
+    {
+      "id": "int-html-nonmodal-popover-interaction-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-html-responsive-image-selection-hints-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-html-successful-control-name-contract-jr-v1",
+      "revision": 1
     },
     {
       "id": "int-html-valid-navigation-ssr-sr-v1",
@@ -108,11 +204,43 @@
       "revision": 3
     },
     {
+      "id": "int-js-async-iteration-completion-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-async-return-rejection-sr-v1",
       "revision": 2
     },
     {
+      "id": "int-js-batch-settlement-policy-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-bfcache-page-lifecycle-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-canonical-identifier-normalization-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-copying-array-sort-contract-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-cross-tab-version-reconciliation-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-dataset-boolean-jr-v1",
+      "revision": 2
+    },
+    {
       "id": "int-js-event-target-currenttarget-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-fetch-http-status-handling-mid-v1",
       "revision": 1
     },
     {
@@ -128,10 +256,6 @@
       "revision": 3
     },
     {
-      "id": "int-js-dataset-boolean-jr-v1",
-      "revision": 2
-    },
-    {
       "id": "int-js-nested-microtask-mid-v1",
       "revision": 4
     },
@@ -144,12 +268,32 @@
       "revision": 1
     },
     {
+      "id": "int-js-own-property-presence-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-stateful-regexp-validation-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-streaming-text-frame-reassembly-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-structured-clone-data-model-fit-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-task-order-jr-v1",
       "revision": 1
     },
     {
       "id": "int-js-worker-long-task-sr-v1",
       "revision": 3
+    },
+    {
+      "id": "int-js-write-retry-idempotency-sr-v1",
+      "revision": 1
     },
     {
       "id": "int-react-controlled-input-jr-v1",
@@ -160,15 +304,31 @@
       "revision": 3
     },
     {
+      "id": "int-react-dom-ref-commit-timing-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-react-effect-connection-cleanup-mid-v1",
       "revision": 3
+    },
+    {
+      "id": "int-react-error-boundary-catch-scope-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-event-handler-deferral-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-external-store-snapshot-consistency-sr-v1",
+      "revision": 1
     },
     {
       "id": "int-react-functional-queue-mid-v1",
       "revision": 1
     },
     {
-      "id": "int-react-ssr-multiroot-useid-sr-v1",
+      "id": "int-react-hook-call-order-invariance-jr-v1",
       "revision": 1
     },
     {
@@ -176,16 +336,44 @@
       "revision": 1
     },
     {
+      "id": "int-react-lazy-chunk-deployment-recovery-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-lazy-state-initialization-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-react-lift-shared-state-jr-v1",
       "revision": 8
+    },
+    {
+      "id": "int-react-optimistic-mutation-rollback-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-portal-logical-tree-behavior-sr-v1",
+      "revision": 1
     },
     {
       "id": "int-react-profile-stable-props-sr-v1",
       "revision": 4
     },
     {
+      "id": "int-react-reducer-transition-invariants-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-server-client-serialization-boundary-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-react-split-hot-context-mid-v1",
       "revision": 2
+    },
+    {
+      "id": "int-react-ssr-multiroot-useid-sr-v1",
+      "revision": 1
     },
     {
       "id": "int-react-stable-list-key-jr-v1",
@@ -196,7 +384,15 @@
       "revision": 3
     },
     {
+      "id": "int-react-state-reset-identity-boundary-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-react-transition-input-priority-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-async-component-retry-boundary-mid-v1",
       "revision": 1
     },
     {
@@ -208,6 +404,10 @@
       "revision": 6
     },
     {
+      "id": "int-vue-conditional-mount-visibility-choice-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-vue-custom-input-model-jr-v1",
       "revision": 1
     },
@@ -216,7 +416,27 @@
       "revision": 3
     },
     {
+      "id": "int-vue-lazy-hydration-strategy-boundary-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-multiroot-fallthrough-attrs-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-next-tick-dom-read-timing-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-pinia-optimistic-transaction-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-vue-pinia-request-scope-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-plugin-multi-app-isolation-sr-v1",
       "revision": 1
     },
     {
@@ -228,16 +448,36 @@
       "revision": 1
     },
     {
+      "id": "int-vue-provide-inject-mutation-boundary-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-raw-html-trust-boundary-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-vue-ref-primitive-jr-v1",
       "revision": 2
     },
     {
-      "id": "int-vue-multiroot-fallthrough-attrs-jr-v1",
+      "id": "int-vue-shallow-ref-external-instance-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-slot-render-scope-contract-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-ssr-state-safe-serialization-sr-v1",
       "revision": 1
     },
     {
       "id": "int-vue-stable-row-props-sr-v1",
       "revision": 3
+    },
+    {
+      "id": "int-vue-template-ref-keyed-registry-mid-v1",
+      "revision": 1
     },
     {
       "id": "int-vue-timezone-hydration-sr-v1",

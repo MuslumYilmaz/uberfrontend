@@ -29,32 +29,32 @@ export const interviewBankPolicyPaths = Object.freeze({
 });
 
 const EXPECTED_BLUEPRINT = Object.freeze({
-  questionCount: 60,
-  level: { junior: 20, mid: 20, senior: 20 },
-  technology: { javascript: 12, html: 6, css: 6, react: 12, angular: 12, vue: 12 },
+  questionCount: 120,
+  level: { junior: 40, mid: 40, senior: 40 },
+  technology: { javascript: 24, html: 12, css: 12, react: 24, angular: 24, vue: 24 },
   technologyByLevel: {
-    junior: { javascript: 4, html: 2, css: 2, react: 4, angular: 4, vue: 4 },
-    mid: { javascript: 4, html: 2, css: 2, react: 4, angular: 4, vue: 4 },
-    senior: { javascript: 4, html: 2, css: 2, react: 4, angular: 4, vue: 4 },
+    junior: { javascript: 8, html: 4, css: 4, react: 8, angular: 8, vue: 8 },
+    mid: { javascript: 8, html: 4, css: 4, react: 8, angular: 8, vue: 8 },
+    senior: { javascript: 8, html: 4, css: 4, react: 8, angular: 8, vue: 8 },
   },
   difficultyBandByLevel: {
-    junior: { foundation: 5, core: 10, stretch: 5 },
-    mid: { foundation: 5, core: 10, stretch: 5 },
-    senior: { foundation: 5, core: 10, stretch: 5 },
+    junior: { foundation: 10, core: 20, stretch: 10 },
+    mid: { foundation: 10, core: 20, stretch: 10 },
+    senior: { foundation: 10, core: 20, stretch: 10 },
   },
   formatByLevel: {
-    junior: { conceptual: 11, "code-output": 2, "production-scenario": 7 },
-    mid: { conceptual: 8, "code-output": 2, "production-scenario": 10 },
-    senior: { conceptual: 5, "code-output": 2, "production-scenario": 13 },
+    junior: { conceptual: 15, "code-output": 2, "production-scenario": 23 },
+    mid: { conceptual: 11, "code-output": 2, "production-scenario": 27 },
+    senior: { conceptual: 5, "code-output": 2, "production-scenario": 33 },
   },
-  correctOptionPosition: { first: 20, second: 20, third: 20 },
+  correctOptionPosition: { first: 40, second: 40, third: 40 },
   competencyDistinctByTechnology: {
-    javascript: 12,
-    html: 6,
-    css: 6,
-    react: 12,
-    angular: 12,
-    vue: 12,
+    javascript: 24,
+    html: 12,
+    css: 12,
+    react: 24,
+    angular: 24,
+    vue: 24,
   },
   selectionPolicy: {
     sessionQuestionCount: 5,
@@ -62,7 +62,7 @@ const EXPECTED_BLUEPRINT = Object.freeze({
     frameworkQuestionsPerSession: 2,
     coreTechnologies: ["javascript", "html", "css"],
     frameworkTechnologies: ["react", "angular", "vue"],
-    eligiblePoolPerLevel: { core: 8, selectedFramework: 4, total: 12 },
+    eligiblePoolPerLevel: { core: 16, selectedFramework: 8, total: 24 },
   },
   codeOutputConstraint: {
     count: 6,
@@ -108,6 +108,12 @@ const APPROVED_OFFICIAL_SOURCE_LICENSES = Object.freeze([
     freshnessDays: 180,
     licenseId: "CC-BY-4.0",
     licenseUrl: "https://github.com/vuejs/docs/blob/main/LICENSE",
+  }),
+  Object.freeze({
+    hostname: "pinia.vuejs.org",
+    freshnessDays: 180,
+    licenseId: "MIT",
+    licenseUrl: "https://github.com/vuejs/pinia/blob/v3/LICENSE",
   }),
 ]);
 const APPROVED_SOURCE_LICENSE_IDS = Object.freeze([
@@ -219,6 +225,22 @@ export function validatePolicyInvariants(policies, errors = []) {
   }
   if (!/^\d+\.\d+\.\d+$/.test(String(quality.checklistVersion || ""))) {
     addPolicyError(errors, "quality.checklistVersion", "must be a semantic version.");
+  }
+  if (!isPlainObject(quality.checklistScope)) {
+    addPolicyError(errors, "quality.checklistScope", "must define technical, editorial, and blind checks.");
+  } else {
+    for (const stageName of ["technical", "editorial", "blind"]) {
+      const checks = quality.checklistScope[stageName];
+      if (!Array.isArray(checks)
+        || checks.length < 3
+        || checks.some((check) => !String(check || "").trim())) {
+        addPolicyError(
+          errors,
+          `quality.checklistScope.${stageName}`,
+          "must contain at least three non-empty checks.",
+        );
+      }
+    }
   }
   if (!isPlainObject(quality.options)) {
     addPolicyError(errors, "quality.options", "must be an object.");
@@ -384,7 +406,7 @@ export function validatePolicyInvariants(policies, errors = []) {
       addPolicyError(
         errors,
         "sources.officialDomains",
-        "must contain exactly the approved MDN, React, Angular, Angular v17, and Vue hosts.",
+        "must contain exactly the approved MDN, React, Angular, Angular v17, Vue, and Pinia hosts.",
       );
     }
     const domainsByHost = new Map(
@@ -642,7 +664,7 @@ function validateBlueprint(blueprint, errors) {
   }
   for (const field of ["level", "technology", "correctOptionPosition"]) {
     if (!exactCounts(blueprint.distributions[field], EXPECTED_BLUEPRINT[field])) {
-      errors.push(`blueprint.distributions.${field} does not match the approved 60-item plan.`);
+      errors.push(`blueprint.distributions.${field} does not match the approved 120-item plan.`);
     }
   }
   for (const level of Object.keys(EXPECTED_BLUEPRINT.level)) {
@@ -673,7 +695,7 @@ function validateBlueprint(blueprint, errors) {
     blueprint.competencyConstraint.distinctByTechnology,
     EXPECTED_BLUEPRINT.competencyDistinctByTechnology,
   )) {
-    errors.push("blueprint competency coverage does not match the approved 60-item plan.");
+    errors.push("blueprint competency coverage does not match the approved 120-item plan.");
   }
   if (canonicalJson(blueprint.selectionPolicy)
     !== canonicalJson(EXPECTED_BLUEPRINT.selectionPolicy)) {
@@ -1175,7 +1197,7 @@ function validateBankDistributions(items, blueprint, errors) {
     const coreCount = levelItems.filter((item) =>
       selectionPolicy.coreTechnologies.includes(item.public.technology)).length;
     if (coreCount !== selectionPolicy.eligiblePoolPerLevel.core) {
-      errors.push(`${level}: eligible core pool is ${coreCount}; expected 8.`);
+      errors.push(`${level}: eligible core pool is ${coreCount}; expected 16.`);
     }
     for (const framework of selectionPolicy.frameworkTechnologies) {
       const frameworkCount = levelItems.filter(
@@ -1184,7 +1206,7 @@ function validateBankDistributions(items, blueprint, errors) {
       if (frameworkCount !== selectionPolicy.eligiblePoolPerLevel.selectedFramework
         || coreCount + frameworkCount !== selectionPolicy.eligiblePoolPerLevel.total) {
         errors.push(
-          `${level}/${framework}: eligible interview pool must be 8 core + 4 framework = 12.`,
+          `${level}/${framework}: eligible interview pool must be 16 core + 8 framework = 24.`,
         );
       }
     }

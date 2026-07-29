@@ -7,11 +7,16 @@ const InterviewSession = require('../../models/InterviewSession');
 const User = require('../../models/User');
 const { isProEntitlementActive } = require('../billing/entitlements');
 const { interviewConfig } = require('./config');
-const { loadInterviewArtifacts } = require('./artifacts');
+const {
+  loadInterviewArtifacts,
+  loadSystemDesignArtifacts,
+} = require('./artifacts');
 const { readQuota, releaseQuota, reserveQuota } = require('./quota');
 const {
+  buildSystemDesignPresentationOrder,
   selectCodingVariant,
   selectQuestions,
+  selectSystemDesignScenario,
 } = require('./selection');
 const {
   consumeRunnerToken,
@@ -26,6 +31,7 @@ const {
   startCoding: transitionStartCoding,
   submitCoding: transitionSubmitCoding,
   submitMcq: transitionSubmitMcq,
+  submitSystemDesign: transitionSubmitSystemDesign,
   voidSessionTechnical: transitionVoidTechnical,
 } = require('./state-machine');
 
@@ -38,7 +44,10 @@ const TECHNICAL_VOID_REASON_CODES = new Set([
   'runner_unavailable',
   'starter_unavailable',
 ]);
-const PRIVATE_SELECT = '+answerKey +codingPrivate +resultSnapshot';
+const PRIVATE_SELECT = (
+  '+answerKey +codingPrivate +systemDesignPrivate +systemDesignBaseline '
+  + '+systemDesignRevealedClarificationIds +resultSnapshot'
+);
 const MAX_MUTATION_RECEIPTS = 100;
 
 class InterviewServiceError extends Error {
@@ -113,10 +122,16 @@ function mutationIdFor(input, operation) {
     .digest('hex')}`;
 }
 
-function normalizeSelection(levelRaw, trackRaw, timingModeRaw = 'standard') {
+function normalizeSelection(
+  levelRaw,
+  trackRaw,
+  timingModeRaw = 'standard',
+  formatRaw = 'coding'
+) {
   const level = String(levelRaw || '').trim().toLowerCase();
   const track = String(trackRaw || '').trim().toLowerCase();
   const timingMode = String(timingModeRaw || 'standard').trim().toLowerCase();
+  const format = String(formatRaw || 'coding').trim().toLowerCase();
   if (!LEVELS.includes(level)) {
     serviceError(400, 'INTERVIEW_INVALID_LEVEL', 'Unsupported interview level');
   }
@@ -126,7 +141,10 @@ function normalizeSelection(levelRaw, trackRaw, timingModeRaw = 'standard') {
   if (timingMode !== 'standard') {
     serviceError(400, 'INTERVIEW_INVALID_TIMING_MODE', 'Only standard timing is available');
   }
-  return { level, track, timingMode };
+  if (!['coding', 'system-design'].includes(format)) {
+    serviceError(400, 'INTERVIEW_INVALID_FORMAT', 'Unsupported interview format');
+  }
+  return { format, level, track, timingMode };
 }
 
 function entitlementSnapshot(user, now) {
@@ -236,7 +254,138 @@ function serializeCodingVariant(variant) {
   };
 }
 
+function serializeSystemDesignDraft(draft) {
+  if (!draft) return null;
+  return {
+    currentStep: String(draft.currentStep || 'clarifications'),
+    clarificationIds: [...(draft.clarificationIds || [])],
+    priorityRequirementIds: [...(draft.priorityRequirementIds || [])],
+    placements: (draft.placements || []).map((entry) => ({
+      cardId: entry.cardId,
+      laneId: entry.laneId,
+      order: entry.order,
+    })),
+    connections: (draft.connections || []).map((entry) => ({
+      fromCardId: entry.fromCardId,
+      toCardId: entry.toCardId,
+      typeId: entry.typeId,
+    })),
+    decisions: (draft.decisions || []).map((entry) => ({
+      decisionId: entry.decisionId,
+      optionId: entry.optionId,
+      rationaleIds: [...(entry.rationaleIds || [])],
+    })),
+    twistResponseActionIds: [...(draft.twistResponseActionIds || [])],
+    scratchpad: String(draft.scratchpad || ''),
+    hash: draft.hash,
+    updatedAt: new Date(draft.updatedAt).toISOString(),
+  };
+}
+
+function collectRevealedClarificationIds(session, additionalIds = []) {
+  const allowedIds = new Set(
+    (session.systemDesignScenario?.clarifications || []).map((entry) => entry.id)
+  );
+  return [...new Set([
+    ...(session.systemDesignRevealedClarificationIds || []),
+    ...(session.systemDesignDraft?.clarificationIds || []),
+    ...additionalIds,
+  ])].filter((id) => allowedIds.has(id));
+}
+
+function orderedByPinnedIds(values, pinnedIds) {
+  const source = Array.isArray(values) ? values : [];
+  if (!Array.isArray(pinnedIds)) return source;
+  const byId = new Map(source.map((entry) => [entry.id, entry]));
+  const ordered = [];
+  const seen = new Set();
+  for (const id of pinnedIds) {
+    const entry = byId.get(id);
+    if (!entry || seen.has(id)) continue;
+    seen.add(id);
+    ordered.push(entry);
+  }
+  for (const entry of source) {
+    if (!seen.has(entry.id)) ordered.push(entry);
+  }
+  return ordered;
+}
+
+function serializeSystemDesign(session) {
+  if ((session.format || 'coding') !== 'system-design') return null;
+  const scenario = session.systemDesignScenario || {};
+  const presentation = session.systemDesignPresentationOrder || null;
+  const decisionPresentation = new Map(
+    (presentation?.decisions || []).map((entry) => [entry.decisionId, entry])
+  );
+  const selectedClarifications = new Set(
+    session.systemDesignDraft?.clarificationIds || []
+  );
+  const answers = new Map(
+    (session.systemDesignPrivate?.clarificationAnswers || []).map((entry) => [
+      entry.clarificationId,
+      entry.answer,
+    ])
+  );
+  const revealed = Boolean(session.systemDesignTwistRevealedAt);
+  return {
+    scenario: {
+      id: scenario.id,
+      revision: scenario.revision,
+      contentHash: scenario.contentHash,
+      level: scenario.level,
+      title: scenario.title,
+      prompt: scenario.prompt,
+      timeLimitSeconds: scenario.timeLimitSeconds,
+      steps: scenario.steps || [],
+      selectionLimits: scenario.selectionLimits || {},
+      lanes: scenario.lanes || [],
+      clarifications: orderedByPinnedIds(
+        scenario.clarifications,
+        presentation?.clarificationIds
+      ),
+      requirements: orderedByPinnedIds(
+        scenario.requirements,
+        presentation?.requirementIds
+      ),
+      cards: orderedByPinnedIds(scenario.cards, presentation?.cardIds),
+      connectionTypes: scenario.connectionTypes || [],
+      decisions: (scenario.decisions || []).map((decision) => {
+        const order = decisionPresentation.get(decision.id);
+        return {
+          ...decision,
+          options: orderedByPinnedIds(decision.options, order?.optionIds),
+          rationales: orderedByPinnedIds(decision.rationales, order?.rationaleIds),
+        };
+      }),
+    },
+    clarificationAnswers: [...selectedClarifications]
+      .filter((clarificationId) => answers.has(clarificationId))
+      .map((clarificationId) => ({
+        clarificationId,
+        answer: answers.get(clarificationId),
+      })),
+    revealedClarificationIds: collectRevealedClarificationIds(session),
+    twist: revealed
+      ? {
+        id: session.systemDesignPrivate?.twist?.id,
+        title: session.systemDesignPrivate?.twist?.title,
+        prompt: session.systemDesignPrivate?.twist?.prompt,
+        responseActions: orderedByPinnedIds(
+          session.systemDesignPrivate?.twist?.responseActions,
+          presentation?.twistActionIds
+        ),
+      }
+      : null,
+    twistRevealed: revealed,
+    baselineCaptured: Boolean(session.systemDesignBaseline),
+    draft: serializeSystemDesignDraft(session.systemDesignDraft),
+    outcome: session.systemDesignOutcome,
+  };
+}
+
 function serializeSession(session, { now = new Date() } = {}) {
+  const interviewFormat = session.format || 'coding';
   const codingVisible = ['coding_active', 'completed'].includes(session.status);
   const draft = codingVisible && session.codingDraft
     ? {
@@ -251,6 +400,7 @@ function serializeSession(session, { now = new Date() } = {}) {
     : null;
   return {
     id: String(session._id),
+    format: interviewFormat,
     status: session.status,
     active: Boolean(session.active),
     version: Number(session.__v || 0),
@@ -258,11 +408,13 @@ function serializeSession(session, { now = new Date() } = {}) {
     track: session.track,
     timingMode: session.timingMode,
     serverNow: new Date(now).toISOString(),
-    bank: {
-      id: session.bank.id,
-      version: session.bank.version,
-      contentHash: session.bank.contentHash,
-    },
+    bank: interviewFormat === 'coding'
+      ? {
+        id: session.bank.id,
+        version: session.bank.version,
+        contentHash: session.bank.contentHash,
+      }
+      : null,
     questions: (session.questions || []).map((question) => ({
       id: question.id,
       revision: question.revision,
@@ -274,6 +426,9 @@ function serializeSession(session, { now = new Date() } = {}) {
       competency: question.competency,
       prompt: question.prompt,
       ...(question.code ? { code: question.code } : {}),
+      ...(question.code && question.codeLanguage
+        ? { codeLanguage: question.codeLanguage }
+        : {}),
       estimatedSeconds: question.estimatedSeconds,
       options: question.options.map((option) => ({
         id: option.id,
@@ -286,15 +441,18 @@ function serializeSession(session, { now = new Date() } = {}) {
       answeredAt: new Date(response.answeredAt).toISOString(),
     })),
     deadlines: {
-      mcq: new Date(session.mcqDeadlineAt).toISOString(),
+      mcq: session.mcqDeadlineAt ? new Date(session.mcqDeadlineAt).toISOString() : null,
       codingReady: session.codingReadyDeadlineAt
         ? new Date(session.codingReadyDeadlineAt).toISOString()
         : null,
       coding: session.codingDeadlineAt
         ? new Date(session.codingDeadlineAt).toISOString()
         : null,
+      systemDesign: session.systemDesignDeadlineAt
+        ? new Date(session.systemDesignDeadlineAt).toISOString()
+        : null,
     },
-    coding: {
+    coding: interviewFormat === 'coding' ? {
       available: session.status === 'coding_ready' || codingVisible,
       started: Boolean(session.codingStartedAt),
       variant: codingVisible ? serializeCodingVariant(session.codingVariant) : null,
@@ -312,7 +470,8 @@ function serializeSession(session, { now = new Date() } = {}) {
         }))
         : [],
       outcome: session.codingOutcome,
-    },
+    } : null,
+    systemDesign: serializeSystemDesign(session),
     entitlement: {
       tier: session.entitlementSnapshot.tier,
       capturedAt: new Date(session.entitlementSnapshot.capturedAt).toISOString(),
@@ -368,10 +527,11 @@ function updateSeenStat(map, id, at) {
 
 async function loadSeenStats(userId) {
   const history = await InterviewSession.find({ userId })
-    .select('questions.id codingVariant.id createdAt')
+    .select('questions.id codingVariant.id systemDesignScenario.id createdAt')
     .lean();
   const questions = new Map();
   const coding = new Map();
+  const systemDesign = new Map();
   for (const session of history) {
     for (const question of session.questions || []) {
       updateSeenStat(questions, question.id, session.createdAt);
@@ -379,8 +539,11 @@ async function loadSeenStats(userId) {
     if (session.codingVariant?.id) {
       updateSeenStat(coding, session.codingVariant.id, session.createdAt);
     }
+    if (session.systemDesignScenario?.id) {
+      updateSeenStat(systemDesign, session.systemDesignScenario.id, session.createdAt);
+    }
   }
-  return { questions, coding };
+  return { questions, coding, systemDesign };
 }
 
 function answerSnapshotFor(artifacts, questions) {
@@ -403,26 +566,53 @@ function answerSnapshotFor(artifacts, questions) {
 async function getConfigForUser(userId, {
   now = new Date(),
   allowCandidateArtifacts = false,
+  allowSystemDesign = false,
 } = {}) {
   const config = interviewConfig();
   const artifacts = loadInterviewArtifacts({
     allowInternalCandidate: allowCandidateArtifacts,
   });
+  let systemDesignArtifacts = null;
+  if (allowSystemDesign) {
+    try {
+      systemDesignArtifacts = loadSystemDesignArtifacts({
+        allowInternalCandidate: allowCandidateArtifacts,
+      });
+    } catch {
+      // The design registry is an independently gated enhancement. Its
+      // availability must never make the existing Coding Mock unavailable.
+    }
+  }
   const user = await User.findById(userId).select('entitlements.pro').lean();
   if (!user) serviceError(404, 'USER_NOT_FOUND', 'User not found');
   const entitlement = entitlementSnapshot(user, now);
-  const quota = entitlement.tier === 'premium'
-    ? {
-      unlimited: true,
-      monthKey: null,
-      used: null,
-      limit: null,
-      remaining: null,
-      resetAt: null,
-    }
+  const unlimitedQuota = {
+    unlimited: true,
+    monthKey: null,
+    used: null,
+    limit: null,
+    remaining: null,
+    resetAt: null,
+  };
+  const codingQuota = entitlement.tier === 'premium'
+    ? unlimitedQuota
     : {
       unlimited: false,
-      ...(await readQuota(userId, { now, limit: config.freeMonthlyLimit })),
+      ...(await readQuota(userId, {
+        now,
+        limit: config.freeMonthlyLimit,
+        format: 'coding',
+      })),
+    };
+  const systemDesignQuota = entitlement.tier === 'premium'
+    ? { ...unlimitedQuota }
+    : {
+      unlimited: false,
+      ...(await readQuota(userId, {
+        now,
+        limit: config.systemDesignFreeMonthlyLimit,
+        format: 'system-design',
+      })),
     };
   const active = await getActiveSession(userId, { now });
   const recentResults = await InterviewSession.find({
@@ -434,6 +624,7 @@ async function getConfigForUser(userId, {
     .select('+resultSnapshot')
     .lean();
   const availability = [];
+  const systemDesignAvailability = [];
   for (const level of LEVELS) {
     for (const track of TRACKS) {
       let available = true;
@@ -453,7 +644,25 @@ async function getConfigForUser(userId, {
       } catch {
         available = false;
       }
-      availability.push({ level, track, available });
+      availability.push({ format: 'coding', level, track, available });
+      let systemDesignAvailable = Boolean(systemDesignArtifacts);
+      if (systemDesignAvailable) {
+        try {
+          selectSystemDesignScenario({
+            scenarios: systemDesignArtifacts.scenarios,
+            level,
+            seed: `availability:system-design:${level}`,
+          });
+        } catch {
+          systemDesignAvailable = false;
+        }
+      }
+      systemDesignAvailability.push({
+        format: 'system-design',
+        level,
+        track,
+        available: systemDesignAvailable,
+      });
     }
   }
   return {
@@ -464,12 +673,29 @@ async function getConfigForUser(userId, {
     timing: {
       mcqSeconds: config.mcqSeconds,
       codingReadySeconds: config.codingReadySeconds,
+      systemDesignSeconds: { ...config.systemDesignSeconds },
     },
-    quota,
+    quota: codingQuota,
+    quotas: {
+      coding: codingQuota,
+      systemDesign: systemDesignQuota,
+    },
+    formats: [
+      { id: 'coding', available: true },
+      {
+        id: 'system-design',
+        available: Boolean(systemDesignArtifacts),
+        ...(systemDesignArtifacts
+          ? {}
+          : { unavailableReason: 'System Design Mock is not currently available' }),
+      },
+    ],
     availability,
+    systemDesignAvailability,
     activeSession: active
       ? {
         id: String(active._id),
+        format: active.format || 'coding',
         status: active.status,
         level: active.level,
         track: active.track,
@@ -478,6 +704,7 @@ async function getConfigForUser(userId, {
       : null,
     lastResults: recentResults.map((session) => ({
       id: String(session._id),
+      format: session.format || 'coding',
       status: session.status,
       level: session.level,
       track: session.track,
@@ -487,6 +714,8 @@ async function getConfigForUser(userId, {
       correct: Number(session.resultSnapshot?.mcq?.correct || 0),
       total: Number(session.resultSnapshot?.mcq?.total || 0),
       codingOutcome: session.resultSnapshot?.coding?.outcome || null,
+      systemDesignOutcome: session.resultSnapshot?.systemDesign?.outcome || null,
+      practiceSignal: session.resultSnapshot?.systemDesign?.practiceSignal || null,
       xpAwarded: 0,
     })),
     minViewportWidth: 768,
@@ -498,15 +727,28 @@ async function createSession(userId, input, {
   now = new Date(),
   seed = crypto.randomBytes(24).toString('hex'),
   allowCandidateArtifacts = false,
+  allowSystemDesign = false,
 } = {}) {
   const config = interviewConfig();
   const requestId = normalizeId(input?.requestId, 'requestId');
-  const { level, track, timingMode } = normalizeSelection(
+  const {
+    format,
+    level,
+    track,
+    timingMode,
+  } = normalizeSelection(
     input?.level,
     input?.track,
-    input?.timingMode
+    input?.timingMode,
+    input?.format
   );
-  const requestHash = canonicalPayloadHash({ level, timingMode, track });
+  // Preserve the exact legacy coding idempotency hash. Explicitly passing the
+  // new default format must replay a session created by an older client.
+  const requestHash = canonicalPayloadHash(
+    format === 'coding'
+      ? { level, timingMode, track }
+      : { format, level, timingMode, track }
+  );
 
   let existing = await InterviewSession.findOne({ userId, createRequestId: requestId })
     .select(PRIVATE_SELECT);
@@ -514,6 +756,13 @@ async function createSession(userId, input, {
     assertCreateRequestMatches(existing, requestHash);
     await reconcileAndSave(existing, now, config);
     return { session: existing, created: false };
+  }
+  if (format === 'system-design' && !allowSystemDesign) {
+    serviceError(
+      404,
+      'INTERVIEW_SYSTEM_DESIGN_DISABLED',
+      'System Design Mock is not currently available'
+    );
   }
 
   const active = await InterviewSession.findOne({ userId, active: true }).select(PRIVATE_SELECT);
@@ -531,45 +780,47 @@ async function createSession(userId, input, {
 
   const user = await User.findById(userId).select('entitlements.pro');
   if (!user) serviceError(404, 'USER_NOT_FOUND', 'User not found');
-  const artifacts = loadInterviewArtifacts({
-    allowInternalCandidate: allowCandidateArtifacts,
-  });
   const seen = await loadSeenStats(userId);
-  const selectedQuestions = selectQuestions({
-    questions: artifacts.bank.questions,
-    track,
-    level,
-    seenCounts: seen.questions,
-    seed,
-  });
-  const selectedCoding = selectCodingVariant({
-    variants: artifacts.coding.variants,
-    track,
-    level,
-    seenCounts: seen.coding,
-    seed,
-  });
-  const codingPrivate = artifacts.coding.privateByKey.get(
-    `${selectedCoding.id}@${selectedCoding.revision}`
-  );
-  if (!codingPrivate) {
-    serviceError(503, 'INTERVIEW_CONTENT_UNAVAILABLE', 'Interview content is unavailable');
-  }
-
   const baseEntitlement = entitlementSnapshot(user, now);
   const expiresAt = addSeconds(now, config.retentionDays * 24 * 60 * 60);
-  const answerKey = answerSnapshotFor(artifacts, selectedQuestions);
-  const timingPolicy = {
-    mcqSeconds: config.mcqSeconds,
-    codingReadySeconds: config.codingReadySeconds,
-    codingSeconds: selectedCoding.timeLimitSeconds,
-    capturedAt: now,
-  };
-  const buildDocument = (entitlement) => new InterviewSession({
+  let buildDocument;
+  if (format === 'coding') {
+    const artifacts = loadInterviewArtifacts({
+      allowInternalCandidate: allowCandidateArtifacts,
+    });
+    const selectedQuestions = selectQuestions({
+      questions: artifacts.bank.questions,
+      track,
+      level,
+      seenCounts: seen.questions,
+      seed,
+    });
+    const selectedCoding = selectCodingVariant({
+      variants: artifacts.coding.variants,
+      track,
+      level,
+      seenCounts: seen.coding,
+      seed,
+    });
+    const codingPrivate = artifacts.coding.privateByKey.get(
+      `${selectedCoding.id}@${selectedCoding.revision}`
+    );
+    if (!codingPrivate) {
+      serviceError(503, 'INTERVIEW_CONTENT_UNAVAILABLE', 'Interview content is unavailable');
+    }
+    const timingPolicy = {
+      mcqSeconds: config.mcqSeconds,
+      codingReadySeconds: config.codingReadySeconds,
+      codingSeconds: selectedCoding.timeLimitSeconds,
+      capturedAt: now,
+    };
+    const answerKey = answerSnapshotFor(artifacts, selectedQuestions);
+    buildDocument = (entitlement) => new InterviewSession({
       userId,
       createRequestId: requestId,
       createRequestHash: requestHash,
       active: true,
+      format,
       status: 'mcq_active',
       level,
       track,
@@ -598,6 +849,63 @@ async function createSession(userId, input, {
       codingPrivate,
       expiresAt,
     });
+  } else {
+    const artifacts = loadSystemDesignArtifacts({
+      allowInternalCandidate: allowCandidateArtifacts,
+    });
+    const selectedScenario = selectSystemDesignScenario({
+      scenarios: artifacts.scenarios,
+      level,
+      seenCounts: seen.systemDesign,
+      seed,
+    });
+    const systemDesignPrivate = artifacts.privateByKey.get(
+      `${selectedScenario.id}@${selectedScenario.revision}`
+    );
+    if (!systemDesignPrivate) {
+      serviceError(503, 'INTERVIEW_CONTENT_UNAVAILABLE', 'Interview content is unavailable');
+    }
+    const systemDesignPresentationOrder = buildSystemDesignPresentationOrder({
+      scenario: selectedScenario,
+      privateScenario: systemDesignPrivate,
+      seed,
+    });
+    const designSeconds = Number(selectedScenario.timeLimitSeconds);
+    buildDocument = (entitlement) => new InterviewSession({
+      userId,
+      createRequestId: requestId,
+      createRequestHash: requestHash,
+      active: true,
+      format,
+      status: 'system_design_active',
+      level,
+      track,
+      timingMode,
+      timingPolicy: {
+        systemDesignSeconds: designSeconds,
+        capturedAt: now,
+      },
+      selectionSeed: seed,
+      systemDesignRegistry: {
+        id: artifacts.id,
+        version: artifacts.version,
+        contentHash: artifacts.contentHash,
+        status: artifacts.status,
+      },
+      entitlementSnapshot: entitlement,
+      questions: [],
+      answerKey: [],
+      mcqResponses: [],
+      systemDesignScenario: selectedScenario,
+      systemDesignPresentationOrder,
+      systemDesignPrivate,
+      systemDesignRevealedClarificationIds: [],
+      systemDesignStartedAt: now,
+      systemDesignDeadlineAt: addSeconds(now, designSeconds),
+      systemDesignOutcome: 'pending',
+      expiresAt,
+    });
+  }
 
   let lastQuotaReservation = null;
   const persistSession = async (mongoSession = null) => {
@@ -606,14 +914,17 @@ async function createSession(userId, input, {
     if (entitlement.tier === 'free') {
       quotaReservation = await reserveQuota(userId, requestId, {
         now,
-        limit: config.freeMonthlyLimit,
+        limit: format === 'system-design'
+          ? config.systemDesignFreeMonthlyLimit
+          : config.freeMonthlyLimit,
         session: mongoSession,
+        format,
       });
       if (!quotaReservation.granted) {
         serviceError(
           403,
           'INTERVIEW_MONTHLY_QUOTA_EXHAUSTED',
-          'Monthly free interview quota is exhausted',
+          `Monthly free ${format === 'system-design' ? 'System Design' : 'Coding'} Mock quota is exhausted`,
           {
             monthKey: quotaReservation.monthKey,
             limit: quotaReservation.limit,
@@ -660,22 +971,30 @@ async function createSession(userId, input, {
     }
     return { session: persisted.document, created: true };
   } catch (error) {
-    if (error?.code === 11000) {
-      existing = await InterviewSession.findOne({ userId, createRequestId: requestId })
-        .select(PRIVATE_SELECT);
-      if (existing) {
-        assertCreateRequestMatches(existing, requestHash);
-        return { session: existing, created: false };
-      }
-    }
     const quotaReservation = persisted?.quotaReservation || lastQuotaReservation;
-    if (
-      !transactionUsed
-      && quotaReservation?.granted
-      && !quotaReservation.alreadyReserved
-    ) {
+    const compensateUnusedReservation = async (winningSession = null) => {
+      if (
+        transactionUsed
+        || !quotaReservation?.granted
+        || quotaReservation.alreadyReserved
+      ) {
+        return;
+      }
+      const winnerUsesReservation = Boolean(
+        winningSession
+        && (winningSession.format || 'coding') === format
+        && winningSession.entitlementSnapshot?.tier === 'free'
+        && winningSession.entitlementSnapshot?.quotaMonthKey === quotaReservation.monthKey
+        && winningSession.entitlementSnapshot?.quotaRequestId === requestId
+      );
+      if (winnerUsesReservation) return;
       try {
-        await releaseQuota(userId, quotaReservation.monthKey, requestId);
+        await releaseQuota(
+          userId,
+          quotaReservation.monthKey,
+          requestId,
+          { format }
+        );
       } catch {
         serviceError(
           503,
@@ -683,6 +1002,22 @@ async function createSession(userId, input, {
           'Interview start could not be finalized; retry with the same request id'
         );
       }
+    };
+    if (error?.code === 11000) {
+      existing = await InterviewSession.findOne({ userId, createRequestId: requestId })
+        .select(PRIVATE_SELECT);
+      if (existing) {
+        await compensateUnusedReservation(existing);
+        assertCreateRequestMatches(existing, requestHash);
+        return { session: existing, created: false };
+      }
+    }
+    if (
+      !transactionUsed
+      && quotaReservation?.granted
+      && !quotaReservation.alreadyReserved
+    ) {
+      await compensateUnusedReservation();
     }
     if (error?.code === 11000) {
       const current = await InterviewSession.findOne({ userId, active: true }).lean();
@@ -886,6 +1221,423 @@ function normalizeDraft(input, config) {
     .update(files.map((file) => `${file.path}\0${file.content}`).join('\0'))
     .digest('hex');
   return { language, files, hash };
+}
+
+function draftArray(raw, field) {
+  if (raw == null) return [];
+  if (!Array.isArray(raw)) {
+    serviceError(
+      400,
+      'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT',
+      `${field} must be an array`
+    );
+  }
+  return raw;
+}
+
+function uniqueStringIds(raw, field, {
+  max,
+  allowed,
+} = {}) {
+  const values = draftArray(raw, field);
+  if (max != null && values.length > max) {
+    serviceError(413, 'INTERVIEW_SYSTEM_DESIGN_DRAFT_TOO_LARGE', `${field} exceeds its limit`);
+  }
+  const normalized = values.map((value) => String(value || '').trim());
+  if (
+    normalized.some((value) => !value || value.length > 120)
+    || new Set(normalized).size !== normalized.length
+    || (allowed && normalized.some((value) => !allowed.has(value)))
+  ) {
+    serviceError(400, 'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT', `${field} is invalid`);
+  }
+  return normalized;
+}
+
+function normalizeSystemDesignDraft(input, session, config) {
+  const scenario = session.systemDesignScenario || {};
+  const limits = scenario.selectionLimits || {};
+  const stepIds = new Set((scenario.steps || []).map((entry) => entry.id));
+  const currentStep = String(
+    input?.currentStep || scenario.steps?.[0]?.id || 'clarifications'
+  ).trim();
+  if (!stepIds.has(currentStep)) {
+    serviceError(
+      400,
+      'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT',
+      'System Design step is invalid'
+    );
+  }
+  const clarificationIds = uniqueStringIds(
+    input?.clarificationIds,
+    'clarificationIds',
+    {
+      max: Number(limits.clarifications || 0),
+      allowed: new Set((scenario.clarifications || []).map((entry) => entry.id)),
+    }
+  );
+  const priorityRequirementIds = uniqueStringIds(
+    input?.priorityRequirementIds,
+    'priorityRequirementIds',
+    {
+      max: Number(limits.priorities || 0),
+      allowed: new Set((scenario.requirements || []).map((entry) => entry.id)),
+    }
+  );
+  const cardById = new Map((scenario.cards || []).map((entry) => [entry.id, entry]));
+  const laneIds = new Set((scenario.lanes || []).map((entry) => entry.id));
+  const placementsRaw = draftArray(input?.placements, 'placements');
+  if (placementsRaw.length > cardById.size) {
+    serviceError(
+      413,
+      'INTERVIEW_SYSTEM_DESIGN_DRAFT_TOO_LARGE',
+      'placements exceeds its limit'
+    );
+  }
+  const placementCards = new Set();
+  const laneOrders = new Set();
+  const placements = placementsRaw.map((entry, index) => {
+    const cardId = String(entry?.cardId || '').trim();
+    const laneId = String(entry?.laneId || '').trim();
+    const order = Number(entry?.order);
+    const card = cardById.get(cardId);
+    const laneOrderKey = `${laneId}:${order}`;
+    if (
+      !card
+      || !laneIds.has(laneId)
+      || !Number.isInteger(order)
+      || order < 0
+      || order >= cardById.size
+      || placementCards.has(cardId)
+      || laneOrders.has(laneOrderKey)
+    ) {
+      serviceError(
+        400,
+        'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT',
+        `placement[${index}] is invalid`
+      );
+    }
+    placementCards.add(cardId);
+    laneOrders.add(laneOrderKey);
+    return { cardId, laneId, order };
+  }).sort(
+    (left, right) =>
+      left.laneId.localeCompare(right.laneId)
+      || left.order - right.order
+      || left.cardId.localeCompare(right.cardId)
+  );
+  for (const lane of scenario.lanes || []) {
+    const orders = placements
+      .filter((placement) => placement.laneId === lane.id)
+      .map((placement) => placement.order)
+      .sort((left, right) => left - right);
+    if (orders.some((order, index) => order !== index)) {
+      serviceError(
+        400,
+        'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT',
+        `placements in lane ${lane.id} must use contiguous order values`
+      );
+    }
+  }
+  const connectionTypeIds = new Set(
+    (scenario.connectionTypes || []).map((entry) => entry.id)
+  );
+  const maxConnections = Math.min(
+    Number(limits.connections || 0),
+    config.maxSystemDesignConnections
+  );
+  const connectionsRaw = draftArray(input?.connections, 'connections');
+  if (connectionsRaw.length > maxConnections) {
+    serviceError(
+      413,
+      'INTERVIEW_SYSTEM_DESIGN_DRAFT_TOO_LARGE',
+      'connections exceeds its limit'
+    );
+  }
+  const connectionKeys = new Set();
+  const connections = connectionsRaw.map((entry, index) => {
+    const fromCardId = String(entry?.fromCardId || '').trim();
+    const toCardId = String(entry?.toCardId || '').trim();
+    const typeId = String(entry?.typeId || '').trim();
+    const key = `${fromCardId}\0${toCardId}\0${typeId}`;
+    if (
+      !placementCards.has(fromCardId)
+      || !placementCards.has(toCardId)
+      || fromCardId === toCardId
+      || !connectionTypeIds.has(typeId)
+      || connectionKeys.has(key)
+    ) {
+      serviceError(
+        400,
+        'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT',
+        `connection[${index}] is invalid`
+      );
+    }
+    connectionKeys.add(key);
+    return { fromCardId, toCardId, typeId };
+  }).sort((left, right) => (
+    left.fromCardId.localeCompare(right.fromCardId)
+    || left.toCardId.localeCompare(right.toCardId)
+    || left.typeId.localeCompare(right.typeId)
+  ));
+  const decisionById = new Map(
+    (scenario.decisions || []).map((entry) => [entry.id, entry])
+  );
+  const decisionsRaw = draftArray(input?.decisions, 'decisions');
+  if (decisionsRaw.length > decisionById.size) {
+    serviceError(
+      413,
+      'INTERVIEW_SYSTEM_DESIGN_DRAFT_TOO_LARGE',
+      'decisions exceeds its limit'
+    );
+  }
+  const decisionIds = new Set();
+  const decisions = decisionsRaw.map((entry, index) => {
+    const decisionId = String(entry?.decisionId || '').trim();
+    const optionId = String(entry?.optionId || '').trim();
+    const definition = decisionById.get(decisionId);
+    if (
+      !definition
+      || decisionIds.has(decisionId)
+      || !definition.options.some((option) => option.id === optionId)
+    ) {
+      serviceError(
+        400,
+        'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT',
+        `decision[${index}] is invalid`
+      );
+    }
+    decisionIds.add(decisionId);
+    const rationaleValues = draftArray(
+      entry?.rationaleIds,
+      `decision[${index}].rationaleIds`
+    );
+    const rationaleLimit = Number(limits.rationalesPerDecision);
+    if (
+      Number.isInteger(rationaleLimit)
+      && rationaleLimit >= 0
+      && rationaleValues.length > rationaleLimit
+    ) {
+      serviceError(
+        400,
+        'INTERVIEW_INVALID_SYSTEM_DESIGN_DRAFT',
+        `decision[${index}].rationaleIds exceeds its selection limit`
+      );
+    }
+    const rationaleIds = uniqueStringIds(
+      rationaleValues,
+      `decision[${index}].rationaleIds`,
+      {
+        max: definition.rationales.length,
+        allowed: new Set(definition.rationales.map((rationale) => rationale.id)),
+      }
+    );
+    return { decisionId, optionId, rationaleIds: rationaleIds.sort() };
+  }).sort((left, right) => left.decisionId.localeCompare(right.decisionId));
+  const rawTwistResponseActionIds = draftArray(
+    input?.twistResponseActionIds,
+    'twistResponseActionIds'
+  );
+  if (
+    !session.systemDesignTwistRevealedAt
+    && rawTwistResponseActionIds.length > 0
+  ) {
+    serviceError(
+      409,
+      'INTERVIEW_SYSTEM_DESIGN_TWIST_LOCKED',
+      'Reveal the production twist before selecting a response'
+    );
+  }
+  const twistDefinition = session.systemDesignPrivate?.twist || {};
+  const twistResponseActionIds = uniqueStringIds(
+    rawTwistResponseActionIds,
+    'twistResponseActionIds',
+    {
+      max: Number(limits.twistActions || 0),
+      allowed: new Set(
+        (twistDefinition.responseActions || []).map((entry) => entry.id)
+      ),
+    }
+  ).sort();
+  const scratchpad = String(input?.scratchpad || '');
+  const scratchLimit = Math.min(
+    Number(limits.scratchpadChars || 0),
+    config.maxSystemDesignScratchpadChars
+  );
+  if ([...scratchpad].length > scratchLimit) {
+    serviceError(
+      413,
+      'INTERVIEW_SYSTEM_DESIGN_DRAFT_TOO_LARGE',
+      'scratchpad exceeds its limit'
+    );
+  }
+  if (session.systemDesignBaseline) {
+    if (
+      JSON.stringify(clarificationIds)
+        !== JSON.stringify(session.systemDesignBaseline.clarificationIds || [])
+      || JSON.stringify(priorityRequirementIds)
+        !== JSON.stringify(session.systemDesignBaseline.priorityRequirementIds || [])
+    ) {
+      serviceError(
+        409,
+        'INTERVIEW_SYSTEM_DESIGN_DISCOVERY_LOCKED',
+        'Clarifications and priorities are locked after the production twist'
+      );
+    }
+  }
+  const value = {
+    currentStep,
+    clarificationIds,
+    priorityRequirementIds,
+    placements,
+    connections,
+    decisions,
+    twistResponseActionIds,
+    scratchpad,
+  };
+  return {
+    ...value,
+    hash: canonicalPayloadHash(value),
+  };
+}
+
+function designBaselineFromDraft(draft) {
+  if (!draft) return null;
+  return {
+    currentStep: draft.currentStep,
+    clarificationIds: [...(draft.clarificationIds || [])],
+    priorityRequirementIds: [...(draft.priorityRequirementIds || [])],
+    placements: (draft.placements || []).map((entry) => ({ ...entry })),
+    connections: (draft.connections || []).map((entry) => ({ ...entry })),
+    decisions: (draft.decisions || []).map((entry) => ({
+      ...entry,
+      rationaleIds: [...(entry.rationaleIds || [])],
+    })),
+    twistResponseActionIds: [...(draft.twistResponseActionIds || [])],
+    scratchpad: String(draft.scratchpad || ''),
+  };
+}
+
+async function saveSystemDesignDraft(userId, sessionId, input, options) {
+  return mutateSession(
+    userId,
+    sessionId,
+    input,
+    'system-design-draft',
+    async (session, { now, config, mutationId }) => {
+      if (
+        (session.format || 'coding') !== 'system-design'
+        || session.status !== 'system_design_active'
+      ) {
+        serviceError(409, 'INTERVIEW_INVALID_STATE', 'System Design draft cannot be updated');
+      }
+      const normalizedDraft = normalizeSystemDesignDraft(input, session, config);
+      const revealedClarificationIds = collectRevealedClarificationIds(
+        session,
+        normalizedDraft.clarificationIds
+      );
+      if (
+        revealedClarificationIds.length
+        > Number(session.systemDesignScenario?.selectionLimits?.clarifications || 0)
+      ) {
+        serviceError(
+          400,
+          'INTERVIEW_SYSTEM_DESIGN_CLARIFICATION_LIMIT_REACHED',
+          'This System Design round has reached its clarification limit'
+        );
+      }
+      session.systemDesignRevealedClarificationIds = revealedClarificationIds;
+      session.systemDesignDraft = {
+        ...normalizedDraft,
+        mutationId,
+        updatedAt: now,
+      };
+      session.markModified('systemDesignRevealedClarificationIds');
+      session.markModified('systemDesignDraft');
+    },
+    options
+  );
+}
+
+async function revealSystemDesignTwist(userId, sessionId, input, options) {
+  return mutateSession(
+    userId,
+    sessionId,
+    input,
+    'system-design-twist-reveal',
+    async (session, { now }) => {
+      if (
+        (session.format || 'coding') !== 'system-design'
+        || session.status !== 'system_design_active'
+      ) {
+        serviceError(409, 'INTERVIEW_INVALID_STATE', 'System Design twist cannot be revealed');
+      }
+      if (session.systemDesignTwistRevealedAt) {
+        serviceError(
+          409,
+          'INTERVIEW_SYSTEM_DESIGN_TWIST_ALREADY_REVEALED',
+          'System Design twist was already revealed'
+        );
+      }
+      if (!session.systemDesignDraft) {
+        serviceError(
+          409,
+          'INTERVIEW_SYSTEM_DESIGN_DRAFT_REQUIRED',
+          'Save the initial design before revealing the production twist'
+        );
+      }
+      const draftHash = String(input?.draftHash || '').trim();
+      if (!draftHash || draftHash !== session.systemDesignDraft.hash) {
+        serviceError(
+          409,
+          'INTERVIEW_DRAFT_HASH_MISMATCH',
+          'Production twist is for a stale System Design draft'
+        );
+      }
+      session.systemDesignRevealedClarificationIds = collectRevealedClarificationIds(session);
+      session.systemDesignBaseline = designBaselineFromDraft(session.systemDesignDraft);
+      session.systemDesignTwistRevealedAt = now;
+      session.markModified('systemDesignRevealedClarificationIds');
+      session.markModified('systemDesignBaseline');
+    },
+    options
+  );
+}
+
+async function submitSystemDesign(userId, sessionId, input, options) {
+  return mutateSession(
+    userId,
+    sessionId,
+    input,
+    'system-design-submit',
+    async (session, { now }) => {
+      if (
+        (session.format || 'coding') !== 'system-design'
+        || session.status !== 'system_design_active'
+      ) {
+        serviceError(409, 'INTERVIEW_INVALID_STATE', 'System Design stage cannot be submitted');
+      }
+      if (!session.systemDesignTwistRevealedAt || !session.systemDesignBaseline) {
+        serviceError(
+          409,
+          'INTERVIEW_SYSTEM_DESIGN_TWIST_REQUIRED',
+          'Reveal the production twist before submitting'
+        );
+      }
+      const draftHash = String(input?.draftHash || '').trim();
+      if (!draftHash || draftHash !== session.systemDesignDraft?.hash) {
+        serviceError(
+          409,
+          'INTERVIEW_DRAFT_HASH_MISMATCH',
+          'Submitted System Design draft is stale'
+        );
+      }
+      if (!transitionSubmitSystemDesign(session, now)) {
+        serviceError(409, 'INTERVIEW_INVALID_STATE', 'System Design stage cannot be submitted');
+      }
+    },
+    options
+  );
 }
 
 async function saveCodingDraft(userId, sessionId, input, options) {
@@ -1113,7 +1865,8 @@ async function voidSessionTechnical(userId, sessionId, {
     await releaseQuota(
       userId,
       session.entitlementSnapshot.quotaMonthKey,
-      session.entitlementSnapshot.quotaRequestId
+      session.entitlementSnapshot.quotaRequestId,
+      { format: session.format || 'coding' }
     );
   }
   return session;
@@ -1169,7 +1922,8 @@ async function voidSessionTechnicalByAdmin(sessionId, {
     await releaseQuota(
       session.userId,
       session.entitlementSnapshot.quotaMonthKey,
-      session.entitlementSnapshot.quotaRequestId
+      session.entitlementSnapshot.quotaRequestId,
+      { format: session.format || 'coding' }
     );
   }
   return session;
@@ -1202,14 +1956,18 @@ module.exports = {
   getResults,
   getSession,
   normalizeDraft,
+  normalizeSystemDesignDraft,
   prepareCodingCheckRun,
   recordCodingCheckRun,
+  revealSystemDesignTwist,
   saveCodingDraft,
   saveMcqAnswer,
+  saveSystemDesignDraft,
   serializeSession,
   startCoding,
   submitCoding,
   submitMcq,
+  submitSystemDesign,
   voidSessionTechnical,
   voidSessionTechnicalByAdmin,
 };

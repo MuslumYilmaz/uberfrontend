@@ -649,7 +649,7 @@ export function validateMcqRuntimeCopies(checkFiles = true) {
   if (!["editorial-gold", "calibrated-gold"].includes(sourceRelease.status)) {
     errors.push(`MCQ source release is not gold: ${sourceRelease.status}.`);
   }
-  if (sourceRelease.contentHash !== "cb3ae89566f78347493c588f0690a162dc83a2a13327a10ab9735d12db8d7f8e") {
+  if (sourceRelease.contentHash !== "e879b419e877f84088171eda3af9f327242435c4b99728c27e38d176fc0517e3") {
     errors.push(`MCQ source content hash drifted: ${sourceRelease.contentHash}.`);
   }
   if (sourceRelease.finalApproval?.approvedBy !== "project-owner"

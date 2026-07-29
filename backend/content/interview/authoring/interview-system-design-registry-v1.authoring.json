@@ -1,0 +1,1913 @@
+{
+  "schemaVersion": "1.0.0",
+  "registryId": "interview-system-design-registry-v1",
+  "registryVersion": "1.0.0",
+  "status": "candidate",
+  "finalApproval": null,
+  "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+  "reviewBatch": {
+    "reviewedDefinitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+    "reviewedAt": "2026-07-29",
+    "technical": {
+      "reviewer": "codex-system-design-technical-v1",
+      "reviewerType": "ai",
+      "status": "passed",
+      "notes": [
+        "Each scoring claim is bound to an allowlisted rule tree and a pinned source-content bundle.",
+        "Two distinct strong paths, one developing path, and one critical-conflict path are executable for every scenario.",
+        "Lane placement and rationale limits preserve scoreable evidence without exposing the private rubric."
+      ]
+    },
+    "blind": {
+      "reviewer": "codex-system-design-blind-v1",
+      "reviewerType": "ai",
+      "status": "passed",
+      "notes": [
+        "Prompts, visible cards, and decision choices were reviewed without the private rubric.",
+        "The scenarios permit more than one coherent architecture and do not expose a single answer-shaped clue.",
+        "Candidate-facing alternatives use parallel length and avoid conspicuous absolute-language distractors."
+      ]
+    },
+    "editorial": {
+      "reviewer": "codex-system-design-editorial-v1",
+      "reviewerType": "ai",
+      "status": "passed",
+      "notes": [
+        "All interview prompts, labels, choices, and distractor-like alternatives are original wording.",
+        "The guided interactions test ownership, failure behavior, accessibility, and adaptation without requiring essay-length input.",
+        "Cards can be placed in any public lane; placement quality is evaluated only by private ID-based rules."
+      ]
+    }
+  },
+  "defaults": {
+    "steps": [
+      {
+        "id": "clarifications",
+        "title": "Clarify the brief"
+      },
+      {
+        "id": "requirements",
+        "title": "Set priorities"
+      },
+      {
+        "id": "architecture",
+        "title": "Build the architecture"
+      },
+      {
+        "id": "decisions",
+        "title": "Defend key decisions"
+      },
+      {
+        "id": "twist",
+        "title": "Respond to a production change"
+      }
+    ],
+    "selectionLimits": {
+      "clarifications": 3,
+      "priorities": 3,
+      "connections": 12,
+      "rationalesPerDecision": 2,
+      "twistActions": 2,
+      "scratchpadChars": 200
+    },
+    "lanes": [
+      {
+        "id": "ui",
+        "title": "UI",
+        "description": "Rendered components and user-facing interaction boundaries."
+      },
+      {
+        "id": "state",
+        "title": "State",
+        "description": "Client ownership, coordination, and lifecycle state."
+      },
+      {
+        "id": "data",
+        "title": "Data",
+        "description": "Cached records, normalized models, and transport adapters."
+      },
+      {
+        "id": "external",
+        "title": "External",
+        "description": "Browser services, APIs, and systems outside the feature."
+      }
+    ],
+    "connectionTypes": [
+      {
+        "id": "data-flow",
+        "title": "Data flow",
+        "description": "Values or snapshots move in this direction."
+      },
+      {
+        "id": "event-flow",
+        "title": "Event flow",
+        "description": "Commands, intents, or lifecycle events move in this direction."
+      },
+      {
+        "id": "observation",
+        "title": "Observation",
+        "description": "Telemetry or browser signals are observed in this direction."
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "int-sd-toast-lifecycle-jr-v1",
+      "revision": 3,
+      "level": "junior",
+      "timeLimitSeconds": 600,
+      "public": {
+        "title": "Design a Reliable Toast Notification Layer",
+        "prompt": "A product team needs non-blocking status messages that any screen can trigger. Design the frontend boundaries for displaying, dismissing, and announcing several messages without leaving timers behind.",
+        "clarifications": [
+          {
+            "id": "toast-callers",
+            "prompt": "Which parts of the application need to create a toast?"
+          },
+          {
+            "id": "toast-actions",
+            "prompt": "Can a toast contain an action that the user may need to complete?"
+          },
+          {
+            "id": "toast-lifetime",
+            "prompt": "Which messages may disappear automatically and which must remain?"
+          },
+          {
+            "id": "toast-volume",
+            "prompt": "How many messages can arrive during a short burst?"
+          },
+          {
+            "id": "toast-announcement",
+            "prompt": "How urgent are these messages for assistive technology?"
+          },
+          {
+            "id": "toast-navigation",
+            "prompt": "Should messages survive client-side route changes?"
+          }
+        ],
+        "requirements": [
+          {
+            "id": "toast-global-trigger",
+            "title": "Global trigger boundary",
+            "description": "Authorized screens and services can emit messages without mounting their own container."
+          },
+          {
+            "id": "toast-persistent-actions",
+            "title": "Persistent actionable messages",
+            "description": "A recovery action remains available until it expires by product policy or the user resolves it."
+          },
+          {
+            "id": "toast-bounded-stack",
+            "title": "Bounded visible stack",
+            "description": "A burst does not create an unlimited set of mounted messages."
+          },
+          {
+            "id": "toast-pause-lifetime",
+            "title": "Pause-aware lifetime",
+            "description": "Permitted timers preserve remaining time through relevant user interaction and page visibility changes."
+          },
+          {
+            "id": "toast-accessible-status",
+            "title": "Accessible status delivery",
+            "description": "Announcements are restrained and controls remain keyboard reachable without stealing focus."
+          },
+          {
+            "id": "toast-cleanup",
+            "title": "Complete lifecycle cleanup",
+            "description": "Dismissal, teardown, and replacement release every owned timer and listener."
+          }
+        ],
+        "cards": [
+          {
+            "id": "toast-command-api",
+            "title": "Toast command API",
+            "description": "Normalizes create, update, and dismiss intent."
+          },
+          {
+            "id": "toast-store",
+            "title": "Toast store",
+            "description": "Owns visible and queued toast records."
+          },
+          {
+            "id": "toast-lifecycle",
+            "title": "Lifecycle coordinator",
+            "description": "Owns deadlines, pause reasons, and cleanup."
+          },
+          {
+            "id": "toast-provider",
+            "title": "Toast provider",
+            "description": "Subscribes once and binds state to rendering."
+          },
+          {
+            "id": "toast-container",
+            "title": "Toast container",
+            "description": "Applies placement, stacking, and overflow presentation."
+          },
+          {
+            "id": "toast-item",
+            "title": "Toast item",
+            "description": "Renders message, actions, and dismissal controls."
+          },
+          {
+            "id": "toast-live-region",
+            "title": "Announcement region",
+            "description": "Publishes concise status changes to assistive technology."
+          },
+          {
+            "id": "toast-browser-clock",
+            "title": "Browser clock and visibility",
+            "description": "Supplies time and page visibility signals."
+          },
+          {
+            "id": "toast-telemetry",
+            "title": "Lifecycle telemetry",
+            "description": "Records queue pressure, dismissals, and delayed cleanup."
+          }
+        ],
+        "decisions": [
+          {
+            "id": "toast-ownership",
+            "title": "State ownership",
+            "prompt": "Where should lifecycle transitions be coordinated?",
+            "options": [
+              {
+                "id": "toast-owner-central",
+                "label": "Shared store with lifecycle coordinator",
+                "description": "Commands update shared records while items emit lifecycle intent."
+              },
+              {
+                "id": "toast-owner-page",
+                "label": "Route-scoped store and container",
+                "description": "Each route owns message records and disposes them on navigation."
+              },
+              {
+                "id": "toast-owner-item",
+                "label": "Item-scoped timer and cleanup",
+                "description": "Rendered items own expiry state and release their local resources."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "toast-rationale-single-owner",
+                "label": "Keep lifecycle transitions under one observable owner"
+              },
+              {
+                "id": "toast-rationale-route-isolation",
+                "label": "Align message cleanup with route ownership"
+              },
+              {
+                "id": "toast-rationale-local-simplicity",
+                "label": "Align timer cleanup with rendered-item ownership"
+              }
+            ]
+          },
+          {
+            "id": "toast-timing",
+            "title": "Lifetime model",
+            "prompt": "How should an eligible timed status preserve its lifetime?",
+            "options": [
+              {
+                "id": "toast-time-remaining",
+                "label": "Track remaining visible time",
+                "description": "Pause for declared reasons and resume from the stored remainder."
+              },
+              {
+                "id": "toast-time-wall-clock",
+                "label": "Maintain a wall-clock deadline",
+                "description": "Calculate expiry from one timestamp across visibility changes."
+              },
+              {
+                "id": "toast-time-reset",
+                "label": "Restart after each pause",
+                "description": "Begin a fresh duration when hover, focus, or visibility resumes."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "toast-rationale-user-time",
+                "label": "Preserve sufficient user time to perceive status"
+              },
+              {
+                "id": "toast-rationale-fixed-deadline",
+                "label": "Preserve a simple timestamp-based expiry contract"
+              },
+              {
+                "id": "toast-rationale-easy-reset",
+                "label": "Preserve a fresh viewing period after interruption"
+              }
+            ]
+          },
+          {
+            "id": "toast-overflow",
+            "title": "Burst handling",
+            "prompt": "What happens when more messages arrive than can be displayed?",
+            "options": [
+              {
+                "id": "toast-overflow-queue",
+                "label": "Queue beyond a bounded stack",
+                "description": "Show a small set and coalesce equivalent pending outcomes."
+              },
+              {
+                "id": "toast-overflow-drop",
+                "label": "Replace the earliest visible message",
+                "description": "Admit newer feedback by dismissing the oldest visible record."
+              },
+              {
+                "id": "toast-overflow-unlimited",
+                "label": "Expand the visible message stack",
+                "description": "Place new feedback directly into the rendered container."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "toast-rationale-bounded",
+                "label": "Bound rendering while retaining distinct recovery paths"
+              },
+              {
+                "id": "toast-rationale-newest",
+                "label": "Favor recent feedback within the visible budget"
+              },
+              {
+                "id": "toast-rationale-no-loss",
+                "label": "Favor immediate visibility without queue coordination"
+              }
+            ]
+          },
+          {
+            "id": "toast-announcer",
+            "title": "Announcement policy",
+            "prompt": "How should new messages reach assistive technology?",
+            "options": [
+              {
+                "id": "toast-announce-polite",
+                "label": "Polite status with urgent escalation",
+                "description": "Use restrained announcements and reserve interruption for urgent events."
+              },
+              {
+                "id": "toast-announce-assertive",
+                "label": "Assertive announcement by severity",
+                "description": "Map warning and error categories to interrupting live updates."
+              },
+              {
+                "id": "toast-announce-visual",
+                "label": "Visual status with focused controls",
+                "description": "Present icons and text while controls remain keyboard reachable."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "toast-rationale-restraint",
+                "label": "Limit interruption while preserving status discovery"
+              },
+              {
+                "id": "toast-rationale-immediacy",
+                "label": "Prioritize rapid announcement for higher-severity feedback"
+              },
+              {
+                "id": "toast-rationale-quiet",
+                "label": "Prioritize visual stability and keyboard operation"
+              }
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {
+            "title": "Core Web implementation lens",
+            "prompt": "Which module owns the store, timer handles, and live-region DOM when no framework lifecycle is available?"
+          },
+          "react": {
+            "title": "React implementation lens",
+            "prompt": "Where would the provider, external store subscription, and effect cleanup boundaries live?"
+          },
+          "angular": {
+            "title": "Angular implementation lens",
+            "prompt": "Which service scope owns the records, and how will timer teardown follow application lifecycle?"
+          },
+          "vue": {
+            "title": "Vue implementation lens",
+            "prompt": "Which composable or plugin owns records, and where will unmount cleanup be centralized?"
+          }
+        }
+      },
+      "private": {
+        "sourceContentId": "notification-toast-system",
+        "expectedSourceBundleHash": "8e169018732ac16d02e516d529deb1e96b1b99cdc30e1cc9f08f00c6c09d7d94",
+        "clarificationAnswers": [
+          {
+            "clarificationId": "toast-callers",
+            "answer": "Components and non-visual client services may emit a typed command; callers do not render containers."
+          },
+          {
+            "clarificationId": "toast-actions",
+            "answer": "Some messages contain Undo or Review actions and must remain available while the action is valid."
+          },
+          {
+            "clarificationId": "toast-lifetime",
+            "answer": "Low-risk status may be timed; actionable, critical, and user-decision messages remain persistent."
+          },
+          {
+            "clarificationId": "toast-volume",
+            "answer": "A background synchronization can create dozens of related outcomes within a few seconds."
+          },
+          {
+            "clarificationId": "toast-announcement",
+            "answer": "Most updates are ordinary status. Only a rare blocking failure is urgent enough to interrupt."
+          },
+          {
+            "clarificationId": "toast-navigation",
+            "answer": "Messages belong to the application shell and normally survive client-side navigation."
+          }
+        ],
+        "twist": {
+          "id": "toast-hidden-tab-burst",
+          "title": "Production change: a hidden-tab burst",
+          "prompt": "While the tab is hidden, thirty background saves finish. When the user returns, several timers have elapsed and each completion could create an announcement. Adapt the design without hiding an unresolved action.",
+          "responseActions": [
+            {
+              "id": "toast-twist-pause-clock",
+              "label": "Pause eligible lifetimes while hidden",
+              "description": "Store remaining exposure time and resume when visibility returns."
+            },
+            {
+              "id": "toast-twist-coalesce",
+              "label": "Coalesce equivalent status outcomes",
+              "description": "Summarize repeated low-risk outcomes while preserving distinct recovery actions."
+            },
+            {
+              "id": "toast-twist-flush",
+              "label": "Replay queued outcomes on return",
+              "description": "Render the backlog and announce each stored completion."
+            },
+            {
+              "id": "toast-twist-restart-all",
+              "label": "Rebase queued message lifetimes",
+              "description": "Assign a fresh duration when the page becomes visible."
+            }
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": ["Actionable versus informational feedback", "Burst and lifetime constraints"],
+              "criteria": [
+                {
+                  "id": "toast-discover-actions",
+                  "weight": 1,
+                  "evidence": "Clarified whether messages contain recovery actions.",
+                  "rule": {
+                    "predicate": "clarificationSelected",
+                    "clarificationId": "toast-actions"
+                  }
+                },
+                {
+                  "id": "toast-prioritize-access",
+                  "weight": 1,
+                  "evidence": "Prioritized persistent actions or accessible status delivery.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "predicate": "requirementPrioritized",
+                        "requirementId": "toast-persistent-actions"
+                      },
+                      {
+                        "predicate": "requirementPrioritized",
+                        "requirementId": "toast-accessible-status"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": ["Single-owner state transitions", "Application-shell rendering"],
+              "criteria": [
+                {
+                  "id": "toast-place-owner",
+                  "weight": 1,
+                  "evidence": "Placed the store in the state boundary.",
+                  "rule": {
+                    "predicate": "cardInLane",
+                    "cardId": "toast-store",
+                    "laneId": "state"
+                  }
+                },
+                {
+                  "id": "toast-connect-renderer",
+                  "weight": 1,
+                  "evidence": "Connected the store snapshot to the provider.",
+                  "rule": {
+                    "predicate": "connectionExists",
+                    "fromCardId": "toast-store",
+                    "toCardId": "toast-provider",
+                    "typeId": "data-flow"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": ["Typed toast commands", "Lifecycle event contracts"],
+              "criteria": [
+                {
+                  "id": "toast-command-store",
+                  "weight": 1,
+                  "evidence": "Connected normalized commands to the record owner.",
+                  "rule": {
+                    "predicate": "connectionExists",
+                    "fromCardId": "toast-command-api",
+                    "toCardId": "toast-store",
+                    "typeId": "event-flow"
+                  }
+                },
+                {
+                  "id": "toast-lifecycle-events",
+                  "weight": 1,
+                  "evidence": "Connected lifecycle coordination back to the store.",
+                  "rule": {
+                    "predicate": "connectionExists",
+                    "fromCardId": "toast-lifecycle",
+                    "toCardId": "toast-store",
+                    "typeId": "event-flow"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": ["Bounded toast queues", "Pause-aware timer cleanup"],
+              "criteria": [
+                {
+                  "id": "toast-bound-overflow",
+                  "weight": 1,
+                  "evidence": "Selected bounded, deduplicated burst handling.",
+                  "rule": {
+                    "predicate": "decisionSelected",
+                    "decisionId": "toast-overflow",
+                    "optionId": "toast-overflow-queue"
+                  }
+                },
+                {
+                  "id": "toast-safe-timing",
+                  "weight": 1,
+                  "evidence": "Selected remaining-time ownership for eligible timers.",
+                  "rule": {
+                    "predicate": "decisionSelected",
+                    "decisionId": "toast-timing",
+                    "optionId": "toast-time-remaining"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": ["Live-region restraint", "Keyboard-reachable toast actions"],
+              "criteria": [
+                {
+                  "id": "toast-place-announcer",
+                  "weight": 1,
+                  "evidence": "Included a dedicated announcement boundary.",
+                  "rule": {
+                    "predicate": "cardInLane",
+                    "cardId": "toast-live-region",
+                    "laneId": "ui"
+                  }
+                },
+                {
+                  "id": "toast-polite-policy",
+                  "weight": 1,
+                  "evidence": "Selected polite announcements with urgency reserved for exceptional events.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "toast-announcer",
+                        "optionId": "toast-announce-polite"
+                      },
+                      {
+                        "predicate": "rationaleSelected",
+                        "decisionId": "toast-announcer",
+                        "rationaleId": "toast-rationale-restraint"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": ["Visibility-aware lifetimes", "Burst announcement policy"],
+              "criteria": [
+                {
+                  "id": "toast-adapt-burst",
+                  "weight": 1,
+                  "evidence": "Selected a bounded response to the hidden-tab burst.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "predicate": "twistActionSelected",
+                        "actionId": "toast-twist-pause-clock"
+                      },
+                      {
+                        "predicate": "twistActionSelected",
+                        "actionId": "toast-twist-coalesce"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "toast-change-design",
+                  "weight": 2,
+                  "evidence": "Changed a relevant lifecycle or overflow decision after the production change.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "allOf": [
+                          {
+                            "predicate": "changedFromBaseline",
+                            "target": "decision",
+                            "id": "toast-timing"
+                          },
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "toast-timing",
+                            "optionId": "toast-time-remaining"
+                          },
+                          {
+                            "predicate": "rationaleSelected",
+                            "decisionId": "toast-timing",
+                            "rationaleId": "toast-rationale-user-time"
+                          }
+                        ]
+                      },
+                      {
+                        "allOf": [
+                          {
+                            "predicate": "changedFromBaseline",
+                            "target": "decision",
+                            "id": "toast-overflow"
+                          },
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "toast-overflow",
+                            "optionId": "toast-overflow-queue"
+                          },
+                          {
+                            "predicate": "rationaleSelected",
+                            "decisionId": "toast-overflow",
+                            "rationaleId": "toast-rationale-bounded"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "toast-critical-item-reset",
+              "severity": "critical",
+              "axisIds": ["architecture-ownership", "resilience-performance"],
+              "summary": "Independent item timers that restart on interaction cannot preserve one observable lifetime or reliable cleanup policy.",
+              "rule": {
+                "allOf": [
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "toast-ownership",
+                    "optionId": "toast-owner-item"
+                  },
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "toast-timing",
+                    "optionId": "toast-time-reset"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "toast-major-assert-all",
+              "severity": "major",
+              "axisIds": ["accessibility-product-ux"],
+              "summary": "Interrupting for every routine status conflicts with restrained, non-blocking feedback.",
+              "rule": {
+                "allOf": [
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "toast-announcer",
+                    "optionId": "toast-announce-assertive"
+                  },
+                  {
+                    "not": {
+                      "predicate": "clarificationSelected",
+                      "clarificationId": "toast-announcement"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "toast-strong-central",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["toast-actions", "toast-volume", "toast-announcement"],
+              "priorityRequirementIds": ["toast-persistent-actions", "toast-accessible-status", "toast-bounded-stack"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "state", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 1},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 2},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-command-api", "toCardId": "toast-store", "typeId": "event-flow"},
+                {"fromCardId": "toast-store", "toCardId": "toast-provider", "typeId": "data-flow"},
+                {"fromCardId": "toast-lifecycle", "toCardId": "toast-store", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-ownership", "optionId": "toast-owner-central", "rationaleIds": ["toast-rationale-single-owner"]},
+                {"decisionId": "toast-timing", "optionId": "toast-time-wall-clock", "rationaleIds": ["toast-rationale-fixed-deadline"]},
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-queue", "rationaleIds": ["toast-rationale-bounded"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": ["toast-rationale-restraint"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["toast-actions", "toast-volume", "toast-announcement"],
+              "priorityRequirementIds": ["toast-persistent-actions", "toast-accessible-status", "toast-bounded-stack"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "state", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 1},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 2},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-command-api", "toCardId": "toast-store", "typeId": "event-flow"},
+                {"fromCardId": "toast-store", "toCardId": "toast-provider", "typeId": "data-flow"},
+                {"fromCardId": "toast-lifecycle", "toCardId": "toast-store", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-ownership", "optionId": "toast-owner-central", "rationaleIds": ["toast-rationale-single-owner"]},
+                {"decisionId": "toast-timing", "optionId": "toast-time-remaining", "rationaleIds": ["toast-rationale-user-time"]},
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-queue", "rationaleIds": ["toast-rationale-bounded"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": ["toast-rationale-restraint"]}
+              ],
+              "twistResponseActionIds": ["toast-twist-pause-clock", "toast-twist-coalesce"],
+              "scratchpad": "Keep distinct recovery actions persistent."
+            }
+          },
+          {
+            "id": "toast-strong-persistent",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["toast-actions", "toast-lifetime", "toast-volume"],
+              "priorityRequirementIds": ["toast-persistent-actions", "toast-bounded-stack", "toast-accessible-status"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "data", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 0},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 1},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1},
+                {"cardId": "toast-telemetry", "laneId": "data", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-command-api", "toCardId": "toast-store", "typeId": "event-flow"},
+                {"fromCardId": "toast-store", "toCardId": "toast-provider", "typeId": "data-flow"},
+                {"fromCardId": "toast-lifecycle", "toCardId": "toast-store", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-ownership", "optionId": "toast-owner-central", "rationaleIds": ["toast-rationale-single-owner"]},
+                {"decisionId": "toast-timing", "optionId": "toast-time-remaining", "rationaleIds": ["toast-rationale-user-time"]},
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-drop", "rationaleIds": ["toast-rationale-newest"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": ["toast-rationale-restraint"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["toast-actions", "toast-lifetime", "toast-volume"],
+              "priorityRequirementIds": ["toast-persistent-actions", "toast-bounded-stack", "toast-accessible-status"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "data", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 0},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 1},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1},
+                {"cardId": "toast-telemetry", "laneId": "data", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-command-api", "toCardId": "toast-store", "typeId": "event-flow"},
+                {"fromCardId": "toast-store", "toCardId": "toast-provider", "typeId": "data-flow"},
+                {"fromCardId": "toast-lifecycle", "toCardId": "toast-store", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-ownership", "optionId": "toast-owner-central", "rationaleIds": ["toast-rationale-single-owner"]},
+                {"decisionId": "toast-timing", "optionId": "toast-time-remaining", "rationaleIds": ["toast-rationale-user-time"]},
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-queue", "rationaleIds": ["toast-rationale-bounded"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": ["toast-rationale-restraint"]}
+              ],
+              "twistResponseActionIds": ["toast-twist-coalesce"],
+              "scratchpad": "Queue status, retain actions."
+            }
+          },
+          {
+            "id": "toast-developing",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["toast-actions"],
+              "priorityRequirementIds": ["toast-bounded-stack", "toast-cleanup"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "data", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 0},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 1},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-store", "toCardId": "toast-provider", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-queue", "rationaleIds": ["toast-rationale-bounded"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": []},
+                {"decisionId": "toast-timing", "optionId": "toast-time-wall-clock", "rationaleIds": []}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["toast-actions"],
+              "priorityRequirementIds": ["toast-bounded-stack", "toast-cleanup"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "data", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 0},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 1},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-lifecycle", "toCardId": "toast-store", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-queue", "rationaleIds": ["toast-rationale-bounded"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": []},
+                {"decisionId": "toast-timing", "optionId": "toast-time-wall-clock", "rationaleIds": []}
+              ],
+              "twistResponseActionIds": ["toast-twist-pause-clock"],
+              "scratchpad": ""
+            }
+          },
+          {
+            "id": "toast-critical",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["toast-volume", "toast-announcement"],
+              "priorityRequirementIds": ["toast-bounded-stack", "toast-accessible-status", "toast-cleanup"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "data", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 0},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 1},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-command-api", "toCardId": "toast-store", "typeId": "event-flow"},
+                {"fromCardId": "toast-store", "toCardId": "toast-provider", "typeId": "data-flow"},
+                {"fromCardId": "toast-lifecycle", "toCardId": "toast-store", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-ownership", "optionId": "toast-owner-item", "rationaleIds": ["toast-rationale-local-simplicity"]},
+                {"decisionId": "toast-timing", "optionId": "toast-time-reset", "rationaleIds": ["toast-rationale-easy-reset"]},
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-queue", "rationaleIds": ["toast-rationale-bounded"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": ["toast-rationale-restraint"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["toast-volume", "toast-announcement"],
+              "priorityRequirementIds": ["toast-bounded-stack", "toast-accessible-status", "toast-cleanup"],
+              "placements": [
+                {"cardId": "toast-command-api", "laneId": "data", "order": 0},
+                {"cardId": "toast-store", "laneId": "state", "order": 0},
+                {"cardId": "toast-lifecycle", "laneId": "state", "order": 1},
+                {"cardId": "toast-provider", "laneId": "ui", "order": 0},
+                {"cardId": "toast-live-region", "laneId": "ui", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "toast-command-api", "toCardId": "toast-store", "typeId": "event-flow"},
+                {"fromCardId": "toast-store", "toCardId": "toast-provider", "typeId": "data-flow"},
+                {"fromCardId": "toast-lifecycle", "toCardId": "toast-store", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "toast-ownership", "optionId": "toast-owner-item", "rationaleIds": ["toast-rationale-local-simplicity"]},
+                {"decisionId": "toast-timing", "optionId": "toast-time-reset", "rationaleIds": ["toast-rationale-easy-reset"]},
+                {"decisionId": "toast-overflow", "optionId": "toast-overflow-queue", "rationaleIds": ["toast-rationale-bounded"]},
+                {"decisionId": "toast-announcer", "optionId": "toast-announce-polite", "rationaleIds": ["toast-rationale-restraint"]}
+              ],
+              "twistResponseActionIds": ["toast-twist-coalesce"],
+              "scratchpad": ""
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-07-29",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt and choices are original.",
+          "references": [
+            {
+              "title": "MDN ARIA status role",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role",
+              "license": "CC BY-SA 2.5 or later",
+              "role": "Validate polite status semantics and focus behavior",
+              "accessedAt": "2026-07-29"
+            },
+            {
+              "title": "W3C WCAG Understanding Timing Adjustable",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html",
+              "license": "W3C Document License",
+              "role": "Validate user-time and adjustable timing considerations",
+              "accessedAt": "2026-07-29"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "int-sd-autocomplete-race-mid-v1",
+      "revision": 3,
+      "level": "mid",
+      "timeLimitSeconds": 900,
+      "public": {
+        "title": "Design a Race-Safe Autocomplete",
+        "prompt": "Design a reusable autocomplete that remains responsive on unreliable networks. Results depend on the typed term, locale, and filters, and keyboard users must be able to understand and navigate every state.",
+        "clarifications": [
+          {"id": "search-identity", "prompt": "Which inputs can change the meaning of the same typed term?"},
+          {"id": "search-order", "prompt": "Can requests finish in a different order from the order in which they started?"},
+          {"id": "search-keyboard", "prompt": "Which keyboard and assistive-technology behavior is required?"},
+          {"id": "search-stale-ui", "prompt": "May previous results remain visible while a new query loads?"},
+          {"id": "search-volume", "prompt": "What traffic and cache limits should the client expect?"},
+          {"id": "search-navigation", "prompt": "Should query state survive route navigation or page reload?"}
+        ],
+        "requirements": [
+          {"id": "search-latest-intent", "title": "Latest intent wins", "description": "An older completion cannot overwrite results for a newer query identity."},
+          {"id": "search-complete-key", "title": "Complete query identity", "description": "Term, locale, filters, and result type participate in cache and request identity."},
+          {"id": "search-keyboard-contract", "title": "Keyboard interaction", "description": "Focus, active option, selection, and Escape behavior stay predictable."},
+          {"id": "search-explicit-states", "title": "Explicit async states", "description": "Loading, stale, empty, error, and ready states have distinct behavior."},
+          {"id": "search-bounded-cache", "title": "Bounded cache", "description": "Repeated queries may reuse data without unbounded memory growth."},
+          {"id": "search-owned-cleanup", "title": "Owned cancellation and cleanup", "description": "The feature releases timers, controllers, and subscriptions on replacement or teardown."}
+        ],
+        "cards": [
+          {"id": "search-input", "title": "Search input", "description": "Captures text and keyboard intent."},
+          {"id": "search-results", "title": "Results list", "description": "Renders one query snapshot and active option."},
+          {"id": "search-status", "title": "Status announcer", "description": "Publishes loading, result count, empty, and error status."},
+          {"id": "search-controller", "title": "Query controller", "description": "Owns query generation and accepted result state."},
+          {"id": "search-cache", "title": "Query cache", "description": "Stores bounded entries by complete normalized identity."},
+          {"id": "search-client", "title": "Request client", "description": "Maps query requests to transport and result contracts."},
+          {"id": "search-abort", "title": "Cancellation owner", "description": "Owns the active AbortController where cancellation is supported."},
+          {"id": "search-api", "title": "Search API", "description": "Returns ordered results for one explicit query identity."},
+          {"id": "search-telemetry", "title": "Search telemetry", "description": "Measures stale completions, latency, cache behavior, and empty states."}
+        ],
+        "decisions": [
+          {
+            "id": "search-async-control",
+            "title": "Async ownership",
+            "prompt": "How does the controller prevent an old completion from committing?",
+            "options": [
+              {"id": "search-async-abort-generation", "label": "Abort and verify generation", "description": "Cancel replaceable work and verify the active generation before commit."},
+              {"id": "search-async-generation", "label": "Verify active generation", "description": "Let transport finish but reject completions from a superseded identity."},
+              {"id": "search-async-debounce", "label": "Debounce request admission", "description": "Coalesce input changes and commit responses in completion order."}
+            ],
+            "rationales": [
+              {"id": "search-rationale-correctness", "label": "Make generation checks the response-acceptance boundary"},
+              {"id": "search-rationale-efficiency", "label": "Reduce transport work for superseded query identities"},
+              {"id": "search-rationale-fewer-starts", "label": "Reduce concurrency through input admission control"}
+            ]
+          },
+          {
+            "id": "search-cache-identity",
+            "title": "Cache identity",
+            "prompt": "What identifies a reusable result entry?",
+            "options": [
+              {"id": "search-key-complete", "label": "Term, locale, filters, and result type", "description": "Key the inputs that change result meaning."},
+              {"id": "search-key-term", "label": "Normalized term with shared context", "description": "Reuse one term entry across locale, filters, and result type."},
+              {"id": "search-key-latest", "label": "Single latest-result cache slot", "description": "Replace the stored value when a response commits."}
+            ],
+            "rationales": [
+              {"id": "search-rationale-semantic-key", "label": "Separate queries with different result semantics"},
+              {"id": "search-rationale-hit-rate", "label": "Increase reuse through a compact cache key"},
+              {"id": "search-rationale-simple-cache", "label": "Reduce entry management and key construction"}
+            ]
+          },
+          {
+            "id": "search-state-owner",
+            "title": "State owner",
+            "prompt": "Which boundary owns query identity, request state, and accepted results?",
+            "options": [
+              {"id": "search-owner-controller", "label": "Dedicated query controller", "description": "Input and result views emit intent and render controller snapshots."},
+              {"id": "search-owner-input", "label": "Input-centered feature owner", "description": "The input owns transport, cache, and result transition state."},
+              {"id": "search-owner-results", "label": "Result-centered feature owner", "description": "The list derives query state and starts transport work."}
+            ],
+            "rationales": [
+              {"id": "search-rationale-one-owner", "label": "Centralize transitions for one query generation"},
+              {"id": "search-rationale-near-event", "label": "Co-locate query work with input events"},
+              {"id": "search-rationale-near-render", "label": "Co-locate query work with result rendering"}
+            ]
+          },
+          {
+            "id": "search-render-policy",
+            "title": "Transition rendering",
+            "prompt": "What should be displayed while a related query is loading?",
+            "options": [
+              {"id": "search-render-labelled-stale", "label": "Retain a labelled prior snapshot", "description": "Mark it pending and prevent selection under a mismatched identity."},
+              {"id": "search-render-clear", "label": "Clear during the pending state", "description": "Show an empty result region until the next response commits."},
+              {"id": "search-render-any-response", "label": "Retain the latest completion", "description": "Replace the list with the most recently completed response."}
+            ],
+            "rationales": [
+              {"id": "search-rationale-continuity", "label": "Preserve continuity while keeping result identity explicit"},
+              {"id": "search-rationale-no-stale-display", "label": "Separate pending state from previously rendered results"},
+              {"id": "search-rationale-fastest-visible", "label": "Prioritize completion latency over request-start order"}
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {"title": "Core Web implementation lens", "prompt": "How will DOM listeners, AbortController ownership, and active-descendant state be created and cleaned up?"},
+          "react": {"title": "React implementation lens", "prompt": "Which state belongs outside rendering Effects, and how will stale closures or Effect cleanup affect ownership?"},
+          "angular": {"title": "Angular implementation lens", "prompt": "Where do RxJS cancellation, component state, and teardown live without splitting query ownership?"},
+          "vue": {"title": "Vue implementation lens", "prompt": "Which watcher or composable owns invalidation, cache identity, and cleanup for the active query?"}
+        }
+      },
+      "private": {
+        "sourceContentId": "realtime-search-debounce-cache",
+        "expectedSourceBundleHash": "46e9e5bb8daf0372d8638d2aef97f5a1299b1d071bcba0dc3c2b42599f0b967e",
+        "clarificationAnswers": [
+          {"clarificationId": "search-identity", "answer": "Locale, normalized filters, permission scope, and result type can all change the result set."},
+          {"clarificationId": "search-order", "answer": "Yes. Cached and network responses can resolve out of order, and cancellation is not guaranteed to stop completion."},
+          {"clarificationId": "search-keyboard", "answer": "Use a combobox-style contract with arrow navigation, Enter selection, Escape dismissal, and stable active-option identity."},
+          {"clarificationId": "search-stale-ui", "answer": "Previous results may stay visible if clearly marked as stale and cannot be selected under the wrong query identity."},
+          {"clarificationId": "search-volume", "answer": "Traffic is high enough to justify debounce and a bounded cache; correctness cannot depend on either optimization."},
+          {"clarificationId": "search-navigation", "answer": "The term belongs in route state, but transient open, focus, and active-option state do not survive a full reload."}
+        ],
+        "twist": {
+          "id": "search-locale-race",
+          "title": "Production change: locale switches mid-request",
+          "prompt": "A user changes locale while a request for the same visible term is in flight. The old transport ignores cancellation and resolves last. Adapt the design so the result language and keyboard state remain coherent.",
+          "responseActions": [
+            {"id": "search-twist-generation", "label": "Advance and verify query generation", "description": "Commit a completion when it matches the current query identity."},
+            {"id": "search-twist-locale-key", "label": "Include locale in cache identity", "description": "Separate entries whose visible term maps to different locales."},
+            {"id": "search-twist-longer-debounce", "label": "Extend input debounce", "description": "Delay request admission after a change to query identity."},
+            {"id": "search-twist-clear-all", "label": "Reset the shared query cache", "description": "Discard existing entries before the next locale-specific request starts."}
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": ["Complete query identity", "Out-of-order response constraints"],
+              "criteria": [
+                {"id": "search-discover-identity", "weight": 1, "evidence": "Clarified every input that changes result meaning.", "rule": {"predicate": "clarificationSelected", "clarificationId": "search-identity"}},
+                {"id": "search-prioritize-latest", "weight": 1, "evidence": "Prioritized latest-intent correctness.", "rule": {"predicate": "requirementPrioritized", "requirementId": "search-latest-intent", "maxRank": 2}}
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": ["Query-controller ownership", "Render-only component boundaries"],
+              "criteria": [
+                {"id": "search-place-controller", "weight": 1, "evidence": "Placed query coordination in the state lane.", "rule": {"predicate": "cardInLane", "cardId": "search-controller", "laneId": "state"}},
+                {"id": "search-owner-choice", "weight": 1, "evidence": "Selected one controller as the transition owner.", "rule": {"predicate": "decisionSelected", "decisionId": "search-state-owner", "optionId": "search-owner-controller"}}
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": ["Semantic cache keys", "Request adapter contracts"],
+              "criteria": [
+                {"id": "search-complete-cache", "weight": 1, "evidence": "Selected complete semantic cache identity.", "rule": {"predicate": "decisionSelected", "decisionId": "search-cache-identity", "optionId": "search-key-complete"}},
+                {"id": "search-client-api", "weight": 1, "evidence": "Connected the request adapter to its external API.", "rule": {"predicate": "connectionExists", "fromCardId": "search-client", "toCardId": "search-api", "typeId": "data-flow"}}
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": ["Generation acceptance guards", "Cancellation as an optimization"],
+              "criteria": [
+                {
+                  "id": "search-race-safe",
+                  "weight": 1,
+                  "evidence": "Selected a generation-based correctness boundary.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "decisionSelected", "decisionId": "search-async-control", "optionId": "search-async-abort-generation"},
+                      {"predicate": "decisionSelected", "decisionId": "search-async-control", "optionId": "search-async-generation"}
+                    ]
+                  }
+                },
+                {"id": "search-controller-client", "weight": 1, "evidence": "Connected query intent to the request adapter.", "rule": {"predicate": "connectionExists", "fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"}}
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": ["Combobox keyboard state", "Async status announcements"],
+              "criteria": [
+                {"id": "search-keyboard-priority", "weight": 1, "evidence": "Prioritized the keyboard interaction contract.", "rule": {"predicate": "requirementPrioritized", "requirementId": "search-keyboard-contract"}},
+                {"id": "search-status-boundary", "weight": 1, "evidence": "Included a UI status announcer.", "rule": {"predicate": "cardInLane", "cardId": "search-status", "laneId": "ui"}}
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": ["Locale-aware invalidation", "Post-constraint architecture changes"],
+              "criteria": [
+                {
+                  "id": "search-twist-correctness",
+                  "weight": 1,
+                  "evidence": "Responded with generation or locale identity protection.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "twistActionSelected", "actionId": "search-twist-generation"},
+                      {"predicate": "twistActionSelected", "actionId": "search-twist-locale-key"}
+                    ]
+                  }
+                },
+                {
+                  "id": "search-change-key",
+                  "weight": 2,
+                  "evidence": "Changed cache identity or async ownership after the locale constraint.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "allOf": [
+                          {"predicate": "changedFromBaseline", "target": "decision", "id": "search-cache-identity"},
+                          {"predicate": "decisionSelected", "decisionId": "search-cache-identity", "optionId": "search-key-complete"},
+                          {"predicate": "rationaleSelected", "decisionId": "search-cache-identity", "rationaleId": "search-rationale-semantic-key"}
+                        ]
+                      },
+                      {
+                        "allOf": [
+                          {"predicate": "changedFromBaseline", "target": "decision", "id": "search-async-control"},
+                          {"predicate": "decisionSelected", "decisionId": "search-async-control", "optionId": "search-async-generation"},
+                          {"predicate": "rationaleSelected", "decisionId": "search-async-control", "rationaleId": "search-rationale-correctness"}
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "search-critical-debounce-commit",
+              "severity": "critical",
+              "axisIds": ["data-interface-contracts", "resilience-performance"],
+              "summary": "Debounce and term-only identity cannot prevent an old locale response from committing.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "search-async-control", "optionId": "search-async-debounce"},
+                  {"predicate": "decisionSelected", "decisionId": "search-cache-identity", "optionId": "search-key-term"}
+                ]
+              }
+            },
+            {
+              "id": "search-major-any-response",
+              "severity": "major",
+              "axisIds": ["resilience-performance", "accessibility-product-ux"],
+              "summary": "Replacing the list with any completion breaks query and active-option identity.",
+              "rule": {"predicate": "decisionSelected", "decisionId": "search-render-policy", "optionId": "search-render-any-response"}
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "search-strong-abort",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["search-identity", "search-order", "search-keyboard"],
+              "priorityRequirementIds": ["search-latest-intent", "search-keyboard-contract", "search-complete-key"],
+              "placements": [
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-abort", "laneId": "state", "order": 1},
+                {"cardId": "search-client", "laneId": "data", "order": 0},
+                {"cardId": "search-cache", "laneId": "data", "order": 1},
+                {"cardId": "search-api", "laneId": "external", "order": 0},
+                {"cardId": "search-status", "laneId": "ui", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"},
+                {"fromCardId": "search-client", "toCardId": "search-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-abort-generation", "rationaleIds": ["search-rationale-correctness", "search-rationale-efficiency"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-term", "rationaleIds": ["search-rationale-hit-rate"]},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-controller", "rationaleIds": ["search-rationale-one-owner"]},
+                {"decisionId": "search-render-policy", "optionId": "search-render-labelled-stale", "rationaleIds": ["search-rationale-continuity"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["search-identity", "search-order", "search-keyboard"],
+              "priorityRequirementIds": ["search-latest-intent", "search-keyboard-contract", "search-complete-key"],
+              "placements": [
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-abort", "laneId": "state", "order": 1},
+                {"cardId": "search-client", "laneId": "data", "order": 0},
+                {"cardId": "search-cache", "laneId": "data", "order": 1},
+                {"cardId": "search-api", "laneId": "external", "order": 0},
+                {"cardId": "search-status", "laneId": "ui", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"},
+                {"fromCardId": "search-client", "toCardId": "search-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-abort-generation", "rationaleIds": ["search-rationale-correctness", "search-rationale-efficiency"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-complete", "rationaleIds": ["search-rationale-semantic-key"]},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-controller", "rationaleIds": ["search-rationale-one-owner"]},
+                {"decisionId": "search-render-policy", "optionId": "search-render-labelled-stale", "rationaleIds": ["search-rationale-continuity"]}
+              ],
+              "twistResponseActionIds": ["search-twist-generation", "search-twist-locale-key"],
+              "scratchpad": "Abort saves work; identity verification remains required."
+            }
+          },
+          {
+            "id": "search-strong-generation",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["search-identity", "search-stale-ui", "search-keyboard"],
+              "priorityRequirementIds": ["search-complete-key", "search-latest-intent", "search-keyboard-contract"],
+              "placements": [
+                {"cardId": "search-input", "laneId": "ui", "order": 0},
+                {"cardId": "search-status", "laneId": "ui", "order": 1},
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-cache", "laneId": "data", "order": 0},
+                {"cardId": "search-client", "laneId": "data", "order": 1},
+                {"cardId": "search-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"},
+                {"fromCardId": "search-client", "toCardId": "search-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-debounce", "rationaleIds": ["search-rationale-fewer-starts"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-complete", "rationaleIds": ["search-rationale-semantic-key"]},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-controller", "rationaleIds": ["search-rationale-one-owner"]},
+                {"decisionId": "search-render-policy", "optionId": "search-render-labelled-stale", "rationaleIds": ["search-rationale-continuity"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["search-identity", "search-stale-ui", "search-keyboard"],
+              "priorityRequirementIds": ["search-complete-key", "search-latest-intent", "search-keyboard-contract"],
+              "placements": [
+                {"cardId": "search-input", "laneId": "ui", "order": 0},
+                {"cardId": "search-status", "laneId": "ui", "order": 1},
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-cache", "laneId": "data", "order": 0},
+                {"cardId": "search-client", "laneId": "data", "order": 1},
+                {"cardId": "search-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"},
+                {"fromCardId": "search-client", "toCardId": "search-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-generation", "rationaleIds": ["search-rationale-correctness"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-complete", "rationaleIds": ["search-rationale-semantic-key"]},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-controller", "rationaleIds": ["search-rationale-one-owner"]},
+                {"decisionId": "search-render-policy", "optionId": "search-render-labelled-stale", "rationaleIds": ["search-rationale-continuity"]}
+              ],
+              "twistResponseActionIds": ["search-twist-generation", "search-twist-locale-key"],
+              "scratchpad": "Generation protects correctness even without cancellation."
+            }
+          },
+          {
+            "id": "search-developing",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["search-order", "search-keyboard"],
+              "priorityRequirementIds": ["search-latest-intent", "search-keyboard-contract"],
+              "placements": [
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-status", "laneId": "ui", "order": 0},
+                {"cardId": "search-client", "laneId": "data", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-generation", "rationaleIds": ["search-rationale-correctness"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-term", "rationaleIds": []},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-controller", "rationaleIds": []}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["search-order", "search-keyboard"],
+              "priorityRequirementIds": ["search-latest-intent", "search-keyboard-contract"],
+              "placements": [
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-client", "laneId": "data", "order": 0}
+              ],
+              "connections": [],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-generation", "rationaleIds": ["search-rationale-correctness"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-complete", "rationaleIds": ["search-rationale-semantic-key"]},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-input", "rationaleIds": ["search-rationale-near-event"]}
+              ],
+              "twistResponseActionIds": ["search-twist-generation"],
+              "scratchpad": ""
+            }
+          },
+          {
+            "id": "search-critical",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["search-identity", "search-order", "search-keyboard"],
+              "priorityRequirementIds": ["search-latest-intent", "search-keyboard-contract", "search-complete-key"],
+              "placements": [
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-status", "laneId": "ui", "order": 0},
+                {"cardId": "search-client", "laneId": "data", "order": 0},
+                {"cardId": "search-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"},
+                {"fromCardId": "search-client", "toCardId": "search-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-debounce", "rationaleIds": ["search-rationale-fewer-starts"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-term", "rationaleIds": ["search-rationale-hit-rate"]},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-controller", "rationaleIds": ["search-rationale-one-owner"]},
+                {"decisionId": "search-render-policy", "optionId": "search-render-labelled-stale", "rationaleIds": ["search-rationale-continuity"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["search-identity", "search-order", "search-keyboard"],
+              "priorityRequirementIds": ["search-latest-intent", "search-keyboard-contract", "search-complete-key"],
+              "placements": [
+                {"cardId": "search-controller", "laneId": "state", "order": 0},
+                {"cardId": "search-status", "laneId": "ui", "order": 0},
+                {"cardId": "search-client", "laneId": "data", "order": 0},
+                {"cardId": "search-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "search-controller", "toCardId": "search-client", "typeId": "event-flow"},
+                {"fromCardId": "search-client", "toCardId": "search-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "search-async-control", "optionId": "search-async-debounce", "rationaleIds": ["search-rationale-fewer-starts"]},
+                {"decisionId": "search-cache-identity", "optionId": "search-key-term", "rationaleIds": ["search-rationale-hit-rate"]},
+                {"decisionId": "search-state-owner", "optionId": "search-owner-controller", "rationaleIds": ["search-rationale-one-owner"]},
+                {"decisionId": "search-render-policy", "optionId": "search-render-labelled-stale", "rationaleIds": ["search-rationale-continuity"]}
+              ],
+              "twistResponseActionIds": ["search-twist-longer-debounce"],
+              "scratchpad": ""
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-07-29",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt and choices are original.",
+          "references": [
+            {
+              "title": "MDN AbortController",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+              "license": "CC BY-SA 2.5 or later",
+              "role": "Validate cancellation mechanics and their ownership boundary",
+              "accessedAt": "2026-07-29"
+            },
+            {
+              "title": "WAI-ARIA Authoring Practices Combobox Pattern",
+              "url": "https://www.w3.org/WAI/ARIA/apg/patterns/combobox/",
+              "license": "W3C Document License",
+              "role": "Validate keyboard and active-option interaction expectations",
+              "accessedAt": "2026-07-29"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "int-sd-ranked-feed-sr-v1",
+      "revision": 3,
+      "level": "senior",
+      "timeLimitSeconds": 1200,
+      "public": {
+        "title": "Design a Ranked Feed That Preserves Reading Context",
+        "prompt": "Design a frontend feed whose ranked pages can overlap or change while a user reads. The experience must paginate reliably, preserve a stable reading anchor, and keep rendering and retained data bounded during a long session.",
+        "clarifications": [
+          {"id": "feed-order-authority", "prompt": "Who defines ordering, and can that ordering change during a session?"},
+          {"id": "feed-pagination", "prompt": "What pagination contract and overlap behavior does the API provide?"},
+          {"id": "feed-restoration", "prompt": "What reading context must survive navigation and measurement changes?"},
+          {"id": "feed-row-geometry", "prompt": "Are row heights fixed, estimated, or allowed to change after render?"},
+          {"id": "feed-memory-budget", "prompt": "What DOM and retained-data budget applies to a long session?"},
+          {"id": "feed-accessibility", "prompt": "How should keyboard loading, focus, announcements, and discovery work?"}
+        ],
+        "requirements": [
+          {"id": "feed-stable-identity", "title": "Stable entity identity", "description": "Overlapping pages and ranking updates do not duplicate or silently replace the wrong item."},
+          {"id": "feed-atomic-cursor", "title": "Atomic cursor commit", "description": "Items and their continuation cursor commit together only for the admitted generation."},
+          {"id": "feed-reading-anchor", "title": "Reading-context preservation", "description": "Late media, ranking updates, and navigation do not unexpectedly move the reader."},
+          {"id": "feed-bounded-rendering", "title": "Bounded rendering and retention", "description": "DOM nodes and retained payloads stay within explicit long-session budgets."},
+          {"id": "feed-recoverable-loading", "title": "Recoverable pagination", "description": "A failed next page keeps loaded content usable and retries the same committed cursor."},
+          {"id": "feed-accessible-loading", "title": "Accessible loading path", "description": "A visible keyboard path, focus policy, and restrained status announcements accompany automatic loading."}
+        ],
+        "cards": [
+          {"id": "feed-view", "title": "Feed view", "description": "Renders ordered item identities and terminal states."},
+          {"id": "feed-viewport", "title": "Bounded viewport", "description": "Mounts a measured or page-windowed subset."},
+          {"id": "feed-load-control", "title": "Load-more control", "description": "Provides visible keyboard intent through the same admission path."},
+          {"id": "feed-controller", "title": "Feed controller", "description": "Owns query generation, request admission, merge, and retry state."},
+          {"id": "feed-request-gate", "title": "Request gate", "description": "Prevents duplicate cursor work and rejects stale generation commits."},
+          {"id": "feed-entities", "title": "Entity store", "description": "Normalizes records by stable server identity."},
+          {"id": "feed-pages", "title": "Page cache", "description": "Keeps page membership, cursors, and ordering versions."},
+          {"id": "feed-measurements", "title": "Measurement cache", "description": "Stores row geometry by entity identity for anchor correction."},
+          {"id": "feed-api", "title": "Ranked feed API", "description": "Returns ordered items, opaque continuation, and ordering metadata."},
+          {"id": "feed-telemetry", "title": "Feed telemetry", "description": "Measures duplicate admission, anchor shift, node count, and stale rejection."}
+        ],
+        "decisions": [
+          {
+            "id": "feed-pagination-model",
+            "title": "Pagination model",
+            "prompt": "How does the client request the next ranked page?",
+            "options": [
+              {"id": "feed-page-cursor", "label": "Opaque cursor with atomic commit", "description": "Commit ordered items and continuation together, then retry the committed cursor."},
+              {"id": "feed-page-offset", "label": "Offset derived from visible count", "description": "Calculate the next request from the current client list length."},
+              {"id": "feed-page-client", "label": "Locally paged result snapshot", "description": "Fetch a broad ranked snapshot and expose it in client-sized pages."}
+            ],
+            "rationales": [
+              {"id": "feed-rationale-order-contract", "label": "Preserve server continuation and ordering semantics"},
+              {"id": "feed-rationale-simple-offset", "label": "Derive continuation from visible client state"},
+              {"id": "feed-rationale-local-nav", "label": "Trade larger transfers for local page navigation"}
+            ]
+          },
+          {
+            "id": "feed-merge-model",
+            "title": "Merge model",
+            "prompt": "How should overlapping pages and updated records enter the visible order?",
+            "options": [
+              {"id": "feed-merge-normalized", "label": "Normalize identities and page membership", "description": "Update entity records while preserving admitted server positions."},
+              {"id": "feed-merge-append", "label": "Append response membership as received", "description": "Represent repeated identities in the order returned by each page."},
+              {"id": "feed-merge-client-sort", "label": "Reorder membership by arrival time", "description": "Derive visible positions from client response completion timestamps."}
+            ],
+            "rationales": [
+              {"id": "feed-rationale-stable-id", "label": "Separate entity identity from ordered membership"},
+              {"id": "feed-rationale-response-order", "label": "Preserve page payloads as independent append units"},
+              {"id": "feed-rationale-local-order", "label": "Derive order from observable client completion"}
+            ]
+          },
+          {
+            "id": "feed-window-model",
+            "title": "Long-session rendering",
+            "prompt": "How should the UI keep mounted work bounded?",
+            "options": [
+              {"id": "feed-window-measured", "label": "Measured virtual window", "description": "Use identity-keyed geometry, overscan, and anchor correction for variable rows."},
+              {"id": "feed-window-pages", "label": "Bounded page window", "description": "Retain a small page range and restore evicted boundaries by stable anchor."},
+              {"id": "feed-window-unbounded", "label": "Retained document flow", "description": "Keep loaded rows mounted and rely on browser layout behavior."}
+            ],
+            "rationales": [
+              {"id": "feed-rationale-profiled-window", "label": "Bound measured rendering cost while preserving context"},
+              {"id": "feed-rationale-page-boundary", "label": "Trade granular virtualization for simpler bounded pages"},
+              {"id": "feed-rationale-native-flow", "label": "Preserve document flow and browser-native discovery"}
+            ]
+          },
+          {
+            "id": "feed-order-change",
+            "title": "Ranking updates",
+            "prompt": "How should a new ranking version affect a reader who is below the top?",
+            "options": [
+              {"id": "feed-order-stage", "label": "Stage a coherent ranking update", "description": "Preserve the anchor until the reader reveals the new version."},
+              {"id": "feed-order-immediate", "label": "Apply updates around the anchor", "description": "Reconcile the mounted range while restoring the current viewport offset."},
+              {"id": "feed-order-arrival", "label": "Rebuild order from arrival time", "description": "Place newer completions ahead without retaining server ranking versions."}
+            ],
+            "rationales": [
+              {"id": "feed-rationale-reading-context", "label": "Protect reading context across ranking changes"},
+              {"id": "feed-rationale-freshness", "label": "Prioritize freshness while correcting viewport movement"},
+              {"id": "feed-rationale-no-version", "label": "Simplify ordering through client completion time"}
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {"title": "Core Web implementation lens", "prompt": "Which owners coordinate IntersectionObserver, ResizeObserver, AbortController, and History restoration without leaking them to item renderers?"},
+          "react": {"title": "React implementation lens", "prompt": "How will keys, external cache identity, transitions, and virtualization avoid render-driven fetch ownership?"},
+          "angular": {"title": "Angular implementation lens", "prompt": "How will signals or RxJS model generation and request admission while keeping OnPush row identity stable?"},
+          "vue": {"title": "Vue implementation lens", "prompt": "How will composables own cursor generations and measurement state without deep-watching the full feed payload?"}
+        }
+      },
+      "private": {
+        "sourceContentId": "news-feed-timeline",
+        "expectedSourceBundleHash": "91af05647649a4376a23918df83f14bf944be9c93d655940535a9a43691409e3",
+        "clarificationAnswers": [
+          {"clarificationId": "feed-order-authority", "answer": "The server owns ranked order and emits ordering versions; live updates may change items above and below the reader."},
+          {"clarificationId": "feed-pagination", "answer": "The API uses opaque cursors, can return overlapping stable IDs, and may repeat a cursor when its contract is violated."},
+          {"clarificationId": "feed-restoration", "answer": "Back navigation should restore the first visible item identity, its viewport offset, and prior focus when still available."},
+          {"clarificationId": "feed-row-geometry", "answer": "Text wraps, media loads late, and user font settings make heights variable."},
+          {"clarificationId": "feed-memory-budget", "answer": "A long session can load thousands of items; both mounted DOM and retained media payloads require explicit budgets."},
+          {"clarificationId": "feed-accessibility", "answer": "Automatic loading must have an equivalent visible Load More path, preserve focus, and announce concise outcomes."}
+        ],
+        "twist": {
+          "id": "feed-live-rerank",
+          "title": "Production change: live ranking while reading",
+          "prompt": "A live ranking version inserts and removes items above the current viewport while images are still changing height. Adapt the design so fresh content is discoverable without moving the reader or corrupting pagination.",
+          "responseActions": [
+            {"id": "feed-twist-anchor", "label": "Preserve item identity and offset", "description": "Correct geometry relative to the anchored item after measurements change."},
+            {"id": "feed-twist-stage", "label": "Stage the incoming ordering version", "description": "Offer a controlled reveal while preserving the active reading window."},
+            {"id": "feed-twist-immediate", "label": "Apply ranking moves as received", "description": "Reconcile visible order when each ranking event reaches the client."},
+            {"id": "feed-twist-reset", "label": "Reset reading position to top", "description": "Start from the newest version when ordering changes."}
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": ["Ordering authority", "Reading-context constraints"],
+              "criteria": [
+                {"id": "feed-discover-order", "weight": 1, "evidence": "Clarified who owns ordering and whether it changes.", "rule": {"predicate": "clarificationSelected", "clarificationId": "feed-order-authority"}},
+                {
+                  "id": "feed-conditional-geometry",
+                  "weight": 1,
+                  "evidence": "When variable geometry was investigated, reading-anchor preservation was prioritized.",
+                  "rule": {
+                    "when": {
+                      "if": {"predicate": "clarificationSelected", "clarificationId": "feed-row-geometry"},
+                      "then": {"predicate": "requirementPrioritized", "requirementId": "feed-reading-anchor"}
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": ["Feed-controller admission", "Viewport versus data ownership"],
+              "criteria": [
+                {"id": "feed-place-controller", "weight": 1, "evidence": "Placed request admission in the state boundary.", "rule": {"predicate": "cardInLane", "cardId": "feed-controller", "laneId": "state"}},
+                {"id": "feed-controller-gate", "weight": 1, "evidence": "Connected feed intent to a dedicated request gate.", "rule": {"predicate": "connectionExists", "fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"}}
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": ["Cursor-page atomicity", "Normalized entity identity"],
+              "criteria": [
+                {"id": "feed-cursor-contract", "weight": 1, "evidence": "Selected an opaque cursor committed with its page.", "rule": {"predicate": "decisionSelected", "decisionId": "feed-pagination-model", "optionId": "feed-page-cursor"}},
+                {"id": "feed-normalized-merge", "weight": 1, "evidence": "Selected normalized identity and page membership.", "rule": {"predicate": "decisionSelected", "decisionId": "feed-merge-model", "optionId": "feed-merge-normalized"}}
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": ["Bounded DOM and data retention", "Duplicate request admission"],
+              "criteria": [
+                {
+                  "id": "feed-bounded-window",
+                  "weight": 1,
+                  "evidence": "Selected a bounded measured or page-window strategy.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "decisionSelected", "decisionId": "feed-window-model", "optionId": "feed-window-measured"},
+                      {"predicate": "decisionSelected", "decisionId": "feed-window-model", "optionId": "feed-window-pages"}
+                    ]
+                  }
+                },
+                {"id": "feed-gate-api", "weight": 1, "evidence": "Connected admitted requests to the ranked API.", "rule": {"predicate": "connectionExists", "fromCardId": "feed-request-gate", "toCardId": "feed-api", "typeId": "data-flow"}}
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": ["Visible Load More parity", "Identity-based focus and anchor restoration"],
+              "criteria": [
+                {"id": "feed-prioritize-access", "weight": 1, "evidence": "Prioritized an accessible loading path.", "rule": {"predicate": "requirementPrioritized", "requirementId": "feed-accessible-loading"}},
+                {"id": "feed-place-load-control", "weight": 1, "evidence": "Included a visible load control in the UI boundary.", "rule": {"predicate": "cardInLane", "cardId": "feed-load-control", "laneId": "ui"}}
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": ["Live-rank staging", "Stable anchors under geometry change"],
+              "criteria": [
+                {
+                  "id": "feed-twist-safe",
+                  "weight": 1,
+                  "evidence": "Preserved the anchor and staged live ordering.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "twistActionSelected", "actionId": "feed-twist-anchor"},
+                      {"predicate": "twistActionSelected", "actionId": "feed-twist-stage"}
+                    ]
+                  }
+                },
+                {
+                  "id": "feed-change-order",
+                  "weight": 2,
+                  "evidence": "Changed ranking policy after the live-update constraint.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "changedFromBaseline", "target": "decision", "id": "feed-order-change"},
+                      {"predicate": "decisionSelected", "decisionId": "feed-order-change", "optionId": "feed-order-stage"},
+                      {"predicate": "rationaleSelected", "decisionId": "feed-order-change", "rationaleId": "feed-rationale-reading-context"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "feed-critical-offset-append",
+              "severity": "critical",
+              "axisIds": ["data-interface-contracts", "resilience-performance"],
+              "summary": "List-length offsets plus blind append cannot preserve ranked page identity under overlap or reordering.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "feed-pagination-model", "optionId": "feed-page-offset"},
+                  {"predicate": "decisionSelected", "decisionId": "feed-merge-model", "optionId": "feed-merge-append"}
+                ]
+              }
+            },
+            {
+              "id": "feed-major-unbounded",
+              "severity": "major",
+              "axisIds": ["resilience-performance"],
+              "summary": "Keeping every row mounted conflicts with the explicit long-session rendering budget.",
+              "rule": {"predicate": "decisionSelected", "decisionId": "feed-window-model", "optionId": "feed-window-unbounded"}
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "feed-strong-measured",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry", "feed-accessibility"],
+              "priorityRequirementIds": ["feed-reading-anchor", "feed-accessible-loading", "feed-atomic-cursor"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1},
+                {"cardId": "feed-viewport", "laneId": "ui", "order": 0},
+                {"cardId": "feed-load-control", "laneId": "ui", "order": 1},
+                {"cardId": "feed-api", "laneId": "external", "order": 0},
+                {"cardId": "feed-measurements", "laneId": "data", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"},
+                {"fromCardId": "feed-request-gate", "toCardId": "feed-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-cursor", "rationaleIds": ["feed-rationale-order-contract"]},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-normalized", "rationaleIds": ["feed-rationale-stable-id"]},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-measured", "rationaleIds": ["feed-rationale-profiled-window"]},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-immediate", "rationaleIds": ["feed-rationale-freshness"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry", "feed-accessibility"],
+              "priorityRequirementIds": ["feed-reading-anchor", "feed-accessible-loading", "feed-atomic-cursor"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1},
+                {"cardId": "feed-viewport", "laneId": "ui", "order": 0},
+                {"cardId": "feed-load-control", "laneId": "ui", "order": 1},
+                {"cardId": "feed-api", "laneId": "external", "order": 0},
+                {"cardId": "feed-measurements", "laneId": "data", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"},
+                {"fromCardId": "feed-request-gate", "toCardId": "feed-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-cursor", "rationaleIds": ["feed-rationale-order-contract"]},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-normalized", "rationaleIds": ["feed-rationale-stable-id"]},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-measured", "rationaleIds": ["feed-rationale-profiled-window"]},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-stage", "rationaleIds": ["feed-rationale-reading-context"]}
+              ],
+              "twistResponseActionIds": ["feed-twist-anchor", "feed-twist-stage"],
+              "scratchpad": "Apply the new version only behind the current anchor."
+            }
+          },
+          {
+            "id": "feed-strong-page-window",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry", "feed-memory-budget"],
+              "priorityRequirementIds": ["feed-reading-anchor", "feed-bounded-rendering", "feed-accessible-loading"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1},
+                {"cardId": "feed-load-control", "laneId": "ui", "order": 0},
+                {"cardId": "feed-view", "laneId": "ui", "order": 1},
+                {"cardId": "feed-pages", "laneId": "data", "order": 0},
+                {"cardId": "feed-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"},
+                {"fromCardId": "feed-request-gate", "toCardId": "feed-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-cursor", "rationaleIds": ["feed-rationale-order-contract"]},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-normalized", "rationaleIds": ["feed-rationale-stable-id"]},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-pages", "rationaleIds": ["feed-rationale-page-boundary"]},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-arrival", "rationaleIds": ["feed-rationale-no-version"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry", "feed-memory-budget"],
+              "priorityRequirementIds": ["feed-reading-anchor", "feed-bounded-rendering", "feed-accessible-loading"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1},
+                {"cardId": "feed-load-control", "laneId": "ui", "order": 0},
+                {"cardId": "feed-view", "laneId": "ui", "order": 1},
+                {"cardId": "feed-pages", "laneId": "data", "order": 0},
+                {"cardId": "feed-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"},
+                {"fromCardId": "feed-request-gate", "toCardId": "feed-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-cursor", "rationaleIds": ["feed-rationale-order-contract"]},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-normalized", "rationaleIds": ["feed-rationale-stable-id"]},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-pages", "rationaleIds": ["feed-rationale-page-boundary"]},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-stage", "rationaleIds": ["feed-rationale-reading-context"]}
+              ],
+              "twistResponseActionIds": ["feed-twist-anchor", "feed-twist-stage"],
+              "scratchpad": "Reload evicted pages from a known cursor boundary."
+            }
+          },
+          {
+            "id": "feed-developing",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry"],
+              "priorityRequirementIds": ["feed-bounded-rendering", "feed-accessible-loading"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-load-control", "laneId": "ui", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-cursor", "rationaleIds": []},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-normalized", "rationaleIds": []},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-pages", "rationaleIds": []},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-immediate", "rationaleIds": []}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry"],
+              "priorityRequirementIds": ["feed-bounded-rendering", "feed-accessible-loading"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1}
+              ],
+              "connections": [],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-cursor", "rationaleIds": []},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-append", "rationaleIds": ["feed-rationale-response-order"]},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-pages", "rationaleIds": []},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-stage", "rationaleIds": ["feed-rationale-reading-context"]}
+              ],
+              "twistResponseActionIds": ["feed-twist-anchor"],
+              "scratchpad": ""
+            }
+          },
+          {
+            "id": "feed-critical",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry", "feed-accessibility"],
+              "priorityRequirementIds": ["feed-reading-anchor", "feed-accessible-loading", "feed-atomic-cursor"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1},
+                {"cardId": "feed-load-control", "laneId": "ui", "order": 0},
+                {"cardId": "feed-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"},
+                {"fromCardId": "feed-request-gate", "toCardId": "feed-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-offset", "rationaleIds": ["feed-rationale-simple-offset"]},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-append", "rationaleIds": ["feed-rationale-response-order"]},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-measured", "rationaleIds": ["feed-rationale-profiled-window"]},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-immediate", "rationaleIds": ["feed-rationale-freshness"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["feed-order-authority", "feed-row-geometry", "feed-accessibility"],
+              "priorityRequirementIds": ["feed-reading-anchor", "feed-accessible-loading", "feed-atomic-cursor"],
+              "placements": [
+                {"cardId": "feed-controller", "laneId": "state", "order": 0},
+                {"cardId": "feed-request-gate", "laneId": "state", "order": 1},
+                {"cardId": "feed-load-control", "laneId": "ui", "order": 0},
+                {"cardId": "feed-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "feed-controller", "toCardId": "feed-request-gate", "typeId": "event-flow"},
+                {"fromCardId": "feed-request-gate", "toCardId": "feed-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "feed-pagination-model", "optionId": "feed-page-offset", "rationaleIds": ["feed-rationale-simple-offset"]},
+                {"decisionId": "feed-merge-model", "optionId": "feed-merge-append", "rationaleIds": ["feed-rationale-response-order"]},
+                {"decisionId": "feed-window-model", "optionId": "feed-window-measured", "rationaleIds": ["feed-rationale-profiled-window"]},
+                {"decisionId": "feed-order-change", "optionId": "feed-order-stage", "rationaleIds": ["feed-rationale-reading-context"]}
+              ],
+              "twistResponseActionIds": ["feed-twist-anchor", "feed-twist-stage"],
+              "scratchpad": ""
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-07-29",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt and choices are original.",
+          "references": [
+            {
+              "title": "MDN Intersection Observer API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API",
+              "license": "CC BY-SA 2.5 or later",
+              "role": "Validate observation as a loading signal rather than an ownership boundary",
+              "accessedAt": "2026-07-29"
+            },
+            {
+              "title": "WAI-ARIA Authoring Practices Feed Pattern",
+              "url": "https://www.w3.org/WAI/ARIA/apg/patterns/feed/",
+              "license": "W3C Document License",
+              "role": "Validate focus, loading, and feed accessibility considerations",
+              "accessedAt": "2026-07-29"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

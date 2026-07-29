@@ -63,6 +63,30 @@
   background: var(--uf-status-danger-bg);
 }
 
+.coding-draft-recovery {
+  display: grid;
+  gap: var(--uf-space-3);
+  margin-bottom: var(--uf-space-4);
+  border-color: var(--uf-status-warn-border);
+  background: var(--uf-status-warn-bg);
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  p {
+    color: var(--uf-text-secondary);
+    line-height: 1.55;
+  }
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--uf-space-2);
+  }
+}
+
 .mcq-layout {
   display: grid;
   grid-template-columns: 230px minmax(0, 820px);
@@ -239,6 +263,11 @@ legend {
   grid-template-columns: minmax(250px, 340px) minmax(0, 1fr);
   gap: var(--uf-space-4);
   align-items: start;
+}
+
+.coding-layout[inert],
+.transition-card[inert] {
+  opacity: .64;
 }
 
 .coding-brief {

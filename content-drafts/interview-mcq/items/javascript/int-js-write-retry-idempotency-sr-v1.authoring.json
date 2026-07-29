@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-write-retry-idempotency-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "write-retry-idempotency",
+    "prompt": "A checkout `POST` can time out after the server has created an order. The endpoint documents `Idempotency-Key` support, and the client may retry an unacknowledged attempt but must not create a second order. Which ownership policy is safe?",
+    "options": [
+      {
+        "id": "choice-2836f6684c",
+        "label": "Generate a fresh key for each retry so the server can distinguish every network attempt in the sequence."
+      },
+      {
+        "id": "choice-a729b49d56",
+        "label": "Retry without a key after a client-side lookup reports no order, treating that read as a creation lock."
+      },
+      {
+        "id": "choice-c317343cd9",
+        "label": "Create one key for the logical checkout, reuse it for exact retries, and rotate it only for a new operation."
+      }
+    ],
+    "estimatedSeconds": 125
+  },
+  "private": {
+    "correctOptionId": "choice-c317343cd9",
+    "answerProof": {
+      "summary": "The idempotency key belongs to the logical mutation rather than an individual transport attempt. Reusing it lets the server recognize a replay and return the original operation's outcome without creating another resource.",
+      "decisiveConstraints": [
+        "The first timed-out request may already have committed.",
+        "Each retry represents the same logical checkout and payload.",
+        "A genuinely new checkout must receive a different operation identity."
+      ],
+      "claims": [
+        {
+          "statement": "POST is not inherently idempotent, so replaying the same POST can repeat its server-side effect.",
+          "sourceIds": [
+            "mdn-http-idempotent"
+          ]
+        },
+        {
+          "statement": "For an endpoint supporting `Idempotency-Key`, retries of one request reuse its key while a new request uses a new key.",
+          "sourceIds": [
+            "mdn-idempotency-key"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-2836f6684c",
+        "verdict": "incorrect",
+        "explanation": "A new key makes the retry look like a new logical mutation, so a server cannot deduplicate the committed first attempt.",
+        "plausibility": "Unique identifiers per transport attempt are useful for tracing and log correlation.",
+        "misconceptionTag": "idempotency-key-identifies-attempt",
+        "falsifyingConstraint": "Every replay of one logical checkout must present the same deduplication identity."
+      },
+      {
+        "optionId": "choice-a729b49d56",
+        "verdict": "incorrect",
+        "explanation": "A read followed by a write is not atomic; the original request can commit after the lookup and before the retry.",
+        "plausibility": "Checking for an existing order seems to avoid replay when the first response was merely lost.",
+        "misconceptionTag": "read-before-write-is-deduplication-lock",
+        "falsifyingConstraint": "The policy must remain safe when commit visibility races with retry timing."
+      },
+      {
+        "optionId": "choice-c317343cd9",
+        "verdict": "correct",
+        "explanation": "Stable operation identity lets the server collapse exact replays while preserving distinct identities for later checkouts.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "http-idempotency",
+      "retry-safety",
+      "operation-identity"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Idempotent",
+        "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent",
+        "sourceId": "mdn-http-idempotent"
+      },
+      {
+        "title": "MDN: Idempotency-Key header",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Idempotency-Key",
+        "sourceId": "mdn-idempotency-key"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-http-idempotent",
+          "title": "MDN: Idempotent",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-idempotency-key",
+          "title": "MDN: Idempotency-Key header",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Idempotency-Key",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

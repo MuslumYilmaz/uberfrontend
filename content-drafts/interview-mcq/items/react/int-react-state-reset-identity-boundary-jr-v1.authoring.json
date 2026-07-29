@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-state-reset-identity-boundary-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "state-reset-identity-boundary",
+    "prompt": "An admin page keeps its table filters while switching customers, but the mounted customer editor incorrectly carries an unsaved draft into the next customer. A customer change should recreate only the editor's local state. Which tree design sets the intended identity boundary?",
+    "options": [
+      {
+        "id": "choice-537d8f2973",
+        "label": "Keep the editor identity and reset each draft field from an Effect keyed by `customerId`."
+      },
+      {
+        "id": "choice-0551c70191",
+        "label": "Key the whole admin page by `customerId` so its filters and editor mount together."
+      },
+      {
+        "id": "choice-3e50a6eb42",
+        "label": "Key the editor subtree by `customerId` while leaving the surrounding page identity stable."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-3e50a6eb42",
+    "answerProof": {
+      "summary": "React associates local state with tree position and identity; changing the editor's key recreates that subtree while preserving the unkeyed surrounding page.",
+      "decisiveConstraints": [
+        "A different customer represents a new editor-state identity.",
+        "Table filters outside the editor must survive the customer change.",
+        "Every local editor state value should reset at the same boundary."
+      ],
+      "claims": [
+        {
+          "statement": "React preserves state while the same component remains at the same tree position and can reset a subtree when its key changes.",
+          "sourceIds": [
+            "react19-preserving-resetting-state"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-537d8f2973",
+        "verdict": "incorrect",
+        "explanation": "An Effect performs a later synchronization and requires every present and future draft field to be reset manually instead of defining a fresh subtree identity.",
+        "plausibility": "A dependency on the customer identifier can notice navigation and assign initial values after the change.",
+        "misconceptionTag": "effect-reset-equals-new-identity",
+        "falsifyingConstraint": "All local state owned by the editor must restart together at the customer boundary."
+      },
+      {
+        "optionId": "choice-0551c70191",
+        "verdict": "incorrect",
+        "explanation": "Changing the page key recreates both the editor and its surrounding table, discarding filters that should remain stable.",
+        "plausibility": "A page-level key guarantees that no state from the previous customer survives anywhere in the page.",
+        "misconceptionTag": "broad-key-preserves-parent-state",
+        "falsifyingConstraint": "The surrounding table filters must remain mounted across customer changes."
+      },
+      {
+        "optionId": "choice-3e50a6eb42",
+        "verdict": "correct",
+        "explanation": "The key gives each customer a distinct editor identity, and placing it below the page leaves unrelated parent state intact.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "React state identity",
+      "keys outside lists",
+      "scoped subtree resets"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Preserving and Resetting State",
+        "url": "https://react.dev/learn/preserving-and-resetting-state",
+        "sourceId": "react19-preserving-resetting-state"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-preserving-resetting-state",
+          "title": "React: Preserving and Resetting State",
+          "url": "https://react.dev/learn/preserving-and-resetting-state",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

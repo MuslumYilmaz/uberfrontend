@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-control-value-accessor-contract-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "control-value-accessor-contract",
+    "prompt": "A custom star-rating is already registered through `NG_VALUE_ACCESSOR`. Clicks call the registered change callback, blur calls the touch callback, and `setDisabledState` updates the buttons. Only `formControl.setValue(4)` fails to repaint because `writeValue` currently calls the change callback instead of updating the displayed stars. Which correction restores the intended direction?",
+    "options": [
+      {
+        "id": "choice-cc28395f07",
+        "label": "Subscribe to the parent control's `valueChanges` inside the rating and repaint from that separate stream."
+      },
+      {
+        "id": "choice-9a18b1a595",
+        "label": "Update the displayed stars inside `writeValue`, and invoke the change callback only for user clicks."
+      },
+      {
+        "id": "choice-30d988193a",
+        "label": "Replace the accessor with `@Input() value` and `@Output() valueChange`, then let each parent repaint it."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-9a18b1a595",
+    "answerProof": {
+      "summary": "A ControlValueAccessor keeps model-to-view writes separate from view-to-model notifications: `writeValue` renders the incoming model value, while the registered change callback is reserved for user-originated changes.",
+      "decisiveConstraints": [
+        "Programmatic model writes must update the component view without being reported back as fresh user input.",
+        "The already-correct click, blur, and disabled channels must keep their existing ownership."
+      ],
+      "claims": [
+        {
+          "statement": "`ControlValueAccessor.writeValue` receives programmatic model-to-view writes, while the registered change callback propagates view changes back to Angular forms.",
+          "sourceIds": [
+            "angular22-control-value-accessor"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-cc28395f07",
+        "verdict": "incorrect",
+        "explanation": "Reaching into a parent control creates a second synchronization path and couples the reusable widget to one host instead of honoring the accessor callback it already receives.",
+        "plausibility": "A valueChanges subscription would observe programmatic updates from that particular control.",
+        "misconceptionTag": "accessor-needs-parent-control-subscription",
+        "falsifyingConstraint": "Model-to-view updates must travel through the existing accessor contract for any compatible forms directive."
+      },
+      {
+        "optionId": "choice-9a18b1a595",
+        "verdict": "correct",
+        "explanation": "`writeValue` owns rendering an incoming model value; only a user click should invoke the registered view-to-model change callback.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-30d988193a",
+        "verdict": "incorrect",
+        "explanation": "A general input/output pair abandons the forms integration that already supplies touch, disabled, and model-write channels.",
+        "plausibility": "An input and output can support manual two-way synchronization in a parent component.",
+        "misconceptionTag": "replace-working-accessor-with-manual-binding",
+        "falsifyingConstraint": "The rating must continue participating in Angular forms without per-parent glue code."
+      }
+    ],
+    "remediationTopics": [
+      "Angular ControlValueAccessor",
+      "NG_VALUE_ACCESSOR",
+      "model-to-view writes",
+      "view-to-model change callbacks"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: ControlValueAccessor",
+        "url": "https://angular.dev/api/forms/ControlValueAccessor",
+        "sourceId": "angular22-control-value-accessor"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-control-value-accessor",
+          "title": "Angular: ControlValueAccessor",
+          "url": "https://angular.dev/api/forms/ControlValueAccessor",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

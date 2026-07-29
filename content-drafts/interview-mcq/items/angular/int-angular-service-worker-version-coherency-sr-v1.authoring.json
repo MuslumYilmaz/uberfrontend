@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-service-worker-version-coherency-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "service-worker-version-coherency",
+    "prompt": "An Angular PWA calls `SwUpdate.activateUpdate()` as soon as `VERSION_READY` arrives, without reloading the tab. The existing application shell later requests a lazy chunk whose filename belongs to its old build and fails. Which update flow preserves a coherent application version?",
+    "options": [
+      {
+        "id": "choice-d1447c84e7",
+        "label": "Call `activateUpdate()`, clear runtime data caches, and continue executing the already loaded application shell."
+      },
+      {
+        "id": "choice-6b25a126b0",
+        "label": "Notify the user when the version is ready, preserve needed draft state, and reload into the new shell."
+      },
+      {
+        "id": "choice-18b4f02fa1",
+        "label": "Keep the old shell indefinitely and preload each remaining lazy route before checking for later versions."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-6b25a126b0",
+    "answerProof": {
+      "summary": "A reload lets the service worker serve one complete installed version to the tab; activating in place can combine an old running shell with new resource names and break lazy loading.",
+      "decisiveConstraints": [
+        "The current JavaScript shell is already executing.",
+        "Lazy chunk filenames can differ between application versions.",
+        "The new version should be applied without mixing build resource graphs."
+      ],
+      "claims": [
+        {
+          "statement": "Angular documents reloading after a version becomes ready as the safe way to update the current tab.",
+          "sourceIds": [
+            "angular22-service-worker-communications"
+          ]
+        },
+        {
+          "statement": "Angular warns that activating an update without reloading can create a mismatch between the application shell and lazy-loaded chunks.",
+          "sourceIds": [
+            "angular22-service-worker-communications"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d1447c84e7",
+        "verdict": "incorrect",
+        "explanation": "Clearing data caches does not replace the JavaScript shell already in memory, so the mixed-version chunk references remain.",
+        "plausibility": "Cache cleanup is a common response to stale service-worker content after deployment.",
+        "misconceptionTag": "data-cache-clear-replaces-app-shell",
+        "falsifyingConstraint": "The mismatch is between executing code and build-specific resource filenames."
+      },
+      {
+        "optionId": "choice-6b25a126b0",
+        "verdict": "correct",
+        "explanation": "A controlled reload starts the tab from the ready version's shell and lets its lazy imports reference that same build.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-18b4f02fa1",
+        "verdict": "incorrect",
+        "explanation": "Keeping the tab on an old release postpones the update and cannot guarantee that every future optional chunk remains available.",
+        "plausibility": "An installed Angular service-worker version can continue serving a coherent old resource set to an existing client.",
+        "misconceptionTag": "preloading-old-version-is-update-activation",
+        "falsifyingConstraint": "The requirement is to move the current tab onto the ready application version."
+      }
+    ],
+    "remediationTopics": [
+      "Angular service worker updates",
+      "VERSION_READY",
+      "activateUpdate risks",
+      "lazy chunk version coherence"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Communicating with the service worker",
+        "url": "https://angular.dev/ecosystem/service-workers/communications",
+        "sourceId": "angular22-service-worker-communications"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-service-worker-communications",
+          "title": "Angular: Communicating with the service worker",
+          "url": "https://angular.dev/ecosystem/service-workers/communications",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

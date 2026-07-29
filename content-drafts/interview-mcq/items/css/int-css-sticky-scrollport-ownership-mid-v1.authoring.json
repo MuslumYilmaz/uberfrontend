@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-sticky-scrollport-ownership-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "css",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "sticky-scrollport-ownership",
+    "prompt": "A report shell with `overflow: auto` is the element users scroll. Inside it, a rounded wrapper has `overflow: hidden`; a table header below that wrapper uses `position: sticky; top: 0` but never sticks while the shell scrolls. Which structural fix restores the intended scroll owner?",
+    "options": [
+      {
+        "id": "choice-b36955f4ca",
+        "label": "Increase the header's `z-index` so it can escape the hidden wrapper and attach to the outer shell."
+      },
+      {
+        "id": "choice-c9e3cbfcd1",
+        "label": "Change the header to `position: fixed` and calculate its horizontal alignment from the shell on every scroll."
+      },
+      {
+        "id": "choice-49bcf66235",
+        "label": "Remove the wrapper's overflow boundary, relocate its clipping, and leave the shell as the scroll container."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-49bcf66235",
+    "answerProof": {
+      "summary": "Sticky positioning selects the nearest ancestor with a scrolling mechanism, even if that ancestor is not the one visibly scrolling. Removing the intermediate overflow boundary lets the header resolve against the actual report scroll container.",
+      "decisiveConstraints": [
+        "The outer shell owns visible scrolling.",
+        "The intermediate hidden-overflow wrapper creates a nearer scrolling mechanism.",
+        "The sticky header already has a non-auto inset."
+      ],
+      "claims": [
+        {
+          "statement": "A sticky element sticks relative to its nearest ancestor with a scrolling mechanism created by overflow values such as hidden, scroll, or auto.",
+          "sourceIds": [
+            "mdn-css-position"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-b36955f4ca",
+        "verdict": "incorrect",
+        "explanation": "Z-index changes painting order within stacking contexts but does not change which ancestor supplies the sticky scroll mechanism.",
+        "plausibility": "Sticky headers often need z-index to paint above rows after they are already sticking.",
+        "misconceptionTag": "z-index-selects-sticky-scrollport",
+        "falsifyingConstraint": "The failure occurs before paint ordering because the wrong ancestor owns sticky positioning."
+      },
+      {
+        "optionId": "choice-c9e3cbfcd1",
+        "verdict": "incorrect",
+        "explanation": "Fixed positioning leaves table flow and introduces manual geometry synchronization instead of repairing the sticky ancestor contract.",
+        "plausibility": "A fixed header can remain visible independently of nested overflow containers.",
+        "misconceptionTag": "fixed-position-is-equivalent-sticky-fix",
+        "falsifyingConstraint": "The header must remain table-aligned and stick only within the report shell's scroll range."
+      },
+      {
+        "optionId": "choice-49bcf66235",
+        "verdict": "correct",
+        "explanation": "Relocating clipping removes the accidental nearer scroll mechanism and restores the shell as the sticky reference.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "sticky-positioning",
+      "scroll-containers",
+      "overflow-ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: position",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position",
+        "sourceId": "mdn-css-position"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-css-position",
+          "title": "MDN: position",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

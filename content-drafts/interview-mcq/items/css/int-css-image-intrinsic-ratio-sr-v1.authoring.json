@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-image-intrinsic-ratio-sr-v1",
-  "revision": 3,
+  "revision": 4,
   "author": {
     "id": "codex-core-author",
     "type": "ai",
@@ -13,19 +13,19 @@
     "difficultyBand": "foundation",
     "format": "conceptual",
     "competency": "intrinsic-ratio-layout-reservation",
-    "prompt": "Field data shows layout shifts across a publishing platform's responsive feeds when CDN images load. Editors choose different ratios, every delivery variant carries intrinsic pixel metadata, and the shared image contract must reserve the right box before resource selection without fixing rendered size. Which platform change meets those constraints?",
+    "prompt": "Field data shows layout shifts in a publishing platform's art-directed `<picture>` components. Desktop sources use landscape crops, mobile sources use portrait crops, and the CDN already exposes every crop's intrinsic dimensions. The browser must reserve the selected crop's ratio before download while the used width remains responsive, without a JavaScript or breakpoint-specific ratio table. Which markup contract meets those constraints?",
     "options": [
       {
         "id": "choice-33350f531f",
-        "label": "Give every feed image the same estimated `min-height`, then remove that placeholder after its load event."
+        "label": "Put dimensions only on the fallback `<img>` and let every selected `<source>` inherit that one ratio."
       },
       {
         "id": "choice-db5d42c2aa",
-        "label": "Emit each asset's `width` and `height` attributes, then apply `max-width: 100%; height: auto` responsively."
+        "label": "Emit each `<source>` crop's dimensions plus fallback `<img>` dimensions, then size the image responsively."
       },
       {
         "id": "choice-02072ee3c0",
-        "label": "Wait for each `load`, read its natural dimensions, and then assign the matching wrapper aspect ratio."
+        "label": "Set one CSS `aspect-ratio` from the fallback crop and use `object-fit: cover` for every selected source."
       }
     ],
     "estimatedSeconds": 90
@@ -33,15 +33,22 @@
   "private": {
     "correctOptionId": "choice-db5d42c2aa",
     "answerProof": {
-      "summary": "Per-image intrinsic dimensions give the browser an aspect ratio during initial layout, while responsive CSS scales that reserved box without locking its display dimensions.",
+      "summary": "Per-candidate dimensions let an art-directed picture expose the selected crop's intrinsic ratio during initial layout, while responsive CSS controls the used width without a separate ratio table.",
       "decisiveConstraints": [
-        "The shared contract serves assets with different intrinsic ratios.",
-        "Per-asset dimensions are available before resource selection and download.",
-        "The same markup must remain responsive across feed layouts."
+        "Art-directed source candidates have intentionally different intrinsic ratios.",
+        "The selected candidate's dimensions are available before its resource is downloaded.",
+        "The component must stay responsive without duplicating media-query logic in CSS or JavaScript."
       ],
       "claims": [
         {
-          "statement": "Replaced elements such as images can derive a preferred aspect ratio from their width and height attributes before responsive CSS determines the used size.",
+          "statement": "Within a `<picture>`, `width` and `height` attributes are allowed on image `<source>` elements, so each selected source can provide its own intrinsic dimensions while the fallback `<img>` carries its dimensions.",
+          "sourceIds": [
+            "mdn-source-element",
+            "mdn-image-element"
+          ]
+        },
+        {
+          "statement": "Intrinsic width and height attributes can supply an image's preferred aspect ratio before responsive CSS determines its used size.",
           "sourceIds": [
             "mdn-aspect-ratio",
             "mdn-image-element"
@@ -53,15 +60,15 @@
       {
         "optionId": "choice-33350f531f",
         "verdict": "incorrect",
-        "explanation": "One platform-wide estimate cannot reserve the correct box for assets with different ratios and can shift again when removed.",
-        "misconceptionTag": "one-placeholder-size-fits-all-images",
-        "plausibility": "Any early placeholder height can reduce the initial amount of movement.",
-        "falsifyingConstraint": "The shared contract must reserve each asset's known ratio across responsive layouts."
+        "explanation": "Fallback dimensions describe the fallback crop; they cannot encode the intentionally different ratio of whichever art-directed source matches.",
+        "misconceptionTag": "picture-sources-inherit-fallback-ratio",
+        "plausibility": "The `<img>` remains the replaced element and its dimensions can reserve a ratio for ordinary same-ratio source sets.",
+        "falsifyingConstraint": "Each selected art-directed crop must reserve its own known ratio."
       },
       {
         "optionId": "choice-db5d42c2aa",
         "verdict": "correct",
-        "explanation": "Per-asset attributes establish the ratio during initial layout, while responsive CSS adapts the used dimensions to each container.",
+        "explanation": "Dimensions on each eligible source and the fallback expose the matching crop ratio during selection, while responsive CSS still adapts the used image size.",
         "misconceptionTag": null,
         "plausibility": null,
         "falsifyingConstraint": null
@@ -69,16 +76,16 @@
       {
         "optionId": "choice-02072ee3c0",
         "verdict": "incorrect",
-        "explanation": "Post-load measurement happens after the platform needed the reservation, so it cannot prevent the original shift.",
-        "misconceptionTag": "post-load-measurement-prevents-shift",
-        "plausibility": "Natural dimensions provide the exact ratio once the resource is available.",
-        "falsifyingConstraint": "Every feed must reserve the correct per-asset space before the resource arrives."
+        "explanation": "One forced ratio hides the selected crop's actual geometry and can crop or letterbox content rather than reserving that candidate's intended box.",
+        "misconceptionTag": "object-fit-replaces-candidate-dimensions",
+        "plausibility": "A fixed aspect ratio can stabilize layout when the product intentionally uses one presentation ratio.",
+        "falsifyingConstraint": "Landscape and portrait candidates must retain their distinct intended ratios."
       }
     ],
     "remediationTopics": [
-      "intrinsic-image-size",
+      "picture source dimensions",
       "aspect-ratio",
-      "layout-stability architecture"
+      "art direction and layout stability"
     ],
     "learnMore": [
       {
@@ -90,6 +97,11 @@
         "title": "MDN: img element",
         "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
         "sourceId": "mdn-image-element"
+      },
+      {
+        "title": "MDN: source element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source",
+        "sourceId": "mdn-source-element"
       }
     ],
     "provenance": {
@@ -120,6 +132,18 @@
           "licenseId": "CC-BY-SA-2.5",
           "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
           "retrievedAt": "2026-07-22",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-source-element",
+          "title": "MDN: source element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
           "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
           "official": true,
           "copiedText": false

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-bfcache-page-lifecycle-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "bfcache-page-lifecycle",
+    "prompt": "A live operations page owns a WebSocket and heartbeat timer. Back/forward navigation should remain eligible for bfcache, and a restored snapshot must not continue with stale connection state. Which lifecycle policy best spans suspension and restoration?",
+    "options": [
+      {
+        "id": "choice-f594eb09a8",
+        "label": "Close resources from `unload`, then rebuild them from `load` because both events bracket each history visit."
+      },
+      {
+        "id": "choice-ed13d6afa6",
+        "label": "Pause resources on `visibilitychange`, then reconnect each time visibility becomes visible without checking page history."
+      },
+      {
+        "id": "choice-e6814ecfe4",
+        "label": "Release resources on `pagehide`, then on `pageshow` use `persisted` to reconnect and revalidate restored data."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-e6814ecfe4",
+    "answerProof": {
+      "summary": "`pagehide` is compatible with bfcache and provides a suspension boundary, while `pageshow` runs on history restoration and its `persisted` flag identifies a cached document that needs reconnection and data revalidation.",
+      "decisiveConstraints": [
+        "The page must not install lifecycle handling that blocks bfcache.",
+        "Network and timer ownership must end before a cached document is suspended.",
+        "A restored heap must reestablish external state rather than trust its snapshot."
+      ],
+      "claims": [
+        {
+          "statement": "`pagehide` is compatible with bfcache, unlike relying on unload-oriented lifecycle handling.",
+          "sourceIds": [
+            "mdn-window-pagehide"
+          ]
+        },
+        {
+          "statement": "`pageshow` fires when returning through history, including bfcache restoration, and exposes `PageTransitionEvent.persisted`.",
+          "sourceIds": [
+            "mdn-window-pageshow"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-f594eb09a8",
+        "verdict": "incorrect",
+        "explanation": "Unload-oriented handling can prevent bfcache use, and a restored document does not perform a fresh load cycle.",
+        "plausibility": "Load and unload appear to form a familiar setup and teardown pair for ordinary document navigation.",
+        "misconceptionTag": "bfcache-restores-through-load",
+        "falsifyingConstraint": "The page must preserve bfcache eligibility and handle restoration of the existing document snapshot."
+      },
+      {
+        "optionId": "choice-ed13d6afa6",
+        "verdict": "incorrect",
+        "explanation": "Visibility changes also occur for tab switches and prerendering, so reconnecting on each visible transition conflates visibility with history restoration.",
+        "plausibility": "Page visibility is useful for reducing background work and can fire in mobile lifecycle situations.",
+        "misconceptionTag": "visibility-equals-history-restoration",
+        "falsifyingConstraint": "Revalidation is specifically required when an existing history snapshot returns from bfcache."
+      },
+      {
+        "optionId": "choice-e6814ecfe4",
+        "verdict": "correct",
+        "explanation": "The paired page-transition events preserve cache compatibility and distinguish a restored snapshot for explicit external-state recovery.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "bfcache",
+      "pagehide-pageshow",
+      "external-resource-lifetimes"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: pagehide event",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event",
+        "sourceId": "mdn-window-pagehide"
+      },
+      {
+        "title": "MDN: pageshow event",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/pageshow_event",
+        "sourceId": "mdn-window-pageshow"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-window-pagehide",
+          "title": "MDN: pagehide event",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-window-pageshow",
+          "title": "MDN: pageshow event",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/pageshow_event",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

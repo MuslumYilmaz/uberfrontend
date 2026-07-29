@@ -73,6 +73,17 @@
           "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE"
         }
       ]
+    },
+    {
+      "hostname": "pinia.vuejs.org",
+      "sourceClass": "framework",
+      "freshnessDays": 180,
+      "licenseRules": [
+        {
+          "licenseId": "MIT",
+          "licenseUrl": "https://github.com/vuejs/pinia/blob/v3/LICENSE"
+        }
+      ]
     }
   ],
   "unofficialSourceRules": {

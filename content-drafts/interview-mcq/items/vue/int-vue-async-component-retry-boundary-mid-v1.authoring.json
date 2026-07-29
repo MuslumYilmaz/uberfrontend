@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-async-component-retry-boundary-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "async-component-retry-boundary",
+    "prompt": "An analytics widget is loaded as a Vue 3.5 async component from a flaky CDN. A transient network failure may be retried at most twice after the initial attempt; any non-transient error or exhausted retry budget must render the error component. Which definition owns that policy without an unbounded import loop?",
+    "code": {
+      "language": "javascript",
+      "runtime": "vue-3.5",
+      "source": "const AnalyticsWidget = defineAsyncComponent(() =>\n  import('./AnalyticsWidget.vue')\n)"
+    },
+    "options": [
+      {
+        "id": "choice-a7bca5d90e",
+        "label": "Set `errorComponent`; in `onError`, use a local counter to `retry` at most two transient failures, else `fail`."
+      },
+      {
+        "id": "choice-8c78927ce1",
+        "label": "Recursively catch rejected imports and start another import until one eventually resolves."
+      },
+      {
+        "id": "choice-829f346c3c",
+        "label": "Set an error component and timeout, relying on Vue to retry each rejected loader twice."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-a7bca5d90e",
+    "answerProof": {
+      "summary": "The options form owns both terminal rendering and recovery: `errorComponent` supplies the terminal UI, while an explicit local counter starting at zero is incremented before each of at most two eligible `retry` calls; every other failure calls `fail`.",
+      "decisiveConstraints": [
+        "Only transient network failures are retryable.",
+        "No more than two retries may follow the initial load attempt.",
+        "Every terminal failure must settle into the configured error component."
+      ],
+      "claims": [
+        {
+          "statement": "Vue's `defineAsyncComponent` options accept an `errorComponent`, and its `onError` callback exposes `retry` and `fail` controls for loader failures.",
+          "sourceIds": [
+            "vue35-async-component-api",
+            "vue35-async-components"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a7bca5d90e",
+        "verdict": "correct",
+        "explanation": "The configured error component owns the terminal state, while the explicit counter makes the two-retry ceiling independent of any interpretation of Vue's attempt number.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-8c78927ce1",
+        "verdict": "incorrect",
+        "explanation": "Recursive recovery has no enforced attempt ceiling or terminal branch, so a persistent outage can keep creating imports indefinitely.",
+        "misconceptionTag": "eventual-resolution-is-retry-policy",
+        "plausibility": "Retrying the dynamic import can recover when a CDN failure is brief.",
+        "falsifyingConstraint": "The loader must stop after two retries and surface a terminal error."
+      },
+      {
+        "optionId": "choice-829f346c3c",
+        "verdict": "incorrect",
+        "explanation": "The error component and timeout expose failure states, but neither option automatically re-invokes a rejected loader.",
+        "misconceptionTag": "error-ui-implies-automatic-retry",
+        "plausibility": "Vue's advanced async options visibly handle loading delays, timeouts, and rejected loaders.",
+        "falsifyingConstraint": "The implementation must explicitly retry eligible failures within a fixed budget."
+      }
+    ],
+    "remediationTopics": [
+      "Vue async components",
+      "bounded retry policies",
+      "async loader error handling"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Global API - defineAsyncComponent",
+        "url": "https://vuejs.org/api/general.html#defineasynccomponent",
+        "sourceId": "vue35-async-component-api"
+      },
+      {
+        "title": "Vue: Async Components",
+        "url": "https://vuejs.org/guide/components/async.html",
+        "sourceId": "vue35-async-components"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-async-component-api",
+          "title": "Vue: Global API - defineAsyncComponent",
+          "url": "https://vuejs.org/api/general.html#defineasynccomponent",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "vue35-async-components",
+          "title": "Vue: Async Components",
+          "url": "https://vuejs.org/guide/components/async.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

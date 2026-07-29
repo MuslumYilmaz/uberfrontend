@@ -15,6 +15,8 @@ function scoringFixture(overrides = {}) {
       technology: 'javascript',
       competency: 'event-loop',
       prompt: 'Which callback runs first?',
+      code: 'queueMicrotask(run); setTimeout(run, 0);',
+      codeLanguage: 'javascript',
       options: [
         { id: 'option-a', label: 'The queued microtask.' },
         { id: 'option-b', label: 'The queued timer.' },
@@ -70,6 +72,10 @@ describe('Interview result remediation', () => {
     });
 
     expect(results.reviewNext).toEqual([]);
+    expect(results.mcq.questions[0]).toEqual(expect.objectContaining({
+      code: 'queueMicrotask(run); setTimeout(run, 0);',
+      codeLanguage: 'javascript',
+    }));
     expect(results.coding.rubric).toEqual([
       expect.objectContaining({ id: 'behavior', status: 'not_evaluated' }),
     ]);
@@ -126,5 +132,148 @@ describe('Interview result remediation', () => {
       usedSeconds: 180,
       allowedSeconds: 900,
     });
+  });
+});
+
+describe('Guided System Design scoring', () => {
+  test('evaluates allowlisted evidence while keeping rules and numeric weights private', () => {
+    const criterion = (id, evidence, rule) => ({
+      id,
+      weight: 1,
+      evidence,
+      rule,
+    });
+    const axes = [
+      ['requirements', { predicate: 'clarificationSelected', clarificationId: 'clarify-scale' }],
+      ['architecture', {
+        predicate: 'cardInLane',
+        cardId: 'controller',
+        laneId: 'state',
+      }],
+      ['interfaces', {
+        predicate: 'decisionSelected',
+        decisionId: 'cache',
+        optionId: 'keyed',
+      }],
+      ['resilience', { predicate: 'twistActionSelected', actionId: 'abort-stale' }],
+      ['accessibility', {
+        when: {
+          if: { predicate: 'requirementPrioritized', requirementId: 'screen-reader' },
+          then: { predicate: 'decisionSelected', decisionId: 'announce', optionId: 'live' },
+        },
+      }],
+      ['tradeoffs', {
+        when: {
+          if: { predicate: 'requirementPrioritized', requirementId: 'offline' },
+          then: {
+            predicate: 'rationaleSelected',
+            decisionId: 'cache',
+            rationaleId: 'offline-safe',
+          },
+        },
+      }],
+    ].map(([id, rule]) => ({
+      id,
+      title: id,
+      remediationTopics: [`Review ${id}`],
+      criteria: [criterion(`${id}-criterion`, `Evidence for ${id}`, rule)],
+    }));
+    const startedAt = new Date('2026-07-29T10:00:00.000Z');
+    const result = buildResultSnapshot({
+      _id: 'system-design-result',
+      format: 'system-design',
+      level: 'mid',
+      track: 'react',
+      timingMode: 'standard',
+      timingPolicy: { systemDesignSeconds: 900 },
+      systemDesignScenario: {
+        id: 'int-sd-autocomplete-race-mid-v1',
+        title: 'Reliable autocomplete',
+        timeLimitSeconds: 900,
+        selectionLimits: { clarifications: 1, priorities: 1 },
+        decisions: [{ id: 'cache' }],
+        frameworkLenses: {
+          react: { title: 'React lens', prompt: 'Discuss ownership.' },
+        },
+      },
+      systemDesignPrivate: {
+        sourceEvidence: { sourceContentId: 'realtime-search-debounce-cache' },
+        rubric: {
+          axes,
+          contradictions: [{
+            id: 'critical-inactive-axis',
+            severity: 'critical',
+            axisIds: ['accessibility'],
+            summary: 'The selected response creates a critical accessibility conflict.',
+            rule: { predicate: 'twistActionSelected', actionId: 'abort-stale' },
+          }],
+        },
+      },
+      systemDesignDraft: {
+        currentStep: 'twist',
+        clarificationIds: ['clarify-scale'],
+        priorityRequirementIds: ['latency'],
+        placements: [{ cardId: 'controller', laneId: 'state', order: 0 }],
+        connections: [],
+        decisions: [{ decisionId: 'cache', optionId: 'keyed', rationaleIds: [] }],
+        twistResponseActionIds: ['abort-stale'],
+        scratchpad: '',
+      },
+      systemDesignBaseline: {
+        currentStep: 'decisions',
+        clarificationIds: ['clarify-scale'],
+        priorityRequirementIds: ['latency'],
+        placements: [{ cardId: 'controller', laneId: 'state', order: 0 }],
+        connections: [],
+        decisions: [{ decisionId: 'cache', optionId: 'none', rationaleIds: [] }],
+        twistResponseActionIds: [],
+        scratchpad: '',
+      },
+      systemDesignStartedAt: startedAt,
+      systemDesignSubmittedAt: new Date('2026-07-29T10:08:00.000Z'),
+      systemDesignTwistRevealedAt: new Date('2026-07-29T10:06:00.000Z'),
+      systemDesignOutcome: 'submitted',
+    }, {
+      finalizedAt: new Date('2026-07-29T10:08:00.000Z'),
+    });
+
+    expect(result).toEqual(expect.objectContaining({
+      interviewFormat: 'system-design',
+      xpAwarded: 0,
+      employmentPrediction: null,
+      mcq: null,
+      coding: null,
+      systemDesign: expect.objectContaining({
+        scenarioId: 'int-sd-autocomplete-race-mid-v1',
+        scenarioTitle: 'Reliable autocomplete',
+        sourceContentId: 'realtime-search-debounce-cache',
+        practiceSignal: 'needs-focus',
+        frameworkLens: { title: 'React lens', prompt: 'Discuss ownership.' },
+        summary: expect.objectContaining({
+          priorities: expect.any(Array),
+          lanes: expect.any(Array),
+          connections: expect.any(Array),
+          decisions: expect.any(Array),
+          twistActions: expect.any(Array),
+        }),
+      }),
+    }));
+    expect(result.systemDesign.axes.map((axis) => axis.status)).toEqual([
+      'strong-evidence',
+      'strong-evidence',
+      'strong-evidence',
+      'strong-evidence',
+      'needs-focus',
+      'not-evaluated',
+    ]);
+    expect(result.systemDesign.timing).toEqual({
+      usedSeconds: 480,
+      allowedSeconds: 900,
+    });
+    expect(result.systemDesign.partialEvidence).toBe(true);
+    expect(JSON.stringify(result)).not.toContain('weight');
+    expect(JSON.stringify(result)).not.toContain('predicate');
+    expect(JSON.stringify(result)).not.toContain('rule');
+    expect(result.systemDesign.design.scratchpad).toBeUndefined();
   });
 });

@@ -82,6 +82,19 @@ function questionCombinationEligible(combo, track, level) {
   return productionCount >= 1 && outputCount <= 1;
 }
 
+function eligibleQuestionForms({ questions, track, level }) {
+  const expectedTech = TRACK_TECH_COUNTS[track];
+  const expectedBands = bandProfileFor(track, level);
+  if (!expectedTech || !expectedBands) {
+    throw new InterviewSelectionError('Unsupported interview selection');
+  }
+  const eligible = questions.filter(
+    (question) => question.level === level && question.technology in expectedTech
+  );
+  return combinations(eligible, 5)
+    .filter((combo) => questionCombinationEligible(combo, track, level));
+}
+
 function compareCandidateScores(left, right) {
   if (left.totalSeen !== right.totalSeen) return left.totalSeen - right.totalSeen;
   if (left.maxSeen !== right.maxSeen) return left.maxSeen - right.maxSeen;
@@ -103,16 +116,7 @@ function seenStat(value) {
 }
 
 function selectQuestions({ questions, track, level, seenCounts = new Map(), seed }) {
-  const expectedTech = TRACK_TECH_COUNTS[track];
-  const expectedBands = bandProfileFor(track, level);
-  if (!expectedTech || !expectedBands) {
-    throw new InterviewSelectionError('Unsupported interview selection');
-  }
-  const eligible = questions.filter(
-    (question) => question.level === level && question.technology in expectedTech
-  );
-  const candidates = combinations(eligible, 5)
-    .filter((combo) => questionCombinationEligible(combo, track, level))
+  const candidates = eligibleQuestionForms({ questions, track, level })
     .map((combo) => {
       const stats = combo.map((item) => seenStat(seenCounts.get(item.id)));
       const counts = stats.map((stat) => stat.count);
@@ -168,13 +172,94 @@ function selectCodingVariant({ variants, track, level, seenCounts = new Map(), s
   return eligible[0].variant;
 }
 
+function selectSystemDesignScenario({
+  scenarios,
+  level,
+  seenCounts = new Map(),
+  seed,
+}) {
+  const eligible = scenarios
+    .filter((scenario) => scenario.enabled && scenario.level === level)
+    .map((scenario) => {
+      const stat = seenStat(seenCounts.get(scenario.id));
+      return {
+        scenario,
+        seen: stat.count,
+        lastSeenAt: stat.lastSeenAt,
+        tieRank: seededRank(seed, `system-design:${scenario.id}`),
+      };
+    })
+    .sort(
+      (left, right) =>
+        left.seen - right.seen
+        || left.lastSeenAt - right.lastSeenAt
+        || left.tieRank - right.tieRank
+    );
+  if (!eligible.length) {
+    throw new InterviewSelectionError(
+      `No approved System Design scenario is enabled for ${level}`
+    );
+  }
+  return eligible[0].scenario;
+}
+
+function buildSystemDesignPresentationOrder({
+  scenario,
+  privateScenario,
+  seed,
+}) {
+  if (!scenario || !privateScenario || !seed) {
+    throw new InterviewSelectionError(
+      'System Design presentation order requires a pinned scenario and seed'
+    );
+  }
+  const shuffleIds = (values, namespace) => deterministicShuffle(
+    (values || []).map((entry) => entry.id),
+    seed,
+    namespace
+  );
+  return {
+    schemaVersion: '1.0.0',
+    clarificationIds: shuffleIds(
+      scenario.clarifications,
+      `system-design:${scenario.id}:clarifications`
+    ),
+    requirementIds: shuffleIds(
+      scenario.requirements,
+      `system-design:${scenario.id}:requirements`
+    ),
+    cardIds: shuffleIds(
+      scenario.cards,
+      `system-design:${scenario.id}:cards`
+    ),
+    decisions: (scenario.decisions || []).map((decision) => ({
+      decisionId: decision.id,
+      optionIds: shuffleIds(
+        decision.options,
+        `system-design:${scenario.id}:decision:${decision.id}:options`
+      ),
+      rationaleIds: shuffleIds(
+        decision.rationales,
+        `system-design:${scenario.id}:decision:${decision.id}:rationales`
+      ),
+    })),
+    twistActionIds: shuffleIds(
+      privateScenario.twist?.responseActions,
+      `system-design:${scenario.id}:twist-actions`
+    ),
+  };
+}
+
 module.exports = {
   DEFAULT_BAND_PROFILE,
   SENIOR_BAND_PROFILES,
   TRACK_TECH_COUNTS,
   InterviewSelectionError,
   bandProfileFor,
+  buildSystemDesignPresentationOrder,
   deterministicShuffle,
+  eligibleQuestionForms,
   selectCodingVariant,
   selectQuestions,
+  selectSystemDesignScenario,
 };

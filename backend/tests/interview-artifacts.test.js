@@ -1,8 +1,14 @@
 'use strict';
 
+const crypto = require('crypto');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
 const {
   InterviewContentError,
   loadInterviewArtifacts,
+  loadSystemDesignArtifacts,
   resetInterviewArtifactsCache,
 } = require('../services/interview/artifacts');
 
@@ -10,6 +16,10 @@ describe('interview runtime artifact gate', () => {
   const originalNodeEnv = process.env.NODE_ENV;
   const originalCandidate = process.env.INTERVIEW_ALLOW_CANDIDATE_BANK;
   const originalAccess = process.env.INTERVIEW_MODE_ACCESS;
+  const originalBankPublicPath = process.env.INTERVIEW_BANK_PUBLIC_PATH;
+  const originalBankReleasePath = process.env.INTERVIEW_BANK_RELEASE_PATH;
+  const originalDesignPublicPath = process.env.INTERVIEW_SYSTEM_DESIGN_PUBLIC_PATH;
+  const temporaryDirectories = [];
 
   afterEach(() => {
     process.env.NODE_ENV = originalNodeEnv;
@@ -17,6 +27,15 @@ describe('interview runtime artifact gate', () => {
     else process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = originalCandidate;
     if (originalAccess == null) delete process.env.INTERVIEW_MODE_ACCESS;
     else process.env.INTERVIEW_MODE_ACCESS = originalAccess;
+    if (originalBankPublicPath == null) delete process.env.INTERVIEW_BANK_PUBLIC_PATH;
+    else process.env.INTERVIEW_BANK_PUBLIC_PATH = originalBankPublicPath;
+    if (originalBankReleasePath == null) delete process.env.INTERVIEW_BANK_RELEASE_PATH;
+    else process.env.INTERVIEW_BANK_RELEASE_PATH = originalBankReleasePath;
+    if (originalDesignPublicPath == null) delete process.env.INTERVIEW_SYSTEM_DESIGN_PUBLIC_PATH;
+    else process.env.INTERVIEW_SYSTEM_DESIGN_PUBLIC_PATH = originalDesignPublicPath;
+    temporaryDirectories.splice(0).forEach((directory) => {
+      fs.rmSync(directory, { force: true, recursive: true });
+    });
     resetInterviewArtifactsCache();
   });
 
@@ -26,9 +45,72 @@ describe('interview runtime artifact gate', () => {
     resetInterviewArtifactsCache();
     const artifacts = loadInterviewArtifacts({ force: true });
     expect(artifacts.bank.status).toBe('editorial-gold');
-    expect(artifacts.bank.questions).toHaveLength(60);
+    expect(artifacts.bank.questions).toHaveLength(120);
+    const snippets = artifacts.bank.questions.filter((question) => question.code);
+    expect(snippets).not.toHaveLength(0);
+    expect(snippets.every((question) => (
+      typeof question.code === 'string'
+      && typeof question.codeLanguage === 'string'
+    ))).toBe(true);
     expect(artifacts.coding.status).toBe('candidate');
     expect(artifacts.coding.variants.filter((variant) => variant.enabled)).not.toHaveLength(0);
+    const systemDesign = loadSystemDesignArtifacts({ force: true });
+    expect(systemDesign.status).toBe('candidate');
+    expect(systemDesign.scenarios).toHaveLength(3);
+    expect(systemDesign.scenarios.every((scenario) => scenario.enabled)).toBe(true);
+  });
+
+  test.each([
+    [
+      'missing source',
+      { language: 'javascript', runtime: 'browser' },
+      'code.source is required',
+    ],
+    [
+      'non-string language',
+      { language: 42, runtime: 'browser', source: 'const value = true;' },
+      'code.language must be a non-empty string',
+    ],
+    [
+      'non-string runtime',
+      { language: 'javascript', runtime: {}, source: 'const value = true;' },
+      'code.runtime must be a non-empty string',
+    ],
+  ])('rejects a malformed structured question snippet: %s', (
+    _caseName,
+    malformedCode,
+    expectedError
+  ) => {
+    process.env.NODE_ENV = 'test';
+    process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+    const contentRoot = path.resolve(__dirname, '../content/interview');
+    const publicArtifact = JSON.parse(fs.readFileSync(
+      path.join(contentRoot, 'frontend-interview-bank-v1.public.json'),
+      'utf8'
+    ));
+    const releaseArtifact = JSON.parse(fs.readFileSync(
+      path.join(contentRoot, 'frontend-interview-bank-v1.release.json'),
+      'utf8'
+    ));
+    const question = publicArtifact.items.find((item) => item.code);
+    question.code = malformedCode;
+
+    const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'interview-bank-'));
+    temporaryDirectories.push(temporaryDirectory);
+    const publicPath = path.join(temporaryDirectory, 'bank.public.json');
+    const releasePath = path.join(temporaryDirectory, 'bank.release.json');
+    const publicRaw = `${JSON.stringify(publicArtifact, null, 2)}\n`;
+    releaseArtifact.artifacts.public.sha256 = crypto
+      .createHash('sha256')
+      .update(publicRaw)
+      .digest('hex');
+    fs.writeFileSync(publicPath, publicRaw);
+    fs.writeFileSync(releasePath, `${JSON.stringify(releaseArtifact, null, 2)}\n`);
+    process.env.INTERVIEW_BANK_PUBLIC_PATH = publicPath;
+    process.env.INTERVIEW_BANK_RELEASE_PATH = releasePath;
+    resetInterviewArtifactsCache();
+
+    expect(() => loadInterviewArtifacts({ force: true })).toThrow(expectedError);
   });
 
   test('production rejects a candidate coding registry even if candidate override is set', () => {
@@ -99,5 +181,19 @@ describe('interview runtime artifact gate', () => {
     process.env.NODE_ENV = 'development';
     resetInterviewArtifactsCache();
     expect(loadInterviewArtifacts().coding.status).toBe('candidate');
+  });
+
+  test('a broken System Design artifact cannot make Coding Mock artifacts unavailable', () => {
+    process.env.NODE_ENV = 'test';
+    process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+    process.env.INTERVIEW_SYSTEM_DESIGN_PUBLIC_PATH = '/missing/system-design-public.json';
+    resetInterviewArtifactsCache();
+
+    expect(() => loadSystemDesignArtifacts({ force: true })).toThrow(
+      'system design public artifact is unavailable'
+    );
+    const coding = loadInterviewArtifacts({ force: true });
+    expect(coding.bank.questions).toHaveLength(120);
+    expect(coding.coding.variants.length).toBeGreaterThan(0);
   });
 });
