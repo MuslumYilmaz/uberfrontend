@@ -52,6 +52,23 @@ assert.match(agentInspector, /run\.stopped/);
 assert.match(agentInspector, /waiting_approval/);
 assert.match(agentInspector, /server version wins/i);
 
+const offlineEmailMeta = read('offline-email-client', 'meta');
+const offlineEmail = bundleText('offline-email-client');
+assert.equal(offlineEmailMeta.title, 'Gmail-Style Offline Email Client Frontend System Design');
+assert.equal(offlineEmailMeta.seo.title, 'Gmail Frontend System Design: Offline Email Client');
+assert.equal('companies' in offlineEmailMeta, false);
+assert.deepEqual(offlineEmailMeta.editorial.companyEvidence, []);
+assert.match(offlineEmail, /not (?:a )?confirmed.{0,80}Google interview question/i);
+assert.match(offlineEmail, /syncCursor/);
+assert.match(offlineEmail, /expired cursor|cursor expiry/i);
+assert.match(offlineEmail, /full (?:sync|snapshot)[\s\S]{0,400}(?:draft|outbox)|(?:draft|outbox)[\s\S]{0,400}full (?:sync|snapshot)/i);
+assert.match(offlineEmail, /clientCommandId/);
+assert.match(offlineEmail, /idempotencyKey/);
+assert.match(offlineEmail, /one logical send creates one Sent message|creates no duplicate Sent row|one command creates at most one message/i);
+assert.match(offlineEmail, /saniti[sz]/i);
+assert.match(offlineEmail, /remote images?/i);
+assert.match(offlineEmail, /privacy proxy|click-to-load|click to load/i);
+
 const infinite = bundleText('infinite-scroll-list');
 assert.match(infinite, /interface PageLoader/);
 assert.match(infinite, /queryKey/);

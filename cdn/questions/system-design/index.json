@@ -1,5 +1,29 @@
 [
   {
+    "id": "offline-email-client",
+    "title": "Gmail-Style Offline Email Client Frontend System Design",
+    "description": "Design an offline-first web email client with normalized mailbox state, incremental sync, durable drafts, idempotent sending, safe message rendering, and accessible navigation.",
+    "tags": [
+      "email",
+      "offline-first",
+      "state-management",
+      "frontend-architecture",
+      "caching",
+      "storage",
+      "virtualization",
+      "accessibility",
+      "security",
+      "api-calls",
+      "error-handling",
+      "autosave"
+    ],
+    "type": "system-design",
+    "access": "free",
+    "publishedAt": "2026-07-29",
+    "updatedAt": "2026-07-29",
+    "difficulty": "hard"
+  },
+  {
     "id": "ai-agent-run-inspector",
     "title": "AI Agent Run Inspector Frontend System Design",
     "description": "Design an AI agent run inspector for nested spans, live tool calls, approval races, resilient stream state, virtualized navigation, redaction, and accessibility.",

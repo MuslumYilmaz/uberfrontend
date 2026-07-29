@@ -1,6 +1,77 @@
 {
   "version": 1,
   "questions": {
+    "offline-email-client": {
+      "assertions": [
+        {
+          "id": "cursor-recovery-preserves-local-intent",
+          "target": "visible",
+          "require": [
+            "(?:expired cursor|cursor (?:is )?expired|cursor expiry)",
+            "(?:full sync|full snapshot|fresh snapshot).{0,180}(?:preserv|retain|keep).{0,100}(?:draft|outbox)|(?:preserv|retain|keep).{0,100}(?:draft|outbox).{0,180}(?:full sync|full snapshot|fresh snapshot)"
+          ]
+        },
+        {
+          "id": "lost-response-send-is-idempotent",
+          "target": "all",
+          "require": [
+            "(?:lost response|response (?:is |was )?(?:lost|disappears|disappeared)|response disappears)",
+            "clientCommandId",
+            "idempotencyKey",
+            "(?:one logical send creates one Sent message|creates no duplicate Sent row|one command creates at most one message)"
+          ]
+        },
+        {
+          "id": "safe-html-and-remote-image-privacy",
+          "target": "visible",
+          "require": [
+            "saniti[sz]",
+            "remote image.{0,160}(?:proxy|click-to-load|click to load)"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "offline-email-client-contract",
+          "name": "MailboxSnapshot",
+          "requiredMembers": [
+            "syncCursor",
+            "threads",
+            "messages",
+            "labels"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "DraftDocument",
+          "requiredMembers": [
+            "draftId",
+            "contentRevision",
+            "baseRemoteRevision"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "OutboxCommand",
+          "requiredLiterals": [
+            "draft.save",
+            "draft.send",
+            "thread.labels.set"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "MailboxEvent",
+          "requiredLiterals": [
+            "message.upserted",
+            "message.removed",
+            "thread.updated",
+            "label.updated",
+            "draft.replaced"
+          ]
+        }
+      ]
+    },
     "ai-agent-run-inspector": {
       "assertions": [
         {

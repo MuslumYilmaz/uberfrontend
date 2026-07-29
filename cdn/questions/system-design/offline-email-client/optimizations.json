@@ -1,0 +1,284 @@
+{
+  "key": "O",
+  "title": "Optimizations for performance, security, and accessibility",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Optimize measured bottlenecks without weakening stable identities, durable intent, security boundaries, or accessible focus."
+    },
+    {
+      "type": "heading",
+      "text": "Virtualized inbox and bounded resources"
+    },
+    {
+      "type": "table",
+      "title": "Performance policy",
+      "columns": [
+        "Area",
+        "Technique",
+        "Guardrail"
+      ],
+      "rows": [
+        [
+          "Thread list",
+          "Virtualize only after DOM, layout, or memory measurements justify it",
+          "Key rows by thread ID; keep selection outside mounted rows; overscan or pin the focused row"
+        ],
+        [
+          "Changing rows",
+          "Use entity-level subscriptions and batch ordinary sync deltas",
+          "Flush visible removals and command acknowledgements promptly; anchor scroll by thread identity, not index"
+        ],
+        [
+          "Message bodies",
+          "Fetch the selected body lazily and cache sanitized output by message revision and policy version",
+          "Cancel obsolete requests; bound cached bodies by bytes and evict closed items first"
+        ],
+        [
+          "Attachments",
+          "Load metadata first and bytes after an explicit preview, open, or save action",
+          "Expose progress, cancellation, scan state, retry, and permission failure; bound preview memory"
+        ],
+        [
+          "Search",
+          "Index cached text incrementally, using a worker only after profiling",
+          "Label offline results as locally available scope rather than full-mailbox search"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "IndexedDB quota and multi-tab coordination"
+    },
+    {
+      "type": "table",
+      "title": "Local retention under storage pressure",
+      "columns": [
+        "Data",
+        "Policy"
+      ],
+      "rows": [
+        [
+          "Drafts and outbox commands",
+          "Durable user intent: write in one transaction and never evict silently; surface storage failure with copy or export recovery"
+        ],
+        [
+          "Snapshot and cursor",
+          "Commit one internally consistent generation; an interrupted replacement cannot become the active base"
+        ],
+        [
+          "Bodies, previews, and search index",
+          "Disposable byte-bounded caches: evict attachments, indexes, old bodies, then obsolete snapshots before intent"
+        ],
+        [
+          "Persistent storage request",
+          "Use as a progressive enhancement; denial leaves a safe reduced-cache mode"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Browser storage improves availability, not confidentiality. Partition storage, memory, workers, and requests by account; clear data on sign-out or account switch. BroadcastChannel may announce committed records and elect a short-lived sync leader, but delivery is advisory. Persist before broadcasting, reload after waking, and let server versions and deltas resolve conflicts."
+    },
+    {
+      "type": "heading",
+      "text": "HTML security, remote content, and accessibility"
+    },
+    {
+      "type": "table",
+      "title": "Trust and interaction boundaries",
+      "columns": [
+        "Concern",
+        "Required behavior"
+      ],
+      "rows": [
+        [
+          "Untrusted HTML",
+          "Use a maintained allowlist sanitizer at one rendering boundary; remove scripts, forms, handlers, active embeds, unsafe styles, and unsafe URL schemes"
+        ],
+        [
+          "Trusted Types",
+          "Create one audited policy for sanitized bodies; ordinary components cannot construct trusted HTML. CSP and sandbox isolation remain defense in depth"
+        ],
+        [
+          "Remote images",
+          "Do not contact sender origins on open or prefetch; use an approved privacy proxy or explicit click-to-load control"
+        ],
+        [
+          "Attachments",
+          "Render filenames as text, isolate previews, revoke blob URLs, and distinguish scanning, blocked, clean, failed, and expired states without color alone"
+        ],
+        [
+          "Inbox semantics",
+          "Prefer a named list of native links and buttons; use an ARIA grid only when real cell navigation warrants its complete keyboard and focus model"
+        ],
+        [
+          "Composer shortcuts",
+          "Preserve Tab order and disable single-key mailbox shortcuts inside the composer, search, recipient editor, and every editable surface"
+        ],
+        [
+          "Focus and announcements",
+          "After removal, focus the nearest surviving thread by ID. Announce offline, queued, confirmed, conflict, and terminal outcomes once, not every sync event"
+        ],
+        [
+          "Narrow and international layouts",
+          "Stack panes at 320 and 390 pixels; contain body width; wrap long tokens; test large text, bidirectional addresses, and on-screen keyboards"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Recovery behavior by fault"
+    },
+    {
+      "type": "table",
+      "title": "Failure behavior",
+      "columns": [
+        "Failure",
+        "Recovery invariant"
+      ],
+      "rows": [
+        [
+          "Offline",
+          "Keep cached mail readable and drafts local; no queued action appears synchronized before authoritative confirmation"
+        ],
+        [
+          "Send succeeds but response is lost",
+          "Reuse the idempotency key or reconcile a delta by clientCommandId; one logical send creates one Sent message"
+        ],
+        [
+          "Sync cursor expires",
+          "Commit a fresh snapshot while preserving account-scoped drafts and outbox commands, then reconcile them"
+        ],
+        [
+          "Quota exhausted",
+          "Reduce disposable caches before durable intent; keep the last committed draft and explain degraded offline support"
+        ],
+        [
+          "Authentication expires or account switches",
+          "Pause work and reject stale responses; never replay commands or reveal cache across authorization scopes"
+        ],
+        [
+          "Draft revision conflicts",
+          "Preserve local and server text, explain the conflict, and require an explicit accepted base before saving"
+        ],
+        [
+          "Malicious HTML",
+          "Render sanitized content or plain text; markup cannot execute, submit forms, install handlers, or use unsafe navigation"
+        ],
+        [
+          "Remote image blocked",
+          "Reserve layout and offer deliberate loading when permitted; opening the message causes no sender-origin request"
+        ],
+        [
+          "Attachment fails",
+          "Keep reading available and show a specific retry or blocked state; never start an automatic download before scanning completes"
+        ],
+        [
+          "Push gap or leader-tab crash",
+          "Foreground or periodic delta reconciliation restores state; push and BroadcastChannel remain replaceable hints"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Measurement, testing, and rollout"
+    },
+    {
+      "type": "checklist",
+      "title": "Signals and test coverage",
+      "items": [
+        "Measure time to cached and fresh inbox, thread-open latency, long tasks, mounted rows, scroll-anchor corrections, and retained bytes.",
+        "Track draft-save success, conflicts, quota failures, outbox age, confirmation latency, cursor expiry, stale time, and duplicate-send prevention without collecting mail content.",
+        "Test sanitization corpora, remote-origin network blocking, attachment states, account isolation, crash recovery, lost responses, expired cursors, and cross-tab races.",
+        "Automate keyboard tasks, identity-based focus restoration, live-region deduplication, 200 percent zoom, forced colors, 320 and 390 pixel overflow, long text, and bidirectional fixtures."
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Progressive rollout",
+      "steps": [
+        {
+          "title": "Cached read path",
+          "text": "Ship normalized snapshots, account isolation, safe body rendering, responsive panes, and accessible navigation."
+        },
+        {
+          "title": "Durable intent",
+          "text": "Add drafts, then idempotent outbox commands behind flags after quota, conflict, crash, and lost-response tests pass."
+        },
+        {
+          "title": "Incremental synchronization",
+          "text": "Add deltas, push invalidation, and advisory tab leadership while shadow-comparing reduced state with fresh snapshots."
+        },
+        {
+          "title": "Measured tuning",
+          "text": "Tune virtualization, cache budgets, search, and previews from field data; rollback presentation without deleting durable intent."
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Design review checkpoint",
+      "items": [
+        "Why stable thread identity protects selection, scroll anchoring, and focus during virtualization.",
+        "Why drafts and outbox commands survive cache eviction, cursor expiry, and presentation rollback.",
+        "Why lost send responses converge through idempotency keys and clientCommandId without duplicate Sent mail.",
+        "Why BroadcastChannel and push reduce latency while server revisions and deltas remain authoritative.",
+        "Why sanitization, remote-image privacy, attachment isolation, native controls, and composer-safe shortcuts are separate boundaries."
+      ],
+      "editorialRole": "answer-checkpoint"
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "Gmail API synchronization guide",
+          "href": "https://developers.google.com/workspace/gmail/api/guides/sync",
+          "description": "Full and partial sync, history cursors, and recovery."
+        },
+        {
+          "label": "Gmail API threads guide",
+          "href": "https://developers.google.com/workspace/gmail/api/guides/threads",
+          "description": "Public message grouping behavior."
+        },
+        {
+          "label": "Gmail API labels guide",
+          "href": "https://developers.google.com/workspace/gmail/api/guides/labels",
+          "description": "Public label and message relationships."
+        },
+        {
+          "label": "Gmail API drafts guide",
+          "href": "https://developers.google.com/workspace/gmail/api/guides/drafts",
+          "description": "Public draft-container lifecycle."
+        },
+        {
+          "label": "MDN IndexedDB API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API",
+          "description": "Transactional structured browser storage."
+        },
+        {
+          "label": "MDN storage quotas and eviction criteria",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria",
+          "description": "Quota, persistence, and eviction behavior."
+        },
+        {
+          "label": "MDN BroadcastChannel API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API",
+          "description": "Same-origin cross-context messaging."
+        },
+        {
+          "label": "OWASP cross-site scripting prevention",
+          "href": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+          "description": "Sanitization, safe sinks, and URL defenses."
+        },
+        {
+          "label": "WAI-ARIA grid pattern",
+          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/grid/",
+          "description": "Grid keyboard and focus expectations."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}

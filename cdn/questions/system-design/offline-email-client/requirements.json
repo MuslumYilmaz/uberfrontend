@@ -1,0 +1,153 @@
+{
+  "key": "R",
+  "title": "Requirements and offline scope",
+  "blocks": [
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Gmail offline architecture, not interview provenance",
+      "text": "This case uses public Gmail-like product behavior and published Gmail API documentation as design inspiration. It is not a confirmed or leaked Google interview question. Every endpoint and component described here is an illustrative frontend contract, not a claim about Google's private implementation or internal architecture."
+    },
+    {
+      "type": "text",
+      "text": "Design a browser-first Gmail frontend system design for a signed-in user who scans an inbox, opens threads, composes durable drafts, manages labels, searches, and sends while connectivity changes. Incremental mailbox sync must keep server-authoritative facts separate from local intent, preserve intentionally cached content, and state whether an action is queued or confirmed."
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Read and organize",
+              "items": [
+                "Browse Inbox, Sent, Drafts, and labels through a virtualized email inbox with stable selection.",
+                "Open a thread and lazy-load bodies or attachments without losing reading position.",
+                "Archive, mark read, star, and change labels through recoverable commands.",
+                "Search the full mailbox online and label offline results as cached-only."
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Compose and send",
+              "items": [
+                "Persist recipients, subject, body, reply context, and attachment references across reloads.",
+                "Autosave locally offline, then synchronize a versioned draft after reconnect.",
+                "Queue Send durably without fabricating a Sent message.",
+                "Retry an unknown outcome without creating a duplicate message."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Offline states and correctness"
+    },
+    {
+      "type": "table",
+      "title": "Explicit page states",
+      "columns": [
+        "State",
+        "Expected experience",
+        "Invariant"
+      ],
+      "rows": [
+        [
+          "Initial launch without cache",
+          "Show an accessible shell, loading labels, retry, or sign-in recovery.",
+          "A failed load never looks like an empty mailbox."
+        ],
+        [
+          "Cached hydration and syncing",
+          "Render cached rows with freshness while requesting a snapshot or delta.",
+          "Cached revisions are not silently promoted to fresh."
+        ],
+        [
+          "Online and caught up",
+          "Merge deltas without moving selection, scroll anchor, draft, or focus.",
+          "Each logical entity has one normalized identity."
+        ],
+        [
+          "Offline or stale",
+          "Keep cached reading and drafting usable; queue supported actions and explain unavailable resources.",
+          "Pending local intent is not server truth."
+        ],
+        [
+          "Expired sync cursor",
+          "Fetch a full snapshot and reconcile it with retained drafts and outbox commands.",
+          "Cache replacement cannot erase pending local intent."
+        ],
+        [
+          "Quota or persistence denied",
+          "Protect active drafts first, reduce offline coverage, and offer cache cleanup.",
+          "Server-backed bodies and attachments are evicted before drafts or commands."
+        ],
+        [
+          "Authentication failure or account switch",
+          "Pause sync, hide the old mailbox, and require recovery.",
+          "No cache, search result, draft, or command crosses account namespaces."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Measurable targets"
+    },
+    {
+      "type": "table",
+      "title": "Budgets validated with representative fixtures",
+      "columns": [
+        "Concern",
+        "Initial target",
+        "Evidence"
+      ],
+      "rows": [
+        [
+          "Warm mailbox",
+          "Useful cached rows within 300 milliseconds on a mid-tier reference device.",
+          "Measure 10,000 stored thread summaries."
+        ],
+        [
+          "Draft durability",
+          "Acknowledged edits survive reload, offline transition, and simulated tab crash.",
+          "Compare draft revision and all compose fields after each boundary."
+        ],
+        [
+          "Convergence",
+          "The mailbox settles after a successful command flush and following delta.",
+          "Inject duplicates, lost responses, and expired cursors."
+        ],
+        [
+          "Responsive accessibility",
+          "Keyboard operation, readable status, and no document overflow at 320 and 390 pixels.",
+          "Test keyboard, screen reader, 200 percent zoom, long subjects, tables, and code."
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Email client frontend system design scope"
+    },
+    {
+      "type": "checklist",
+      "title": "Deliberately out of scope",
+      "items": [
+        "SMTP, mail retrieval protocols, delivery queues, bounces, and cross-provider deliverability.",
+        "Spam classification, ranking, notifications, and backend full-text indexing.",
+        "Server storage topology, attachment object storage, and disaster recovery.",
+        "Contacts, calendars, advertising, and end-to-end encryption protocols.",
+        "Reproducing Gmail's private internals."
+      ]
+    },
+    {
+      "type": "text",
+      "text": "The frontend owns normalized state, IndexedDB caching, offline draft sync, the email outbox pattern, safe rendering, attachment UX, accessibility, and reconciliation. Services own authentication, authoritative revisions, mailbox history, idempotent execution, server search, delivery, authorization, and malware outcomes. Browser storage supports continuity but is neither an unlimited archive nor a confidentiality boundary."
+    }
+  ]
+}

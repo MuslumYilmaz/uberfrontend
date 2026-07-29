@@ -8823,6 +8823,34 @@
     "assetRef": "questions/system-design/flashcard-language-trainer/meta.json"
   },
   {
+    "id": "offline-email-client",
+    "family": "question",
+    "title": "Gmail-Style Offline Email Client Frontend System Design",
+    "route": "/system-design/offline-email-client",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design an offline-first web email client with normalized mailbox state, incremental sync, durable drafts, idempotent sending, safe message rendering, and accessible navigation.",
+    "tags": [
+      "email",
+      "offline-first",
+      "state-management",
+      "frontend-architecture",
+      "caching",
+      "storage",
+      "virtualization",
+      "accessibility",
+      "security",
+      "api-calls",
+      "error-handling",
+      "autosave"
+    ],
+    "access": "free",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-07-29",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/offline-email-client/meta.json"
+  },
+  {
     "id": "image-upload-preview",
     "family": "question",
     "title": "Image Upload & Preview Component",

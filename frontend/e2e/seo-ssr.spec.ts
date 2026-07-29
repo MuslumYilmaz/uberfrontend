@@ -105,6 +105,19 @@ const CASES = [
     indexable: true,
     singleHydratedH1: true,
   },
+  {
+    path: '/system-design/offline-email-client',
+    titleIncludes: 'Gmail Frontend System Design: Offline Email Client',
+    h1: 'Gmail-Style Offline Email Client Frontend System Design',
+    detail: true,
+    indexable: true,
+    singleHydratedH1: true,
+    bodyTextIncludes: [
+      'incremental mailbox sync',
+      'Worked example: the send succeeds and the response disappears',
+      'Design review checkpoint',
+    ],
+  },
 ];
 
 const RAW_HTML_CASES: Array<{
@@ -151,6 +164,16 @@ const RAW_HTML_CASES: Array<{
     access: 'free',
     titleText: 'AI Agent Run Inspector Frontend System Design',
     includeText: ['nested agent turns', 'Worked example: follow one run through the reducer', 'Interview answer checkpoint'],
+  },
+  {
+    path: '/system-design/offline-email-client',
+    access: 'free',
+    titleText: 'Gmail-Style Offline Email Client Frontend System Design',
+    includeText: [
+      'incremental mailbox sync',
+      'Worked example: the send succeeds and the response disappears',
+      'Design review checkpoint',
+    ],
   },
   {
     path: '/system-design/endless-short-video-feed',
@@ -305,6 +328,13 @@ const AI_AGENT_RUN_INSPECTOR_PATH = '/system-design/ai-agent-run-inspector';
 const AI_AGENT_RUN_INSPECTOR_TITLE = 'AI Agent Run Inspector Frontend System Design';
 const AI_AGENT_RUN_INSPECTOR_SEO_DESCRIPTION =
   'Design an AI agent trace viewer with nested spans, streamed tool calls, human approvals, reconnects, virtualization, redaction, and accessible navigation.';
+const OFFLINE_EMAIL_CLIENT_PATH = '/system-design/offline-email-client';
+const OFFLINE_EMAIL_CLIENT_H1 = 'Gmail-Style Offline Email Client Frontend System Design';
+const OFFLINE_EMAIL_CLIENT_SEO_TITLE = 'Gmail Frontend System Design: Offline Email Client';
+const OFFLINE_EMAIL_CLIENT_SEO_DESCRIPTION =
+  'Design an offline email client with incremental mailbox sync, IndexedDB caching, durable drafts, idempotent sends, safe HTML, and accessible navigation.';
+const OFFLINE_EMAIL_CLIENT_CATALOG_DESCRIPTION =
+  'Design an offline-first web email client with normalized mailbox state, incremental sync, durable drafts, idempotent sending, safe message rendering, and accessible navigation.';
 const PREMIUM_SYSTEM_DESIGN_SEO_CASES = [
   {
     path: '/system-design/netflix-scale-expansion',
@@ -1056,6 +1086,60 @@ test.describe('seo-ssr', () => {
       mainEntityOfPage: expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH),
       datePublished: '2026-07-28T00:00:00.000Z',
       dateModified: '2026-07-28T00:00:00.000Z',
+      isAccessibleForFree: true,
+    });
+  });
+
+  test('raw offline email client exposes exact indexable SEO and the complete free answer', async ({ request }) => {
+    const html = await readRawHtml(request, OFFLINE_EMAIL_CLIENT_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(OFFLINE_EMAIL_CLIENT_SEO_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(OFFLINE_EMAIL_CLIENT_SEO_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(OFFLINE_EMAIL_CLIENT_H1);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH));
+    expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+    expect(bodyMarkup).not.toMatch(/<app-locked-preview\b/i);
+
+    [
+      'Gmail frontend system design',
+      'not a confirmed or leaked Google interview question',
+      'Worked example: the send succeeds and the response disappears',
+      'One reply across cache, outbox, and mailbox sync',
+      'clientCommandId',
+      'expired cursor',
+      'remote image',
+      'Design review checkpoint',
+    ].forEach((expectedText) => {
+      expect(text, `offline email client includes ${expectedText}`).toContain(normalizeText(expectedText));
+    });
+
+    ['BreadcrumbList', 'Article', 'LearningResource'].forEach((type) => {
+      expect(schemaTypes, `JSON-LD includes ${type}`).toContain(type);
+    });
+    const article = schemaNodes.find((node) => node['@type'] === 'Article');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
+      headline: OFFLINE_EMAIL_CLIENT_H1,
+      description: OFFLINE_EMAIL_CLIENT_SEO_DESCRIPTION,
+      url: expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
+      mainEntityOfPage: expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
+      datePublished: '2026-07-29T00:00:00.000Z',
+      dateModified: '2026-07-29T00:00:00.000Z',
+      isAccessibleForFree: true,
+    });
+    const learningResource = schemaNodes.find((node) => node['@type'] === 'LearningResource');
+    expect(learningResource).toMatchObject({
+      '@id': `${expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH)}#learning-resource`,
+      name: OFFLINE_EMAIL_CLIENT_H1,
+      description: OFFLINE_EMAIL_CLIENT_CATALOG_DESCRIPTION,
+      url: expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
       isAccessibleForFree: true,
     });
   });

@@ -507,6 +507,7 @@
 /system-design/netflix-scale-expansion
 /system-design/news-feed-timeline
 /system-design/notification-toast-system
+/system-design/offline-email-client
 /system-design/realtime-search-debounce-cache
 /system-design/scalable-notifications-feed
 /system-design/ui-component-state-from-mock

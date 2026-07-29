@@ -1,0 +1,148 @@
+{
+  "key": "I",
+  "title": "Interface contracts for sync and sending",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The browser needs a small contract surface separating authoritative reads from durable commands. Snapshot and changes endpoints deliver mailbox truth; draft save, send, and label endpoints accept version-aware intent. The browser treats snapshot, delta, draft, send, and label service endpoints as one versioned contract. Mail delivery, spam filtering, and provider storage remain behind them, outside browser ownership. Responses expose identities and revisions for deterministic reconciliation; transport errors never decide final authoritative mailbox truth. Cancellation, retry timing, and persistence remain adapter details."
+    },
+    {
+      "type": "heading",
+      "text": "Snapshot, delta, and detail reads"
+    },
+    {
+      "type": "table",
+      "title": "Illustrative mailbox endpoints",
+      "columns": [
+        "Request",
+        "Response contract",
+        "Frontend responsibility"
+      ],
+      "rows": [
+        [
+          "GET /mailboxes/:id/snapshot?label=INBOX&pageToken=",
+          "MailboxSnapshot with optional page token, opaque syncCursor, threads, messages, and labels.",
+          "Seed normalized storage and persist the cursor with entities. Page tokens paginate views; they never replace the change cursor."
+        ],
+        [
+          "GET /mailboxes/:id/changes?after=",
+          "Bounded MailboxDelta with ordered events, command outcomes, and next syncCursor.",
+          "Fetch after reconnect or invalidation. Deduplicate events and advance the cursor only after the local merge commits."
+        ],
+        [
+          "GET /threads/:id",
+          "Versioned Thread and Message summaries, followed by body requests when needed.",
+          "Fill missing detail without treating it as a mailbox snapshot. Abort when route or account changes."
+        ],
+        [
+          "GET /messages/:id/body",
+          "Bounded body with content type, source revision, remote-resource metadata, and attachment references.",
+          "Sanitize HTML and cache by message revision and sanitizer version. Never execute sender content."
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type CommandOutcome =\n  | {\n      commandId: string;\n      status: 'applied';\n      clientCommandId: string;\n      serverRevision: string;\n    }\n  | {\n      commandId: string;\n      status: 'conflict';\n      currentRevision: string;\n      reason: 'revision-mismatch' | 'draft-replaced' | 'already-sent';\n    }\n  | {\n      commandId: string;\n      status: 'rejected';\n      reason: 'invalid' | 'forbidden' | 'attachment-unavailable';\n    };\n\ntype MailboxEvent =\n  | { type: 'message.upserted'; eventId: string; message: Message; clientCommandId?: string }\n  | { type: 'message.removed'; eventId: string; messageId: string; revision: string }\n  | { type: 'thread.updated'; eventId: string; thread: Thread }\n  | { type: 'label.updated'; eventId: string; label: Label }\n  | { type: 'draft.replaced'; eventId: string; draft: DraftDocument; clientCommandId?: string };\n\ntype MailboxDelta = {\n  mailboxId: string;\n  afterCursor: string;\n  syncCursor: string;\n  events: readonly MailboxEvent[];\n  commandOutcomes: readonly CommandOutcome[];\n  hasMore: boolean;\n};\n\ntype ThreadDetail = {\n  thread: Thread;\n  messages: readonly Message[];\n};\n\ntype MessageBodyResource = {\n  messageId: string;\n  sourceRevision: string;\n  contentType: 'text/plain' | 'text/html';\n  content: string;\n  hasRemoteImages: boolean;\n  attachmentIds: readonly string[];\n};",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "offline-email-client-contract"
+      }
+    },
+    {
+      "type": "heading",
+      "text": "Gateway and reducer boundaries"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type SaveDraftResult = {\n  draft: DraftDocument;\n  clientCommandId: string;\n};\n\ntype SendAccepted = {\n  status: 'accepted';\n  commandId: string;\n  clientCommandId: string;\n  reconciliation: 'await-mailbox-delta';\n};\n\ntype LabelCommandResult = {\n  status: 'applied' | 'accepted';\n  commandId: string;\n  clientCommandId: string;\n  threadRevision?: string;\n};\n\ninterface MailboxGateway {\n  getSnapshot(input: {\n    mailboxId: string;\n    labelId?: string;\n    pageToken?: string;\n    signal: AbortSignal;\n  }): Promise<{ snapshot: MailboxSnapshot; nextPageToken?: string }>;\n  getChanges(input: {\n    mailboxId: string;\n    after: string;\n    signal: AbortSignal;\n  }): Promise<MailboxDelta>;\n  getThread(threadId: string, signal: AbortSignal): Promise<ThreadDetail>;\n  getMessageBody(messageId: string, signal: AbortSignal): Promise<MessageBodyResource>;\n  saveDraft(command: Extract<OutboxCommand, { kind: 'draft.save' }>): Promise<SaveDraftResult>;\n  sendDraft(command: Extract<OutboxCommand, { kind: 'draft.send' }>): Promise<SendAccepted>;\n  setThreadLabels(\n    command: Extract<OutboxCommand, { kind: 'thread.labels.set' }>,\n  ): Promise<LabelCommandResult>;\n}\n\ntype MailboxDocument = {\n  threadsById: Record<string, Thread>;\n  messagesById: Record<string, Message>;\n  labelsById: Record<string, Label>;\n  draftsById: Record<string, DraftDocument>;\n};\n\ndeclare function upsertMessage(document: MailboxDocument, message: Message): void;\ndeclare function removeMessage(document: MailboxDocument, messageId: string, revision: string): void;\ndeclare function upsertThread(document: MailboxDocument, thread: Thread): void;\ndeclare function upsertLabel(document: MailboxDocument, label: Label): void;\ndeclare function replaceDraft(document: MailboxDocument, draft: DraftDocument): void;\n\nfunction assertNever(value: never): never {\n  throw new Error(`Unsupported mailbox event: ${String(value)}`);\n}\n\nfunction applyMailboxEvent(document: MailboxDocument, event: MailboxEvent): void {\n  switch (event.type) {\n    case 'message.upserted':\n      upsertMessage(document, event.message);\n      return;\n    case 'message.removed':\n      removeMessage(document, event.messageId, event.revision);\n      return;\n    case 'thread.updated':\n      upsertThread(document, event.thread);\n      return;\n    case 'label.updated':\n      upsertLabel(document, event.label);\n      return;\n    case 'draft.replaced':\n      replaceDraft(document, event.draft);\n      return;\n    default:\n      assertNever(event);\n  }\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "offline-email-client-contract"
+      }
+    },
+    {
+      "type": "text",
+      "text": "Push or server-sent events announce only that a mailbox may have changed. They are not authoritative payloads and do not advance syncCursor. The coordinator coalesces invalidations, calls changes from its committed cursor, and applies the event union exhaustively. Missed or repeated notifications remain safe because the delta endpoint is authoritative. An expired cursor triggers a fresh snapshot while separate durable DraftDocument and OutboxCommand records survive."
+    },
+    {
+      "type": "heading",
+      "text": "Versioned command endpoints"
+    },
+    {
+      "type": "table",
+      "title": "Mutation contracts and ambiguous outcomes",
+      "columns": [
+        "Request",
+        "Required concurrency fields",
+        "Resolution rule"
+      ],
+      "rows": [
+        [
+          "PUT /drafts/:id",
+          "If-Match carries baseRevision; Idempotency-Key carries the durable key; the body carries commandId, clientCommandId, and content revision.",
+          "Success returns the stable draft ID and remote revision. Conflict returns the current revision without discarding the local document."
+        ],
+        [
+          "POST /drafts/:id/send",
+          "Carries commandId, clientCommandId, idempotency key, base revision, and expected content revision.",
+          "Acceptance must not invent a Sent message. Await an authoritative message or outcome echoing clientCommandId."
+        ],
+        [
+          "POST /threads/:id/label-commands",
+          "Carries exact add and remove label sets, command identity, and thread base revision.",
+          "Project optimistically, then confirm by revision or delta. On conflict, rebase intent against current membership."
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "PUT /drafts/draft_91\nIf-Match: draft-r12\nIdempotency-Key: idem-save-91-13\nContent-Type: application/json\n\n{\n  \"commandId\": \"cmd-save-13\",\n  \"clientCommandId\": \"cmd-save-13\",\n  \"baseRevision\": \"draft-r12\",\n  \"contentRevision\": 13,\n  \"content\": {\n    \"to\": [{ \"address\": \"reader@example.com\" }],\n    \"cc\": [],\n    \"bcc\": [],\n    \"subject\": \"Offline notes\",\n    \"bodyHtml\": \"<p>Draft body</p>\",\n    \"attachmentIds\": []\n  }\n}\n\nPOST /drafts/draft_91/send\nIf-Match: draft-r13\nIdempotency-Key: idem-send-91\nContent-Type: application/json\n\n{\n  \"commandId\": \"cmd-send-91\",\n  \"clientCommandId\": \"cmd-send-91\",\n  \"baseRevision\": \"draft-r13\",\n  \"expectedContentRevision\": 13\n}\n\n202 Accepted\n{\n  \"status\": \"accepted\",\n  \"commandId\": \"cmd-send-91\",\n  \"clientCommandId\": \"cmd-send-91\",\n  \"reconciliation\": \"await-mailbox-delta\"\n}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "steps",
+      "title": "Lost-response send reconciliation",
+      "steps": [
+        {
+          "title": "Persist before transport",
+          "text": "Write draft.send with its command ID, idempotency key, base revision, and expected draft content revision in the same durable transaction that marks the composer as queued."
+        },
+        {
+          "title": "Retry the identical command",
+          "text": "If the server accepted the send but its response disappeared, reconnecting code submits the same idempotency key. It does not create a second command or a speculative delivered Message."
+        },
+        {
+          "title": "Catch up from mailbox truth",
+          "text": "Fetch changes after the last committed cursor. A message.upserted event carrying the matching clientCommandId proves which server message resulted from the command."
+        },
+        {
+          "title": "Converge once",
+          "text": "Upsert the authoritative message by its server ID, clear exactly one outbox record, remove the confirmed draft, and advance the cursor in one transaction. A replay sees the same identities and creates no duplicate Sent row."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Search has two explicit scopes"
+    },
+    {
+      "type": "text",
+      "text": "Full-mailbox search belongs to the server because the browser may hold only partial mail and evicted bodies. Results return stable IDs, scope, query token, and page cursor; normal detail contracts hydrate them. Local search runs over cached headers, snippets, and indexed bodies, but the UI labels it as cached mail only. Offline mode keeps those limited results available and offers a retry when connectivity returns."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "HTTP status is not domain reconciliation",
+      "text": "A successful command response can be lost, and a timeout can hide a successful send. Conversely, an accepted response can precede the mailbox delta that makes the result visible. The interface therefore exposes command identity, idempotency, revisions, and clientCommandId; the normalized delta merge, not transport optimism, decides the final mailbox state."
+    }
+  ]
+}
