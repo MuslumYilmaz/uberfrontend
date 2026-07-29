@@ -3,7 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MonacoEditorComponent, MonacoLoadError } from './monaco-editor.component';
 
 describe('MonacoEditorComponent loader failure handling', () => {
+  let previousGlobals: ReturnType<typeof captureMonacoGlobals>;
+
   beforeEach(() => {
+    previousGlobals = captureMonacoGlobals();
     resetMonacoGlobals();
 
     TestBed.configureTestingModule({
@@ -14,6 +17,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
   afterEach(() => {
     resetMonacoGlobals();
+    restoreMonacoGlobals(previousGlobals);
     TestBed.resetTestingModule();
   });
 
@@ -69,6 +73,10 @@ describe('MonacoEditorComponent loader failure handling', () => {
     const secondScript = currentLoaderScript();
     expect(secondScript).not.toBeNull();
     expect(secondScript).not.toBe(firstScript);
+
+    secondScript!.dispatchEvent(new Event('error'));
+    await Promise.resolve();
+    secondFixture.destroy();
   });
 
   it('emits ready after the AMD loader exposes a usable Monaco API', async () => {
@@ -166,6 +174,41 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
   function currentLoaderScript(): HTMLScriptElement | null {
     return document.querySelector<HTMLScriptElement>('script[data-fa-monaco-loader]');
+  }
+
+  function captureMonacoGlobals() {
+    const win = window as any;
+    return {
+      require: win.require,
+      monaco: win.monaco,
+      faMonacoReady: win.__faMonacoReady,
+      faMonacoLoaderPromise: win.__faMonacoLoaderPromise,
+      monacoEnvironment: win.MonacoEnvironment,
+      loaderPromise: (MonacoEditorComponent as any).loaderPromise,
+      monacoReady: (MonacoEditorComponent as any).monacoReady,
+      webCompletionsInstalled: (MonacoEditorComponent as any).webCompletionsInstalled,
+    };
+  }
+
+  function restoreMonacoGlobals(snapshot: ReturnType<typeof captureMonacoGlobals>): void {
+    const win = window as any;
+    win.require = snapshot.require;
+    win.monaco = snapshot.monaco;
+    restoreOptionalGlobal(win, '__faMonacoReady', snapshot.faMonacoReady);
+    restoreOptionalGlobal(win, '__faMonacoLoaderPromise', snapshot.faMonacoLoaderPromise);
+    restoreOptionalGlobal(win, 'MonacoEnvironment', snapshot.monacoEnvironment);
+    (MonacoEditorComponent as any).loaderPromise = snapshot.loaderPromise;
+    (MonacoEditorComponent as any).monacoReady = snapshot.monacoReady;
+    (MonacoEditorComponent as any).webCompletionsInstalled = snapshot.webCompletionsInstalled;
+  }
+
+  function restoreOptionalGlobal(
+    win: Record<string, unknown>,
+    key: string,
+    value: unknown,
+  ): void {
+    if (value === undefined) delete win[key];
+    else win[key] = value;
   }
 
   function resetMonacoGlobals(): void {
