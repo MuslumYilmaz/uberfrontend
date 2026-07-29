@@ -38,20 +38,10 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-07-29",
   "seo": {
     "title": "AI Chat Textarea Frontend System Design",
     "description": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming, and accessible keyboard behavior."
-  },
-  "premiumPreview": {
-    "summary": "Design an AI chat composer and current-turn experience with IME-safe input, attachment readiness, idempotent send, streaming, stop, and draft recovery.",
-    "learningOutcomes": [
-      "Separate composer draft, attachment work, pending send, and streamed message state.",
-      "Preserve text across IME composition, navigation, upload failure, and uncertain sends.",
-      "Correlate lowercase SSE events with one message and stream command.",
-      "Keep Stop, retry, focus, and live announcements accessible without entering model orchestration."
-    ],
-    "unlockDescription": "Premium unlocks the IME-and-cancel example, command reconciliation, stream ordering, and draft-recovery analysis."
   },
   "editorial": {
     "draftSource": "content-drafts/system-design/ai-chat-textarea-design.md",
