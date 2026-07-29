@@ -11,6 +11,7 @@ describe('InterviewResultsComponent', () => {
 
   const result: InterviewResult = {
     sessionId: 'session-1',
+    interviewFormat: 'coding',
     level: 'mid',
     track: 'react',
     completedAt: '2026-07-27T12:00:00.000Z',
@@ -57,6 +58,7 @@ describe('InterviewResultsComponent', () => {
         { id: 'a11y', label: 'Accessibility', criteria: [], status: 'not_evaluated' },
       ],
     },
+    systemDesign: null,
     disclaimer: 'This mock interview is preparation feedback, not an employment decision.',
     mcqTiming: { usedSeconds: 540, allowedSeconds: 600 },
     codingTiming: { usedSeconds: 2100, allowedSeconds: 2100 },
@@ -81,6 +83,10 @@ describe('InterviewResultsComponent', () => {
   });
 
   it('shows diagnostic details, the disclaimer, and zero-XP semantics', () => {
+    localStorage.setItem(
+      'fa:interview:coding-draft:v1:session-1',
+      JSON.stringify({ local: 'stale' }),
+    );
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent as string;
 
@@ -97,6 +103,7 @@ describe('InterviewResultsComponent', () => {
     expect(text).not.toContain('80%');
     expect(text).not.toContain('Strong hire');
     expect(text).not.toContain('Hire');
+    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
   });
 
   it('does not describe an abandoned checked draft as submitted', () => {
@@ -128,5 +135,96 @@ describe('InterviewResultsComponent', () => {
     expect(text).toContain('no answer report was created');
     expect(text).toContain('Return to interview home');
     expect(text).not.toContain('Answer review');
+  });
+
+  it('offers an exact resume link when the report route is opened before completion', () => {
+    service.getResult.and.returnValue(throwError(() => ({
+      status: 409,
+      error: { code: 'INTERVIEW_RESULTS_NOT_READY' },
+    })));
+
+    fixture.detectChanges();
+    const resume = fixture.nativeElement.querySelector(
+      'a[href="/interview/session-1"]',
+    ) as HTMLAnchorElement | null;
+
+    expect(fixture.nativeElement.textContent).toContain('still active');
+    expect(resume?.textContent).toContain('Resume interview');
+    expect(fixture.nativeElement.textContent).not.toContain('Try again');
+  });
+
+  it('renders system-design evidence and the submitted artifact without MCQ scoring', () => {
+    service.getResult.and.returnValue(of({
+      ...result,
+      interviewFormat: 'system-design',
+      score: { correct: 0, incorrect: 0, unanswered: 0, total: 0 },
+      sections: [],
+      questions: [],
+      remediationTopics: [],
+      coding: null,
+      systemDesign: {
+        sourceContentId: 'realtime-search-debounce-cache',
+        scenarioId: 'int-sd-autocomplete-race-mid-v1',
+        scenarioTitle: 'Reliable autocomplete',
+        outcome: 'timed_out',
+        partialEvidence: true,
+        practiceSignal: 'on-track',
+        axes: [{
+          id: 'architecture',
+          label: 'Architecture and ownership',
+          status: 'developing',
+          evidence: ['A single request owner was identified.'],
+        }],
+        contradictions: [{
+          id: 'cache-identity',
+          severity: 'major',
+          label: 'The cache key omits locale.',
+          explanation: 'Results from different locales can collide.',
+        }],
+        remediationTopics: ['Cache identity'],
+        designSnapshot: null,
+        summary: {
+          priorities: [{ id: 'ordering', title: 'Preserve request ordering', rank: 1 }],
+          lanes: [{
+            id: 'data',
+            title: 'Data',
+            cards: [{ id: 'controller', title: 'Request controller', order: 0 }],
+          }],
+          connections: [{
+            fromCardId: 'input',
+            fromTitle: 'Search input',
+            toCardId: 'controller',
+            toTitle: 'Request controller',
+            typeId: 'event-flow',
+            typeTitle: 'Event flow',
+          }],
+          decisions: [{
+            id: 'ownership',
+            title: 'Request ownership',
+            option: { id: 'abort', label: 'Abort obsolete requests' },
+            rationales: [{ id: 'ordering', label: 'Prevent stale results' }],
+          }],
+          twistActions: [{ id: 'locale-key', label: 'Include locale in request identity' }],
+        },
+        frameworkLens: {
+          title: 'React request ownership',
+          prompt: 'Keep request identity in the owning hook.',
+        },
+        timing: { usedSeconds: 900, allowedSeconds: 900 },
+      },
+    }));
+
+    fixture.detectChanges();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('On Track');
+    expect(text).toContain('Your design');
+    expect(text).toContain('Request controller');
+    expect(text).toContain('reached its time limit');
+    expect(text).toContain('Cache identity');
+    expect(text).toContain('React request ownership');
+    expect(text).toContain('Open the full system design walkthrough');
+    expect(text).not.toContain('Answer review');
+    expect(text).not.toContain('MCQ time used');
   });
 });

@@ -4,11 +4,13 @@ import { expect, test } from './fixtures';
 
 type InterviewLevel = 'junior' | 'mid' | 'senior';
 type InterviewTrack = 'core-web' | 'react' | 'angular' | 'vue';
+type InterviewFormat = 'coding' | 'system-design';
 type InterviewAccessMode = 'off' | 'internal' | 'public';
 type SessionStatus =
   | 'mcq_active'
   | 'coding_ready'
   | 'coding_active'
+  | 'system_design_active'
   | 'completed'
   | 'abandoned';
 
@@ -18,12 +20,15 @@ type MockQuestion = {
   technology: string;
   competency: string;
   prompt: string;
+  code?: string;
+  codeLanguage?: string;
   options: Array<{ id: string; label: string }>;
   selectedOptionId: string | null;
 };
 
 type MockSession = {
   id: string;
+  format: InterviewFormat;
   status: SessionStatus;
   level: InterviewLevel;
   track: InterviewTrack;
@@ -42,6 +47,7 @@ type MockSession = {
     checkResults: Array<Record<string, unknown>>;
     runCount: number;
   };
+  systemDesign: null | Record<string, any>;
 };
 
 type CapturedRequest = {
@@ -55,6 +61,13 @@ type InterviewApiOptions = {
   enabled?: boolean;
   accessMode?: InterviewAccessMode;
   quota?: {
+    remaining: number | null;
+    limit: number | null;
+    resetAt: string | null;
+    unlimited: boolean;
+  };
+  systemDesignEnabled?: boolean;
+  systemDesignQuota?: {
     remaining: number | null;
     limit: number | null;
     resetAt: string | null;
@@ -81,6 +94,7 @@ const ACTIVE_STATUSES = new Set<SessionStatus>([
   'mcq_active',
   'coding_ready',
   'coding_active',
+  'system_design_active',
 ]);
 
 function nowIso(): string {
@@ -118,6 +132,12 @@ function buildQuestions(track: InterviewTrack): MockQuestion[] {
     prompt: index === 0
       ? 'Which change best preserves behavior while fixing the production issue described?'
       : `Choose the best answer for ${technology} scenario ${index + 1}.`,
+    ...(index === 0
+      ? {
+        code: `const longRuntimeIdentifier = "${'runtime-boundary-'.repeat(24)}";`,
+        codeLanguage: 'javascript',
+      }
+      : {}),
     options: [
       { id: `q${index + 1}-a`, label: 'Apply the smallest change at the owning boundary.' },
       { id: `q${index + 1}-b`, label: 'Move the same work into every consuming component.' },
@@ -134,6 +154,7 @@ function buildSession(
 ): MockSession {
   return {
     id,
+    format: 'coding',
     status: 'mcq_active',
     level,
     track,
@@ -145,6 +166,104 @@ function buildSession(
     questions: buildQuestions(track),
     currentQuestionIndex: 0,
     coding: null,
+    systemDesign: null,
+  };
+}
+
+function buildSystemDesignSession(
+  level: InterviewLevel,
+  track: InterviewTrack,
+  id = `mock-system-design-${track}-${level}`,
+): MockSession {
+  const minutes = level === 'junior' ? 10 : level === 'senior' ? 20 : 15;
+  return {
+    id,
+    format: 'system-design',
+    status: 'system_design_active',
+    level,
+    track,
+    version: 1,
+    bankVersion: 'interview-system-design-registry-v1',
+    serverNow: nowIso(),
+    mcqDeadlineAt: null,
+    codingReadyDeadlineAt: null,
+    questions: [],
+    currentQuestionIndex: 0,
+    coding: null,
+    systemDesign: {
+      scenario: {
+        id: 'int-sd-autocomplete-race-mid-v1',
+        revision: 1,
+        contentHash: 'mock-design-content-hash',
+        level,
+        title: 'Reliable autocomplete',
+        prompt: 'Design an autocomplete that stays correct on slow networks.',
+        timeLimitSeconds: minutes * 60,
+        steps: [
+          { id: 'clarifications', title: 'Clarify' },
+          { id: 'requirements', title: 'Prioritize' },
+          { id: 'architecture', title: 'Architecture' },
+          { id: 'decisions', title: 'Decisions' },
+          { id: 'twist', title: 'Production twist' },
+        ],
+        selectionLimits: {
+          clarifications: 3,
+          priorities: 3,
+          connections: 6,
+          rationalesPerDecision: 2,
+          twistActions: 2,
+          scratchpadChars: 200,
+        },
+        lanes: [
+          { id: 'ui', title: 'UI' },
+          { id: 'data', title: 'Data' },
+        ],
+        clarifications: [
+          { id: 'keyboard', prompt: 'Is keyboard navigation required?' },
+          { id: 'stale-results', prompt: 'Can stale results remain visible?' },
+          { id: 'cache-scope', prompt: 'Can cached results be shared across users?' },
+          { id: 'result-volume', prompt: 'How many results can a query return?' },
+        ],
+        requirements: [
+          { id: 'ordering', title: 'Preserve request ordering' },
+          { id: 'focus', title: 'Keep keyboard focus stable' },
+          { id: 'cache', title: 'Bound duplicate network requests' },
+        ],
+        cards: [
+          {
+            id: 'input',
+            title: 'Search input',
+            description: 'Owns the user query and keyboard events.',
+          },
+          {
+            id: 'controller',
+            title: 'Request controller',
+            description: 'Owns request identity and cancellation.',
+          },
+        ],
+        connectionTypes: [
+          { id: 'event-flow', title: 'Event flow' },
+          { id: 'data-flow', title: 'Data flow' },
+        ],
+        decisions: [{
+          id: 'ownership',
+          title: 'Request ownership',
+          prompt: 'How should obsolete requests be handled?',
+          options: [
+            { id: 'abort', label: 'Abort obsolete requests' },
+            { id: 'allow-all', label: 'Allow every request to commit' },
+          ],
+          rationales: [{ id: 'ordering', label: 'Prevent stale results' }],
+        }],
+      },
+      clarificationAnswers: [],
+      revealedClarificationIds: [],
+      twist: null,
+      twistRevealed: false,
+      baselineCaptured: false,
+      draft: null,
+      outcome: 'pending',
+    },
   };
 }
 
@@ -226,6 +345,9 @@ function buildResult(
       technology: question.technology,
       competency: question.competency,
       prompt: question.prompt,
+      ...(question.code
+        ? { code: question.code, codeLanguage: question.codeLanguage }
+        : {}),
       options: question.options,
       selectedOptionId,
       correctOptionId,
@@ -252,6 +374,7 @@ function buildResult(
 
   return {
     sessionId: session.id,
+    interviewFormat: 'coding',
     level: session.level,
     track: session.track,
     completedAt: nowIso(),
@@ -284,9 +407,58 @@ function buildResult(
       ],
       timing: { usedSeconds: attempted ? 93 : 0, allowedSeconds: 1500 },
     },
+    systemDesign: null,
     disclaimer: 'Practice feedback, not an employment prediction.',
     mcqTiming: { usedSeconds: 124, allowedSeconds: 600 },
     xpAwarded: 0,
+  };
+}
+
+function buildSystemDesignResult(session: MockSession): Record<string, unknown> {
+  return {
+    sessionId: session.id,
+    interviewFormat: 'system-design',
+    level: session.level,
+    track: session.track,
+    completedAt: nowIso(),
+    xpAwarded: 0,
+    mcq: null,
+    coding: null,
+    systemDesign: {
+      scenarioId: 'int-sd-autocomplete-race-mid-v1',
+      scenarioTitle: 'Reliable autocomplete',
+      sourceContentId: 'realtime-search-debounce-cache',
+      outcome: 'submitted',
+      practiceSignal: 'not-enough-evidence',
+      partialEvidence: true,
+      timing: { usedSeconds: 180, allowedSeconds: 900 },
+      frameworkLens: {
+        title: 'React request ownership',
+        prompt: 'Identify the component or hook that owns request identity.',
+      },
+      axes: [{
+        id: 'requirements',
+        title: 'Requirement discovery',
+        status: 'developing',
+        evidence: ['Keyboard navigation was clarified before architecture decisions.'],
+      }],
+      contradictions: [],
+      remediation: [{ topic: 'Request identity', evidenceCount: 1 }],
+      design: clone(session.systemDesign?.['draft'] || {}),
+      summary: {
+        priorities: [],
+        lanes: [],
+        connections: [],
+        decisions: [],
+        twistActions: [{
+          id: 'include-locale',
+          label: 'Include locale in request and cache identity',
+        }],
+      },
+    },
+    reviewNext: [{ topic: 'Request identity', evidenceCount: 1 }],
+    employmentPrediction: null,
+    evidenceNotice: 'Practice evidence only, not an employment prediction.',
   };
 }
 
@@ -294,11 +466,16 @@ class InterviewApiMock {
   enabled: boolean;
   accessMode: InterviewAccessMode;
   quota: NonNullable<InterviewApiOptions['quota']>;
+  systemDesignEnabled: boolean;
+  systemDesignQuota: NonNullable<InterviewApiOptions['systemDesignQuota']>;
   currentSession: MockSession | null;
   result: Record<string, unknown> | null;
   createRequests: CapturedRequest[] = [];
   answerRequests: CapturedRequest[] = [];
   draftRequests: CapturedRequest[] = [];
+  systemDesignDraftRequests: CapturedRequest[] = [];
+  systemDesignTwistRequests: CapturedRequest[] = [];
+  systemDesignSubmitRequests: CapturedRequest[] = [];
   checkRequests: CapturedRequest[] = [];
   endRequests: CapturedRequest[] = [];
   getSessionCount = 0;
@@ -308,6 +485,13 @@ class InterviewApiMock {
     this.enabled = options.enabled ?? true;
     this.accessMode = options.accessMode ?? (this.enabled ? 'public' : 'off');
     this.quota = options.quota ?? {
+      remaining: 1,
+      limit: 1,
+      resetAt: '2026-08-01T00:00:00.000+03:00',
+      unlimited: false,
+    };
+    this.systemDesignEnabled = options.systemDesignEnabled ?? false;
+    this.systemDesignQuota = options.systemDesignQuota ?? {
       remaining: 1,
       limit: 1,
       resetAt: '2026-08-01T00:00:00.000+03:00',
@@ -336,10 +520,25 @@ class InterviewApiMock {
             accessMode: this.accessMode,
             unavailableReason: this.enabled ? null : 'Interview Mode is disabled for this environment.',
             quota: this.quota,
+            quotas: {
+              coding: this.quota,
+              systemDesign: this.systemDesignQuota,
+            },
+            formats: [
+              { id: 'coding', available: true },
+              {
+                id: 'system-design',
+                available: this.systemDesignEnabled,
+                ...(this.systemDesignEnabled
+                  ? {}
+                  : { unavailableReason: 'System Design Mock is not currently available' }),
+              },
+            ],
             activeSession: this.activeLink(),
             lastResults: this.result
               ? [{
                 sessionId: String(this.result['sessionId']),
+                format: this.result['interviewFormat'],
                 level: this.result['level'],
                 track: this.result['track'],
                 completedAt: this.result['completedAt'],
@@ -350,13 +549,27 @@ class InterviewApiMock {
               TRACKS.map((track) => ({
                 level: level.value,
                 track: track.value,
+                format: 'coding',
                 available: true,
                 reason: null,
+              })),
+            ),
+            systemDesignAvailability: LEVELS.flatMap((level) =>
+              TRACKS.map((track) => ({
+                level: level.value,
+                track: track.value,
+                format: 'system-design',
+                available: this.systemDesignEnabled,
               })),
             ),
             levels: LEVELS,
             tracks: TRACKS,
             minViewportWidth: 768,
+            timing: {
+              mcqSeconds: 600,
+              codingReadySeconds: 300,
+              systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+            },
           },
         });
         return;
@@ -367,14 +580,24 @@ class InterviewApiMock {
         this.createRequests.push(this.capture(request, path, body));
         const level = body['level'] as InterviewLevel;
         const track = body['track'] as InterviewTrack;
+        const format = body['format'] === 'system-design' ? 'system-design' : 'coding';
         this.createCount += 1;
-        this.currentSession = buildSession(
-          level,
-          track,
-          `mock-session-${this.createCount}-${level}-${track}`,
-        );
-        if (!this.quota.unlimited && typeof this.quota.remaining === 'number') {
-          this.quota = { ...this.quota, remaining: Math.max(0, this.quota.remaining - 1) };
+        this.currentSession = format === 'system-design'
+          ? buildSystemDesignSession(
+            level,
+            track,
+            `mock-system-design-${this.createCount}-${level}-${track}`,
+          )
+          : buildSession(
+            level,
+            track,
+            `mock-session-${this.createCount}-${level}-${track}`,
+          );
+        const quota = format === 'system-design' ? this.systemDesignQuota : this.quota;
+        if (!quota.unlimited && typeof quota.remaining === 'number') {
+          const updated = { ...quota, remaining: Math.max(0, quota.remaining - 1) };
+          if (format === 'system-design') this.systemDesignQuota = updated;
+          else this.quota = updated;
         }
         await this.reply(route, { session: this.snapshotSession() }, 201);
         return;
@@ -440,6 +663,96 @@ class InterviewApiMock {
           runCount: 0,
         };
         await this.reply(route, { session: this.snapshotSession() });
+        return;
+      }
+
+      if (method === 'PUT' && path.endsWith('/system-design/draft')) {
+        const body = jsonBody(request);
+        this.systemDesignDraftRequests.push(this.capture(request, path, body));
+        const session = this.requireSession();
+        const design = session.systemDesign;
+        if (!design) {
+          await this.reply(route, { error: 'System design session missing.' }, 409);
+          return;
+        }
+        const clarificationIds = Array.isArray(body['clarificationIds'])
+          ? body['clarificationIds'].map(String)
+          : [];
+        const revealed = new Set<string>(
+          Array.isArray(design['revealedClarificationIds'])
+            ? design['revealedClarificationIds'].map(String)
+            : [],
+        );
+        clarificationIds.forEach((id) => revealed.add(id));
+        design['revealedClarificationIds'] = [...revealed];
+        design['clarificationAnswers'] = clarificationIds.map((clarificationId) => ({
+          clarificationId,
+          answer: clarificationId === 'keyboard'
+            ? 'Yes, full keyboard navigation is required.'
+            : 'Stale results may remain visible only with an explicit status.',
+        }));
+        session.version += 1;
+        design['draft'] = {
+          currentStep: body['currentStep'],
+          clarificationIds,
+          priorityRequirementIds: body['priorityRequirementIds'] || [],
+          placements: body['placements'] || [],
+          connections: body['connections'] || [],
+          decisions: body['decisions'] || [],
+          twistResponseActionIds: body['twistResponseActionIds'] || [],
+          scratchpad: body['scratchpad'] || '',
+          hash: `design-draft-hash-${this.systemDesignDraftRequests.length}`,
+          updatedAt: nowIso(),
+        };
+        await this.reply(route, { session: this.snapshotSession(), replayed: false });
+        return;
+      }
+
+      if (method === 'POST' && path.endsWith('/system-design/twist/reveal')) {
+        const body = jsonBody(request);
+        this.systemDesignTwistRequests.push(this.capture(request, path, body));
+        const session = this.requireSession();
+        const design = session.systemDesign;
+        if (!design || body['draftHash'] !== design['draft']?.['hash']) {
+          await this.reply(route, { error: 'Draft hash mismatch.' }, 409);
+          return;
+        }
+        session.version += 1;
+        design['twistRevealed'] = true;
+        design['baselineCaptured'] = true;
+        design['twist'] = {
+          id: 'locale-change',
+          title: 'Locale changes during an in-flight request',
+          prompt: 'The user changes locale while an older request is still in flight.',
+          responseActions: [
+            {
+              id: 'include-locale',
+              label: 'Include locale in request and cache identity',
+            },
+            {
+              id: 'abort-obsolete',
+              label: 'Abort the obsolete request',
+            },
+          ],
+        };
+        await this.reply(route, { session: this.snapshotSession(), replayed: false });
+        return;
+      }
+
+      if (method === 'POST' && path.endsWith('/system-design/submit')) {
+        const body = jsonBody(request);
+        this.systemDesignSubmitRequests.push(this.capture(request, path, body));
+        const session = this.requireSession();
+        const design = session.systemDesign;
+        if (!design || body['draftHash'] !== design['draft']?.['hash']) {
+          await this.reply(route, { error: 'Draft hash mismatch.' }, 409);
+          return;
+        }
+        session.status = 'completed';
+        session.version += 1;
+        design['outcome'] = 'submitted';
+        this.result = buildSystemDesignResult(session);
+        await this.reply(route, { session: this.snapshotSession(), replayed: false });
         return;
       }
 
@@ -540,6 +853,7 @@ class InterviewApiMock {
     if (!session || !ACTIVE_STATUSES.has(session.status)) return null;
     return {
       id: session.id,
+      format: session.format,
       status: session.status,
       level: session.level,
       track: session.track,
@@ -736,6 +1050,124 @@ test('completes MCQ → local JS checks → coding submit → raw results withou
   expect(progressWrites).toEqual([]);
 });
 
+test('completes guided system design setup → autosave → refresh → twist → evidence report', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  const api = new InterviewApiMock({ systemDesignEnabled: true });
+  await seedAuthenticatedInterview(page, api);
+
+  await page.goto('/interview');
+  await page.getByRole('radio', { name: /System design mock/ }).check();
+  await selectSetupChoice(page, 'Track', 'React');
+  await expect(page.getByText('15 minutes guided system design')).toBeVisible();
+  await page.getByTestId('interview-start').click();
+
+  await expect(page).toHaveURL(/\/interview\/mock-system-design-1-mid-react$/);
+  await expect(page.getByTestId('system-design-round')).toBeVisible();
+  await expect(page.getByTestId('interview-timer')).toContainText('System design time');
+  expect(api.createRequests[0].body).toEqual({
+    format: 'system-design',
+    level: 'mid',
+    track: 'react',
+    viewportWidth: 1366,
+  });
+
+  await page.setViewportSize({ width: 834, height: 900 });
+  await expectNoHorizontalOverflow(page);
+  const sidebarBox = await page.locator('.design-sidebar').boundingBox();
+  const workspaceBox = await page.locator('.design-workspace').boundingBox();
+  expect(sidebarBox).not.toBeNull();
+  expect(workspaceBox).not.toBeNull();
+  expect(workspaceBox!.y).toBeGreaterThan(sidebarBox!.y);
+  await page.setViewportSize({ width: 1366, height: 900 });
+
+  const keyboardClarification = page.getByLabel('Is keyboard navigation required?');
+  await keyboardClarification.focus();
+  await keyboardClarification.press('Space');
+  await expect(keyboardClarification).toBeChecked();
+  await expect(page.getByText(/Interviewer: Yes, full keyboard navigation is required/))
+    .toBeVisible();
+  await expect.poll(() => api.systemDesignDraftRequests.length).toBeGreaterThanOrEqual(1);
+
+  const staleClarification = page.getByLabel('Can stale results remain visible?');
+  const cacheClarification = page.getByLabel('Can cached results be shared across users?');
+  const unseenClarification = page.getByLabel('How many results can a query return?');
+  await staleClarification.check();
+  await cacheClarification.check();
+  const beforeThreeAnswersSave = api.systemDesignDraftRequests.length;
+  await expect.poll(() => api.systemDesignDraftRequests.length)
+    .toBeGreaterThan(beforeThreeAnswersSave);
+
+  await cacheClarification.uncheck();
+  const beforeReleasedSelectionSave = api.systemDesignDraftRequests.length;
+  await expect.poll(() => api.systemDesignDraftRequests.length)
+    .toBeGreaterThan(beforeReleasedSelectionSave);
+  await expect(unseenClarification).toBeDisabled();
+  await expect(cacheClarification).toBeEnabled();
+  const beforeReuseSave = api.systemDesignDraftRequests.length;
+  await cacheClarification.check();
+  await expect(page.getByText('3/3 selected')).toBeVisible();
+  await expect.poll(() => api.systemDesignDraftRequests.length).toBeGreaterThan(beforeReuseSave);
+
+  await page.reload();
+  await expect(page.getByLabel('Is keyboard navigation required?')).toBeChecked();
+  await expect(page.getByLabel('Can stale results remain visible?')).toBeChecked();
+  await expect(page.getByLabel('Can cached results be shared across users?')).toBeChecked();
+  await expect(page.getByLabel('How many results can a query return?')).toBeDisabled();
+  await expect(page.getByText(/Interviewer: Yes, full keyboard navigation is required/))
+    .toBeVisible();
+
+  await page.getByRole('button', { name: 'Next stage' }).click();
+  await page.getByLabel('Preserve request ordering').check();
+  await page.getByLabel('Keep keyboard focus stable').check();
+  await page.getByLabel('Bound duplicate network requests').check();
+  await page.getByRole('button', { name: 'Next stage' }).click();
+
+  const inputCard = page.locator('.palette-card').filter({ hasText: 'Search input' });
+  const inputLaneSelect = inputCard.getByRole('combobox');
+  await inputLaneSelect.click();
+  const inputLaneListboxId = await inputLaneSelect.getAttribute('aria-controls');
+  expect(inputLaneListboxId).toBeTruthy();
+  await page.locator(`#${inputLaneListboxId!}`)
+    .getByRole('option', { name: 'UI', exact: true })
+    .click();
+  const controllerCard = page.locator('.palette-card').filter({ hasText: 'Request controller' });
+  const controllerLaneSelect = controllerCard.getByRole('combobox');
+  await controllerLaneSelect.click();
+  const controllerLaneListboxId = await controllerLaneSelect.getAttribute('aria-controls');
+  expect(controllerLaneListboxId).toBeTruthy();
+  await page.locator(`#${controllerLaneListboxId!}`)
+    .getByRole('option', { name: 'Data', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Next stage' }).click();
+
+  const connectionBuilder = page.locator('.connection-builder');
+  await connectionBuilder.getByRole('combobox').nth(0).click();
+  await page.getByRole('option', { name: 'Search input', exact: true }).last().click();
+  await connectionBuilder.getByRole('combobox').nth(2).click();
+  await page.getByRole('option', { name: 'Request controller', exact: true }).last().click();
+  await page.getByRole('button', { name: 'Add connection' }).click();
+  await page.getByLabel('Abort obsolete requests').check();
+  await page.getByLabel('Prevent stale results').check();
+  await page.getByRole('button', { name: 'Continue to production twist' }).click();
+  await page.getByTestId('reveal-system-design-twist').click();
+
+  await expect(page.getByText('The user changes locale while an older request is still in flight.'))
+    .toBeVisible();
+  await page.getByLabel('Include locale in request and cache identity').check();
+  await expect(page.getByText('Design saved')).toBeVisible();
+  await page.getByTestId('submit-system-design').click();
+
+  await expect(page).toHaveURL(/\/interview\/mock-system-design-1-mid-react\/results$/);
+  await expect(page.getByRole('heading', { name: 'Your design' })).toBeVisible();
+  await expect(page.getByText('Not enough evidence')).toBeVisible();
+  await expect(page.getByText('Request identity', { exact: true })).toBeVisible();
+  await expect(page.getByText('This session awarded 0 XP and did not change solved progress.'))
+    .toBeVisible();
+  await expect(page.getByText(/Correct|Incorrect/, { exact: true })).toHaveCount(0);
+  expect(api.systemDesignTwistRequests[0].body['draftHash']).toBeTruthy();
+  expect(api.systemDesignSubmitRequests[0].body['draftHash']).toBeTruthy();
+});
+
 test('renders the bounded framework interview shell without normal solution/progress controls', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 900 });
   const session = buildSession('junior', 'react', 'framework-shell-session');
@@ -786,7 +1218,7 @@ test('an expired MCQ deadline is reconciled through the backend transition', asy
   await expect(page.getByTestId('interview-timer')).toContainText('Start coding within');
 });
 
-test('resume and hard refresh preserve the pinned question order, answer, and timer', async ({ page }) => {
+test('leaving, resuming, and refreshing preserve question position, review state, answers, and timer', async ({ page }) => {
   const session = buildSession('senior', 'vue', 'resume-session');
   session.questions[0].selectedOptionId = 'q1-b';
   const api = new InterviewApiMock({ initialSession: session });
@@ -800,10 +1232,19 @@ test('resume and hard refresh preserve the pinned question order, answer, and ti
   await expect(page.locator('input[type="radio"][value="q1-b"]')).toBeChecked();
   const orderBefore = await page.locator('.question-nav button').allTextContents();
 
+  await page.locator('.question-nav button').nth(3).click();
+  await expect(page.getByText(session.questions[3].prompt)).toBeVisible();
+  await page.goto('/interview');
+  await page.getByRole('button', { name: 'Resume interview' }).click();
+  await expect(page.getByText(session.questions[3].prompt)).toBeVisible();
+
+  await page.getByRole('button', { name: 'Review answers' }).click();
+  await expect(page.getByRole('heading', { name: 'Check for unanswered questions' })).toBeVisible();
   await page.reload();
-  await expect(page.getByText(session.questions[0].prompt)).toBeVisible();
-  await expect(page.locator('input[type="radio"][value="q1-b"]')).toBeChecked();
+  await expect(page.getByRole('heading', { name: 'Check for unanswered questions' })).toBeVisible();
   expect(await page.locator('.question-nav button').allTextContents()).toEqual(orderBefore);
+  await page.locator('.question-nav button').first().click();
+  await expect(page.locator('input[type="radio"][value="q1-b"]')).toBeChecked();
   await expect(page.getByTestId('interview-timer')).toContainText('MCQ time');
   expect(api.getSessionCount).toBeGreaterThanOrEqual(2);
 });
@@ -820,7 +1261,7 @@ test('free quota gate prevents a start request', async ({ page }) => {
   await seedAuthenticatedInterview(page, api);
 
   await page.goto('/interview');
-  await expect(page.getByRole('heading', { name: 'No attempts remaining' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'No coding attempts remaining' })).toBeVisible();
   await expect(page.getByTestId('interview-start')).toBeDisabled();
   expect(api.createRequests).toEqual([]);
 });
@@ -863,6 +1304,20 @@ test('premium users can abandon and immediately start a second unlimited session
   expect(api.quota.remaining).toBeNull();
 });
 
+for (const width of [834, 1366]) {
+  test(`active MCQ snippets stay inside the session layout at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const active = buildSession('mid', 'react', `snippet-session-${width}`);
+    const api = new InterviewApiMock({ initialSession: active });
+    await seedAuthenticatedInterview(page, api);
+
+    await page.goto(`/interview/${active.id}`);
+    await expect(page.getByTestId('interview-session')).toBeVisible();
+    await expect(page.locator('.question-code')).toContainText('longRuntimeIdentifier');
+    await expectNoHorizontalOverflow(page);
+  });
+}
+
 for (const width of [360, 390, 834, 1366, 1440]) {
   test(`setup and results reflow at ${width}px without horizontal overflow`, async ({ page }) => {
     await page.setViewportSize({ width, height: width < 700 ? 844 : 900 });
@@ -888,6 +1343,8 @@ for (const width of [360, 390, 834, 1366, 1440]) {
     await page.goto(`/interview/${completed.id}/results`);
     await expect(page.getByTestId('interview-results')).toBeVisible();
     await expect(page.getByText('Preparation feedback only')).toBeVisible();
+    await page.locator('.answer-list details summary').first().click();
+    await expect(page.locator('.question-code').first()).toContainText('longRuntimeIdentifier');
     await expectNoHorizontalOverflow(page);
   });
 }

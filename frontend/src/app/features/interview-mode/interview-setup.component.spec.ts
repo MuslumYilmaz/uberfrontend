@@ -1,7 +1,7 @@
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { Router, provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import {
   InterviewAvailability,
   InterviewSession,
@@ -22,12 +22,29 @@ describe('InterviewSetupComponent', () => {
     accessMode: 'public',
     unavailableReason: null,
     quota: { remaining: 2, limit: 3, resetAt: null, unlimited: false },
+    quotas: {
+      coding: { remaining: 2, limit: 3, resetAt: null, unlimited: false },
+      'system-design': { remaining: 1, limit: 1, resetAt: null, unlimited: false },
+    },
     activeSession: null,
     lastResults: [],
     targets: [
       ...(['junior', 'mid', 'senior'] as const).flatMap((level) =>
-        (['core-web', 'react'] as const).map((track) => ({ level, track, available: true }))
+        (['core-web', 'react'] as const).map((track) => ({
+          level,
+          track,
+          format: 'coding' as const,
+          available: true,
+        }))
       ),
+    ],
+    formats: [
+      { value: 'coding', label: 'Coding mock' },
+      { value: 'system-design', label: 'System design mock' },
+    ],
+    formatAvailability: [
+      { format: 'coding', enabled: true, unavailableReason: null },
+      { format: 'system-design', enabled: true, unavailableReason: null },
     ],
     levels: [
       { value: 'junior', label: 'Junior' },
@@ -39,13 +56,18 @@ describe('InterviewSetupComponent', () => {
       { value: 'react', label: 'React' },
     ],
     minViewportWidth: 1,
-    timing: { mcqSeconds: 600, codingReadySeconds: 300 },
+    timing: {
+      mcqSeconds: 600,
+      codingReadySeconds: 300,
+      systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+    },
     ...overrides,
   });
 
   const session: InterviewSession = {
     id: 'session-1',
     status: 'mcq_active',
+    format: 'coding',
     level: 'mid',
     track: 'core-web',
     version: 1,
@@ -56,6 +78,7 @@ describe('InterviewSetupComponent', () => {
     questions: [],
     currentQuestionIndex: 0,
     coding: null,
+    systemDesign: null,
   };
 
   beforeEach(async () => {
@@ -134,8 +157,8 @@ describe('InterviewSetupComponent', () => {
   it('blocks a level and track pair that the backend marks unavailable', () => {
     service.getAvailability.and.returnValue(of(availability({
       targets: [
-        { level: 'mid', track: 'core-web', available: true },
-        { level: 'senior', track: 'react', available: false },
+        { level: 'mid', track: 'core-web', format: 'coding', available: true },
+        { level: 'senior', track: 'react', format: 'coding', available: false },
       ],
     })));
     fixture.detectChanges();
@@ -156,6 +179,7 @@ describe('InterviewSetupComponent', () => {
       activeSession: {
         id: 'active-1',
         status: 'coding_active',
+        format: 'coding',
         level: 'mid',
         track: 'react',
       },
@@ -171,6 +195,7 @@ describe('InterviewSetupComponent', () => {
       activeSession: {
         id: 'active-race',
         status: 'mcq_active',
+        format: 'coding',
         level: 'mid',
         track: 'core-web',
       },
@@ -187,6 +212,35 @@ describe('InterviewSetupComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Resume interview');
   });
 
+  it('keeps start disabled during refresh and ignores an older availability response', () => {
+    const first = new Subject<InterviewAvailability>();
+    const second = new Subject<InterviewAvailability>();
+    service.getAvailability.and.returnValues(first, second);
+
+    fixture.detectChanges();
+    component.load();
+    expect(component.loading()).toBeTrue();
+    expect(component.canStart()).toBeFalse();
+
+    const active = availability({
+      activeSession: {
+        id: 'newer-active',
+        status: 'system_design_active',
+        format: 'system-design',
+        level: 'senior',
+        track: 'vue',
+      },
+    });
+    second.next(active);
+    second.complete();
+    first.next(availability());
+    first.complete();
+
+    expect(component.loading()).toBeFalse();
+    expect(component.availability()?.activeSession?.id).toBe('newer-active');
+    expect(component.canStart()).toBeFalse();
+  });
+
   it('labels an internal admin preview without changing the interview contract', () => {
     service.getAvailability.and.returnValue(of(availability({
       accessMode: 'internal',
@@ -201,10 +255,55 @@ describe('InterviewSetupComponent', () => {
 
   it('shows the backend-provided MCQ duration', () => {
     service.getAvailability.and.returnValue(of(availability({
-      timing: { mcqSeconds: 570, codingReadySeconds: 300 },
+      timing: {
+        mcqSeconds: 570,
+        codingReadySeconds: 300,
+        systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+      },
     })));
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('9m 30s MCQ');
+  });
+
+  it('starts the separate system-design format with its own quota and level timer', () => {
+    const designSession = {
+      ...session,
+      format: 'system-design' as const,
+      status: 'system_design_active' as const,
+    };
+    service.createSession.and.returnValue(of(designSession));
+    fixture.detectChanges();
+
+    component.onFormatChange('system-design');
+    component.onLevelChange('senior');
+    fixture.detectChanges();
+    component.start();
+
+    expect(service.createSession.calls.mostRecent().args[0]).toEqual({
+      format: 'system-design',
+      level: 'senior',
+      track: 'core-web',
+      viewportWidth: window.innerWidth,
+    });
+    expect(fixture.nativeElement.textContent).toContain('20 minutes guided system design');
+    expect(fixture.nativeElement.textContent).toContain('1 / 1');
+  });
+
+  it('renders system-design practice signals as human-readable feedback', () => {
+    service.getAvailability.and.returnValue(of(availability({
+      lastResults: [{
+        sessionId: 'design-result',
+        format: 'system-design',
+        level: 'mid',
+        track: 'react',
+        practiceSignal: 'not-enough-evidence',
+      }],
+    })));
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Not enough evidence');
+    expect(fixture.nativeElement.textContent).not.toContain('Not-enough-evidence');
   });
 });

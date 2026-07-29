@@ -36,6 +36,7 @@ const QuestionSnapshotSchema = new Schema(
     competency: { type: String, required: true, trim: true },
     prompt: { type: String, required: true },
     code: { type: String, default: null },
+    codeLanguage: { type: String, default: null, trim: true },
     estimatedSeconds: { type: Number, required: true, min: 1 },
     options: {
       type: [OptionSchema],
@@ -174,9 +175,10 @@ const MutationReceiptSchema = new Schema(
 
 const TimingPolicySchema = new Schema(
   {
-    mcqSeconds: { type: Number, required: true, min: 60 },
-    codingReadySeconds: { type: Number, required: true, min: 30 },
-    codingSeconds: { type: Number, required: true, min: 60 },
+    mcqSeconds: { type: Number, default: null, min: 60 },
+    codingReadySeconds: { type: Number, default: null, min: 30 },
+    codingSeconds: { type: Number, default: null, min: 60 },
+    systemDesignSeconds: { type: Number, default: null, min: 60 },
     capturedAt: { type: Date, required: true },
   },
   { _id: false }
@@ -188,12 +190,19 @@ const InterviewSessionSchema = new Schema(
     createRequestId: { type: String, required: true, trim: true },
     createRequestHash: { type: String, required: true, trim: true },
     active: { type: Boolean, default: true, required: true },
+    format: {
+      type: String,
+      enum: ['coding', 'system-design'],
+      required: true,
+      default: 'coding',
+    },
     status: {
       type: String,
       enum: [
         'mcq_active',
         'coding_ready',
         'coding_active',
+        'system_design_active',
         'completed',
         'abandoned',
         'voided_technical',
@@ -209,25 +218,40 @@ const InterviewSessionSchema = new Schema(
     },
     timingMode: { type: String, enum: ['standard'], default: 'standard', required: true },
     timingPolicy: { type: TimingPolicySchema, required: true },
-    selectionSeed: { type: String, required: true, trim: true },
+    selectionSeed: {
+      type: String,
+      required: true,
+      trim: true,
+      select: false,
+    },
     bank: {
-      id: { type: String, required: true, trim: true },
-      version: { type: String, required: true, trim: true },
-      contentHash: { type: String, required: true, trim: true },
+      id: { type: String, default: null, trim: true },
+      version: { type: String, default: null, trim: true },
+      contentHash: { type: String, default: null, trim: true },
       status: {
         type: String,
         enum: ['candidate', 'editorial-gold', 'calibrated-gold'],
-        required: true,
+        default: null,
       },
     },
     codingRegistry: {
-      id: { type: String, required: true, trim: true },
-      version: { type: String, required: true, trim: true },
-      contentHash: { type: String, required: true, trim: true },
+      id: { type: String, default: null, trim: true },
+      version: { type: String, default: null, trim: true },
+      contentHash: { type: String, default: null, trim: true },
       status: {
         type: String,
         enum: ['candidate', 'editorial-gold', 'calibrated-gold'],
-        required: true,
+        default: null,
+      },
+    },
+    systemDesignRegistry: {
+      id: { type: String, default: null, trim: true },
+      version: { type: String, default: null, trim: true },
+      contentHash: { type: String, default: null, trim: true },
+      status: {
+        type: String,
+        enum: ['candidate', 'editorial-gold', 'calibrated-gold'],
+        default: null,
       },
     },
     entitlementSnapshot: {
@@ -240,32 +264,44 @@ const InterviewSessionSchema = new Schema(
     },
     questions: {
       type: [QuestionSnapshotSchema],
-      required: true,
+      default: [],
       validate: {
         validator(value) {
-          return Array.isArray(value) && value.length === 5;
+          return (
+            Array.isArray(value)
+            && (
+              (this.format === 'system-design' && value.length === 0)
+              || ((this.format || 'coding') === 'coding' && value.length === 5)
+            )
+          );
         },
-        message: 'Interview sessions require exactly five MCQ questions',
+        message: 'Interview session questions do not match the selected format',
       },
     },
     answerKey: {
       type: [AnswerKeySchema],
-      required: true,
+      default: [],
       select: false,
       validate: {
         validator(value) {
-          return Array.isArray(value) && value.length === 5;
+          return (
+            Array.isArray(value)
+            && (
+              (this.format === 'system-design' && value.length === 0)
+              || ((this.format || 'coding') === 'coding' && value.length === 5)
+            )
+          );
         },
-        message: 'Interview sessions require exactly five answer keys',
+        message: 'Interview session answer keys do not match the selected format',
       },
     },
     mcqResponses: { type: [McqResponseSchema], default: [] },
-    mcqStartedAt: { type: Date, required: true },
-    mcqDeadlineAt: { type: Date, required: true },
+    mcqStartedAt: { type: Date, default: null },
+    mcqDeadlineAt: { type: Date, default: null },
     mcqSubmittedAt: { type: Date, default: null },
     codingReadyAt: { type: Date, default: null },
     codingReadyDeadlineAt: { type: Date, default: null },
-    codingVariant: { type: CodingVariantSchema, required: true },
+    codingVariant: { type: CodingVariantSchema, default: null },
     codingPrivate: {
       type: Schema.Types.Mixed,
       default: null,
@@ -283,6 +319,43 @@ const InterviewSessionSchema = new Schema(
     },
     codingSubmittedAt: { type: Date, default: null },
     submittedDraftHash: { type: String, default: null },
+    systemDesignScenario: {
+      type: Schema.Types.Mixed,
+      default: null,
+    },
+    systemDesignPresentationOrder: {
+      type: Schema.Types.Mixed,
+      default: null,
+    },
+    systemDesignPrivate: {
+      type: Schema.Types.Mixed,
+      default: null,
+      select: false,
+    },
+    systemDesignDraft: {
+      type: Schema.Types.Mixed,
+      default: null,
+    },
+    systemDesignRevealedClarificationIds: {
+      type: [String],
+      default: [],
+      select: false,
+    },
+    systemDesignBaseline: {
+      type: Schema.Types.Mixed,
+      default: null,
+      select: false,
+    },
+    systemDesignStartedAt: { type: Date, default: null },
+    systemDesignDeadlineAt: { type: Date, default: null },
+    systemDesignTwistRevealedAt: { type: Date, default: null },
+    systemDesignSubmittedAt: { type: Date, default: null },
+    systemDesignOutcome: {
+      type: String,
+      enum: ['pending', 'submitted', 'timed_out', 'abandoned'],
+      default: 'pending',
+      required: true,
+    },
     mutationReceipts: { type: [MutationReceiptSchema], default: [] },
     resultSnapshot: {
       type: Schema.Types.Mixed,
@@ -303,6 +376,43 @@ const InterviewSessionSchema = new Schema(
     optimisticConcurrency: true,
   }
 );
+
+function hasArtifactIdentity(value) {
+  return Boolean(
+    value?.id
+    && value?.version
+    && value?.contentHash
+    && value?.status
+  );
+}
+
+InterviewSessionSchema.pre('validate', function validateFormatContract(next) {
+  const format = this.format || 'coding';
+  if (format === 'coding') {
+    if (
+      !hasArtifactIdentity(this.bank)
+      || !hasArtifactIdentity(this.codingRegistry)
+      || !this.codingVariant
+      || !this.mcqStartedAt
+      || !this.mcqDeadlineAt
+      || !Number(this.timingPolicy?.mcqSeconds)
+      || !Number(this.timingPolicy?.codingReadySeconds)
+      || !Number(this.timingPolicy?.codingSeconds)
+    ) {
+      this.invalidate('format', 'Coding interview snapshot is incomplete');
+    }
+  } else if (
+    !hasArtifactIdentity(this.systemDesignRegistry)
+    || !this.systemDesignScenario
+    || !this.systemDesignPrivate
+    || !this.systemDesignStartedAt
+    || !this.systemDesignDeadlineAt
+    || !Number(this.timingPolicy?.systemDesignSeconds)
+  ) {
+    this.invalidate('format', 'System Design interview snapshot is incomplete');
+  }
+  next();
+});
 
 InterviewSessionSchema.index(
   { userId: 1 },

@@ -16,6 +16,8 @@ import {
   InterviewDraftSaveResult,
   InterviewFrameworkCheck,
   InterviewFrameworkRunnerConfig,
+  InterviewFormat,
+  InterviewFormatAvailability,
   InterviewJavaScriptRunnerConfig,
   InterviewLevel,
   InterviewMcqOption,
@@ -30,10 +32,28 @@ import {
   InterviewSession,
   InterviewSessionLink,
   InterviewSessionStatus,
+  InterviewSystemDesignCard,
+  InterviewSystemDesignClarification,
+  InterviewSystemDesignConnection,
+  InterviewSystemDesignConnectionType,
+  InterviewSystemDesignContradiction,
+  InterviewSystemDesignDecision,
+  InterviewSystemDesignDecisionAnswer,
+  InterviewSystemDesignDraft,
+  InterviewSystemDesignLane,
+  InterviewSystemDesignMutationResult,
+  InterviewSystemDesignPracticeSignal,
+  InterviewSystemDesignRequirement,
+  InterviewSystemDesignResult,
+  InterviewSystemDesignScenario,
+  InterviewSystemDesignState,
+  InterviewSystemDesignStep,
+  InterviewSystemDesignTwistAction,
   InterviewTargetAvailability,
   InterviewTrack,
   SaveInterviewAnswerRequest,
   SaveInterviewCodingDraftRequest,
+  SaveInterviewSystemDesignDraftRequest,
 } from '../models/interview.model';
 import { apiUrl } from '../utils/api-base';
 
@@ -186,6 +206,54 @@ export class InterviewService {
       .pipe(map((payload) => this.normalizeOptionalResult(payload)));
   }
 
+  saveSystemDesignDraft(
+    sessionId: string,
+    request: SaveInterviewSystemDesignDraftRequest,
+    expectedVersion: number,
+  ): Observable<InterviewSystemDesignMutationResult> {
+    return this.http
+      .put<unknown>(
+        `${this.base}/${this.encode(sessionId)}/system-design/draft`,
+        {
+          ...this.serializeSystemDesignDraft(request.draft),
+          mutationId: request.mutationId,
+          expectedVersion,
+        },
+        { withCredentials: true },
+      )
+      .pipe(map((payload) => this.normalizeSystemDesignMutation(payload)));
+  }
+
+  revealSystemDesignTwist(
+    sessionId: string,
+    draftHash: string,
+    mutationId: string,
+    expectedVersion: number,
+  ): Observable<InterviewSystemDesignMutationResult> {
+    return this.http
+      .post<unknown>(
+        `${this.base}/${this.encode(sessionId)}/system-design/twist/reveal`,
+        { draftHash, mutationId, expectedVersion },
+        { withCredentials: true },
+      )
+      .pipe(map((payload) => this.normalizeSystemDesignMutation(payload)));
+  }
+
+  submitSystemDesign(
+    sessionId: string,
+    draftHash: string,
+    mutationId: string,
+    expectedVersion: number,
+  ): Observable<InterviewSystemDesignMutationResult> {
+    return this.http
+      .post<unknown>(
+        `${this.base}/${this.encode(sessionId)}/system-design/submit`,
+        { draftHash, mutationId, expectedVersion },
+        { withCredentials: true },
+      )
+      .pipe(map((payload) => this.normalizeSystemDesignMutation(payload)));
+  }
+
   endSession(sessionId: string, expectedVersion: number): Observable<InterviewResult | null> {
     return this.http
       .post<unknown>(
@@ -212,21 +280,51 @@ export class InterviewService {
       ? this.normalizeAccessMode(source['accessMode'])
       : 'off';
     const quotaSource = this.record(source['quota']);
+    const quotasSource = this.record(source['quotas']);
     const activeSource = this.record(source['activeSession'] ?? source['active']);
     const rawResults = this.array(source['lastResults'] ?? source['recentResults']);
-    const targets = this.array(source['availability'])
+    const targets = [
+      ...this.array(source['targets'] ?? source['availability']),
+      ...this.array(source['systemDesignAvailability']),
+    ]
       .map((value) => this.normalizeTargetAvailability(value))
       .filter((value): value is InterviewTargetAvailability => value !== null);
+    const legacyQuota = quotaSource ? this.normalizeQuota(quotaSource) : null;
+    const codingQuotaSource = this.record(quotasSource?.['coding']);
+    const systemDesignQuotaSource = this.record(
+      quotasSource?.['systemDesign'] ?? quotasSource?.['system-design'],
+    );
+    const formats = this.normalizeChoices<InterviewFormat>(
+      source['formats'],
+      ['coding', 'system-design'],
+      { coding: 'Coding mock', 'system-design': 'System design mock' },
+    );
+    const formatAvailability = this.normalizeFormatAvailability(
+      source['formatAvailability'] ?? source['formats'],
+      advertisedEnabled && accessMode !== 'off',
+    );
+    const timing = this.record(source['timing']);
+    const systemDesignTiming = this.record(
+      timing?.['systemDesignSeconds'] ?? timing?.['system-design'],
+    );
     return {
       enabled: advertisedEnabled && accessMode !== 'off',
       accessMode,
       unavailableReason: this.optionalText(source['unavailableReason'] ?? source['reason']),
-      quota: quotaSource ? this.normalizeQuota(quotaSource) : null,
+      quota: legacyQuota,
+      quotas: {
+        coding: codingQuotaSource ? this.normalizeQuota(codingQuotaSource) : legacyQuota,
+        'system-design': systemDesignQuotaSource
+          ? this.normalizeQuota(systemDesignQuotaSource)
+          : null,
+      },
       activeSession: activeSource ? this.normalizeSessionLink(activeSource) : null,
       lastResults: rawResults
         .map((value) => this.normalizeResultLink(this.record(value)))
         .filter((value): value is InterviewResultLink => value !== null),
       targets,
+      formats,
+      formatAvailability,
       levels: this.normalizeChoices<InterviewLevel>(
         source['levels'],
         ['junior', 'mid', 'senior'],
@@ -239,11 +337,61 @@ export class InterviewService {
       ),
       minViewportWidth: this.positiveInteger(source['minViewportWidth']) ?? 768,
       timing: {
-        mcqSeconds: this.positiveInteger(this.record(source['timing'])?.['mcqSeconds']) ?? 600,
+        mcqSeconds: this.positiveInteger(timing?.['mcqSeconds']) ?? 600,
         codingReadySeconds:
-          this.positiveInteger(this.record(source['timing'])?.['codingReadySeconds']) ?? 300,
+          this.positiveInteger(timing?.['codingReadySeconds']) ?? 300,
+        systemDesignSeconds: {
+          junior: this.positiveInteger(
+            systemDesignTiming?.['junior'] ?? timing?.['systemDesignJuniorSeconds'],
+          ) ?? 600,
+          mid: this.positiveInteger(
+            systemDesignTiming?.['mid'] ?? timing?.['systemDesignMidSeconds'],
+          ) ?? 900,
+          senior: this.positiveInteger(
+            systemDesignTiming?.['senior'] ?? timing?.['systemDesignSeniorSeconds'],
+          ) ?? 1200,
+        },
       },
     };
+  }
+
+  private normalizeFormatAvailability(
+    value: unknown,
+    mainEnabled: boolean,
+  ): InterviewFormatAvailability[] {
+    const byFormat = new Map<InterviewFormat, InterviewFormatAvailability>();
+    this.array(value).forEach((entry) => {
+      const source = this.record(entry);
+      const format = this.normalizeOptionalFormat(
+        source?.['format'] ?? source?.['value'] ?? source?.['id'] ?? entry,
+      );
+      if (!format) return;
+      const explicitlyDisabled = source?.['enabled'] === false
+        || source?.['available'] === false
+        || source?.['disabled'] === true;
+      byFormat.set(format, {
+        format,
+        enabled: mainEnabled && !explicitlyDisabled,
+        unavailableReason: this.optionalText(
+          source?.['unavailableReason'] ?? source?.['reason'],
+        ),
+      });
+    });
+    if (!byFormat.has('coding')) {
+      byFormat.set('coding', {
+        format: 'coding',
+        enabled: mainEnabled,
+        unavailableReason: null,
+      });
+    }
+    if (!byFormat.has('system-design')) {
+      byFormat.set('system-design', {
+        format: 'system-design',
+        enabled: false,
+        unavailableReason: 'System design mock is not available yet.',
+      });
+    }
+    return [...byFormat.values()];
   }
 
   private normalizeAccessMode(value: unknown): InterviewAccessMode {
@@ -266,6 +414,7 @@ export class InterviewService {
     return {
       level: level as InterviewLevel,
       track: track as InterviewTrack,
+      format: this.normalizeOptionalFormat(source['format']) ?? 'coding',
       available: source['available'] === true,
     };
   }
@@ -287,6 +436,9 @@ export class InterviewService {
     return {
       id,
       status: this.normalizeStatus(source['status'] ?? source['phase']),
+      format: this.normalizeFormat(
+        source['format'] ?? source['interviewFormat'],
+      ),
       level: this.normalizeLevel(source['level']),
       track: this.normalizeTrack(source['track'] ?? source['framework']),
       version: this.nonNegativeInteger(source['version'] ?? source['sessionVersion']) ?? 0,
@@ -310,6 +462,10 @@ export class InterviewService {
         questions.length,
       ),
       coding: this.normalizeCodingState(source['coding'], deadlines),
+      systemDesign: this.normalizeSystemDesignState(
+        source['systemDesign'] ?? source['system-design'],
+        deadlines,
+      ),
     };
   }
 
@@ -353,6 +509,9 @@ export class InterviewService {
 
     return {
       sessionId,
+      interviewFormat: this.normalizeFormat(
+        source['interviewFormat'] ?? source['format'],
+      ),
       level: this.normalizeLevel(source['level']),
       track: this.normalizeTrack(source['track'] ?? source['framework']),
       completedAt: this.isoText(source['completedAt'] ?? source['finalizedAt']),
@@ -373,6 +532,9 @@ export class InterviewService {
         .filter((value): value is InterviewMcqResult => value !== null),
       remediationTopics,
       coding: this.normalizeCodingResult(source['coding']),
+      systemDesign: this.normalizeSystemDesignResult(
+        source['systemDesign'] ?? source['system-design'],
+      ),
       disclaimer: this.text(source['disclaimer'] ?? source['evidenceNotice'])
         || 'This mock interview is preparation feedback, not an employment decision.',
       mcqTiming: this.normalizeTiming(
@@ -401,6 +563,7 @@ export class InterviewService {
     return {
       id,
       status: this.normalizeStatus(source['status'] ?? source['phase']),
+      format: this.normalizeFormat(source['format'] ?? source['interviewFormat']),
       level: this.optionalLevel(source['level']),
       track: this.optionalTrack(source['track'] ?? source['framework']),
       updatedAt: this.isoText(source['updatedAt']) ?? undefined,
@@ -414,6 +577,7 @@ export class InterviewService {
     const mcq = this.record(source['mcq']);
     return {
       sessionId,
+      format: this.normalizeFormat(source['format'] ?? source['interviewFormat']),
       completedAt: this.isoText(
         source['completedAt'] ?? source['endedAt'] ?? source['finalizedAt'],
       ) ?? undefined,
@@ -425,6 +589,11 @@ export class InterviewService {
       total: this.nonNegativeInteger(
         source['total'] ?? this.record(source['score'])?.['total'] ?? mcq?.['total'],
       ) ?? undefined,
+      practiceSignal: this.normalizeOptionalPracticeSignal(
+        source['practiceSignal']
+          ?? this.record(source['systemDesign'])?.['practiceSignal']
+          ?? this.record(source['systemDesign'])?.['overallSignal'],
+      ),
     };
   }
 
@@ -444,14 +613,18 @@ export class InterviewService {
     const selected = this.optionalText(
       source['selectedOptionId'] ?? answerMap.get(id),
     );
+    const snippet = this.normalizeQuestionCode(
+      publicSource['code'],
+      publicSource['codeLanguage'] ?? publicSource['language'],
+    );
     return {
       id,
       revision: this.positiveInteger(publicSource['revision']) ?? 1,
       technology: this.text(publicSource['technology'] ?? publicSource['tech']) || 'frontend',
       competency: this.text(publicSource['competency'] ?? publicSource['topic']) || 'Frontend',
       prompt,
-      code: this.optionalText(publicSource['code']) ?? undefined,
-      codeLanguage: this.optionalText(publicSource['codeLanguage'] ?? publicSource['language']) ?? undefined,
+      code: snippet.code ?? undefined,
+      codeLanguage: snippet.codeLanguage ?? undefined,
       options,
       estimatedSeconds: this.positiveInteger(publicSource['estimatedSeconds']) ?? undefined,
       selectedOptionId: selected && options.some((option) => option.id === selected)
@@ -466,6 +639,356 @@ export class InterviewService {
     const id = this.text(source['id'] ?? source['optionId']);
     const label = this.text(source['label'] ?? source['text']);
     return id && label ? { id, label } : null;
+  }
+
+  private normalizeSystemDesignState(
+    value: unknown,
+    deadlines: JsonRecord | null,
+  ): InterviewSystemDesignState | null {
+    const source = this.record(value);
+    if (!source) return null;
+    const twistSource = this.record(source['twist']);
+    const stage = this.text(source['stage']) === 'twist'
+      || source['twistRevealed'] === true
+      || twistSource?.['revealed'] === true
+      ? 'twist'
+      : 'initial';
+    const scenario = this.normalizeSystemDesignScenario(
+      source['scenario'] ?? source['publicScenario'],
+    );
+    const clarificationAnswers = new Map(
+      this.array(source['clarificationAnswers'])
+        .map((entry) => {
+          const row = this.record(entry);
+          return [
+            this.text(row?.['clarificationId'] ?? row?.['id']),
+            this.text(row?.['answer']),
+          ] as const;
+        })
+        .filter(([id, answer]) => !!id && !!answer),
+    );
+    if (scenario && clarificationAnswers.size) {
+      scenario.clarifications = scenario.clarifications.map((clarification) => ({
+        ...clarification,
+        answer: clarificationAnswers.get(clarification.id) ?? clarification.answer,
+      }));
+    }
+    return {
+      stage,
+      deadlineAt: this.isoText(
+        source['deadlineAt'] ?? deadlines?.['systemDesign'] ?? deadlines?.['system-design'],
+      ),
+      scenario,
+      revealedClarificationIds: this.stringList(source['revealedClarificationIds']),
+      draft: this.normalizeSystemDesignDraft(source['draft']),
+      twist: {
+        revealed: stage === 'twist',
+        prompt: stage === 'twist'
+          ? this.optionalText(twistSource?.['prompt'] ?? source['twistPrompt'])
+          : null,
+        actions: stage === 'twist'
+          ? this.normalizeTwistActions(
+            twistSource?.['responseActions']
+              ?? twistSource?.['actions']
+              ?? source['twistActions'],
+          )
+          : [],
+        maxActions: this.positiveInteger(
+          twistSource?.['maxActions'] ?? source['maxTwistActions'],
+        ) ?? scenario?.selectionLimits.twistActions ?? 2,
+      },
+    };
+  }
+
+  private normalizeSystemDesignScenario(value: unknown): InterviewSystemDesignScenario | null {
+    const source = this.record(value);
+    if (!source) return null;
+    const publicSource = this.record(source['public']) ?? source;
+    const stepsRecord = this.record(publicSource['steps']);
+    const stepRows = this.array(publicSource['steps']);
+    const stepById = (id: string): JsonRecord | null => {
+      const direct = this.record(stepsRecord?.[id]);
+      if (direct) return direct;
+      return this.record(stepRows.find((entry) => {
+        const row = this.record(entry);
+        return this.text(row?.['id']).toLowerCase().replace(/-/g, '_') === id;
+      }));
+    };
+    const clarificationStep = stepById('clarifications');
+    const priorityStep = stepById('requirements');
+    const architectureStep = stepById('architecture');
+    const decisionStep = stepById('decisions');
+    const id = this.text(publicSource['id'] ?? publicSource['scenarioId']);
+    const title = this.text(publicSource['title']);
+    const prompt = this.text(publicSource['prompt'] ?? publicSource['brief']);
+    if (!id || !title || !prompt) return null;
+
+    const clarifications = this.array(
+      publicSource['clarifications']
+        ?? clarificationStep?.['items']
+        ?? clarificationStep?.['clarifications'],
+    )
+      .map((entry) => {
+        const row = this.record(entry);
+        const clarificationId = this.text(row?.['id']);
+        const clarificationPrompt = this.text(row?.['prompt'] ?? row?.['question']);
+        return clarificationId && clarificationPrompt
+          ? {
+            id: clarificationId,
+            prompt: clarificationPrompt,
+            answer: this.optionalText(row?.['answer'] ?? row?.['interviewerAnswer']),
+          } satisfies InterviewSystemDesignClarification
+          : null;
+      })
+      .filter((entry): entry is InterviewSystemDesignClarification => entry !== null);
+    const requirements = this.array(
+      publicSource['requirements']
+        ?? publicSource['priorities']
+        ?? priorityStep?.['items']
+        ?? priorityStep?.['requirements'],
+    )
+      .map((entry) => {
+        const row = this.record(entry);
+        const requirementId = this.text(row?.['id']);
+        const label = this.text(row?.['label'] ?? row?.['title']);
+        const description = this.optionalText(row?.['description']);
+        return requirementId && label
+          ? {
+            id: requirementId,
+            label,
+            ...(description ? { description } : {}),
+          } satisfies InterviewSystemDesignRequirement
+          : null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    const lanes = this.array(
+      publicSource['lanes'] ?? architectureStep?.['lanes'],
+    )
+      .map((entry) => {
+        const row = this.record(entry);
+        const laneId = this.text(row?.['id']);
+        const label = this.text(row?.['label'] ?? row?.['title']);
+        const description = this.optionalText(row?.['description']);
+        return laneId && label
+          ? {
+            id: laneId,
+            label,
+            ...(description ? { description } : {}),
+          } satisfies InterviewSystemDesignLane
+          : null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    const cards = this.array(
+      publicSource['cards']
+        ?? publicSource['components']
+        ?? architectureStep?.['cards'],
+    )
+      .map((entry) => {
+        const row = this.record(entry);
+        const cardId = this.text(row?.['id']);
+        const label = this.text(row?.['label'] ?? row?.['title']);
+        if (!cardId || !label) return null;
+        const description = this.optionalText(row?.['description']);
+        return {
+          id: cardId,
+          label,
+          ...(description ? { description } : {}),
+        } satisfies InterviewSystemDesignCard;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    const decisions = this.array(
+      publicSource['decisions']
+        ?? decisionStep?.['items']
+        ?? decisionStep?.['decisions'],
+    )
+      .map((entry) => this.normalizeSystemDesignDecision(entry))
+      .filter((entry): entry is InterviewSystemDesignDecision => entry !== null);
+    const limits = this.record(publicSource['selectionLimits']);
+
+    return {
+      id,
+      revision: this.positiveInteger(publicSource['revision']) ?? 1,
+      title,
+      prompt,
+      sourceContentId: this.optionalText(publicSource['sourceContentId']),
+      estimatedSeconds: this.positiveInteger(
+        publicSource['estimatedSeconds'] ?? publicSource['timeLimitSeconds'],
+      ) ?? 900,
+      selectionLimits: {
+        clarifications: this.positiveInteger(limits?.['clarifications']) ?? 3,
+        priorities: this.positiveInteger(limits?.['priorities']) ?? 3,
+        connections: this.positiveInteger(limits?.['connections']) ?? 8,
+        rationalesPerDecision:
+          this.positiveInteger(limits?.['rationalesPerDecision']) ?? 2,
+        twistActions: this.positiveInteger(limits?.['twistActions']) ?? 2,
+        scratchpadChars: this.positiveInteger(limits?.['scratchpadChars']) ?? 200,
+      },
+      clarifications,
+      requirements,
+      lanes,
+      cards,
+      decisions,
+      connectionTypes: this.normalizeConnectionTypes(
+        publicSource['connectionTypes'] ?? architectureStep?.['connectionTypes'],
+      ),
+    };
+  }
+
+  private normalizeSystemDesignDecision(value: unknown): InterviewSystemDesignDecision | null {
+    const source = this.record(value);
+    if (!source) return null;
+    const id = this.text(source['id']);
+    const prompt = this.text(source['prompt'] ?? source['question']);
+    const options = this.array(source['options'])
+      .map((entry) => {
+        const row = this.record(entry);
+        const optionId = this.text(row?.['id']);
+        const label = this.text(row?.['label'] ?? row?.['text']);
+        return optionId && label
+          ? {
+            id: optionId,
+            label,
+            description: this.optionalText(row?.['description']) ?? undefined,
+          }
+          : null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    const rationales = this.array(source['rationales'] ?? source['rationaleOptions'])
+      .map((entry) => {
+        const row = this.record(entry);
+        const rationaleId = this.text(row?.['id']);
+        const label = this.text(row?.['label'] ?? row?.['text']);
+        return rationaleId && label ? { id: rationaleId, label } : null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    return id && prompt && options.length
+      ? { id, prompt, options, rationales }
+      : null;
+  }
+
+  private normalizeConnectionTypes(
+    value: unknown,
+  ): InterviewChoice<InterviewSystemDesignConnectionType>[] {
+    const normalized = this.array(value)
+      .map((entry) => {
+        const source = this.record(entry);
+        const id = this.text(source?.['id'] ?? source?.['value'] ?? entry);
+        const label = this.text(source?.['label'] ?? source?.['title']);
+        return id
+          ? {
+            value: id,
+            label: label || id,
+            description: this.optionalText(source?.['description']) ?? undefined,
+          }
+          : null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    return normalized.length
+      ? normalized
+      : [
+        { value: 'data', label: 'Data' },
+        { value: 'event', label: 'Event' },
+        { value: 'request', label: 'Request' },
+        { value: 'response', label: 'Response' },
+      ];
+  }
+
+  private normalizeTwistActions(value: unknown): InterviewSystemDesignTwistAction[] {
+    return this.array(value)
+      .map((entry) => {
+        const source = this.record(entry);
+        const id = this.text(source?.['id']);
+        const label = this.text(source?.['label'] ?? source?.['title']);
+        const description = this.optionalText(source?.['description']);
+        return id && label
+          ? {
+            id,
+            label,
+            ...(description ? { description } : {}),
+          }
+          : null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+  }
+
+  private normalizeSystemDesignDraft(value: unknown): InterviewSystemDesignDraft | null {
+    const source = this.record(value);
+    if (!source) return null;
+    const rawStep = this.text(source['currentStep'] ?? source['step'])
+      .toLowerCase()
+      .replace(/-/g, '_');
+    const currentStep = (
+      ['clarifications', 'requirements', 'architecture', 'decisions', 'twist'].includes(rawStep)
+        ? rawStep
+        : 'clarifications'
+    ) as InterviewSystemDesignStep;
+    const placements = this.array(source['placements'])
+      .map((entry, index) => {
+        const row = this.record(entry);
+        const cardId = this.text(row?.['cardId']);
+        const laneId = this.text(row?.['laneId']);
+        return cardId && laneId
+          ? {
+            cardId,
+            laneId,
+            order: this.nonNegativeInteger(row?.['order']) ?? index,
+          }
+          : null;
+      })
+      .filter((entry): entry is InterviewSystemDesignDraft['placements'][number] => entry !== null);
+    const connections = this.array(source['connections'])
+      .map((entry, index) => {
+        const row = this.record(entry);
+        const fromCardId = this.text(row?.['fromCardId'] ?? row?.['from']);
+        const toCardId = this.text(row?.['toCardId'] ?? row?.['to']);
+        const type = this.normalizeConnectionType(row?.['type'] ?? row?.['typeId']);
+        return fromCardId && toCardId && type
+          ? {
+            id: this.text(row?.['id']) || `connection-${index + 1}`,
+            fromCardId,
+            toCardId,
+            type,
+          } satisfies InterviewSystemDesignConnection
+          : null;
+      })
+      .filter((entry): entry is InterviewSystemDesignConnection => entry !== null);
+    const decisions = this.array(source['decisions'] ?? source['decisionAnswers'])
+      .map((entry) => {
+        const row = this.record(entry);
+        const decisionId = this.text(row?.['decisionId'] ?? row?.['id']);
+        const optionId = this.text(row?.['optionId']);
+        return decisionId && optionId
+          ? {
+            decisionId,
+            optionId,
+            rationaleIds: this.stringList(row?.['rationaleIds']),
+          } satisfies InterviewSystemDesignDecisionAnswer
+          : null;
+      })
+      .filter((entry): entry is InterviewSystemDesignDecisionAnswer => entry !== null);
+    return {
+      currentStep,
+      selectedClarificationIds: this.stringList(
+        source['selectedClarificationIds'] ?? source['clarificationIds'],
+      ),
+      prioritizedRequirementIds: this.stringList(
+        source['prioritizedRequirementIds']
+          ?? source['priorityRequirementIds']
+          ?? source['priorityIds'],
+      ),
+      placements,
+      connections,
+      decisions,
+      selectedTwistActionIds: this.stringList(
+        source['selectedTwistActionIds']
+          ?? source['twistResponseActionIds']
+          ?? source['twistActionIds'],
+      ),
+      scratchpad: this.text(source['scratchpad']).slice(0, 200),
+      hash: this.optionalText(source['hash'] ?? source['draftHash']),
+      revision: this.nonNegativeInteger(source['revision']),
+      updatedAt: this.isoText(source['updatedAt']),
+    };
   }
 
   private normalizeCodingState(
@@ -773,13 +1296,17 @@ export class InterviewService {
     const correctOptionId = this.text(source['correctOptionId']);
     if (!questionId || !prompt || !correctOptionId || !options.length) return null;
     const selectedOptionId = this.optionalText(source['selectedOptionId']);
+    const snippet = this.normalizeQuestionCode(
+      source['code'],
+      source['codeLanguage'] ?? source['language'],
+    );
     return {
       questionId,
       technology: this.text(source['technology'] ?? source['tech']) || 'frontend',
       competency: this.text(source['competency'] ?? source['topic']) || 'Frontend',
       prompt,
-      code: this.optionalText(source['code']),
-      codeLanguage: this.optionalText(source['codeLanguage'] ?? source['language']),
+      code: snippet.code,
+      codeLanguage: snippet.codeLanguage,
       options,
       selectedOptionId: selectedOptionId && options.some((option) => option.id === selectedOptionId)
         ? selectedOptionId
@@ -836,6 +1363,235 @@ export class InterviewService {
             criteria: this.stringList(entry['criteria']),
             status,
           };
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
+    };
+  }
+
+  private normalizeSystemDesignMutation(payload: unknown): InterviewSystemDesignMutationResult {
+    const root = this.record(payload);
+    const session = this.normalizeOptionalSession(payload);
+    const systemDesign = this.record(this.record(root?.['session'])?.['systemDesign']);
+    return {
+      version: this.normalizeResponseVersion(payload),
+      draft: this.normalizeSystemDesignDraft(
+        root?.['draft'] ?? systemDesign?.['draft'],
+      ),
+      session,
+      replayed: root?.['replayed'] === true,
+    };
+  }
+
+  private serializeSystemDesignDraft(
+    draft: SaveInterviewSystemDesignDraftRequest['draft'],
+  ): JsonRecord {
+    return {
+      currentStep: draft.currentStep,
+      clarificationIds: [...draft.selectedClarificationIds],
+      priorityRequirementIds: [...draft.prioritizedRequirementIds],
+      placements: draft.placements.map(({ cardId, laneId, order }) => ({
+        cardId,
+        laneId,
+        order,
+      })),
+      connections: draft.connections.map(({ fromCardId, toCardId, type }) => ({
+        fromCardId,
+        toCardId,
+        typeId: type,
+      })),
+      decisions: draft.decisions.map(({ decisionId, optionId, rationaleIds }) => ({
+        decisionId,
+        optionId,
+        rationaleIds: [...rationaleIds],
+      })),
+      twistResponseActionIds: [...draft.selectedTwistActionIds],
+      scratchpad: draft.scratchpad,
+    };
+  }
+
+  private normalizeSystemDesignResult(value: unknown): InterviewSystemDesignResult | null {
+    const source = this.record(value);
+    if (!source) return null;
+    const scenario = this.record(source['scenario']);
+    const scenarioId = this.text(
+      source['scenarioId'] ?? scenario?.['id'],
+    );
+    if (!scenarioId) return null;
+    const signal = this.normalizeOptionalPracticeSignal(
+      source['practiceSignal'] ?? source['overallSignal'] ?? source['signal'],
+    ) ?? 'not-enough-evidence';
+    const axes = this.array(source['axes'] ?? source['rubric'])
+      .map((entry, index) => {
+        const row = this.record(entry);
+        const label = this.text(row?.['label'] ?? row?.['title']);
+        if (!label) return null;
+        const rawStatus = this.text(row?.['status']).toLowerCase().replace(/_/g, '-');
+        const status = [
+          'strong-evidence',
+          'developing',
+          'needs-focus',
+          'not-evaluated',
+        ].includes(rawStatus)
+          ? rawStatus as InterviewSystemDesignResult['axes'][number]['status']
+          : 'not-evaluated';
+        return {
+          id: this.text(row?.['id']) || `axis-${index + 1}`,
+          label,
+          status,
+          evidence: this.array(
+            row?.['evidence'] ?? row?.['evidenceItems'] ?? row?.['observations'],
+          ).map((item) => {
+            const evidence = this.record(item);
+            return this.text(
+              evidence?.['label']
+                ?? evidence?.['summary']
+                ?? evidence?.['message']
+                ?? item,
+            );
+          }).filter(Boolean),
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    const contradictions = this.array(source['contradictions'])
+      .map((entry, index) => {
+        const row = this.record(entry);
+        const label = this.text(
+          row?.['label'] ?? row?.['title'] ?? row?.['summary'],
+        );
+        if (!label) return null;
+        return {
+          id: this.text(row?.['id']) || `contradiction-${index + 1}`,
+          severity: this.text(row?.['severity']) === 'critical' ? 'critical' : 'major',
+          label,
+          explanation: this.text(
+            row?.['explanation'] ?? row?.['message'] ?? row?.['summary'],
+          ),
+        } satisfies InterviewSystemDesignContradiction;
+      })
+      .filter((entry): entry is InterviewSystemDesignContradiction => entry !== null);
+    const frameworkLensSource = this.record(source['frameworkLens']);
+    const lensTitle = this.text(frameworkLensSource?.['title']);
+    const lensPrompt = this.text(frameworkLensSource?.['prompt']);
+    return {
+      sourceContentId: this.optionalText(
+        source['sourceContentId'] ?? scenario?.['sourceContentId'],
+      ),
+      scenarioId,
+      scenarioTitle: this.text(
+        source['scenarioTitle'] ?? source['title'] ?? scenario?.['title'],
+      ) || 'System design scenario',
+      outcome: this.text(source['outcome']) || 'pending',
+      partialEvidence: source['partialEvidence'] === true,
+      practiceSignal: signal,
+      axes,
+      contradictions,
+      remediationTopics: this.array(
+        source['remediationTopics'] ?? source['remediation'] ?? source['reviewNext'],
+      ).map((item) => {
+        const remediation = this.record(item);
+        return this.text(
+          remediation?.['topic']
+            ?? remediation?.['label']
+            ?? remediation?.['title']
+            ?? item,
+        );
+      }).filter(Boolean),
+      designSnapshot: this.normalizeSystemDesignDraft(
+        source['designSnapshot'] ?? source['design'] ?? source['draft'],
+      ),
+      summary: this.normalizeSystemDesignSummary(source['summary']),
+      frameworkLens: lensTitle && lensPrompt
+        ? { title: lensTitle, prompt: lensPrompt }
+        : null,
+      timing: this.normalizeTiming(source['timing']),
+    };
+  }
+
+  private normalizeSystemDesignSummary(
+    value: unknown,
+  ): InterviewSystemDesignResult['summary'] {
+    const source = this.record(value);
+    return {
+      priorities: this.array(source?.['priorities'])
+        .map((entry, index) => {
+          const row = this.record(entry);
+          const id = this.text(row?.['id']);
+          const title = this.text(row?.['title'] ?? row?.['label']);
+          return id && title
+            ? { id, title, rank: this.positiveInteger(row?.['rank']) ?? index + 1 }
+            : null;
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
+      lanes: this.array(source?.['lanes'])
+        .map((entry) => {
+          const row = this.record(entry);
+          const id = this.text(row?.['id']);
+          const title = this.text(row?.['title'] ?? row?.['label']);
+          if (!id || !title) return null;
+          return {
+            id,
+            title,
+            cards: this.array(row?.['cards'])
+              .map((card, index) => {
+                const cardRow = this.record(card);
+                const cardId = this.text(cardRow?.['id']);
+                const cardTitle = this.text(cardRow?.['title'] ?? cardRow?.['label']);
+                return cardId && cardTitle
+                  ? {
+                    id: cardId,
+                    title: cardTitle,
+                    order: this.nonNegativeInteger(cardRow?.['order']) ?? index,
+                  }
+                  : null;
+              })
+              .filter((card): card is NonNullable<typeof card> => card !== null),
+          };
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
+      connections: this.array(source?.['connections'])
+        .map((entry) => {
+          const row = this.record(entry);
+          const fromCardId = this.text(row?.['fromCardId']);
+          const fromTitle = this.text(row?.['fromTitle']);
+          const toCardId = this.text(row?.['toCardId']);
+          const toTitle = this.text(row?.['toTitle']);
+          const typeId = this.text(row?.['typeId']);
+          const typeTitle = this.text(row?.['typeTitle']);
+          return fromCardId && fromTitle && toCardId && toTitle && typeId && typeTitle
+            ? { fromCardId, fromTitle, toCardId, toTitle, typeId, typeTitle }
+            : null;
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
+      decisions: this.array(source?.['decisions'])
+        .map((entry) => {
+          const row = this.record(entry);
+          const option = this.record(row?.['option']);
+          const id = this.text(row?.['id']);
+          const title = this.text(row?.['title']);
+          const optionId = this.text(option?.['id']);
+          const optionLabel = this.text(option?.['label']);
+          if (!id || !title || !optionId || !optionLabel) return null;
+          return {
+            id,
+            title,
+            option: { id: optionId, label: optionLabel },
+            rationales: this.array(row?.['rationales'])
+              .map((rationale) => {
+                const rationaleRow = this.record(rationale);
+                const rationaleId = this.text(rationaleRow?.['id']);
+                const label = this.text(rationaleRow?.['label']);
+                return rationaleId && label ? { id: rationaleId, label } : null;
+              })
+              .filter((rationale): rationale is NonNullable<typeof rationale> => rationale !== null),
+          };
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
+      twistActions: this.array(source?.['twistActions'])
+        .map((entry) => {
+          const row = this.record(entry);
+          const id = this.text(row?.['id']);
+          const label = this.text(row?.['label']);
+          return id && label ? { id, label } : null;
         })
         .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
     };
@@ -927,10 +1683,44 @@ export class InterviewService {
     if (['mcq', 'mcq_active', 'trivia', 'trivia_active'].includes(status)) return 'mcq_active';
     if (['coding_ready', 'ready_for_coding', 'transition'].includes(status)) return 'coding_ready';
     if (['coding', 'coding_active'].includes(status)) return 'coding_active';
+    if (['system_design', 'system_design_active', 'design_active'].includes(status)) {
+      return 'system_design_active';
+    }
     if (['completed', 'complete', 'finalized'].includes(status)) return 'completed';
     if (['abandoned', 'expired', 'timed_out'].includes(status)) return 'abandoned';
     if (['voided_technical', 'voided', 'technical_failure'].includes(status)) return 'voided_technical';
     return 'mcq_active';
+  }
+
+  private normalizeFormat(value: unknown): InterviewFormat {
+    return this.normalizeOptionalFormat(value) ?? 'coding';
+  }
+
+  private normalizeOptionalFormat(value: unknown): InterviewFormat | null {
+    const format = this.text(value).toLowerCase().replace(/_/g, '-');
+    if (['system-design', 'systemdesign', 'design'].includes(format)) return 'system-design';
+    if (['coding', 'code', 'standard'].includes(format)) return 'coding';
+    return null;
+  }
+
+  private normalizeConnectionType(value: unknown): InterviewSystemDesignConnectionType | null {
+    const type = this.text(value).toLowerCase();
+    return type || null;
+  }
+
+  private normalizeOptionalPracticeSignal(
+    value: unknown,
+  ): InterviewSystemDesignPracticeSignal | undefined {
+    const signal = this.text(value).toLowerCase().replace(/_/g, '-');
+    if (['strong-system-design-session', 'strong-session', 'strong'].includes(signal)) {
+      return 'strong-system-design-session';
+    }
+    if (signal === 'on-track') return 'on-track';
+    if (signal === 'needs-focus') return 'needs-focus';
+    if (['not-enough-evidence', 'insufficient-evidence'].includes(signal)) {
+      return 'not-enough-evidence';
+    }
+    return undefined;
   }
 
   private normalizeLevel(value: unknown): InterviewLevel {
@@ -999,6 +1789,21 @@ export class InterviewService {
   private optionalText(value: unknown): string | null {
     const text = this.text(value);
     return text || null;
+  }
+
+  private normalizeQuestionCode(
+    value: unknown,
+    fallbackLanguage: unknown,
+  ): { code: string | null; codeLanguage: string | null } {
+    const structured = this.record(value);
+    const code = this.optionalText(structured?.['source'] ?? value);
+    if (!code) return { code: null, codeLanguage: null };
+    return {
+      code,
+      codeLanguage: this.optionalText(
+        structured?.['language'] ?? fallbackLanguage,
+      ),
+    };
   }
 
   private isoText(value: unknown): string | null {

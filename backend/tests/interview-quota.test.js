@@ -4,6 +4,7 @@ const {
   monthKeyInTimezone,
   nextMonthResetAt,
   quotaExpiresAt,
+  quotaField,
 } = require('../services/interview/quota');
 const InterviewMonthlyQuota = require('../models/InterviewMonthlyQuota');
 
@@ -29,5 +30,13 @@ describe('Interview monthly quota calendar', () => {
         }),
       ],
     ]));
+  });
+
+  test('uses independent storage fields for Coding and System Design attempts', () => {
+    expect(quotaField()).toBe('requestIds');
+    expect(quotaField('coding')).toBe('requestIds');
+    expect(quotaField('system-design')).toBe('systemDesignRequestIds');
+    expect(() => quotaField('unknown')).toThrow('Unsupported interview quota format');
+    expect(InterviewMonthlyQuota.schema.path('systemDesignRequestIds')).toBeDefined();
   });
 });

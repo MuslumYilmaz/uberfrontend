@@ -40,13 +40,20 @@ describe('AppSidebarComponent', () => {
       accessMode: interviewAccessMode,
       unavailableReason: interviewEnabled ? null : 'Interview Mode is unavailable.',
       quota: null,
+      quotas: { coding: null, 'system-design': null },
       activeSession: null,
       lastResults: [],
       targets: [],
+      formats: [],
+      formatAvailability: [],
       levels: [],
       tracks: [],
       minViewportWidth: 768,
-      timing: { mcqSeconds: 600, codingReadySeconds: 300 },
+      timing: {
+        mcqSeconds: 600,
+        codingReadySeconds: 300,
+        systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+      },
     }));
     const practiceRegistry = {
       catalogEntries: signal([

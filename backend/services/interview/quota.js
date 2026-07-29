@@ -49,10 +49,17 @@ function quotaPublicState({ monthKey, used, limit }) {
   };
 }
 
-async function readQuota(userId, { now = new Date(), limit }) {
+function quotaField(format = 'coding') {
+  if (format === 'coding') return 'requestIds';
+  if (format === 'system-design') return 'systemDesignRequestIds';
+  throw new TypeError('Unsupported interview quota format');
+}
+
+async function readQuota(userId, { now = new Date(), limit, format = 'coding' }) {
   const monthKey = monthKeyInTimezone(now);
   const record = await InterviewMonthlyQuota.findOne({ userId, monthKey }).lean();
-  const used = Array.isArray(record?.requestIds) ? record.requestIds.length : 0;
+  const field = quotaField(format);
+  const used = Array.isArray(record?.[field]) ? record[field].length : 0;
   return quotaPublicState({ monthKey, used, limit });
 }
 
@@ -60,18 +67,20 @@ async function reserveQuota(userId, requestId, {
   now = new Date(),
   limit,
   session = null,
+  format = 'coding',
 }) {
   const monthKey = monthKeyInTimezone(now);
   const selector = { userId, monthKey };
   const expiresAt = quotaExpiresAt(monthKey);
+  const field = quotaField(format);
   const existingQuery = InterviewMonthlyQuota.findOne(selector);
   if (session) existingQuery.session(session);
   const existing = await existingQuery.lean();
-  if (existing?.requestIds?.includes(requestId)) {
+  if (existing?.[field]?.includes(requestId)) {
     return {
       granted: true,
       alreadyReserved: true,
-      ...quotaPublicState({ monthKey, used: existing.requestIds.length, limit }),
+      ...quotaPublicState({ monthKey, used: existing[field].length, limit }),
     };
   }
 
@@ -79,11 +88,11 @@ async function reserveQuota(userId, requestId, {
   const firstUpdate = InterviewMonthlyQuota.findOneAndUpdate(
     {
       ...selector,
-      requestIds: { $ne: requestId },
-      [`requestIds.${lastAllowedIndex}`]: { $exists: false },
+      [field]: { $ne: requestId },
+      [`${field}.${lastAllowedIndex}`]: { $exists: false },
     },
     {
-      $addToSet: { requestIds: requestId },
+      $addToSet: { [field]: requestId },
       $set: { expiresAt },
     },
     { new: true, session: session || undefined }
@@ -95,7 +104,7 @@ async function reserveQuota(userId, requestId, {
       const created = new InterviewMonthlyQuota({
         userId,
         monthKey,
-        requestIds: [requestId],
+        [field]: [requestId],
         expiresAt,
       });
       await created.save(session ? { session } : undefined);
@@ -109,22 +118,22 @@ async function reserveQuota(userId, requestId, {
     const racedQuery = InterviewMonthlyQuota.findOne(selector);
     if (session) racedQuery.session(session);
     const raced = await racedQuery.lean();
-    if (raced?.requestIds?.includes(requestId)) {
+    if (raced?.[field]?.includes(requestId)) {
       return {
         granted: true,
         alreadyReserved: true,
-        ...quotaPublicState({ monthKey, used: raced.requestIds.length, limit }),
+        ...quotaPublicState({ monthKey, used: raced[field].length, limit }),
       };
     }
     if (raced) {
       updated = await InterviewMonthlyQuota.findOneAndUpdate(
         {
           ...selector,
-          requestIds: { $ne: requestId },
-          [`requestIds.${lastAllowedIndex}`]: { $exists: false },
+          [field]: { $ne: requestId },
+          [`${field}.${lastAllowedIndex}`]: { $exists: false },
         },
         {
-          $addToSet: { requestIds: requestId },
+          $addToSet: { [field]: requestId },
           $set: { expiresAt },
         },
         { new: true, session: session || undefined }
@@ -138,7 +147,7 @@ async function reserveQuota(userId, requestId, {
     if (session) currentQuery.session(session);
     current = await currentQuery.lean();
   }
-  const requestIds = Array.isArray(current?.requestIds) ? current.requestIds : [];
+  const requestIds = Array.isArray(current?.[field]) ? current[field] : [];
   const granted = requestIds.includes(requestId);
   return {
     granted,
@@ -147,11 +156,15 @@ async function reserveQuota(userId, requestId, {
   };
 }
 
-async function releaseQuota(userId, monthKey, requestId, { session = null } = {}) {
+async function releaseQuota(userId, monthKey, requestId, {
+  session = null,
+  format = 'coding',
+} = {}) {
   if (!userId || !monthKey || !requestId) return;
+  const field = quotaField(format);
   await InterviewMonthlyQuota.updateOne(
     { userId, monthKey },
-    { $pull: { requestIds: requestId } },
+    { $pull: { [field]: requestId } },
     session ? { session } : undefined
   );
 }
@@ -160,6 +173,7 @@ module.exports = {
   monthKeyInTimezone,
   nextMonthResetAt,
   quotaExpiresAt,
+  quotaField,
   readQuota,
   releaseQuota,
   reserveQuota,

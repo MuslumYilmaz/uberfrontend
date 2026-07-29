@@ -75,6 +75,162 @@
   gap: var(--uf-space-3);
 }
 
+.design-summary {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.5fr) minmax(180px, .8fr);
+  gap: var(--uf-space-3);
+
+  article {
+    display: grid;
+    gap: var(--uf-space-2);
+    min-width: 0;
+  }
+
+  span { color: var(--uf-text-secondary); font-size: var(--uf-meta-size); }
+  strong { font-size: var(--uf-subsection-title-size); line-height: 1.35; }
+}
+
+.design-axis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--uf-space-3);
+  margin-top: var(--uf-space-4);
+
+  article {
+    display: grid;
+    gap: var(--uf-space-3);
+    min-width: 0;
+  }
+
+  article > div {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--uf-space-3);
+  }
+
+  article > div span {
+    flex: none;
+    padding: 5px 9px;
+    border: 1px solid var(--uf-border-subtle);
+    border-radius: var(--uf-radius-pill);
+    color: var(--uf-text-secondary);
+    font-size: var(--uf-meta-size);
+  }
+
+  ul { margin: 0; padding-left: 20px; }
+  li + li { margin-top: var(--uf-space-2); }
+  p { margin: 0; color: var(--uf-text-secondary); }
+}
+
+.partial-evidence-note {
+  margin: var(--uf-space-4) 0 0;
+  border-color: var(--uf-status-warn-border);
+  background: var(--uf-status-warn-bg);
+  line-height: 1.55;
+}
+
+.submitted-design-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--uf-space-3);
+  margin-top: var(--uf-space-4);
+
+  article {
+    min-width: 0;
+
+    h3 { margin: 0 0 var(--uf-space-3); font-size: var(--uf-subsection-title-size); }
+    > p { margin: 0; color: var(--uf-text-secondary); }
+    > ul, > ol { margin: 0; padding-left: 20px; }
+    li + li { margin-top: var(--uf-space-2); }
+  }
+
+  dl {
+    grid-template-columns: 1fr;
+    margin: 0;
+
+    div { padding: var(--uf-space-3); }
+  }
+
+  .decision-reasons {
+    color: var(--uf-text-secondary);
+    font-size: var(--uf-meta-size);
+
+    ul {
+      margin: var(--uf-space-2) 0 0;
+      padding-left: 18px;
+    }
+  }
+}
+
+.submitted-lanes {
+  display: grid;
+  gap: var(--uf-space-3);
+
+  > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px var(--uf-space-3);
+    min-width: 0;
+  }
+
+  span { color: var(--uf-text-secondary); font-size: var(--uf-meta-size); }
+  ul {
+    grid-column: 1 / -1;
+    margin: var(--uf-space-2) 0 0;
+    padding-left: 20px;
+  }
+}
+
+.twist-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  align-items: center;
+  margin-top: var(--uf-space-3);
+  border-color: var(--uf-status-info-border);
+  background: var(--uf-status-info-bg);
+
+  strong { margin-right: var(--uf-space-2); }
+  span {
+    padding: 5px 9px;
+    border: 1px solid var(--uf-border-subtle);
+    border-radius: var(--uf-radius-pill);
+    background: var(--uf-bg);
+    font-size: var(--uf-meta-size);
+  }
+}
+
+.design-axis--strong {
+  border-color: color-mix(
+    in srgb,
+    var(--uf-learning-structured-accent) 48%,
+    var(--uf-border-subtle)
+  );
+}
+
+.design-axis--focus { border-color: var(--uf-status-warn-border); }
+
+.contradiction-section {
+  border-color: var(--uf-status-warn-border);
+  background: var(--uf-status-warn-bg);
+
+  h2 { margin: 6px 0 var(--uf-space-4); }
+  ul { display: grid; gap: var(--uf-space-3); margin: 0; padding: 0; list-style: none; }
+  li { display: grid; gap: 4px; }
+  span { color: var(--uf-text-secondary); line-height: 1.5; }
+}
+
+.framework-result {
+  h2 { margin: 6px 0; }
+  p:not(.eyebrow) { color: var(--uf-text-secondary); line-height: 1.55; }
+  > span { color: var(--uf-text-tertiary); font-size: var(--uf-meta-size); }
+}
+
+.walkthrough-link {
+  margin-top: var(--uf-space-5);
+}
+
 .score-grid article {
   display: grid;
   gap: var(--uf-space-2);
@@ -212,10 +368,13 @@
 
 .answer-list {
   display: grid;
+  min-width: 0;
   gap: var(--uf-space-3);
 }
 
 details {
+  min-width: 0;
+
   summary {
     display: flex;
     justify-content: space-between;
@@ -234,6 +393,7 @@ details {
 .answer--incorrect { border-color: var(--uf-status-warn-border); }
 
 .answer-body {
+  min-width: 0;
   padding-top: var(--uf-space-4);
   border-top: 1px solid var(--uf-border-subtle);
   margin-top: var(--uf-space-4);
@@ -283,6 +443,9 @@ dl {
 
 @media (max-width: 900px) {
   .score-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .design-summary,
+  .design-axis-grid,
+  .submitted-design-grid { grid-template-columns: 1fr; }
   .breakdown-grid { grid-template-columns: 1fr; }
 }
 

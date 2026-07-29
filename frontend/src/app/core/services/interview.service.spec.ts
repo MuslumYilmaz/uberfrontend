@@ -55,11 +55,15 @@ describe('InterviewService', () => {
     expect(result?.levels.map((level) => level.value)).toEqual(['junior', 'senior']);
     expect(result?.tracks.map((track) => track.value)).toEqual(['core-web', 'react']);
     expect(result?.targets).toEqual([
-      { level: 'junior', track: 'core-web', available: true },
-      { level: 'senior', track: 'react', available: false },
+      { level: 'junior', track: 'core-web', format: 'coding', available: true },
+      { level: 'senior', track: 'react', format: 'coding', available: false },
     ]);
     expect(result?.minViewportWidth).toBe(720);
-    expect(result?.timing).toEqual({ mcqSeconds: 600, codingReadySeconds: 300 });
+    expect(result?.timing).toEqual({
+      mcqSeconds: 600,
+      codingReadySeconds: 300,
+      systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+    });
   });
 
   it('preserves an unlimited premium quota instead of coercing it to exhausted', () => {
@@ -145,6 +149,54 @@ describe('InterviewService', () => {
     expect(Object.keys(session.questions[0])).not.toContain('correctOptionId');
     expect(Object.keys(session.questions[0])).not.toContain('explanation');
     expect(Object.keys(session.questions[0])).not.toContain('provenance');
+  });
+
+  it('normalizes structured, legacy-string, and missing MCQ snippets', () => {
+    const makeQuestion = (id: string, code?: unknown, language?: string) => ({
+      id,
+      revision: 1,
+      technology: 'javascript',
+      competency: 'runtime-contracts',
+      prompt: `How should ${id} be handled in this production flow?`,
+      ...(code === undefined ? {} : { code }),
+      ...(language ? { codeLanguage: language } : {}),
+      options: [
+        { id: `${id}-one`, label: 'Use the first runtime-safe approach.' },
+        { id: `${id}-two`, label: 'Use the second runtime-safe approach.' },
+        { id: `${id}-three`, label: 'Use the third runtime-safe approach.' },
+      ],
+    });
+    const session = service.normalizeSession({
+      session: {
+        id: 'snippet-session',
+        status: 'mcq_active',
+        level: 'mid',
+        track: 'core-web',
+        version: 1,
+        serverNow: '2026-07-29T12:00:00.000Z',
+        deadlines: { mcq: '2026-07-29T12:10:00.000Z' },
+        questions: [
+          makeQuestion('structured', {
+            language: 'javascript',
+            runtime: 'browser',
+            source: 'const structured = true;',
+          }),
+          makeQuestion('legacy', 'const legacy = true;', 'javascript'),
+          makeQuestion('missing'),
+        ],
+      },
+    });
+
+    expect(session.questions[0]).toEqual(jasmine.objectContaining({
+      code: 'const structured = true;',
+      codeLanguage: 'javascript',
+    }));
+    expect(session.questions[1]).toEqual(jasmine.objectContaining({
+      code: 'const legacy = true;',
+      codeLanguage: 'javascript',
+    }));
+    expect(session.questions[2].code).toBeUndefined();
+    expect(session.questions[2].codeLanguage).toBeUndefined();
   });
 
   it('keeps an asset-only framework task public without exposing runner tests', () => {
@@ -419,5 +471,244 @@ describe('InterviewService', () => {
     }));
     expect(result.remediationTopics).toEqual(['Promises', 'Abort signals', 'Error paths']);
     expect(result.mcqTiming).toEqual({ usedSeconds: 500, allowedSeconds: 600 });
+  });
+
+  it('normalizes split system-design availability without changing the legacy coding quota', () => {
+    const result = service.normalizeAvailability({
+      enabled: true,
+      accessMode: 'public',
+      quota: { remaining: 1, limit: 1 },
+      quotas: {
+        coding: { remaining: 1, limit: 1 },
+        systemDesign: { remaining: 0, limit: 1, resetAt: '2026-08-01T00:00:00.000Z' },
+      },
+      formats: [
+        { id: 'coding', available: true },
+        { id: 'system-design', available: true },
+      ],
+      availability: [
+        { format: 'coding', level: 'mid', track: 'react', available: true },
+      ],
+      systemDesignAvailability: [
+        { format: 'system-design', level: 'mid', track: 'react', available: true },
+      ],
+      timing: {
+        systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+      },
+    });
+
+    expect(result.quota?.remaining).toBe(1);
+    expect(result.quotas['system-design']?.remaining).toBe(0);
+    expect(result.targets).toContain(jasmine.objectContaining({
+      format: 'system-design',
+      level: 'mid',
+      track: 'react',
+      available: true,
+    }));
+    expect(result.formatAvailability.find((entry) => entry.format === 'system-design')?.enabled)
+      .toBeTrue();
+  });
+
+  it('projects a guided design session and reveals only selected clarification answers', () => {
+    const session = service.normalizeSession({
+      session: {
+        id: 'design-session',
+        format: 'system-design',
+        status: 'system_design_active',
+        level: 'mid',
+        track: 'react',
+        version: 2,
+        serverNow: '2026-07-29T10:00:00.000Z',
+        deadlines: { systemDesign: '2026-07-29T10:15:00.000Z' },
+        systemDesign: {
+          scenario: {
+            id: 'int-sd-autocomplete-race-mid-v1',
+            revision: 1,
+            title: 'Reliable autocomplete',
+            prompt: 'Design a production autocomplete.',
+            timeLimitSeconds: 900,
+            steps: [
+              { id: 'clarifications', title: 'Clarify' },
+              { id: 'requirements', title: 'Prioritize' },
+              { id: 'architecture', title: 'Architecture' },
+              { id: 'decisions', title: 'Decisions' },
+              { id: 'twist', title: 'Twist' },
+            ],
+            selectionLimits: {
+              clarifications: 3,
+              priorities: 3,
+              connections: 6,
+              rationalesPerDecision: 2,
+              twistActions: 2,
+              scratchpadChars: 200,
+            },
+            lanes: [
+              { id: 'ui', title: 'UI' },
+              { id: 'data', title: 'Data' },
+            ],
+            clarifications: [
+              { id: 'a11y', prompt: 'Is keyboard navigation required?' },
+              { id: 'seo', prompt: 'Is SEO required?' },
+            ],
+            requirements: [{ id: 'stale', title: 'Prevent stale results' }],
+            cards: [{
+              id: 'controller',
+              title: 'Request controller',
+            }],
+            connectionTypes: [{ id: 'data-flow', title: 'Data flow' }],
+            decisions: [{
+              id: 'cancellation',
+              title: 'Cancellation',
+              prompt: 'How will requests be owned?',
+              options: [{ id: 'abort', label: 'Abort obsolete requests' }],
+              rationales: [{ id: 'ordering', label: 'Preserve ordering' }],
+            }],
+            frameworkLens: { title: 'React ownership', prompt: 'Name the owner.' },
+            privateRubric: 'must not survive',
+          },
+          clarificationAnswers: [{
+            clarificationId: 'a11y',
+            answer: 'Yes, full keyboard navigation is required.',
+          }],
+          twist: null,
+          twistRevealed: false,
+          draft: {
+            currentStep: 'clarifications',
+            clarificationIds: ['a11y'],
+            priorityRequirementIds: [],
+            placements: [],
+            connections: [],
+            decisions: [],
+            twistResponseActionIds: [],
+            scratchpad: '',
+            hash: 'draft-hash',
+            updatedAt: '2026-07-29T10:01:00.000Z',
+          },
+        },
+      },
+    });
+
+    expect(session.format).toBe('system-design');
+    expect(session.status).toBe('system_design_active');
+    expect(session.systemDesign?.deadlineAt).toBe('2026-07-29T10:15:00.000Z');
+    expect(session.systemDesign?.scenario?.clarifications[0].answer)
+      .toBe('Yes, full keyboard navigation is required.');
+    expect(session.systemDesign?.scenario?.clarifications[1].answer).toBeNull();
+    expect(session.systemDesign?.scenario?.connectionTypes[0].value).toBe('data-flow');
+    expect(Object.keys(session.systemDesign?.scenario || {})).not.toContain('privateRubric');
+    expect(Object.keys(session.systemDesign?.scenario || {})).not.toContain('frameworkLens');
+  });
+
+  it('serializes the UI design draft to the pinned backend wire contract', () => {
+    service.saveSystemDesignDraft(
+      'design/session',
+      {
+        mutationId: 'mutation-1',
+        draft: {
+          currentStep: 'requirements',
+          selectedClarificationIds: ['a11y'],
+          prioritizedRequirementIds: ['stale'],
+          placements: [{ cardId: 'input', laneId: 'ui', order: 0 }],
+          connections: [{
+            id: 'local-only-id',
+            fromCardId: 'input',
+            toCardId: 'controller',
+            type: 'event-flow',
+          }],
+          decisions: [{
+            decisionId: 'cancellation',
+            optionId: 'abort',
+            rationaleIds: ['ordering'],
+          }],
+          selectedTwistActionIds: [],
+          scratchpad: 'Check focus restoration.',
+        },
+      },
+      4,
+    ).subscribe();
+
+    const request = http.expectOne(
+      `${apiUrl('/interviews')}/design%2Fsession/system-design/draft`,
+    );
+    expect(request.request.body).toEqual({
+      currentStep: 'requirements',
+      clarificationIds: ['a11y'],
+      priorityRequirementIds: ['stale'],
+      placements: [{ cardId: 'input', laneId: 'ui', order: 0 }],
+      connections: [{
+        fromCardId: 'input',
+        toCardId: 'controller',
+        typeId: 'event-flow',
+      }],
+      decisions: [{
+        decisionId: 'cancellation',
+        optionId: 'abort',
+        rationaleIds: ['ordering'],
+      }],
+      twistResponseActionIds: [],
+      scratchpad: 'Check focus restoration.',
+      mutationId: 'mutation-1',
+      expectedVersion: 4,
+    });
+    request.flush({
+      session: {
+        id: 'design-session',
+        format: 'system-design',
+        status: 'system_design_active',
+        version: 5,
+      },
+    });
+  });
+
+  it('normalizes system-design evidence without inventing a score or hiring prediction', () => {
+    const result = service.normalizeResult({
+      results: {
+        sessionId: 'design-session',
+        interviewFormat: 'system-design',
+        level: 'senior',
+        track: 'vue',
+        xpAwarded: 500,
+        systemDesign: {
+          scenarioId: 'int-sd-ranked-feed-sr-v1',
+          scenarioTitle: 'Ranked feed',
+          sourceContentId: 'news-feed-timeline',
+          practiceSignal: 'on-track',
+          timing: { usedSeconds: 1100, allowedSeconds: 1200 },
+          axes: [{
+            id: 'architecture',
+            title: 'Architecture and ownership',
+            status: 'developing',
+            evidence: ['A single feed owner was identified.'],
+          }],
+          contradictions: [{
+            id: 'unbounded-dom',
+            severity: 'major',
+            axisIds: ['performance'],
+            summary: 'The rendering plan leaves the DOM unbounded.',
+          }],
+          remediation: [{ topic: 'Windowed rendering', evidenceCount: 1 }],
+          design: {
+            currentStep: 'twist',
+            clarificationIds: ['scale'],
+            priorityRequirementIds: ['bounded-rendering'],
+            placements: [],
+            connections: [],
+            decisions: [],
+            twistResponseActionIds: ['reconcile'],
+            scratchpad: '',
+            hash: 'design-hash',
+            updatedAt: '2026-07-29T10:20:00.000Z',
+          },
+        },
+        evidenceNotice: 'Practice evidence only.',
+      },
+    });
+
+    expect(result.interviewFormat).toBe('system-design');
+    expect(result.systemDesign?.practiceSignal).toBe('on-track');
+    expect(result.systemDesign?.contradictions[0].label).toContain('unbounded');
+    expect(result.systemDesign?.remediationTopics).toEqual(['Windowed rendering']);
+    expect(result.score.total).toBe(0);
+    expect(result.xpAwarded).toBe(0);
   });
 });

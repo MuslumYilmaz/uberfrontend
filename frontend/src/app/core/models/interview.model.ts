@@ -1,10 +1,12 @@
 export type InterviewLevel = 'junior' | 'mid' | 'senior';
 export type InterviewTrack = 'core-web' | 'react' | 'angular' | 'vue';
+export type InterviewFormat = 'coding' | 'system-design';
 export type InterviewAccessMode = 'off' | 'internal' | 'public';
 export type InterviewSessionStatus =
   | 'mcq_active'
   | 'coding_ready'
   | 'coding_active'
+  | 'system_design_active'
   | 'completed'
   | 'abandoned'
   | 'voided_technical';
@@ -26,6 +28,7 @@ export interface InterviewQuota {
 export interface InterviewSessionLink {
   id: string;
   status: InterviewSessionStatus;
+  format: InterviewFormat;
   level?: InterviewLevel;
   track?: InterviewTrack;
   updatedAt?: string;
@@ -33,22 +36,32 @@ export interface InterviewSessionLink {
 
 export interface InterviewResultLink {
   sessionId: string;
+  format: InterviewFormat;
   completedAt?: string;
   level?: InterviewLevel;
   track?: InterviewTrack;
   correct?: number;
   total?: number;
+  practiceSignal?: InterviewSystemDesignPracticeSignal;
 }
 
 export interface InterviewTargetAvailability {
   level: InterviewLevel;
   track: InterviewTrack;
+  format: InterviewFormat;
   available: boolean;
 }
 
 export interface InterviewAvailabilityTiming {
   mcqSeconds: number;
   codingReadySeconds: number;
+  systemDesignSeconds: Record<InterviewLevel, number>;
+}
+
+export interface InterviewFormatAvailability {
+  format: InterviewFormat;
+  enabled: boolean;
+  unavailableReason: string | null;
 }
 
 export interface InterviewAvailability {
@@ -56,9 +69,12 @@ export interface InterviewAvailability {
   accessMode: InterviewAccessMode;
   unavailableReason: string | null;
   quota: InterviewQuota | null;
+  quotas: Record<InterviewFormat, InterviewQuota | null>;
   activeSession: InterviewSessionLink | null;
   lastResults: InterviewResultLink[];
   targets: InterviewTargetAvailability[];
+  formats: InterviewChoice<InterviewFormat>[];
+  formatAvailability: InterviewFormatAvailability[];
   levels: InterviewChoice<InterviewLevel>[];
   tracks: InterviewChoice<InterviewTrack>[];
   minViewportWidth: number;
@@ -142,9 +158,139 @@ export interface InterviewCodingState {
   runCount: number;
 }
 
+export type InterviewSystemDesignStep =
+  | 'clarifications'
+  | 'requirements'
+  | 'architecture'
+  | 'decisions'
+  | 'twist';
+
+export type InterviewSystemDesignConnectionType = string;
+
+export interface InterviewSystemDesignClarification {
+  id: string;
+  prompt: string;
+  answer: string | null;
+}
+
+export interface InterviewSystemDesignRequirement {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+export interface InterviewSystemDesignLane {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+export interface InterviewSystemDesignCard {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+export interface InterviewSystemDesignRationale {
+  id: string;
+  label: string;
+}
+
+export interface InterviewSystemDesignDecisionOption {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+export interface InterviewSystemDesignDecision {
+  id: string;
+  prompt: string;
+  options: InterviewSystemDesignDecisionOption[];
+  rationales: InterviewSystemDesignRationale[];
+}
+
+export interface InterviewSystemDesignTwistAction {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+export interface InterviewSystemDesignTwist {
+  revealed: boolean;
+  prompt: string | null;
+  actions: InterviewSystemDesignTwistAction[];
+  maxActions: number;
+}
+
+export interface InterviewSystemDesignScenario {
+  id: string;
+  revision: number;
+  title: string;
+  prompt: string;
+  sourceContentId: string | null;
+  estimatedSeconds: number;
+  selectionLimits: {
+    clarifications: number;
+    priorities: number;
+    connections: number;
+    rationalesPerDecision: number;
+    twistActions: number;
+    scratchpadChars: number;
+  };
+  clarifications: InterviewSystemDesignClarification[];
+  requirements: InterviewSystemDesignRequirement[];
+  lanes: InterviewSystemDesignLane[];
+  cards: InterviewSystemDesignCard[];
+  decisions: InterviewSystemDesignDecision[];
+  connectionTypes: InterviewChoice<InterviewSystemDesignConnectionType>[];
+}
+
+export interface InterviewSystemDesignPlacement {
+  cardId: string;
+  laneId: string;
+  order: number;
+}
+
+export interface InterviewSystemDesignConnection {
+  id: string;
+  fromCardId: string;
+  toCardId: string;
+  type: InterviewSystemDesignConnectionType;
+}
+
+export interface InterviewSystemDesignDecisionAnswer {
+  decisionId: string;
+  optionId: string;
+  rationaleIds: string[];
+}
+
+export interface InterviewSystemDesignDraft {
+  currentStep: InterviewSystemDesignStep;
+  selectedClarificationIds: string[];
+  prioritizedRequirementIds: string[];
+  placements: InterviewSystemDesignPlacement[];
+  connections: InterviewSystemDesignConnection[];
+  decisions: InterviewSystemDesignDecisionAnswer[];
+  selectedTwistActionIds: string[];
+  scratchpad: string;
+  hash: string | null;
+  revision: number | null;
+  updatedAt: string | null;
+}
+
+export interface InterviewSystemDesignState {
+  stage: 'initial' | 'twist';
+  deadlineAt: string | null;
+  scenario: InterviewSystemDesignScenario | null;
+  revealedClarificationIds: string[];
+  draft: InterviewSystemDesignDraft | null;
+  twist: InterviewSystemDesignTwist;
+}
+
 export interface InterviewSession {
   id: string;
   status: InterviewSessionStatus;
+  format: InterviewFormat;
   level: InterviewLevel;
   track: InterviewTrack;
   version: number;
@@ -155,12 +301,14 @@ export interface InterviewSession {
   questions: InterviewMcqQuestion[];
   currentQuestionIndex: number;
   coding: InterviewCodingState | null;
+  systemDesign: InterviewSystemDesignState | null;
 }
 
 export interface CreateInterviewSessionRequest {
   level: InterviewLevel;
   track: InterviewTrack;
   viewportWidth: number;
+  format?: InterviewFormat;
 }
 
 export interface SaveInterviewAnswerRequest {
@@ -182,6 +330,18 @@ export interface InterviewMutationAck {
 export interface InterviewDraftSaveResult {
   version: number | null;
   draft: InterviewCodingDraft | null;
+}
+
+export interface SaveInterviewSystemDesignDraftRequest {
+  draft: Omit<InterviewSystemDesignDraft, 'hash' | 'revision' | 'updatedAt'>;
+  mutationId: string;
+}
+
+export interface InterviewSystemDesignMutationResult {
+  version: number | null;
+  draft: InterviewSystemDesignDraft | null;
+  session: InterviewSession | null;
+  replayed: boolean;
 }
 
 export interface InterviewRunnerCheck {
@@ -290,8 +450,78 @@ export interface InterviewTiming {
   allowedSeconds: number | null;
 }
 
+export type InterviewSystemDesignAxisStatus =
+  | 'strong-evidence'
+  | 'developing'
+  | 'needs-focus'
+  | 'not-evaluated';
+
+export type InterviewSystemDesignPracticeSignal =
+  | 'not-enough-evidence'
+  | 'needs-focus'
+  | 'on-track'
+  | 'strong-system-design-session';
+
+export interface InterviewSystemDesignAxisResult {
+  id: string;
+  label: string;
+  status: InterviewSystemDesignAxisStatus;
+  evidence: string[];
+}
+
+export interface InterviewSystemDesignContradiction {
+  id: string;
+  severity: 'major' | 'critical';
+  label: string;
+  explanation: string;
+}
+
+export interface InterviewSystemDesignSummary {
+  priorities: Array<{ id: string; title: string; rank: number }>;
+  lanes: Array<{
+    id: string;
+    title: string;
+    cards: Array<{ id: string; title: string; order: number }>;
+  }>;
+  connections: Array<{
+    fromCardId: string;
+    fromTitle: string;
+    toCardId: string;
+    toTitle: string;
+    typeId: string;
+    typeTitle: string;
+  }>;
+  decisions: Array<{
+    id: string;
+    title: string;
+    option: { id: string; label: string };
+    rationales: Array<{ id: string; label: string }>;
+  }>;
+  twistActions: Array<{ id: string; label: string }>;
+}
+
+export interface InterviewSystemDesignResult {
+  sourceContentId: string | null;
+  scenarioId: string;
+  scenarioTitle: string;
+  outcome: 'submitted' | 'timed_out' | 'abandoned' | 'pending' | string;
+  partialEvidence: boolean;
+  practiceSignal: InterviewSystemDesignPracticeSignal;
+  axes: InterviewSystemDesignAxisResult[];
+  contradictions: InterviewSystemDesignContradiction[];
+  remediationTopics: string[];
+  designSnapshot: InterviewSystemDesignDraft | null;
+  summary: InterviewSystemDesignSummary;
+  frameworkLens: {
+    title: string;
+    prompt: string;
+  } | null;
+  timing: InterviewTiming;
+}
+
 export interface InterviewResult {
   sessionId: string;
+  interviewFormat: InterviewFormat;
   level: InterviewLevel;
   track: InterviewTrack;
   completedAt: string | null;
@@ -300,6 +530,7 @@ export interface InterviewResult {
   questions: InterviewMcqResult[];
   remediationTopics: string[];
   coding: InterviewCodingResult | null;
+  systemDesign: InterviewSystemDesignResult | null;
   disclaimer: string;
   mcqTiming: InterviewTiming;
   codingTiming: InterviewTiming | null;

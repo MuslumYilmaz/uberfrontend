@@ -5,19 +5,29 @@
 
   <section *ngIf="error()" class="state-card state-card--error" faCard role="alert">
     <p>{{ error() }}</p>
-    <a *ngIf="voided(); else retryResult" faButton variant="primary" routerLink="/interview">
+    <a *ngIf="voided()" faButton variant="primary" routerLink="/interview">
       Return to interview home
     </a>
-    <ng-template #retryResult>
+    <a
+      *ngIf="interviewStillActive()"
+      faButton
+      variant="primary"
+      [routerLink]="['/interview', sessionId]">
+      Resume interview
+    </a>
+    <ng-container *ngIf="!voided() && !interviewStillActive()">
       <button faButton variant="ghost" type="button" (click)="load()">Try again</button>
-    </ng-template>
+    </ng-container>
   </section>
 
   <ng-container *ngIf="result() as report">
     <header class="results-hero">
       <div>
         <p class="eyebrow">Interview complete</p>
-        <h1>{{ report.track | titlecase }} · {{ report.level | titlecase }} report</h1>
+        <h1>
+          {{ report.interviewFormat === 'system-design' ? 'System design' : (report.track | titlecase) }}
+          · {{ report.level | titlecase }} report
+        </h1>
         <p *ngIf="report.completedAt">{{ report.completedAt | date:'medium' }}</p>
       </div>
       <div class="results-hero__actions">
@@ -32,7 +42,10 @@
       <span>This session awarded 0 XP and did not change solved progress.</span>
     </section>
 
-    <section class="score-grid" aria-label="Interview summary">
+    <section
+      *ngIf="report.interviewFormat === 'coding'"
+      class="score-grid"
+      aria-label="Interview summary">
       <article faCard elevated>
         <span>Correct</span>
         <strong>{{ report.score.correct }}</strong>
@@ -55,7 +68,10 @@
       </article>
     </section>
 
-    <section *ngIf="report.sections.length" class="report-section" aria-labelledby="breakdown-title">
+    <section
+      *ngIf="report.interviewFormat === 'coding' && report.sections.length"
+      class="report-section"
+      aria-labelledby="breakdown-title">
       <h2 id="breakdown-title">Topic breakdown</h2>
       <div class="breakdown-grid">
         <article *ngFor="let section of report.sections" faCard>
@@ -67,7 +83,10 @@
       </div>
     </section>
 
-    <section *ngIf="report.remediationTopics.length" class="report-section focus-section" faCard>
+    <section
+      *ngIf="report.interviewFormat === 'coding' && report.remediationTopics.length"
+      class="report-section focus-section"
+      faCard>
       <div>
         <p class="eyebrow">Review next</p>
         <h2>Topics to prepare</h2>
@@ -78,7 +97,10 @@
       </ul>
     </section>
 
-    <section *ngIf="report.coding as coding" class="report-section coding-result" faCard>
+    <section
+      *ngIf="report.interviewFormat === 'coding' && report.coding as coding"
+      class="report-section coding-result"
+      faCard>
       <div class="section-heading">
         <div>
           <p class="eyebrow">Coding task</p>
@@ -135,7 +157,10 @@
       </a>
     </section>
 
-    <section *ngIf="report.questions.length" class="report-section" aria-labelledby="answers-title">
+    <section
+      *ngIf="report.interviewFormat === 'coding' && report.questions.length"
+      class="report-section"
+      aria-labelledby="answers-title">
       <h2 id="answers-title">Answer review</h2>
       <div class="answer-list">
         <details
@@ -168,5 +193,174 @@
         </details>
       </div>
     </section>
+
+    <ng-container *ngIf="report.interviewFormat === 'system-design' && report.systemDesign as design">
+      <section class="design-summary" aria-label="System design summary">
+        <article faCard elevated>
+          <span>Practice signal</span>
+          <strong>{{ practiceSignalLabel(design.practiceSignal) }}</strong>
+        </article>
+        <article faCard elevated>
+          <span>Scenario</span>
+          <strong>{{ design.scenarioTitle }}</strong>
+        </article>
+        <article faCard elevated>
+          <span>Time used</span>
+          <strong>{{ formatTiming(design.timing) }}</strong>
+        </article>
+      </section>
+
+      <p
+        *ngIf="design.partialEvidence"
+        class="partial-evidence-note"
+        faCard
+        role="note">
+        This report uses partial evidence because the round
+        {{ design.outcome === 'timed_out' ? 'reached its time limit' : 'ended before every checkpoint was completed' }}.
+        Missing evidence is shown as “Not evaluated” or “Needs focus”; it is not a hiring prediction.
+      </p>
+
+      <section class="report-section" aria-labelledby="your-design-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Submitted artifact</p>
+            <h2 id="your-design-title">Your design</h2>
+          </div>
+          <span>{{ designOutcomeLabel(design.outcome) }}</span>
+        </div>
+
+        <div class="submitted-design-grid">
+          <article faCard>
+            <h3>Priorities</h3>
+            <ol *ngIf="design.summary.priorities.length; else noPriorities">
+              <li *ngFor="let priority of design.summary.priorities">
+                {{ priority.title }}
+              </li>
+            </ol>
+            <ng-template #noPriorities><p>No priorities were recorded.</p></ng-template>
+          </article>
+
+          <article faCard>
+            <h3>Architecture lanes</h3>
+            <div *ngIf="design.summary.lanes.length; else noArchitecture" class="submitted-lanes">
+              <div *ngFor="let lane of design.summary.lanes">
+                <strong>{{ lane.title }}</strong>
+                <span *ngIf="lane.cards.length; else emptyLane">
+                  {{ lane.cards.length }} component{{ lane.cards.length === 1 ? '' : 's' }}
+                </span>
+                <ng-template #emptyLane><span>No components</span></ng-template>
+                <ul *ngIf="lane.cards.length">
+                  <li *ngFor="let card of lane.cards">{{ card.title }}</li>
+                </ul>
+              </div>
+            </div>
+            <ng-template #noArchitecture><p>No architecture cards were recorded.</p></ng-template>
+          </article>
+
+          <article faCard>
+            <h3>Connections</h3>
+            <ul *ngIf="design.summary.connections.length; else noConnections">
+              <li *ngFor="let connection of design.summary.connections">
+                {{ connection.fromTitle }} → {{ connection.typeTitle }} → {{ connection.toTitle }}
+              </li>
+            </ul>
+            <ng-template #noConnections><p>No connections were recorded.</p></ng-template>
+          </article>
+
+          <article faCard>
+            <h3>Key decisions</h3>
+            <dl *ngIf="design.summary.decisions.length; else noDecisions">
+              <div *ngFor="let decision of design.summary.decisions">
+                <dt>{{ decision.title }}</dt>
+                <dd>{{ decision.option.label }}</dd>
+                <dd *ngIf="decision.rationales.length" class="decision-reasons">
+                  <ul>
+                    <li *ngFor="let rationale of decision.rationales">{{ rationale.label }}</li>
+                  </ul>
+                </dd>
+              </div>
+            </dl>
+            <ng-template #noDecisions><p>No key decisions were recorded.</p></ng-template>
+          </article>
+        </div>
+
+        <div *ngIf="design.summary.twistActions.length" class="twist-summary" faCard>
+          <strong>Production twist response</strong>
+          <span *ngFor="let action of design.summary.twistActions">{{ action.label }}</span>
+        </div>
+      </section>
+
+      <section class="report-section" aria-labelledby="design-evidence-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Practice evidence</p>
+            <h2 id="design-evidence-title">System design signals</h2>
+          </div>
+          <span>No percentage or hiring prediction</span>
+        </div>
+        <div class="design-axis-grid">
+          <article
+            *ngFor="let axis of design.axes"
+            faCard
+            [class.design-axis--strong]="axis.status === 'strong-evidence'"
+            [class.design-axis--focus]="axis.status === 'needs-focus'">
+            <div>
+              <strong>{{ axis.label }}</strong>
+              <span>{{ axisStatusLabel(axis.status) }}</span>
+            </div>
+            <ul *ngIf="axis.evidence.length; else noAxisEvidence">
+              <li *ngFor="let evidence of axis.evidence">{{ evidence }}</li>
+            </ul>
+            <ng-template #noAxisEvidence>
+              <p>No scorable evidence was recorded for this axis.</p>
+            </ng-template>
+          </article>
+        </div>
+      </section>
+
+      <section
+        *ngIf="design.contradictions.length"
+        class="report-section contradiction-section"
+        faCard>
+        <p class="eyebrow">Consistency review</p>
+        <h2>Decisions to revisit</h2>
+        <ul>
+          <li *ngFor="let contradiction of design.contradictions">
+            <strong>{{ contradiction.severity | titlecase }} · {{ contradiction.label }}</strong>
+            <span *ngIf="contradiction.explanation">{{ contradiction.explanation }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <section
+        *ngIf="design.remediationTopics.length"
+        class="report-section focus-section"
+        faCard>
+        <div>
+          <p class="eyebrow">Review next</p>
+          <h2>Topics to prepare</h2>
+          <p>These topics come from missing or conflicting evidence in this design.</p>
+        </div>
+        <ul>
+          <li *ngFor="let topic of design.remediationTopics">{{ topic }}</li>
+        </ul>
+      </section>
+
+      <section *ngIf="design.frameworkLens as lens" class="report-section framework-result" faCard>
+        <p class="eyebrow">{{ report.track | titlecase }} implementation lens</p>
+        <h2>{{ lens.title }}</h2>
+        <p>{{ lens.prompt }}</p>
+        <span>This follow-up did not affect the core system design signal.</span>
+      </section>
+
+      <a
+        *ngIf="design.sourceContentId"
+        faButton
+        variant="ghost"
+        class="walkthrough-link"
+        [routerLink]="['/system-design', design.sourceContentId]">
+        Open the full system design walkthrough
+      </a>
+    </ng-container>
   </ng-container>
 </main>

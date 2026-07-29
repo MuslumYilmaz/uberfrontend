@@ -7,9 +7,12 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "assert:e2e-safe-env": "node scripts/assert-e2e-safe-env.mjs",
+    "generate:interview-content": "node content/interview/tools/generate-interview-content.mjs",
+    "generate:interview-content:check": "node content/interview/tools/generate-interview-content.mjs --check",
+    "validate:interview-content": "node content/interview/tools/validate-interview-content.mjs",
     "repair:prod-integrity": "node scripts/prod-integrity-repair.js",
     "test": "jest",
-    "verify:ci": "npm test",
+    "verify:ci": "npm run generate:interview-content:check && npm run validate:interview-content && npm test",
     "test:cv-calibration": "jest cv-linter.calibration"
   },
   "keywords": [],

@@ -1,0 +1,494 @@
+<section
+  *ngIf="scenario() as case"
+  class="design-round"
+  data-testid="system-design-round">
+  <aside class="design-sidebar" faCard>
+    <p class="eyebrow">Guided system design</p>
+    <h2>{{ case.title }}</h2>
+    <p>{{ case.prompt }}</p>
+
+    <nav class="step-nav" aria-label="System design stages">
+      <button
+        *ngFor="let step of steps; let index = index"
+        faButton
+        variant="ghost"
+        size="sm"
+        block
+        type="button"
+        [class.step-nav__item--active]="draft().currentStep === step.id"
+        [disabled]="interactionLocked() || (step.id === 'twist' && !twistRevealed())"
+        [attr.aria-current]="draft().currentStep === step.id ? 'step' : null"
+        (click)="selectStep(step.id)">
+        <span>{{ index + 1 }}</span>
+        <strong>{{ step.label }}</strong>
+      </button>
+    </nav>
+
+    <label class="scratchpad">
+      <span>Scratchpad <small>Not scored</small></span>
+      <textarea
+        [attr.maxlength]="case.selectionLimits.scratchpadChars"
+        [disabled]="interactionLocked()"
+        rows="4"
+        [value]="draft().scratchpad"
+        (input)="updateScratchpad($any($event.target).value)">
+      </textarea>
+      <small>{{ draft().scratchpad.length }}/{{ case.selectionLimits.scratchpadChars }}</small>
+    </label>
+
+    <span
+      class="sync-status"
+      [class.sync-status--warning]="hasDraftConflict()
+        || reconcilingState()
+        || syncState() === 'offline'
+        || syncState() === 'error'"
+      role="status">
+      {{ syncLabel() }}
+    </span>
+  </aside>
+
+  <section class="design-workspace" faCard elevated>
+    <section
+      *ngIf="hasDraftConflict()"
+      class="draft-recovery"
+      role="alert"
+      data-testid="system-design-draft-conflict">
+      <p class="eyebrow">Draft conflict</p>
+      <h2>Choose which draft to continue with</h2>
+      <p>
+        This device draft was based on a different server version. It has not been
+        uploaded, so work from another tab will not be replaced without your confirmation.
+      </p>
+
+      <div *ngIf="!confirmDeviceDraftRestore(); else confirmRestore" class="draft-recovery__actions">
+        <button
+          faButton
+          variant="primary"
+          type="button"
+          [disabled]="reconcilingState() || busy()"
+          (click)="useServerDraft()">
+          Use server version
+        </button>
+        <button
+          faButton
+          variant="ghost"
+          type="button"
+          [disabled]="reconcilingState() || busy()"
+          (click)="requestDeviceDraftRestore()">
+          Restore this device draft
+        </button>
+      </div>
+
+      <ng-template #confirmRestore>
+        <div class="draft-recovery__confirm">
+          <strong>Replace the current server draft?</strong>
+          <p>
+            Your device draft will be synced intentionally. If the production twist is
+            already open, its locked clarifications and priorities will remain unchanged.
+          </p>
+          <div class="draft-recovery__actions">
+            <button
+              faButton
+              variant="ghost"
+              type="button"
+              [disabled]="reconcilingState() || busy()"
+              (click)="cancelDeviceDraftRestore()">
+              Cancel
+            </button>
+            <button
+              faButton
+              variant="primary"
+              type="button"
+              [disabled]="reconcilingState() || busy()"
+              (click)="restoreDeviceDraft()">
+              Confirm restore and sync
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </section>
+
+    <p *ngIf="error()" class="design-alert design-alert--error" role="alert">
+      {{ error() }}
+    </p>
+
+    <div
+      class="design-editing-surface"
+      [attr.inert]="interactionLocked() ? '' : null">
+      <ng-container [ngSwitch]="draft().currentStep">
+      <section *ngSwitchCase="'clarifications'" class="phase">
+        <div class="phase__heading">
+          <div>
+            <p class="eyebrow">Step 1 of 5</p>
+            <h2>Clarify the brief</h2>
+            <p>Choose up to three questions that would materially change your design.</p>
+          </div>
+          <span>{{ draft().selectedClarificationIds.length }}/{{ clarificationLimit() }} selected</span>
+        </div>
+
+        <fieldset class="choice-list" [disabled]="twistRevealed()">
+          <legend class="sr-only">Clarification questions</legend>
+          <label
+            *ngFor="let clarification of case.clarifications"
+            class="choice-card"
+            [class.choice-card--selected]="draft().selectedClarificationIds.includes(clarification.id)">
+            <input
+              type="checkbox"
+              [checked]="draft().selectedClarificationIds.includes(clarification.id)"
+              [disabled]="!clarificationCanSelect(clarification.id)"
+              (change)="toggleClarification(clarification.id)">
+            <span>
+              <strong>{{ clarification.prompt }}</strong>
+              <small
+                *ngIf="draft().selectedClarificationIds.includes(clarification.id) && clarification.answer"
+                class="interviewer-answer">
+                Interviewer: {{ clarification.answer }}
+              </small>
+            </span>
+          </label>
+        </fieldset>
+
+        <p *ngIf="twistRevealed()" class="design-alert" role="note">
+          Clarifications are locked because the production twist has been revealed.
+        </p>
+      </section>
+
+      <section *ngSwitchCase="'requirements'" class="phase">
+        <div class="phase__heading">
+          <div>
+            <p class="eyebrow">Step 2 of 5</p>
+            <h2>Set the priorities</h2>
+            <p>Select up to three requirements. Their order represents your priority.</p>
+          </div>
+          <span>{{ draft().prioritizedRequirementIds.length }}/{{ priorityLimit() }} selected</span>
+        </div>
+
+        <ol *ngIf="draft().prioritizedRequirementIds.length" class="priority-list">
+          <li *ngFor="let id of draft().prioritizedRequirementIds; let index = index">
+            <span><strong>{{ index + 1 }}</strong> {{ requirementLabel(id) }}</span>
+            <span class="inline-actions">
+              <button
+                faButton
+                variant="ghost"
+                size="sm"
+                type="button"
+                [disabled]="twistRevealed() || index === 0"
+                [attr.aria-label]="'Move priority ' + (index + 1) + ' up'"
+                (click)="movePriority(id, -1)">
+                ↑
+              </button>
+              <button
+                faButton
+                variant="ghost"
+                size="sm"
+                type="button"
+                [disabled]="twistRevealed() || index === draft().prioritizedRequirementIds.length - 1"
+                [attr.aria-label]="'Move priority ' + (index + 1) + ' down'"
+                (click)="movePriority(id, 1)">
+                ↓
+              </button>
+            </span>
+          </li>
+        </ol>
+
+        <fieldset class="choice-list" [disabled]="twistRevealed()">
+          <legend class="sr-only">Requirements to prioritize</legend>
+          <label
+            *ngFor="let requirement of case.requirements"
+            class="choice-card"
+            [class.choice-card--selected]="draft().prioritizedRequirementIds.includes(requirement.id)">
+            <input
+              type="checkbox"
+              [checked]="draft().prioritizedRequirementIds.includes(requirement.id)"
+              [disabled]="!draft().prioritizedRequirementIds.includes(requirement.id)
+                && draft().prioritizedRequirementIds.length >= priorityLimit()"
+              (change)="togglePriority(requirement.id)">
+            <span>
+              <strong>{{ requirement.label }}</strong>
+              <small *ngIf="requirement.description">{{ requirement.description }}</small>
+            </span>
+          </label>
+        </fieldset>
+      </section>
+
+      <section *ngSwitchCase="'architecture'" class="phase phase--wide">
+        <div class="phase__heading">
+          <div>
+            <p class="eyebrow">Step 3 of 5</p>
+            <h2>Build the architecture</h2>
+            <p>Add component cards to lanes. Use the buttons to keep the board keyboard accessible.</p>
+          </div>
+          <span>{{ draft().placements.length }} cards placed</span>
+        </div>
+
+        <section class="card-palette" aria-labelledby="component-palette-title">
+          <h3 id="component-palette-title">Available components</h3>
+          <article *ngFor="let card of case.cards" class="palette-card">
+            <div>
+              <strong>{{ card.label }}</strong>
+              <p *ngIf="card.description">{{ card.description }}</p>
+            </div>
+            <label>
+              <span class="sr-only">Lane for {{ card.label }}</span>
+              <fa-select
+                [options]="laneOptions(card.id)"
+                [value]="placementLane(card.id)"
+                optionLabel="label"
+                optionValue="value"
+                (valueChange)="onLaneSelection(card.id, $event)">
+              </fa-select>
+            </label>
+          </article>
+        </section>
+
+        <div class="lane-board" aria-label="Architecture lanes">
+          <section *ngFor="let lane of case.lanes" class="lane">
+            <header>
+              <h3>{{ lane.label }}</h3>
+              <p *ngIf="lane.description">{{ lane.description }}</p>
+            </header>
+            <ol>
+              <li *ngFor="let placement of placementsForLane(lane.id); let index = index">
+                <span>{{ cardLabel(placement.cardId) }}</span>
+                <span class="inline-actions">
+                  <button
+                    faButton
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    [disabled]="index === 0"
+                    [attr.aria-label]="'Move ' + cardLabel(placement.cardId) + ' up'"
+                    (click)="moveCard(placement.cardId, -1)">↑</button>
+                  <button
+                    faButton
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    [disabled]="index === placementsForLane(lane.id).length - 1"
+                    [attr.aria-label]="'Move ' + cardLabel(placement.cardId) + ' down'"
+                    (click)="moveCard(placement.cardId, 1)">↓</button>
+                  <button
+                    faButton
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    [attr.aria-label]="'Remove ' + cardLabel(placement.cardId)"
+                    (click)="removeCard(placement.cardId)">×</button>
+                </span>
+              </li>
+            </ol>
+            <p *ngIf="!placementsForLane(lane.id).length" class="lane__empty">No components yet</p>
+          </section>
+        </div>
+      </section>
+
+      <section *ngSwitchCase="'decisions'" class="phase">
+        <div class="phase__heading">
+          <div>
+            <p class="eyebrow">Step 4 of 5</p>
+            <h2>Connect and defend the design</h2>
+            <p>Describe the flow, then choose an approach and concise reasons for each decision.</p>
+          </div>
+        </div>
+
+        <section class="connection-builder" aria-labelledby="connection-title">
+          <h3 id="connection-title">Data and event connections</h3>
+          <div class="connection-fields">
+            <label>
+              <span>From</span>
+              <fa-select
+                [options]="placedCardOptions()"
+                [value]="connectionFrom()"
+                optionLabel="label"
+                optionValue="value"
+                (valueChange)="connectionFrom.set($any($event))">
+              </fa-select>
+            </label>
+            <label>
+              <span>Type</span>
+              <fa-select
+                [options]="case.connectionTypes"
+                [value]="connectionType()"
+                optionLabel="label"
+                optionValue="value"
+                (valueChange)="onConnectionTypeChange($event)">
+              </fa-select>
+            </label>
+            <label>
+              <span>To</span>
+              <fa-select
+                [options]="placedCardOptions()"
+                [value]="connectionTo()"
+                optionLabel="label"
+                optionValue="value"
+                (valueChange)="connectionTo.set($any($event))">
+              </fa-select>
+            </label>
+            <button faButton variant="ghost" type="button" (click)="addConnection()">
+              Add connection
+            </button>
+          </div>
+
+          <ul *ngIf="draft().connections.length" class="connection-list">
+            <li *ngFor="let connection of draft().connections">
+              <span>
+                {{ cardLabel(connection.fromCardId) }}
+                <strong>{{ connection.type }}</strong>
+                {{ cardLabel(connection.toCardId) }}
+              </span>
+              <button
+                faButton
+                variant="ghost"
+                size="sm"
+                type="button"
+                [attr.aria-label]="'Remove connection from ' + cardLabel(connection.fromCardId)"
+                (click)="removeConnection(connection.id)">Remove</button>
+            </li>
+          </ul>
+        </section>
+
+        <article *ngFor="let decision of case.decisions" class="decision-card">
+          <h3>{{ decision.prompt }}</h3>
+          <fieldset class="decision-options">
+            <legend class="sr-only">{{ decision.prompt }}</legend>
+            <label *ngFor="let option of decision.options">
+              <input
+                type="radio"
+                [name]="'decision-' + decision.id"
+                [value]="option.id"
+                [checked]="selectedDecisionOption(decision.id) === option.id"
+                (change)="selectDecisionOption(decision, option.id)">
+              <span>
+                <strong>{{ option.label }}</strong>
+                <small *ngIf="option.description">{{ option.description }}</small>
+              </span>
+            </label>
+          </fieldset>
+          <fieldset *ngIf="selectedDecisionOption(decision.id) && decision.rationales.length" class="rationale-list">
+            <legend>
+              Why?
+              <small>
+                {{ selectedRationaleCount(decision.id) }}/{{ case.selectionLimits.rationalesPerDecision || 2 }}
+                selected
+              </small>
+            </legend>
+            <label *ngFor="let rationale of decision.rationales">
+              <input
+                type="checkbox"
+                [checked]="rationaleSelected(decision.id, rationale.id)"
+                [disabled]="!rationaleCanSelect(decision.id, rationale.id)"
+                (change)="toggleRationale(decision.id, rationale.id)">
+              <span>{{ rationale.label }}</span>
+            </label>
+          </fieldset>
+        </article>
+      </section>
+
+      <section *ngSwitchCase="'twist'" class="phase">
+        <div class="phase__heading">
+          <div>
+            <p class="eyebrow">Step 5 of 5</p>
+            <h2>Respond to a production twist</h2>
+            <p>Your priorities and clarifications lock when the twist is revealed. You can still adapt the architecture and decisions.</p>
+          </div>
+        </div>
+
+        <section *ngIf="!twistRevealed(); else revealedTwist" class="twist-gate" faCard>
+          <h3>Ready for the changing constraint?</h3>
+          <p>Sync the latest design first. Revealing the twist captures an immutable baseline.</p>
+          <button
+            faButton
+            variant="primary"
+            type="button"
+            [loading]="busy()"
+            [disabled]="!canRevealTwist()"
+            (click)="revealTwist()"
+            data-testid="reveal-system-design-twist">
+            Reveal production twist
+          </button>
+        </section>
+
+        <ng-template #revealedTwist>
+          <section class="twist-card" faCard elevated>
+            <p class="eyebrow">New constraint</p>
+            <h3>{{ design()?.twist?.prompt }}</h3>
+            <p>Choose up to {{ design()?.twist?.maxActions || 2 }} responses, then revisit your architecture or decisions.</p>
+            <div class="choice-list">
+              <label
+                *ngFor="let action of design()?.twist?.actions"
+                class="choice-card"
+                [class.choice-card--selected]="draft().selectedTwistActionIds.includes(action.id)">
+                <input
+                  type="checkbox"
+                  [checked]="draft().selectedTwistActionIds.includes(action.id)"
+                  [disabled]="!draft().selectedTwistActionIds.includes(action.id)
+                    && draft().selectedTwistActionIds.length >= (design()?.twist?.maxActions || 2)"
+                  (change)="toggleTwistAction(action.id)">
+                <span>
+                  <strong>{{ action.label }}</strong>
+                  <small *ngIf="action.description">{{ action.description }}</small>
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <p *ngIf="partialSubmitWarning()" class="design-alert design-alert--warning" role="alert">
+            Some checkpoints have no evidence. You can return to them, or submit a partial session.
+          </p>
+
+          <div class="submit-actions">
+            <button
+              *ngIf="partialSubmitWarning()"
+              faButton
+              variant="ghost"
+              type="button"
+              [loading]="busy()"
+              [disabled]="!canSubmit()"
+              (click)="requestSubmit(true)">
+              Submit with partial evidence
+            </button>
+            <button
+              faButton
+              variant="primary"
+              type="button"
+              [loading]="busy()"
+              [disabled]="!canSubmit()"
+              (click)="requestSubmit()"
+              data-testid="submit-system-design">
+              Submit system design
+            </button>
+          </div>
+        </ng-template>
+      </section>
+      </ng-container>
+
+      <footer class="phase-actions">
+        <button
+          faButton
+          variant="ghost"
+          type="button"
+          [disabled]="currentStepIndex() === 0"
+          (click)="previousStep()">
+          Previous stage
+        </button>
+        <button
+          *ngIf="currentStepIndex() < 3"
+          faButton
+          variant="primary"
+          type="button"
+          (click)="nextStep()">
+          Next stage
+        </button>
+        <button
+          *ngIf="currentStepIndex() === 3 && !twistRevealed()"
+          faButton
+          variant="primary"
+          type="button"
+          [disabled]="syncState() !== 'saved'"
+          (click)="selectStep('twist')">
+          Continue to production twist
+        </button>
+      </footer>
+    </div>
+  </section>
+</section>

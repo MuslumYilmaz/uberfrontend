@@ -15,7 +15,12 @@ function addSeconds(date, seconds) {
 function finalizeCompleted(session, at, outcome) {
   session.status = 'completed';
   session.active = false;
-  session.codingOutcome = outcome;
+  if ((session.format || 'coding') === 'system-design') {
+    session.systemDesignOutcome = outcome;
+    if (outcome === 'submitted') session.systemDesignSubmittedAt = new Date(at);
+  } else {
+    session.codingOutcome = outcome;
+  }
   session.completedAt = new Date(at);
   session.resultSnapshot = buildResultSnapshot(session, { finalizedAt: at });
 }
@@ -45,6 +50,14 @@ function reconcileSession(session, now, config) {
 
   while (keepReconciling && !TERMINAL_STATUSES.has(session.status)) {
     keepReconciling = false;
+    if (
+      session.status === 'system_design_active'
+      && new Date(session.systemDesignDeadlineAt).getTime() <= nowDate.getTime()
+    ) {
+      finalizeCompleted(session, new Date(session.systemDesignDeadlineAt), 'timed_out');
+      changed = true;
+      continue;
+    }
     if (
       session.status === 'mcq_active'
       && new Date(session.mcqDeadlineAt).getTime() <= nowDate.getTime()
@@ -102,11 +115,21 @@ function submitCoding(session, now, draftHash) {
   return true;
 }
 
+function submitSystemDesign(session, now) {
+  if (session.status !== 'system_design_active') return false;
+  finalizeCompleted(session, now, 'submitted');
+  return true;
+}
+
 function abandonSession(session, now) {
   if (TERMINAL_STATUSES.has(session.status)) return false;
   session.status = 'abandoned';
   session.active = false;
-  session.codingOutcome = 'abandoned';
+  if ((session.format || 'coding') === 'system-design') {
+    session.systemDesignOutcome = 'abandoned';
+  } else {
+    session.codingOutcome = 'abandoned';
+  }
   session.abandonedAt = new Date(now);
   session.resultSnapshot = buildResultSnapshot(session, { finalizedAt: now });
   return true;
@@ -127,6 +150,7 @@ module.exports = {
   reconcileSession,
   startCoding,
   submitCoding,
+  submitSystemDesign,
   submitMcq,
   voidSessionTechnical,
 };

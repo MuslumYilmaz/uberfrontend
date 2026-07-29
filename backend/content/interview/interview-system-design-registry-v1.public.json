@@ -1,0 +1,1057 @@
+{
+  "registryId": "interview-system-design-registry-v1",
+  "registryVersion": "1.0.0",
+  "scenarios": [
+    {
+      "cards": [
+        {
+          "description": "Captures text and keyboard intent.",
+          "id": "search-input",
+          "title": "Search input"
+        },
+        {
+          "description": "Renders one query snapshot and active option.",
+          "id": "search-results",
+          "title": "Results list"
+        },
+        {
+          "description": "Publishes loading, result count, empty, and error status.",
+          "id": "search-status",
+          "title": "Status announcer"
+        },
+        {
+          "description": "Owns query generation and accepted result state.",
+          "id": "search-controller",
+          "title": "Query controller"
+        },
+        {
+          "description": "Stores bounded entries by complete normalized identity.",
+          "id": "search-cache",
+          "title": "Query cache"
+        },
+        {
+          "description": "Maps query requests to transport and result contracts.",
+          "id": "search-client",
+          "title": "Request client"
+        },
+        {
+          "description": "Owns the active AbortController where cancellation is supported.",
+          "id": "search-abort",
+          "title": "Cancellation owner"
+        },
+        {
+          "description": "Returns ordered results for one explicit query identity.",
+          "id": "search-api",
+          "title": "Search API"
+        },
+        {
+          "description": "Measures stale completions, latency, cache behavior, and empty states.",
+          "id": "search-telemetry",
+          "title": "Search telemetry"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "search-identity",
+          "prompt": "Which inputs can change the meaning of the same typed term?"
+        },
+        {
+          "id": "search-order",
+          "prompt": "Can requests finish in a different order from the order in which they started?"
+        },
+        {
+          "id": "search-keyboard",
+          "prompt": "Which keyboard and assistive-technology behavior is required?"
+        },
+        {
+          "id": "search-stale-ui",
+          "prompt": "May previous results remain visible while a new query loads?"
+        },
+        {
+          "id": "search-volume",
+          "prompt": "What traffic and cache limits should the client expect?"
+        },
+        {
+          "id": "search-navigation",
+          "prompt": "Should query state survive route navigation or page reload?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
+      "decisions": [
+        {
+          "id": "search-async-control",
+          "options": [
+            {
+              "description": "Cancel replaceable work and verify the active generation before commit.",
+              "id": "search-async-abort-generation",
+              "label": "Abort and verify generation"
+            },
+            {
+              "description": "Let transport finish but reject completions from a superseded identity.",
+              "id": "search-async-generation",
+              "label": "Verify active generation"
+            },
+            {
+              "description": "Coalesce input changes and commit responses in completion order.",
+              "id": "search-async-debounce",
+              "label": "Debounce request admission"
+            }
+          ],
+          "prompt": "How does the controller prevent an old completion from committing?",
+          "rationales": [
+            {
+              "id": "search-rationale-correctness",
+              "label": "Make generation checks the response-acceptance boundary"
+            },
+            {
+              "id": "search-rationale-efficiency",
+              "label": "Reduce transport work for superseded query identities"
+            },
+            {
+              "id": "search-rationale-fewer-starts",
+              "label": "Reduce concurrency through input admission control"
+            }
+          ],
+          "title": "Async ownership"
+        },
+        {
+          "id": "search-cache-identity",
+          "options": [
+            {
+              "description": "Key the inputs that change result meaning.",
+              "id": "search-key-complete",
+              "label": "Term, locale, filters, and result type"
+            },
+            {
+              "description": "Reuse one term entry across locale, filters, and result type.",
+              "id": "search-key-term",
+              "label": "Normalized term with shared context"
+            },
+            {
+              "description": "Replace the stored value when a response commits.",
+              "id": "search-key-latest",
+              "label": "Single latest-result cache slot"
+            }
+          ],
+          "prompt": "What identifies a reusable result entry?",
+          "rationales": [
+            {
+              "id": "search-rationale-semantic-key",
+              "label": "Separate queries with different result semantics"
+            },
+            {
+              "id": "search-rationale-hit-rate",
+              "label": "Increase reuse through a compact cache key"
+            },
+            {
+              "id": "search-rationale-simple-cache",
+              "label": "Reduce entry management and key construction"
+            }
+          ],
+          "title": "Cache identity"
+        },
+        {
+          "id": "search-state-owner",
+          "options": [
+            {
+              "description": "Input and result views emit intent and render controller snapshots.",
+              "id": "search-owner-controller",
+              "label": "Dedicated query controller"
+            },
+            {
+              "description": "The input owns transport, cache, and result transition state.",
+              "id": "search-owner-input",
+              "label": "Input-centered feature owner"
+            },
+            {
+              "description": "The list derives query state and starts transport work.",
+              "id": "search-owner-results",
+              "label": "Result-centered feature owner"
+            }
+          ],
+          "prompt": "Which boundary owns query identity, request state, and accepted results?",
+          "rationales": [
+            {
+              "id": "search-rationale-one-owner",
+              "label": "Centralize transitions for one query generation"
+            },
+            {
+              "id": "search-rationale-near-event",
+              "label": "Co-locate query work with input events"
+            },
+            {
+              "id": "search-rationale-near-render",
+              "label": "Co-locate query work with result rendering"
+            }
+          ],
+          "title": "State owner"
+        },
+        {
+          "id": "search-render-policy",
+          "options": [
+            {
+              "description": "Mark it pending and prevent selection under a mismatched identity.",
+              "id": "search-render-labelled-stale",
+              "label": "Retain a labelled prior snapshot"
+            },
+            {
+              "description": "Show an empty result region until the next response commits.",
+              "id": "search-render-clear",
+              "label": "Clear during the pending state"
+            },
+            {
+              "description": "Replace the list with the most recently completed response.",
+              "id": "search-render-any-response",
+              "label": "Retain the latest completion"
+            }
+          ],
+          "prompt": "What should be displayed while a related query is loading?",
+          "rationales": [
+            {
+              "id": "search-rationale-continuity",
+              "label": "Preserve continuity while keeping result identity explicit"
+            },
+            {
+              "id": "search-rationale-no-stale-display",
+              "label": "Separate pending state from previously rendered results"
+            },
+            {
+              "id": "search-rationale-fastest-visible",
+              "label": "Prioritize completion latency over request-start order"
+            }
+          ],
+          "title": "Transition rendering"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "Where do RxJS cancellation, component state, and teardown live without splitting query ownership?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "How will DOM listeners, AbortController ownership, and active-descendant state be created and cleaned up?",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "Which state belongs outside rendering Effects, and how will stale closures or Effect cleanup affect ownership?",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "Which watcher or composable owns invalidation, cache identity, and cleanup for the active query?",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-autocomplete-race-mid-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "mid",
+      "prompt": "Design a reusable autocomplete that remains responsive on unreliable networks. Results depend on the typed term, locale, and filters, and keyboard users must be able to understand and navigate every state.",
+      "requirements": [
+        {
+          "description": "An older completion cannot overwrite results for a newer query identity.",
+          "id": "search-latest-intent",
+          "title": "Latest intent wins"
+        },
+        {
+          "description": "Term, locale, filters, and result type participate in cache and request identity.",
+          "id": "search-complete-key",
+          "title": "Complete query identity"
+        },
+        {
+          "description": "Focus, active option, selection, and Escape behavior stay predictable.",
+          "id": "search-keyboard-contract",
+          "title": "Keyboard interaction"
+        },
+        {
+          "description": "Loading, stale, empty, error, and ready states have distinct behavior.",
+          "id": "search-explicit-states",
+          "title": "Explicit async states"
+        },
+        {
+          "description": "Repeated queries may reuse data without unbounded memory growth.",
+          "id": "search-bounded-cache",
+          "title": "Bounded cache"
+        },
+        {
+          "description": "The feature releases timers, controllers, and subscriptions on replacement or teardown.",
+          "id": "search-owned-cleanup",
+          "title": "Owned cancellation and cleanup"
+        }
+      ],
+      "revision": 3,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 900,
+      "title": "Design a Race-Safe Autocomplete"
+    },
+    {
+      "cards": [
+        {
+          "description": "Renders ordered item identities and terminal states.",
+          "id": "feed-view",
+          "title": "Feed view"
+        },
+        {
+          "description": "Mounts a measured or page-windowed subset.",
+          "id": "feed-viewport",
+          "title": "Bounded viewport"
+        },
+        {
+          "description": "Provides visible keyboard intent through the same admission path.",
+          "id": "feed-load-control",
+          "title": "Load-more control"
+        },
+        {
+          "description": "Owns query generation, request admission, merge, and retry state.",
+          "id": "feed-controller",
+          "title": "Feed controller"
+        },
+        {
+          "description": "Prevents duplicate cursor work and rejects stale generation commits.",
+          "id": "feed-request-gate",
+          "title": "Request gate"
+        },
+        {
+          "description": "Normalizes records by stable server identity.",
+          "id": "feed-entities",
+          "title": "Entity store"
+        },
+        {
+          "description": "Keeps page membership, cursors, and ordering versions.",
+          "id": "feed-pages",
+          "title": "Page cache"
+        },
+        {
+          "description": "Stores row geometry by entity identity for anchor correction.",
+          "id": "feed-measurements",
+          "title": "Measurement cache"
+        },
+        {
+          "description": "Returns ordered items, opaque continuation, and ordering metadata.",
+          "id": "feed-api",
+          "title": "Ranked feed API"
+        },
+        {
+          "description": "Measures duplicate admission, anchor shift, node count, and stale rejection.",
+          "id": "feed-telemetry",
+          "title": "Feed telemetry"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "feed-order-authority",
+          "prompt": "Who defines ordering, and can that ordering change during a session?"
+        },
+        {
+          "id": "feed-pagination",
+          "prompt": "What pagination contract and overlap behavior does the API provide?"
+        },
+        {
+          "id": "feed-restoration",
+          "prompt": "What reading context must survive navigation and measurement changes?"
+        },
+        {
+          "id": "feed-row-geometry",
+          "prompt": "Are row heights fixed, estimated, or allowed to change after render?"
+        },
+        {
+          "id": "feed-memory-budget",
+          "prompt": "What DOM and retained-data budget applies to a long session?"
+        },
+        {
+          "id": "feed-accessibility",
+          "prompt": "How should keyboard loading, focus, announcements, and discovery work?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",
+      "decisions": [
+        {
+          "id": "feed-pagination-model",
+          "options": [
+            {
+              "description": "Commit ordered items and continuation together, then retry the committed cursor.",
+              "id": "feed-page-cursor",
+              "label": "Opaque cursor with atomic commit"
+            },
+            {
+              "description": "Calculate the next request from the current client list length.",
+              "id": "feed-page-offset",
+              "label": "Offset derived from visible count"
+            },
+            {
+              "description": "Fetch a broad ranked snapshot and expose it in client-sized pages.",
+              "id": "feed-page-client",
+              "label": "Locally paged result snapshot"
+            }
+          ],
+          "prompt": "How does the client request the next ranked page?",
+          "rationales": [
+            {
+              "id": "feed-rationale-order-contract",
+              "label": "Preserve server continuation and ordering semantics"
+            },
+            {
+              "id": "feed-rationale-simple-offset",
+              "label": "Derive continuation from visible client state"
+            },
+            {
+              "id": "feed-rationale-local-nav",
+              "label": "Trade larger transfers for local page navigation"
+            }
+          ],
+          "title": "Pagination model"
+        },
+        {
+          "id": "feed-merge-model",
+          "options": [
+            {
+              "description": "Update entity records while preserving admitted server positions.",
+              "id": "feed-merge-normalized",
+              "label": "Normalize identities and page membership"
+            },
+            {
+              "description": "Represent repeated identities in the order returned by each page.",
+              "id": "feed-merge-append",
+              "label": "Append response membership as received"
+            },
+            {
+              "description": "Derive visible positions from client response completion timestamps.",
+              "id": "feed-merge-client-sort",
+              "label": "Reorder membership by arrival time"
+            }
+          ],
+          "prompt": "How should overlapping pages and updated records enter the visible order?",
+          "rationales": [
+            {
+              "id": "feed-rationale-stable-id",
+              "label": "Separate entity identity from ordered membership"
+            },
+            {
+              "id": "feed-rationale-response-order",
+              "label": "Preserve page payloads as independent append units"
+            },
+            {
+              "id": "feed-rationale-local-order",
+              "label": "Derive order from observable client completion"
+            }
+          ],
+          "title": "Merge model"
+        },
+        {
+          "id": "feed-window-model",
+          "options": [
+            {
+              "description": "Use identity-keyed geometry, overscan, and anchor correction for variable rows.",
+              "id": "feed-window-measured",
+              "label": "Measured virtual window"
+            },
+            {
+              "description": "Retain a small page range and restore evicted boundaries by stable anchor.",
+              "id": "feed-window-pages",
+              "label": "Bounded page window"
+            },
+            {
+              "description": "Keep loaded rows mounted and rely on browser layout behavior.",
+              "id": "feed-window-unbounded",
+              "label": "Retained document flow"
+            }
+          ],
+          "prompt": "How should the UI keep mounted work bounded?",
+          "rationales": [
+            {
+              "id": "feed-rationale-profiled-window",
+              "label": "Bound measured rendering cost while preserving context"
+            },
+            {
+              "id": "feed-rationale-page-boundary",
+              "label": "Trade granular virtualization for simpler bounded pages"
+            },
+            {
+              "id": "feed-rationale-native-flow",
+              "label": "Preserve document flow and browser-native discovery"
+            }
+          ],
+          "title": "Long-session rendering"
+        },
+        {
+          "id": "feed-order-change",
+          "options": [
+            {
+              "description": "Preserve the anchor until the reader reveals the new version.",
+              "id": "feed-order-stage",
+              "label": "Stage a coherent ranking update"
+            },
+            {
+              "description": "Reconcile the mounted range while restoring the current viewport offset.",
+              "id": "feed-order-immediate",
+              "label": "Apply updates around the anchor"
+            },
+            {
+              "description": "Place newer completions ahead without retaining server ranking versions.",
+              "id": "feed-order-arrival",
+              "label": "Rebuild order from arrival time"
+            }
+          ],
+          "prompt": "How should a new ranking version affect a reader who is below the top?",
+          "rationales": [
+            {
+              "id": "feed-rationale-reading-context",
+              "label": "Protect reading context across ranking changes"
+            },
+            {
+              "id": "feed-rationale-freshness",
+              "label": "Prioritize freshness while correcting viewport movement"
+            },
+            {
+              "id": "feed-rationale-no-version",
+              "label": "Simplify ordering through client completion time"
+            }
+          ],
+          "title": "Ranking updates"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "How will signals or RxJS model generation and request admission while keeping OnPush row identity stable?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "Which owners coordinate IntersectionObserver, ResizeObserver, AbortController, and History restoration without leaking them to item renderers?",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "How will keys, external cache identity, transitions, and virtualization avoid render-driven fetch ownership?",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "How will composables own cursor generations and measurement state without deep-watching the full feed payload?",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-ranked-feed-sr-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "senior",
+      "prompt": "Design a frontend feed whose ranked pages can overlap or change while a user reads. The experience must paginate reliably, preserve a stable reading anchor, and keep rendering and retained data bounded during a long session.",
+      "requirements": [
+        {
+          "description": "Overlapping pages and ranking updates do not duplicate or silently replace the wrong item.",
+          "id": "feed-stable-identity",
+          "title": "Stable entity identity"
+        },
+        {
+          "description": "Items and their continuation cursor commit together only for the admitted generation.",
+          "id": "feed-atomic-cursor",
+          "title": "Atomic cursor commit"
+        },
+        {
+          "description": "Late media, ranking updates, and navigation do not unexpectedly move the reader.",
+          "id": "feed-reading-anchor",
+          "title": "Reading-context preservation"
+        },
+        {
+          "description": "DOM nodes and retained payloads stay within explicit long-session budgets.",
+          "id": "feed-bounded-rendering",
+          "title": "Bounded rendering and retention"
+        },
+        {
+          "description": "A failed next page keeps loaded content usable and retries the same committed cursor.",
+          "id": "feed-recoverable-loading",
+          "title": "Recoverable pagination"
+        },
+        {
+          "description": "A visible keyboard path, focus policy, and restrained status announcements accompany automatic loading.",
+          "id": "feed-accessible-loading",
+          "title": "Accessible loading path"
+        }
+      ],
+      "revision": 3,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 1200,
+      "title": "Design a Ranked Feed That Preserves Reading Context"
+    },
+    {
+      "cards": [
+        {
+          "description": "Normalizes create, update, and dismiss intent.",
+          "id": "toast-command-api",
+          "title": "Toast command API"
+        },
+        {
+          "description": "Owns visible and queued toast records.",
+          "id": "toast-store",
+          "title": "Toast store"
+        },
+        {
+          "description": "Owns deadlines, pause reasons, and cleanup.",
+          "id": "toast-lifecycle",
+          "title": "Lifecycle coordinator"
+        },
+        {
+          "description": "Subscribes once and binds state to rendering.",
+          "id": "toast-provider",
+          "title": "Toast provider"
+        },
+        {
+          "description": "Applies placement, stacking, and overflow presentation.",
+          "id": "toast-container",
+          "title": "Toast container"
+        },
+        {
+          "description": "Renders message, actions, and dismissal controls.",
+          "id": "toast-item",
+          "title": "Toast item"
+        },
+        {
+          "description": "Publishes concise status changes to assistive technology.",
+          "id": "toast-live-region",
+          "title": "Announcement region"
+        },
+        {
+          "description": "Supplies time and page visibility signals.",
+          "id": "toast-browser-clock",
+          "title": "Browser clock and visibility"
+        },
+        {
+          "description": "Records queue pressure, dismissals, and delayed cleanup.",
+          "id": "toast-telemetry",
+          "title": "Lifecycle telemetry"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "toast-callers",
+          "prompt": "Which parts of the application need to create a toast?"
+        },
+        {
+          "id": "toast-actions",
+          "prompt": "Can a toast contain an action that the user may need to complete?"
+        },
+        {
+          "id": "toast-lifetime",
+          "prompt": "Which messages may disappear automatically and which must remain?"
+        },
+        {
+          "id": "toast-volume",
+          "prompt": "How many messages can arrive during a short burst?"
+        },
+        {
+          "id": "toast-announcement",
+          "prompt": "How urgent are these messages for assistive technology?"
+        },
+        {
+          "id": "toast-navigation",
+          "prompt": "Should messages survive client-side route changes?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "b8dc020ac24d90e5f92e729cf10dc80874afe9771be0f973d59e941b0c5c1b7b",
+      "decisions": [
+        {
+          "id": "toast-ownership",
+          "options": [
+            {
+              "description": "Commands update shared records while items emit lifecycle intent.",
+              "id": "toast-owner-central",
+              "label": "Shared store with lifecycle coordinator"
+            },
+            {
+              "description": "Each route owns message records and disposes them on navigation.",
+              "id": "toast-owner-page",
+              "label": "Route-scoped store and container"
+            },
+            {
+              "description": "Rendered items own expiry state and release their local resources.",
+              "id": "toast-owner-item",
+              "label": "Item-scoped timer and cleanup"
+            }
+          ],
+          "prompt": "Where should lifecycle transitions be coordinated?",
+          "rationales": [
+            {
+              "id": "toast-rationale-single-owner",
+              "label": "Keep lifecycle transitions under one observable owner"
+            },
+            {
+              "id": "toast-rationale-route-isolation",
+              "label": "Align message cleanup with route ownership"
+            },
+            {
+              "id": "toast-rationale-local-simplicity",
+              "label": "Align timer cleanup with rendered-item ownership"
+            }
+          ],
+          "title": "State ownership"
+        },
+        {
+          "id": "toast-timing",
+          "options": [
+            {
+              "description": "Pause for declared reasons and resume from the stored remainder.",
+              "id": "toast-time-remaining",
+              "label": "Track remaining visible time"
+            },
+            {
+              "description": "Calculate expiry from one timestamp across visibility changes.",
+              "id": "toast-time-wall-clock",
+              "label": "Maintain a wall-clock deadline"
+            },
+            {
+              "description": "Begin a fresh duration when hover, focus, or visibility resumes.",
+              "id": "toast-time-reset",
+              "label": "Restart after each pause"
+            }
+          ],
+          "prompt": "How should an eligible timed status preserve its lifetime?",
+          "rationales": [
+            {
+              "id": "toast-rationale-user-time",
+              "label": "Preserve sufficient user time to perceive status"
+            },
+            {
+              "id": "toast-rationale-fixed-deadline",
+              "label": "Preserve a simple timestamp-based expiry contract"
+            },
+            {
+              "id": "toast-rationale-easy-reset",
+              "label": "Preserve a fresh viewing period after interruption"
+            }
+          ],
+          "title": "Lifetime model"
+        },
+        {
+          "id": "toast-overflow",
+          "options": [
+            {
+              "description": "Show a small set and coalesce equivalent pending outcomes.",
+              "id": "toast-overflow-queue",
+              "label": "Queue beyond a bounded stack"
+            },
+            {
+              "description": "Admit newer feedback by dismissing the oldest visible record.",
+              "id": "toast-overflow-drop",
+              "label": "Replace the earliest visible message"
+            },
+            {
+              "description": "Place new feedback directly into the rendered container.",
+              "id": "toast-overflow-unlimited",
+              "label": "Expand the visible message stack"
+            }
+          ],
+          "prompt": "What happens when more messages arrive than can be displayed?",
+          "rationales": [
+            {
+              "id": "toast-rationale-bounded",
+              "label": "Bound rendering while retaining distinct recovery paths"
+            },
+            {
+              "id": "toast-rationale-newest",
+              "label": "Favor recent feedback within the visible budget"
+            },
+            {
+              "id": "toast-rationale-no-loss",
+              "label": "Favor immediate visibility without queue coordination"
+            }
+          ],
+          "title": "Burst handling"
+        },
+        {
+          "id": "toast-announcer",
+          "options": [
+            {
+              "description": "Use restrained announcements and reserve interruption for urgent events.",
+              "id": "toast-announce-polite",
+              "label": "Polite status with urgent escalation"
+            },
+            {
+              "description": "Map warning and error categories to interrupting live updates.",
+              "id": "toast-announce-assertive",
+              "label": "Assertive announcement by severity"
+            },
+            {
+              "description": "Present icons and text while controls remain keyboard reachable.",
+              "id": "toast-announce-visual",
+              "label": "Visual status with focused controls"
+            }
+          ],
+          "prompt": "How should new messages reach assistive technology?",
+          "rationales": [
+            {
+              "id": "toast-rationale-restraint",
+              "label": "Limit interruption while preserving status discovery"
+            },
+            {
+              "id": "toast-rationale-immediacy",
+              "label": "Prioritize rapid announcement for higher-severity feedback"
+            },
+            {
+              "id": "toast-rationale-quiet",
+              "label": "Prioritize visual stability and keyboard operation"
+            }
+          ],
+          "title": "Announcement policy"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "Which service scope owns the records, and how will timer teardown follow application lifecycle?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "Which module owns the store, timer handles, and live-region DOM when no framework lifecycle is available?",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "Where would the provider, external store subscription, and effect cleanup boundaries live?",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "Which composable or plugin owns records, and where will unmount cleanup be centralized?",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-toast-lifecycle-jr-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "junior",
+      "prompt": "A product team needs non-blocking status messages that any screen can trigger. Design the frontend boundaries for displaying, dismissing, and announcing several messages without leaving timers behind.",
+      "requirements": [
+        {
+          "description": "Authorized screens and services can emit messages without mounting their own container.",
+          "id": "toast-global-trigger",
+          "title": "Global trigger boundary"
+        },
+        {
+          "description": "A recovery action remains available until it expires by product policy or the user resolves it.",
+          "id": "toast-persistent-actions",
+          "title": "Persistent actionable messages"
+        },
+        {
+          "description": "A burst does not create an unlimited set of mounted messages.",
+          "id": "toast-bounded-stack",
+          "title": "Bounded visible stack"
+        },
+        {
+          "description": "Permitted timers preserve remaining time through relevant user interaction and page visibility changes.",
+          "id": "toast-pause-lifetime",
+          "title": "Pause-aware lifetime"
+        },
+        {
+          "description": "Announcements are restrained and controls remain keyboard reachable without stealing focus.",
+          "id": "toast-accessible-status",
+          "title": "Accessible status delivery"
+        },
+        {
+          "description": "Dismissal, teardown, and replacement release every owned timer and listener.",
+          "id": "toast-cleanup",
+          "title": "Complete lifecycle cleanup"
+        }
+      ],
+      "revision": 3,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 600,
+      "title": "Design a Reliable Toast Notification Layer"
+    }
+  ],
+  "schemaVersion": "1.0.0",
+  "status": "candidate"
+}

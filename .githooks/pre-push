@@ -93,6 +93,7 @@ sort -u -o "$CHANGED_FILES" "$CHANGED_FILES"
 
 HAS_FRONTEND_CHANGES=0
 HAS_BACKEND_CHANGES=0
+HAS_INTERVIEW_CONTENT_CHANGES=0
 
 if grep -Eq "$FRONTEND_CHANGE_RE" "$CHANGED_FILES"; then
   HAS_FRONTEND_CHANGES=1
@@ -100,6 +101,10 @@ fi
 
 if grep -Eq "$BACKEND_CHANGE_RE" "$CHANGED_FILES"; then
   HAS_BACKEND_CHANGES=1
+fi
+
+if grep -Eq '^backend/content/interview/' "$CHANGED_FILES"; then
+  HAS_INTERVIEW_CONTENT_CHANGES=1
 fi
 
 if [ "$HAVE_REFS" -eq 1 ] && [ "$HAS_FRONTEND_CHANGES" -eq 0 ] && [ "$HAS_BACKEND_CHANGES" -eq 0 ]; then
@@ -118,7 +123,7 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
       continue
     fi
 
-    if [[ "$file" =~ ^backend/.*\.js$ ]]; then
+    if [[ "$file" =~ ^backend/.*\.m?js$ ]]; then
       echo "$file" >> "$BACKEND_SOURCE_FILES"
       echo "$file" >> "$BACKEND_NODECHECK_FILES"
     fi
@@ -168,6 +173,19 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
       exit 1
     fi
     echo "[pre-push] OK: Changed backend test files passed."
+  fi
+
+  if [ "$HAS_INTERVIEW_CONTENT_CHANGES" -eq 1 ]; then
+    echo "[pre-push] Validating generated interview content..."
+    if ! npm -C backend run generate:interview-content:check; then
+      echo "[pre-push] ERROR: Generated interview content is stale. Push aborted." >&2
+      exit 1
+    fi
+    if ! npm -C backend run validate:interview-content; then
+      echo "[pre-push] ERROR: Interview content validation failed. Push aborted." >&2
+      exit 1
+    fi
+    echo "[pre-push] OK: Interview content validation passed."
   fi
 fi
 
