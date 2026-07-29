@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-route-parameter-reuse-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "route-parameter-reuse",
+    "prompt": "Navigating from `/products/41` to `/products/42` reuses the same Angular product component. It reads `route.snapshot.paramMap` once in its constructor, so the screen keeps product 41. Which data flow follows later parameter changes without forcing a page reload?",
+    "options": [
+      {
+        "id": "choice-f6f1b2274b",
+        "label": "Derive the product load from the route's `paramMap` stream and render each resulting value."
+      },
+      {
+        "id": "choice-2a144db089",
+        "label": "Have a template getter reread the `ActivatedRouteSnapshot` captured in the constructor."
+      },
+      {
+        "id": "choice-e58d046dd6",
+        "label": "Navigate through `window.location` so every identifier change constructs a fresh Angular application."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-f6f1b2274b",
+    "answerProof": {
+      "summary": "An ActivatedRoute snapshot is a fixed point in time, while the route parameter observable emits later navigation state to the reused component.",
+      "decisiveConstraints": [
+        "The same component instance remains active across identifier changes.",
+        "Product loading must respond to navigation events over time.",
+        "Client-side routing should remain intact."
+      ],
+      "claims": [
+        {
+          "statement": "Angular route snapshots are static and do not reflect later route changes.",
+          "sourceIds": [
+            "angular22-read-route-state"
+          ]
+        },
+        {
+          "statement": "ActivatedRoute exposes route parameters as observable values that components can consume over time.",
+          "sourceIds": [
+            "angular22-read-route-state"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-f6f1b2274b",
+        "verdict": "correct",
+        "explanation": "The parameter stream emits for the reused instance, allowing the loading pipeline to replace product 41 with product 42.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-2a144db089",
+        "verdict": "incorrect",
+        "explanation": "The getter rereads the one snapshot object captured during construction; Angular does not mutate that object when a later navigation creates the route's next snapshot.",
+        "plausibility": "Template getters run during checks, so repeatedly evaluating one can look like a way to observe changing router state.",
+        "misconceptionTag": "snapshot-becomes-live-when-reread",
+        "falsifyingConstraint": "The getter is bound to the captured snapshot object rather than the live `ActivatedRoute.paramMap` stream."
+      },
+      {
+        "optionId": "choice-e58d046dd6",
+        "verdict": "incorrect",
+        "explanation": "A document navigation would refresh the data but discards the active application and bypasses the intended client-router reuse behavior.",
+        "plausibility": "A full reload constructs a component against the newest URL snapshot.",
+        "misconceptionTag": "full-reload-is-router-reactivity",
+        "falsifyingConstraint": "The solution must handle parameter updates within Angular's current client-side application."
+      }
+    ],
+    "remediationTopics": [
+      "Angular ActivatedRoute",
+      "route snapshots versus observables",
+      "component reuse across parameter changes"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Read route state",
+        "url": "https://angular.dev/guide/routing/read-route-state",
+        "sourceId": "angular22-read-route-state"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-read-route-state",
+          "title": "Angular: Read route state",
+          "url": "https://angular.dev/guide/routing/read-route-state",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

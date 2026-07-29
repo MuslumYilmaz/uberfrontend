@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-optimistic-mutation-rollback-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "optimistic-mutation-rollback",
+    "prompt": "A React 19 comment list should display each submitted comment immediately. Multiple submissions may overlap, the canonical `comments` value changes only after server success, and a rejected submission must disappear while showing its error. Which ownership model provides that rollback?",
+    "options": [
+      {
+        "id": "choice-95e7f3bf24",
+        "label": "Insert into the canonical array immediately, then remove the failed item later by its current list index."
+      },
+      {
+        "id": "choice-e9f368ece5",
+        "label": "Layer client-ID entries with `useOptimistic` inside Actions, update canonical data on success, and report failures."
+      },
+      {
+        "id": "choice-b61bad3c0c",
+        "label": "Copy pending entries into canonical state from an Effect before starting each request, then retain that copy."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-e9f368ece5",
+    "answerProof": {
+      "summary": "`useOptimistic` layers temporary reducer results over the canonical value for pending Actions; if an Action fails without changing the canonical value, React returns to that base while error state explains the rollback.",
+      "decisiveConstraints": [
+        "Optimistic entries are temporary overlays rather than committed server data.",
+        "Overlapping entries need stable client identities.",
+        "Server failure must leave the canonical list unchanged and expose an error."
+      ],
+      "claims": [
+        {
+          "statement": "`useOptimistic` exposes temporary state while an Action is pending and derives it from the supplied canonical value.",
+          "sourceIds": [
+            "react19-use-optimistic"
+          ]
+        },
+        {
+          "statement": "When an Action fails and the canonical value was not updated, the optimistic state returns to that unchanged value.",
+          "sourceIds": [
+            "react19-use-optimistic"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-95e7f3bf24",
+        "verdict": "incorrect",
+        "explanation": "Writing into canonical data makes an unconfirmed entry look committed, and rollback by index can remove a different item after overlapping list changes.",
+        "plausibility": "Immediate canonical insertion makes the item visible and a later catch block can attempt an inverse update.",
+        "misconceptionTag": "canonical-mutation-is-optimistic-overlay",
+        "falsifyingConstraint": "Canonical comments change only after server success, and concurrent list positions are not stable identities."
+      },
+      {
+        "optionId": "choice-e9f368ece5",
+        "verdict": "correct",
+        "explanation": "Each Action owns a temporary identified entry, while success updates the base and failure lets the overlay disappear with an explicit message.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b61bad3c0c",
+        "verdict": "incorrect",
+        "explanation": "Copying pending data into canonical state before the request removes the distinction needed for automatic rollback and retains rejected entries.",
+        "plausibility": "An Effect can consolidate pending and confirmed collections into one list for rendering.",
+        "misconceptionTag": "effect-commit-preserves-rollback-base",
+        "falsifyingConstraint": "A failed request must return to canonical server-confirmed data."
+      }
+    ],
+    "remediationTopics": [
+      "React useOptimistic",
+      "Actions and transitions",
+      "optimistic rollback",
+      "stable client-generated identities"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useOptimistic",
+        "url": "https://react.dev/reference/react/useOptimistic",
+        "sourceId": "react19-use-optimistic"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-optimistic",
+          "title": "React: useOptimistic",
+          "url": "https://react.dev/reference/react/useOptimistic",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

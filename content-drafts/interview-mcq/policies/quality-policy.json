@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "policyId": "interview-quality-policy-v1",
-  "checklistVersion": "1.1.0",
+  "checklistVersion": "1.2.0",
   "itemWritingReference": {
     "title": "NBME Item-Writing Guide for Constructed-Response and Multiple-Choice Items",
     "url": "https://www.nbme.org/sites/default/files/2021-02/NBME_Item%20Writing%20Guide_R_6.pdf",
@@ -9,6 +9,23 @@
     "retrievedAt": "2026-07-22",
     "revision": "February 2021",
     "copiedText": false
+  },
+  "checklistScope": {
+    "technical": [
+      "Verify every decisive claim against a current official source supported by the declared runtime profile.",
+      "Confirm that the keyed option satisfies every scenario constraint and that each distractor fails a different stated constraint.",
+      "Reject malformed structured snippets; when a snippet exists, verify language, runtime, and source as one contract."
+    ],
+    "editorial": [
+      "Prefer a concrete development or production decision over recall-only trivia.",
+      "Require three parallel, similarly detailed options whose distractors represent distinct, plausible engineering misconceptions.",
+      "Check the full 120-item corpus for duplicate material, positional clues, answer-length clues, and uneven technology or difficulty coverage."
+    ],
+    "blind": [
+      "Solve without authored answer, rationales, provenance, level, or difficulty band.",
+      "Record any alternative valid option or clue as a blocker instead of inferring author intent.",
+      "Assess level and difficulty comparatively within the complete 120-item corpus."
+    ]
   },
   "options": {
     "count": 3,
@@ -84,9 +101,9 @@
       "core": "Root-cause selection across at least two realistic constraints or competing remedies at the declared level.",
       "stretch": "A subtle ordering, version, ownership, or multi-constraint distinction near the upper edge of the declared level."
     },
-    "levelAllocationRule": "The 60-item blueprint contains exactly 20 junior, 20 mid, and 20 senior items. Compare the full corpus when assigning levels; if an item cannot defensibly fit its cohort under the scope definitions, flag it instead of forcing the quota.",
+    "levelAllocationRule": "The 120-item blueprint contains exactly 40 junior, 40 mid, and 40 senior items. Compare the full corpus when assigning levels; if an item cannot defensibly fit its cohort under the scope definitions, flag it instead of forcing the quota.",
     "crossLevelRule": "Bands are not absolute across levels; a senior foundation item can be more direct than a mid stretch item while still testing senior scope.",
-    "bandAllocationRule": "After assigning level, rank items comparatively within each 20-item level cohort: exactly 5 foundation, 10 core, and 5 stretch. Never change a level merely to satisfy a band quota.",
+    "bandAllocationRule": "After assigning level, rank items comparatively within each 40-item level cohort: exactly 10 foundation, 20 core, and 10 stretch. Never change a level merely to satisfy a band quota.",
     "blindReviewRule": "A blind reviewer must apply this rubric and comparative allocation without seeing the authored level, band, correct option, rationales, or provenance."
   },
   "calibration": {

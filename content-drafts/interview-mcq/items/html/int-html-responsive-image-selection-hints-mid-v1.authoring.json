@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-responsive-image-selection-hints-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "html",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "responsive-image-selection-hints",
+    "prompt": "A product image keeps the same crop but renders near the viewport width on phones and half the viewport width in the desktop grid. Several intrinsic widths are available, and the browser should avoid downloading an unnecessarily large file. Which markup supplies the needed selection inputs?",
+    "options": [
+      {
+        "id": "choice-9927af2153",
+        "label": "List width-descriptor candidates in `srcset`, omit `sizes`, and rely on the default `100vw` slot assumption in every layout."
+      },
+      {
+        "id": "choice-fb494ac1a2",
+        "label": "Provide width-descriptor `srcset`, an accurate responsive `sizes` value, plus `src` as the fallback candidate."
+      },
+      {
+        "id": "choice-ab49e8a30f",
+        "label": "Put each intrinsic width in a separate `picture` source selected only by device-pixel-ratio media queries."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-fb494ac1a2",
+    "answerProof": {
+      "summary": "Width descriptors tell the browser each candidate's intrinsic width, while `sizes` describes the expected rendered slot across layout conditions so the browser can combine slot size and display density when choosing a resource.",
+      "decisiveConstraints": [
+        "The image composition does not change across layouts.",
+        "Rendered slot width changes with the layout breakpoint.",
+        "The browser chooses among multiple intrinsic widths."
+      ],
+      "claims": [
+        {
+          "statement": "For responsive resolution switching, `srcset` supplies width-described candidates and `sizes` supplies slot-size hints used in resource selection.",
+          "sourceIds": [
+            "mdn-responsive-images"
+          ]
+        },
+        {
+          "statement": "With width descriptors, the browser divides candidate width by the source size from `sizes` to determine effective pixel density.",
+          "sourceIds": [
+            "mdn-img-element"
+          ]
+        },
+        {
+          "statement": "When `sizes` is omitted for a width-descriptor `srcset`, its source-size default is `100vw`.",
+          "sourceIds": [
+            "mdn-img-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-9927af2153",
+        "verdict": "incorrect",
+        "explanation": "Without `sizes`, the `100vw` default overstates the half-viewport desktop slot and can select a larger candidate than necessary.",
+        "plausibility": "The candidate widths are present, and browsers know the viewport and device pixel density.",
+        "misconceptionTag": "srcset-widths-describe-layout-slot",
+        "falsifyingConstraint": "Resource selection needs the rendered slot width before layout-specific CSS has been applied."
+      },
+      {
+        "optionId": "choice-fb494ac1a2",
+        "verdict": "correct",
+        "explanation": "The candidate widths and responsive slot hint provide the inputs needed for an efficient same-crop choice.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-ab49e8a30f",
+        "verdict": "incorrect",
+        "explanation": "Pixel-density queries alone do not describe the phone-versus-grid slot width and duplicate selection logic better expressed by `sizes`.",
+        "plausibility": "`picture` sources are useful when media conditions select different formats or art-directed crops.",
+        "misconceptionTag": "picture-is-required-for-resolution-switching",
+        "falsifyingConstraint": "The crop stays constant and the varying input is rendered slot width."
+      }
+    ],
+    "remediationTopics": [
+      "responsive-images",
+      "srcset-width-descriptors",
+      "sizes-slot-hints"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Responsive images",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images",
+        "sourceId": "mdn-responsive-images"
+      },
+      {
+        "title": "MDN: img element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+        "sourceId": "mdn-img-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-responsive-images",
+          "title": "MDN: Responsive images",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-img-element",
+          "title": "MDN: img element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-nonmodal-popover-interaction-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "html",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "nonmodal-popover-interaction",
+    "prompt": "A dashboard toolbar sits inside a transformed, `overflow: hidden` panel whose local stacking and clipping boundary cuts off its custom Help overlay behind adjacent charts. Help must escape that rendering boundary, remain non-modal, support outside-click and Escape dismissal, and preserve its invoker relationship. Which primitive spans both contracts?",
+    "options": [
+      {
+        "id": "choice-16dd0c25ae",
+        "label": "Use a button with `popovertarget` and a matching auto popover, then position the promoted top-layer element for the toolbar."
+      },
+      {
+        "id": "choice-076dc0c418",
+        "label": "Use `showModal()` on a dialog inside the panel, then position its top-layer box beside the toolbar and trap focus."
+      },
+      {
+        "id": "choice-5f7545dfbb",
+        "label": "Use a positioned `role=\"dialog\"` div inside the panel, raise its `z-index`, and script light dismissal beside the toolbar."
+      }
+    ],
+    "estimatedSeconds": 130
+  },
+  "private": {
+    "correctOptionId": "choice-16dd0c25ae",
+    "answerProof": {
+      "summary": "A shown auto popover enters the browser's top layer, escaping the panel's local paint ordering and clipping boundary, while remaining non-modal and supplying native light dismissal plus declarative invoker semantics.",
+      "decisiveConstraints": [
+        "Background content remains operable while the panel is open.",
+        "The overlay must render outside an ancestor's stacking and clipping boundary.",
+        "Light dismiss and Escape behavior are required.",
+        "The platform should own the invoker relationship."
+      ],
+      "claims": [
+        {
+          "statement": "Popover API popovers are non-modal, and the default auto state supports light dismissal and browser dismissal such as Escape.",
+          "sourceIds": [
+            "mdn-using-popover-api"
+          ]
+        },
+        {
+          "statement": "A declarative `popovertarget` relationship updates keyboard focus navigation and exposes implicit invoker relationships for assistive technology.",
+          "sourceIds": [
+            "mdn-using-popover-api"
+          ]
+        },
+        {
+          "statement": "When open, a popover appears in the top layer and is not influenced by parent `position` or `overflow` styling.",
+          "sourceIds": [
+            "mdn-popover-attribute"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-16dd0c25ae",
+        "verdict": "correct",
+        "explanation": "The top-layer promotion crosses the rendering boundary, while auto-popover and invoker behavior satisfy the non-modal interaction contract.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-076dc0c418",
+        "verdict": "incorrect",
+        "explanation": "`showModal()` escapes the clipping boundary, but it makes the document inert and imposes modality that contradicts Help.",
+        "plausibility": "A modal dialog also enters the top layer and is appropriate for tasks requiring an exclusive response.",
+        "misconceptionTag": "all-overlay-panels-are-modal-dialogs",
+        "falsifyingConstraint": "Users must be able to operate background content while Help remains open."
+      },
+      {
+        "optionId": "choice-5f7545dfbb",
+        "verdict": "incorrect",
+        "explanation": "A larger `z-index` cannot move a descendant outside its ancestor's clipping boundary, and ARIA does not add native dismissal behavior.",
+        "plausibility": "A positioned ARIA surface can implement specialized non-modal behavior inside an unclipped overlay host.",
+        "misconceptionTag": "z-index-escapes-ancestor-clipping",
+        "falsifyingConstraint": "The panel must cross the existing rendering boundary without relocating a custom overlay host."
+      }
+    ],
+    "remediationTopics": [
+      "popover-api",
+      "nonmodal-overlays",
+      "declarative-invokers",
+      "top-layer-rendering",
+      "stacking-and-clipping-boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Using the Popover API",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using",
+        "sourceId": "mdn-using-popover-api"
+      },
+      {
+        "title": "MDN: popover global attribute",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/popover",
+        "sourceId": "mdn-popover-attribute"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-using-popover-api",
+          "title": "MDN: Using the Popover API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-popover-attribute",
+          "title": "MDN: popover global attribute",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/popover",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

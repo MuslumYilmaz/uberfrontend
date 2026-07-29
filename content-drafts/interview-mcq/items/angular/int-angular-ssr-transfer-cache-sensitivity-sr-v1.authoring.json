@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-ssr-transfer-cache-sensitivity-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "ssr-transfer-cache-sensitivity",
+    "prompt": "An Angular SSR application makes an authenticated `/api/profile` GET, but policy forbids serializing that user-specific response into hydration HTML. A proposed optimization enables transfer caching for requests with authorization headers to avoid a browser fetch. Which configuration respects the policy?",
+    "options": [
+      {
+        "id": "choice-86ecdbb805",
+        "label": "Keep authenticated requests excluded and explicitly disable or filter transfer caching for the profile request."
+      },
+      {
+        "id": "choice-9d08c348bd",
+        "label": "Enable authenticated transfer entries but omit response headers so only the profile body reaches hydration."
+      },
+      {
+        "id": "choice-65f2434dc4",
+        "label": "Remove the authorization header before the server request, then restore it when hydration reads the cached response."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-86ecdbb805",
+    "answerProof": {
+      "summary": "Angular excludes credential-bearing requests from transfer cache by default; an explicit endpoint filter or per-request opt-out preserves that protection when the body must not enter serialized hydration state.",
+      "decisiveConstraints": [
+        "The response body is user-specific.",
+        "Hydration HTML must not contain that response.",
+        "Avoiding a second request cannot override the stated data boundary."
+      ],
+      "claims": [
+        {
+          "statement": "Angular excludes requests with authorization, proxy-authorization, or cookie credentials from HTTP transfer cache by default.",
+          "sourceIds": [
+            "angular22-ssr"
+          ]
+        },
+        {
+          "statement": "Angular supports excluding sensitive endpoints with a transfer-cache filter or disabling transfer cache for an individual request.",
+          "sourceIds": [
+            "angular22-ssr"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-86ecdbb805",
+        "verdict": "correct",
+        "explanation": "The response remains outside serialized transfer state, and the browser can obtain its own authorized value under the intended policy.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-9d08c348bd",
+        "verdict": "incorrect",
+        "explanation": "Excluding response headers does not exclude the cached response body, which is the user-specific data prohibited by the policy.",
+        "plausibility": "Angular transfer-cache configuration separately controls which response headers are serialized.",
+        "misconceptionTag": "omitted-headers-remove-response-body",
+        "falsifyingConstraint": "The sensitive payload is in the profile body rather than only in response headers."
+      },
+      {
+        "optionId": "choice-65f2434dc4",
+        "verdict": "incorrect",
+        "explanation": "Removing authentication changes the server request's meaning and cannot produce the same user-specific profile for later restoration.",
+        "plausibility": "A request without an authorization header can satisfy the default transfer-cache eligibility check.",
+        "misconceptionTag": "credentials-can-be-restored-after-response",
+        "falsifyingConstraint": "The server needs the credential to select the correct private profile response."
+      }
+    ],
+    "remediationTopics": [
+      "Angular SSR HTTP transfer cache",
+      "authenticated request exclusion",
+      "sensitive hydration data",
+      "per-request transferCache policy"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Server-side rendering",
+        "url": "https://angular.dev/best-practices/performance/ssr",
+        "sourceId": "angular22-ssr"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-ssr",
+          "title": "Angular: Server-side rendering",
+          "url": "https://angular.dev/best-practices/performance/ssr",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

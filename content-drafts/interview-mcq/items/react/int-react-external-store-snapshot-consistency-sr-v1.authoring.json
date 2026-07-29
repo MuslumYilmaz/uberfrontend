@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-external-store-snapshot-consistency-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "external-store-snapshot-consistency",
+    "prompt": "A mutable external store is connected with `useSyncExternalStore`. Without any store mutation, the dashboard repeatedly rerenders until React aborts; instrumentation shows consecutive `getSnapshot()` results contain equal fields but fail `Object.is`. Which store contract fixes the integration?",
+    "code": {
+      "language": "javascript",
+      "runtime": "react-19.2",
+      "source": "function getSnapshot() {\n  return { ...store.current };\n}"
+    },
+    "options": [
+      {
+        "id": "choice-461cac8eee",
+        "label": "Cache an immutable snapshot and return its same identity until the store actually mutates."
+      },
+      {
+        "id": "choice-d9c3993bed",
+        "label": "Keep returning fresh snapshots and wrap every subscribing component with `React.memo`."
+      },
+      {
+        "id": "choice-9917fd8e7a",
+        "label": "Keep returning fresh snapshots and deep-compare them inside each component after rendering."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-461cac8eee",
+    "answerProof": {
+      "summary": "`useSyncExternalStore` uses snapshot identity to determine whether the external value changed, so a mutable store must reuse its last immutable snapshot until a real mutation invalidates it.",
+      "decisiveConstraints": [
+        "Repeated reads without a store mutation represent the same value.",
+        "React observes the snapshot before component-level memoization or comparison can intervene.",
+        "A real mutation must publish a distinguishable immutable snapshot."
+      ],
+      "claims": [
+        {
+          "statement": "React requires `getSnapshot` to return the same value across calls while the external store has not changed.",
+          "sourceIds": [
+            "react19-use-sync-external-store"
+          ]
+        },
+        {
+          "statement": "For a mutable store, React recommends caching the last immutable snapshot and creating another only when store data changes.",
+          "sourceIds": [
+            "react19-use-sync-external-store"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-461cac8eee",
+        "verdict": "correct",
+        "explanation": "Stable snapshot identity tells React that repeated reads are unchanged, while mutation can replace the cache and trigger subscribers.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d9c3993bed",
+        "verdict": "incorrect",
+        "explanation": "`React.memo` compares component props, but the Hook still observes a distinct snapshot value on each read and requests another render.",
+        "plausibility": "Memoized components can skip renders when their incoming props retain equivalent values.",
+        "misconceptionTag": "react-memo-stabilizes-store-snapshot",
+        "falsifyingConstraint": "The unstable identity is returned by the external-store Hook itself rather than by component props."
+      },
+      {
+        "optionId": "choice-9917fd8e7a",
+        "verdict": "incorrect",
+        "explanation": "A comparison performed after the Hook returns cannot change the fresh identity React already used to detect an external-store update.",
+        "plausibility": "Deep comparison can recognize that two separately allocated objects contain equal fields.",
+        "misconceptionTag": "post-render-comparison-controls-hook",
+        "falsifyingConstraint": "The snapshot identity contract is evaluated before component code can discard the returned object."
+      }
+    ],
+    "remediationTopics": [
+      "useSyncExternalStore",
+      "immutable snapshots",
+      "external-store change detection",
+      "snapshot identity caching"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useSyncExternalStore",
+        "url": "https://react.dev/reference/react/useSyncExternalStore",
+        "sourceId": "react19-use-sync-external-store"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-sync-external-store",
+          "title": "React: useSyncExternalStore",
+          "url": "https://react.dev/reference/react/useSyncExternalStore",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-server-client-serialization-boundary-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "server-client-serialization-boundary",
+    "prompt": "A React Server Component reads product data with a server-only client, then passes an ordinary inline `onBuy` function to a `'use client'` purchase button. The framework rejects that prop at the boundary. Buying only needs serializable product data and browser-side interaction code. Which refactor preserves the split?",
+    "code": {
+      "language": "jsx",
+      "runtime": "react-19.2",
+      "source": "// Server Component\nconst product = await catalog.read(productId);\nreturn <BuyButton product={product} onBuy={() => cart.add(product.id)} />;"
+    },
+    "options": [
+      {
+        "id": "choice-941643ac4e",
+        "label": "Mark the data-reading parent `'use client'` so the inline function no longer crosses a server boundary."
+      },
+      {
+        "id": "choice-fd71b26d53",
+        "label": "Pass serializable product fields, and create the click handler inside the client purchase component."
+      },
+      {
+        "id": "choice-c93f7a6c4b",
+        "label": "Convert the inline function to source text, then reconstruct and invoke it inside the client component."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-fd71b26d53",
+    "answerProof": {
+      "summary": "The Server Component can retain server-only data access and pass supported data values across the client boundary; the Client Component then owns its browser event handler without serializing an ordinary function.",
+      "decisiveConstraints": [
+        "Server-only catalog access must stay outside the client module graph.",
+        "Props crossing into the Client Component must be serializable.",
+        "The interaction implementation can live entirely on the client side."
+      ],
+      "claims": [
+        {
+          "statement": "Props passed from a Server Component to a Client Component must use React-supported serializable values.",
+          "sourceIds": [
+            "react19-use-client"
+          ]
+        },
+        {
+          "statement": "Ordinary functions are not supported serializable props across that boundary, while client event handlers can be defined within the client module subtree.",
+          "sourceIds": [
+            "react19-use-client"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-941643ac4e",
+        "verdict": "incorrect",
+        "explanation": "Moving the parent into the client module graph also moves its dependencies toward client evaluation, conflicting with the server-only catalog access.",
+        "plausibility": "Functions can be passed normally between components that are already inside the same client module subtree.",
+        "misconceptionTag": "client-directive-preserves-server-only-access",
+        "falsifyingConstraint": "The parent must continue executing its catalog read on the server."
+      },
+      {
+        "optionId": "choice-fd71b26d53",
+        "verdict": "correct",
+        "explanation": "Only data crosses the boundary, and the Client Component creates the function where event handling actually executes.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-c93f7a6c4b",
+        "verdict": "incorrect",
+        "explanation": "Function source is not the function's closed-over server environment, and evaluating text in the browser creates an unsafe, incomplete substitute.",
+        "plausibility": "Strings are serializable values and can technically carry JavaScript-looking text across a boundary.",
+        "misconceptionTag": "serialized-source-preserves-function-closure",
+        "falsifyingConstraint": "The original function closes over server values and is not a supported client prop."
+      }
+    ],
+    "remediationTopics": [
+      "React Server Components",
+      "use client boundary",
+      "serializable props",
+      "client-owned event handlers"
+    ],
+    "learnMore": [
+      {
+        "title": "React: 'use client' directive",
+        "url": "https://react.dev/reference/rsc/use-client",
+        "sourceId": "react19-use-client"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-client",
+          "title": "React: 'use client' directive",
+          "url": "https://react.dev/reference/rsc/use-client",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

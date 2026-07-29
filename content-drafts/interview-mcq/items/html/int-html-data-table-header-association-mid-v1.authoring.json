@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-data-table-header-association-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "html",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "data-table-header-association",
+    "prompt": "A financial table has row headers plus quarter and measure header tiers. Users can reorder Revenue and Cost columns, and the UI then rerenders only affected rows. Assistive technology must announce every applicable label after each reorder without relying on inferred positions. Which ownership policy keeps those associations correct?",
+    "options": [
+      {
+        "id": "choice-b532cfa3aa",
+        "label": "Replace the table with a `role=\"grid\"`, cache header positions on first render, and reuse those indexes after each reorder."
+      },
+      {
+        "id": "choice-8cc9c8c619",
+        "label": "Derive stable `th` IDs from row, quarter, and measure keys, then recompute each rendered cell's `headers` tokens after reordering."
+      },
+      {
+        "id": "choice-657244fb75",
+        "label": "Derive each `th` ID from its current column index, then retain existing cell `headers` tokens during partial row rerenders."
+      }
+    ],
+    "estimatedSeconds": 115
+  },
+  "private": {
+    "correctOptionId": "choice-8cc9c8c619",
+    "answerProof": {
+      "summary": "Stable semantic IDs preserve header identity as columns move, while recomputing each rerendered cell's `headers` token list keeps its explicit row, quarter, and measure associations aligned with the current layout.",
+      "decisiveConstraints": [
+        "The content is genuinely tabular data.",
+        "Each data cell has a row, quarter, and measure association.",
+        "Column order can change without rebuilding every header.",
+        "Partially rerendered cells must expose the current association set."
+      ],
+      "claims": [
+        {
+          "statement": "The `headers` attribute links a table cell to one or more `th` elements by their unique IDs and supports explicit associations in complex tables.",
+          "sourceIds": [
+            "mdn-table-accessibility"
+          ]
+        },
+        {
+          "statement": "The `scope` attribute expresses row, column, row-group, or column-group relationships but does not encode an arbitrary list of header IDs.",
+          "sourceIds": [
+            "mdn-th-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-b532cfa3aa",
+        "verdict": "incorrect",
+        "explanation": "Cached visual positions become stale after reordering, while replacing native table semantics creates unrelated grid interaction obligations.",
+        "plausibility": "Position indexes can appear sufficient when the initial visual and semantic column orders match.",
+        "misconceptionTag": "cached-visual-position-owns-header-identity",
+        "falsifyingConstraint": "Associations must follow the current semantic keys after each reorder."
+      },
+      {
+        "optionId": "choice-8cc9c8c619",
+        "verdict": "correct",
+        "explanation": "Stable keyed IDs own header identity, and regenerated tokens make every updated cell reference its current semantic header set.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-657244fb75",
+        "verdict": "incorrect",
+        "explanation": "Index-derived IDs change ownership when columns move, and retained tokens can reference the wrong or obsolete header identities.",
+        "plausibility": "Column indexes are convenient IDs when a table's order is fixed for its full lifetime.",
+        "misconceptionTag": "visual-index-is-stable-semantic-identity",
+        "falsifyingConstraint": "Partial rerenders must not preserve associations from the previous column order."
+      }
+    ],
+    "remediationTopics": [
+      "table-semantics",
+      "headers-id-association",
+      "complex-table-accessibility",
+      "stable-semantic-identities",
+      "partial-render-association-updates"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: HTML table accessibility",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Table_accessibility",
+        "sourceId": "mdn-table-accessibility"
+      },
+      {
+        "title": "MDN: th element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/th",
+        "sourceId": "mdn-th-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-table-accessibility",
+          "title": "MDN: HTML table accessibility",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Table_accessibility",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-th-element",
+          "title": "MDN: th element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/th",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

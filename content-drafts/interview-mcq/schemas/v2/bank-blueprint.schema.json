@@ -323,13 +323,13 @@
           ],
           "properties": {
             "core": {
-              "const": 8
+              "const": 16
             },
             "selectedFramework": {
-              "const": 4
+              "const": 8
             },
             "total": {
-              "const": 12
+              "const": 24
             }
           }
         }

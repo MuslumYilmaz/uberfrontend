@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-cross-tab-version-reconciliation-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "cross-tab-version-reconciliation",
+    "prompt": "Several same-origin tabs show an order draft and exchange server-accepted incremental patches through `BroadcastChannel`. Each patch has a strictly increasing revision and is valid only on the immediately preceding revision; a canonical full snapshot can be fetched. Delays can expose an older patch after a newer one or leave a revision gap. Which reconciliation policy prevents corruption?",
+    "options": [
+      {
+        "id": "choice-80e00c16e7",
+        "label": "Apply every arriving patch immediately because channel delivery order is the freshest sequence shared by the tabs."
+      },
+      {
+        "id": "choice-0616a6638e",
+        "label": "Sort patches by sender timestamps, apply the latest clock value, and replace server revisions when local time is newer."
+      },
+      {
+        "id": "choice-3bcb98adb2",
+        "label": "Apply the next contiguous server revision, ignore older revisions, and refetch a snapshot for a missing intermediate patch."
+      }
+    ],
+    "estimatedSeconds": 145
+  },
+  "private": {
+    "correctOptionId": "choice-3bcb98adb2",
+    "answerProof": {
+      "summary": "The server revision is the shared monotonic authority. A patch can be applied only to its declared predecessor; older revisions are stale, while a forward gap requires the canonical snapshot instead of applying an incomplete transition.",
+      "decisiveConstraints": [
+        "Each patch depends on the immediately preceding server revision.",
+        "Message arrival order may differ from accepted change order.",
+        "All tabs share the same server-issued revision sequence.",
+        "The full snapshot is the authoritative recovery path for a missing patch."
+      ],
+      "claims": [
+        {
+          "statement": "BroadcastChannel provides same-origin cross-context messaging, but the application defines the message protocol and reconciliation meaning.",
+          "sourceIds": [
+            "mdn-broadcast-channel-api"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-80e00c16e7",
+        "verdict": "incorrect",
+        "explanation": "Arrival order can lag or skip the server sequence, so applying a stale or noncontiguous patch can regress or corrupt the draft.",
+        "plausibility": "Within one ordered producer, processing patches as received can be a simple transition policy.",
+        "misconceptionTag": "arrival-order-is-authoritative-version",
+        "falsifyingConstraint": "A patch may run only on the server revision it names as its predecessor."
+      },
+      {
+        "optionId": "choice-0616a6638e",
+        "verdict": "incorrect",
+        "explanation": "Client clocks can skew and do not prove that every prerequisite server patch has been applied.",
+        "plausibility": "Wall-clock timestamps are easy to attach and appear to provide a total ordering for user edits.",
+        "misconceptionTag": "client-clock-satisfies-patch-preconditions",
+        "falsifyingConstraint": "The server revision is the only monotonic ordering shared by every participant."
+      },
+      {
+        "optionId": "choice-3bcb98adb2",
+        "verdict": "correct",
+        "explanation": "Contiguous revisions preserve patch preconditions, stale revisions lose authority, and snapshot recovery closes an unreconstructable gap.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "broadcast-channel",
+      "monotonic-versions",
+      "cross-context-reconciliation",
+      "incremental-patch-preconditions",
+      "snapshot-gap-recovery"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Broadcast Channel API",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API",
+        "sourceId": "mdn-broadcast-channel-api"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-broadcast-channel-api",
+          "title": "MDN: Broadcast Channel API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

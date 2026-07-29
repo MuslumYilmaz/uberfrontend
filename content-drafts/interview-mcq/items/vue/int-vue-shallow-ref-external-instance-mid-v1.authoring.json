@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-shallow-ref-external-instance-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "shallow-ref-external-instance",
+    "prompt": "A shared Vue 3.5 composable exposes a third-party chart instance whose nodes are identity-keyed and mutated internally on every frame. Consumers that read the container must rerun when a route change replaces the whole instance, but replacement instances arrive unmarked and nested SDK mutations must stay outside Vue. Which implementation preserves that contract without preprocessing every assignment?",
+    "options": [
+      {
+        "id": "choice-091f50b607",
+        "label": "Use `ref(toRaw(createChart()))`, then assign later chart instances directly through `.value`."
+      },
+      {
+        "id": "choice-876579a98c",
+        "label": "Use `reactive({ chart: markRaw(createChart()) })`, then assign later instances directly to `chart`."
+      },
+      {
+        "id": "choice-06c4b2e35f",
+        "label": "Use `shallowRef(createChart())`, then assign later chart instances directly through `.value`."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-06c4b2e35f",
+    "answerProof": {
+      "summary": "A shallow ref makes only its `.value` replacement reactive and leaves every assigned instance unconverted, preserving third-party identity while still notifying Vue when ownership changes.",
+      "decisiveConstraints": [
+        "The external object's nested graph must retain its original identities.",
+        "Replacing the entire instance must still notify reactive consumers."
+      ],
+      "claims": [
+        {
+          "statement": "Vue stores a shallow ref's inner value as-is and tracks only `.value`, recommending `shallowRef()` for external state integrations and replacement-based updates.",
+          "sourceIds": [
+            "vue35-shallow-ref"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-091f50b607",
+        "verdict": "incorrect",
+        "explanation": "`toRaw()` only returns the raw form of its current argument; placing that object in a normal ref still deeply converts object assignments, including later replacements.",
+        "misconceptionTag": "toraw-is-a-persistent-opt-out",
+        "plausibility": "`toRaw()` can retrieve an original object from a Vue-created proxy for temporary identity-sensitive work.",
+        "falsifyingConstraint": "Every replacement must remain unconverted without requiring a per-assignment escape hatch."
+      },
+      {
+        "optionId": "choice-876579a98c",
+        "verdict": "incorrect",
+        "explanation": "`markRaw()` protects only the initial instance in this design; the deep reactive wrapper converts a later unmarked chart assigned to its `chart` property.",
+        "misconceptionTag": "markraw-propagates-across-replacements",
+        "plausibility": "The reactive wrapper tracks replacement of its root `chart` property, and the initially marked instance stays raw.",
+        "falsifyingConstraint": "Replacement instances arrive unmarked yet must retain their original nested identities."
+      },
+      {
+        "optionId": "choice-06c4b2e35f",
+        "verdict": "correct",
+        "explanation": "The shallow ref reacts to each new top-level instance while leaving every assigned instance and all of its internals unproxied.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Vue shallowRef",
+      "external instance integration",
+      "reactive conversion boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Reactivity API - shallowRef",
+        "url": "https://vuejs.org/api/reactivity-advanced.html#shallowref",
+        "sourceId": "vue35-shallow-ref"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-shallow-ref",
+          "title": "Vue: Reactivity API - shallowRef",
+          "url": "https://vuejs.org/api/reactivity-advanced.html#shallowref",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

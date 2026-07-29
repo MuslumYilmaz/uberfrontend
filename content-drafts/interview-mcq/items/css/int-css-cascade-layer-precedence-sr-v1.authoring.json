@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-cascade-layer-precedence-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "css",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "cascade-layer-precedence",
+    "prompt": "A design system imports normal, non-important vendor styles with selectors more specific than the application's component rules. The team wants local component declarations to win predictably without selector escalation. Which layer policy establishes that precedence?",
+    "options": [
+      {
+        "id": "choice-b6b24fe19b",
+        "label": "Declare `@layer vendor, app`, import vendor CSS into `vendor`, and place local component rules in `app`."
+      },
+      {
+        "id": "choice-224329d690",
+        "label": "Put vendor CSS in a later `vendor` layer and repeat classes in the earlier local component selectors."
+      },
+      {
+        "id": "choice-87967f9807",
+        "label": "Put both style sets in `vendor`, load local CSS first, and rely on its lower-specificity rules to win."
+      }
+    ],
+    "estimatedSeconds": 125
+  },
+  "private": {
+    "correctOptionId": "choice-b6b24fe19b",
+    "answerProof": {
+      "summary": "For normal declarations inside one origin, later layers outrank earlier layers before selector specificity is compared. Declaring vendor before app gives local component rules stable precedence over more-specific vendor selectors.",
+      "decisiveConstraints": [
+        "Both competing declarations are normal author styles.",
+        "Both style sets are assigned to named layers.",
+        "Local rules must win without increasing selector specificity."
+      ],
+      "claims": [
+        {
+          "statement": "For normal declarations, later-created cascade layers have precedence over earlier layers, and layer precedence is considered before specificity.",
+          "sourceIds": [
+            "mdn-cascade-layers"
+          ]
+        },
+        {
+          "statement": "A statement such as `@layer vendor, app` establishes the named layer order before rules or imports populate those layers.",
+          "sourceIds": [
+            "mdn-layer-at-rule"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-b6b24fe19b",
+        "verdict": "correct",
+        "explanation": "The later app layer wins the normal-declaration layer comparison before vendor specificity can matter.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-224329d690",
+        "verdict": "incorrect",
+        "explanation": "The later vendor layer wins the normal layer comparison before the repeated local classes can contribute specificity.",
+        "plausibility": "Repeating classes is a familiar technique for increasing selector weight within a single cascade layer.",
+        "misconceptionTag": "specificity-can-cross-layer-order",
+        "falsifyingConstraint": "Normal local rules must occupy a later layer than the vendor declarations."
+      },
+      {
+        "optionId": "choice-87967f9807",
+        "verdict": "incorrect",
+        "explanation": "Within one layer, specificity is still compared before source order, so the more-specific vendor selector remains authoritative.",
+        "plausibility": "Source order resolves ties and is a common override technique when competing selectors have equal weight.",
+        "misconceptionTag": "source-order-beats-specificity-in-layer",
+        "falsifyingConstraint": "The solution must neutralize vendor specificity as a precedence factor."
+      }
+    ],
+    "remediationTopics": [
+      "cascade-layers",
+      "layer-order",
+      "specificity-management"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Cascade layers",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers",
+        "sourceId": "mdn-cascade-layers"
+      },
+      {
+        "title": "MDN: @layer",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40layer",
+        "sourceId": "mdn-layer-at-rule"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-cascade-layers",
+          "title": "MDN: Cascade layers",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-layer-at-rule",
+          "title": "MDN: @layer",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40layer",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

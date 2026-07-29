@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-async-iteration-completion-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "async-iteration-completion",
+    "prompt": "A migration command must update records one at a time because the service enforces strict ordering. The command may report success only after every update finishes, and the first rejection must stop later updates. Which implementation has the required completion behavior?",
+    "options": [
+      {
+        "id": "choice-a7094369fc",
+        "label": "Iterate with `for...of`, await each update inside the loop, then report success after the loop exits."
+      },
+      {
+        "id": "choice-0b180b0a1a",
+        "label": "Call `forEach` with an async callback, await the value returned by `forEach`, then report success."
+      },
+      {
+        "id": "choice-f4cb60f9e0",
+        "label": "Map records to async callbacks, await the resulting array directly, then report success after that await."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-a7094369fc",
+    "answerProof": {
+      "summary": "A `for...of` loop can await each update before advancing, so rejection interrupts the loop and reaching the following statement proves that every ordered update fulfilled.",
+      "decisiveConstraints": [
+        "Updates must start sequentially rather than concurrently.",
+        "The outer command must remain pending until the active update settles.",
+        "A rejection must prevent subsequent records from starting."
+      ],
+      "claims": [
+        {
+          "statement": "`forEach` discards callback return values and does not wait for promises returned by an async callback.",
+          "sourceIds": [
+            "mdn-array-foreach"
+          ]
+        },
+        {
+          "statement": "`await` pauses the surrounding async function until the awaited promise settles and throws when that promise rejects.",
+          "sourceIds": [
+            "mdn-await"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-a7094369fc",
+        "verdict": "correct",
+        "explanation": "Each loop iteration waits for its update, and an exception exits before the next record or the success report.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-0b180b0a1a",
+        "verdict": "incorrect",
+        "explanation": "`forEach` returns `undefined` without adopting the callback promises, so the outer await completes before the updates do.",
+        "plausibility": "The callback is async and each invocation visibly contains an await, which can look like sequential control flow.",
+        "misconceptionTag": "foreach-adopts-async-callbacks",
+        "falsifyingConstraint": "The iteration method must expose a promise representing completion of all callback work."
+      },
+      {
+        "optionId": "choice-f4cb60f9e0",
+        "verdict": "incorrect",
+        "explanation": "`map` returns an array of promises, and awaiting that plain array neither sequences nor waits for those promises.",
+        "plausibility": "Mapping is the correct first step for concurrent `Promise.all` composition, so the returned collection looks awaitable.",
+        "misconceptionTag": "awaiting-array-adopts-members",
+        "falsifyingConstraint": "The contract requires ordered execution and a promise that adopts each update's settlement."
+      }
+    ],
+    "remediationTopics": [
+      "async-iteration",
+      "foreach-return-values",
+      "sequential-await"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Array.prototype.forEach()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach",
+        "sourceId": "mdn-array-foreach"
+      },
+      {
+        "title": "MDN: await",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await",
+        "sourceId": "mdn-await"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-array-foreach",
+          "title": "MDN: Array.prototype.forEach()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-await",
+          "title": "MDN: await",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

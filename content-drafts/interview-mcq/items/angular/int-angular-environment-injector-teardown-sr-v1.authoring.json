@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-environment-injector-teardown-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "environment-injector-teardown",
+    "prompt": "A widget host creates a child `EnvironmentInjector`, passes it to `createComponent`, and installs widget-scoped providers whose `DestroyRef` callbacks close workers and subscriptions. Removing a widget destroys its `ComponentRef`, but those provider resources remain active. What teardown boundary is missing?",
+    "options": [
+      {
+        "id": "choice-ef412e4428",
+        "label": "Destroy the separately created child injector when removing the widget, along with its component reference."
+      },
+      {
+        "id": "choice-66e6d18603",
+        "label": "Remove the component host element from the DOM and let provider callbacks detect its disconnection."
+      },
+      {
+        "id": "choice-ab59c81d38",
+        "label": "Destroy only the application root injector so every widget provider cleans up in one operation."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-ef412e4428",
+    "answerProof": {
+      "summary": "The host explicitly created an injector lifetime separate from the component reference, so it must destroy that injector to run destruction callbacks for injector-owned providers.",
+      "decisiveConstraints": [
+        "The child EnvironmentInjector is created and retained by the widget host.",
+        "Resource-owning providers belong to that child injector.",
+        "Removing one widget must not destroy other widgets or the application."
+      ],
+      "claims": [
+        {
+          "statement": "Angular `EnvironmentInjector` exposes `destroy()` and a `destroyed` state for explicitly ending its lifetime.",
+          "sourceIds": [
+            "angular22-environment-injector"
+          ]
+        },
+        {
+          "statement": "DestroyRef cleanup callbacks run when their corresponding component or injector is destroyed.",
+          "sourceIds": [
+            "angular22-destroy-ref"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ef412e4428",
+        "verdict": "correct",
+        "explanation": "Destroying the child injector ends the provider scope and invokes cleanup registered by resources created in that scope.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-66e6d18603",
+        "verdict": "incorrect",
+        "explanation": "DOM removal has no contract to destroy an Angular injector, so provider-owned workers and subscriptions can continue without a view.",
+        "plausibility": "Removing the host makes the widget invisible and resembles the physical end of its user-interface lifetime.",
+        "misconceptionTag": "dom-disconnection-destroys-injector",
+        "falsifyingConstraint": "The leaked resources are owned by Angular's child injector rather than by DOM connectivity."
+      },
+      {
+        "optionId": "choice-ab59c81d38",
+        "verdict": "incorrect",
+        "explanation": "The root injector represents the application lifetime, so destroying it to remove one widget would tear down unrelated application services.",
+        "plausibility": "Root destruction would eventually invoke cleanup for descendants and application-scoped providers.",
+        "misconceptionTag": "root-destroy-is-widget-teardown",
+        "falsifyingConstraint": "Each widget needs an independent teardown boundary while the application continues running."
+      }
+    ],
+    "remediationTopics": [
+      "Angular EnvironmentInjector",
+      "DestroyRef",
+      "dynamic component ownership",
+      "provider-scope teardown"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: EnvironmentInjector",
+        "url": "https://angular.dev/api/core/EnvironmentInjector",
+        "sourceId": "angular22-environment-injector"
+      },
+      {
+        "title": "Angular: DestroyRef",
+        "url": "https://angular.dev/api/core/DestroyRef",
+        "sourceId": "angular22-destroy-ref"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-environment-injector",
+          "title": "Angular: EnvironmentInjector",
+          "url": "https://angular.dev/api/core/EnvironmentInjector",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-destroy-ref",
+          "title": "Angular: DestroyRef",
+          "url": "https://angular.dev/api/core/DestroyRef",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

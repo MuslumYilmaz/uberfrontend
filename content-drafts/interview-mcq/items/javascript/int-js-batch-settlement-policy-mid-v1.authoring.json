@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-batch-settlement-policy-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "batch-settlement-policy",
+    "prompt": "A media dashboard starts five independent thumbnail jobs together, but a new file selection can supersede that batch before it settles. The active batch must show one ordered success or failure per file, while a late older batch must not replace newer rows. Which completion policy fits?",
+    "options": [
+      {
+        "id": "choice-39ca12e32b",
+        "label": "Capture the batch ID, await `Promise.all(jobs)`, and commit its fulfillment array only while that ID remains active."
+      },
+      {
+        "id": "choice-d6d0e655cb",
+        "label": "Capture the batch ID, await `Promise.allSettled(jobs)`, and commit its ordered outcomes only while that ID remains active."
+      },
+      {
+        "id": "choice-9f9ab5431e",
+        "label": "Await `Promise.allSettled(jobs)` for each batch, then commit every ordered outcome set whenever that batch finishes."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-d6d0e655cb",
+    "answerProof": {
+      "summary": "`Promise.allSettled` retains one ordered outcome per input despite individual failures, while an active-batch identity check prevents a superseded asynchronous completion from committing stale rows.",
+      "decisiveConstraints": [
+        "A rejected job must not short-circuit collection.",
+        "Results must remain associated with original input order.",
+        "Only the currently active batch may commit rows."
+      ],
+      "claims": [
+        {
+          "statement": "`Promise.allSettled` waits for every input to settle and returns outcome objects in input order regardless of completion order.",
+          "sourceIds": [
+            "mdn-promise-allsettled"
+          ]
+        },
+        {
+          "statement": "`Promise.all` rejects when any input rejects, so its fulfillment array cannot report the remaining mixed outcomes.",
+          "sourceIds": [
+            "mdn-promise-all"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-39ca12e32b",
+        "verdict": "incorrect",
+        "explanation": "`Promise.all` rejects on the first rejection, so the generation check cannot recover the missing per-file outcome records.",
+        "plausibility": "The batch identity check prevents stale commits, and `Promise.all` preserves order when every job fulfills.",
+        "misconceptionTag": "promise-all-retains-mixed-outcomes",
+        "falsifyingConstraint": "The dashboard needs a settled record for each job even when one or more jobs reject."
+      },
+      {
+        "optionId": "choice-d6d0e655cb",
+        "verdict": "correct",
+        "explanation": "The aggregate preserves every ordered outcome, and the identity gate gives commit ownership only to the active batch.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-9f9ab5431e",
+        "verdict": "incorrect",
+        "explanation": "`Promise.allSettled` preserves the outcomes, but an older batch that finishes later can still overwrite the active batch's rows.",
+        "plausibility": "Each individual batch produces a complete ordered result set suitable for rendering.",
+        "misconceptionTag": "settlement-implies-current-commit-ownership",
+        "falsifyingConstraint": "A superseded batch must lose permission to commit even if it settles successfully."
+      }
+    ],
+    "remediationTopics": [
+      "promise-concurrency",
+      "allsettled-outcomes",
+      "batch-failure-policy",
+      "async-generation-ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Promise.allSettled()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled",
+        "sourceId": "mdn-promise-allsettled"
+      },
+      {
+        "title": "MDN: Promise.all()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all",
+        "sourceId": "mdn-promise-all"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-promise-allsettled",
+          "title": "MDN: Promise.allSettled()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-promise-all",
+          "title": "MDN: Promise.all()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

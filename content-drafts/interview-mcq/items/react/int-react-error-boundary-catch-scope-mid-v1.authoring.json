@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-error-boundary-catch-scope-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "error-boundary-catch-scope",
+    "prompt": "A settings subtree needs a fallback if a descendant throws while rendering. Its Save button also awaits a request and must show an inline message when that promise rejects. Which error design covers both failure origins?",
+    "options": [
+      {
+        "id": "choice-eee730c8e7",
+        "label": "Wrap the subtree in an Error Boundary and let it handle both render failures and rejected Save promises."
+      },
+      {
+        "id": "choice-927757a1e4",
+        "label": "Wrap the subtree in an Error Boundary, and catch the awaited Save failure inside its event workflow."
+      },
+      {
+        "id": "choice-3ec33fc9bb",
+        "label": "Wrap the returned descendant JSX in `try/catch`, and move rejected Save promises into a passive Effect."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-927757a1e4",
+    "answerProof": {
+      "summary": "A boundary owns errors thrown while React renders its descendants, while an asynchronous event workflow must catch and translate its own rejected operation into local UI state.",
+      "decisiveConstraints": [
+        "One failure is thrown during descendant rendering.",
+        "The other failure settles asynchronously from a user event.",
+        "Each failure needs a different user-facing recovery surface."
+      ],
+      "claims": [
+        {
+          "statement": "React Error Boundaries provide fallback UI for errors thrown by child components during rendering.",
+          "sourceIds": [
+            "react19-component-error-boundary"
+          ]
+        },
+        {
+          "statement": "Error Boundaries do not catch errors from event handlers or asynchronous code such as promise callbacks.",
+          "sourceIds": [
+            "react19-component-error-boundary"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-eee730c8e7",
+        "verdict": "incorrect",
+        "explanation": "The boundary covers descendant rendering, but a rejected promise created by the Save event remains outside its catch scope.",
+        "plausibility": "Both failures happen within UI that is visually nested beneath the same boundary.",
+        "misconceptionTag": "boundary-catches-async-event-errors",
+        "falsifyingConstraint": "The Save rejection originates in asynchronous event code rather than descendant rendering."
+      },
+      {
+        "optionId": "choice-927757a1e4",
+        "verdict": "correct",
+        "explanation": "The boundary handles render-time failure, and the event workflow can catch its own promise rejection and set the requested inline message.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-3ec33fc9bb",
+        "verdict": "incorrect",
+        "explanation": "A parent `try/catch` around JSX creation cannot catch errors React encounters later while rendering descendants, and an Effect changes the Save ownership boundary.",
+        "plausibility": "JavaScript `try/catch` handles synchronous throws, while Effects can observe state after a render.",
+        "misconceptionTag": "jsx-try-catch-is-error-boundary",
+        "falsifyingConstraint": "React renders the descendant after the parent has returned its JSX."
+      }
+    ],
+    "remediationTopics": [
+      "React Error Boundaries",
+      "render errors versus event errors",
+      "asynchronous error ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Component — Catching rendering errors with an Error Boundary",
+        "url": "https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary",
+        "sourceId": "react19-component-error-boundary"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-component-error-boundary",
+          "title": "React: Component — Catching rendering errors with an Error Boundary",
+          "url": "https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

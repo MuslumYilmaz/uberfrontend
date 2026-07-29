@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-successful-control-name-contract-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "html",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "successful-control-name-contract",
+    "prompt": "An enabled text input has `id=\"company\"`, a matching visible label, and a user-entered value. It validates successfully, but native form submission and `new FormData(form)` both omit the company field. Which markup change fixes the data contract?",
+    "options": [
+      {
+        "id": "choice-6aa9141b56",
+        "label": "Add `aria-label=\"company\"` so the accessibility tree supplies the key used during form serialization."
+      },
+      {
+        "id": "choice-fe7f9a7360",
+        "label": "Add `data-field=\"company\"` so the browser recognizes the control as application-owned form data."
+      },
+      {
+        "id": "choice-e138aa1e44",
+        "label": "Add `name=\"company\"` so submission serializes the enabled control as a company name-value pair."
+      }
+    ],
+    "estimatedSeconds": 65
+  },
+  "private": {
+    "correctOptionId": "choice-e138aa1e44",
+    "answerProof": {
+      "summary": "The `name` attribute supplies the form-data key paired with the control's value. An ID connects labels and scripting, but it does not substitute for the submission name.",
+      "decisiveConstraints": [
+        "The control is enabled and otherwise participates in the form.",
+        "The value must appear under the key `company`.",
+        "Accessibility and application metadata do not define serialization keys."
+      ],
+      "claims": [
+        {
+          "statement": "An input's `name` is submitted with its value as a name-value pair, while an input without a name is not submitted.",
+          "sourceIds": [
+            "mdn-input-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-6aa9141b56",
+        "verdict": "incorrect",
+        "explanation": "ARIA naming affects accessibility semantics and does not create a native form-data serialization key.",
+        "plausibility": "The attribute gives the control a machine-readable name for assistive technology.",
+        "misconceptionTag": "accessible-name-is-form-name",
+        "falsifyingConstraint": "The browser's form serialization algorithm requires a form control name, not an ARIA label."
+      },
+      {
+        "optionId": "choice-fe7f9a7360",
+        "verdict": "incorrect",
+        "explanation": "A custom data attribute is available to scripts but carries no built-in successful-control semantics.",
+        "plausibility": "Application code often uses data attributes to map DOM elements to domain fields.",
+        "misconceptionTag": "data-attribute-defines-submission-key",
+        "falsifyingConstraint": "Native submission and FormData construction must work without custom serialization code."
+      },
+      {
+        "optionId": "choice-e138aa1e44",
+        "verdict": "correct",
+        "explanation": "The `name` supplies the missing key, allowing the entered value to participate in native form data.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "successful-form-controls",
+      "input-name",
+      "formdata-serialization"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: input element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input",
+        "sourceId": "mdn-input-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-input-element",
+          "title": "MDN: input element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

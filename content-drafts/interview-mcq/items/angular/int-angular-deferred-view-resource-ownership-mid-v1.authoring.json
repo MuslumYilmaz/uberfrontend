@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-deferred-view-resource-ownership-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "deferred-view-resource-ownership",
+    "prompt": "A live analytics panel exists only inside an interaction-triggered `@defer` block. Its WebSocket should not connect while the placeholder is shown and must close when navigation destroys the rendered panel. Which owner aligns both the loading and teardown boundaries?",
+    "code": {
+      "language": "html",
+      "runtime": "angular-22",
+      "source": "@defer (on interaction) {\n  <live-analytics />\n} @placeholder {\n  <button>Load analytics</button>\n}"
+    },
+    "options": [
+      {
+        "id": "choice-ddf5b0e6f1",
+        "label": "Start the socket in a root-provided service constructor and leave it connected for the application lifetime."
+      },
+      {
+        "id": "choice-eea440c95a",
+        "label": "Start the socket in the eager placeholder component and transfer its reference when deferred content renders."
+      },
+      {
+        "id": "choice-4755b9e3b9",
+        "label": "Start the socket from the deferred panel's context and register cleanup with that context's `DestroyRef`."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-4755b9e3b9",
+    "answerProof": {
+      "summary": "The deferred component is created only after the trigger, and its destruction context is the matching owner for closing resources created by that component.",
+      "decisiveConstraints": [
+        "Placeholder rendering must not start the connection.",
+        "One connection belongs to the rendered analytics panel instance.",
+        "Destroying that panel must release its connection."
+      ],
+      "claims": [
+        {
+          "statement": "Angular does not render the primary content of an `@defer` block until its trigger occurs.",
+          "sourceIds": [
+            "angular22-defer"
+          ]
+        },
+        {
+          "statement": "Angular `DestroyRef` lets code register cleanup callbacks for the lifetime of the creating component or injector context.",
+          "sourceIds": [
+            "angular22-component-lifecycle"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ddf5b0e6f1",
+        "verdict": "incorrect",
+        "explanation": "A root service is created outside the deferred panel lifetime, so its connection can start early and remain after the panel is gone.",
+        "plausibility": "A root singleton offers one shared connection and avoids reconnecting while users revisit the feature.",
+        "misconceptionTag": "root-service-has-deferred-view-lifetime",
+        "falsifyingConstraint": "The connection must exist only for a rendered panel instance."
+      },
+      {
+        "optionId": "choice-eea440c95a",
+        "verdict": "incorrect",
+        "explanation": "The placeholder is eager and has a different view lifetime, so it opens the resource before interaction and cannot reliably own the panel's teardown.",
+        "plausibility": "The placeholder exists before loading and could prepare data intended for the eventual panel.",
+        "misconceptionTag": "placeholder-owns-deferred-content-resource",
+        "falsifyingConstraint": "No WebSocket may connect while only placeholder content is rendered."
+      },
+      {
+        "optionId": "choice-4755b9e3b9",
+        "verdict": "correct",
+        "explanation": "Connection setup begins with the deferred panel, and its DestroyRef closes the resource when that same ownership context ends.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular deferrable views",
+      "DestroyRef",
+      "resource lifetime ownership",
+      "placeholder versus deferred content"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Deferred loading with @defer",
+        "url": "https://angular.dev/guide/templates/defer",
+        "sourceId": "angular22-defer"
+      },
+      {
+        "title": "Angular: Component lifecycle",
+        "url": "https://angular.dev/guide/components/lifecycle",
+        "sourceId": "angular22-component-lifecycle"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-defer",
+          "title": "Angular: Deferred loading with @defer",
+          "url": "https://angular.dev/guide/templates/defer",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-component-lifecycle",
+          "title": "Angular: Component lifecycle",
+          "url": "https://angular.dev/guide/components/lifecycle",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

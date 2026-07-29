@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-conditional-mount-visibility-choice-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "conditional-mount-visibility-choice",
+    "prompt": "A filter panel is toggled many times during one visit. Hiding it must preserve its draft input and child component instance, and rendering it during the initial page load is acceptable. Which Vue directive best matches that lifecycle?",
+    "options": [
+      {
+        "id": "choice-4722715b68",
+        "label": "Use `v-if`, so Vue removes and recreates the panel whenever its visibility changes."
+      },
+      {
+        "id": "choice-9cca2d65af",
+        "label": "Use `v-show`, so Vue keeps the panel rendered and toggles its CSS display state."
+      },
+      {
+        "id": "choice-d57ab37a10",
+        "label": "Use keyed `v-if`, so Vue restores the same panel instance after every later remount."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-9cca2d65af",
+    "answerProof": {
+      "summary": "The panel needs visibility changes without unmounting, which matches `v-show` because it keeps the rendered subtree in the DOM and changes only its display state.",
+      "decisiveConstraints": [
+        "The same child component instance and its local draft must survive each hide and reveal.",
+        "Paying the panel's initial render cost is acceptable."
+      ],
+      "claims": [
+        {
+          "statement": "Vue documents that `v-show` keeps an element rendered and toggles CSS display, while `v-if` destroys and recreates listeners and child components across toggles.",
+          "sourceIds": [
+            "vue35-conditional-rendering"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-4722715b68",
+        "verdict": "incorrect",
+        "explanation": "`v-if` removes the subtree when false, so the panel's child instance and unsaved local draft do not remain mounted.",
+        "misconceptionTag": "conditional-rendering-preserves-instance",
+        "plausibility": "`v-if` is Vue's standard directive for rendering content only while a condition is truthy.",
+        "falsifyingConstraint": "The existing child instance must survive while the panel is hidden."
+      },
+      {
+        "optionId": "choice-9cca2d65af",
+        "verdict": "correct",
+        "explanation": "`v-show` leaves the subtree mounted and changes its display style, preserving the panel's component state through frequent toggles.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d57ab37a10",
+        "verdict": "incorrect",
+        "explanation": "A stable key can guide identity while a vnode remains in a rendered branch, but it does not cancel the unmount caused by false `v-if`.",
+        "misconceptionTag": "stable-key-cancels-unmount",
+        "plausibility": "Keys help Vue preserve the intended identity when reconciling repeated or conditional children.",
+        "falsifyingConstraint": "The false branch removes the keyed panel instead of keeping its instance alive."
+      }
+    ],
+    "remediationTopics": [
+      "Vue conditional rendering",
+      "v-if and v-show",
+      "component mount lifetime"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Conditional Rendering",
+        "url": "https://vuejs.org/guide/essentials/conditional.html",
+        "sourceId": "vue35-conditional-rendering"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-conditional-rendering",
+          "title": "Vue: Conditional Rendering",
+          "url": "https://vuejs.org/guide/essentials/conditional.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

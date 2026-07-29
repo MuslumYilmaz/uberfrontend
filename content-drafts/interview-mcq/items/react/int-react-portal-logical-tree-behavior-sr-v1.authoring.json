@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-portal-logical-tree-behavior-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "portal-logical-tree-behavior",
+    "prompt": "A card opens a modal through a portal to `document.body`. Clicking the modal's Save button also triggers the card's fixed selection handler. The modal must keep consuming the card subtree's live React context without duplicating providers. Which change fits those constraints?",
+    "options": [
+      {
+        "id": "choice-c2da13e67c",
+        "label": "Move the portal target inside the card's DOM node while preserving its current React parent and handlers."
+      },
+      {
+        "id": "choice-3adbe6f616",
+        "label": "Render the modal with a separate root and manually mirror the current context into another provider."
+      },
+      {
+        "id": "choice-1c55fa3428",
+        "label": "Keep the portal and stop propagation at the modal interaction boundary before running its Save behavior."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-1c55fa3428",
+    "answerProof": {
+      "summary": "A portal preserves the modal's logical React ancestry, including context and synthetic event propagation; stopping the modal event prevents the ancestor selection handler without changing that ancestry.",
+      "decisiveConstraints": [
+        "The modal must retain the same React context ancestry.",
+        "The existing card selection handler cannot be changed.",
+        "Modal activation must not continue to the card's bubbling handler."
+      ],
+      "claims": [
+        {
+          "statement": "A React portal changes physical DOM placement but otherwise behaves as a child in the React tree, including context access.",
+          "sourceIds": [
+            "react19-create-portal"
+          ]
+        },
+        {
+          "statement": "Events from portal content propagate according to the React tree, and React documents stopping propagation inside the portal as a remedy.",
+          "sourceIds": [
+            "react19-create-portal"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-c2da13e67c",
+        "verdict": "incorrect",
+        "explanation": "Changing the target's DOM location does not change the portal's React ancestry, so the Save event still reaches the card's React handler.",
+        "plausibility": "DOM event propagation commonly follows physical containment, making the portal container appear to define the boundary.",
+        "misconceptionTag": "portal-events-follow-target-dom",
+        "falsifyingConstraint": "React propagates portal events through the logical component tree."
+      },
+      {
+        "optionId": "choice-3adbe6f616",
+        "verdict": "incorrect",
+        "explanation": "A separate root breaks the inherited provider relationship and requires manual synchronization that the scenario explicitly excludes.",
+        "plausibility": "Independent roots have separate React event ancestry, so the card handler would not receive the modal click.",
+        "misconceptionTag": "copied-provider-is-shared-context",
+        "falsifyingConstraint": "The modal must consume the existing live context rather than a separately wired copy."
+      },
+      {
+        "optionId": "choice-1c55fa3428",
+        "verdict": "correct",
+        "explanation": "The modal remains in the same logical tree for context, while stopping its event prevents the card's bubbling selection handler.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "React portals",
+      "logical versus physical trees",
+      "portal event propagation",
+      "context across portals"
+    ],
+    "learnMore": [
+      {
+        "title": "React: createPortal",
+        "url": "https://react.dev/reference/react-dom/createPortal",
+        "sourceId": "react19-create-portal"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-create-portal",
+          "title": "React: createPortal",
+          "url": "https://react.dev/reference/react-dom/createPortal",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

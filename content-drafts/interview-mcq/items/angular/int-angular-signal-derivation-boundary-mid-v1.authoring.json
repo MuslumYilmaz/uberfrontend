@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-signal-derivation-boundary-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "signal-derivation-boundary",
+    "prompt": "An Angular cart stores `price` and `quantity` as writable signals. An Effect copies their product into a third writable `total` signal, creating an extra update path and occasional inconsistent reads. The total has no independent edits. Which model expresses its ownership?",
+    "options": [
+      {
+        "id": "choice-74c73802f7",
+        "label": "Keep the Effect and enable signal writes so it can synchronize `total` after either source changes."
+      },
+      {
+        "id": "choice-c94e9d94c4",
+        "label": "Keep `total` writable and update it manually from every price and quantity event handler."
+      },
+      {
+        "id": "choice-07a263c298",
+        "label": "Replace writable `total` with `computed(() => price() * quantity())` and consume that read-only derived signal."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-07a263c298",
+    "answerProof": {
+      "summary": "Because total is entirely determined by two source signals, a computed signal makes that dependency the single definition and removes independently writable duplicate state.",
+      "decisiveConstraints": [
+        "Total has no user-owned or server-owned value separate from price and quantity.",
+        "Every read should reflect the current source-signal values.",
+        "The design should remove manual propagation paths."
+      ],
+      "claims": [
+        {
+          "statement": "Angular computed signals derive a read-only value from tracked signal dependencies and invalidate when those dependencies change.",
+          "sourceIds": [
+            "angular22-signals"
+          ]
+        },
+        {
+          "statement": "Angular advises against Effects for propagating state changes and recommends computed signals for derived values.",
+          "sourceIds": [
+            "angular22-signal-effects"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-74c73802f7",
+        "verdict": "incorrect",
+        "explanation": "The Effect preserves a second writable source and an asynchronous propagation step even though total is a pure synchronous derivation.",
+        "plausibility": "Effects track signal reads and rerun when price or quantity changes.",
+        "misconceptionTag": "effect-is-derived-signal",
+        "falsifyingConstraint": "No independent side effect or writable total value exists."
+      },
+      {
+        "optionId": "choice-c94e9d94c4",
+        "verdict": "incorrect",
+        "explanation": "Duplicating the calculation across event paths can miss future update sources and still permits total to diverge from its inputs.",
+        "plausibility": "Synchronous handler updates can make all three signals appear consistent after known user events.",
+        "misconceptionTag": "all-source-updates-live-in-handlers",
+        "falsifyingConstraint": "The invariant should follow signal values regardless of which code path changes them."
+      },
+      {
+        "optionId": "choice-07a263c298",
+        "verdict": "correct",
+        "explanation": "The computed signal memoizes one read-only derivation and invalidates it directly from the two source dependencies.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Angular computed signals",
+      "derived versus writable state",
+      "Effects for external side effects",
+      "single source of truth"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Signals",
+        "url": "https://angular.dev/guide/signals",
+        "sourceId": "angular22-signals"
+      },
+      {
+        "title": "Angular: Side effects for non-reactive APIs",
+        "url": "https://angular.dev/guide/signals/effect",
+        "sourceId": "angular22-signal-effects"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-signals",
+          "title": "Angular: Signals",
+          "url": "https://angular.dev/guide/signals",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-signal-effects",
+          "title": "Angular: Side effects for non-reactive APIs",
+          "url": "https://angular.dev/guide/signals/effect",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

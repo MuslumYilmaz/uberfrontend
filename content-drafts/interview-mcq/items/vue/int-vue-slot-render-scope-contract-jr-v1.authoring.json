@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-slot-render-scope-contract-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "slot-render-scope-contract",
+    "prompt": "A reusable `<DataList>` owns each current `row`, while its parent supplies the markup for a named `item` slot. The parent slot tries to render `row.name`, but `row` exists only inside `<DataList>`. Which contract exposes the row without moving list ownership to the parent?",
+    "code": {
+      "language": "vue",
+      "runtime": "vue-3.5",
+      "source": "<DataList :rows=\"rows\">\n  <template #item>\n    <strong>{{ row.name }}</strong>\n  </template>\n</DataList>"
+    },
+    "options": [
+      {
+        "id": "choice-7b7e0c28fd",
+        "label": "Pass `row` from the child slot outlet and destructure that slot prop in the parent."
+      },
+      {
+        "id": "choice-d3187e4a7e",
+        "label": "Declare `row` only in the child setup and let parent slot expressions read it directly."
+      },
+      {
+        "id": "choice-b56c3cbe1c",
+        "label": "Read the child component's private `row` through the parent slot's `$parent` value."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-7b7e0c28fd",
+    "answerProof": {
+      "summary": "Slot content is authored in the parent scope, so the child must explicitly pass its current row as a slot prop for the parent template to consume.",
+      "decisiveConstraints": [
+        "The child remains responsible for iterating and selecting the current row.",
+        "The parent controls only the markup rendered for that row."
+      ],
+      "claims": [
+        {
+          "statement": "Vue slot expressions use the lexical scope where the slot content is defined, and a child exposes child-owned values by passing props from its slot outlet.",
+          "sourceIds": [
+            "vue35-slot-render-scope"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-7b7e0c28fd",
+        "verdict": "correct",
+        "explanation": "A scoped slot makes the row an explicit child-to-parent render input while leaving iteration and row ownership inside `DataList`.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d3187e4a7e",
+        "verdict": "incorrect",
+        "explanation": "The child setup can use `row` in its own template, but parent-authored slot expressions cannot see child state without a slot prop.",
+        "misconceptionTag": "slot-content-inherits-child-scope",
+        "plausibility": "The slot is rendered at an outlet located inside the child component's template.",
+        "falsifyingConstraint": "Vue resolves slot expressions against the parent scope where that content was defined."
+      },
+      {
+        "optionId": "choice-b56c3cbe1c",
+        "verdict": "incorrect",
+        "explanation": "Parent-chain inspection couples the slot to private component internals and does not establish a supported named-slot data contract.",
+        "misconceptionTag": "component-parent-access-is-slot-api",
+        "plausibility": "Component instance references can expose some public instance properties at runtime.",
+        "falsifyingConstraint": "The reusable component needs an explicit stable contract rather than private instance traversal."
+      }
+    ],
+    "remediationTopics": [
+      "Vue slot render scope",
+      "scoped slots",
+      "slot props"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Slots",
+        "url": "https://vuejs.org/guide/components/slots.html",
+        "sourceId": "vue35-slot-render-scope"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-slot-render-scope",
+          "title": "Vue: Slots",
+          "url": "https://vuejs.org/guide/components/slots.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

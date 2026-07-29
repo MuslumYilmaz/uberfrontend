@@ -1,6 +1,6 @@
 {
   "bankId": "frontend-interview-gold-bank",
-  "bankVersion": "1.0.0",
+  "bankVersion": "1.1.0",
   "items": [
     {
       "competency": "template-observable-subscription",
@@ -28,6 +28,31 @@
       "technology": "angular"
     },
     {
+      "competency": "auth-refresh-single-flight",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-angular-auth-refresh-single-flight-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-f19def9492",
+          "label": "Share one in-flight refresh result, exclude the refresh request, retry each original once, and clear shared state on settlement."
+        },
+        {
+          "id": "choice-cbf54b74b0",
+          "label": "Start one refresh inside every 401 handler, then let each handler retry its request with whichever token finishes last."
+        },
+        {
+          "id": "choice-13501fa3c5",
+          "label": "Queue every failed request, immediately replay the queue with the expired token, and refresh after those retries settle."
+        }
+      ],
+      "prompt": "Three Angular API requests receive 401 responses together after an access token expires. The refresh endpoint must not intercept itself, exactly one refresh may run, and each original request should retry once with the resulting token. Which interceptor architecture enforces those constraints?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
       "competency": "template-binding-direction",
       "difficultyBand": "foundation",
       "estimatedSeconds": 60,
@@ -50,6 +75,141 @@
       ],
       "prompt": "A Save button must be disabled while `isSaving` is true and call the component's `save()` method when the user activates it. Which Angular template expresses both data flows correctly?",
       "revision": 2,
+      "technology": "angular"
+    },
+    {
+      "competency": "control-value-accessor-contract",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-angular-control-value-accessor-contract-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-cc28395f07",
+          "label": "Subscribe to the parent control's `valueChanges` inside the rating and repaint from that separate stream."
+        },
+        {
+          "id": "choice-9a18b1a595",
+          "label": "Update the displayed stars inside `writeValue`, and invoke the change callback only for user clicks."
+        },
+        {
+          "id": "choice-30d988193a",
+          "label": "Replace the accessor with `@Input() value` and `@Output() valueChange`, then let each parent repaint it."
+        }
+      ],
+      "prompt": "A custom star-rating is already registered through `NG_VALUE_ACCESSOR`. Clicks call the registered change callback, blur calls the touch callback, and `setDisabledState` updates the buttons. Only `formControl.setValue(4)` fails to repaint because `writeValue` currently calls the change callback instead of updating the displayed stars. Which correction restores the intended direction?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "code": {
+        "language": "html",
+        "runtime": "angular-22",
+        "source": "@defer (on interaction) {\n  <live-analytics />\n} @placeholder {\n  <button>Load analytics</button>\n}"
+      },
+      "competency": "deferred-view-resource-ownership",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-angular-deferred-view-resource-ownership-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-ddf5b0e6f1",
+          "label": "Start the socket in a root-provided service constructor and leave it connected for the application lifetime."
+        },
+        {
+          "id": "choice-eea440c95a",
+          "label": "Start the socket in the eager placeholder component and transfer its reference when deferred content renders."
+        },
+        {
+          "id": "choice-4755b9e3b9",
+          "label": "Start the socket from the deferred panel's context and register cleanup with that context's `DestroyRef`."
+        }
+      ],
+      "prompt": "A live analytics panel exists only inside an interaction-triggered `@defer` block. Its WebSocket should not connect while the placeholder is shown and must close when navigation destroys the rendered panel. Which owner aligns both the loading and teardown boundaries?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "environment-injector-teardown",
+      "difficultyBand": "core",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-angular-environment-injector-teardown-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-ef412e4428",
+          "label": "Destroy the separately created child injector when removing the widget, along with its component reference."
+        },
+        {
+          "id": "choice-66e6d18603",
+          "label": "Remove the component host element from the DOM and let provider callbacks detect its disconnection."
+        },
+        {
+          "id": "choice-ab59c81d38",
+          "label": "Destroy only the application root injector so every widget provider cleans up in one operation."
+        }
+      ],
+      "prompt": "A widget host creates a child `EnvironmentInjector`, passes it to `createComponent`, and installs widget-scoped providers whose `DestroyRef` callbacks close workers and subscriptions. Removing a widget destroys its `ComponentRef`, but those provider resources remain active. What teardown boundary is missing?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "for-block-row-identity",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 75,
+      "format": "production-scenario",
+      "id": "int-angular-for-block-row-identity-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-495704a46c",
+          "label": "Track `$index` so each rendered position keeps its existing row view after a reorder."
+        },
+        {
+          "id": "choice-bbf44ef6f9",
+          "label": "Track `record.id` so each logical record retains its row identity across arrays and reorders."
+        },
+        {
+          "id": "choice-1464b8e19a",
+          "label": "Track `record` so each freshly allocated object reference defines the next row identity."
+        }
+      ],
+      "prompt": "An editable Angular table receives a newly allocated array after each server refresh and can reorder its rows. Each record has a stable unique `id`; focused inputs and child state should follow the same record while DOM churn stays low. Which `@for` tracking expression fits?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "code": {
+        "language": "typescript",
+        "runtime": "angular-22",
+        "source": "export function auditInterceptor(\n  req: HttpRequest<Record<string, unknown>>,\n  next: HttpHandlerFn\n) {\n  // transform, then call next(transformed)\n}"
+      },
+      "competency": "http-request-immutability",
+      "difficultyBand": "core",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-angular-http-request-immutability-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-cb2b4d0ff1",
+          "label": "Assign the header and audit field directly onto `req.headers` and `req.body` before forwarding `req`."
+        },
+        {
+          "id": "choice-3d5d7ac79e",
+          "label": "Clone the header, but append audit data into the original body's nested array before forwarding the clone."
+        },
+        {
+          "id": "choice-dcdbc2bc3d",
+          "label": "Clone the request with the new header and a newly constructed body containing the audit field."
+        }
+      ],
+      "prompt": "An Angular interceptor adds a request ID header and an audit field to a JSON body. Requests may pass through the interceptor again during retry, so the original request and its nested body must remain unchanged. Which transformation is retry-safe?",
+      "revision": 1,
       "technology": "angular"
     },
     {
@@ -193,6 +353,81 @@
       "technology": "angular"
     },
     {
+      "competency": "route-parameter-reuse",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-angular-route-parameter-reuse-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-f6f1b2274b",
+          "label": "Derive the product load from the route's `paramMap` stream and render each resulting value."
+        },
+        {
+          "id": "choice-2a144db089",
+          "label": "Have a template getter reread the `ActivatedRouteSnapshot` captured in the constructor."
+        },
+        {
+          "id": "choice-e58d046dd6",
+          "label": "Navigate through `window.location` so every identifier change constructs a fresh Angular application."
+        }
+      ],
+      "prompt": "Navigating from `/products/41` to `/products/42` reuses the same Angular product component. It reads `route.snapshot.paramMap` once in its constructor, so the screen keeps product 41. Which data flow follows later parameter changes without forcing a page reload?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "service-worker-version-coherency",
+      "difficultyBand": "core",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-angular-service-worker-version-coherency-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-d1447c84e7",
+          "label": "Call `activateUpdate()`, clear runtime data caches, and continue executing the already loaded application shell."
+        },
+        {
+          "id": "choice-6b25a126b0",
+          "label": "Notify the user when the version is ready, preserve needed draft state, and reload into the new shell."
+        },
+        {
+          "id": "choice-18b4f02fa1",
+          "label": "Keep the old shell indefinitely and preload each remaining lazy route before checking for later versions."
+        }
+      ],
+      "prompt": "An Angular PWA calls `SwUpdate.activateUpdate()` as soon as `VERSION_READY` arrives, without reloading the tab. The existing application shell later requests a lazy chunk whose filename belongs to its old build and fails. Which update flow preserves a coherent application version?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "signal-derivation-boundary",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "conceptual",
+      "id": "int-angular-signal-derivation-boundary-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-74c73802f7",
+          "label": "Keep the Effect and enable signal writes so it can synchronize `total` after either source changes."
+        },
+        {
+          "id": "choice-c94e9d94c4",
+          "label": "Keep `total` writable and update it manually from every price and quantity event handler."
+        },
+        {
+          "id": "choice-07a263c298",
+          "label": "Replace writable `total` with `computed(() => price() * quantity())` and consume that read-only derived signal."
+        }
+      ],
+      "prompt": "An Angular cart stores `price` and `quantity` as writable signals. An Effect copies their product into a third writable `total` signal, creating an extra update path and occasional inconsistent reads. The total has no independent edits. Which model expresses its ownership?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
       "competency": "ssr-platform-specific-dependency-boundary",
       "difficultyBand": "stretch",
       "estimatedSeconds": 180,
@@ -214,6 +449,56 @@
         }
       ],
       "prompt": "An Angular 22 checkout runs with SSR and hydration. Analytics must use a browser SDK in the browser and a server logger during SSR. Components must inject one API, and neither implementation may import the other platform's dependency. Which design satisfies that boundary?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "ssr-transfer-cache-sensitivity",
+      "difficultyBand": "core",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-angular-ssr-transfer-cache-sensitivity-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-86ecdbb805",
+          "label": "Keep authenticated requests excluded and explicitly disable or filter transfer caching for the profile request."
+        },
+        {
+          "id": "choice-9d08c348bd",
+          "label": "Enable authenticated transfer entries but omit response headers so only the profile body reaches hydration."
+        },
+        {
+          "id": "choice-65f2434dc4",
+          "label": "Remove the authorization header before the server request, then restore it when hydration reads the cached response."
+        }
+      ],
+      "prompt": "An Angular SSR application makes an authenticated `/api/profile` GET, but policy forbids serializing that user-specific response into hydration HTML. A proposed optimization enables transfer caching for requests with authorization headers to avoid a browser fetch. Which configuration respects the policy?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "standalone-import-visibility",
+      "difficultyBand": "core",
+      "estimatedSeconds": 75,
+      "format": "conceptual",
+      "id": "int-angular-standalone-import-visibility-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-2d08a53b50",
+          "label": "Register both template symbols as dependency-injection providers in the component metadata."
+        },
+        {
+          "id": "choice-3f48e3d234",
+          "label": "Declare the component and pipe as template dependencies in the standalone component's `imports` array."
+        },
+        {
+          "id": "choice-4f8a0dffb1",
+          "label": "Add `PricingService` to the component's `imports` array beside both template symbols."
+        }
+      ],
+      "prompt": "A standalone order component injects `PricingService`, but its template cannot resolve the standalone `<app-price>` component or `CurrencyPipe`. Both symbols are imported at the top of the TypeScript file. Which metadata change makes them available to this template?",
       "revision": 1,
       "technology": "angular"
     },
@@ -245,6 +530,31 @@
       ],
       "prompt": "An Angular autocomplete maps `query.valueChanges` to `HttpClient.get`. With `mergeMap`, an older request can finish last and replace newer suggestions. The API supports cancellation through unsubscription. Which operator change best enforces latest-query ownership?",
       "revision": 2,
+      "technology": "angular"
+    },
+    {
+      "competency": "template-sanitization-trust",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-angular-template-sanitization-trust-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-9bdc1b1132",
+          "label": "Render `{{ description }}` so Angular interprets the string as formatted HTML."
+        },
+        {
+          "id": "choice-fd1a06c19a",
+          "label": "Call `bypassSecurityTrustHtml(description)` and bind that trusted result to `[innerHTML]`."
+        },
+        {
+          "id": "choice-0978d53180",
+          "label": "Bind the untrusted string directly to `[innerHTML]` and retain Angular's HTML sanitization."
+        }
+      ],
+      "prompt": "A CMS description is untrusted but should preserve harmless formatting such as `<strong>`. Test content can also include an image error handler. The application has no separate reviewed sanitizer. Which Angular rendering path preserves safe HTML without declaring the whole value trusted?",
+      "revision": 1,
       "technology": "angular"
     },
     {
@@ -353,6 +663,56 @@
       "technology": "css"
     },
     {
+      "competency": "cascade-layer-precedence",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 125,
+      "format": "production-scenario",
+      "id": "int-css-cascade-layer-precedence-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-b6b24fe19b",
+          "label": "Declare `@layer vendor, app`, import vendor CSS into `vendor`, and place local component rules in `app`."
+        },
+        {
+          "id": "choice-224329d690",
+          "label": "Put vendor CSS in a later `vendor` layer and repeat classes in the earlier local component selectors."
+        },
+        {
+          "id": "choice-87967f9807",
+          "label": "Put both style sets in `vendor`, load local CSS first, and rely on its lower-specificity rules to win."
+        }
+      ],
+      "prompt": "A design system imports normal, non-important vendor styles with selectors more specific than the application's component rules. The team wants local component declarations to win predictably without selector escalation. Which layer policy establishes that precedence?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
+      "competency": "container-query-component-boundary",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 130,
+      "format": "production-scenario",
+      "id": "int-css-container-query-component-boundary-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-0c7b71d309",
+          "label": "Keep a viewport media query on the card and add selector exceptions for every sidebar and results placement."
+        },
+        {
+          "id": "choice-4c6dddf33f",
+          "label": "Make the host wrapper an inline-size query container and style card descendants inside a matching `@container` rule."
+        },
+        {
+          "id": "choice-aa1d788270",
+          "label": "Make the card itself an inline-size query container and use its query to change that same card's outer display."
+        }
+      ],
+      "prompt": "The same product card appears in a narrow sidebar and a wide results column at the same viewport width. Its internal layout should switch according to the space assigned by each host, without host-specific card classes. Where should the size-query boundary live?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
       "competency": "flex-item-minimum-size",
       "difficultyBand": "core",
       "estimatedSeconds": 120,
@@ -387,19 +747,94 @@
       "options": [
         {
           "id": "choice-33350f531f",
-          "label": "Give every feed image the same estimated `min-height`, then remove that placeholder after its load event."
+          "label": "Put dimensions only on the fallback `<img>` and let every selected `<source>` inherit that one ratio."
         },
         {
           "id": "choice-db5d42c2aa",
-          "label": "Emit each asset's `width` and `height` attributes, then apply `max-width: 100%; height: auto` responsively."
+          "label": "Emit each `<source>` crop's dimensions plus fallback `<img>` dimensions, then size the image responsively."
         },
         {
           "id": "choice-02072ee3c0",
-          "label": "Wait for each `load`, read its natural dimensions, and then assign the matching wrapper aspect ratio."
+          "label": "Set one CSS `aspect-ratio` from the fallback crop and use `object-fit: cover` for every selected source."
         }
       ],
-      "prompt": "Field data shows layout shifts across a publishing platform's responsive feeds when CDN images load. Editors choose different ratios, every delivery variant carries intrinsic pixel metadata, and the shared image contract must reserve the right box before resource selection without fixing rendered size. Which platform change meets those constraints?",
-      "revision": 3,
+      "prompt": "Field data shows layout shifts in a publishing platform's art-directed `<picture>` components. Desktop sources use landscape crops, mobile sources use portrait crops, and the CDN already exposes every crop's intrinsic dimensions. The browser must reserve the selected crop's ratio before download while the used width remains responsive, without a JavaScript or breakpoint-specific ratio table. Which markup contract meets those constraints?",
+      "revision": 4,
+      "technology": "css"
+    },
+    {
+      "competency": "layout-animation-invalidation-budget",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-css-layout-animation-invalidation-budget-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-21018fb155",
+          "label": "Continue animating `left` and `width`, then add `will-change: all` to every tab for the page lifetime."
+        },
+        {
+          "id": "choice-52a4a24335",
+          "label": "Animate `margin-left` and `max-width`, then force synchronous layout before each frame to stabilize geometry."
+        },
+        {
+          "id": "choice-a35af2f121",
+          "label": "Measure target geometry outside the frame loop, animate `transform` and `opacity`, and scope `will-change` briefly."
+        }
+      ],
+      "prompt": "A selection highlight moves between fixed-size tabs while a large dashboard is updating. Profiling shows that animating its `left` and `width` triggers layout and paint across many frames. The effect only needs translation, scaling, and fading. Which policy best reduces rendering work?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
+      "competency": "logical-axis-localization",
+      "difficultyBand": "core",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-css-logical-axis-localization-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-2e4749c28d",
+          "label": "Set `margin-inline-end` on the avatar so the mapped physical side follows writing mode and direction."
+        },
+        {
+          "id": "choice-a613613d32",
+          "label": "Set `margin-right` on the avatar and swap it to `margin-left` only when the document direction is RTL."
+        },
+        {
+          "id": "choice-0d399390ad",
+          "label": "Set `margin-block-end` on the avatar so the spacing follows the edge where inline text finishes."
+        }
+      ],
+      "prompt": "A reusable author badge needs spacing after its avatar in the direction text flows. It must work in left-to-right, right-to-left, and vertical writing modes without locale-specific selectors. Which declaration expresses that intent?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
+      "competency": "percentage-size-containing-block",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 75,
+      "format": "production-scenario",
+      "id": "int-css-percentage-size-containing-block-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-448d038867",
+          "label": "Change the child to `min-height: 100%` while leaving the pane's height dependent on its content."
+        },
+        {
+          "id": "choice-b86d435e64",
+          "label": "Set `height: 20rem` on the pane so the descendant's `height: 100%` resolves against it."
+        },
+        {
+          "id": "choice-d89b461ba6",
+          "label": "Set `height: 100vh` on the child so its percentage no longer depends on the preview pane."
+        }
+      ],
+      "prompt": "A preview pane is required to be exactly `20rem` tall. It currently has only `min-height: 20rem`; its normal-flow child uses `height: 100%; overflow: auto` but stays at content height when nearly empty. Which change gives the percentage a definite basis?",
+      "revision": 1,
       "technology": "css"
     },
     {
@@ -453,6 +888,31 @@
       "technology": "css"
     },
     {
+      "competency": "sticky-scrollport-ownership",
+      "difficultyBand": "core",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-css-sticky-scrollport-ownership-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-b36955f4ca",
+          "label": "Increase the header's `z-index` so it can escape the hidden wrapper and attach to the outer shell."
+        },
+        {
+          "id": "choice-c9e3cbfcd1",
+          "label": "Change the header to `position: fixed` and calculate its horizontal alignment from the shell on every scroll."
+        },
+        {
+          "id": "choice-49bcf66235",
+          "label": "Remove the wrapper's overflow boundary, relocate its clipping, and leave the shell as the scroll container."
+        }
+      ],
+      "prompt": "A report shell with `overflow: auto` is the element users scroll. Inside it, a rounded wrapper has `overflow: hidden`; a table header below that wrapper uses `position: sticky; top: 0` but never sticks while the shell scrolls. Which structural fix restores the intended scroll owner?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
       "competency": "adaptive-visual-effects-and-containment",
       "difficultyBand": "stretch",
       "estimatedSeconds": 180,
@@ -476,6 +936,56 @@
       "prompt": "A loading card uses an infinite shimmer; its loading state and boundary are only visual. In reduced-motion mode the shimmer must stop, and in forced-colors mode both state and boundary must remain perceivable. Profiling suggests paint containment for the decorative shimmer layer, but focus indicators may extend beyond the card. Which policy meets the contract?",
       "revision": 2,
       "technology": "css"
+    },
+    {
+      "competency": "autofill-purpose-metadata",
+      "difficultyBand": "core",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-html-autofill-purpose-metadata-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-39ff7258ed",
+          "label": "Give named controls ordered `autocomplete` tokens such as `shipping postal-code` and `billing postal-code`."
+        },
+        {
+          "id": "choice-b7bba33832",
+          "label": "Give each control a different placeholder and CSS class while leaving its `autocomplete` value unspecified."
+        },
+        {
+          "id": "choice-1e657caf2d",
+          "label": "Set `autocomplete=\"on\"` on the form and use the same `postal-code` token for both address sections."
+        }
+      ],
+      "prompt": "A checkout shows separate shipping and billing address fields. Labels and input types are correct, but the browser sometimes copies one section's ZIP into both. Which markup policy gives autofill the missing purpose distinction?",
+      "revision": 1,
+      "technology": "html"
+    },
+    {
+      "competency": "data-table-header-association",
+      "difficultyBand": "core",
+      "estimatedSeconds": 115,
+      "format": "production-scenario",
+      "id": "int-html-data-table-header-association-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-b532cfa3aa",
+          "label": "Replace the table with a `role=\"grid\"`, cache header positions on first render, and reuse those indexes after each reorder."
+        },
+        {
+          "id": "choice-8cc9c8c619",
+          "label": "Derive stable `th` IDs from row, quarter, and measure keys, then recompute each rendered cell's `headers` tokens after reordering."
+        },
+        {
+          "id": "choice-657244fb75",
+          "label": "Derive each `th` ID from its current column index, then retain existing cell `headers` tokens during partial row rerenders."
+        }
+      ],
+      "prompt": "A financial table has row headers plus quarter and measure header tiers. Users can reorder Revenue and Cost columns, and the UI then rerenders only affected rows. Assistive technology must announce every applicable label after each reorder without relying on inferred positions. Which ownership policy keeps those associations correct?",
+      "revision": 1,
+      "technology": "html"
     },
     {
       "competency": "script-loading-order",
@@ -553,6 +1063,31 @@
       "technology": "html"
     },
     {
+      "competency": "iframe-capability-isolation",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-html-iframe-capability-isolation-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-adc5b853e5",
+          "label": "Embed without `sandbox` and let a CSP inside the customer-authored document disable the capabilities it does not use."
+        },
+        {
+          "id": "choice-437dc87d92",
+          "label": "Use `sandbox=\"allow-scripts allow-same-origin allow-popups\"` and an `allow` list that grants camera and microphone."
+        },
+        {
+          "id": "choice-809d3fc999",
+          "label": "Use `sandbox=\"allow-scripts\"`, omit `allow-same-origin`, and keep camera and microphone denied by Permissions Policy."
+        }
+      ],
+      "prompt": "A product renders customer-authored interactive HTML from a dedicated preview origin. The preview needs scripts, but it must not gain origin identity, popups, top navigation, forms, downloads, camera, or microphone access. Which embedding policy grants only the required capability?",
+      "revision": 1,
+      "technology": "html"
+    },
+    {
       "competency": "explicit-form-label-association",
       "difficultyBand": "core",
       "estimatedSeconds": 60,
@@ -600,6 +1135,81 @@
       ],
       "prompt": "A checkout drawer uses `<div role=\"button\" onclick=\"placeOrder()\">Place order</div>`. Mouse activation works, but Tab skips it and Enter and Space do nothing. It performs a non-submit in-page action, and no custom element is required. Which fix needs the least custom interaction code?",
       "revision": 3,
+      "technology": "html"
+    },
+    {
+      "competency": "nonmodal-popover-interaction",
+      "difficultyBand": "core",
+      "estimatedSeconds": 130,
+      "format": "production-scenario",
+      "id": "int-html-nonmodal-popover-interaction-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-16dd0c25ae",
+          "label": "Use a button with `popovertarget` and a matching auto popover, then position the promoted top-layer element for the toolbar."
+        },
+        {
+          "id": "choice-076dc0c418",
+          "label": "Use `showModal()` on a dialog inside the panel, then position its top-layer box beside the toolbar and trap focus."
+        },
+        {
+          "id": "choice-5f7545dfbb",
+          "label": "Use a positioned `role=\"dialog\"` div inside the panel, raise its `z-index`, and script light dismissal beside the toolbar."
+        }
+      ],
+      "prompt": "A dashboard toolbar sits inside a transformed, `overflow: hidden` panel whose local stacking and clipping boundary cuts off its custom Help overlay behind adjacent charts. Help must escape that rendering boundary, remain non-modal, support outside-click and Escape dismissal, and preserve its invoker relationship. Which primitive spans both contracts?",
+      "revision": 1,
+      "technology": "html"
+    },
+    {
+      "competency": "responsive-image-selection-hints",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-html-responsive-image-selection-hints-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-9927af2153",
+          "label": "List width-descriptor candidates in `srcset`, omit `sizes`, and rely on the default `100vw` slot assumption in every layout."
+        },
+        {
+          "id": "choice-fb494ac1a2",
+          "label": "Provide width-descriptor `srcset`, an accurate responsive `sizes` value, plus `src` as the fallback candidate."
+        },
+        {
+          "id": "choice-ab49e8a30f",
+          "label": "Put each intrinsic width in a separate `picture` source selected only by device-pixel-ratio media queries."
+        }
+      ],
+      "prompt": "A product image keeps the same crop but renders near the viewport width on phones and half the viewport width in the desktop grid. Several intrinsic widths are available, and the browser should avoid downloading an unnecessarily large file. Which markup supplies the needed selection inputs?",
+      "revision": 1,
+      "technology": "html"
+    },
+    {
+      "competency": "successful-control-name-contract",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 65,
+      "format": "production-scenario",
+      "id": "int-html-successful-control-name-contract-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-6aa9141b56",
+          "label": "Add `aria-label=\"company\"` so the accessibility tree supplies the key used during form serialization."
+        },
+        {
+          "id": "choice-fe7f9a7360",
+          "label": "Add `data-field=\"company\"` so the browser recognizes the control as application-owned form data."
+        },
+        {
+          "id": "choice-e138aa1e44",
+          "label": "Add `name=\"company\"` so submission serializes the enabled control as a company name-value pair."
+        }
+      ],
+      "prompt": "An enabled text input has `id=\"company\"`, a matching visible label, and a user-entered value. It validates successfully, but native form submission and `new FormData(form)` both omit the company field. Which markup change fixes the data contract?",
+      "revision": 1,
       "technology": "html"
     },
     {
@@ -653,6 +1263,31 @@
       "technology": "javascript"
     },
     {
+      "competency": "async-iteration-completion",
+      "difficultyBand": "core",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-js-async-iteration-completion-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-a7094369fc",
+          "label": "Iterate with `for...of`, await each update inside the loop, then report success after the loop exits."
+        },
+        {
+          "id": "choice-0b180b0a1a",
+          "label": "Call `forEach` with an async callback, await the value returned by `forEach`, then report success."
+        },
+        {
+          "id": "choice-f4cb60f9e0",
+          "label": "Map records to async callbacks, await the resulting array directly, then report success after that await."
+        }
+      ],
+      "prompt": "A migration command must update records one at a time because the service enforces strict ordering. The command may report success only after every update finishes, and the first rejection must stop later updates. Which implementation has the required completion behavior?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
       "code": {
         "language": "javascript",
         "runtime": "browser",
@@ -680,6 +1315,131 @@
       ],
       "prompt": "What does this code log in a standards-compliant browser?",
       "revision": 2,
+      "technology": "javascript"
+    },
+    {
+      "competency": "batch-settlement-policy",
+      "difficultyBand": "core",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-js-batch-settlement-policy-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-39ca12e32b",
+          "label": "Capture the batch ID, await `Promise.all(jobs)`, and commit its fulfillment array only while that ID remains active."
+        },
+        {
+          "id": "choice-d6d0e655cb",
+          "label": "Capture the batch ID, await `Promise.allSettled(jobs)`, and commit its ordered outcomes only while that ID remains active."
+        },
+        {
+          "id": "choice-9f9ab5431e",
+          "label": "Await `Promise.allSettled(jobs)` for each batch, then commit every ordered outcome set whenever that batch finishes."
+        }
+      ],
+      "prompt": "A media dashboard starts five independent thumbnail jobs together, but a new file selection can supersede that batch before it settles. The active batch must show one ordered success or failure per file, while a late older batch must not replace newer rows. Which completion policy fits?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "bfcache-page-lifecycle",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-js-bfcache-page-lifecycle-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-f594eb09a8",
+          "label": "Close resources from `unload`, then rebuild them from `load` because both events bracket each history visit."
+        },
+        {
+          "id": "choice-ed13d6afa6",
+          "label": "Pause resources on `visibilitychange`, then reconnect each time visibility becomes visible without checking page history."
+        },
+        {
+          "id": "choice-e6814ecfe4",
+          "label": "Release resources on `pagehide`, then on `pageshow` use `persisted` to reconnect and revalidate restored data."
+        }
+      ],
+      "prompt": "A live operations page owns a WebSocket and heartbeat timer. Back/forward navigation should remain eligible for bfcache, and a restored snapshot must not continue with stale connection state. Which lifecycle policy best spans suspension and restoration?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "canonical-identifier-normalization",
+      "difficultyBand": "core",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-js-canonical-identifier-normalization-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-0110818a58",
+          "label": "Normalize both candidate and stored names to NFC, then compare the normalized strings with case preserved."
+        },
+        {
+          "id": "choice-35a2c0faf5",
+          "label": "Lowercase both candidate and stored names, then compare their original unnormalized code-unit sequences."
+        },
+        {
+          "id": "choice-63803539fc",
+          "label": "Encode both candidate and stored names with `encodeURIComponent`, then compare the resulting encoded strings."
+        }
+      ],
+      "prompt": "A case-sensitive tag editor accepts Unicode names. Users can paste visually identical accented tags whose code points use composed or decomposed forms, and those tags must share one identifier without changing letter case. Which comparison policy fits?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "copying-array-sort-contract",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 65,
+      "format": "production-scenario",
+      "id": "int-js-copying-array-sort-contract-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-31c71647af",
+          "label": "Sort `orders` in place, then store that result under a second variable owned by this table."
+        },
+        {
+          "id": "choice-d39b83cb59",
+          "label": "Use `orders.toSorted(comparePrice)` and assign the returned array to the table's local variable."
+        },
+        {
+          "id": "choice-b64281eeb8",
+          "label": "Reverse the shared list before sorting it, then restore the original order after the table renders."
+        }
+      ],
+      "prompt": "A table receives a shared `orders` array from a cache. One view needs a price-sorted sequence, but changing the cached array would silently reorder another view. Which expression gives the table its own sorted array?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "cross-tab-version-reconciliation",
+      "difficultyBand": "core",
+      "estimatedSeconds": 145,
+      "format": "production-scenario",
+      "id": "int-js-cross-tab-version-reconciliation-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-80e00c16e7",
+          "label": "Apply every arriving patch immediately because channel delivery order is the freshest sequence shared by the tabs."
+        },
+        {
+          "id": "choice-0616a6638e",
+          "label": "Sort patches by sender timestamps, apply the latest clock value, and replace server revisions when local time is newer."
+        },
+        {
+          "id": "choice-3bcb98adb2",
+          "label": "Apply the next contiguous server revision, ignore older revisions, and refetch a snapshot for a missing intermediate patch."
+        }
+      ],
+      "prompt": "Several same-origin tabs show an order draft and exchange server-accepted incremental patches through `BroadcastChannel`. Each patch has a strictly increasing revision and is valid only on the immediately preceding revision; a canonical full snapshot can be fetched. Delays can expose an older patch after a newer one or leave a revision gap. Which reconciliation policy prevents corruption?",
+      "revision": 1,
       "technology": "javascript"
     },
     {
@@ -739,6 +1499,31 @@
         }
       ],
       "prompt": "What does the delegated click handler log, in order, in a standards-compliant browser?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "fetch-http-status-handling",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 95,
+      "format": "production-scenario",
+      "id": "int-js-fetch-http-status-handling-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-1e541bcbce",
+          "label": "After `fetch` resolves, check `response.ok`; throw a typed HTTP error before parsing the success body."
+        },
+        {
+          "id": "choice-b1080d314f",
+          "label": "Parse the body first, then treat any JSON object as a successful profile regardless of its response status."
+        },
+        {
+          "id": "choice-c5a41d3c61",
+          "label": "Move the request into `try...catch` and rely on `fetch` to reject each response outside the 200 range."
+        }
+      ],
+      "prompt": "A profile loader uses `fetch` and its catch block for the error UI. During a `404` response, the promise follows the success path and the code tries to render the server's error document as a profile. Which response boundary fixes the classification?",
       "revision": 1,
       "technology": "javascript"
     },
@@ -908,6 +1693,106 @@
       "technology": "javascript"
     },
     {
+      "competency": "own-property-presence",
+      "difficultyBand": "core",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-js-own-property-presence-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-4e884dedd8",
+          "label": "Treat the key as supplied when `patch[key] !== undefined`, because direct lookup exposes its value."
+        },
+        {
+          "id": "choice-37b0999cfa",
+          "label": "Treat the key as supplied when `Object.hasOwn(patch, key)` returns true for that patch object."
+        },
+        {
+          "id": "choice-7c3d05fe9b",
+          "label": "Treat the key as supplied when `key in patch` returns true anywhere along the lookup chain."
+        }
+      ],
+      "prompt": "A configuration patch distinguishes an omitted key from an explicitly supplied key whose value is `undefined`. It must also ignore matching properties inherited through the prototype chain. Which presence check matches both rules?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "stateful-regexp-validation",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 95,
+      "format": "production-scenario",
+      "id": "int-js-stateful-regexp-validation-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-cb898261b0",
+          "label": "Keep the global flag and increment `lastIndex` before each call so the next search starts later."
+        },
+        {
+          "id": "choice-abc9f6918e",
+          "label": "Keep the global flag and retry `test` after a failure so its internal index cycles back to zero."
+        },
+        {
+          "id": "choice-93a3ad003b",
+          "label": "Remove `g` and reuse the anchored expression because validation does not enumerate matches."
+        }
+      ],
+      "prompt": "A module reuses `const skuPattern = /^[A-Z]{3}-\\d{4}$/g` and calls `skuPattern.test(value)` for each field. The same valid SKU passes once and fails on the next call. The validator only needs a whole-string yes/no result. Which correction removes the hidden state?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "streaming-text-frame-reassembly",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 175,
+      "format": "production-scenario",
+      "id": "int-js-streaming-text-frame-reassembly-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-51e7a0bf0c",
+          "label": "Pipe through `TextDecoderStream`, retain the incomplete text tail, parse complete lines, then process the final tail."
+        },
+        {
+          "id": "choice-bf4e061259",
+          "label": "Create a new `TextDecoder` for each byte chunk, decode it independently, and parse that decoded chunk as JSON."
+        },
+        {
+          "id": "choice-06c4c3ec77",
+          "label": "Pipe through `TextDecoderStream`, parse each emitted string as one JSON record, and discard strings without a newline."
+        }
+      ],
+      "prompt": "A `fetch` response streams UTF-8 newline-delimited JSON. Network chunks can split a multibyte character or one JSON line, and the final line may omit a newline. Which consumer preserves both decoding and protocol framing?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "structured-clone-data-model-fit",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 125,
+      "format": "production-scenario",
+      "id": "int-js-structured-clone-data-model-fit-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-faf2e93ea5",
+          "label": "Clone with a transfer list containing the live buffer, post that checkpoint without transfers, and keep reading the original buffer."
+        },
+        {
+          "id": "choice-1c36bd2dbd",
+          "label": "Clone with `structuredClone` without transfers, post that checkpoint without transfers, and retain both independent main-thread graphs."
+        },
+        {
+          "id": "choice-729cb41a9d",
+          "label": "Copy the root with object spread, post it without transfers, and treat the new root as independent during later edits."
+        }
+      ],
+      "prompt": "An editor creates an undo checkpoint, then asynchronously posts it to a persistence worker while editing continues. The graph contains nested objects, `Date`, `Map`, a cycle, and an `ArrayBuffer`. Both the live graph and the main-thread checkpoint must stay readable until the worker acknowledges persistence, and the saved copies must not reflect later edits. No uncloneable values are present. Which ownership policy fits?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
       "code": {
         "language": "javascript",
         "runtime": "browser",
@@ -963,6 +1848,31 @@
       "technology": "javascript"
     },
     {
+      "competency": "write-retry-idempotency",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 125,
+      "format": "production-scenario",
+      "id": "int-js-write-retry-idempotency-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-2836f6684c",
+          "label": "Generate a fresh key for each retry so the server can distinguish every network attempt in the sequence."
+        },
+        {
+          "id": "choice-a729b49d56",
+          "label": "Retry without a key after a client-side lookup reports no order, treating that read as a creation lock."
+        },
+        {
+          "id": "choice-c317343cd9",
+          "label": "Create one key for the logical checkout, reuse it for exact retries, and rotate it only for a new operation."
+        }
+      ],
+      "prompt": "A checkout `POST` can time out after the server has created an order. The endpoint documents `Idempotency-Key` support, and the client may retry an unacknowledged attempt but must not create a second order. Which ownership policy is safe?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
       "competency": "controlled-input-edit-normalization",
       "difficultyBand": "stretch",
       "estimatedSeconds": 120,
@@ -1013,6 +1923,36 @@
       "technology": "react"
     },
     {
+      "code": {
+        "language": "jsx",
+        "runtime": "react-19.2",
+        "source": "const headerRef = useRef(null);\nconst [columnRects, setColumnRects] = useState([]);"
+      },
+      "competency": "dom-ref-commit-timing",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-react-dom-ref-commit-timing-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-66496f38ba",
+          "label": "Read the ref in `useLayoutEffect` and update the overlay from that committed measurement."
+        },
+        {
+          "id": "choice-456a57f953",
+          "label": "Read the ref during render and update the overlay before returning the data-grid JSX."
+        },
+        {
+          "id": "choice-ed56c20a52",
+          "label": "Read the ref in `useEffect` and update the overlay after the browser's first paint."
+        }
+      ],
+      "prompt": "A client-side data grid renders a header and a separately positioned selection overlay. The overlay needs the committed header cells' widths before the browser's first paint; otherwise it flashes under the wrong columns. A ref points to the header row. Where should measurement and overlay-state update run?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "competency": "effect-resource-lifecycle",
       "difficultyBand": "core",
       "estimatedSeconds": 105,
@@ -1038,6 +1978,91 @@
       "technology": "react"
     },
     {
+      "competency": "error-boundary-catch-scope",
+      "difficultyBand": "core",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-react-error-boundary-catch-scope-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-eee730c8e7",
+          "label": "Wrap the subtree in an Error Boundary and let it handle both render failures and rejected Save promises."
+        },
+        {
+          "id": "choice-927757a1e4",
+          "label": "Wrap the subtree in an Error Boundary, and catch the awaited Save failure inside its event workflow."
+        },
+        {
+          "id": "choice-3ec33fc9bb",
+          "label": "Wrap the returned descendant JSX in `try/catch`, and move rejected Save promises into a passive Effect."
+        }
+      ],
+      "prompt": "A settings subtree needs a fallback if a descendant throws while rendering. Its Save button also awaits a request and must show an inline message when that promise rejects. Which error design covers both failure origins?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "code": {
+        "language": "jsx",
+        "runtime": "react-19.2",
+        "source": "<button onClick={submitOrder(orderId)}>\n  Place order\n</button>"
+      },
+      "competency": "event-handler-deferral",
+      "difficultyBand": "core",
+      "estimatedSeconds": 75,
+      "format": "production-scenario",
+      "id": "int-react-event-handler-deferral-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-130d32d4d8",
+          "label": "Move `submitOrder(orderId)` into an Effect that depends on the current order identifier."
+        },
+        {
+          "id": "choice-955dd39c95",
+          "label": "Pass `submitOrder` directly and let it read the order identifier from React's click event."
+        },
+        {
+          "id": "choice-2cb838fef4",
+          "label": "Pass `() => submitOrder(orderId)` so React invokes the captured operation only for the button click."
+        }
+      ],
+      "prompt": "A checkout button currently submits an order while the component renders, then has no function left to run when clicked. The submit operation needs the current `orderId` and must begin only after activation. Which replacement fixes the timing contract?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "code": {
+        "language": "javascript",
+        "runtime": "react-19.2",
+        "source": "function getSnapshot() {\n  return { ...store.current };\n}"
+      },
+      "competency": "external-store-snapshot-consistency",
+      "difficultyBand": "core",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-react-external-store-snapshot-consistency-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-461cac8eee",
+          "label": "Cache an immutable snapshot and return its same identity until the store actually mutates."
+        },
+        {
+          "id": "choice-d9c3993bed",
+          "label": "Keep returning fresh snapshots and wrap every subscribing component with `React.memo`."
+        },
+        {
+          "id": "choice-9917fd8e7a",
+          "label": "Keep returning fresh snapshots and deep-compare them inside each component after rendering."
+        }
+      ],
+      "prompt": "A mutable external store is connected with `useSyncExternalStore`. Without any store mutation, the dashboard repeatedly rerenders until React aborts; instrumentation shows consecutive `getSnapshot()` results contain equal fields but fail `Object.is`. Which store contract fixes the integration?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "competency": "subscription-stale-closure-updates",
       "difficultyBand": "core",
       "estimatedSeconds": 120,
@@ -1059,6 +2084,31 @@
         }
       ],
       "prompt": "A React total subscribes once to a stable `socket` in an Effect. A burst can deliver several deltas before the next render. Its handler calls `setTotal(total + delta)`, so updates overwrite one another; the subscription must not restart whenever `total` changes. Which implementation preserves every delta and the listener lifecycle?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "hook-call-order-invariance",
+      "difficultyBand": "core",
+      "estimatedSeconds": 75,
+      "format": "conceptual",
+      "id": "int-react-hook-call-order-invariance-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-d012a95482",
+          "label": "Call the presence Hook only inside the enabled branch, before the component's other top-level Hooks."
+        },
+        {
+          "id": "choice-d73cf8e307",
+          "label": "Call Hooks at the top level on every render, then branch inside their behavior or rendered result."
+        },
+        {
+          "id": "choice-ff12fc0252",
+          "label": "Call the presence Hook inside a memo callback that runs only while tracking is enabled."
+        }
+      ],
+      "prompt": "A profile component optionally enables presence tracking. The first render has tracking disabled, but a later render enables it and React reports a changed Hook order. Which design preserves React's state-slot mapping across both renders?",
       "revision": 1,
       "technology": "react"
     },
@@ -1088,6 +2138,61 @@
       "technology": "react"
     },
     {
+      "competency": "lazy-chunk-deployment-recovery",
+      "difficultyBand": "core",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-react-lazy-chunk-deployment-recovery-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-0ae563b32d",
+          "label": "Change the component key and rerender the same lazy declaration, expecting its loader to run again."
+        },
+        {
+          "id": "choice-2d0a481e75",
+          "label": "Keep only Suspense and change its loading fallback into the error view for rejected loader Promises."
+        },
+        {
+          "id": "choice-1609d59a4f",
+          "label": "Wrap Suspense and the lazy route in an Error Boundary that renders failure UI for the rejection."
+        }
+      ],
+      "prompt": "After a deployment, a production analytics route's `lazy` import Promise rejects while the component is inside Suspense. The route must leave the loading state, show an explicit failure surface, and avoid a Retry control that merely remounts the same declaration. Which UI boundary matches React's contract?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "code": {
+        "language": "jsx",
+        "runtime": "react-19.2",
+        "source": "function Preferences() {\n  const [settings, setSettings] = useState(readPreferences());\n  // ...\n}"
+      },
+      "competency": "lazy-state-initialization",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-react-lazy-state-initialization-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-f4e8c64f8d",
+          "label": "Pass the reader as the initializer: `useState(readPreferences)`."
+        },
+        {
+          "id": "choice-14c0ea24ed",
+          "label": "Wrap the reader without calling it: `useState(() => readPreferences)`."
+        },
+        {
+          "id": "choice-363e25597e",
+          "label": "Start with empty state, then call the reader from a mount Effect."
+        }
+      ],
+      "prompt": "A client-only preferences panel parses a large `localStorage` record during every render even though React uses the value only to initialize state. The reader is pure, and development Strict Mode probes are acceptable. Which initialization removes the repeated render cost without showing an empty first state?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "competency": "shared-state-ownership",
       "difficultyBand": "core",
       "estimatedSeconds": 120,
@@ -1113,6 +2218,56 @@
       "technology": "react"
     },
     {
+      "competency": "optimistic-mutation-rollback",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-react-optimistic-mutation-rollback-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-95e7f3bf24",
+          "label": "Insert into the canonical array immediately, then remove the failed item later by its current list index."
+        },
+        {
+          "id": "choice-e9f368ece5",
+          "label": "Layer client-ID entries with `useOptimistic` inside Actions, update canonical data on success, and report failures."
+        },
+        {
+          "id": "choice-b61bad3c0c",
+          "label": "Copy pending entries into canonical state from an Effect before starting each request, then retain that copy."
+        }
+      ],
+      "prompt": "A React 19 comment list should display each submitted comment immediately. Multiple submissions may overlap, the canonical `comments` value changes only after server success, and a rejected submission must disappear while showing its error. Which ownership model provides that rollback?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "portal-logical-tree-behavior",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-react-portal-logical-tree-behavior-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-c2da13e67c",
+          "label": "Move the portal target inside the card's DOM node while preserving its current React parent and handlers."
+        },
+        {
+          "id": "choice-3adbe6f616",
+          "label": "Render the modal with a separate root and manually mirror the current context into another provider."
+        },
+        {
+          "id": "choice-1c55fa3428",
+          "label": "Keep the portal and stop propagation at the modal interaction boundary before running its Save behavior."
+        }
+      ],
+      "prompt": "A card opens a modal through a portal to `document.body`. Clicking the modal's Save button also triggers the card's fixed selection handler. The modal must keep consuming the card subtree's live React context without duplicating providers. Which change fits those constraints?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "competency": "profile-guided-render-memoization",
       "difficultyBand": "core",
       "estimatedSeconds": 150,
@@ -1135,6 +2290,61 @@
       ],
       "prompt": "Across several high-frequency dashboards, large virtualized tables and charts use a shared `{ data, options }` prop API. Profiler traces show unrelated ticker updates rerendering each expensive surface because parents rebuild equivalent options; those options must still change when filters or theme change. The surfaces read no changing context, React Compiler is disabled, and behavior must stay unchanged. Which cross-team policy creates safe prop-based bailouts?",
       "revision": 4,
+      "technology": "react"
+    },
+    {
+      "competency": "reducer-transition-invariants",
+      "difficultyBand": "core",
+      "estimatedSeconds": 105,
+      "format": "conceptual",
+      "id": "int-react-reducer-transition-invariants-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-d1052d09a2",
+          "label": "Dispatch domain events to one pure reducer that returns every coupled field as a valid next state."
+        },
+        {
+          "id": "choice-aa8b77e819",
+          "label": "Keep independent setters and add an Effect that repairs invalid combinations after each committed update."
+        },
+        {
+          "id": "choice-dddaa6e787",
+          "label": "Keep independent setters and rely on React batching their calls within each current event handler."
+        }
+      ],
+      "prompt": "A checkout form stores country, shipping method, and payment choice separately. Several handlers update overlapping fields, and some paths leave a payment choice that is invalid for the new country. Which state model makes that cross-field invariant easiest to enforce and test?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "code": {
+        "language": "jsx",
+        "runtime": "react-19.2",
+        "source": "// Server Component\nconst product = await catalog.read(productId);\nreturn <BuyButton product={product} onBuy={() => cart.add(product.id)} />;"
+      },
+      "competency": "server-client-serialization-boundary",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-react-server-client-serialization-boundary-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-941643ac4e",
+          "label": "Mark the data-reading parent `'use client'` so the inline function no longer crosses a server boundary."
+        },
+        {
+          "id": "choice-fd71b26d53",
+          "label": "Pass serializable product fields, and create the click handler inside the client purchase component."
+        },
+        {
+          "id": "choice-c93f7a6c4b",
+          "label": "Convert the inline function to source text, then reconstruct and invoke it inside the client component."
+        }
+      ],
+      "prompt": "A React Server Component reads product data with a server-only client, then passes an ordinary inline `onBuy` function to a `'use client'` purchase button. The framework rejects that prop at the boundary. Buying only needs serializable product data and browser-side interaction code. Which refactor preserves the split?",
+      "revision": 1,
       "technology": "react"
     },
     {
@@ -1243,6 +2453,31 @@
       "technology": "react"
     },
     {
+      "competency": "state-reset-identity-boundary",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-react-state-reset-identity-boundary-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-537d8f2973",
+          "label": "Keep the editor identity and reset each draft field from an Effect keyed by `customerId`."
+        },
+        {
+          "id": "choice-0551c70191",
+          "label": "Key the whole admin page by `customerId` so its filters and editor mount together."
+        },
+        {
+          "id": "choice-3e50a6eb42",
+          "label": "Key the editor subtree by `customerId` while leaving the surrounding page identity stable."
+        }
+      ],
+      "prompt": "An admin page keeps its table filters while switching customers, but the mounted customer editor incorrectly carries an unsaved draft into the next customer. A customer change should recreate only the editor's local state. Which tree design sets the intended identity boundary?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "competency": "concurrent-update-priorities",
       "difficultyBand": "core",
       "estimatedSeconds": 165,
@@ -1266,6 +2501,36 @@
       "prompt": "A controlled search input updates `query`, and the same handler updates `filterQuery` used by a costly result tree. Keystrokes feel blocked. The input must reflect every key immediately, while result rendering may be interrupted. Which scheduling change matches those priorities?",
       "revision": 1,
       "technology": "react"
+    },
+    {
+      "code": {
+        "language": "javascript",
+        "runtime": "vue-3.5",
+        "source": "const AnalyticsWidget = defineAsyncComponent(() =>\n  import('./AnalyticsWidget.vue')\n)"
+      },
+      "competency": "async-component-retry-boundary",
+      "difficultyBand": "core",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-vue-async-component-retry-boundary-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-a7bca5d90e",
+          "label": "Set `errorComponent`; in `onError`, use a local counter to `retry` at most two transient failures, else `fail`."
+        },
+        {
+          "id": "choice-8c78927ce1",
+          "label": "Recursively catch rejected imports and start another import until one eventually resolves."
+        },
+        {
+          "id": "choice-829f346c3c",
+          "label": "Set an error component and timeout, relying on Vue to retry each rejected loader twice."
+        }
+      ],
+      "prompt": "An analytics widget is loaded as a Vue 3.5 async component from a flaky CDN. A transient network failure may be retried at most twice after the initial attempt; any non-transient error or exhausted retry budget must render the error component. Which definition owns that policy without an unbounded import loop?",
+      "revision": 1,
+      "technology": "vue"
     },
     {
       "competency": "composable-effect-lifetime",
@@ -1315,6 +2580,31 @@
       ],
       "prompt": "A Vue 3.5 checkout renders `grandTotal`, which is defined entirely by reactive `subtotal` and `tax` and has no independent write path. Separately, after `currency` changes, analytics must inspect the summary after its component DOM patch. Which design assigns both responsibilities correctly?",
       "revision": 6,
+      "technology": "vue"
+    },
+    {
+      "competency": "conditional-mount-visibility-choice",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 75,
+      "format": "conceptual",
+      "id": "int-vue-conditional-mount-visibility-choice-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-4722715b68",
+          "label": "Use `v-if`, so Vue removes and recreates the panel whenever its visibility changes."
+        },
+        {
+          "id": "choice-9cca2d65af",
+          "label": "Use `v-show`, so Vue keeps the panel rendered and toggles its CSS display state."
+        },
+        {
+          "id": "choice-d57ab37a10",
+          "label": "Use keyed `v-if`, so Vue restores the same panel instance after every later remount."
+        }
+      ],
+      "prompt": "A filter panel is toggled many times during one visit. Hiding it must preserve its draft input and child component instance, and rendering it during the initial page load is acceptable. Which Vue directive best matches that lifecycle?",
+      "revision": 1,
       "technology": "vue"
     },
     {
@@ -1369,6 +2659,36 @@
     },
     {
       "code": {
+        "language": "javascript",
+        "runtime": "vue-3.5",
+        "source": "const ReviewsWidget = defineAsyncComponent({\n  loader: () => import('./ReviewsWidget.vue')\n})"
+      },
+      "competency": "lazy-hydration-strategy-boundary",
+      "difficultyBand": "core",
+      "estimatedSeconds": 180,
+      "format": "production-scenario",
+      "id": "int-vue-lazy-hydration-strategy-boundary-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-0d135d0922",
+          "label": "Keep the default hydration behavior, but add `suspensible: false` so preloaded widgets stop joining Suspense."
+        },
+        {
+          "id": "choice-379120b857",
+          "label": "Gate each widget with an `onMounted()` observer and `v-if` so its server-rendered subtree is replaced inside the zone."
+        },
+        {
+          "id": "choice-ca2965db36",
+          "label": "Set the async component's `hydrate` option to `hydrateOnVisible({ rootMargin: '200px' })` for its existing SSR subtree."
+        }
+      ],
+      "prompt": "A Vue 3.5 SSR product page eagerly preloads the reviews chunk during route navigation. Profiling still shows that every server-rendered reviews widget hydrates during startup, including widgets far below the fold. The HTML must remain in the initial response, but each widget should take client ownership only after entering a 200 px approach zone. Which change fixes the lifecycle boundary?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "code": {
         "language": "vue",
         "runtime": "vue-3.5",
         "source": "<template>\n  <span class=\"icon\" aria-hidden=\"true\">★</span>\n  <button type=\"button\"><slot /></button>\n</template>"
@@ -1398,6 +2718,66 @@
       "technology": "vue"
     },
     {
+      "code": {
+        "language": "vue",
+        "runtime": "vue-3.5",
+        "source": "<script setup>\nconst expanded = ref(false)\nconst panel = useTemplateRef('panel')\n\nasync function openPanel() {\n  expanded.value = true\n  placeOverlay(panel.value.scrollHeight)\n}\n</script>"
+      },
+      "competency": "next-tick-dom-read-timing",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-vue-next-tick-dom-read-timing-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-535c1df15f",
+          "label": "Set `expanded`, await `nextTick()`, then read `scrollHeight` and place the overlay."
+        },
+        {
+          "id": "choice-6a9c498ca0",
+          "label": "Set `expanded`, read `scrollHeight`, then await `nextTick()` before placing the overlay."
+        },
+        {
+          "id": "choice-03dacc67f6",
+          "label": "Read `scrollHeight`, set `expanded`, then place the overlay in `requestAnimationFrame`."
+        }
+      ],
+      "prompt": "A click handler expands a Vue 3.5 panel and immediately reads its template ref's `scrollHeight` to position an overlay. The measurement still describes the collapsed DOM. The same handler must measure exactly once after Vue applies that state change. Which sequence provides that guarantee?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "code": {
+        "language": "javascript",
+        "runtime": "vue-3.5",
+        "source": "async setQuantity(id, quantity) {\n  const before = this.items[id].quantity\n  this.items[id].quantity = quantity\n  try {\n    await api.saveQuantity(id, quantity)\n  } catch {\n    this.items[id].quantity = before\n  }\n}"
+      },
+      "competency": "pinia-optimistic-transaction",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 180,
+      "format": "production-scenario",
+      "id": "int-vue-pinia-optimistic-transaction-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-69f8f7ec15",
+          "label": "Queue every cart save globally, applying the next optimistic value after the prior request settles."
+        },
+        {
+          "id": "choice-afb52d5fc8",
+          "label": "Give each line mutation a token, and roll back its snapshot only while that token is still current."
+        },
+        {
+          "id": "choice-3d1c061324",
+          "label": "Restore each failed request's snapshot, then ask the component to reapply its latest displayed value."
+        }
+      ],
+      "prompt": "A Pinia cart action saves quantity optimistically. For one line item, request A writes `2`, then request B writes `3`; B succeeds before A fails. The UI must stay at `3`, later saves may start immediately, and unrelated lines must remain independent. Which transaction policy prevents the stale failure from rolling back newer state?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
       "competency": "ssr-store-request-ownership",
       "difficultyBand": "core",
       "estimatedSeconds": 180,
@@ -1419,6 +2799,36 @@
         }
       ],
       "prompt": "A Node server creates one Pinia instance at module scope and reuses it for every Vue 3.5 SSR request. Under concurrent traffic, one user's cart can appear in another response. Which architecture best fixes the ownership boundary?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "code": {
+        "language": "javascript",
+        "runtime": "vue-3.5",
+        "source": "let currentClient\n\nexport const analyticsPlugin = {\n  install(app, client) {\n    currentClient = client\n  }\n}"
+      },
+      "competency": "plugin-multi-app-isolation",
+      "difficultyBand": "core",
+      "estimatedSeconds": 180,
+      "format": "production-scenario",
+      "id": "int-vue-plugin-multi-app-isolation-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-dab31181df",
+          "label": "Keep one module client and reinstall the plugin on the intended app before sending each event."
+        },
+        {
+          "id": "choice-163924f4cc",
+          "label": "Store both clients on `window` by mount element and let injectors discover their nearest root."
+        },
+        {
+          "id": "choice-1aa4c7d516",
+          "label": "Use a shared Symbol key and call `app.provide(key, client)` inside each plugin installation."
+        }
+      ],
+      "prompt": "One page mounts two independent Vue 3.5 applications. Both install the same analytics plugin, but each passes a different tenant client. The plugin stores the latest client in module scope, so installing the second app silently redirects events from the first. Descendants already consume the client through `inject`. Which plugin design restores application-level isolation?",
       "revision": 1,
       "technology": "vue"
     },
@@ -1473,6 +2883,61 @@
       "technology": "vue"
     },
     {
+      "competency": "provide-inject-mutation-boundary",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "conceptual",
+      "id": "int-vue-provide-inject-mutation-boundary-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-f8d3e46535",
+          "label": "Provide a readonly theme ref together with a provider-owned `setTheme` function."
+        },
+        {
+          "id": "choice-5c0423e09f",
+          "label": "Provide the writable theme ref and let each injecting component assign its value."
+        },
+        {
+          "id": "choice-b9a521f673",
+          "label": "Provide the current theme string and let descendants replace that injected value."
+        }
+      ],
+      "prompt": "A settings provider owns a reactive theme. Deep descendants must display it and request changes, but they must not mutate the theme ref directly. Which provided contract keeps updates reactive and preserves that ownership?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "code": {
+        "language": "vue",
+        "runtime": "vue-3.5",
+        "source": "<template>\n  <article class=\"excerpt\" v-html=\"article.body\" />\n</template>"
+      },
+      "competency": "raw-html-trust-boundary",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-vue-raw-html-trust-boundary-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-c87ef2a326",
+          "label": "Interpolate the raw API field as text, then reconstruct approved tags inside the component."
+        },
+        {
+          "id": "choice-6844223b97",
+          "label": "Apply the allowlist on the trusted backend, return a sanitized API field, and bind only that field to `v-html`."
+        },
+        {
+          "id": "choice-9efb032021",
+          "label": "Strip script tags with a browser regex immediately before passing the raw API field to `v-html`."
+        }
+      ],
+      "prompt": "A Vue web app displays CMS article excerpts with a small allowlist of formatting tags. The trusted backend can sanitize submitted HTML before its article API returns it; the browser has no reviewed sanitizer. The template currently passes the raw API field to `v-html`. Which change preserves approved formatting without sending raw user HTML to that sink?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
       "competency": "composition-api-reactive-primitives",
       "difficultyBand": "foundation",
       "estimatedSeconds": 75,
@@ -1498,6 +2963,91 @@
       "technology": "vue"
     },
     {
+      "competency": "shallow-ref-external-instance",
+      "difficultyBand": "core",
+      "estimatedSeconds": 105,
+      "format": "conceptual",
+      "id": "int-vue-shallow-ref-external-instance-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-091f50b607",
+          "label": "Use `ref(toRaw(createChart()))`, then assign later chart instances directly through `.value`."
+        },
+        {
+          "id": "choice-876579a98c",
+          "label": "Use `reactive({ chart: markRaw(createChart()) })`, then assign later instances directly to `chart`."
+        },
+        {
+          "id": "choice-06c4b2e35f",
+          "label": "Use `shallowRef(createChart())`, then assign later chart instances directly through `.value`."
+        }
+      ],
+      "prompt": "A shared Vue 3.5 composable exposes a third-party chart instance whose nodes are identity-keyed and mutated internally on every frame. Consumers that read the container must rerun when a route change replaces the whole instance, but replacement instances arrive unmarked and nested SDK mutations must stay outside Vue. Which implementation preserves that contract without preprocessing every assignment?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "code": {
+        "language": "vue",
+        "runtime": "vue-3.5",
+        "source": "<DataList :rows=\"rows\">\n  <template #item>\n    <strong>{{ row.name }}</strong>\n  </template>\n</DataList>"
+      },
+      "competency": "slot-render-scope-contract",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-vue-slot-render-scope-contract-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-7b7e0c28fd",
+          "label": "Pass `row` from the child slot outlet and destructure that slot prop in the parent."
+        },
+        {
+          "id": "choice-d3187e4a7e",
+          "label": "Declare `row` only in the child setup and let parent slot expressions read it directly."
+        },
+        {
+          "id": "choice-b56c3cbe1c",
+          "label": "Read the child component's private `row` through the parent slot's `$parent` value."
+        }
+      ],
+      "prompt": "A reusable `<DataList>` owns each current `row`, while its parent supplies the markup for a named `item` slot. The parent slot tries to render `row.name`, but `row` exists only inside `<DataList>`. Which contract exposes the row without moving list ownership to the parent?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "code": {
+        "language": "javascript",
+        "runtime": "vue-3.5",
+        "source": "const state = JSON.stringify(pinia.state.value)\nconst shell = `<script>window.__STATE__ = ${state}</script>`"
+      },
+      "competency": "ssr-state-safe-serialization",
+      "difficultyBand": "core",
+      "estimatedSeconds": 180,
+      "format": "production-scenario",
+      "id": "int-vue-ssr-state-safe-serialization-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-ed06682752",
+          "label": "Escape quotation marks as HTML entities, then keep interpolating the JSON into the script assignment."
+        },
+        {
+          "id": "choice-4cfbeadcdd",
+          "label": "Use an HTML-embedding-safe data serializer, then parse that request snapshot before client hydration."
+        },
+        {
+          "id": "choice-480c2b55cf",
+          "label": "Keep the raw JSON in a nonce-bearing script and rely on CSP to contain every state value."
+        }
+      ],
+      "prompt": "A Vue 3.5 SSR server embeds a request-local Pinia snapshot in an inline script so the client can hydrate the same state. A user display name can contain `</script>`, which breaks out of the script raw-text boundary when inserted through plain `JSON.stringify`. Which handoff preserves the exact hydration data without treating user content as executable markup?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
       "competency": "render-update-prop-stability",
       "difficultyBand": "core",
       "estimatedSeconds": 150,
@@ -1520,6 +3070,36 @@
       ],
       "prompt": "Profiling a Vue 3.5 trading UI with several large virtualized product viewports shows that high-frequency `selectedId` changes update every mounted `ProductRow`. A shared row-prop adapter creates a new `viewConfig` object for each row containing `selected` and unchanged `currency`; every viewport uses that contract, so its fan-out consumes the render budget. Which contract redesign most directly narrows updates across the system?",
       "revision": 3,
+      "technology": "vue"
+    },
+    {
+      "code": {
+        "language": "vue",
+        "runtime": "vue-3.5",
+        "source": "<article\n  v-for=\"card in cards\"\n  :key=\"card.id\"\n  ref=\"cardElements\"\n>\n  {{ card.title }}\n</article>"
+      },
+      "competency": "template-ref-keyed-registry",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-vue-template-ref-keyed-registry-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-3f48476585",
+          "label": "Zip the ref array to the current cards array after updates and assume both orders stay equal."
+        },
+        {
+          "id": "choice-6f174ce7f4",
+          "label": "Copy the mounted ref array into a card-ID map once and retain that map through later updates."
+        },
+        {
+          "id": "choice-4e37a56cf1",
+          "label": "Bind a function ref per card that stores its element by ID and deletes that ID when passed `null`."
+        }
+      ],
+      "prompt": "A reorderable Vue 3.5 card list feeds element measurements into an external layout engine. Callbacks need the current element by stable card ID, including after moves and removals. The current `v-for` ref produces an array. Which ref strategy maintains the required keyed registry?",
+      "revision": 1,
       "technology": "vue"
     },
     {

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-pinia-optimistic-transaction-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "pinia-optimistic-transaction",
+    "prompt": "A Pinia cart action saves quantity optimistically. For one line item, request A writes `2`, then request B writes `3`; B succeeds before A fails. The UI must stay at `3`, later saves may start immediately, and unrelated lines must remain independent. Which transaction policy prevents the stale failure from rolling back newer state?",
+    "code": {
+      "language": "javascript",
+      "runtime": "vue-3.5",
+      "source": "async setQuantity(id, quantity) {\n  const before = this.items[id].quantity\n  this.items[id].quantity = quantity\n  try {\n    await api.saveQuantity(id, quantity)\n  } catch {\n    this.items[id].quantity = before\n  }\n}"
+    },
+    "options": [
+      {
+        "id": "choice-69f8f7ec15",
+        "label": "Queue every cart save globally, applying the next optimistic value after the prior request settles."
+      },
+      {
+        "id": "choice-afb52d5fc8",
+        "label": "Give each line mutation a token, and roll back its snapshot only while that token is still current."
+      },
+      {
+        "id": "choice-3d1c061324",
+        "label": "Restore each failed request's snapshot, then ask the component to reapply its latest displayed value."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-afb52d5fc8",
+    "answerProof": {
+      "summary": "Given the stated A/B settlement order, a per-line mutation token makes rollback authority conditional on still being the latest transaction, so A's late failure cannot overwrite B's committed quantity or block unrelated records.",
+      "decisiveConstraints": [
+        "Multiple writes for the same line may overlap and settle out of order.",
+        "A stale transaction must lose authority to mutate current state.",
+        "Concurrency for later saves and other line items must remain available."
+      ],
+      "claims": [
+        {
+          "statement": "Pinia actions are designed for business logic, have access to the whole store instance, and can await asynchronous API calls.",
+          "sourceIds": [
+            "pinia3-actions"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-69f8f7ec15",
+        "verdict": "incorrect",
+        "explanation": "Global serialization avoids out-of-order rollback, but it delays later optimistic writes and couples independent cart lines behind unrelated network work.",
+        "misconceptionTag": "global-serialization-is-required-for-consistency",
+        "plausibility": "One request at a time makes completion order match mutation order.",
+        "falsifyingConstraint": "Later saves must start immediately and unrelated lines must remain independent."
+      },
+      {
+        "optionId": "choice-afb52d5fc8",
+        "verdict": "correct",
+        "explanation": "The token revokes A's rollback authority as soon as B becomes current, while each line retains its own concurrent transaction boundary.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-3d1c061324",
+        "verdict": "incorrect",
+        "explanation": "Restoring A first creates an observable stale state, and a component-owned repair duplicates the store's source of truth and can race again.",
+        "misconceptionTag": "rollback-then-ui-repair-is-atomic",
+        "plausibility": "The component may still display or remember the user's most recent quantity.",
+        "falsifyingConstraint": "A stale response must never regain write authority over the current store value."
+      }
+    ],
+    "remediationTopics": [
+      "Pinia actions",
+      "optimistic concurrency",
+      "conditional rollback",
+      "per-record transaction ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Pinia: Actions",
+        "url": "https://pinia.vuejs.org/core-concepts/actions.html",
+        "sourceId": "pinia3-actions"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "pinia3-actions",
+          "title": "Pinia: Actions",
+          "url": "https://pinia.vuejs.org/core-concepts/actions.html",
+          "role": "technical-verification",
+          "licenseId": "MIT",
+          "licenseUrl": "https://github.com/vuejs/pinia/blob/v3/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Pinia 3.x documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

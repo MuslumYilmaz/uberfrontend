@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-own-property-presence-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "own-property-presence",
+    "prompt": "A configuration patch distinguishes an omitted key from an explicitly supplied key whose value is `undefined`. It must also ignore matching properties inherited through the prototype chain. Which presence check matches both rules?",
+    "options": [
+      {
+        "id": "choice-4e884dedd8",
+        "label": "Treat the key as supplied when `patch[key] !== undefined`, because direct lookup exposes its value."
+      },
+      {
+        "id": "choice-37b0999cfa",
+        "label": "Treat the key as supplied when `Object.hasOwn(patch, key)` returns true for that patch object."
+      },
+      {
+        "id": "choice-7c3d05fe9b",
+        "label": "Treat the key as supplied when `key in patch` returns true anywhere along the lookup chain."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-37b0999cfa",
+    "answerProof": {
+      "summary": "`Object.hasOwn` tests ownership independently of the stored value and excludes prototype-chain matches, exactly separating omitted, explicit-undefined, and inherited cases.",
+      "decisiveConstraints": [
+        "An own property with value `undefined` counts as supplied.",
+        "A missing own property does not count as supplied.",
+        "An inherited property does not count as supplied."
+      ],
+      "claims": [
+        {
+          "statement": "`Object.hasOwn` returns true for an own property even when its value is `undefined`, and false for inherited properties.",
+          "sourceIds": [
+            "mdn-object-hasown"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-4e884dedd8",
+        "verdict": "incorrect",
+        "explanation": "Value lookup cannot distinguish a missing property from an own property explicitly assigned `undefined`.",
+        "plausibility": "Comparing against undefined is a concise and common check when only usable values matter.",
+        "misconceptionTag": "undefined-value-means-absent-key",
+        "falsifyingConstraint": "An explicit own property with value undefined must retain presence semantics."
+      },
+      {
+        "optionId": "choice-37b0999cfa",
+        "verdict": "correct",
+        "explanation": "The static ownership check accepts explicit undefined and rejects both missing and inherited properties.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-7c3d05fe9b",
+        "verdict": "incorrect",
+        "explanation": "The `in` operator includes inherited properties, so prototype data can be mistaken for a supplied patch field.",
+        "plausibility": "The operator correctly detects properties whose value is undefined and therefore solves half of the requirement.",
+        "misconceptionTag": "in-operator-checks-own-properties",
+        "falsifyingConstraint": "Only fields directly owned by the patch object may count as supplied."
+      }
+    ],
+    "remediationTopics": [
+      "property-ownership",
+      "object-hasown",
+      "prototype-chain"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Object.hasOwn()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn",
+        "sourceId": "mdn-object-hasown"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-object-hasown",
+          "title": "MDN: Object.hasOwn()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

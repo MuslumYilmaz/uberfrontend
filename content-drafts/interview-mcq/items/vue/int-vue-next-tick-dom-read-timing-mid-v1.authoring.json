@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-next-tick-dom-read-timing-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "next-tick-dom-read-timing",
+    "prompt": "A click handler expands a Vue 3.5 panel and immediately reads its template ref's `scrollHeight` to position an overlay. The measurement still describes the collapsed DOM. The same handler must measure exactly once after Vue applies that state change. Which sequence provides that guarantee?",
+    "code": {
+      "language": "vue",
+      "runtime": "vue-3.5",
+      "source": "<script setup>\nconst expanded = ref(false)\nconst panel = useTemplateRef('panel')\n\nasync function openPanel() {\n  expanded.value = true\n  placeOverlay(panel.value.scrollHeight)\n}\n</script>"
+    },
+    "options": [
+      {
+        "id": "choice-535c1df15f",
+        "label": "Set `expanded`, await `nextTick()`, then read `scrollHeight` and place the overlay."
+      },
+      {
+        "id": "choice-6a9c498ca0",
+        "label": "Set `expanded`, read `scrollHeight`, then await `nextTick()` before placing the overlay."
+      },
+      {
+        "id": "choice-03dacc67f6",
+        "label": "Read `scrollHeight`, set `expanded`, then place the overlay in `requestAnimationFrame`."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-535c1df15f",
+    "answerProof": {
+      "summary": "Vue batches the DOM patch caused by the reactive assignment, so awaiting the next tick after that assignment establishes the required boundary before measuring the updated panel.",
+      "decisiveConstraints": [
+        "The measurement belongs to the DOM produced by this specific expansion.",
+        "The handler must measure once rather than poll or guess a timer delay."
+      ],
+      "claims": [
+        {
+          "statement": "Vue buffers DOM updates caused by reactive mutations, and `nextTick()` awaited after a mutation resolves after that DOM update flush.",
+          "sourceIds": [
+            "vue35-next-tick"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-535c1df15f",
+        "verdict": "correct",
+        "explanation": "The state write schedules the panel patch, and the following `nextTick` boundary ensures the ref is measured after that patch.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-6a9c498ca0",
+        "verdict": "incorrect",
+        "explanation": "The height is captured before Vue patches the panel, so delaying only the overlay write cannot repair the already stale measurement.",
+        "misconceptionTag": "deferred-consumption-refreshes-dom-read",
+        "plausibility": "Waiting before applying styles can avoid writing layout changes during the current synchronous handler.",
+        "falsifyingConstraint": "The measured value itself must come from the expanded DOM."
+      },
+      {
+        "optionId": "choice-03dacc67f6",
+        "verdict": "incorrect",
+        "explanation": "The animation-frame callback delays only the overlay placement; the height was captured from the collapsed panel before the expansion.",
+        "misconceptionTag": "deferred-write-refreshes-earlier-read",
+        "plausibility": "Animation frames are a common boundary for coordinating visual updates with browser rendering.",
+        "falsifyingConstraint": "The height read itself must occur after Vue patches the expanded panel."
+      }
+    ],
+    "remediationTopics": [
+      "Vue nextTick",
+      "batched DOM updates",
+      "post-render measurement"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Global API - nextTick",
+        "url": "https://vuejs.org/api/general.html#nexttick",
+        "sourceId": "vue35-next-tick"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-next-tick",
+          "title": "Vue: Global API - nextTick",
+          "url": "https://vuejs.org/api/general.html#nexttick",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

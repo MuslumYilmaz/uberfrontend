@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-auth-refresh-single-flight-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "auth-refresh-single-flight",
+    "prompt": "Three Angular API requests receive 401 responses together after an access token expires. The refresh endpoint must not intercept itself, exactly one refresh may run, and each original request should retry once with the resulting token. Which interceptor architecture enforces those constraints?",
+    "options": [
+      {
+        "id": "choice-f19def9492",
+        "label": "Share one in-flight refresh result, exclude the refresh request, retry each original once, and clear shared state on settlement."
+      },
+      {
+        "id": "choice-cbf54b74b0",
+        "label": "Start one refresh inside every 401 handler, then let each handler retry its request with whichever token finishes last."
+      },
+      {
+        "id": "choice-13501fa3c5",
+        "label": "Queue every failed request, immediately replay the queue with the expired token, and refresh after those retries settle."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-f19def9492",
+    "answerProof": {
+      "summary": "A service-level in-flight result creates a single-flight boundary shared by concurrent interceptor executions; each captured request can resume once, and finalization permits a later expiry to start a new refresh.",
+      "decisiveConstraints": [
+        "Concurrent 401 handlers must converge on one refresh operation.",
+        "The refresh call cannot enter the same recovery branch.",
+        "Each original request gets at most one authenticated retry.",
+        "The single-flight state must reset after success or failure."
+      ],
+      "claims": [
+        {
+          "statement": "Angular interceptors can transform the response stream associated with each captured outgoing request and can implement authentication and retry patterns.",
+          "sourceIds": [
+            "angular22-http-interceptors"
+          ]
+        },
+        {
+          "statement": "Angular HttpClient observables are cold and each independent subscription sends a request, so a shared in-flight operation is needed when multiple consumers must reuse one request.",
+          "sourceIds": [
+            "angular22-http-making-requests"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-f19def9492",
+        "verdict": "correct",
+        "explanation": "All 401 paths join one refresh lifetime, then independently clone and retry their captured requests with one resulting token.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-cbf54b74b0",
+        "verdict": "incorrect",
+        "explanation": "Cold refresh calls started per handler produce duplicate rotations and can race token replacement or invalidate one another.",
+        "plausibility": "Each handler locally owns the request that failed and can recover it without coordinating shared state.",
+        "misconceptionTag": "parallel-refreshes-are-equivalent",
+        "falsifyingConstraint": "The authentication system permits exactly one refresh for the concurrent expiry event."
+      },
+      {
+        "optionId": "choice-13501fa3c5",
+        "verdict": "incorrect",
+        "explanation": "Replaying before refresh repeats the known-invalid credential and spends each request's retry without acquiring usable authorization.",
+        "plausibility": "A queue can serialize retries and prevent a burst of simultaneous follow-up requests.",
+        "misconceptionTag": "retry-precedes-credential-refresh",
+        "falsifyingConstraint": "Original requests need the newly refreshed token on their single retry."
+      }
+    ],
+    "remediationTopics": [
+      "Angular HTTP interceptors",
+      "single-flight refresh",
+      "cold HttpClient observables",
+      "bounded authentication retry"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular: Intercepting requests and responses",
+        "url": "https://angular.dev/guide/http/interceptors",
+        "sourceId": "angular22-http-interceptors"
+      },
+      {
+        "title": "Angular: Making requests",
+        "url": "https://angular.dev/guide/http/making-requests",
+        "sourceId": "angular22-http-making-requests"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-http-interceptors",
+          "title": "Angular: Intercepting requests and responses",
+          "url": "https://angular.dev/guide/http/interceptors",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-http-making-requests",
+          "title": "Angular: Making requests",
+          "url": "https://angular.dev/guide/http/making-requests",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-07-29",
+          "revision": "Angular v22.0.8+sha-d346905 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

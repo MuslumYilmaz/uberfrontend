@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-layout-animation-invalidation-budget-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "css",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "layout-animation-invalidation-budget",
+    "prompt": "A selection highlight moves between fixed-size tabs while a large dashboard is updating. Profiling shows that animating its `left` and `width` triggers layout and paint across many frames. The effect only needs translation, scaling, and fading. Which policy best reduces rendering work?",
+    "options": [
+      {
+        "id": "choice-21018fb155",
+        "label": "Continue animating `left` and `width`, then add `will-change: all` to every tab for the page lifetime."
+      },
+      {
+        "id": "choice-52a4a24335",
+        "label": "Animate `margin-left` and `max-width`, then force synchronous layout before each frame to stabilize geometry."
+      },
+      {
+        "id": "choice-a35af2f121",
+        "label": "Measure target geometry outside the frame loop, animate `transform` and `opacity`, and scope `will-change` briefly."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-a35af2f121",
+    "answerProof": {
+      "summary": "Geometry properties such as left, width, margins, and maximum width enter layout and paint work, while transform and opacity can be handled in composition. Measuring once avoids read/write layout churn, and temporary targeted `will-change` avoids persistent layer costs.",
+      "decisiveConstraints": [
+        "The highlight does not need to alter surrounding layout.",
+        "Per-frame layout is the measured bottleneck.",
+        "Layer hints must not be applied broadly for the page lifetime."
+      ],
+      "claims": [
+        {
+          "statement": "Geometry-affecting properties can trigger style, layout, and paint, while transform and opacity can be handled at the composition stage.",
+          "sourceIds": [
+            "mdn-animation-performance"
+          ]
+        },
+        {
+          "statement": "`will-change` should be used sparingly and switched on and off with enough lead time rather than applied broadly.",
+          "sourceIds": [
+            "mdn-will-change"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-21018fb155",
+        "verdict": "incorrect",
+        "explanation": "The animated geometry still incurs layout work, and broad persistent `will-change` can consume resources without removing that contract.",
+        "plausibility": "Layer promotion hints can improve some animations and are easy to add without changing coordinates.",
+        "misconceptionTag": "will-change-removes-layout-cost",
+        "falsifyingConstraint": "The frame path must avoid geometry invalidation and persistent hints across every tab."
+      },
+      {
+        "optionId": "choice-52a4a24335",
+        "verdict": "incorrect",
+        "explanation": "Margins and maximum width also affect geometry, while forced layout inside each frame adds synchronization work.",
+        "plausibility": "Explicit measurement can prevent visual jumps when an animation depends on changing dimensions.",
+        "misconceptionTag": "forced-layout-stabilizes-frame-budget",
+        "falsifyingConstraint": "The effect can be represented without per-frame layout reads or geometry writes."
+      },
+      {
+        "optionId": "choice-a35af2f121",
+        "verdict": "correct",
+        "explanation": "It derives endpoints once, keeps frame updates in compositing-friendly properties, and limits promotion hints to active use.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "rendering-waterfall",
+      "compositor-friendly-animation",
+      "will-change-lifecycle"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Animation performance and frame rate",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Animation_performance_and_frame_rate",
+        "sourceId": "mdn-animation-performance"
+      },
+      {
+        "title": "MDN: will-change",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/will-change",
+        "sourceId": "mdn-will-change"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-animation-performance",
+          "title": "MDN: Animation performance and frame rate",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Animation_performance_and_frame_rate",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-will-change",
+          "title": "MDN: will-change",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/will-change",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

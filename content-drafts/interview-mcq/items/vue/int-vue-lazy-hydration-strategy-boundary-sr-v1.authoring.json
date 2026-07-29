@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-lazy-hydration-strategy-boundary-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "lazy-hydration-strategy-boundary",
+    "prompt": "A Vue 3.5 SSR product page eagerly preloads the reviews chunk during route navigation. Profiling still shows that every server-rendered reviews widget hydrates during startup, including widgets far below the fold. The HTML must remain in the initial response, but each widget should take client ownership only after entering a 200 px approach zone. Which change fixes the lifecycle boundary?",
+    "code": {
+      "language": "javascript",
+      "runtime": "vue-3.5",
+      "source": "const ReviewsWidget = defineAsyncComponent({\n  loader: () => import('./ReviewsWidget.vue')\n})"
+    },
+    "options": [
+      {
+        "id": "choice-0d135d0922",
+        "label": "Keep the default hydration behavior, but add `suspensible: false` so preloaded widgets stop joining Suspense."
+      },
+      {
+        "id": "choice-379120b857",
+        "label": "Gate each widget with an `onMounted()` observer and `v-if` so its server-rendered subtree is replaced inside the zone."
+      },
+      {
+        "id": "choice-ca2965db36",
+        "label": "Set the async component's `hydrate` option to `hydrateOnVisible({ rootMargin: '200px' })` for its existing SSR subtree."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-ca2965db36",
+    "answerProof": {
+      "summary": "The async component's hydration strategy is independent of chunk preloading: visibility hydration preserves the SSR markup while transferring client ownership at the configured approach boundary.",
+      "decisiveConstraints": [
+        "The widget's useful server-rendered HTML must remain in the page before hydration.",
+        "Hydration timing must be driven by proximity to the viewport.",
+        "Already preloaded code must not imply immediate hydration of every server-rendered widget."
+      ],
+      "claims": [
+        {
+          "statement": "Vue 3.5 async components support lazy hydration strategies, and `hydrateOnVisible` uses `IntersectionObserver` options such as `rootMargin` to hydrate near visibility.",
+          "sourceIds": [
+            "vue35-lazy-hydration"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-0d135d0922",
+        "verdict": "incorrect",
+        "explanation": "`suspensible` changes how the async component participates in Suspense; it does not defer hydration of existing SSR markup to a spatial boundary.",
+        "misconceptionTag": "suspense-participation-controls-hydration",
+        "plausibility": "Suspense participation does affect how an async component coordinates pending work with its parent boundary.",
+        "falsifyingConstraint": "The widget must avoid client ownership until its own approach zone is reached."
+      },
+      {
+        "optionId": "choice-379120b857",
+        "verdict": "incorrect",
+        "explanation": "A client-only `v-if` gate removes or replaces the server-rendered subtree instead of hydrating that markup under Vue's SSR hydration contract.",
+        "misconceptionTag": "client-mount-gate-preserves-ssr-hydration",
+        "plausibility": "An observer-controlled mount can delay creation of a purely client-rendered component.",
+        "falsifyingConstraint": "The initial server-rendered HTML must remain and later acquire client ownership through hydration."
+      },
+      {
+        "optionId": "choice-ca2965db36",
+        "verdict": "correct",
+        "explanation": "The async component's hydration strategy transfers ownership of the existing SSR subtree when its root enters the configured observer margin, regardless of when the chunk was downloaded.",
+        "misconceptionTag": null,
+        "plausibility": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "Vue lazy hydration",
+      "SSR interaction readiness",
+      "visibility-based activation"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue: Async Components - Lazy Hydration",
+        "url": "https://vuejs.org/guide/components/async.html#lazy-hydration",
+        "sourceId": "vue35-lazy-hydration"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue35-lazy-hydration",
+          "title": "Vue: Async Components - Lazy Hydration",
+          "url": "https://vuejs.org/guide/components/async.html#lazy-hydration",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

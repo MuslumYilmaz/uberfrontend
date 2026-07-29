@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-logical-axis-localization-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "css",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "logical-axis-localization",
+    "prompt": "A reusable author badge needs spacing after its avatar in the direction text flows. It must work in left-to-right, right-to-left, and vertical writing modes without locale-specific selectors. Which declaration expresses that intent?",
+    "options": [
+      {
+        "id": "choice-2e4749c28d",
+        "label": "Set `margin-inline-end` on the avatar so the mapped physical side follows writing mode and direction."
+      },
+      {
+        "id": "choice-a613613d32",
+        "label": "Set `margin-right` on the avatar and swap it to `margin-left` only when the document direction is RTL."
+      },
+      {
+        "id": "choice-0d399390ad",
+        "label": "Set `margin-block-end` on the avatar so the spacing follows the edge where inline text finishes."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-2e4749c28d",
+    "answerProof": {
+      "summary": "`margin-inline-end` represents the end edge of the inline text-flow axis. Its physical mapping follows both direction and writing mode, avoiding separate horizontal locale rules and covering vertical flow.",
+      "decisiveConstraints": [
+        "Spacing belongs after the avatar along the inline axis.",
+        "The inline axis may run horizontally or vertically.",
+        "The component cannot depend on locale-specific selector overrides."
+      ],
+      "claims": [
+        {
+          "statement": "`margin-inline-end` maps to a physical margin according to writing mode, directionality, and text orientation.",
+          "sourceIds": [
+            "mdn-margin-inline-end"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-2e4749c28d",
+        "verdict": "correct",
+        "explanation": "The logical property follows the inline end in all declared writing directions without physical-side branching.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-a613613d32",
+        "verdict": "incorrect",
+        "explanation": "Left and right overrides cover horizontal directions but do not map the spacing onto a vertical inline axis.",
+        "plausibility": "Direction selectors are a familiar way to mirror horizontal layouts between LTR and RTL.",
+        "misconceptionTag": "rtl-overrides-cover-writing-modes",
+        "falsifyingConstraint": "The same rule must adapt when inline content flows vertically."
+      },
+      {
+        "optionId": "choice-0d399390ad",
+        "verdict": "incorrect",
+        "explanation": "`margin-block-end` follows the block-stacking axis rather than the edge after inline content.",
+        "plausibility": "The word end matches the desired trailing edge and block margins often separate component content.",
+        "misconceptionTag": "block-end-is-text-end",
+        "falsifyingConstraint": "The spacing must follow the inline axis, not the axis along which blocks stack."
+      }
+    ],
+    "remediationTopics": [
+      "css-logical-properties",
+      "inline-axis",
+      "writing-modes"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: margin-inline-end",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin-inline-end",
+        "sourceId": "mdn-margin-inline-end"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-margin-inline-end",
+          "title": "MDN: margin-inline-end",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin-inline-end",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

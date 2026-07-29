@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-event-handler-deferral-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "event-handler-deferral",
+    "prompt": "A checkout button currently submits an order while the component renders, then has no function left to run when clicked. The submit operation needs the current `orderId` and must begin only after activation. Which replacement fixes the timing contract?",
+    "code": {
+      "language": "jsx",
+      "runtime": "react-19.2",
+      "source": "<button onClick={submitOrder(orderId)}>\n  Place order\n</button>"
+    },
+    "options": [
+      {
+        "id": "choice-130d32d4d8",
+        "label": "Move `submitOrder(orderId)` into an Effect that depends on the current order identifier."
+      },
+      {
+        "id": "choice-955dd39c95",
+        "label": "Pass `submitOrder` directly and let it read the order identifier from React's click event."
+      },
+      {
+        "id": "choice-2cb838fef4",
+        "label": "Pass `() => submitOrder(orderId)` so React invokes the captured operation only for the button click."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-2cb838fef4",
+    "answerProof": {
+      "summary": "JSX evaluates a called function during rendering, whereas passing a closure gives React a function it can invoke later with access to the rendered order identifier.",
+      "decisiveConstraints": [
+        "Submitting is caused by a user activation rather than by rendering or an order change.",
+        "The handler needs the `orderId` captured by the current render."
+      ],
+      "claims": [
+        {
+          "statement": "React event handlers must receive a function value; calling a function in JSX executes it during rendering instead of deferring it until the event.",
+          "sourceIds": [
+            "react19-responding-to-events"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-130d32d4d8",
+        "verdict": "incorrect",
+        "explanation": "An Effect ties the submission to mounting or identifier changes, so an order can be submitted without a user activating the button.",
+        "plausibility": "Effects can run side effects after React commits a render and can react to a changed identifier.",
+        "misconceptionTag": "user-event-belongs-in-effect",
+        "falsifyingConstraint": "The operation must begin in response to button activation, not in response to synchronization."
+      },
+      {
+        "optionId": "choice-955dd39c95",
+        "verdict": "incorrect",
+        "explanation": "React passes the event object to a direct handler, not the application-specific order identifier expected by this submit function.",
+        "plausibility": "Passing a named function directly is the usual React event-handler shape when its signature accepts the event.",
+        "misconceptionTag": "event-argument-is-domain-identifier",
+        "falsifyingConstraint": "The submit function requires `orderId`, while React supplies the click event as its argument."
+      },
+      {
+        "optionId": "choice-2cb838fef4",
+        "verdict": "correct",
+        "explanation": "The closure is passed rather than called during render and captures the current identifier for React to use on activation.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "React event handlers",
+      "render-time evaluation",
+      "passing arguments through closures"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Responding to Events",
+        "url": "https://react.dev/learn/responding-to-events",
+        "sourceId": "react19-responding-to-events"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-responding-to-events",
+          "title": "React: Responding to Events",
+          "url": "https://react.dev/learn/responding-to-events",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

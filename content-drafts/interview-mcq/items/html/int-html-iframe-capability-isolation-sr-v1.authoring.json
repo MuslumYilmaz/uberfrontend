@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-iframe-capability-isolation-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "html",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "iframe-capability-isolation",
+    "prompt": "A product renders customer-authored interactive HTML from a dedicated preview origin. The preview needs scripts, but it must not gain origin identity, popups, top navigation, forms, downloads, camera, or microphone access. Which embedding policy grants only the required capability?",
+    "options": [
+      {
+        "id": "choice-adc5b853e5",
+        "label": "Embed without `sandbox` and let a CSP inside the customer-authored document disable the capabilities it does not use."
+      },
+      {
+        "id": "choice-437dc87d92",
+        "label": "Use `sandbox=\"allow-scripts allow-same-origin allow-popups\"` and an `allow` list that grants camera and microphone."
+      },
+      {
+        "id": "choice-809d3fc999",
+        "label": "Use `sandbox=\"allow-scripts\"`, omit `allow-same-origin`, and keep camera and microphone denied by Permissions Policy."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-809d3fc999",
+    "answerProof": {
+      "summary": "An iframe sandbox begins from a restricted capability set and selectively restores scripts. Omitting same-origin keeps an opaque origin, omitting other sandbox tokens withholds their capabilities, and Permissions Policy maintains explicit device-feature denial.",
+      "decisiveConstraints": [
+        "Script execution is the only sandbox capability the preview needs.",
+        "Customer-authored content is not trusted to enforce its own boundary.",
+        "Origin and powerful device capabilities must remain unavailable."
+      ],
+      "claims": [
+        {
+          "statement": "The iframe `sandbox` attribute restricts embedded content and `allow-scripts` selectively permits script execution without granting the other sandbox tokens.",
+          "sourceIds": [
+            "mdn-iframe-element"
+          ]
+        },
+        {
+          "statement": "An iframe `allow` policy and the parent Permissions Policy combine using the more restrictive effective policy.",
+          "sourceIds": [
+            "mdn-permissions-policy"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-adc5b853e5",
+        "verdict": "incorrect",
+        "explanation": "Content controlled by the customer cannot be trusted to preserve a self-declared CSP, and no iframe sandbox boundary exists.",
+        "plausibility": "CSP is a strong defense for documents whose response policy is controlled by the hosting application.",
+        "misconceptionTag": "untrusted-child-enforces-own-boundary",
+        "falsifyingConstraint": "The embedding document must enforce restrictions independently of customer-authored content."
+      },
+      {
+        "optionId": "choice-437dc87d92",
+        "verdict": "incorrect",
+        "explanation": "It restores origin and popup privileges and explicitly grants the device capabilities that the contract denies.",
+        "plausibility": "Those tokens are frequently added to make complex third-party widgets work with fewer integration failures.",
+        "misconceptionTag": "broad-iframe-tokens-are-harmless",
+        "falsifyingConstraint": "Only script execution may be granted to the preview."
+      },
+      {
+        "optionId": "choice-809d3fc999",
+        "verdict": "correct",
+        "explanation": "The sandbox restores scripts alone, retains opaque-origin isolation, and leaves powerful device features unavailable.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "iframe-sandbox",
+      "permissions-policy",
+      "least-privilege-embedding"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: iframe element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+        "sourceId": "mdn-iframe-element"
+      },
+      {
+        "title": "MDN: Permissions Policy",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy",
+        "sourceId": "mdn-permissions-policy"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-iframe-element",
+          "title": "MDN: iframe element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-permissions-policy",
+          "title": "MDN: Permissions Policy",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-07-29",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

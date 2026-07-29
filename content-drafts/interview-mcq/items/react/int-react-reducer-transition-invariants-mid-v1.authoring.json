@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-reducer-transition-invariants-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "reducer-transition-invariants",
+    "prompt": "A checkout form stores country, shipping method, and payment choice separately. Several handlers update overlapping fields, and some paths leave a payment choice that is invalid for the new country. Which state model makes that cross-field invariant easiest to enforce and test?",
+    "options": [
+      {
+        "id": "choice-d1052d09a2",
+        "label": "Dispatch domain events to one pure reducer that returns every coupled field as a valid next state."
+      },
+      {
+        "id": "choice-aa8b77e819",
+        "label": "Keep independent setters and add an Effect that repairs invalid combinations after each committed update."
+      },
+      {
+        "id": "choice-dddaa6e787",
+        "label": "Keep independent setters and rely on React batching their calls within each current event handler."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-d1052d09a2",
+    "answerProof": {
+      "summary": "A reducer centralizes related transitions as a pure current-state-and-action calculation, allowing each domain event to return a state that already satisfies the checkout invariant.",
+      "decisiveConstraints": [
+        "Multiple events can change more than one related field.",
+        "Invalid intermediate committed combinations should not need later repair.",
+        "The transition rules need isolated tests."
+      ],
+      "claims": [
+        {
+          "statement": "A React reducer receives current state and an action and returns the next state that React stores.",
+          "sourceIds": [
+            "react19-extracting-state-reducer"
+          ]
+        },
+        {
+          "statement": "Reducers should be pure and can be tested independently from the component.",
+          "sourceIds": [
+            "react19-extracting-state-reducer"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d1052d09a2",
+        "verdict": "correct",
+        "explanation": "One reducer owns the full transition, so a country event can simultaneously replace dependent choices and return a valid snapshot.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-aa8b77e819",
+        "verdict": "incorrect",
+        "explanation": "The Effect reacts after a state combination has committed and creates a second update path whose repair ordering also needs coordination.",
+        "plausibility": "An Effect can observe all fields and normalize them whenever any dependency changes.",
+        "misconceptionTag": "effect-is-atomic-state-transition",
+        "falsifyingConstraint": "Each domain event should produce a valid next snapshot without a later repair commit."
+      },
+      {
+        "optionId": "choice-dddaa6e787",
+        "verdict": "incorrect",
+        "explanation": "Batching groups rendering work but does not centralize transition rules across handlers or guarantee that every handler updates all dependent fields.",
+        "plausibility": "Batched setters often appear together in one rendered result instead of causing a render for each call.",
+        "misconceptionTag": "batching-enforces-domain-invariant",
+        "falsifyingConstraint": "Several independently maintained event paths must enforce the same coupled rule."
+      }
+    ],
+    "remediationTopics": [
+      "React useReducer",
+      "domain-event modeling",
+      "pure state transitions",
+      "cross-field invariants"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Extracting State Logic into a Reducer",
+        "url": "https://react.dev/learn/extracting-state-logic-into-a-reducer",
+        "sourceId": "react19-extracting-state-reducer"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-extracting-state-reducer",
+          "title": "React: Extracting State Logic into a Reducer",
+          "url": "https://react.dev/learn/extracting-state-logic-into-a-reducer",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

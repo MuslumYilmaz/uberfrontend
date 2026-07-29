@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-hook-call-order-invariance-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-07-29"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "hook-call-order-invariance",
+    "prompt": "A profile component optionally enables presence tracking. The first render has tracking disabled, but a later render enables it and React reports a changed Hook order. Which design preserves React's state-slot mapping across both renders?",
+    "options": [
+      {
+        "id": "choice-d012a95482",
+        "label": "Call the presence Hook only inside the enabled branch, before the component's other top-level Hooks."
+      },
+      {
+        "id": "choice-d73cf8e307",
+        "label": "Call Hooks at the top level on every render, then branch inside their behavior or rendered result."
+      },
+      {
+        "id": "choice-ff12fc0252",
+        "label": "Call the presence Hook inside a memo callback that runs only while tracking is enabled."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-d73cf8e307",
+    "answerProof": {
+      "summary": "React associates Hook state with call order, so the component must execute the same top-level Hook sequence and make optional behavior conditional inside that stable structure.",
+      "decisiveConstraints": [
+        "The enabled flag can change while the same component instance remains mounted.",
+        "Hook calls must retain a stable count and order across those renders."
+      ],
+      "claims": [
+        {
+          "statement": "React requires Hooks to be called at the top level rather than in conditions, nested callbacks, or after conditional returns.",
+          "sourceIds": [
+            "react19-rules-of-hooks"
+          ]
+        },
+        {
+          "statement": "Calling the same Hooks in the same order lets React associate each call with the correct state.",
+          "sourceIds": [
+            "react19-rules-of-hooks-lint"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-d012a95482",
+        "verdict": "incorrect",
+        "explanation": "Placing a conditional Hook before other Hooks still inserts a call only on enabled renders and shifts every later state slot.",
+        "plausibility": "Keeping the optional call near the start can look like it makes the remaining Hook sequence predictable.",
+        "misconceptionTag": "conditional-hook-position-is-stable",
+        "falsifyingConstraint": "The presence call itself is absent on one render and present on another."
+      },
+      {
+        "optionId": "choice-d73cf8e307",
+        "verdict": "correct",
+        "explanation": "The Hook sequence stays invariant, while the enabled value can control work inside the Hook or select what the component displays.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-ff12fc0252",
+        "verdict": "incorrect",
+        "explanation": "A memo callback is nested and may be skipped, so putting a Hook there does not establish a top-level call on each render.",
+        "plausibility": "Memo callbacks already express conditional recomputation based on dependencies and can appear to isolate optional work.",
+        "misconceptionTag": "memo-callback-is-hook-boundary",
+        "falsifyingConstraint": "Hooks cannot be called inside a function passed to `useMemo`."
+      }
+    ],
+    "remediationTopics": [
+      "Rules of Hooks",
+      "Hook call order",
+      "conditional behavior inside custom Hooks"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Rules of Hooks",
+        "url": "https://react.dev/reference/rules/rules-of-hooks",
+        "sourceId": "react19-rules-of-hooks"
+      },
+      {
+        "title": "React: rules-of-hooks lint",
+        "url": "https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks",
+        "sourceId": "react19-rules-of-hooks-lint"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-rules-of-hooks",
+          "title": "React: Rules of Hooks",
+          "url": "https://react.dev/reference/rules/rules-of-hooks",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "react19-rules-of-hooks-lint",
+          "title": "React: rules-of-hooks lint",
+          "url": "https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-07-29",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}
