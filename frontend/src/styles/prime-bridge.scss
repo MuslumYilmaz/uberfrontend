@@ -89,6 +89,37 @@
   border-color: var(--uf-border-subtle);
 }
 
+/* System-design reader dialogs are appended to body, so their unique
+   styleClass and maskStyleClass belong in this global PrimeNG bridge. */
+.sdl-mobile-dialog.p-dialog {
+  max-height: min(78dvh, 680px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  background: #0f0f10;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .45);
+  overflow: hidden;
+}
+
+.sdl-mobile-dialog.p-dialog .p-dialog-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: #141416;
+  color: #e6eaee;
+}
+
+.sdl-mobile-dialog.p-dialog .p-dialog-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sdl-mobile-dialog.p-dialog .p-dialog-header-icon {
+  color: #e6eaee;
+}
+
+.sdl-mobile-dialog-mask.p-dialog-mask {
+  background: rgba(8, 10, 14, .68);
+}
+
 .fa-modal-mask.p-dialog-mask.p-component-overlay {
   background: color-mix(in srgb, var(--uf-bg) 62%, transparent);
   backdrop-filter: blur(4px) saturate(112%);
@@ -226,5 +257,12 @@
   .fa-modal-mask.p-dialog-mask.p-component-overlay,
   .fa-modal.p-dialog {
     animation: none;
+  }
+
+  .sdl-mobile-dialog.p-dialog,
+  .sdl-mobile-dialog-mask.p-dialog-mask {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
 }

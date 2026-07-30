@@ -794,30 +794,6 @@
   border-color: rgba(255,255,255,.2);
   background: #151b24;
 }
-:host ::ng-deep .sdl-mobile-dialog{
-  max-height: min(78dvh, 680px);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 12px;
-  background: #0f0f10;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, .45);
-  overflow: hidden;
-}
-:host ::ng-deep .sdl-mobile-dialog .p-dialog-header{
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  background: #141416;
-  color:#e6eaee;
-}
-:host ::ng-deep .sdl-mobile-dialog .p-dialog-title{
-  font-size: 13px;
-  font-weight: 700;
-}
-:host ::ng-deep .sdl-mobile-dialog .p-dialog-header-icon{
-  color:#e6eaee;
-}
-:host ::ng-deep .sdl-mobile-dialog-mask{
-  background: rgba(8, 10, 14, .68);
-}
 .sdl-mobile-panel-content{
   min-width: 0;
   max-width: 100%;
@@ -982,12 +958,6 @@
   }
   .report-issue-btn:active{
     transform: none;
-  }
-  :host ::ng-deep .sdl-mobile-dialog,
-  :host ::ng-deep .sdl-mobile-dialog-mask{
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
   }
 }
 
