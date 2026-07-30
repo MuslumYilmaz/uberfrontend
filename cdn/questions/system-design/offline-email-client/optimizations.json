@@ -60,7 +60,7 @@
       "rows": [
         [
           "Drafts and outbox commands",
-          "Durable user intent: write in one transaction and never evict silently; surface storage failure with copy or export recovery"
+          "Durable user intent: write drafts, attachment lifecycle records, and commands in one transaction and never evict them silently; surface storage failure with copy or export recovery"
         ],
         [
           "Snapshot and cursor",
@@ -78,7 +78,7 @@
     },
     {
       "type": "text",
-      "text": "Browser storage improves availability, not confidentiality. Partition storage, memory, workers, and requests by account; clear data on sign-out or account switch. BroadcastChannel may announce committed records and elect a short-lived sync leader, but delivery is advisory. Persist before broadcasting, reload after waking, and let server versions and deltas resolve conflicts."
+      "text": "Browser storage improves availability, not confidentiality. Partition storage, memory, workers, and requests by account; clear data on sign-out or account switch. BroadcastChannel may announce committed records and elect a short-lived sync leader, but delivery is advisory. Persist before broadcasting, reload after waking, and let server versions and deltas resolve conflicts. Background Sync is only a progressive enhancement: the browser may not support it or schedule work after the tab closes. Durable draft and outbox records therefore remain queued and flush at the next eligible foreground or reconnect opportunity; the UI never promises background delivery."
     },
     {
       "type": "heading",
@@ -160,7 +160,7 @@
         ],
         [
           "Draft revision conflicts",
-          "Preserve local and server text, explain the conflict, and require an explicit accepted base before saving"
+          "Record the remote revision as acknowledgement, newer base, or conflict without overwriting newer local intent; preserve both documents and require an explicit accepted base before saving"
         ],
         [
           "Malicious HTML",
@@ -172,11 +172,11 @@
         ],
         [
           "Attachment fails",
-          "Keep reading available and show a specific retry or blocked state; never start an automatic download before scanning completes"
+          "Keep reading available and preserve the stable draft-attachment identity, committed byte offset, and local recovery data; retry the same upload session or idempotency key, and never enable Send or start a download before the finalized asset is ready"
         ],
         [
           "Push gap or leader-tab crash",
-          "Foreground or periodic delta reconciliation restores state; push and BroadcastChannel remain replaceable hints"
+          "The next eligible foreground or periodic delta reconciliation restores state; push, Background Sync, and BroadcastChannel remain replaceable hints rather than delivery guarantees"
         ]
       ]
     },
@@ -190,7 +190,8 @@
       "items": [
         "Measure time to cached and fresh inbox, thread-open latency, long tasks, mounted rows, scroll-anchor corrections, and retained bytes.",
         "Track draft-save success, conflicts, quota failures, outbox age, confirmation latency, cursor expiry, stale time, and duplicate-send prevention without collecting mail content.",
-        "Test sanitization corpora, remote-origin network blocking, attachment states, account isolation, crash recovery, lost responses, expired cursors, and cross-tab races.",
+        "Test sanitization corpora, remote-origin network blocking, attachment upload progress, cancel, retry, finalization and download states, account isolation, crash recovery, lost responses, expired cursors, and cross-tab races.",
+        "Test browsers without Background Sync and tab-close cases; queued commands must remain durable and flush on the next eligible foreground or reconnect without claiming background delivery.",
         "Automate keyboard tasks, identity-based focus restoration, live-region deduplication, 200 percent zoom, forced colors, 320 and 390 pixel overflow, long text, and bidirectional fixtures."
       ]
     },
@@ -221,7 +222,7 @@
       "title": "Design review checkpoint",
       "items": [
         "Why stable thread identity protects selection, scroll anchoring, and focus during virtualization.",
-        "Why drafts and outbox commands survive cache eviction, cursor expiry, and presentation rollback.",
+        "Why drafts, attachment lifecycle records, and outbox commands survive cache eviction, cursor expiry, and presentation rollback.",
         "Why lost send responses converge through idempotency keys and clientCommandId without duplicate Sent mail.",
         "Why BroadcastChannel and push reduce latency while server revisions and deltas remain authoritative.",
         "Why sanitization, remote-image privacy, attachment isolation, native controls, and composer-safe shortcuts are separate boundaries."
@@ -266,6 +267,11 @@
           "label": "MDN BroadcastChannel API",
           "href": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API",
           "description": "Same-origin cross-context messaging."
+        },
+        {
+          "label": "MDN Background Synchronization API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Background_Synchronization_API",
+          "description": "Optional deferred work with limited browser availability."
         },
         {
           "label": "OWASP cross-site scripting prevention",

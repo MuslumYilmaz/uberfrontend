@@ -1102,6 +1102,10 @@ test.describe('seo-ssr', () => {
     expect(extractRawMeta(html, 'description')).toBe(OFFLINE_EMAIL_CLIENT_SEO_DESCRIPTION);
     expect(extractRawH1(html)).toBe(OFFLINE_EMAIL_CLIENT_H1);
     expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(bodyMarkup).toMatch(
+      /<pre\b[^>]*class=["'][^"']*\bsd-code\b[^"']*["'][^>]*>\s*<code\b[^>]*>[\s\S]*?type MailboxSnapshot/i,
+    );
+    expect(bodyMarkup).not.toMatch(/<app-monaco-editor\b/i);
     expect(extractRawCanonical(html)).toBe(expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH));
     expect(robots).toBe('index,follow');
     expect(hasLockedShellMarkup(html)).toBe(false);
@@ -1141,6 +1145,7 @@ test.describe('seo-ssr', () => {
       description: OFFLINE_EMAIL_CLIENT_CATALOG_DESCRIPTION,
       url: expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
       isAccessibleForFree: true,
+      educationalLevel: 'hard',
     });
   });
 

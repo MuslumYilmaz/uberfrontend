@@ -89,6 +89,7 @@ describe('guided system-design interview content', () => {
       scenario.level,
       scenario.timeLimitSeconds,
     ])).toEqual([
+      ['int-sd-ai-chat-composer-mid-v1', 'mid', 900],
       ['int-sd-autocomplete-race-mid-v1', 'mid', 900],
       ['int-sd-ranked-feed-sr-v1', 'senior', 1200],
       ['int-sd-toast-lifecycle-jr-v1', 'junior', 600],
@@ -127,6 +128,44 @@ describe('guided system-design interview content', () => {
     expect(errors).toEqual(expect.arrayContaining([
       expect.stringContaining('choice length differs from its peer median by more than 25%'),
       expect.stringContaining('choice wording contains an avoidable absolute-language clue'),
+    ]));
+  });
+
+  test('rejects four-word solution signatures leaked through clarification answers', () => {
+    const errors = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.publicPackage.scenarios.find(
+        (entry) => entry.id === "int-sd-ai-chat-composer-mid-v1"
+      );
+      const privateScenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === scenario.id
+      );
+      const sendDecision = scenario.decisions.find(
+        (entry) => entry.id === "chat-send-identity"
+      );
+      const option = sendDecision.options.find(
+        (entry) => entry.id === "chat-send-command-message"
+      );
+      const rationale = sendDecision.rationales.find(
+        (entry) => entry.id === "chat-rationale-one-turn"
+      );
+      privateScenario.clarificationAnswers.find(
+        (entry) => entry.clarificationId === "chat-send-uncertainty"
+      ).answer = \`The API constraint is: \${option.label}. \${option.description}\`;
+      privateScenario.clarificationAnswers.find(
+        (entry) => entry.clarificationId === "chat-draft-scope"
+      ).answer = \`The product constraint is to \${rationale.label}.\`;
+      console.log(JSON.stringify(content.validateBuiltSystemDesignContent(built)));
+    `);
+    expect(errors).toEqual(expect.arrayContaining([
+      expect.stringContaining(
+        'clarification answer repeats a four-word solution signature '
+        + 'from chat-send-identity/chat-send-command-message'
+      ),
+      expect.stringContaining(
+        'clarification answer repeats a four-word solution signature '
+        + 'from chat-send-identity/chat-rationale-one-turn'
+      ),
     ]));
   });
 
@@ -186,6 +225,108 @@ describe('guided system-design interview content', () => {
     }
   });
 
+  test('requires every scored composer boundary before the chat fixture can remain strong', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.publicPackage.scenarios.find(
+        (entry) => entry.id === "int-sd-ai-chat-composer-mid-v1"
+      );
+      const privateScenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === scenario.id
+      );
+      const strong = privateScenario.validationFixtures.find(
+        (entry) => entry.id === "chat-strong-split-owners"
+      );
+      const targets = [
+        ["chat-composer-view", "accessibility-product-ux"],
+        ["chat-message-list", "accessibility-product-ux"],
+        ["chat-draft-store", "architecture-ownership"],
+        ["chat-attachment-coordinator", "architecture-ownership"],
+        ["chat-browser-storage", "architecture-ownership"],
+      ];
+      const removeCard = (draft, cardId) => {
+        draft.placements = draft.placements.filter(
+          (entry) => entry.cardId !== cardId
+        );
+        draft.connections = draft.connections.filter(
+          (entry) => entry.fromCardId !== cardId && entry.toCardId !== cardId
+        );
+        const nextOrder = new Map();
+        for (const placement of draft.placements) {
+          const order = nextOrder.get(placement.laneId) || 0;
+          placement.order = order;
+          nextOrder.set(placement.laneId, order + 1);
+        }
+      };
+      console.log(JSON.stringify(targets.map(([cardId, axisId]) => {
+        const fixture = structuredClone(strong);
+        removeCard(fixture.draft, cardId);
+        const score = content.scoreSystemDesignFixture(privateScenario, fixture);
+        return {
+          cardId,
+          validation: content.validateSystemDesignDraft({
+            scenario,
+            privateScenario,
+            draft: fixture.draft,
+            baseline: fixture.baseline,
+          }),
+          signal: score.practiceSignal,
+          axisStatus: score.axes.find((axis) => axis.id === axisId).status,
+        };
+      })));
+    `);
+    for (const outcome of outcomes) {
+      expect(outcome.validation).toEqual([]);
+      expect(outcome.signal).toBe('On Track');
+      expect(outcome.axisStatus).toBe('needs-focus');
+    }
+  });
+
+  test('accepts already-correct chat decisions without change-from-baseline evidence', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const privateScenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-ai-chat-composer-mid-v1"
+      );
+      const adaptation = privateScenario.rubric.axes.find(
+        (entry) => entry.id === "adaptation-tradeoffs"
+      );
+      console.log(JSON.stringify({
+        rules: adaptation.criteria.map((entry) => entry.rule),
+        strong: privateScenario.validationFixtures
+          .filter((entry) => entry.kind === "strong")
+          .map((fixture) => ({
+            signal: content.scoreSystemDesignFixture(privateScenario, fixture).practiceSignal,
+            baseline: fixture.baseline.decisions
+              .filter((entry) => [
+                "chat-send-identity",
+                "chat-stream-terminal",
+              ].includes(entry.decisionId))
+              .map((entry) => entry.optionId),
+            draft: fixture.draft.decisions
+              .filter((entry) => [
+                "chat-send-identity",
+                "chat-stream-terminal",
+              ].includes(entry.decisionId))
+              .map((entry) => entry.optionId),
+          })),
+      }));
+    `);
+    expect(JSON.stringify(result.rules)).not.toContain('changedFromBaseline');
+    expect(result.strong).toEqual([
+      {
+        signal: 'Strong System Design Session',
+        baseline: ['chat-send-command-message', 'chat-stream-correlated-terminal'],
+        draft: ['chat-send-command-message', 'chat-stream-correlated-terminal'],
+      },
+      {
+        signal: 'Strong System Design Session',
+        baseline: ['chat-send-command-message', 'chat-stream-correlated-terminal'],
+        draft: ['chat-send-command-message', 'chat-stream-correlated-terminal'],
+      },
+    ]);
+  });
+
   test('keeps generated validation fixtures in parity with runtime scoring', () => {
     const expectedSignals = {
       strong: 'strong-system-design-session',
@@ -199,6 +340,8 @@ describe('guided system-design interview content', () => {
       for (const fixture of privateScenario.validationFixtures) {
         const result = runtimeFixtureResult(publicScenario, privateScenario, fixture);
         expect(result.systemDesign.practiceSignal).toBe(expectedSignals[fixture.kind]);
+        expect(result.systemDesign.sourceContentId)
+          .toBe(privateScenario.sourceEvidence.sourceContentId);
       }
     }
   });
@@ -526,11 +669,11 @@ describe('guided system-design interview content', () => {
       for (const fixture of privateScenario.validationFixtures.filter(
         (entry) => entry.kind === 'strong'
       )) {
-        const targetId = changedDecisionId(fixture);
+        const targetId = changedDecisionId(fixture)
+          || (privateScenario.id === 'int-sd-ai-chat-composer-mid-v1'
+            ? 'chat-send-identity'
+            : undefined);
         expect(targetId).toBeDefined();
-        const baselineDecision = fixture.baseline.decisions.find(
-          (entry) => entry.decisionId === targetId
-        );
         const currentDecision = fixture.draft.decisions.find(
           (entry) => entry.decisionId === targetId
         );
@@ -538,10 +681,7 @@ describe('guided system-design interview content', () => {
           (entry) => entry.id === targetId
         );
         const wrongOption = decisionDefinition.options.find(
-          (entry) => (
-            entry.id !== currentDecision.optionId
-            && entry.id !== baselineDecision.optionId
-          )
+          (entry) => entry.id !== currentDecision.optionId
         );
         expect(wrongOption).toBeDefined();
 
@@ -624,6 +764,7 @@ describe('guided system-design interview content', () => {
         (entry) => entry.kind === 'strong'
       )) {
         const targetId = changedDecisionId(fixture);
+        if (!targetId) continue;
         const currentDecision = fixture.draft.decisions.find(
           (entry) => entry.decisionId === targetId
         );
@@ -779,7 +920,12 @@ describe('guided system-design interview content', () => {
 
   test('pins every source bundle and invalidates candidate approval by default', () => {
     expect(release.finalApproval).toBeNull();
-    expect(release.scenarioRefs).toHaveLength(3);
+    expect(release.scenarioRefs).toHaveLength(4);
+    expect(
+      privatePackage.scenarios.find(
+        (scenario) => scenario.id === 'int-sd-ai-chat-composer-mid-v1'
+      )?.sourceEvidence.sourceContentId
+    ).toBe('ai-chat-textarea-design');
     for (const reference of release.scenarioRefs) {
       expect(reference.sourceBundleHash).toMatch(/^[a-f0-9]{64}$/);
       const privateScenario = privatePackage.scenarios.find(

@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
@@ -11,21 +13,25 @@ import { SystemDesignDetailComponent } from './system-design-detail.component';
 describe('SystemDesignDetailComponent', () => {
   let bugReport: jasmine.SpyObj<BugReportService>;
   let seo: jasmine.SpyObj<SeoService>;
+  let questionService: jasmine.SpyObj<QuestionService>;
   let authUser: any;
 
   beforeEach(async () => {
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
+    questionService = jasmine.createSpyObj<QuestionService>(
+      'QuestionService',
+      ['loadSystemDesign', 'loadSystemDesignQuestion', 'clearCache'],
+    );
+    questionService.loadSystemDesign.and.returnValue(of([]));
+    questionService.loadSystemDesignQuestion.and.returnValue(of(null));
     seo.buildCanonicalUrl.and.callFake((value: string) => value);
     authUser = null;
 
     await TestBed.configureTestingModule({
-      imports: [SystemDesignDetailComponent, RouterTestingModule],
+      imports: [SystemDesignDetailComponent, RouterTestingModule, NoopAnimationsModule],
       providers: [
-        {
-          provide: QuestionService,
-          useValue: { loadSystemDesign: () => { }, loadSystemDesignQuestion: () => { }, clearCache: () => { } },
-        },
+        { provide: QuestionService, useValue: questionService },
         { provide: SeoService, useValue: seo },
         { provide: AuthService, useValue: { user: () => authUser, isLoggedIn: () => !!authUser } },
         { provide: OnboardingService, useValue: { getProfile: () => null } },
@@ -115,6 +121,7 @@ describe('SystemDesignDetailComponent', () => {
       description,
       tags: ['infinite-scroll', 'pagination', 'virtualization'],
       access: 'free',
+      difficulty: 'hard',
       publishedAt: '2025-11-22',
       updatedAt: '2026-07-27',
       radio: [
@@ -143,6 +150,7 @@ describe('SystemDesignDetailComponent', () => {
     expect(article?.dateModified).toBe('2026-07-27T00:00:00.000Z');
     expect(article?.isAccessibleForFree).toBeTrue();
     expect(learningResource?.isAccessibleForFree).toBeTrue();
+    expect(learningResource?.educationalLevel).toBe('hard');
     expect(typeNames).toContain('BreadcrumbList');
     expect(typeNames).toContain('Article');
     expect(typeNames).toContain('LearningResource');
@@ -244,6 +252,130 @@ describe('SystemDesignDetailComponent', () => {
     expect(externalLink?.getAttribute('target')).toBe('_blank');
     expect(externalLink?.getAttribute('rel')).toBe('noopener noreferrer');
     expect(host.textContent || '').toContain('Use this prompt alongside other frontend architecture scenarios.');
+  });
+
+  it('renders read-only code and tables as semantic SSR-friendly content', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.q.set({
+      id: 'offline-email-client',
+      title: 'Gmail-Style Offline Email Client Frontend System Design',
+      description: 'Offline mailbox design.',
+      tags: ['email'],
+      access: 'free',
+      contentLoadState: 'ready',
+      radio: [
+        {
+          key: 'D',
+          title: 'Data',
+          blocks: [
+            {
+              type: 'code',
+              language: 'typescript',
+              code: 'interface MailboxSnapshot { syncCursor: string }',
+            },
+            {
+              type: 'table',
+              title: 'Mailbox states',
+              columns: ['State', 'Invariant'],
+              rows: [['Cached', 'Never presented as fresh']],
+            },
+          ],
+        },
+      ],
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const code = host.querySelector('pre.sd-code code');
+    const caption = host.querySelector('.sd-table caption');
+    const headers = Array.from(host.querySelectorAll('.sd-table th'));
+    const tableScroller = host.querySelector('.sd-table-scroll');
+
+    expect(code?.textContent).toContain('MailboxSnapshot');
+    expect(host.querySelector('app-monaco-editor')).toBeNull();
+    expect(caption?.textContent?.trim()).toBe('Mailbox states');
+    expect(headers.map((header) => header.getAttribute('scope'))).toEqual(['col', 'col']);
+    expect(tableScroller?.getAttribute('tabindex')).toBe('0');
+    expect(tableScroller?.getAttribute('aria-label')).toBe('Mailbox states table');
+  });
+
+  it('keeps one canonical H1 when the mobile overview is open', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.q.set({
+      id: 'offline-email-client',
+      title: 'Gmail-Style Offline Email Client Frontend System Design',
+      description: 'Offline mailbox design.',
+      tags: ['email'],
+      access: 'free',
+      contentLoadState: 'ready',
+      radio: [{ key: 'R', title: 'Requirements', blocks: [] }],
+    });
+    component.mobileOverviewOpen.set(true);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelectorAll('h1')).toHaveSize(1);
+    expect(host.querySelector('h1')?.textContent?.trim())
+      .toBe('Gmail-Style Offline Email Client Frontend System Design');
+    expect(host.querySelector('#sd-mobile-overview-panel h1')).toBeNull();
+  });
+
+  it('disables smooth section scrolling when reduced motion is requested', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    spyOn(window, 'matchMedia').and.returnValue({
+      matches: true,
+    } as MediaQueryList);
+
+    expect((component as any).preferredScrollBehavior()).toBe('auto');
+  });
+
+  it('surfaces an atomic content error and replaces it after a successful retry', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const indexEntry = {
+      id: 'offline-email-client',
+      title: 'Gmail-Style Offline Email Client Frontend System Design',
+      description: 'Catalog description.',
+      tags: ['email'],
+      type: 'system-design',
+      access: 'free' as const,
+      difficulty: 'hard',
+      contentLoadState: 'error' as const,
+    };
+    component.all = [indexEntry];
+    component.q.set(indexEntry);
+    questionService.loadSystemDesignQuestion.and.returnValue(of({
+      id: indexEntry.id,
+      seo: { title: 'Offline email SEO title' },
+      radio: [
+        {
+          key: 'R',
+          title: 'Requirements',
+          blocks: [{ type: 'text', text: 'Complete answer loaded.' }],
+        },
+      ],
+      contentLoadState: 'ready',
+    }));
+
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="sd-content-error"]'))
+      .not.toBeNull();
+
+    component.retrySystemDesignContent();
+    fixture.detectChanges();
+
+    expect(questionService.loadSystemDesignQuestion)
+      .toHaveBeenCalledWith(indexEntry.id, { transferState: false });
+    expect(component.contentLoadState()).toBe('ready');
+    expect(component.sections().map((section) => section.key)).toEqual(['R']);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Complete answer loaded.');
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="sd-content-error"]'))
+      .toBeNull();
   });
 
   it('surfaces RADIO plus the matched blueprint guide without duplicate guide links', () => {

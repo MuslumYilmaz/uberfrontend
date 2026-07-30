@@ -5,6 +5,323 @@
     {
       "cards": [
         {
+          "description": "Captures text, composition, attachment, shortcut, autosize, and focus intent.",
+          "id": "chat-composer-view",
+          "title": "Composer view"
+        },
+        {
+          "description": "Renders paged history and the current correlated turn.",
+          "id": "chat-message-list",
+          "title": "Message list"
+        },
+        {
+          "description": "Publishes restrained send, stream, stop, and retry outcomes.",
+          "id": "chat-status",
+          "title": "Status announcer"
+        },
+        {
+          "description": "Owns scoped unsent text, revision, and persistence state.",
+          "id": "chat-draft-store",
+          "title": "Draft store"
+        },
+        {
+          "description": "Owns local, uploading, ready, and failed attachment phases.",
+          "id": "chat-attachment-coordinator",
+          "title": "Attachment coordinator"
+        },
+        {
+          "description": "Owns send identity, optimistic message, stream acceptance, and terminal reconciliation.",
+          "id": "chat-turn-coordinator",
+          "title": "Turn coordinator"
+        },
+        {
+          "description": "Parses typed sequenced events without owning visible conversation state.",
+          "id": "chat-stream-adapter",
+          "title": "Stream adapter"
+        },
+        {
+          "description": "Maps send, stop, retry, and reconciliation commands to transport contracts.",
+          "id": "chat-client",
+          "title": "Chat client"
+        },
+        {
+          "description": "Persists scoped draft revisions and recoverable command identity.",
+          "id": "chat-browser-storage",
+          "title": "Browser storage"
+        },
+        {
+          "description": "Accepts idempotent commands and returns authoritative turn and stream events.",
+          "id": "chat-api",
+          "title": "Chat API"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "chat-draft-scope",
+          "prompt": "How is an unsent draft scoped, persisted, and restored across navigation or reload?"
+        },
+        {
+          "id": "chat-composition",
+          "prompt": "Which IME, Enter-key, autosize, and focus behaviors must the composer preserve?"
+        },
+        {
+          "id": "chat-attachments",
+          "prompt": "Which attachment phases block sending, and how can failed items recover?"
+        },
+        {
+          "id": "chat-send-uncertainty",
+          "prompt": "Can the server accept a send when its transport response is lost or retried?"
+        },
+        {
+          "id": "chat-stream-order",
+          "prompt": "Can stream events arrive late, repeat, or belong to a turn that is no longer visible?"
+        },
+        {
+          "id": "chat-stop-truth",
+          "prompt": "Does closing local transport prove that generation stopped on the server?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "60be16613d6499dd7896ffb7d14924ec7633dc3b427b4bef668e7857b7faafcb",
+      "decisions": [
+        {
+          "id": "chat-state-ownership",
+          "options": [
+            {
+              "description": "Keep unsent intent and sent-turn transitions in boundaries with distinct lifetimes.",
+              "id": "chat-owner-split-lifetimes",
+              "label": "Separate draft and turn owners"
+            },
+            {
+              "description": "Coordinate draft, attachment, send, and stream transitions in one feature service.",
+              "id": "chat-owner-feature-controller",
+              "label": "One feature controller"
+            },
+            {
+              "description": "Let the input view manage draft, attachment, send, and streamed message transitions.",
+              "id": "chat-owner-composer-view",
+              "label": "Composer-owned conversation state"
+            }
+          ],
+          "prompt": "Which boundary owns draft, attachment, send, and stream transitions?",
+          "rationales": [
+            {
+              "id": "chat-rationale-state-lifetimes",
+              "label": "Match ownership boundaries to lifetime and failure mode"
+            },
+            {
+              "id": "chat-rationale-serialized-feature",
+              "label": "Keep feature transitions behind one serialized command path"
+            },
+            {
+              "id": "chat-rationale-near-input",
+              "label": "Keep interaction state near the component receiving input events"
+            }
+          ],
+          "title": "State ownership"
+        },
+        {
+          "id": "chat-send-identity",
+          "options": [
+            {
+              "description": "Persist command, client-message, and draft-revision IDs for reconciliation.",
+              "id": "chat-send-command-message",
+              "label": "Command and client-message identity"
+            },
+            {
+              "description": "Use conversation identity and submission time as the retry lookup key.",
+              "id": "chat-send-conversation-time",
+              "label": "Conversation and submission time"
+            },
+            {
+              "description": "Create new command and message IDs when a send request is retried.",
+              "id": "chat-send-fresh-retry",
+              "label": "Fresh identity for each retry"
+            }
+          ],
+          "prompt": "How does an uncertain retry converge on one logical user turn?",
+          "rationales": [
+            {
+              "id": "chat-rationale-one-turn",
+              "label": "Make retries converge on one logical user turn"
+            },
+            {
+              "id": "chat-rationale-compact-key",
+              "label": "Reuse conversation context with a compact lookup key"
+            },
+            {
+              "id": "chat-rationale-fresh-attempt",
+              "label": "Isolate each transport attempt under fresh identities"
+            }
+          ],
+          "title": "Send and retry identity"
+        },
+        {
+          "id": "chat-stream-terminal",
+          "options": [
+            {
+              "description": "Accept deltas by conversation, stream, message, and sequence before terminal reconciliation.",
+              "id": "chat-stream-correlated-terminal",
+              "label": "Correlated sequence and terminal state"
+            },
+            {
+              "description": "Abort local transport on Stop and treat the partial response as terminal.",
+              "id": "chat-stream-local-abort",
+              "label": "Local abort defines completion"
+            },
+            {
+              "description": "Append each delta to the assistant placeholder rendered by the active route.",
+              "id": "chat-stream-visible-placeholder",
+              "label": "Current visible placeholder"
+            }
+          ],
+          "prompt": "Which boundary decides whether a stream event or Stop outcome may update the turn?",
+          "rationales": [
+            {
+              "id": "chat-rationale-reject-stale",
+              "label": "Reject stale or duplicate events before visible state changes"
+            },
+            {
+              "id": "chat-rationale-abort-boundary",
+              "label": "Use transport cancellation as the terminal state boundary"
+            },
+            {
+              "id": "chat-rationale-near-message",
+              "label": "Keep streaming updates close to the rendered message"
+            }
+          ],
+          "title": "Stream and Stop policy"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "Which service, signal, or RxJS boundary serializes turn state while teardown stays scoped to its owner?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "Where do composition events, scoped persistence, stream parsing, AbortController cleanup, and focus recovery live?",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "Which reducer, store, and Effect boundaries preserve command and stream identity without stale closures?",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "Which composables own draft persistence, stream invalidation, and cleanup without coupling them to rendering?",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-ai-chat-composer-mid-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "mid",
+      "prompt": "Design the frontend boundaries for an AI chat composer with composition-safe input, recoverable drafts, attachment readiness, one logical send, and a streamed assistant response. Stop, retry, and navigation must not let stale events corrupt a newer turn.",
+      "requirements": [
+        {
+          "description": "IME composition, keyboard shortcuts, autosizing, and focus recovery preserve user intent.",
+          "id": "chat-composition-safe",
+          "title": "Composition-safe input"
+        },
+        {
+          "description": "Unsent text persists separately from messages under an explicit conversation and account scope.",
+          "id": "chat-recoverable-draft",
+          "title": "Recoverable scoped draft"
+        },
+        {
+          "description": "Only finalized attachment identities enter a send command, while failed items remain recoverable.",
+          "id": "chat-ready-attachments",
+          "title": "Explicit attachment readiness"
+        },
+        {
+          "description": "Retry and acknowledgement converge on one user message instead of duplicating the turn.",
+          "id": "chat-one-logical-send",
+          "title": "One logical send"
+        },
+        {
+          "description": "Conversation, message, stream, and sequence identity reject stale or duplicate assistant events.",
+          "id": "chat-correlated-stream",
+          "title": "Correlated ordered stream"
+        },
+        {
+          "description": "Stop, retry, errors, streaming status, and focus changes remain understandable and operable.",
+          "id": "chat-accessible-recovery",
+          "title": "Accessible recovery controls"
+        }
+      ],
+      "revision": 1,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 900,
+      "title": "Design a Resilient AI Chat Composer"
+    },
+    {
+      "cards": [
+        {
           "description": "Captures text and keyboard intent.",
           "id": "search-input",
           "title": "Search input"

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, booleanAttribute } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
+import { Dialog, DialogModule } from 'primeng/dialog';
 
 type FaDialogStyle = {
   width?: string;
@@ -14,6 +14,8 @@ type FaDialogStyle = {
   host: { ngSkipHydration: 'true' },
   template: `
     <p-dialog
+      #dialog
+      [header]="header"
       [visible]="visible"
       (visibleChange)="visibleChange.emit($event)"
       [modal]="modal"
@@ -24,13 +26,20 @@ type FaDialogStyle = {
       [resizable]="resizable"
       [blockScroll]="blockScroll"
       [closeOnEscape]="closeOnEscape"
+      [closeAriaLabel]="closeAriaLabel"
+      [focusOnShow]="focusOnShow"
+      [focusTrap]="focusTrap"
       [showHeader]="showHeader"
       [styleClass]="dialogClassName"
       [appendTo]="appendTo"
       [contentStyle]="contentStyle"
-      [style]="dialogStyle">
+      [style]="dialogStyle"
+      (onShow)="focusDialogOnShow(dialog)">
       <ng-template pTemplate="header">
-        <div class="fa-dialog__header" *ngIf="showHeader">
+        <div
+          class="fa-dialog__header"
+          *ngIf="showHeader"
+          [id]="dialog.ariaLabelledBy">
           <span *ngIf="header">{{ header }}</span>
           <ng-content select="[faDialogHeader]"></ng-content>
         </div>
@@ -59,6 +68,9 @@ export class FaDialogComponent {
   @Input({ transform: booleanAttribute }) resizable = false;
   @Input({ transform: booleanAttribute }) blockScroll = true;
   @Input({ transform: booleanAttribute }) closeOnEscape = true;
+  @Input() closeAriaLabel = 'Close dialog';
+  @Input({ transform: booleanAttribute }) focusOnShow = true;
+  @Input({ transform: booleanAttribute }) focusTrap = true;
   @Input({ transform: booleanAttribute }) showHeader = true;
   @Input({ transform: booleanAttribute }) showFooter = false;
 
@@ -87,5 +99,24 @@ export class FaDialogComponent {
   get dialogClassName(): string {
     const extra = this.styleClass?.trim();
     return extra ? `fa-dialog ${extra}` : 'fa-dialog';
+  }
+
+  focusDialogOnShow(dialog: Dialog): void {
+    if (!this.focusOnShow) return;
+
+    requestAnimationFrame(() => {
+      const container = dialog.container;
+      if (!container || container.contains(document.activeElement)) return;
+
+      const firstFocusable = container.querySelector<HTMLElement>([
+        'button:not([disabled])',
+        'a[href]',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(','));
+      (firstFocusable || container).focus();
+    });
   }
 }

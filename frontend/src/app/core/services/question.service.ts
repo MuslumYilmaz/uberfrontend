@@ -235,9 +235,9 @@ export class QuestionService {
         if (!sections.length) {
           // meta zaten radio içeriyorsa dokunma
           if (Array.isArray(meta.radio)) {
-            return of(meta);
+            return of({ ...meta, contentLoadState: 'ready' as const });
           }
-          return of(meta);
+          return of({ ...meta, contentLoadState: 'ready' as const });
         }
 
         const sectionRequests = sections.map((s: any) => {
@@ -248,25 +248,30 @@ export class QuestionService {
             : this.http.get<any>(fallback);
 
           return src$.pipe(
-            catchError(() => of(null)),
             map((sec) => ({
               key: s.key,
               title: s.title,
               // section json -> { key, title, blocks: Block[] } bekliyoruz
-              blocks: (sec && (sec as any).blocks) || []
+              blocks: (sec && (sec as any).blocks) || [],
             }))
           );
         });
 
         if (!sectionRequests.length) {
-          return of(meta);
+          return of({ ...meta, contentLoadState: 'ready' as const });
         }
 
         return forkJoin(sectionRequests).pipe(
           map((radioSections) => ({
             ...meta,
-            radio: radioSections
-          }))
+            radio: radioSections,
+            contentLoadState: 'ready' as const,
+          })),
+          catchError(() => of({
+            ...meta,
+            radio: [],
+            contentLoadState: 'error' as const,
+          })),
         );
       }),
       tap((full) => {
@@ -523,11 +528,10 @@ export class QuestionService {
         if (!meta) return of(null);
         const sections = Array.isArray(meta.sections) ? meta.sections : [];
         if (!sections.length) {
-          return of(meta);
+          return of({ ...meta, contentLoadState: 'ready' as const });
         }
         const sectionRequests = sections.map((s: any) =>
           this.assetReader.readJson(`assets/questions/system-design/${id}/${s.file}`).pipe(
-            catchError(() => of(null)),
             map((sec) => ({
               key: s.key,
               title: s.title,
@@ -539,7 +543,13 @@ export class QuestionService {
           map((sectionsResolved) => ({
             ...meta,
             radio: sectionsResolved,
-          }))
+            contentLoadState: 'ready' as const,
+          })),
+          catchError(() => of({
+            ...meta,
+            radio: [],
+            contentLoadState: 'error' as const,
+          })),
         );
       }),
       tap((full) => {

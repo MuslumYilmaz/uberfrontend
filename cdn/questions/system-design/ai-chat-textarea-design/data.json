@@ -4,7 +4,7 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Model the composer and current turn explicitly. Unsent text, attachment work, a pending send command, the optimistic message, and sequenced assistant output have different lifetimes and failure paths."
+      "text": "Model the composer and current turn explicitly. Persisted unsent text, transient IME interaction, attachment work, a pending send command, the optimistic message, and sequenced assistant output have different lifetimes and failure paths."
     },
     {
       "type": "divider"
@@ -16,7 +16,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "ComposerDraft is scoped by conversation and stores text revision plus composition state. AttachmentDraft tracks local upload readiness. PendingSend correlates the optimistic user message. StreamMessage accepts deltas only from its stream identity and next sequence."
+              "text": "ComposerDraft is scoped by account and conversation and stores recoverable text, never transient IME state. ComposerInteractionState remains in memory while the control is mounted. AttachmentDraft tracks local upload readiness. PendingSend correlates the optimistic user message. StreamMessage accepts deltas only from its stream identity and next sequence."
             }
           ]
         },
@@ -24,7 +24,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "State-model checks:\n- Draft revision and IME composition are explicit.\n- Attachment readiness cannot be inferred from a URL.\n- Client message and command IDs make uncertain send retry idempotent.\n- Stream identity and sequence reject stale or duplicate deltas."
+              "text": "State-model checks:\n- Draft revision and transient IME composition are explicit but separate.\n- Attachment readiness cannot be inferred from a URL.\n- Client message and command IDs make uncertain send retry idempotent.\n- Stream identity and sequence reject stale or duplicate deltas."
             }
           ]
         }
@@ -44,8 +44,13 @@
       "rows": [
         [
           "ComposerDraft",
-          "Scoped unsent text and composition state",
-          "Prevents navigation or IME events from losing intent"
+          "Account- and conversation-scoped unsent text",
+          "Restores intent without persisting control-local IME state"
+        ],
+        [
+          "ComposerInteractionState",
+          "Transient IME and submit-gating state",
+          "Prevents Enter from submitting while composition is active"
         ],
         [
           "AttachmentDraft",
@@ -67,7 +72,7 @@
     {
       "type": "code",
       "language": "ts",
-      "code": "type AttachmentPhase = 'local' | 'uploading' | 'ready' | 'error';\ntype StreamPhase = 'pending' | 'streaming' | 'complete' | 'stopped' | 'error';\n\ninterface ComposerDraft {\n  conversationId: string;\n  text: string;\n  revision: number;\n  savedAt: number;\n  isComposing: boolean;\n  attachmentLocalIds: string[];\n}\n\ninterface AttachmentDraft {\n  localId: string;\n  phase: AttachmentPhase;\n  assetId: string | null;\n  error: string | null;\n}\n\ninterface PendingSend {\n  commandId: string;\n  clientMessageId: string;\n  draftRevision: number;\n  phase: 'sending' | 'acknowledged' | 'error';\n}\n\ninterface StreamMessage {\n  messageId: string;\n  streamId: string;\n  lastSequence: number;\n  text: string;\n  phase: StreamPhase;\n}\n",
+      "code": "type AttachmentPhase = 'local' | 'uploading' | 'ready' | 'error';\ntype StreamPhase = 'pending' | 'streaming' | 'complete' | 'stopped' | 'error';\n\ninterface ComposerDraft {\n  accountId: string;\n  conversationId: string;\n  text: string;\n  revision: number;\n  savedAt: number;\n  attachmentLocalIds: string[];\n}\n\ninterface ComposerInteractionState {\n  isComposing: boolean;\n}\n\ninterface AttachmentDraft {\n  localId: string;\n  phase: AttachmentPhase;\n  assetId: string | null;\n  error: string | null;\n}\n\ninterface PendingSend {\n  conversationId: string;\n  commandId: string;\n  clientMessageId: string;\n  draftRevision: number;\n  phase: 'sending' | 'acknowledged' | 'error';\n}\n\ninterface StreamMessage {\n  conversationId: string;\n  commandId: string;\n  clientMessageId: string;\n  messageId: string;\n  streamId: string;\n  lastSequence: number;\n  text: string;\n  phase: StreamPhase;\n}\n\ninterface TurnSnapshot extends StreamMessage {\n  updatedAt: number;\n}\n",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -83,7 +88,7 @@
               "type": "checklist",
               "title": "Explicit state",
               "items": [
-                "Draft revision and composition state.",
+                "Persisted draft revision and transient composition state.",
                 "Attachment phase and finalized asset identity.",
                 "Command and client message IDs for send reconciliation.",
                 "Stream ID, last accepted sequence, partial text, and terminal phase."
@@ -139,7 +144,7 @@
     },
     {
       "type": "text",
-      "text": "Keep ComposerDraft, AttachmentDraft, composition state, and PendingSend separate from conversation messages. A sent user message gets a client ID for idempotent reconciliation. Streaming assistant text is a versioned or sequenced message resource, while the local composer draft can persist independently across navigation."
+      "text": "Keep ComposerDraft, ComposerInteractionState, AttachmentDraft, and PendingSend separate from conversation messages. Persist the draft by account and conversation, but keep IME composition state transient because it belongs to the mounted control. A sent user message gets a client ID for idempotent reconciliation. Streaming assistant text is a sequenced message resource, while the local composer draft can persist independently across navigation."
     },
     {
       "type": "table",
@@ -152,8 +157,13 @@
       "rows": [
         [
           "ComposerDraft",
-          "text, revision, savedAt",
+          "accountId, conversationId, text, revision, savedAt",
           "Local draft"
+        ],
+        [
+          "ComposerInteractionState",
+          "isComposing",
+          "Mounted control"
         ],
         [
           "AttachmentDraft",

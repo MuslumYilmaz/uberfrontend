@@ -4,6 +4,9 @@ import { buildMockUser, installAuthMock } from './auth-mocks';
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const TABLET_VIEWPORT = { width: 834, height: 1112 };
 const DESKTOP_VIEWPORT = { width: 1366, height: 900 };
+const INFINITE_SCROLL_H1 = 'Infinite Scroll List System Design';
+const OFFLINE_EMAIL_PATH = '/system-design/offline-email-client';
+const OFFLINE_EMAIL_H1 = 'Gmail-Style Offline Email Client Frontend System Design';
 const E2E_BASE_URL = (
   process.env.PLAYWRIGHT_BASE_URL
   || `http://${process.env.PLAYWRIGHT_HOST || '127.0.0.1'}:${process.env.PLAYWRIGHT_PORT || '4200'}`
@@ -91,39 +94,86 @@ async function assertSystemDesignNoOverflow(page: import('@playwright/test').Pag
   await assertCenterLayoutNoOverflow(page);
 }
 
+async function assertSingleVisibleH1(
+  page: import('@playwright/test').Page,
+  expectedText: string,
+  viewportWidth: number,
+) {
+  const headings = page.locator('h1');
+  await expect(headings, `one H1 at ${viewportWidth}px`).toHaveCount(1);
+  await expect(headings, `visible H1 at ${viewportWidth}px`).toBeVisible();
+  await expect(headings).toHaveText(expectedText);
+}
+
+async function assertSemanticCodeIsSelectable(page: import('@playwright/test').Page) {
+  const code = page.locator('pre.sd-code > code').filter({ hasText: 'type MailboxSnapshot' }).first();
+  await expect(code).toBeVisible();
+  await expect(page.locator('app-monaco-editor')).toHaveCount(0);
+
+  const semantics = await code.evaluate((element) => ({
+    tag: element.tagName,
+    parentTag: element.parentElement?.tagName,
+    userSelect: getComputedStyle(element).userSelect,
+  }));
+  expect(semantics).toEqual({
+    tag: 'CODE',
+    parentTag: 'PRE',
+    userSelect: 'text',
+  });
+
+  const selectedText = await code.evaluate((element) => {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    const value = selection?.toString() || '';
+    selection?.removeAllRanges();
+    return value;
+  });
+  expect(selectedText).toContain('type MailboxSnapshot');
+}
+
 test.describe('system design mobile layout guardrail', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Layout guardrails are chromium-only.');
   test.use({
     consoleErrorAllowlist: ['\\/api\\/auth\\/me'],
   });
 
-  test('system design mobile - compact controls visible and rails hidden', async ({ page }) => {
+  test('system design mobile - compact header and controls keep one visible H1', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     await page.goto('/system-design/infinite-scroll-list');
 
+    await assertSingleVisibleH1(page, INFINITE_SCROLL_H1, MOBILE_VIEWPORT.width);
     await expect(page.getByTestId('sd-mobile-overview-trigger')).toBeVisible();
     await expect(page.getByTestId('sd-mobile-toc-trigger')).toBeVisible();
-    await expect(page.locator('.sdl-left')).toBeHidden();
+    await expect(page.locator('.sdl-left')).toBeVisible();
+    await expect(page.getByTestId('system-design-report-issue-btn')).toBeVisible();
+    await expect(page.locator('.sdl-left .title-meta')).toBeVisible();
+    await expect(page.locator('.sdl-left .left-body .desc')).toBeVisible();
     await expect(page.locator('.sdl-right')).toBeHidden();
 
     await stabilize(page);
     await assertSystemDesignNoOverflow(page);
   });
 
-  test('system design mobile - overview panel open and close', async ({ page }) => {
+  test('system design mobile - fa-dialog closes with Escape and restores trigger focus', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     await page.goto('/system-design/infinite-scroll-list');
 
-    await page.getByTestId('sd-mobile-overview-trigger').click();
-    await expect(page.getByTestId('sd-mobile-overview-panel')).toBeVisible();
-    await page.getByTestId('sd-mobile-overview-close').click();
-    await expect(page.getByTestId('sd-mobile-overview-panel')).toHaveCount(0);
+    const trigger = page.getByTestId('sd-mobile-overview-trigger');
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: 'Question overview' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveClass(/fa-dialog/);
+    await expect
+      .poll(() => dialog.evaluate((element) => element.contains(document.activeElement)))
+      .toBe(true);
 
-    await page.getByTestId('sd-mobile-overview-trigger').click();
-    await expect(page.getByTestId('sd-mobile-overview-panel')).toBeVisible();
-    await page.mouse.click(4, 4);
+    await page.keyboard.press('Escape');
     await expect(page.getByTestId('sd-mobile-overview-panel')).toHaveCount(0);
-    await expect(page.getByTestId('sd-mobile-toc-panel')).toHaveCount(0);
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
 
     await stabilize(page);
     await assertSystemDesignNoOverflow(page);
@@ -147,13 +197,17 @@ test.describe('system design mobile layout guardrail', () => {
     await assertSystemDesignNoOverflow(page);
   });
 
-  test('system design mobile - compact behavior still active on tablet', async ({ page }) => {
+  test('system design tablet - compact header keeps one visible H1', async ({ page }) => {
     await page.setViewportSize(TABLET_VIEWPORT);
     await page.goto('/system-design/infinite-scroll-list');
 
+    await assertSingleVisibleH1(page, INFINITE_SCROLL_H1, TABLET_VIEWPORT.width);
     await expect(page.getByTestId('sd-mobile-overview-trigger')).toBeVisible();
     await expect(page.getByTestId('sd-mobile-toc-trigger')).toBeVisible();
-    await expect(page.locator('.sdl-left')).toBeHidden();
+    await expect(page.locator('.sdl-left')).toBeVisible();
+    await expect(page.getByTestId('system-design-report-issue-btn')).toBeVisible();
+    await expect(page.locator('.sdl-left .title-meta')).toBeVisible();
+    await expect(page.locator('.sdl-left .left-body .desc')).toBeVisible();
     await expect(page.locator('.sdl-right')).toBeHidden();
 
     await stabilize(page);
@@ -196,7 +250,7 @@ test.describe('system design mobile layout guardrail', () => {
     await workedExampleHeading.scrollIntoViewIfNeeded();
     const workedExampleTable = page.locator('.sd-table').filter({ hasText: 'Event-by-event reconciliation' });
     const workedExampleCode = workedExampleHeading.locator(
-      'xpath=following-sibling::div[contains(@class, "sd-code")][1]',
+      'xpath=following-sibling::pre[contains(@class, "sd-code")][1]',
     );
 
     await expect(workedExampleTable).toHaveCount(1);
@@ -219,13 +273,13 @@ test.describe('system design mobile layout guardrail', () => {
     await assertSystemDesignNoOverflow(page);
   });
 
-  test('offline email client - free answer and wide worked example stay contained at 320 and 390 pixels', async ({ page }) => {
+  test('offline email client - semantic code, table headers, and wide content stay contained at 320 and 390 pixels', async ({ page }) => {
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 844 });
-      const response = await page.goto('/system-design/offline-email-client');
+      const response = await page.goto(OFFLINE_EMAIL_PATH);
 
       expect(response?.status()).toBe(200);
-      await expect(page.locator('h1')).toHaveText('Gmail-Style Offline Email Client Frontend System Design');
+      await assertSingleVisibleH1(page, OFFLINE_EMAIL_H1, width);
       await expect(page.locator('.locked-card')).toHaveCount(0);
 
       const workedExampleHeading = page.getByText(
@@ -237,7 +291,15 @@ test.describe('system design mobile layout guardrail', () => {
       });
       await expect(workedExampleHeading).toBeVisible();
       await expect(workedExampleTable).toHaveCount(1);
-      await expect(page.locator('.sd-code')).not.toHaveCount(0);
+      await assertSemanticCodeIsSelectable(page);
+
+      const semanticTable = workedExampleTable.locator('table');
+      await expect(semanticTable.locator('caption')).toHaveText('One reply across cache, outbox, and mailbox sync');
+      const headerScopes = await semanticTable.locator('thead th').evaluateAll(
+        (headers) => headers.map((header) => header.getAttribute('scope')),
+      );
+      expect(headerScopes.length).toBeGreaterThan(0);
+      expect(headerScopes.every((scope) => scope === 'col')).toBe(true);
 
       await workedExampleHeading.scrollIntoViewIfNeeded();
       const tableScroll = workedExampleTable.locator('.sd-table-scroll');

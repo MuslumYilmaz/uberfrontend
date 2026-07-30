@@ -3,6 +3,9 @@ import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 
 const SERIOUS_IMPACTS = new Set(['serious', 'critical']);
+const MOBILE_VIEWPORT = { width: 390, height: 844 };
+const OFFLINE_EMAIL_PATH = '/system-design/offline-email-client';
+const OFFLINE_EMAIL_H1 = 'Gmail-Style Offline Email Client Frontend System Design';
 
 async function seedAuthenticatedSession(page: any) {
   const token = `e2e-a11y-${Date.now()}`;
@@ -89,6 +92,27 @@ test.describe('accessibility smoke', () => {
     await page.goto('/javascript/coding/js-number-clamp');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
     await expectNoSeriousViolations(page, 'coding detail route', '[data-testid="coding-detail-page"]');
+  });
+
+  test('offline email reader and open Overview dialog are accessible by keyboard', async ({ page }) => {
+    await page.setViewportSize(MOBILE_VIEWPORT);
+    await page.goto(OFFLINE_EMAIL_PATH);
+
+    await expect(page.getByRole('heading', { level: 1, name: OFFLINE_EMAIL_H1 })).toBeVisible();
+    await expectNoSeriousViolations(page, 'offline email reader', '.sdl-root');
+
+    const trigger = page.getByTestId('sd-mobile-overview-trigger');
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: 'Question overview' });
+    await expect(dialog).toBeVisible();
+    await expect
+      .poll(() => dialog.evaluate((element) => element.contains(document.activeElement)))
+      .toBe(true);
+    await expectNoSeriousViolations(page, 'offline email Overview dialog', '[role="dialog"]');
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
   });
 
   test('dashboard route has no serious accessibility violations for authenticated users', async ({ page }) => {

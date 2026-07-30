@@ -54,6 +54,15 @@ assert.match(agentInspector, /server version wins/i);
 
 const offlineEmailMeta = read('offline-email-client', 'meta');
 const offlineEmail = bundleText('offline-email-client');
+const offlineEmailDataCode = read('offline-email-client', 'data').blocks
+  .filter((block) => block.type === 'code')
+  .map((block) => block.code)
+  .join('\n');
+const offlineEmailInterfaceCode = read('offline-email-client', 'interfaces').blocks
+  .filter((block) => block.type === 'code')
+  .map((block) => block.code)
+  .join('\n');
+const offlineEmailContractCode = `${offlineEmailDataCode}\n${offlineEmailInterfaceCode}`;
 assert.equal(offlineEmailMeta.title, 'Gmail-Style Offline Email Client Frontend System Design');
 assert.equal(offlineEmailMeta.seo.title, 'Gmail Frontend System Design: Offline Email Client');
 assert.equal('companies' in offlineEmailMeta, false);
@@ -68,6 +77,34 @@ assert.match(offlineEmail, /one logical send creates one Sent message|creates no
 assert.match(offlineEmail, /saniti[sz]/i);
 assert.match(offlineEmail, /remote images?/i);
 assert.match(offlineEmail, /privacy proxy|click-to-load|click to load/i);
+const draftAttachmentContract = offlineEmailDataCode
+  .match(/type DraftAttachment\s*=[\s\S]*?\n\ntype DraftContent/)?.[0];
+assert.ok(draftAttachmentContract, 'Offline email must define DraftAttachment');
+for (const state of ['selected', 'uploading', 'processing', 'ready', 'failed', 'blocked', 'canceled']) {
+  assert.match(draftAttachmentContract, new RegExp(`'${state}'`));
+}
+assert.match(offlineEmailDataCode, /uploadSessionId: string/);
+assert.match(offlineEmailDataCode, /uploadedBytes: number/);
+assert.match(offlineEmailDataCode, /assetId: string/);
+assert.match(offlineEmailDataCode, /attachmentAssetIds: readonly string\[\]/);
+assert.match(offlineEmailDataCode, /type MailboxProjection\s*=\s*\{[\s\S]*remoteDraftsById/);
+assert.match(offlineEmailDataCode, /type LocalIntentState\s*=\s*\{[\s\S]*attachmentsById/);
+assert.doesNotMatch(offlineEmailContractCode, /\btype MailboxDocument\s*=/);
+assert.match(offlineEmailInterfaceCode, /reconcileRemoteDraft/);
+assert.match(offlineEmail, /newer local (?:content remains intact|edits remain intact)/i);
+assert.match(offlineEmail, /never assigns remote draft content over a newer local document/i);
+for (const method of [
+  'createAttachmentUpload',
+  'uploadAttachmentBytes',
+  'finalizeAttachmentUpload',
+  'cancelAttachmentUpload',
+  'createAttachmentDownload',
+]) {
+  assert.match(offlineEmailInterfaceCode, new RegExp(`\\b${method}\\b`));
+}
+assert.match(offlineEmail, /Background Sync is only a progressive enhancement/i);
+assert.match(offlineEmail, /next eligible foreground or reconnect opportunity/i);
+assert.match(offlineEmail, /never promises background delivery/i);
 
 const infinite = bundleText('infinite-scroll-list');
 assert.match(infinite, /interface PageLoader/);
@@ -99,8 +136,30 @@ assert.match(dashboard, /revision/);
 assert.doesNotMatch(dashboard, /type LayoutVersion = 1 \| 2/);
 
 const aiChat = bundleText('ai-chat-textarea-design');
+const aiChatDataCode = read('ai-chat-textarea-design', 'data').blocks
+  .filter((block) => block.type === 'code')
+  .map((block) => block.code)
+  .join('\n');
+const aiChatInterfaceCode = read('ai-chat-textarea-design', 'interfaces').blocks
+  .filter((block) => block.type === 'code')
+  .map((block) => block.code)
+  .join('\n');
+const composerDraftContract = aiChatDataCode.match(/interface ComposerDraft\s*\{[^}]*\}/)?.[0];
+assert.ok(composerDraftContract, 'AI chat must define ComposerDraft');
+assert.doesNotMatch(composerDraftContract, /\bisComposing\b/);
+assert.match(aiChatDataCode, /interface ComposerInteractionState\s*\{[^}]*isComposing: boolean/);
+assert.match(aiChatInterfaceCode, /interface StopCommand\s*\{[^}]*stopCommandId: string/);
+assert.match(aiChatInterfaceCode, /interface OpenTurnEventsInput\s*\{[^}]*afterSequence: number/);
+assert.match(aiChatInterfaceCode, /interface ChatTurnClient\s*\{[\s\S]*openEvents\([^)]*OpenTurnEventsInput[^)]*\): AsyncIterable<TurnEvent>/);
+assert.match(aiChatInterfaceCode, /getTurnSnapshot\([^)]*\{[\s\S]*streamId: string[\s\S]*\}\): Promise<TurnSnapshot>/);
 assert.match(aiChat, /event: message\.delta/);
-assert.match(aiChat, /data: \{\\"streamId\\"/);
+assert.match(aiChat, /data: \{\\"conversationId\\":\\"c_123\\",\\"streamId\\"/);
+assert.match(aiChat, /one stopCommandId per user intent and reuse it after a lost response/i);
+assert.match(aiChat, /account switch[\s\S]{0,500}logout/i);
+assert.match(aiChat, /Browser storage is not a confidentiality boundary/i);
+assert.match(aiChat, /Treat assistant content as untrusted/i);
+assert.match(aiChat, /never pass streamed or completed assistant HTML directly to innerHTML/i);
+assert.doesNotMatch(aiChat, /DraftStore owns unsent text and composition state/i);
 assert.doesNotMatch(aiChat, /EVENT:|DATA:/);
 
 const trainingDashboard = bundleText('model-training-progress-dashboard');

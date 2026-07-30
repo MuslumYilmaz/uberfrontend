@@ -4,7 +4,7 @@
   "blocks": [
     {
       "type": "text",
-      "text": "An offline email client needs more than a cached array of inbox rows. The same message can appear in an inbox, search result, starred view, and thread, while a label can belong to many messages. Normalize shared entities by immutable identity, then separate server-confirmed mailbox data from local user intent. A full synchronization may replace the mailbox projection, but it must never erase an unconfirmed draft or send command. Selection and scroll position are view state; downloaded bodies, previews, and search indexes are disposable resources."
+      "text": "An offline email client needs more than a cached array of inbox rows. The same message can appear in an inbox, search result, starred view, and thread, while a label can belong to many messages. Normalize shared entities by immutable identity, then separate server-confirmed mailbox data from local user intent. A full synchronization may replace the mailbox projection, but it must never erase an unconfirmed draft, attachment upload, or send command. Selection and scroll position are view state; downloaded bodies, previews, and search indexes are disposable resources."
     },
     {
       "type": "heading",
@@ -40,6 +40,11 @@
           "Saving replaces the draft content revision while preserving the container identity. A failed or superseded save never turns a draft into an immutable delivered message."
         ],
         [
+          "DraftAttachment",
+          "A client-generated attachment ID belongs to one draft and survives upload retries. A ready record maps that identity to one finalized server asset ID.",
+          "Track selected, uploading, processing, ready, failed, blocked, and canceled states explicitly. Send is eligible only when every referenced attachment is ready; retry reuses the upload session or idempotency key."
+        ],
+        [
           "OutboxCommand",
           "A stable command ID and idempotency key describe one save, send, or label intent based on a known revision.",
           "Retry the same command identity until an authoritative delta or command outcome reconciles it. Do not mint a new key after an ambiguous response."
@@ -49,7 +54,7 @@
     {
       "type": "code",
       "language": "typescript",
-      "code": "type MailboxAddress = {\n  name?: string;\n  address: string;\n};\n\ntype Thread = {\n  id: string;\n  messageIds: readonly string[];\n  labelIds: readonly string[];\n  subject: string;\n  snippet: string;\n  participants: readonly MailboxAddress[];\n  lastMessageAt: string;\n  unreadMessageCount: number;\n  revision: string;\n};\n\ntype Message = {\n  readonly id: string;\n  readonly threadId: string;\n  readonly labelIds: readonly string[];\n  readonly from: MailboxAddress;\n  readonly to: readonly MailboxAddress[];\n  readonly sentAt: string;\n  readonly subject: string;\n  readonly snippet: string;\n  readonly bodyResourceId: string;\n  readonly attachmentIds: readonly string[];\n  readonly revision: string;\n  readonly clientCommandId?: string;\n};\n\ntype Label = {\n  id: string;\n  name: string;\n  kind: 'system' | 'user';\n  color?: string;\n  revision: string;\n};\n\ntype MailboxSnapshot = {\n  mailboxId: string;\n  syncCursor: string;\n  threads: readonly Thread[];\n  messages: readonly Message[];\n  labels: readonly Label[];\n  capturedAt: string;\n};\n\ntype DraftContent = {\n  to: readonly MailboxAddress[];\n  cc: readonly MailboxAddress[];\n  bcc: readonly MailboxAddress[];\n  subject: string;\n  bodyHtml: string;\n  attachmentIds: readonly string[];\n};\n\ntype DraftDocument = {\n  draftId: string;\n  mailboxId: string;\n  threadId?: string;\n  content: DraftContent;\n  contentRevision: number;\n  baseRemoteRevision: string | null;\n  remoteRevision?: string;\n  updatedAt: string;\n};",
+      "code": "type MailboxAddress = {\n  name?: string;\n  address: string;\n};\n\ntype Thread = {\n  id: string;\n  messageIds: readonly string[];\n  labelIds: readonly string[];\n  subject: string;\n  snippet: string;\n  participants: readonly MailboxAddress[];\n  lastMessageAt: string;\n  unreadMessageCount: number;\n  revision: string;\n};\n\ntype Message = {\n  readonly id: string;\n  readonly threadId: string;\n  readonly labelIds: readonly string[];\n  readonly from: MailboxAddress;\n  readonly to: readonly MailboxAddress[];\n  readonly sentAt: string;\n  readonly subject: string;\n  readonly snippet: string;\n  readonly bodyResourceId: string;\n  readonly attachmentIds: readonly string[];\n  readonly revision: string;\n  readonly clientCommandId?: string;\n};\n\ntype Label = {\n  id: string;\n  name: string;\n  kind: 'system' | 'user';\n  color?: string;\n  revision: string;\n};\n\ntype MailboxSnapshot = {\n  mailboxId: string;\n  syncCursor: string;\n  threads: readonly Thread[];\n  messages: readonly Message[];\n  labels: readonly Label[];\n  capturedAt: string;\n};\n\ntype DraftAttachmentBase = {\n  attachmentId: string;\n  draftId: string;\n  fileName: string;\n  contentType: string;\n  sizeBytes: number;\n};\n\ntype DraftAttachment =\n  | (DraftAttachmentBase & {\n      status: 'selected';\n      uploadedBytes: 0;\n    })\n  | (DraftAttachmentBase & {\n      status: 'uploading' | 'processing';\n      uploadSessionId: string;\n      uploadedBytes: number;\n    })\n  | (DraftAttachmentBase & {\n      status: 'ready';\n      uploadSessionId: string;\n      uploadedBytes: number;\n      assetId: string;\n      assetRevision: string;\n    })\n  | (DraftAttachmentBase & {\n      status: 'failed';\n      uploadSessionId?: string;\n      uploadedBytes: number;\n      failureCode: string;\n      retryable: boolean;\n    })\n  | (DraftAttachmentBase & {\n      status: 'blocked';\n      uploadSessionId: string;\n      uploadedBytes: number;\n      assetId: string;\n      failureCode: string;\n    })\n  | (DraftAttachmentBase & {\n      status: 'canceled';\n      uploadedBytes: number;\n    });\n\ntype DraftContent = {\n  to: readonly MailboxAddress[];\n  cc: readonly MailboxAddress[];\n  bcc: readonly MailboxAddress[];\n  subject: string;\n  bodyHtml: string;\n  attachmentIds: readonly string[];\n};\n\ntype DraftDocument = {\n  draftId: string;\n  mailboxId: string;\n  threadId?: string;\n  content: DraftContent;\n  contentRevision: number;\n  baseRemoteRevision: string | null;\n  remoteRevision?: string;\n  updatedAt: string;\n};\n\ntype RemoteDraftRevision = {\n  draftId: string;\n  mailboxId: string;\n  threadId?: string;\n  content: DraftContent;\n  revision: string;\n  acknowledgedContentRevision?: number;\n  updatedAt: string;\n};",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -63,7 +68,7 @@
     {
       "type": "code",
       "language": "typescript",
-      "code": "type CommandBase = {\n  commandId: string;\n  idempotencyKey: string;\n  baseRevision: string | null;\n  createdAt: string;\n};\n\ntype OutboxCommand =\n  | (CommandBase & {\n      kind: 'draft.save';\n      draftId: string;\n      document: DraftDocument;\n    })\n  | (CommandBase & {\n      kind: 'draft.send';\n      draftId: string;\n      expectedContentRevision: number;\n    })\n  | (CommandBase & {\n      kind: 'thread.labels.set';\n      threadId: string;\n      addLabelIds: readonly string[];\n      removeLabelIds: readonly string[];\n    });\n\ntype PendingCommand = {\n  command: OutboxCommand;\n  status: 'queued' | 'submitting' | 'awaiting-delta' | 'conflict' | 'failed';\n  attemptCount: number;\n  retryAfter?: string;\n  lastErrorCode?: string;\n};\n\ntype MailboxClientState = {\n  mailbox: {\n    threadsById: Record<string, Thread>;\n    messagesById: Record<string, Message>;\n    labelsById: Record<string, Label>;\n    syncCursor: string | null;\n    phase: 'empty' | 'cached' | 'syncing' | 'fresh' | 'stale' | 'recovering';\n  };\n  localIntent: {\n    draftsById: Record<string, DraftDocument>;\n    commandsById: Record<string, PendingCommand>;\n  };\n  view: {\n    selectedThreadId?: string;\n    activeLabelId?: string;\n    query: string;\n  };\n  resources: {\n    bodyCacheKeys: readonly string[];\n    attachmentCacheKeys: readonly string[];\n    localSearchVersion?: string;\n  };\n};",
+      "code": "type CommandBase = {\n  commandId: string;\n  idempotencyKey: string;\n  baseRevision: string | null;\n  createdAt: string;\n};\n\ntype OutboxCommand =\n  | (CommandBase & {\n      kind: 'draft.save';\n      draftId: string;\n      document: DraftDocument;\n    })\n  | (CommandBase & {\n      kind: 'draft.send';\n      draftId: string;\n      expectedContentRevision: number;\n      attachmentAssetIds: readonly string[];\n    })\n  | (CommandBase & {\n      kind: 'thread.labels.set';\n      threadId: string;\n      addLabelIds: readonly string[];\n      removeLabelIds: readonly string[];\n    });\n\ntype PendingCommand = {\n  command: OutboxCommand;\n  status: 'queued' | 'submitting' | 'awaiting-delta' | 'conflict' | 'failed';\n  attemptCount: number;\n  retryAfter?: string;\n  lastErrorCode?: string;\n};\n\ntype MailboxProjection = {\n  threadsById: Record<string, Thread>;\n  messagesById: Record<string, Message>;\n  labelsById: Record<string, Label>;\n  remoteDraftsById: Record<string, RemoteDraftRevision>;\n  syncCursor: string | null;\n  phase: 'empty' | 'cached' | 'syncing' | 'fresh' | 'stale' | 'recovering';\n};\n\ntype LocalIntentState = {\n  draftsById: Record<string, DraftDocument>;\n  attachmentsById: Record<string, DraftAttachment>;\n  commandsById: Record<string, PendingCommand>;\n};\n\ntype MailboxClientState = {\n  projection: MailboxProjection;\n  localIntent: LocalIntentState;\n  view: {\n    selectedThreadId?: string;\n    activeLabelId?: string;\n    query: string;\n  };\n  resources: {\n    bodyCacheKeys: readonly string[];\n    attachmentCacheKeys: readonly string[];\n    localSearchVersion?: string;\n  };\n};",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -86,7 +91,7 @@
         ],
         [
           "Durable local intent",
-          "Draft documents, draft revisions, outbox commands, idempotency keys, attempt counts, and ambiguous send state.",
+          "Draft documents, attachment lifecycle records, finalized asset identities, outbox commands, idempotency keys, attempt counts, and ambiguous send state.",
           "Persist it in one transaction before optimistic UI. Preserve it across reload, offline periods, cursor recovery, and cache eviction."
         ],
         [
@@ -124,7 +129,7 @@
         },
         {
           "title": "Reconcile matching intent",
-          "text": "When an event echoes clientCommandId, confirm that outbox command. Remove a sent draft only after the authoritative outcome, even if the send response disappeared."
+          "text": "When an event echoes clientCommandId, confirm that outbox command. A remote draft revision advances the acknowledged base, but newer local content remains intact; incompatible concurrent changes retain both revisions as an explicit conflict. Remove a sent draft only after the authoritative outcome, even if the send response disappeared."
         },
         {
           "title": "Handle removal explicitly",

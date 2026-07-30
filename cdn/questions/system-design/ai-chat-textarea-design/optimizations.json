@@ -54,7 +54,7 @@
         ],
         [
           "Draft scoping",
-          "Persist by account and conversation with explicit cleanup",
+          "Persist by account and conversation with switch, logout, and retention cleanup",
           "Restores intent without leaking drafts across users"
         ],
         [
@@ -173,7 +173,7 @@
         ],
         [
           "Stream reconnects",
-          "Resume by cursor or fetch the message snapshot.",
+          "Resume after the last accepted sequence or fetch the authoritative turn snapshot.",
           "Partial content converges."
         ]
       ]
@@ -188,11 +188,23 @@
     },
     {
       "type": "heading",
+      "text": "Draft confidentiality and safe rendering"
+    },
+    {
+      "type": "text",
+      "text": "Namespace persisted drafts and attachment handles by accountId plus conversationId. On account switch, immediately detach the previous account's in-memory draft and load only the next account namespace. On logout, delete persisted drafts and local attachment handles unless an explicit product-approved device-retention policy says otherwise; any retained draft needs a bounded TTL and a visible clear-drafts control. Browser storage is not a confidentiality boundary, so avoid logging or sending draft text to telemetry and prefer memory-only drafts for sensitive modes."
+    },
+    {
+      "type": "text",
+      "text": "Treat assistant content as untrusted even when it arrives from the product API. Parse only supported Markdown, sanitize the rendered result, allowlist link protocols, and render code as inert text; never pass streamed or completed assistant HTML directly to innerHTML. Apply the same safe-render boundary to partial stream updates so an unfinished Markdown token cannot introduce executable markup or event handlers."
+    },
+    {
+      "type": "heading",
       "text": "Rollout and measurement"
     },
     {
       "type": "text",
-      "text": "Test IME composition, mobile keyboards, voice input, paste, long drafts, large text, RTL, attachment races, duplicate send, stream interruption, and route restoration. Track accidental empty sends, draft loss, duplicate messages, stop latency, attachment recovery, and input responsiveness."
+      "text": "Test IME composition, mobile keyboards, voice input, paste, long drafts, large text, RTL, attachment races, duplicate send, lost Stop responses, stream interruption, route restoration, account switches, logout cleanup, and hostile assistant Markdown. Track accidental empty sends, draft loss, cross-account draft exposure, duplicate messages, stop latency, attachment recovery, and input responsiveness."
     },
     {
       "type": "callout",

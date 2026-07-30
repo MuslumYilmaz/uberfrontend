@@ -7,9 +7,79 @@ import { Question } from '../models/question.model';
 import { QuestionService } from '../services/question.service';
 import {
   codingDetailResolver,
+  normalizeSystemDesignDetail,
   QuestionDetailResolved,
   triviaDetailResolver,
 } from './question-detail.resolver';
+
+describe('normalizeSystemDesignDetail', () => {
+  const indexEntry = {
+    id: 'offline-email-client',
+    title: 'Gmail-Style Offline Email Client Frontend System Design',
+    description: 'Catalog description.',
+    tags: ['email', 'offline-first'],
+    type: 'system-design',
+    access: 'free',
+    difficulty: 'hard',
+    publishedAt: '2026-07-29',
+    updatedAt: '2026-07-30',
+  };
+
+  it('keeps index metadata authoritative while retaining detail content', () => {
+    const detail = {
+      title: 'Stale detail title',
+      description: 'Stale detail description.',
+      tags: ['stale'],
+      access: 'premium',
+      difficulty: 'intermediate',
+      publishedAt: '2026-07-01',
+      updatedAt: '2026-07-01',
+      seo: { title: 'SEO title' },
+      guideSlug: 'state-data',
+      radio: [{ key: 'R', title: 'Requirements', blocks: [] }],
+      contentLoadState: 'ready',
+    };
+
+    const resolved = normalizeSystemDesignDetail(
+      indexEntry.id,
+      [indexEntry],
+      detail,
+    );
+
+    expect(resolved).toEqual(jasmine.objectContaining({
+      id: indexEntry.id,
+      title: indexEntry.title,
+      description: indexEntry.description,
+      tags: indexEntry.tags,
+      access: 'free',
+      difficulty: 'hard',
+      publishedAt: '2026-07-29',
+      updatedAt: '2026-07-30',
+      seo: detail.seo,
+      guideSlug: 'state-data',
+      radio: detail.radio,
+      contentLoadState: 'ready',
+    }));
+  });
+
+  it('marks a catalog question as unavailable when its detail bundle does not load', () => {
+    const resolved = normalizeSystemDesignDetail(
+      indexEntry.id,
+      [indexEntry],
+      null,
+    );
+
+    expect(resolved).toEqual(jasmine.objectContaining({
+      id: indexEntry.id,
+      difficulty: 'hard',
+      contentLoadState: 'error',
+    }));
+  });
+
+  it('returns null only when neither catalog nor detail knows the id', () => {
+    expect(normalizeSystemDesignDetail('unknown', [], null)).toBeNull();
+  });
+});
 
 describe('triviaDetailResolver', () => {
   const fullQuestion = {

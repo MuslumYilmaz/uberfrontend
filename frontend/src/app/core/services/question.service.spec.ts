@@ -284,6 +284,90 @@ describe('QuestionService', () => {
     expect(list[0]?.id).toBe('sys-network');
   });
 
+  it('fails a split system-design answer atomically when one section cannot load', async () => {
+    const resultPromise = firstValueFrom(
+      service.loadSystemDesignQuestion('offline-email-client', { transferState: false }),
+    );
+    const metaRequest = await waitForRequest(
+      (r) => r.url.includes('offline-email-client/meta.json'),
+      'offline email meta fetch',
+    );
+    metaRequest.flush({
+      id: 'offline-email-client',
+      title: 'Offline email',
+      sections: [
+        { key: 'R', title: 'Requirements', file: 'requirements.json' },
+        { key: 'A', title: 'Architecture', file: 'architecture.json' },
+      ],
+    });
+
+    const requirementsRequest = await waitForRequest(
+      (r) => r.url.includes('offline-email-client/requirements.json'),
+      'offline email requirements fetch',
+    );
+    const architectureRequest = await waitForRequest(
+      (r) => r.url.includes('offline-email-client/architecture.json'),
+      'offline email architecture fetch',
+    );
+    requirementsRequest.flush({
+      key: 'R',
+      title: 'Requirements',
+      blocks: [{ type: 'text', text: 'Loaded section' }],
+    });
+    architectureRequest.flush('unavailable', {
+      status: 503,
+      statusText: 'Service Unavailable',
+    });
+
+    const result = await resultPromise;
+    expect(result).toEqual(jasmine.objectContaining({
+      id: 'offline-email-client',
+      contentLoadState: 'error',
+      radio: [],
+    }));
+  });
+
+  it('marks a split system-design answer ready only after every section loads', async () => {
+    const resultPromise = firstValueFrom(
+      service.loadSystemDesignQuestion('offline-email-client', { transferState: false }),
+    );
+    const metaRequest = await waitForRequest(
+      (r) => r.url.includes('offline-email-client/meta.json'),
+      'offline email meta retry',
+    );
+    metaRequest.flush({
+      id: 'offline-email-client',
+      title: 'Offline email',
+      sections: [
+        { key: 'R', title: 'Requirements', file: 'requirements.json' },
+        { key: 'A', title: 'Architecture', file: 'architecture.json' },
+      ],
+    });
+
+    const requirementsRequest = await waitForRequest(
+      (r) => r.url.includes('offline-email-client/requirements.json'),
+      'offline email requirements retry',
+    );
+    const architectureRequest = await waitForRequest(
+      (r) => r.url.includes('offline-email-client/architecture.json'),
+      'offline email architecture retry',
+    );
+    requirementsRequest.flush({
+      key: 'R',
+      title: 'Requirements',
+      blocks: [{ type: 'text', text: 'Requirements loaded' }],
+    });
+    architectureRequest.flush({
+      key: 'A',
+      title: 'Architecture',
+      blocks: [{ type: 'text', text: 'Architecture loaded' }],
+    });
+
+    const result = await resultPromise;
+    expect(result?.contentLoadState).toBe('ready');
+    expect(result?.radio?.map((section: any) => section.key)).toEqual(['R', 'A']);
+  });
+
   it('maps detail-grade questions into list-safe summaries', async () => {
     const resultPromise = firstValueFrom(
       service.loadQuestionSummaries('javascript', 'trivia', { transferState: false }),
