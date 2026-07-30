@@ -4,7 +4,7 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Scope the case to the composer and current turn: composition-safe text input, autosizing, attachment readiness, local draft persistence, one idempotent send command, streamed assistant state, Stop, retry, and focus recovery. Older history is an abstract paged input, not a database-design exercise."
+      "text": "Scope the case to the composer and current turn: composition-safe text input with transient IME state, autosizing, attachment readiness, account-scoped draft persistence, one idempotent send command, streamed assistant state, idempotent Stop, retry, and focus recovery. Older history is an abstract paged input, not a database-design exercise."
     },
     {
       "type": "divider"
@@ -107,7 +107,7 @@
         [
           "Composer draft",
           "Local draft store",
-          "IME composition and unsent text never become conversation messages"
+          "Unsent text never becomes a conversation message, and mounted-control IME state is never persisted"
         ],
         [
           "Attachment draft",

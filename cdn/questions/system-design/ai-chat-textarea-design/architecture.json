@@ -12,7 +12,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "ComposerView captures text and composition events. DraftStore persists scoped unsent input. AttachmentCoordinator exposes finalized asset IDs. TurnCoordinator snapshots one send command and reduces echoed message plus stream events. MessageList consumes current-turn selectors and an abstract paged history source."
+              "text": "ComposerView captures text and owns transient composition events. DraftStore persists account- and conversation-scoped unsent input without control-local IME state. AttachmentCoordinator exposes finalized asset IDs. TurnCoordinator snapshots one send command and reduces echoed message plus stream events. MessageList consumes current-turn selectors and an abstract paged history source."
             }
           ]
         },
@@ -45,8 +45,8 @@
         ],
         [
           "DraftStore",
-          "Scopes and persists unsent text",
-          "Allows navigation recovery without writing conversation history."
+          "Scopes and persists unsent text, excluding transient IME state",
+          "Allows navigation recovery without serializing mounted-control state or writing conversation history."
         ],
         [
           "TurnCoordinator",
@@ -71,7 +71,7 @@
     {
       "type": "code",
       "language": "text",
-      "code": "ComposerView\n  -> DraftStore (text revision + IME composition)\n  -> AttachmentCoordinator (local file -> finalized asset ID)\n  -> TurnCoordinator (command ID + client message ID)\n  -> ChatTurnClient\n  -> StreamAdapter (stream ID + message ID + sequence)\n  -> Current-turn reducer\n  -> MessageList and restrained status announcements",
+      "code": "ComposerView (transient IME interaction)\n  -> DraftStore (account + conversation + text revision)\n  -> AttachmentCoordinator (local file -> finalized asset ID)\n  -> TurnCoordinator (command ID + client message ID)\n  -> ChatTurnClient (send + resume + stable Stop + snapshot)\n  -> StreamAdapter (stream ID + message ID + sequence)\n  -> Current-turn reducer\n  -> MessageList and restrained status announcements",
       "validation": {
         "kind": "pseudocode"
       }
@@ -85,10 +85,10 @@
               "type": "checklist",
               "title": "Composer and stream decisions",
               "items": [
-                "DraftStore owns unsent text and composition state.",
+                "DraftStore owns recoverable unsent text; ComposerView owns transient composition state.",
                 "TurnCoordinator owns one command and assistant placeholder.",
                 "Streaming deltas append only when stream identity and sequence match.",
-                "Stop preserves partial text and reconciles the authoritative terminal phase."
+                "Stop reuses one stable command identity, preserves partial text, and reconciles the authoritative terminal phase."
               ]
             }
           ]
@@ -131,7 +131,7 @@
         },
         {
           "title": "5. Resume",
-          "text": "On reload, request the latest messages and continue where the user left off."
+          "text": "On reload or reconnect, resume events after the last accepted sequence; if the cursor cannot continue, fetch an authoritative turn snapshot and reconcile it by conversation, command, message, and stream identity."
         }
       ]
     },
@@ -159,7 +159,7 @@
       "type": "callout",
       "variant": "warning",
       "title": "Composer and stream ownership",
-      "text": "Keep native composition behavior in the view, local intent in DraftStore, asynchronous turn identity in TurnCoordinator, and raw protocol parsing in StreamAdapter.",
+      "text": "Keep native, transient composition behavior in the view, account-scoped local intent in DraftStore, asynchronous turn identity in TurnCoordinator, and raw protocol parsing in StreamAdapter.",
       "editorialRole": "canonical-model"
     },
     {
@@ -200,9 +200,9 @@
         ],
         [
           "User stops stream",
-          "Abort the active response command and retain received text as partial.",
+          "Create one stable Stop command, abort local reading, and retain received text as partial while authoritative status reconciles.",
           "Stop becomes Retry or Continue by product policy.",
-          "Cancellation is not message deletion."
+          "Local cancellation is not proof of server cancellation or message deletion."
         ]
       ]
     }

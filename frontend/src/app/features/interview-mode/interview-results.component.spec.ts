@@ -163,9 +163,9 @@ describe('InterviewResultsComponent', () => {
       remediationTopics: [],
       coding: null,
       systemDesign: {
-        sourceContentId: 'realtime-search-debounce-cache',
-        scenarioId: 'int-sd-autocomplete-race-mid-v1',
-        scenarioTitle: 'Reliable autocomplete',
+        sourceContentId: 'ai-chat-textarea-design',
+        scenarioId: 'int-sd-ai-chat-composer-mid-v1',
+        scenarioTitle: 'Resilient AI chat composer',
         outcome: 'timed_out',
         partialEvidence: true,
         practiceSignal: 'on-track',
@@ -226,5 +226,10 @@ describe('InterviewResultsComponent', () => {
     expect(text).toContain('Open the full system design walkthrough');
     expect(text).not.toContain('Answer review');
     expect(text).not.toContain('MCQ time used');
+    expect(
+      (fixture.nativeElement.querySelector(
+        'a.walkthrough-link'
+      ) as HTMLAnchorElement | null)?.getAttribute('href')
+    ).toBe('/system-design/ai-chat-textarea-design');
   });
 });

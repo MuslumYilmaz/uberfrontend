@@ -27,6 +27,10 @@ export type SystemDesignQuestionResolved = {
   tags: string[];
   access: 'free' | 'premium';
   type: string;
+  difficulty?: string;
+  publishedAt?: string;
+  updatedAt?: string;
+  contentLoadState?: 'ready' | 'error';
   [key: string]: unknown;
 };
 
@@ -120,7 +124,7 @@ export const codingDetailResolver: ResolveFn<QuestionDetailResolved> = (route) =
   return resolveDetail(tech, kind, id);
 };
 
-function normalizeSystemDesignDetail(
+export function normalizeSystemDesignDetail(
   id: string,
   list: any[],
   detail: any | null,
@@ -132,38 +136,49 @@ function normalizeSystemDesignDetail(
 
   if (!fromIndex && detail) {
     return {
+      ...(detail || {}),
       id,
       title: String(detail?.title || id),
       description: String(detail?.description || ''),
       tags: Array.isArray(detail?.tags) ? detail.tags : [],
       type: String(detail?.type || 'system-design'),
       access: String(detail?.access || 'free') === 'premium' ? 'premium' : 'free',
-      ...(detail || {}),
+      difficulty: detail?.difficulty == null ? undefined : String(detail.difficulty),
+      publishedAt: detail?.publishedAt == null ? undefined : String(detail.publishedAt),
+      updatedAt: detail?.updatedAt == null ? undefined : String(detail.updatedAt),
+      contentLoadState: detail?.contentLoadState === 'error' ? 'error' : 'ready',
     };
   }
 
   if (fromIndex && !detail) {
     return {
+      ...fromIndex,
       id: String(fromIndex.id || id),
       title: String(fromIndex.title || id),
       description: String(fromIndex.description || ''),
       tags: Array.isArray(fromIndex.tags) ? fromIndex.tags : [],
       type: String(fromIndex.type || 'system-design'),
       access: String(fromIndex.access || 'free') === 'premium' ? 'premium' : 'free',
-      ...fromIndex,
+      difficulty: fromIndex?.difficulty == null ? undefined : String(fromIndex.difficulty),
+      publishedAt: fromIndex?.publishedAt == null ? undefined : String(fromIndex.publishedAt),
+      updatedAt: fromIndex?.updatedAt == null ? undefined : String(fromIndex.updatedAt),
+      contentLoadState: 'error',
     };
   }
 
   return {
-    id: String(fromIndex.id || id),
-    title: String(fromIndex.title || detail?.title || id),
-    description: String(fromIndex.description || detail?.description || ''),
-    tags: Array.isArray(fromIndex.tags) && fromIndex.tags.length
-      ? fromIndex.tags
-      : (Array.isArray(detail?.tags) ? detail.tags : []),
-    type: String(fromIndex.type || detail?.type || 'system-design'),
     ...(detail || {}),
-    access: String(fromIndex.access || detail?.access || 'free') === 'premium' ? 'premium' : 'free',
+    ...(fromIndex || {}),
+    id: String(fromIndex.id ?? id),
+    title: String(fromIndex.title ?? id),
+    description: String(fromIndex.description ?? ''),
+    tags: Array.isArray(fromIndex.tags) ? fromIndex.tags : [],
+    type: String(fromIndex.type ?? 'system-design'),
+    access: String(fromIndex.access ?? 'free') === 'premium' ? 'premium' : 'free',
+    difficulty: fromIndex.difficulty == null ? undefined : String(fromIndex.difficulty),
+    publishedAt: fromIndex.publishedAt == null ? undefined : String(fromIndex.publishedAt),
+    updatedAt: fromIndex.updatedAt == null ? undefined : String(fromIndex.updatedAt),
+    contentLoadState: detail?.contentLoadState === 'error' ? 'error' : 'ready',
   };
 }
 

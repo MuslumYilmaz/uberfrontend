@@ -9,9 +9,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { ChipModule } from 'primeng/chip';
 import { QuestionService } from '../../../core/services/question.service';
-import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
+import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
+import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier, PremiumPreviewContent } from '../../../core/models/question.model';
@@ -30,7 +31,10 @@ import {
 } from './system-design-guide-link.util';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
-import { SystemDesignDetailResolved } from '../../../core/resolvers/question-detail.resolver';
+import {
+  normalizeSystemDesignDetail,
+  SystemDesignDetailResolved,
+} from '../../../core/resolvers/question-detail.resolver';
 import {
   freeChallengeForFramework,
   frameworkLabel,
@@ -154,6 +158,7 @@ type SDQuestion = {
   publishedAt?: string;
   updatedAt?: string;
   difficulty?: string;
+  contentLoadState?: 'ready' | 'error';
   premiumPreview?: PremiumPreviewContent;
   guideSlug?: string;
   guide?: string;
@@ -197,7 +202,15 @@ const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
 @Component({
   selector: 'app-system-design-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ChipModule, MonacoEditorComponent, FooterComponent, LockedPreviewComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ChipModule,
+    FooterComponent,
+    LockedPreviewComponent,
+    FaButtonComponent,
+    FaDialogComponent,
+  ],
   templateUrl: './system-design-detail.component.html',
   styleUrls: ['./system-design-detail.component.css']
 })
@@ -223,6 +236,10 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   title = computed(() => this.q()?.title ?? '');
   description = computed(() => this.q()?.description ?? '');
   tags = computed(() => this.q()?.tags ?? []);
+  contentLoadState = computed<'ready' | 'error'>(() =>
+    this.q()?.contentLoadState === 'error' ? 'error' : 'ready'
+  );
+  contentRetrying = signal(false);
   locked = computed(() => {
     const access = (this.q() as any)?.access ?? 'free';
     const user = this.auth.user();
@@ -362,15 +379,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   mobileOverviewOpen = signal(false);
   mobileTocOpen = signal(false);
   @ViewChildren('sectionHeading', { read: ElementRef }) heads!: QueryList<ElementRef<HTMLElement>>;
-
-  /** Lazy Monaco: observed placeholders */
-  @ViewChildren('codeSentinel', { read: ElementRef }) codeSentinels!: QueryList<ElementRef<HTMLElement>>;
-  private io?: IntersectionObserver;
-  private mountedCodes = signal<Set<string>>(new Set());
-  isCodeMounted = (id: string) => this.mountedCodes().has(id);
-  codeKey(sectionKey: string, idx: string | number) {
-    return `${sectionKey}#${idx}`;
-  }
+  private mobileOverviewTrigger: HTMLElement | null = null;
+  private mobileTocTrigger: HTMLElement | null = null;
   trackByTagValue = (index: number, tag: string): string => tag || String(index);
   trackBySectionKey = (_: number, section: RadioSection): string => section.key;
   trackByBlock = (index: number, block: Block): string =>
@@ -390,23 +400,6 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   trackByGuideSlug = (_: number, item: BlueprintGuideLink): string => item.slug;
   /** Center column for potential responsive image sizing */
   @ViewChild('centerEl', { read: ElementRef }) centerEl!: ElementRef<HTMLElement>;
-
-  /** Monaco viewer options */
-  codeViewerOptions = {
-    readOnly: true,
-    wordWrap: 'on',
-    lineNumbers: 'on',
-    minimap: { enabled: false },
-    renderLineHighlight: 'none',
-    scrollBeyondLastLine: false,
-    overviewRulerLanes: 0,
-    folding: true,
-    scrollbar: {
-      vertical: 'hidden', horizontal: 'hidden',
-      useShadows: false, verticalScrollbarSize: 0, horizontalScrollbarSize: 0,
-      alwaysConsumeMouseWheel: false,
-    },
-  };
 
   // programmatic scroll coordination
   private isProgrammaticScroll = false;
@@ -439,28 +432,6 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       this.updateActiveFromPositions();
     }, 0));
 
-    // Observe code sentinels for lazy Monaco mount
-    const setupIO = () => {
-      this.io?.disconnect();
-      if (typeof IntersectionObserver === 'undefined') return;
-      this.io = new IntersectionObserver((entries) => {
-        const next = new Set(this.mountedCodes());
-        for (const e of entries) {
-          const id = (e.target as HTMLElement).dataset['codeId']!;
-          if (e.isIntersecting && id) next.add(id);
-        }
-        if (next.size !== this.mountedCodes().size) this.mountedCodes.set(next);
-      }, {
-        root: null,
-        rootMargin: '700px 0px 700px 0px',
-        threshold: 0
-      });
-      this.codeSentinels.forEach(ref => this.io!.observe(ref.nativeElement));
-    };
-
-    setupIO();
-    this.codeSentinels.changes.subscribe(() => setupIO());
-
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('resize', this.onResize, { passive: true });
 
@@ -477,7 +448,6 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       if (this.resizeRaf) cancelAnimationFrame(this.resizeRaf);
     }
     clearInterval(this.settleWatcher);
-    this.io?.disconnect();
   }
 
   trackLockedPathClick(pathId: string): void {
@@ -564,10 +534,6 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
     if (pos >= 0) {
       this.idx = pos;
-      const meta = this.all[pos]; // index.json’dan gelen meta (id, title, description, tags...)
-
-      // Her soru değişiminde lazy code mount'ları ve activeKey'i resetle
-      this.mountedCodes.set(new Set());
       this.activeKey.set(null);
 
       // Detay json'ı çek (meta + radio blokları)
@@ -577,22 +543,12 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
           return;
         }
 
-        const merged: SDQuestion = {
-          // Önce index meta:
-          id: meta.id,
-          title: meta.title,
-          description: meta.description,
-          tags: meta.tags ?? [],
-          type: meta.type,
-
-          // Sonra detail meta (meta.json içindeki ekstra alanlar / radio, sections, vs.):
-          ...(detail as Partial<SDQuestion>),
-
-          // access: keep index authority
-          access: (meta as any).access ?? 'free',
-        };
-
-        this.applyResolvedQuestion(merged);
+        const merged = normalizeSystemDesignDetail(id, this.all, detail);
+        if (!merged) {
+          this.navTo404();
+          return;
+        }
+        this.applyResolvedQuestion(merged as SDQuestion);
       });
 
       return;
@@ -616,17 +572,12 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
         return;
       }
 
-      const merged: SDQuestion = {
-        id,
-        title: detail.title ?? id,
-        description: detail.description ?? '',
-        tags: detail.tags ?? [],
-        type: detail.type ?? 'system-design',
-        access: (detail as any).access ?? 'free',
-        ...(detail as Partial<SDQuestion>),
-      };
-
-      this.applyResolvedQuestion(merged);
+      const merged = normalizeSystemDesignDetail(id, this.all, detail);
+      if (!merged) {
+        if (this.all.length) this.navTo404();
+        return;
+      }
+      this.applyResolvedQuestion(merged as SDQuestion);
     });
   }
 
@@ -647,7 +598,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private applyResolvedQuestion(question: SDQuestion): void {
-    this.mountedCodes.set(new Set());
+    this.contentRetrying.set(false);
     this.activeKey.set(null);
     this.q.set(question);
     this.updateSeo(question);
@@ -669,6 +620,24 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const secs = this.sections();
     this.activeKey.set(secs[0]?.key ?? null);
     setTimeout(() => this.updateActiveFromPositions(), 0);
+  }
+
+  retrySystemDesignContent(): void {
+    const current = this.q();
+    if (!current || this.contentRetrying()) return;
+
+    this.contentRetrying.set(true);
+    this.qs.loadSystemDesignQuestion(current.id, { transferState: false }).subscribe({
+      next: (detail) => {
+        const merged = normalizeSystemDesignDetail(current.id, this.all, detail);
+        if (merged) {
+          this.applyResolvedQuestion(merged as SDQuestion);
+          return;
+        }
+        this.contentRetrying.set(false);
+      },
+      error: () => this.contentRetrying.set(false),
+    });
   }
 
   /** Send the user to the NotFound page with the missing URL preserved. */
@@ -958,7 +927,10 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     this.programScrollTarget = Math.min(maxTop, Math.max(0, desired));
     this.isProgrammaticScroll = true;
 
-    window.scrollTo({ top: this.programScrollTarget, behavior: 'smooth' });
+    window.scrollTo({
+      top: this.programScrollTarget,
+      behavior: this.preferredScrollBehavior(),
+    });
 
     clearInterval(this.settleWatcher);
     let lastY = window.pageYOffset;
@@ -986,7 +958,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     if (!this.isBrowser) return;
     this.isProgrammaticScroll = true;
     this.programScrollTarget = 0;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: this.preferredScrollBehavior() });
 
     clearInterval(this.settleWatcher);
     let lastY = window.pageYOffset;
@@ -1043,44 +1015,87 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     this.navToIndex(this.idx + 1);
   }
 
-  toggleMobileOverview() {
+  toggleMobileOverview(trigger?: EventTarget | null) {
+    if (trigger instanceof HTMLElement) this.mobileOverviewTrigger = trigger;
     if (this.mobileOverviewOpen()) {
       this.mobileOverviewOpen.set(false);
+      this.restoreMobileFocus(this.mobileOverviewTrigger);
       return;
     }
-    this.mobileTocOpen.set(false);
+    this.closeMobileToc(false);
     this.mobileOverviewOpen.set(true);
   }
 
-  openMobileOverview() {
-    this.mobileTocOpen.set(false);
+  openMobileOverview(trigger?: EventTarget | null) {
+    if (trigger instanceof HTMLElement) this.mobileOverviewTrigger = trigger;
+    this.closeMobileToc(false);
     this.mobileOverviewOpen.set(true);
   }
 
-  closeMobileOverview() {
+  closeMobileOverview(restoreFocus = true) {
+    const wasOpen = this.mobileOverviewOpen();
     this.mobileOverviewOpen.set(false);
+    if (wasOpen && restoreFocus) this.restoreMobileFocus(this.mobileOverviewTrigger);
   }
 
-  toggleMobileToc() {
+  onMobileOverviewVisibleChange(visible: boolean): void {
+    if (visible) {
+      this.mobileOverviewOpen.set(true);
+      return;
+    }
+    this.closeMobileOverview();
+  }
+
+  toggleMobileToc(trigger?: EventTarget | null) {
+    if (trigger instanceof HTMLElement) this.mobileTocTrigger = trigger;
     if (this.mobileTocOpen()) {
       this.mobileTocOpen.set(false);
+      this.restoreMobileFocus(this.mobileTocTrigger);
       return;
     }
-    this.mobileOverviewOpen.set(false);
+    this.closeMobileOverview(false);
     this.mobileTocOpen.set(true);
   }
 
-  openMobileToc() {
-    this.mobileOverviewOpen.set(false);
+  openMobileToc(trigger?: EventTarget | null) {
+    if (trigger instanceof HTMLElement) this.mobileTocTrigger = trigger;
+    this.closeMobileOverview(false);
     this.mobileTocOpen.set(true);
   }
 
-  closeMobileToc() {
+  closeMobileToc(restoreFocus = true) {
+    const wasOpen = this.mobileTocOpen();
     this.mobileTocOpen.set(false);
+    if (wasOpen && restoreFocus) this.restoreMobileFocus(this.mobileTocTrigger);
+  }
+
+  onMobileTocVisibleChange(visible: boolean): void {
+    if (visible) {
+      this.mobileTocOpen.set(true);
+      return;
+    }
+    this.closeMobileToc();
   }
 
   closeMobilePanels() {
-    this.mobileOverviewOpen.set(false);
-    this.mobileTocOpen.set(false);
+    if (this.mobileOverviewOpen()) {
+      this.closeMobileOverview();
+      return;
+    }
+    this.closeMobileToc();
+  }
+
+  private restoreMobileFocus(target: HTMLElement | null): void {
+    if (!this.isBrowser || !target) return;
+    requestAnimationFrame(() => {
+      if (document.contains(target)) target.focus();
+    });
+  }
+
+  private preferredScrollBehavior(): ScrollBehavior {
+    return typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'auto'
+      : 'smooth';
   }
 }

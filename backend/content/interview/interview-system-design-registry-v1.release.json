@@ -2,22 +2,30 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "1e9761ae4d7f6660ccb4604c97d9155d453d4c859d5ced0b99012bd76022291e"
+      "sha256": "9a7aa6d284c04a5db97ad335833541562da876eefc7626d276600cf28d877f4f"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "202798ba53e5e892da73dff64060ce871112f488d80407d52152084012e1b4f9"
+      "sha256": "4c3a7d3f04fe12df25ec461dbbba844c89a0d90b93c7eaf7b1ebc47a44915ee7"
     }
   },
-  "contentHash": "9ae5e0a6ef7abff27b707310142765e7c8e9eb508f7ba04bd3a5b7208eb36f75",
-  "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
-  "enabledScenarioCount": 3,
+  "contentHash": "51fe1a33def572049d50a98780329ffed7a11004acfc0e55a07ef5f584aed1cc",
+  "definitionHash": "562d9fb1f36bcf977f662cb8fd762ea89e17d420776917234d2ad39ef8673e77",
+  "enabledScenarioCount": 4,
   "finalApproval": null,
-  "registryContentHash": "9ae5e0a6ef7abff27b707310142765e7c8e9eb508f7ba04bd3a5b7208eb36f75",
+  "registryContentHash": "51fe1a33def572049d50a98780329ffed7a11004acfc0e55a07ef5f584aed1cc",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.0.0",
-  "scenarioCount": 3,
+  "scenarioCount": 4,
   "scenarioRefs": [
+    {
+      "contentHash": "60be16613d6499dd7896ffb7d14924ec7633dc3b427b4bef668e7857b7faafcb",
+      "enabled": true,
+      "id": "int-sd-ai-chat-composer-mid-v1",
+      "level": "mid",
+      "revision": 1,
+      "sourceBundleHash": "e693eb94397741cf4290fc304470b3ed6ee6211b7469d313d244a464eef423e1"
+    },
     {
       "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
       "enabled": true,

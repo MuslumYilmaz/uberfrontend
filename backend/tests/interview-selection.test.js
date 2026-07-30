@@ -251,18 +251,18 @@ describe('interview form selection', () => {
   test('selects the enabled framework-independent System Design scenario by level', () => {
     const registry = loadSystemDesignArtifacts({ force: true });
     for (const level of ['junior', 'mid', 'senior']) {
-      const react = selectSystemDesignScenario({
+      const selected = selectSystemDesignScenario({
         scenarios: registry.scenarios,
         level,
-        seed: `design:react:${level}`,
+        seed: `design:shared:${level}`,
       });
-      const vue = selectSystemDesignScenario({
+      const repeated = selectSystemDesignScenario({
         scenarios: registry.scenarios,
         level,
-        seed: `design:vue:${level}`,
+        seed: `design:shared:${level}`,
       });
-      expect(react).toEqual(vue);
-      expect(react).toEqual(expect.objectContaining({
+      expect(selected).toEqual(repeated);
+      expect(selected).toEqual(expect.objectContaining({
         enabled: true,
         level,
         frameworkLenses: expect.objectContaining({
@@ -273,6 +273,66 @@ describe('interview form selection', () => {
         }),
       }));
     }
+  });
+
+  test('rotates the two Mid System Design scenarios by least-seen and deterministic ties', () => {
+    const registry = loadSystemDesignArtifacts({ force: true });
+    const midScenarios = registry.scenarios.filter((scenario) => scenario.level === 'mid');
+    expect(midScenarios.map((scenario) => scenario.id).sort()).toEqual([
+      'int-sd-ai-chat-composer-mid-v1',
+      'int-sd-autocomplete-race-mid-v1',
+    ]);
+
+    const newlyUnseen = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'mid',
+      seed: 'design:mid:newly-unseen',
+      seenCounts: new Map([
+        ['int-sd-autocomplete-race-mid-v1', {
+          count: 1,
+          lastSeenAt: '2026-07-28T12:00:00.000Z',
+        }],
+      ]),
+    });
+    expect(newlyUnseen.id).toBe('int-sd-ai-chat-composer-mid-v1');
+
+    const oldestSeen = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'mid',
+      seed: 'design:mid:oldest-seen',
+      seenCounts: new Map([
+        ['int-sd-ai-chat-composer-mid-v1', {
+          count: 2,
+          lastSeenAt: '2026-05-01T00:00:00.000Z',
+        }],
+        ['int-sd-autocomplete-race-mid-v1', {
+          count: 2,
+          lastSeenAt: '2026-07-25T00:00:00.000Z',
+        }],
+      ]),
+    });
+    expect(oldestSeen.id).toBe('int-sd-ai-chat-composer-mid-v1');
+
+    const tieSelections = Array.from({ length: 32 }, (_, index) =>
+      selectSystemDesignScenario({
+        scenarios: registry.scenarios,
+        level: 'mid',
+        seed: `design:mid:tie:${index}`,
+      }).id
+    );
+    expect(new Set(tieSelections)).toEqual(new Set([
+      'int-sd-ai-chat-composer-mid-v1',
+      'int-sd-autocomplete-race-mid-v1',
+    ]));
+    expect(selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'mid',
+      seed: 'design:mid:stable-tie',
+    }).id).toBe(selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'mid',
+      seed: 'design:mid:stable-tie',
+    }).id);
   });
 
   test('pins a stable System Design presentation permutation without changing ids', () => {

@@ -24,8 +24,10 @@ const systemDesignArtifactNames = Object.freeze({
 const expectedScenarios = Object.freeze({
   "int-sd-toast-lifecycle-jr-v1": { level: "junior", timeLimitSeconds: 600 },
   "int-sd-autocomplete-race-mid-v1": { level: "mid", timeLimitSeconds: 900 },
+  "int-sd-ai-chat-composer-mid-v1": { level: "mid", timeLimitSeconds: 900 },
   "int-sd-ranked-feed-sr-v1": { level: "senior", timeLimitSeconds: 1200 },
 });
+const expectedScenarioCount = Object.keys(expectedScenarios).length;
 const expectedAxisIds = Object.freeze([
   "requirement-discovery",
   "architecture-ownership",
@@ -354,6 +356,44 @@ function validateChoiceQuality(entries, location, errors) {
     ) {
       errors.push(
         `${location}[${index}]: choice length differs from its peer median by more than 25%.`,
+      );
+    }
+  }
+}
+
+function fourWordSignatures(value) {
+  const words = String(value || "")
+    .normalize("NFKD")
+    .toLocaleLowerCase("en-US")
+    .match(/[\p{L}\p{N}]+/gu) || [];
+  return words.slice(0, -3).map((_, index) => (
+    words.slice(index, index + 4).join(" ")
+  ));
+}
+
+function validateClarificationChoiceOverlap(
+  clarificationAnswers,
+  decisions,
+  location,
+  errors,
+) {
+  const choices = decisions.flatMap((decision) => (
+    [...decision.options, ...decision.rationales].map((entry) => ({
+      decisionId: decision.id,
+      choiceId: entry.id,
+      signatures: new Set(
+        fourWordSignatures(`${entry.label || ""} ${entry.description || ""}`),
+      ),
+    }))
+  ));
+  for (const answer of clarificationAnswers) {
+    const answerSignatures = fourWordSignatures(answer.answer);
+    for (const choice of choices) {
+      const overlap = answerSignatures.find((entry) => choice.signatures.has(entry));
+      if (!overlap) continue;
+      errors.push(
+        `${location}/${answer.clarificationId}: clarification answer repeats `
+        + `a four-word solution signature from ${choice.decisionId}/${choice.choiceId}.`,
       );
     }
   }
@@ -949,11 +989,11 @@ export function validateBuiltSystemDesignContent(built) {
   }
   const publicIds = publicPackage.scenarios.map((entry) => entry.id);
   if (
-    publicIds.length !== 3
-    || new Set(publicIds).size !== 3
+    publicIds.length !== expectedScenarioCount
+    || new Set(publicIds).size !== expectedScenarioCount
     || Object.keys(expectedScenarios).some((id) => !publicIds.includes(id))
   ) {
-    errors.push("System-design registry must contain the three approved scenario IDs.");
+    errors.push("System-design registry must contain the approved scenario IDs.");
   }
   const privateById = new Map(privatePackage.scenarios.map((entry) => [entry.id, entry]));
   for (const scenario of publicPackage.scenarios) {
@@ -1048,6 +1088,12 @@ export function validateBuiltSystemDesignContent(built) {
     if (scenario.clarifications.some((entry) => !answerIds.has(entry.id))) {
       errors.push(`${scenario.id}: clarification answers do not cover public prompts.`);
     }
+    validateClarificationChoiceOverlap(
+      privateScenario.clarificationAnswers,
+      scenario.decisions,
+      scenario.id,
+      errors,
+    );
     const axisIds = privateScenario.rubric.axes.map((axis) => axis.id);
     if (
       axisIds.join(",") !== expectedAxisIds.join(",")
@@ -1200,8 +1246,8 @@ export function validateBuiltSystemDesignContent(built) {
     errors.push(`Public system-design registry leaked private keys: ${leakPaths.join(", ")}.`);
   }
   if (
-    release.scenarioCount !== 3
-    || release.enabledScenarioCount !== 3
+    release.scenarioCount !== expectedScenarioCount
+    || release.enabledScenarioCount !== expectedScenarioCount
     || release.registryContentHash !== release.contentHash
   ) {
     errors.push("System-design release counts or content hash are invalid.");

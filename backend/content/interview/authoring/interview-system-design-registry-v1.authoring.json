@@ -4,38 +4,41 @@
   "registryVersion": "1.0.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+  "definitionHash": "562d9fb1f36bcf977f662cb8fd762ea89e17d420776917234d2ad39ef8673e77",
   "reviewBatch": {
-    "reviewedDefinitionHash": "e3a62938454fa551c7e7a54bd5217643f8ebf8d4e461e9d2d8d5c149b484650c",
+    "reviewedDefinitionHash": "562d9fb1f36bcf977f662cb8fd762ea89e17d420776917234d2ad39ef8673e77",
     "reviewedAt": "2026-07-29",
     "technical": {
-      "reviewer": "codex-system-design-technical-v1",
+      "reviewer": "codex-system-design-technical-v2",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
         "Each scoring claim is bound to an allowlisted rule tree and a pinned source-content bundle.",
         "Two distinct strong paths, one developing path, and one critical-conflict path are executable for every scenario.",
-        "Lane placement and rationale limits preserve scoreable evidence without exposing the private rubric."
+        "Lane placement and rationale limits preserve scoreable evidence without exposing the private rubric.",
+        "AI chat scoring distinguishes transport cancellation from authoritative terminal state and requires stable command, message, conversation, and stream identity."
       ]
     },
     "blind": {
-      "reviewer": "codex-system-design-blind-v1",
+      "reviewer": "codex-system-design-blind-v2",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
         "Prompts, visible cards, and decision choices were reviewed without the private rubric.",
         "The scenarios permit more than one coherent architecture and do not expose a single answer-shaped clue.",
-        "Candidate-facing alternatives use parallel length and avoid conspicuous absolute-language distractors."
+        "Candidate-facing alternatives use parallel length and avoid conspicuous absolute-language distractors.",
+        "The AI chat prompt supports split-lifetime and serialized feature-controller designs while keeping unsafe view ownership plausible."
       ]
     },
     "editorial": {
-      "reviewer": "codex-system-design-editorial-v1",
+      "reviewer": "codex-system-design-editorial-v2",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
         "All interview prompts, labels, choices, and distractor-like alternatives are original wording.",
         "The guided interactions test ownership, failure behavior, accessibility, and adaptation without requiring essay-length input.",
-        "Cards can be placed in any public lane; placement quality is evaluated only by private ID-based rules."
+        "Cards can be placed in any public lane; placement quality is evaluated only by private ID-based rules.",
+        "The AI chat scenario remains scoped to composer and current-turn behavior instead of expanding into model or database design."
       ]
     }
   },
@@ -1426,6 +1429,569 @@
               "url": "https://www.w3.org/WAI/ARIA/apg/patterns/combobox/",
               "license": "W3C Document License",
               "role": "Validate keyboard and active-option interaction expectations",
+              "accessedAt": "2026-07-29"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "int-sd-ai-chat-composer-mid-v1",
+      "revision": 1,
+      "level": "mid",
+      "timeLimitSeconds": 900,
+      "public": {
+        "title": "Design a Resilient AI Chat Composer",
+        "prompt": "Design the frontend boundaries for an AI chat composer with composition-safe input, recoverable drafts, attachment readiness, one logical send, and a streamed assistant response. Stop, retry, and navigation must not let stale events corrupt a newer turn.",
+        "clarifications": [
+          {"id": "chat-draft-scope", "prompt": "How is an unsent draft scoped, persisted, and restored across navigation or reload?"},
+          {"id": "chat-composition", "prompt": "Which IME, Enter-key, autosize, and focus behaviors must the composer preserve?"},
+          {"id": "chat-attachments", "prompt": "Which attachment phases block sending, and how can failed items recover?"},
+          {"id": "chat-send-uncertainty", "prompt": "Can the server accept a send when its transport response is lost or retried?"},
+          {"id": "chat-stream-order", "prompt": "Can stream events arrive late, repeat, or belong to a turn that is no longer visible?"},
+          {"id": "chat-stop-truth", "prompt": "Does closing local transport prove that generation stopped on the server?"}
+        ],
+        "requirements": [
+          {"id": "chat-composition-safe", "title": "Composition-safe input", "description": "IME composition, keyboard shortcuts, autosizing, and focus recovery preserve user intent."},
+          {"id": "chat-recoverable-draft", "title": "Recoverable scoped draft", "description": "Unsent text persists separately from messages under an explicit conversation and account scope."},
+          {"id": "chat-ready-attachments", "title": "Explicit attachment readiness", "description": "Only finalized attachment identities enter a send command, while failed items remain recoverable."},
+          {"id": "chat-one-logical-send", "title": "One logical send", "description": "Retry and acknowledgement converge on one user message instead of duplicating the turn."},
+          {"id": "chat-correlated-stream", "title": "Correlated ordered stream", "description": "Conversation, message, stream, and sequence identity reject stale or duplicate assistant events."},
+          {"id": "chat-accessible-recovery", "title": "Accessible recovery controls", "description": "Stop, retry, errors, streaming status, and focus changes remain understandable and operable."}
+        ],
+        "cards": [
+          {"id": "chat-composer-view", "title": "Composer view", "description": "Captures text, composition, attachment, shortcut, autosize, and focus intent."},
+          {"id": "chat-message-list", "title": "Message list", "description": "Renders paged history and the current correlated turn."},
+          {"id": "chat-status", "title": "Status announcer", "description": "Publishes restrained send, stream, stop, and retry outcomes."},
+          {"id": "chat-draft-store", "title": "Draft store", "description": "Owns scoped unsent text, revision, and persistence state."},
+          {"id": "chat-attachment-coordinator", "title": "Attachment coordinator", "description": "Owns local, uploading, ready, and failed attachment phases."},
+          {"id": "chat-turn-coordinator", "title": "Turn coordinator", "description": "Owns send identity, optimistic message, stream acceptance, and terminal reconciliation."},
+          {"id": "chat-stream-adapter", "title": "Stream adapter", "description": "Parses typed sequenced events without owning visible conversation state."},
+          {"id": "chat-client", "title": "Chat client", "description": "Maps send, stop, retry, and reconciliation commands to transport contracts."},
+          {"id": "chat-browser-storage", "title": "Browser storage", "description": "Persists scoped draft revisions and recoverable command identity."},
+          {"id": "chat-api", "title": "Chat API", "description": "Accepts idempotent commands and returns authoritative turn and stream events."}
+        ],
+        "decisions": [
+          {
+            "id": "chat-state-ownership",
+            "title": "State ownership",
+            "prompt": "Which boundary owns draft, attachment, send, and stream transitions?",
+            "options": [
+              {"id": "chat-owner-split-lifetimes", "label": "Separate draft and turn owners", "description": "Keep unsent intent and sent-turn transitions in boundaries with distinct lifetimes."},
+              {"id": "chat-owner-feature-controller", "label": "One feature controller", "description": "Coordinate draft, attachment, send, and stream transitions in one feature service."},
+              {"id": "chat-owner-composer-view", "label": "Composer-owned conversation state", "description": "Let the input view manage draft, attachment, send, and streamed message transitions."}
+            ],
+            "rationales": [
+              {"id": "chat-rationale-state-lifetimes", "label": "Match ownership boundaries to lifetime and failure mode"},
+              {"id": "chat-rationale-serialized-feature", "label": "Keep feature transitions behind one serialized command path"},
+              {"id": "chat-rationale-near-input", "label": "Keep interaction state near the component receiving input events"}
+            ]
+          },
+          {
+            "id": "chat-send-identity",
+            "title": "Send and retry identity",
+            "prompt": "How does an uncertain retry converge on one logical user turn?",
+            "options": [
+              {"id": "chat-send-command-message", "label": "Command and client-message identity", "description": "Persist command, client-message, and draft-revision IDs for reconciliation."},
+              {"id": "chat-send-conversation-time", "label": "Conversation and submission time", "description": "Use conversation identity and submission time as the retry lookup key."},
+              {"id": "chat-send-fresh-retry", "label": "Fresh identity for each retry", "description": "Create new command and message IDs when a send request is retried."}
+            ],
+            "rationales": [
+              {"id": "chat-rationale-one-turn", "label": "Make retries converge on one logical user turn"},
+              {"id": "chat-rationale-compact-key", "label": "Reuse conversation context with a compact lookup key"},
+              {"id": "chat-rationale-fresh-attempt", "label": "Isolate each transport attempt under fresh identities"}
+            ]
+          },
+          {
+            "id": "chat-stream-terminal",
+            "title": "Stream and Stop policy",
+            "prompt": "Which boundary decides whether a stream event or Stop outcome may update the turn?",
+            "options": [
+              {"id": "chat-stream-correlated-terminal", "label": "Correlated sequence and terminal state", "description": "Accept deltas by conversation, stream, message, and sequence before terminal reconciliation."},
+              {"id": "chat-stream-local-abort", "label": "Local abort defines completion", "description": "Abort local transport on Stop and treat the partial response as terminal."},
+              {"id": "chat-stream-visible-placeholder", "label": "Current visible placeholder", "description": "Append each delta to the assistant placeholder rendered by the active route."}
+            ],
+            "rationales": [
+              {"id": "chat-rationale-reject-stale", "label": "Reject stale or duplicate events before visible state changes"},
+              {"id": "chat-rationale-abort-boundary", "label": "Use transport cancellation as the terminal state boundary"},
+              {"id": "chat-rationale-near-message", "label": "Keep streaming updates close to the rendered message"}
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {"title": "Core Web implementation lens", "prompt": "Where do composition events, scoped persistence, stream parsing, AbortController cleanup, and focus recovery live?"},
+          "react": {"title": "React implementation lens", "prompt": "Which reducer, store, and Effect boundaries preserve command and stream identity without stale closures?"},
+          "angular": {"title": "Angular implementation lens", "prompt": "Which service, signal, or RxJS boundary serializes turn state while teardown stays scoped to its owner?"},
+          "vue": {"title": "Vue implementation lens", "prompt": "Which composables own draft persistence, stream invalidation, and cleanup without coupling them to rendering?"}
+        }
+      },
+      "private": {
+        "sourceContentId": "ai-chat-textarea-design",
+        "expectedSourceBundleHash": "e693eb94397741cf4290fc304470b3ed6ee6211b7469d313d244a464eef423e1",
+        "clarificationAnswers": [
+          {"clarificationId": "chat-draft-scope", "answer": "Unsent text must survive navigation or reload, remain isolated between accounts and conversations, and not disappear while a send has an uncertain outcome."},
+          {"clarificationId": "chat-composition", "answer": "IME users must finish composition without accidental submission. Text-area growth stays bounded, and keyboard and focus behavior remains usable after send, Stop, attachment removal, or failure."},
+          {"clarificationId": "chat-attachments", "answer": "An attachment may still be local, transferring, ready, or failed when Send is pressed. Incomplete items cannot be sent, and one failure must not discard recoverable text or other attachments."},
+          {"clarificationId": "chat-send-uncertainty", "answer": "Yes. The server may accept a request even when the client receives no response. Repeating the user's single send must not create a duplicate logical message."},
+          {"clarificationId": "chat-stream-order", "answer": "Yes. Events may arrive late or more than once, including after the user opens another conversation. Applying one twice or rendering it in the wrong conversation is invalid."},
+          {"clarificationId": "chat-stop-truth", "answer": "No. The local connection can close while generation is still running, and a Stop response can be lost. The UI must not report an unconfirmed terminal outcome."}
+        ],
+        "twist": {
+          "id": "chat-navigation-stop-race",
+          "title": "Production change: navigation during an uncertain Stop",
+          "prompt": "A user presses Stop, immediately opens another conversation, and the Stop response is lost. The old stream continues sending events. Adapt the design so the old turn can reconcile without changing the new conversation.",
+          "responseActions": [
+            {"id": "chat-twist-scope-events", "label": "Scope late events to their turn", "description": "Gate deltas by conversation, message, stream, and accepted sequence identity."},
+            {"id": "chat-twist-reconcile-stop", "label": "Reconcile Stop with server state", "description": "Keep Stop pending until an authoritative terminal event confirms the outcome."},
+            {"id": "chat-twist-clear-partial", "label": "Clear the old partial response", "description": "Remove the visible partial response when navigation selects another conversation."},
+            {"id": "chat-twist-fresh-stop", "label": "Retry Stop under a new command", "description": "Issue another Stop request with a fresh command identity after the route changes."}
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": ["Uncertain send outcomes", "Composition-safe input", "Draft and attachment constraints"],
+              "criteria": [
+                {"id": "chat-discover-send-uncertainty", "weight": 1, "evidence": "Clarified how accepted sends survive lost responses.", "rule": {"predicate": "clarificationSelected", "clarificationId": "chat-send-uncertainty"}},
+                {"id": "chat-prioritize-composition", "weight": 1, "evidence": "Prioritized composition-safe input behavior.", "rule": {"predicate": "requirementPrioritized", "requirementId": "chat-composition-safe", "maxRank": 2}},
+                {
+                  "id": "chat-discover-composer-constraints",
+                  "weight": 1,
+                  "evidence": "Clarified at least one draft, IME, or attachment failure boundary.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "clarificationSelected", "clarificationId": "chat-draft-scope"},
+                      {"predicate": "clarificationSelected", "clarificationId": "chat-composition"},
+                      {"predicate": "clarificationSelected", "clarificationId": "chat-attachments"}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": ["Turn-coordinator ownership", "Draft persistence boundary", "Attachment readiness flow"],
+              "criteria": [
+                {
+                  "id": "chat-valid-turn-owner",
+                  "weight": 1,
+                  "evidence": "Placed turn coordination in state under a coherent feature owner.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "chat-turn-coordinator", "laneId": "state"},
+                      {
+                        "anyOf": [
+                          {"predicate": "decisionSelected", "decisionId": "chat-state-ownership", "optionId": "chat-owner-split-lifetimes"},
+                          {"predicate": "decisionSelected", "decisionId": "chat-state-ownership", "optionId": "chat-owner-feature-controller"}
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "chat-durable-composer-paths",
+                  "weight": 3,
+                  "evidence": "Connected draft persistence and attachment readiness to their durable owners.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "connectionExists", "fromCardId": "chat-draft-store", "toCardId": "chat-browser-storage", "typeId": "data-flow"},
+                      {"predicate": "connectionExists", "fromCardId": "chat-attachment-coordinator", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": ["Idempotent send identity", "Chat transport contracts"],
+              "criteria": [
+                {"id": "chat-command-message-identity", "weight": 1, "evidence": "Selected stable command and client-message identity.", "rule": {"predicate": "decisionSelected", "decisionId": "chat-send-identity", "optionId": "chat-send-command-message"}},
+                {"id": "chat-client-api-contract", "weight": 1, "evidence": "Connected the chat adapter to its external API.", "rule": {"predicate": "connectionExists", "fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"}}
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": ["Sequenced stream acceptance", "Stop terminal reconciliation"],
+              "criteria": [
+                {"id": "chat-correlated-terminal", "weight": 1, "evidence": "Selected correlated sequence and terminal reconciliation.", "rule": {"predicate": "decisionSelected", "decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal"}},
+                {"id": "chat-stream-reducer-flow", "weight": 1, "evidence": "Connected parsed stream events to the turn owner.", "rule": {"predicate": "connectionExists", "fromCardId": "chat-stream-adapter", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"}}
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": ["Composition-safe interaction", "Restrained status announcements"],
+              "criteria": [
+                {"id": "chat-accessible-priority", "weight": 1, "evidence": "Prioritized accessible Stop, retry, status, and focus behavior.", "rule": {"predicate": "requirementPrioritized", "requirementId": "chat-accessible-recovery"}},
+                {
+                  "id": "chat-accessible-ui-boundaries",
+                  "weight": 3,
+                  "evidence": "Kept composer, message rendering, and restrained status output in explicit UI boundaries.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "chat-composer-view", "laneId": "ui"},
+                      {"predicate": "cardInLane", "cardId": "chat-message-list", "laneId": "ui"},
+                      {"predicate": "cardInLane", "cardId": "chat-status", "laneId": "ui"}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": ["Cross-conversation event isolation", "Authoritative Stop outcomes"],
+              "criteria": [
+                {
+                  "id": "chat-adapted-identity-contract",
+                  "weight": 3,
+                  "evidence": "Applied the navigation race under stable send identity and correlated stream state.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "twistActionSelected", "actionId": "chat-twist-scope-events"},
+                      {"predicate": "twistActionSelected", "actionId": "chat-twist-reconcile-stop"},
+                      {"predicate": "decisionSelected", "decisionId": "chat-send-identity", "optionId": "chat-send-command-message"},
+                      {"predicate": "decisionSelected", "decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal"}
+                    ]
+                  }
+                },
+                {
+                  "id": "chat-twist-isolation",
+                  "weight": 1,
+                  "evidence": "Scoped late events and reconciled the uncertain Stop.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "twistActionSelected", "actionId": "chat-twist-scope-events"},
+                      {"predicate": "twistActionSelected", "actionId": "chat-twist-reconcile-stop"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "chat-critical-fresh-retry-local-abort",
+              "severity": "critical",
+              "axisIds": ["data-interface-contracts", "resilience-performance"],
+              "summary": "Fresh retry identities plus local-abort terminal state can duplicate a send and let old stream events cross turns.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "chat-send-identity", "optionId": "chat-send-fresh-retry"},
+                  {"predicate": "decisionSelected", "decisionId": "chat-stream-terminal", "optionId": "chat-stream-local-abort"}
+                ]
+              }
+            },
+            {
+              "id": "chat-major-view-owned-state",
+              "severity": "major",
+              "axisIds": ["architecture-ownership", "accessibility-product-ux"],
+              "summary": "Composer-owned conversation state ties asynchronous turn recovery to one mounted input view.",
+              "rule": {"predicate": "decisionSelected", "decisionId": "chat-state-ownership", "optionId": "chat-owner-composer-view"}
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "chat-strong-split-owners",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chat-send-uncertainty", "chat-composition", "chat-attachments"],
+              "priorityRequirementIds": ["chat-composition-safe", "chat-accessible-recovery", "chat-one-logical-send"],
+              "placements": [
+                {"cardId": "chat-composer-view", "laneId": "ui", "order": 0},
+                {"cardId": "chat-message-list", "laneId": "ui", "order": 1},
+                {"cardId": "chat-status", "laneId": "ui", "order": 2},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-draft-store", "laneId": "state", "order": 1},
+                {"cardId": "chat-attachment-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "chat-api", "laneId": "external", "order": 0},
+                {"cardId": "chat-browser-storage", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-draft-store", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-attachment-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-turn-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-draft-store", "toCardId": "chat-browser-storage", "typeId": "data-flow"},
+                {"fromCardId": "chat-attachment-coordinator", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-client", "typeId": "event-flow"},
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"},
+                {"fromCardId": "chat-api", "toCardId": "chat-stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "chat-stream-adapter", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-message-list", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-status", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-split-lifetimes", "rationaleIds": ["chat-rationale-state-lifetimes"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-command-message", "rationaleIds": ["chat-rationale-one-turn"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal", "rationaleIds": ["chat-rationale-reject-stale"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chat-send-uncertainty", "chat-composition", "chat-attachments"],
+              "priorityRequirementIds": ["chat-composition-safe", "chat-accessible-recovery", "chat-one-logical-send"],
+              "placements": [
+                {"cardId": "chat-composer-view", "laneId": "ui", "order": 0},
+                {"cardId": "chat-message-list", "laneId": "ui", "order": 1},
+                {"cardId": "chat-status", "laneId": "ui", "order": 2},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-draft-store", "laneId": "state", "order": 1},
+                {"cardId": "chat-attachment-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "chat-api", "laneId": "external", "order": 0},
+                {"cardId": "chat-browser-storage", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-draft-store", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-attachment-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-turn-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-draft-store", "toCardId": "chat-browser-storage", "typeId": "data-flow"},
+                {"fromCardId": "chat-attachment-coordinator", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-client", "typeId": "event-flow"},
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"},
+                {"fromCardId": "chat-api", "toCardId": "chat-stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "chat-stream-adapter", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-message-list", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-status", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-split-lifetimes", "rationaleIds": ["chat-rationale-state-lifetimes"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-command-message", "rationaleIds": ["chat-rationale-one-turn"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal", "rationaleIds": ["chat-rationale-reject-stale"]}
+              ],
+              "twistResponseActionIds": ["chat-twist-scope-events", "chat-twist-reconcile-stop"],
+              "scratchpad": "A lost response reuses command identity; route state does not own the stream."
+            }
+          },
+          {
+            "id": "chat-strong-feature-controller",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chat-send-uncertainty", "chat-composition", "chat-attachments"],
+              "priorityRequirementIds": ["chat-composition-safe", "chat-accessible-recovery", "chat-one-logical-send"],
+              "placements": [
+                {"cardId": "chat-composer-view", "laneId": "ui", "order": 0},
+                {"cardId": "chat-message-list", "laneId": "ui", "order": 1},
+                {"cardId": "chat-status", "laneId": "ui", "order": 2},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-draft-store", "laneId": "state", "order": 1},
+                {"cardId": "chat-attachment-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "chat-api", "laneId": "external", "order": 0},
+                {"cardId": "chat-browser-storage", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-draft-store", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-attachment-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-turn-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-draft-store", "toCardId": "chat-browser-storage", "typeId": "data-flow"},
+                {"fromCardId": "chat-attachment-coordinator", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-client", "typeId": "event-flow"},
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"},
+                {"fromCardId": "chat-api", "toCardId": "chat-stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "chat-stream-adapter", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-message-list", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-status", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-feature-controller", "rationaleIds": ["chat-rationale-serialized-feature"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-command-message", "rationaleIds": ["chat-rationale-one-turn"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal", "rationaleIds": ["chat-rationale-reject-stale"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chat-send-uncertainty", "chat-composition", "chat-attachments"],
+              "priorityRequirementIds": ["chat-composition-safe", "chat-accessible-recovery", "chat-one-logical-send"],
+              "placements": [
+                {"cardId": "chat-composer-view", "laneId": "ui", "order": 0},
+                {"cardId": "chat-message-list", "laneId": "ui", "order": 1},
+                {"cardId": "chat-status", "laneId": "ui", "order": 2},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-draft-store", "laneId": "state", "order": 1},
+                {"cardId": "chat-attachment-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "chat-api", "laneId": "external", "order": 0},
+                {"cardId": "chat-browser-storage", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-draft-store", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-attachment-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-turn-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-draft-store", "toCardId": "chat-browser-storage", "typeId": "data-flow"},
+                {"fromCardId": "chat-attachment-coordinator", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-client", "typeId": "event-flow"},
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"},
+                {"fromCardId": "chat-api", "toCardId": "chat-stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "chat-stream-adapter", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-message-list", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-status", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-feature-controller", "rationaleIds": ["chat-rationale-serialized-feature"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-command-message", "rationaleIds": ["chat-rationale-one-turn"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal", "rationaleIds": ["chat-rationale-reject-stale"]}
+              ],
+              "twistResponseActionIds": ["chat-twist-scope-events", "chat-twist-reconcile-stop"],
+              "scratchpad": "The feature controller keeps old-turn reconciliation independent from route rendering."
+            }
+          },
+          {
+            "id": "chat-developing",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chat-send-uncertainty", "chat-composition", "chat-attachments"],
+              "priorityRequirementIds": ["chat-composition-safe", "chat-accessible-recovery", "chat-one-logical-send"],
+              "placements": [
+                {"cardId": "chat-composer-view", "laneId": "ui", "order": 0},
+                {"cardId": "chat-message-list", "laneId": "ui", "order": 1},
+                {"cardId": "chat-status", "laneId": "ui", "order": 2},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "chat-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-turn-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-client", "typeId": "event-flow"},
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"},
+                {"fromCardId": "chat-api", "toCardId": "chat-stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "chat-stream-adapter", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-message-list", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-status", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-feature-controller", "rationaleIds": ["chat-rationale-serialized-feature"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-command-message", "rationaleIds": ["chat-rationale-one-turn"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal", "rationaleIds": ["chat-rationale-reject-stale"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chat-send-uncertainty", "chat-composition", "chat-attachments"],
+              "priorityRequirementIds": ["chat-composition-safe", "chat-accessible-recovery", "chat-one-logical-send"],
+              "placements": [
+                {"cardId": "chat-composer-view", "laneId": "ui", "order": 0},
+                {"cardId": "chat-message-list", "laneId": "ui", "order": 1},
+                {"cardId": "chat-status", "laneId": "ui", "order": 2},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "chat-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "chat-composer-view", "toCardId": "chat-turn-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-client", "typeId": "event-flow"},
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"},
+                {"fromCardId": "chat-api", "toCardId": "chat-stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "chat-stream-adapter", "toCardId": "chat-turn-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-message-list", "typeId": "data-flow"},
+                {"fromCardId": "chat-turn-coordinator", "toCardId": "chat-status", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-feature-controller", "rationaleIds": ["chat-rationale-serialized-feature"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-command-message", "rationaleIds": ["chat-rationale-one-turn"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-correlated-terminal", "rationaleIds": ["chat-rationale-reject-stale"]}
+              ],
+              "twistResponseActionIds": ["chat-twist-scope-events", "chat-twist-reconcile-stop"],
+              "scratchpad": ""
+            }
+          },
+          {
+            "id": "chat-critical",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chat-send-uncertainty", "chat-stop-truth", "chat-composition"],
+              "priorityRequirementIds": ["chat-one-logical-send", "chat-accessible-recovery", "chat-correlated-stream"],
+              "placements": [
+                {"cardId": "chat-status", "laneId": "ui", "order": 0},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-split-lifetimes", "rationaleIds": ["chat-rationale-state-lifetimes"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-fresh-retry", "rationaleIds": ["chat-rationale-fresh-attempt"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-local-abort", "rationaleIds": ["chat-rationale-abort-boundary"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chat-send-uncertainty", "chat-stop-truth", "chat-composition"],
+              "priorityRequirementIds": ["chat-one-logical-send", "chat-accessible-recovery", "chat-correlated-stream"],
+              "placements": [
+                {"cardId": "chat-status", "laneId": "ui", "order": 0},
+                {"cardId": "chat-turn-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "chat-client", "laneId": "data", "order": 0},
+                {"cardId": "chat-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "chat-client", "toCardId": "chat-api", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chat-state-ownership", "optionId": "chat-owner-split-lifetimes", "rationaleIds": ["chat-rationale-state-lifetimes"]},
+                {"decisionId": "chat-send-identity", "optionId": "chat-send-fresh-retry", "rationaleIds": ["chat-rationale-fresh-attempt"]},
+                {"decisionId": "chat-stream-terminal", "optionId": "chat-stream-local-abort", "rationaleIds": ["chat-rationale-abort-boundary"]}
+              ],
+              "twistResponseActionIds": ["chat-twist-clear-partial"],
+              "scratchpad": ""
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-07-29",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt and choices are original.",
+          "references": [
+            {
+              "title": "Input Events Level 2",
+              "url": "https://www.w3.org/TR/input-events-2/",
+              "license": "W3C Document License",
+              "role": "Validate composition and editable-input event boundaries",
+              "accessedAt": "2026-07-29"
+            },
+            {
+              "title": "WHATWG Streams Standard",
+              "url": "https://streams.spec.whatwg.org/",
+              "license": "CC BY 4.0",
+              "role": "Validate readable stream cancellation and lifecycle mechanics",
+              "accessedAt": "2026-07-29"
+            },
+            {
+              "title": "WCAG 2.2 Understanding Status Messages",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html",
+              "license": "W3C Document License",
+              "role": "Validate accessible asynchronous status communication",
               "accessedAt": "2026-07-29"
             }
           ]

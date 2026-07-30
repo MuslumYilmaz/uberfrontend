@@ -49,7 +49,7 @@
     "searchIntent": "Prepare a frontend system design answer for AI Chat Text Area (ChatGPT-Style).",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI Chat Text Area (ChatGPT-Style).",
     "uniqueAngle": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-07-29",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

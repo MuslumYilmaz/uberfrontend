@@ -66,7 +66,7 @@
                     data-testid="sd-mobile-overview-trigger"
                     [attr.aria-expanded]="mobileOverviewOpen()"
                     aria-controls="sd-mobile-overview-panel"
-                    (click)="toggleMobileOverview()">
+                    (click)="toggleMobileOverview($event.currentTarget)">
                     <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                     <span>Overview</span>
                 </button>
@@ -76,56 +76,33 @@
                     data-testid="sd-mobile-toc-trigger"
                     [attr.aria-expanded]="mobileTocOpen()"
                     aria-controls="sd-mobile-toc-panel"
-                    (click)="toggleMobileToc()">
+                    (click)="toggleMobileToc($event.currentTarget)">
                     <i class="fa-solid fa-list" aria-hidden="true"></i>
                     <span>On this page</span>
                 </button>
             </section>
 
-            <div
-                class="sdl-mobile-backdrop"
-                data-testid="sd-mobile-backdrop"
-                *ngIf="mobileOverviewOpen() || mobileTocOpen()"
-                (click)="closeMobilePanels()"
-                aria-hidden="true">
-            </div>
-
-            <section
-                id="sd-mobile-overview-panel"
-                class="sdl-mobile-panel"
-                data-testid="sd-mobile-overview-panel"
-                *ngIf="mobileOverviewOpen()"
-                role="dialog"
-                aria-label="Question overview">
-                <div class="sdl-mobile-panel-head">
-                    <div class="sdl-mobile-panel-title">Overview</div>
-                    <button
-                        type="button"
-                        class="sdl-mobile-panel-close"
-                        data-testid="sd-mobile-overview-close"
-                        (click)="closeMobileOverview()"
-                        aria-label="Close overview panel">
-                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                    </button>
-                </div>
-
+            <fa-dialog
+                header="Question overview"
+                closeAriaLabel="Close overview panel"
+                [visible]="mobileOverviewOpen()"
+                (visibleChange)="onMobileOverviewVisibleChange($event)"
+                [modal]="true"
+                [dismissableMask]="true"
+                [blockScroll]="true"
+                [closeOnEscape]="true"
+                [focusOnShow]="true"
+                [focusTrap]="true"
+                width="min(720px, calc(100vw - 24px))"
+                maxWidth="720px"
+                styleClass="sdl-mobile-dialog"
+                maskStyleClass="sdl-mobile-dialog-mask"
+                [contentStyle]="{ padding: '0', overflow: 'hidden' }">
+              <section
+                  id="sd-mobile-overview-panel"
+                  class="sdl-mobile-panel-content"
+                  data-testid="sd-mobile-overview-panel">
                 <div class="sdl-mobile-overview-body">
-                    <div class="title-row">
-                        <h1 class="title" [title]="title()">{{ title() }}</h1>
-                        <button
-                            class="report-issue-btn"
-                            type="button"
-                            data-testid="system-design-report-issue-btn-mobile"
-                            (click)="reportIssue()"
-                            aria-label="Report issue on this question">
-                            <i class="fa-solid fa-bug" aria-hidden="true"></i>
-                            <span class="report-issue-btn__label">Report issue</span>
-                        </button>
-                    </div>
-                    <div class="title-meta">
-                        By {{ authorLabel(q()) }}
-                        <ng-container *ngIf="updatedLabel(q()) as updated"> · Updated {{ updated }}</ng-container>
-                    </div>
                     <div class="desc">{{ description() }}</div>
                     <div class="tags">
                         <p-chip *ngFor="let tag of tags(); trackBy: trackByTagValue" [label]="tag" styleClass="custom-chip"></p-chip>
@@ -153,26 +130,29 @@
                         </div>
                     </details>
                 </div>
-            </section>
+              </section>
+            </fa-dialog>
 
-            <section
-                id="sd-mobile-toc-panel"
-                class="sdl-mobile-panel sdl-mobile-panel--toc"
-                data-testid="sd-mobile-toc-panel"
-                *ngIf="mobileTocOpen()"
-                role="dialog"
-                aria-label="Page sections">
-                <div class="sdl-mobile-panel-head">
-                    <div class="sdl-mobile-panel-title">On this page</div>
-                    <button
-                        type="button"
-                        class="sdl-mobile-panel-close"
-                        data-testid="sd-mobile-toc-close"
-                        (click)="closeMobileToc()"
-                        aria-label="Close table of contents panel">
-                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                    </button>
-                </div>
+            <fa-dialog
+                header="On this page"
+                closeAriaLabel="Close table of contents panel"
+                [visible]="mobileTocOpen()"
+                (visibleChange)="onMobileTocVisibleChange($event)"
+                [modal]="true"
+                [dismissableMask]="true"
+                [blockScroll]="true"
+                [closeOnEscape]="true"
+                [focusOnShow]="true"
+                [focusTrap]="true"
+                width="min(720px, calc(100vw - 24px))"
+                maxWidth="720px"
+                styleClass="sdl-mobile-dialog"
+                maskStyleClass="sdl-mobile-dialog-mask"
+                [contentStyle]="{ padding: '0', overflow: 'hidden' }">
+              <section
+                  id="sd-mobile-toc-panel"
+                  class="sdl-mobile-panel-content"
+                  data-testid="sd-mobile-toc-panel">
                 <ul class="toc-list sdl-mobile-toc-list">
                     <li *ngFor="let s of sections(); trackBy: trackBySectionKey">
                         <button class="toc-item" [class.active]="activeKey()===s.key" (click)="scrollToKey(s.key)">
@@ -180,6 +160,26 @@
                         </button>
                     </li>
                 </ul>
+              </section>
+            </fa-dialog>
+
+            <section
+                *ngIf="contentLoadState() === 'error'"
+                class="sd-content-error"
+                data-testid="sd-content-error"
+                aria-live="polite">
+                <h2>We couldn’t load this answer</h2>
+                <p>The question overview is available, but one or more answer sections did not load. Retry to fetch the complete answer.</p>
+                <button
+                    faButton
+                    variant="primary"
+                    size="sm"
+                    type="button"
+                    [loading]="contentRetrying()"
+                    [disabled]="contentRetrying()"
+                    (click)="retrySystemDesignContent()">
+                    {{ contentRetrying() ? 'Retrying…' : 'Retry answer' }}
+                </button>
             </section>
 
             <ng-container *ngFor="let s of sections(); trackBy: trackBySectionKey">
@@ -210,21 +210,10 @@
                         <!-- DIVIDER -->
                         <div *ngIf="b.type === 'divider'" class="sd-divider"></div>
 
-                        <!-- CODE (Monaco, lazy) -->
-                        <div *ngIf="b.type === 'code'" class="sd-code"
-                            [style.minHeight.px]="!isCodeMounted(codeKey(sectionKey, idx)) ? (b.height || 160) : (b.height || null)">
-                            <div *ngIf="!isCodeMounted(codeKey(sectionKey, idx)); else showCode" #codeSentinel
-                                class="code-sentinel" [attr.data-code-id]="codeKey(sectionKey, idx)">
-                            </div>
-
-                            <ng-template #showCode>
-                                <app-monaco-editor class="sd-code-fill" [code]="b.code"
-                                    [language]="b.language || 'typescript'" [readOnly]="true" [interactive]="false"
-                                    [autoHeight]="!b.height" [options]="codeViewerOptions"
-                                    [style.height.px]="b.height || null">
-                                </app-monaco-editor>
-                            </ng-template>
-                        </div>
+                        <!-- READ-ONLY CODE: semantic, SSR-visible, and selectable -->
+                        <pre *ngIf="b.type === 'code'" class="sd-code"
+                            [style.maxHeight.px]="b.height || null"
+                            [attr.data-language]="b.language || 'typescript'"><code>{{ b.code }}</code></pre>
 
                         <!-- IMAGE -->
                         <figure *ngIf="b.type === 'image'" class="sd-figure">
@@ -295,12 +284,16 @@
 
                         <!-- TABLE -->
                         <div *ngIf="b.type === 'table'" class="sd-table">
-                            <div class="sd-table-title" *ngIf="b.title">{{ b.title }}</div>
-                            <div class="sd-table-scroll">
+                            <div
+                                class="sd-table-scroll"
+                                role="region"
+                                tabindex="0"
+                                [attr.aria-label]="b.title ? b.title + ' table' : 'System design data table'">
                                 <table>
+                                    <caption *ngIf="b.title">{{ b.title }}</caption>
                                     <thead>
                                         <tr>
-                                            <th *ngFor="let col of b.columns; trackBy: trackByStringValue">{{ col }}</th>
+                                            <th scope="col" *ngFor="let col of b.columns; trackBy: trackByStringValue">{{ col }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

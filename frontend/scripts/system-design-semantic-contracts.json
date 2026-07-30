@@ -28,6 +28,76 @@
             "saniti[sz]",
             "remote image.{0,160}(?:proxy|click-to-load|click to load)"
           ]
+        },
+        {
+          "id": "draft-attachment-lifecycle-and-readiness",
+          "target": "code",
+          "sections": [
+            "data",
+            "interfaces"
+          ],
+          "require": [
+            "type\\s+DraftAttachment\\s*=",
+            "uploadSessionId",
+            "uploadedBytes",
+            "assetId",
+            "attachmentAssetIds"
+          ]
+        },
+        {
+          "id": "projection-and-local-intent-stay-separated",
+          "target": "code",
+          "sections": [
+            "data",
+            "interfaces"
+          ],
+          "require": [
+            "type\\s+MailboxProjection\\s*=",
+            "type\\s+LocalIntentState\\s*=",
+            "reconcileRemoteDraft"
+          ],
+          "forbid": [
+            "type\\s+MailboxDocument\\s*="
+          ]
+        },
+        {
+          "id": "remote-draft-preserves-newer-local-intent",
+          "target": "visible",
+          "sections": [
+            "data",
+            "interfaces"
+          ],
+          "require": [
+            "newer local (?:content remains intact|edits remain intact)",
+            "explicit conflict",
+            "never assigns remote draft content over a newer local document"
+          ]
+        },
+        {
+          "id": "attachment-gateway-covers-the-lifecycle",
+          "target": "code",
+          "sections": [
+            "interfaces"
+          ],
+          "require": [
+            "createAttachmentUpload",
+            "uploadAttachmentBytes",
+            "finalizeAttachmentUpload",
+            "cancelAttachmentUpload",
+            "createAttachmentDownload"
+          ]
+        },
+        {
+          "id": "background-sync-is-not-a-delivery-guarantee",
+          "target": "visible",
+          "sections": [
+            "optimizations"
+          ],
+          "require": [
+            "Background Sync is only a progressive enhancement",
+            "(?:next eligible foreground|foreground or reconnect opportunity)",
+            "never promises background delivery"
+          ]
         }
       ],
       "symbols": [
@@ -48,6 +118,60 @@
             "draftId",
             "contentRevision",
             "baseRemoteRevision"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "DraftAttachment",
+          "requiredLiterals": [
+            "selected",
+            "uploading",
+            "processing",
+            "ready",
+            "failed",
+            "blocked",
+            "canceled"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "MailboxProjection",
+          "requiredMembers": [
+            "threadsById",
+            "messagesById",
+            "labelsById",
+            "remoteDraftsById",
+            "syncCursor"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "LocalIntentState",
+          "requiredMembers": [
+            "draftsById",
+            "attachmentsById",
+            "commandsById"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "MailboxGateway",
+          "requiredMembers": [
+            "createAttachmentUpload",
+            "uploadAttachmentBytes",
+            "finalizeAttachmentUpload",
+            "getAttachmentAsset",
+            "cancelAttachmentUpload",
+            "createAttachmentDownload"
+          ]
+        },
+        {
+          "group": "offline-email-client-contract",
+          "name": "DraftReconciliation",
+          "requiredLiterals": [
+            "acknowledged",
+            "base-advanced",
+            "conflict"
           ]
         },
         {
@@ -449,6 +573,133 @@
           "require": [
             "composition|IME",
             "AbortSignal|AbortController"
+          ]
+        },
+        {
+          "id": "ime-state-is-transient",
+          "target": "code",
+          "sections": [
+            "data"
+          ],
+          "require": [
+            "interface\\s+ComposerInteractionState\\s*\\{[\\s\\S]{0,180}isComposing"
+          ],
+          "forbid": [
+            "interface\\s+ComposerDraft\\s*\\{[^}]*isComposing"
+          ]
+        },
+        {
+          "id": "stop-resume-and-snapshot-converge",
+          "target": "all",
+          "sections": [
+            "architecture",
+            "interfaces",
+            "optimizations"
+          ],
+          "require": [
+            "stopCommandId",
+            "afterSequence",
+            "getTurnSnapshot",
+            "(?:stable Stop|one stopCommandId|reuse (?:that|one) identity)"
+          ]
+        },
+        {
+          "id": "draft-account-isolation-and-retention",
+          "target": "visible",
+          "sections": [
+            "optimizations"
+          ],
+          "require": [
+            "account switch",
+            "logout",
+            "(?:retention|bounded TTL)",
+            "(?:confidentiality boundary|telemetry)"
+          ]
+        },
+        {
+          "id": "assistant-content-safe-render-boundary",
+          "target": "visible",
+          "sections": [
+            "optimizations"
+          ],
+          "require": [
+            "assistant content as untrusted",
+            "saniti[sz]",
+            "allowlist link protocols",
+            "innerHTML"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "ai-chat-textarea-design-contract",
+          "name": "ComposerDraft",
+          "requiredMembers": [
+            "accountId",
+            "conversationId",
+            "text",
+            "revision",
+            "savedAt",
+            "attachmentLocalIds"
+          ]
+        },
+        {
+          "group": "ai-chat-textarea-design-contract",
+          "name": "ComposerInteractionState",
+          "requiredMembers": [
+            "isComposing"
+          ]
+        },
+        {
+          "group": "ai-chat-textarea-design-contract",
+          "name": "StreamMessage",
+          "requiredMembers": [
+            "conversationId",
+            "commandId",
+            "clientMessageId",
+            "messageId",
+            "streamId",
+            "lastSequence",
+            "phase"
+          ]
+        },
+        {
+          "group": "ai-chat-textarea-design-contract",
+          "name": "StopCommand",
+          "requiredMembers": [
+            "stopCommandId",
+            "conversationId",
+            "streamId"
+          ]
+        },
+        {
+          "group": "ai-chat-textarea-design-contract",
+          "name": "OpenTurnEventsInput",
+          "requiredMembers": [
+            "conversationId",
+            "streamId",
+            "afterSequence",
+            "signal"
+          ]
+        },
+        {
+          "group": "ai-chat-textarea-design-contract",
+          "name": "TurnEvent",
+          "requiredLiterals": [
+            "message.delta",
+            "message.completed",
+            "message.stopped",
+            "message.failed"
+          ]
+        },
+        {
+          "group": "ai-chat-textarea-design-contract",
+          "name": "ChatTurnClient",
+          "requiredMembers": [
+            "send",
+            "openEvents",
+            "stop",
+            "getTurnSnapshot"
           ]
         }
       ]
