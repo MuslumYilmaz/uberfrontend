@@ -290,21 +290,22 @@ describe('SystemDesignListComponent', () => {
     expect(text(fixture)).not.toContain('Most asked frontend system design questions');
   });
 
-  it('uses the representative Continue Watching case for the fourth start step', async () => {
+  it('uses the public Netflix guide for the fourth start step', async () => {
     const { fixture } = await createComponent();
     const startSection = (fixture.nativeElement as HTMLElement).querySelector(
       '[data-testid="system-design-start-section"]',
     );
     const netflixGuide = startSection?.querySelector<HTMLAnchorElement>(
-      'a[href="/system-design/netflix-scale-expansion"]',
+      'a[href="/companies/netflix/preview"]',
     );
 
     expect(netflixGuide).toBeTruthy();
-    expect(netflixGuide?.textContent?.replace(/\s+/g, ' ').trim()).toContain(
-      'Netflix Continue Watching frontend system design',
+    expect(netflixGuide?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Netflix frontend interview questions',
     );
+    expect(netflixGuide?.getAttribute('href')).not.toContain('?');
     expect(
-      startSection?.querySelector('a[href="/companies/netflix/preview"]'),
+      startSection?.querySelector('a[href="/system-design/netflix-scale-expansion"]'),
     ).toBeNull();
   });
 

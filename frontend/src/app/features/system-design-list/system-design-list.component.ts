@@ -196,8 +196,8 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
       step: 'Step 4',
       title: 'Apply the framework to a representative device-scale case',
       detail: 'Use the Continue Watching case to practice progress reconciliation, constrained-device performance, spatial focus, and accessible cross-device behavior.',
-      route: ['/', 'system-design', 'netflix-scale-expansion'],
-      cta: 'Netflix Continue Watching frontend system design',
+      route: ['/', 'companies', 'netflix', 'preview'],
+      cta: 'Netflix frontend interview questions',
     },
   ];
 
