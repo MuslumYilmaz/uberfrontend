@@ -515,6 +515,46 @@ function assertInfiniteScrollSystemDesignSitemapEntry(entries) {
   }
 }
 
+function assertAngularHttpCancellationLabSitemapEntry(entries) {
+  const loc = 'https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request';
+  const collections = [
+    { label: 'indexed sitemaps', entries },
+    { label: 'sitemap.xml fallback', entries: getAllSitemapEntries(['sitemap.xml']) },
+  ];
+
+  collections.forEach(({ label, entries: collectionEntries }) => {
+    const matches = collectionEntries.filter((item) => item.loc === loc);
+    if (matches.length !== 1) {
+      throw new Error(`${label} must include exactly one Angular HttpClient cancellation lab loc: ${loc}`);
+    }
+    if (matches[0].lastmod !== '2026-08-03') {
+      throw new Error(
+        `${label} Angular HttpClient cancellation lab lastmod must be 2026-08-03, got ${matches[0].lastmod || '(missing)'}`,
+      );
+    }
+  });
+}
+
+function assertReactStaleClosuresSitemapEntry(entries) {
+  const loc = 'https://frontendatlas.com/react/trivia/react-stale-state-closures';
+  const collections = [
+    { label: 'indexed sitemaps', entries },
+    { label: 'sitemap.xml fallback', entries: getAllSitemapEntries(['sitemap.xml']) },
+  ];
+
+  collections.forEach(({ label, entries: collectionEntries }) => {
+    const matches = collectionEntries.filter((item) => item.loc === loc);
+    if (matches.length !== 1) {
+      throw new Error(`${label} must include exactly one React stale closures case-file loc: ${loc}`);
+    }
+    if (matches[0].lastmod !== '2026-08-03') {
+      throw new Error(
+        `${label} React stale closures case-file lastmod must be 2026-08-03, got ${matches[0].lastmod || '(missing)'}`,
+      );
+    }
+  });
+}
+
 function normalizeTitle(value) {
   return String(value || '')
     .trim()
@@ -1023,6 +1063,8 @@ assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertGoogleCompanyPreviewSitemapEntry(entries);
 assertNetflixCompanyPreviewSitemapEntry(entries);
 assertInfiniteScrollSystemDesignSitemapEntry(entries);
+assertAngularHttpCancellationLabSitemapEntry(entries);
+assertReactStaleClosuresSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
 assertAngularMasteryRedirects();
 assertRobotsAllowsCodingQueryNoindex();

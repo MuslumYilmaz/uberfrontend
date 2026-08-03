@@ -6509,196 +6509,165 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Yes. Unsubscribing from an HttpClient Observable aborts the in-progress browser request. switchMap, AsyncPipe, and takeUntil cancel because they unsubscribe; ignoring stale responses does not.",
+    "description": "Unsubscribing from an active HttpClient Observable tears down the subscription and aborts the client request. That does not prove server work stopped or stale UI is impossible. The lab below shows how to verify each layer.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Yes: unsubscribing from an <code>HttpClient</code> Observable aborts the in-progress browser request. The five cancellation gotchas are: unsubscribe is the real cancellation trigger, <code>switchMap</code> cancels because it unsubscribes, <code>takeUntil</code> and AsyncPipe cancel for the same reason, <code>mergeMap</code> and ignored callbacks do not cancel old requests, and the server may keep working after the browser aborts."
+          "text": "## Read the model as an ownership chain\n\nThe interactive lab above executes a local RxJS Observable; it is not a live API benchmark. Read its result from left to right. First identify who owns the subscription and which event releases it. Next ask whether teardown reached an HTTP backend while the request was still active. Then verify the product rule independently: can an obsolete intent still commit state? Finally, treat server cancellation as a separate distributed-systems question. A proxy, service worker, cache, interceptor, or server runtime can change what you observe after the client disconnects. This sequence prevents two common reasoning errors: calling a response “canceled” merely because the UI ignored it, and claiming server computation stopped merely because DevTools marked the browser request as canceled."
         },
         {
           "type": "text",
-          "text": "<strong>What unsubscribe owns</strong><br><br><code>HttpClient</code> Observables are cold request blueprints: subscribing starts the browser request, and unsubscribing tears down an in-progress request. That is why <code>AsyncPipe</code>, <code>switchMap</code>, and lifecycle teardown can cancel stale HTTP work."
+          "text": "## Turn the model into application proof\n\nSelect the product contract before choosing an operator, run the deterministic model, and explain every event in its trace. Then reproduce the same boundary in your application with three correlated signals: a request ID in DevTools, a teardown or <code>finalize()</code> log, and an assertion about the rendered state. Use network throttling to keep the request active long enough to exercise cancellation. Repeat the check after interceptors and sharing operators are installed, because they can move upstream ownership away from the component that unsubscribed. The goal is not to collect one red “canceled” row; it is to show that the intended owner released its work and that an obsolete response cannot win the UI."
         },
         {
           "type": "text",
-          "text": "<strong>Do you need to unsubscribe from every HttpClient call?</strong><br><br>Not usually for memory-leak prevention after a normal response, because Angular <code>HttpClient</code> Observables usually complete when the response returns. But yes, you should unsubscribe when the request is still in flight and the UI intent or component lifetime has moved on. That teardown aborts the browser request and avoids stale callbacks touching destroyed UI."
+          "text": "## 1. Manual unsubscribe: explicit user ownership\n\nKeep the returned <code>Subscription</code> when the product has a real Cancel action, such as stopping a report preview before it finishes. Calling <code>unsubscribe()</code> while the HTTP request is active closes the RxJS subscription and asks Angular's backend to abort the transport. Calling it after the response completed is harmless but cannot undo work already finished. A cancel button also needs a UI contract: disable repeated cancellation, leave the screen in a stable idle or canceled state, and decide whether a later retry starts from scratch."
+        },
+        {
+          "type": "text",
+          "text": "## 2. switchMap: latest intent owns the UI\n\nFor typeahead, route parameters, filters, and other latest-only reads, <code>switchMap</code> replaces the current inner subscription when a new outer value arrives. With a cold <code>HttpClient</code> Observable, that replacement tears down the old request. The important guarantee is ownership: query B replaces query A, so A must not update B's screen. Debounce and distinctness reduce unnecessary work, but neither is the cancellation mechanism. Do not use <code>switchMap</code> for a payment, save, or audit write that must finish; a second emission would unsubscribe the first."
+        },
+        {
+          "type": "text",
+          "text": "## 3. mergeMap: concurrency, not cancellation\n\n<code>mergeMap</code> subscribes to every inner request and allows responses to complete in any order. That is useful for independent parallel work, but dangerous for a search result assigned directly to one state field: a slow response for A can arrive after B and overwrite the newer UI. Dropping A inside the subscriber can protect the UI if the generation check is correct, but the transport still ran. Choose <code>mergeMap</code> only when concurrent work is part of the UX contract, and add bounded concurrency, deduplication, and idempotency where the workload requires them."
+        },
+        {
+          "type": "text",
+          "text": "## 4. takeUntilDestroyed: component lifetime owns teardown\n\nUse <code>takeUntilDestroyed()</code> for an imperative subscription whose lifetime belongs to an Angular component, directive, or service injection context. Destruction completes the operator's notifier path and unsubscribes upstream, so an active <code>HttpClient</code> request is aborted. It prevents work from continuing solely because a destroyed view still owns a subscription. It does not decide what should happen when the component remains alive but a newer query arrives; combine lifecycle ownership with <code>switchMap</code> or another intent policy when both boundaries matter."
+        },
+        {
+          "type": "text",
+          "text": "## 5. AsyncPipe: template ownership without manual cleanup\n\n<code>AsyncPipe</code> subscribes while its view consumes the Observable and unsubscribes when the pipe is destroyed or its Observable reference changes. If the source is a still-active <code>HttpClient</code> request, that teardown can abort it. The pipe is not automatically a latest-only operator for arbitrary requests you manually start elsewhere; it owns only its subscription. Prefer an Observable view model rendered with <code>AsyncPipe</code> when the template should own the lifetime, and keep request selection in the upstream pipeline."
+        },
+        {
+          "type": "text",
+          "text": "## 6. shareReplay: cancellation depends on source ownership\n\nSharing changes who owns the upstream subscription. With <code>shareReplay({ bufferSize: 1, refCount: true })</code>, the shared source unsubscribes while it is still active when the last consumer leaves, so an in-flight HTTP request can be aborted. With <code>refCount: false</code>, the source remains subscribed after downstream consumers leave and an active request can continue. Once a one-shot HTTP request has completed and its value is cached, later unsubscription cannot cancel that completed transport. Define cache lifetime, invalidation, error reset, and refresh semantics instead of treating <code>shareReplay</code> as a universal HTTP cache."
+        },
+        {
+          "type": "text",
+          "text": "## Debug from symptom to proof\n\nStart with the user-visible failure, then inspect the layer that can actually create it. Do not prescribe <code>switchMap</code> merely because two requests overlap. A stale search result, duplicated mutation, request that survives navigation, and server job that outlives a browser tab require different evidence and may require different fixes."
         },
         {
           "type": "list",
           "columns": [
-            "Action",
-            "Does it cancel the network request?",
-            "What really happens"
+            "Symptom",
+            "Likely root cause",
+            "Proof",
+            "Fix"
           ],
           "rows": [
             [
-              "Unsubscribe from HttpClient Observable",
-              "✅ Yes",
-              "Browser request is aborted."
+              "Old search result replaces the newest result",
+              "Concurrent inner requests or an unguarded imperative callback",
+              "Throttle the network, label requests A/B, and observe out-of-order state commits",
+              "Use switchMap for latest-only reads or reject stale generations before committing"
             ],
             [
-              "switchMap to a new request",
-              "✅ Yes",
-              "Previous inner subscription is unsubscribed."
+              "Request remains active after navigation",
+              "A manual subscription outlives its component or a shared source still owns it",
+              "Add finalize logs and inspect the Network request after component destruction",
+              "Use AsyncPipe or takeUntilDestroyed; review shareReplay refCount ownership"
             ],
             [
-              "takeUntil emits",
-              "✅ Yes",
-              "Subscription is torn down → request aborted."
+              "Cancel button changes the UI but bytes keep transferring",
+              "The code changed state without unsubscribing",
+              "Check subscription.closed and DevTools transfer activity",
+              "Unsubscribe the active request and model an explicit canceled state"
             ],
             [
-              "Component destroyed (async pipe)",
-              "✅ Yes",
-              "AsyncPipe unsubscribes automatically."
+              "Duplicate saves or payments",
+              "The chosen operator allows unsafe parallel writes or retries are not idempotent",
+              "Trace request IDs and server-side idempotency keys",
+              "Queue, exhaust, or deduplicate writes according to the product contract"
             ],
             [
-              "Using mergeMap",
-              "❌ No",
-              "Old requests keep running in parallel."
+              "Browser says canceled but server CPU continues",
+              "The server handler does not observe client disconnect cancellation",
+              "Correlate the client request ID with server tracing",
+              "Propagate a cancellation signal server-side or move long work to a job with explicit status"
             ],
             [
-              "Ignoring the result in code",
-              "❌ No",
-              "Network still continues; you just drop the response."
+              "Last subscriber leaves but shared request continues",
+              "shareReplay keeps the upstream source subscribed",
+              "Compare finalize logs with refCount true and false",
+              "Choose refCount and invalidation deliberately; do not assume downstream unsubscribe owns the source"
             ]
           ],
-          "caption": "What truly cancels HTTP in Angular?"
+          "caption": "A cancellation debugging matrix"
         },
         {
           "type": "text",
-          "text": "<strong>The classic search example</strong><br><br>When users type quickly, you want to cancel old requests and only keep the latest one."
+          "text": "## Prove cancellation three ways\n\n<strong>1. Browser DevTools Network:</strong> enable network throttling, start a request, trigger the cancellation boundary, and inspect whether the request becomes canceled before its response finishes. Record the request ID and timing; status text differs across browsers and HTTP backends. <strong>2. RxJS teardown:</strong> place <code>finalize()</code> beside the request or return a teardown function from a controlled Observable. This proves subscription cleanup, although <code>finalize</code> also runs on completion and error, so record the event that preceded it. <strong>3. Angular HTTP testing:</strong> capture the pending request with <code>HttpTestingController.expectOne()</code>, tear down its subscriber, and assert <code>TestRequest.cancelled</code>. Then separately test the UI state so a transport assertion does not hide a stale-commit bug."
+        },
+        {
+          "type": "text",
+          "text": "## Copyable six-test suite\n\nThis focused Jasmine suite isolates the six ownership patterns. It uses Angular's testing backend, so it is fast and deterministic: no real server, timer, or random delay is involved. Keep <code>provideHttpClient()</code> before <code>provideHttpClientTesting()</code>, match each request before acting on it, and retain <code>verify()</code> so unexpected requests still fail the test."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "this.results$ = this.searchControl.valueChanges.pipe(\n  debounceTime(300),\n  distinctUntilChanged(),\n  switchMap(term => this.http.get(`/api/search?q=${term}`))\n);"
+          "code": "import { AsyncPipe } from '@angular/common';\nimport { HttpClient, provideHttpClient } from '@angular/common/http';\nimport {\n  HttpTestingController,\n  provideHttpClientTesting,\n} from '@angular/common/http/testing';\nimport { Component, inject } from '@angular/core';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\nimport { TestBed } from '@angular/core/testing';\nimport { Subject } from 'rxjs';\nimport { mergeMap, shareReplay, switchMap } from 'rxjs/operators';\n\n@Component({ standalone: true, template: '' })\nclass LifecycleHost {\n  private readonly http = inject(HttpClient);\n  readonly request = this.http.get('/api/lifecycle').pipe(\n    takeUntilDestroyed()\n  ).subscribe();\n}\n\n@Component({\n  standalone: true,\n  imports: [AsyncPipe],\n  template: '{{ data$ | async }}',\n})\nclass AsyncPipeHost {\n  private readonly http = inject(HttpClient);\n  readonly data$ = this.http.get('/api/async-pipe');\n}\n\ndescribe('HttpClient cancellation contracts', () => {\n  let http: HttpClient;\n  let httpMock: HttpTestingController;\n\n  beforeEach(() => {\n    TestBed.configureTestingModule({\n      providers: [provideHttpClient(), provideHttpClientTesting()],\n    });\n    http = TestBed.inject(HttpClient);\n    httpMock = TestBed.inject(HttpTestingController);\n  });\n\n  afterEach(() => httpMock.verify());\n\n  it('cancels an active request on manual unsubscribe', () => {\n    const sub = http.get('/api/manual').subscribe();\n    const req = httpMock.expectOne('/api/manual');\n\n    sub.unsubscribe();\n\n    expect(req.cancelled).toBeTrue();\n  });\n\n  it('lets switchMap cancel the previous request', () => {\n    const queries = new Subject<string>();\n    const sub = queries.pipe(\n      switchMap(q => http.get('/api/search', { params: { q } }))\n    ).subscribe();\n\n    queries.next('angular');\n    const first = httpMock.expectOne(r => r.params.get('q') === 'angular');\n    queries.next('rxjs');\n    const second = httpMock.expectOne(r => r.params.get('q') === 'rxjs');\n\n    expect(first.cancelled).toBeTrue();\n    expect(second.cancelled).toBeFalse();\n    second.flush({ items: [] });\n    sub.unsubscribe();\n  });\n\n  it('keeps concurrent mergeMap requests active', () => {\n    const queries = new Subject<string>();\n    const sub = queries.pipe(\n      mergeMap(q => http.get('/api/search', { params: { q } }))\n    ).subscribe();\n\n    queries.next('angular');\n    queries.next('rxjs');\n    const first = httpMock.expectOne(r => r.params.get('q') === 'angular');\n    const second = httpMock.expectOne(r => r.params.get('q') === 'rxjs');\n\n    expect(first.cancelled).toBeFalse();\n    expect(second.cancelled).toBeFalse();\n    second.flush({ items: ['new'] });\n    first.flush({ items: ['old'] });\n    sub.unsubscribe();\n  });\n\n  it('cancels through takeUntilDestroyed', () => {\n    const fixture = TestBed.createComponent(LifecycleHost);\n    const req = httpMock.expectOne('/api/lifecycle');\n\n    fixture.destroy();\n\n    expect(req.cancelled).toBeTrue();\n  });\n\n  it('lets AsyncPipe cancel when its view is destroyed', () => {\n    const fixture = TestBed.createComponent(AsyncPipeHost);\n    fixture.detectChanges();\n    const req = httpMock.expectOne('/api/async-pipe');\n\n    fixture.destroy();\n\n    expect(req.cancelled).toBeTrue();\n  });\n\n  it('makes shareReplay cancellation depend on refCount', () => {\n    const refCounted$ = http.get('/api/ref-counted').pipe(\n      shareReplay({ bufferSize: 1, refCount: true })\n    );\n    const refCountedSub = refCounted$.subscribe();\n    const refCountedReq = httpMock.expectOne('/api/ref-counted');\n    refCountedSub.unsubscribe();\n    expect(refCountedReq.cancelled).toBeTrue();\n\n    const pinned$ = http.get('/api/pinned').pipe(\n      shareReplay({ bufferSize: 1, refCount: false })\n    );\n    const pinnedSub = pinned$.subscribe();\n    const pinnedReq = httpMock.expectOne('/api/pinned');\n    pinnedSub.unsubscribe();\n    expect(pinnedReq.cancelled).toBeFalse();\n    pinnedReq.flush({ ok: true });\n  });\n});"
         },
         {
           "type": "text",
-          "text": "<strong>Why this cancels old requests</strong><br><br><code>switchMap</code> unsubscribes from the previous inner Observable when a new value arrives. Since <code>HttpClient</code> cancels requests on unsubscribe, the browser request is aborted."
-        },
-        {
-          "type": "text",
-          "text": "<strong>takeUntilDestroyed pattern (component lifecycle)</strong><br><br>In modern Angular, prefer <code>takeUntilDestroyed()</code> for manual subscriptions tied to a component lifetime. The older <code>takeUntil(destroy$)</code> subject pattern is still common in older codebases, but it should not be the first answer for new Angular code."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "import { HttpClient } from '@angular/common/http';\nimport { DestroyRef, inject } from '@angular/core';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\n\nexport class DataComponent {\n  private readonly destroyRef = inject(DestroyRef);\n  private readonly http = inject(HttpClient);\n\n  ngOnInit() {\n    this.http.get('/api/data').pipe(\n      takeUntilDestroyed(this.destroyRef)\n    ).subscribe();\n  }\n}"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Manual teardown also cancels</strong><br><br><code>switchMap</code> is not the only cancel mechanism. If you keep the subscription and call <code>unsubscribe()</code> yourself, Angular aborts the underlying request just the same. That matters in imperative flows like dialogs, temporary polling, or explicit “cancel” buttons."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "let sub = this.http.get('/api/report').subscribe({\n  next: data => console.log(data),\n  error: err => console.error(err)\n});\n\ncancelButton.onclick = () => {\n  sub.unsubscribe(); // ✅ real network cancellation\n};"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Ignoring a result is not cancellation</strong><br><br>If code sets a flag like <code>ignoreOldResponses = true</code> but keeps the old subscription alive, the browser request still runs. You only changed what your callback does with the response."
-        },
-        {
-          "type": "text",
-          "text": "<strong>What does NOT cancel the request</strong><br><br>Many devs think these cancel HTTP, but they don’t:"
+          "text": "## Choose the operator from the UX contract\n\nCancellation is a product decision before it is an RxJS decision. State what repeated user intent means, then choose an operator whose subscription behavior enforces it. Also test loading, error, retry, and disabled states; a correct flattening operator can still produce a confusing interface if those states do not follow the same ownership rule."
         },
         {
           "type": "list",
           "columns": [
-            "Myth",
-            "Reality"
+            "UX contract",
+            "Typical operator",
+            "What repeated intent means",
+            "Cancellation behavior"
           ],
           "rows": [
             [
-              "“I used mergeMap, so old requests are gone”",
-              "❌ mergeMap runs everything in parallel. Nothing is canceled."
-            ],
-            [
-              "“I navigated away from the page”",
-              "❌ Unless you unsubscribed (async pipe or takeUntil), request keeps running."
-            ],
-            [
-              "“I ignored the result in subscribe”",
-              "❌ The network request still completes."
-            ],
-            [
-              "“The server will stop anyway”",
-              "❌ The server may continue processing even if client aborts."
-            ]
-          ],
-          "caption": "Common misconceptions"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Important nuance: canceling the browser request vs canceling server work</strong><br><br>When Angular aborts the request, the <em>browser connection</em> is closed. The server may or may not stop processing—this depends entirely on server implementation. From the frontend point of view, however, the request is gone."
-        },
-        {
-          "type": "text",
-          "text": "<strong>How to verify this in Angular tests</strong><br><br>In an interview, describe the test shape instead of reciting APIs: subscribe to the request, capture the pending HTTP call, unsubscribe before returning a response, and assert that the pending request was marked cancelled. If the test helper has an option to ignore cancelled requests during cleanup, use it only after the cancellation assertion is already covered; do not use cleanup settings to hide a missing request expectation."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "const sub = service.loadUser().subscribe();\nconst req = httpMock.expectOne('/api/user');\n\nsub.unsubscribe();\n\nexpect(req.cancelled).toBeTrue();"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Angular pattern",
-            "Does it cancel HTTP?",
-            "Why"
-          ],
-          "rows": [
-            [
-              "AsyncPipe in template",
-              "✅ Yes",
-              "Auto-unsubscribes when component is destroyed."
-            ],
-            [
+              "Latest wins",
               "switchMap",
-              "✅ Yes",
-              "Unsubscribes previous inner Observable."
+              "Replace the previous read, such as search or filters",
+              "Unsubscribes the prior active inner request"
             ],
             [
-              "takeUntil / takeUntilDestroyed",
-              "✅ Yes",
-              "Unsubscribe is triggered by notifier or lifecycle."
+              "Queue all",
+              "concatMap",
+              "Preserve order and let every operation finish",
+              "Does not cancel; starts the next after completion"
             ],
             [
+              "Run in parallel",
               "mergeMap",
-              "❌ No",
-              "No cancellation semantics."
+              "Every operation is independent",
+              "Does not cancel; optionally bound concurrency"
             ],
             [
-              "shareReplay",
-              "⚠️ Depends",
-              "May keep the request alive if refCount is false."
+              "First wins while busy",
+              "exhaustMap",
+              "Ignore repeated submit intent until the active operation finishes",
+              "Keeps the first request; never starts ignored repeats"
             ]
           ],
-          "caption": "Cancellation behavior by pattern"
+          "caption": "Map product intent to an RxJS flattening policy"
         },
         {
           "type": "text",
-          "text": "<strong>Same flow, different operator, different cancellation behavior</strong><br><br>These two snippets look similar, but only one actually aborts old requests when a new query arrives:"
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "// ✅ Latest-only behavior: previous HttpClient request is unsubscribed\nresults$ = this.search.valueChanges.pipe(\n  debounceTime(250),\n  distinctUntilChanged(),\n  switchMap(q => this.http.get(`/api/search?q=${q}`))\n);\n\n// ❌ Old requests keep running: responses can still arrive out of order\nresults$ = this.search.valueChanges.pipe(\n  debounceTime(250),\n  distinctUntilChanged(),\n  mergeMap(q => this.http.get(`/api/search?q=${q}`))\n);"
+          "text": "## Edge cases that change the diagnosis\n\n<strong>Timeout:</strong> Angular's request <code>timeout</code> option can terminate the backend request when its deadline is exceeded, so “only a user-written unsubscribe can abort HTTP” is too absolute. Interceptors may add delay before the backend request; the documented timeout applies to the backend request, not all interceptor time. <strong>Completed requests:</strong> most one-shot <code>HttpClient</code> Observables complete after their response. Unsubscribing afterward is cleanup with no transport left to abort. <strong>Interceptors:</strong> an interceptor can retry, cache, share, or replace an Observable, changing which subscription owns the backend request. Verify the final chain rather than assuming operator placement guarantees transport behavior."
         },
         {
           "type": "text",
-          "text": "<strong>When switchMap is the wrong answer</strong><br><br><code>switchMap</code> is right for latest-only reads like typeahead, autocomplete, filters, and route-driven detail fetches. It is the wrong default for save, payment, checkout, analytics, or mutation flows where every request must complete. In those cases, choose the flattening operator from the UX contract: <code>concatMap</code> to queue writes, <code>mergeMap</code> to allow safe parallel writes, or <code>exhaustMap</code> to ignore repeat clicks while one request is already running."
+          "text": "## Cache, transport, and server work are different lifetimes\n\nA service worker, browser cache, interceptor cache, or already-completed <code>shareReplay</code> value may satisfy a subscriber without a new network request. In that case there is no in-flight transport to cancel, even though an Observable subscription still opens and closes. Conversely, aborting the browser's Fetch or XHR does not automatically roll back a database write or stop CPU work already accepted by the server. Long operations need server-side disconnect handling, cooperative cancellation, idempotency, or an asynchronous job API. Treat the browser abort as one signal in an end-to-end ownership design, not as a distributed transaction."
         },
         {
           "type": "text",
-          "text": "<strong>Senior-level pitfall</strong><br><br>Using <code>shareReplay</code> without <code>refCount</code> can keep an HTTP request (or its subscription) alive forever, making it impossible to cancel later even if components unsubscribe."
+          "text": "## Practice the adjacent failure modes\n\nContinue with <a href=\"/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use\">switchMap vs mergeMap vs concatMap vs exhaustMap</a>, <a href=\"/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns\">Angular subscription cleanup patterns</a>, <a href=\"/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app\">shareReplay failure modes</a>, and the free <a href=\"/javascript/coding/js-take-latest\">takeLatest coding exercise</a>. Together they cover intent replacement, component lifetime, shared-source ownership, and stale-response defense without assuming every problem is solved by one operator."
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br>In Angular, <strong>only unsubscribing</strong> cancels an HTTP request. Operators like <code>switchMap</code>, <code>takeUntil</code>, and the <code>async</code> pipe cancel requests because they unsubscribe. Operators like <code>mergeMap</code> do not cancel anything—they just ignore or parallelize results. Real cancellation = unsubscribe."
+          "text": "## Source check\n\nCompare the behavior described here with Angular's official <a href=\"https://angular.dev/guide/http/making-requests\" target=\"_blank\" rel=\"noopener noreferrer\">HTTP request guide</a>, including its unsubscribe and timeout guidance; the official <a href=\"https://angular.dev/guide/http/testing\" target=\"_blank\" rel=\"noopener noreferrer\">HTTP testing guide</a>; the <a href=\"https://angular.dev/api/common/http/testing/TestRequest\" target=\"_blank\" rel=\"noopener noreferrer\">TestRequest.cancelled API reference</a>; and the <a href=\"https://angular.dev/api/common/http/HttpRequest\" target=\"_blank\" rel=\"noopener noreferrer\">HttpRequest API reference</a>. Browser cancellation and server cancellation remain separate operational concerns, so confirm server behavior in that system's own runtime and tracing documentation."
+        },
+        {
+          "type": "text",
+          "text": "## Interview summary\n\nA strong answer starts with the direct rule: tearing down an active <code>HttpClient</code> subscription aborts the client request. It then names ownership: <code>switchMap</code> replaces the previous inner subscription, <code>takeUntilDestroyed</code> and <code>AsyncPipe</code> tie teardown to a view lifetime, <code>mergeMap</code> preserves concurrency, and <code>shareReplay</code> can keep upstream ownership after a consumer leaves. Finish by separating subscription, transport, UI commit, and server work, and explain how DevTools, <code>finalize</code>, and <code>TestRequest.cancelled</code> prove different parts of the contract."
         }
       ]
     },
@@ -6711,18 +6680,20 @@
       "cancellation",
       "basics"
     ],
-    "updatedAt": "2026-07-03",
+    "publishedAt": "2026-01-25",
+    "updatedAt": "2026-08-03",
     "interviewFocus": {
-      "summary": "This Angular interview question tests whether you can distinguish true HttpClient cancellation from ignoring stale responses, explain unsubscribe ownership, and defend the RxJS operator choice.",
+      "summary": "This Angular interview question tests whether you can separate RxJS teardown, browser transport cancellation, stale UI prevention, and server-side work, then prove the chosen request policy with DevTools and Angular tests.",
       "tests": [
-        "True request cancellation vs stale response handling",
-        "unsubscribe, switchMap, takeUntil, and AsyncPipe cleanup ownership",
-        "why mergeMap and ignored callbacks do not cancel old network work"
+        "subscription teardown vs browser abort vs server cancellation",
+        "switchMap, takeUntilDestroyed, AsyncPipe, mergeMap, and shareReplay ownership",
+        "DevTools, finalize, TestRequest.cancelled, and stale-commit verification"
       ]
     },
     "seo": {
-      "title": "Angular HttpClient unsubscribe: 5 cancellation gotchas",
-      "description": "Yes—unsubscribing aborts an in-flight Angular HttpClient request. Compare switchMap, takeUntil, AsyncPipe, mergeMap, and stale-response handling."
+      "title": "Angular HttpClient Unsubscribe: 6 Tests & DevTools",
+      "h1": "Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI",
+      "description": "Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection."
     },
     "incidentCard": {
       "title": "Request Cancellation Check",
@@ -6742,7 +6713,7 @@
         }
       ],
       "correctOptionId": "unsubscribe-is-what-actually-cancels-httpclient-requests",
-      "rereadPrompt": "Not quite. The core lesson is simple: real HTTP cancellation in Angular comes from unsubscribe. If nothing unsubscribes from the HttpClient Observable, the request keeps going even if your code stops caring about the result."
+      "rereadPrompt": "Not quite. In this latest-only search flow, ignoring an old result protects only the UI commit. Unsubscribing the previous HttpClient Observable tears down that subscription and aborts its active browser request; whether server work also stops is a separate contract."
     }
   },
   {

@@ -20,6 +20,7 @@ const PRIME_PATTERNS = [
 ];
 
 const VISUAL_CLASS_PATTERN = /\bfa-(btn|chip|card)\b/g;
+const SHARED_VISUAL_ELEMENT_PATTERN = /<\/?\s*fa-(?:btn|chip|card)\b/gi;
 const NG_DEEP_PATTERN = /::ng-deep/g;
 const INLINE_STYLES_PATTERN = /styles\s*:\s*\[/g;
 const RAW_COLOR_LITERAL_PATTERN = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]+\)|hsla?\([^)]+\)/g;
@@ -57,6 +58,10 @@ function normalizeRel(fullPath) {
 function countMatches(text, regex) {
   const matches = text.match(regex);
   return matches ? matches.length : 0;
+}
+
+function countRawVisualClassMatches(text) {
+  return countMatches(text.replace(SHARED_VISUAL_ELEMENT_PATTERN, ''), VISUAL_CLASS_PATTERN);
 }
 
 async function sumFileSizes(files) {
@@ -111,7 +116,7 @@ export async function collectDesignSystemMetrics() {
       rawPrimeHits += primeInFile;
     }
 
-    const visualInFile = countMatches(text, VISUAL_CLASS_PATTERN);
+    const visualInFile = countRawVisualClassMatches(text);
     if (visualInFile > 0) {
       rawVisualFiles += 1;
       rawVisualHits += visualInFile;

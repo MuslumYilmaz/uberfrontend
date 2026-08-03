@@ -95,9 +95,9 @@ describe('trivia-seo.util', () => {
   });
 
   it('preserves the React stale closures search landing metadata', () => {
-    const expectedTitle = 'React Stale Closures: Causes, Fixes, and Tests';
+    const expectedTitle = 'React Stale Closures: 6 PRs, Which Fix Is Right?';
     const expectedDescription =
-      'Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests.';
+      'Review six React pull requests: four stale closures, one intentional snapshot, and one async race. Predict the failure and reveal the minimal safe diff.';
     const title = seoTitleForQuestion({
       id: 'react-stale-state-closures',
       title: 'Why does React sometimes show stale state in closures? How do you fix it?',
@@ -197,27 +197,25 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
-  it('preserves Angular HttpClient cancellation interview SEO override', () => {
+  it('preserves the Angular HttpClient cancellation lab SEO contract', () => {
     const question = {
       id: 'angular-http-what-actually-cancels-request',
-      title: 'What Actually Cancels an HTTP Request in Angular?',
+      title: 'Does Angular HttpClient unsubscribe cancel requests?',
       technology: 'angular',
       seo: {
-        title: 'Angular HttpClient unsubscribe: 5 cancellation gotchas',
+        title: 'Angular HttpClient Unsubscribe: 6 Tests & DevTools',
         description:
-          'Yes—unsubscribing aborts an in-flight Angular HttpClient request. Compare switchMap, takeUntil, AsyncPipe, mergeMap, and stale-response handling.',
+          'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
 
-    expect(title).toBe(
-      'Angular HttpClient unsubscribe: 5 cancellation gotchas'
-    );
+    expect(title).toBe('Angular HttpClient Unsubscribe: 6 Tests & DevTools');
     expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'Yes—unsubscribing aborts an in-flight Angular HttpClient request. Compare switchMap, takeUntil, AsyncPipe, mergeMap, and stale-response handling.'
+      'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.'
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });
