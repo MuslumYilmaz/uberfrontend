@@ -128,6 +128,29 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
+  it('preserves the JavaScript async race title experiment without changing its description', () => {
+    const expectedTitle = 'JavaScript Async Race Conditions: Fix Stale UI';
+    const expectedDescription =
+      'Fix the stale UI bug where older async work overwrites newer results; compare AbortController, request-id guards, and takeLatest ownership.';
+    const question = {
+      id: 'js-async-race-conditions',
+      title: 'Async Race Conditions and Stale UI Updates',
+      technology: 'javascript',
+      seo: {
+        title: expectedTitle,
+        description: expectedDescription,
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'javascript');
+
+    expect(title).toBe(expectedTitle);
+    expect(description).toBe(expectedDescription);
+    expect(title.length).toBeLessThanOrEqual(54);
+    expect(description.length).toBeLessThanOrEqual(155);
+  });
+
   it('preserves React render-nothing SEO title when description carries interview intent', () => {
     const question = {
       id: 'react-render-nothing-return-value',
