@@ -10556,7 +10556,7 @@
     "publishedAt": "2026-04-10",
     "updatedAt": "2026-07-03",
     "seo": {
-      "title": "Fix stale UI from async race conditions",
+      "title": "JavaScript Async Race Conditions: Fix Stale UI",
       "description": "Fix the stale UI bug where older async work overwrites newer results; compare AbortController, request-id guards, and takeLatest ownership.",
       "h1": "Async Race Conditions and Stale UI Updates"
     }

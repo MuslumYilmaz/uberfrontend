@@ -20,6 +20,12 @@ const STALE_CLOSURES_H1 = 'React Stale Closures: Why State Goes Stale and How to
 const STALE_CLOSURES_DESCRIPTION =
   'Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests.';
 
+const ASYNC_RACE_PATH = '/javascript/trivia/js-async-race-conditions';
+const ASYNC_RACE_TITLE = 'JavaScript Async Race Conditions: Fix Stale UI';
+const ASYNC_RACE_H1 = 'Async Race Conditions and Stale UI Updates';
+const ASYNC_RACE_DESCRIPTION =
+  'Fix the stale UI bug where older async work overwrites newer results; compare AbortController, request-id guards, and takeLatest ownership.';
+
 const CASES = [
   {
     path: '/coding',
@@ -794,6 +800,18 @@ test.describe('seo-ssr', () => {
     expect(html).not.toContain('Functional state updates to avoid stale reads.');
     expect(hasLockedShellMarkup(html)).toBe(true);
     expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('noindex,follow');
+  });
+
+  test('raw JavaScript async race title experiment changes only the search title contract', async ({ request }) => {
+    const html = await readRawHtml(request, ASYNC_RACE_PATH);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+
+    expect(extractRawTitle(html)).toBe(ASYNC_RACE_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(ASYNC_RACE_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(ASYNC_RACE_H1);
+    expect(rawBodyMarkup(html).match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(ASYNC_RACE_PATH));
+    expect(robots).toBe('index,follow');
   });
 
   test('raw React stale closures landing page preserves indexable developer-first SEO and schema', async ({ request }) => {
