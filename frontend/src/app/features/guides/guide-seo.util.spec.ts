@@ -735,7 +735,7 @@ describe('guide-seo.util', () => {
       jsGuide!
     );
 
-    expect(meta.title).toBe('JavaScript Coding Interview Questions: Frontend Practice');
+    expect(meta.title).toBe('JavaScript Coding Interview Practice: 25 Questions (2026)');
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/javascript-interviews');
     expect(meta.description).toBe(
       'Practice frontend JavaScript coding interview questions with debounce, throttle, Promise.all, event loop, closures, DOM delegation, EventEmitter, and drills.',
@@ -761,7 +761,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.headline).toBe('JavaScript Coding Interview Questions: Frontend Practice');
+    expect(article?.headline).toBe('JavaScript Coding Interview Practice: 25 Questions (2026)');
     expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',

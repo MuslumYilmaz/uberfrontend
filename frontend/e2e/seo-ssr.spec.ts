@@ -294,6 +294,7 @@ const NETFLIX_OFFICIAL_SOURCES = [
 const NETFLIX_PREVIEW_INBOUND_PAGES = [
   { path: '/', anchor: 'View Netflix preview' },
   { path: '/companies', anchor: 'Netflix frontend interview questions' },
+  { path: '/system-design', anchor: 'Netflix frontend interview questions' },
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
