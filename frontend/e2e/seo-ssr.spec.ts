@@ -15,16 +15,70 @@ const SSR_ENABLED = (() => {
 })();
 
 const STALE_CLOSURES_PATH = '/react/trivia/react-stale-state-closures';
-const STALE_CLOSURES_TITLE = 'React Stale Closures: Causes, Fixes, and Tests';
-const STALE_CLOSURES_H1 = 'React Stale Closures: Why State Goes Stale and How to Fix It';
+const STALE_CLOSURES_TITLE = 'React Stale Closures: 6 PRs, Which Fix Is Right?';
+const STALE_CLOSURES_H1 = 'React Stale Closure Case Files: Diagnose Six Pull Requests';
 const STALE_CLOSURES_DESCRIPTION =
-  'Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests.';
+  'Review six React pull requests: four stale closures, one intentional snapshot, and one async race. Predict the failure and reveal the minimal safe diff.';
+const STALE_CLOSURES_TRUST_NOTE =
+  'These are representative FrontendAtlas code-review scenarios, not real pull requests or leaked interview material.';
+const STALE_CLOSURES_DIRECT_ANSWER_HEADING = 'React stale closures: direct answer';
+const STALE_CLOSURES_CASE_FILES = [
+  { id: 'pr-interval-counter', title: 'Interval counter: update from previous state' },
+  { id: 'pr-chat-theme', title: 'Chat connection: read the latest theme without reconnecting' },
+  { id: 'pr-escape-listener', title: 'Escape listener: re-synchronize with isDirty' },
+  { id: 'pr-debounced-autosave', title: 'Debounced autosave: pass the invocation snapshot' },
+  { id: 'pr-export-snapshot', title: 'Export audit: preserve the initiating snapshot' },
+  { id: 'pr-search-ordering', title: 'Async search: diagnose a race, not a closure' },
+] as const;
+const STALE_CLOSURES_SECTION_HEADINGS = [
+  'Callback contract',
+  'React stale closure case files',
+  'Diagnosis table',
+  'Production code-review checklist',
+  'Source check',
+  '30-second interview answer',
+] as const;
+const STALE_CLOSURES_OFFICIAL_SOURCES = [
+  'https://react.dev/learn/state-as-a-snapshot',
+  'https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps',
+  'https://react.dev/reference/react/useEffectEvent',
+  'https://react.dev/reference/react/useRef',
+] as const;
 
 const ASYNC_RACE_PATH = '/javascript/trivia/js-async-race-conditions';
 const ASYNC_RACE_TITLE = 'JavaScript Async Race Conditions: Fix Stale UI';
 const ASYNC_RACE_H1 = 'Async Race Conditions and Stale UI Updates';
 const ASYNC_RACE_DESCRIPTION =
   'Fix the stale UI bug where older async work overwrites newer results; compare AbortController, request-id guards, and takeLatest ownership.';
+
+const ANGULAR_HTTP_CANCELLATION_LAB_PATH =
+  '/angular/trivia/angular-http-what-actually-cancels-request';
+const ANGULAR_HTTP_CANCELLATION_LAB_TITLE =
+  'Angular HttpClient Unsubscribe: 6 Tests & DevTools';
+const ANGULAR_HTTP_CANCELLATION_LAB_H1 =
+  'Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI';
+const ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION =
+  'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.';
+const ANGULAR_HTTP_CANCELLATION_LAB_SCENARIOS = [
+  'Manual unsubscribe',
+  'switchMap',
+  'mergeMap',
+  'takeUntilDestroyed',
+  'AsyncPipe',
+  'shareReplay',
+] as const;
+const ANGULAR_HTTP_CANCELLATION_LAB_RESOURCES = [
+  '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+  '/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns',
+  '/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app',
+  '/javascript/coding/js-take-latest',
+] as const;
+const ANGULAR_HTTP_CANCELLATION_LAB_SOURCES = [
+  'https://angular.dev/guide/http/making-requests',
+  'https://angular.dev/guide/http/testing',
+  'https://angular.dev/api/common/http/testing/TestRequest',
+  'https://angular.dev/api/common/http/HttpRequest',
+] as const;
 
 const CASES = [
   {
@@ -96,10 +150,27 @@ const CASES = [
     indexable: true,
     singleHydratedH1: true,
     bodyTextIncludes: [
-      'React stale closure: direct answer',
-      'React stale closure fixes and examples',
-      'Quick fix chooser',
-      'How to test a stale closure bug',
+      'Direct answer',
+      'Callback contract',
+      'React stale closure case files',
+      'Diagnosis table',
+      'Production code-review checklist',
+      '30-second interview answer',
+    ],
+  },
+  {
+    path: ANGULAR_HTTP_CANCELLATION_LAB_PATH,
+    titleIncludes: ANGULAR_HTTP_CANCELLATION_LAB_TITLE,
+    h1: ANGULAR_HTTP_CANCELLATION_LAB_H1,
+    detail: true,
+    indexable: true,
+    singleHydratedH1: true,
+    bodyTextIncludes: [
+      '15-second answer',
+      'Cancellation behavior model',
+      'Browser DevTools',
+      'HttpTestingController',
+      'Source check',
       'Interview focus',
     ],
   },
@@ -473,7 +544,7 @@ function rawVisibleTextPreserveCase(html: string): string {
 }
 
 function extractRawTitle(html: string): string {
-  return html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] || '';
+  return decodeBasicHtmlEntities(html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] || '');
 }
 
 function extractRawH1(html: string): string {
@@ -515,12 +586,12 @@ function extractRawJsonLdNodes(html: string): Array<Record<string, any>> {
 
 function extractRawMeta(html: string, name: string): string {
   const tag = html.match(new RegExp(`<meta\\s+[^>]*name=["']${name}["'][^>]*>`, 'i'))?.[0] || '';
-  return tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '';
+  return decodeBasicHtmlEntities(tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '');
 }
 
 function extractRawPropertyMeta(html: string, property: string): string {
   const tag = html.match(new RegExp(`<meta\\s+[^>]*property=["']${property}["'][^>]*>`, 'i'))?.[0] || '';
-  return tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '';
+  return decodeBasicHtmlEntities(tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '');
 }
 
 function extractRawCanonical(html: string): string {
@@ -814,43 +885,87 @@ test.describe('seo-ssr', () => {
     expect(robots).toBe('index,follow');
   });
 
-  test('raw React stale closures landing page preserves indexable developer-first SEO and schema', async ({ request }) => {
-    const html = await readRawHtml(request, STALE_CLOSURES_PATH);
+  test('raw Angular HttpClient cancellation lab exposes the complete public debugging answer and schema', async ({ request }) => {
+    const html = await readRawHtml(request, ANGULAR_HTTP_CANCELLATION_LAB_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
     const text = rawVisibleText(html);
     const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
     const schemaNodes = extractRawJsonLdNodes(html);
     const schemaTypes = extractRawJsonLdTypes(html);
 
-    expect(extractRawTitle(html)).toBe(STALE_CLOSURES_TITLE);
-    expect(extractRawH1(html)).toBe(STALE_CLOSURES_H1);
-    expect(rawBodyMarkup(html).match(/<h1\b/gi) || []).toHaveLength(1);
-    expect(extractRawMeta(html, 'description')).toBe(STALE_CLOSURES_DESCRIPTION);
-    expect(extractRawCanonical(html)).toBe(expectedCanonical(STALE_CLOSURES_PATH));
+    expect(extractRawTitle(html)).toBe(ANGULAR_HTTP_CANCELLATION_LAB_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(ANGULAR_HTTP_CANCELLATION_LAB_H1);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(ANGULAR_HTTP_CANCELLATION_LAB_PATH));
     expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
 
-    expect(extractRawPropertyMeta(html, 'og:title')).toBe(STALE_CLOSURES_TITLE);
-    expect(extractRawPropertyMeta(html, 'og:description')).toBe(STALE_CLOSURES_DESCRIPTION);
-    expect(extractRawMeta(html, 'twitter:title')).toBe(STALE_CLOSURES_TITLE);
-    expect(extractRawMeta(html, 'twitter:description')).toBe(STALE_CLOSURES_DESCRIPTION);
-    expect(text).toContain(normalizeText('Each React render creates a new set of state and prop bindings'));
+    expect(extractRawPropertyMeta(html, 'og:title')).toBe(ANGULAR_HTTP_CANCELLATION_LAB_TITLE);
+    expect(extractRawPropertyMeta(html, 'og:description')).toBe(
+      ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION,
+    );
+    expect(extractRawMeta(html, 'twitter:title')).toBe(ANGULAR_HTTP_CANCELLATION_LAB_TITLE);
+    expect(extractRawMeta(html, 'twitter:description')).toBe(
+      ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION,
+    );
+
+    for (const expectedText of [
+      '15-second answer',
+      'Cancellation behavior model',
+      'RxJS subscription',
+      'Browser transport',
+      'UI commit',
+      'Server work',
+      ...ANGULAR_HTTP_CANCELLATION_LAB_SCENARIOS,
+      'Browser DevTools',
+      'finalize',
+      'HttpTestingController',
+      'TestRequest.cancelled',
+      'http-cancellation.spec.ts',
+      'Source check',
+      'Interview focus',
+    ]) {
+      expect(text, `Angular cancellation raw HTML includes ${expectedText}`).toContain(
+        normalizeText(expectedText),
+      );
+    }
 
     const orderedContent = [
-      'React stale closure: direct answer',
-      'Quick fix chooser',
-      'Scenario 1: setInterval reads old state',
-      'How to test a stale closure bug',
-      'React stale closure FAQ',
+      '15-second answer',
+      'Cancellation behavior model',
+      'Cancellation patterns, proof, and production rules',
+      'Source check',
       'Interview focus',
     ].map((label) => ({ label, index: text.indexOf(normalizeText(label)) }));
-
     orderedContent.forEach(({ label, index }) => {
-      expect(index, `raw HTML includes ${label}`).toBeGreaterThanOrEqual(0);
+      expect(index, `raw Angular cancellation HTML includes ${label}`).toBeGreaterThanOrEqual(0);
     });
     for (let index = 1; index < orderedContent.length; index += 1) {
       expect(
         orderedContent[index].index,
         `${orderedContent[index].label} follows ${orderedContent[index - 1].label}`,
       ).toBeGreaterThan(orderedContent[index - 1].index);
+    }
+
+    expect(bodyMarkup).toMatch(
+      /(?:class=["'][^"']*source-check[^"']*["'][^>]*data-nosnippet|data-nosnippet[^>]*class=["'][^"']*source-check[^"']*["'])/i,
+    );
+    expect(bodyMarkup).not.toContain('data-testid="trivia-prep-entry"');
+    expect(bodyMarkup).not.toMatch(
+      /href=["']\/javascript\/trivia\/js-async-race-conditions(?:[?#][^"']*)?["']/i,
+    );
+
+    for (const route of ANGULAR_HTTP_CANCELLATION_LAB_RESOURCES) {
+      expectCleanRawLink(html, route, ANGULAR_HTTP_CANCELLATION_LAB_PATH);
+      expect(
+        (bodyMarkup.match(new RegExp(`<a\\b[^>]*href=["']${escapeRegExp(route)}["']`, 'gi')) || [])
+          .length,
+        `${route} appears once in the visible raw answer`,
+      ).toBe(1);
+    }
+    for (const source of ANGULAR_HTTP_CANCELLATION_LAB_SOURCES) {
+      expectCleanRawLink(html, source, ANGULAR_HTTP_CANCELLATION_LAB_PATH);
     }
 
     expect(schemaTypes).toContain('BreadcrumbList');
@@ -861,18 +976,318 @@ test.describe('seo-ssr', () => {
 
     const article = schemaNodes.find((node) => node['@type'] === 'TechArticle');
     expect(article).toMatchObject({
+      '@id': expectedCanonical(ANGULAR_HTTP_CANCELLATION_LAB_PATH),
+      headline: ANGULAR_HTTP_CANCELLATION_LAB_H1,
+      description: ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION,
+      url: expectedCanonical(ANGULAR_HTTP_CANCELLATION_LAB_PATH),
+      mainEntityOfPage: expectedCanonical(ANGULAR_HTTP_CANCELLATION_LAB_PATH),
+      datePublished: '2026-01-25T00:00:00.000Z',
+      dateModified: '2026-08-03T00:00:00.000Z',
+      isAccessibleForFree: true,
+      learningResourceType: 'Interactive debugging lab',
+    });
+    expect((article?.about || []).map((item: any) => item.name)).toContain(
+      'Angular HttpClient cancellation',
+    );
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain(
+      'TestRequest.cancelled',
+    );
+    expect((article?.hasPart || []).map((item: any) => item.name)).toContain(
+      'Cancellation behavior model',
+    );
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual(
+      expect.arrayContaining([...ANGULAR_HTTP_CANCELLATION_LAB_SOURCES]),
+    );
+  });
+
+  test('hydrated Angular HttpClient cancellation lab preserves metadata, interaction, and responsive containment', async ({ page }) => {
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+    });
+    const runtimeIssues = collectClientRuntimeIssues(page);
+
+    const response = await page.goto(ANGULAR_HTTP_CANCELLATION_LAB_PATH, {
+      waitUntil: 'networkidle',
+    });
+    expect(response?.status()).toBe(200);
+    await assertHydratedBasics(page, {
+      path: ANGULAR_HTTP_CANCELLATION_LAB_PATH,
+      titleIncludes: ANGULAR_HTTP_CANCELLATION_LAB_TITLE,
+      h1: ANGULAR_HTTP_CANCELLATION_LAB_H1,
+      detail: true,
+      indexable: true,
+      singleHydratedH1: true,
+      bodyTextIncludes: [
+        '15-second answer',
+        'Cancellation behavior model',
+        'Browser DevTools',
+        'HttpTestingController',
+        'Source check',
+        'Interview focus',
+      ],
+    });
+
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION,
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      ANGULAR_HTTP_CANCELLATION_LAB_TITLE,
+    );
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
+      'content',
+      ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION,
+    );
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute(
+      'content',
+      ANGULAR_HTTP_CANCELLATION_LAB_TITLE,
+    );
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
+      'content',
+      ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION,
+    );
+
+    const lab = page.getByTestId('angular-http-cancellation-lab');
+    await expect(lab).toBeVisible();
+    await expect(
+      lab.locator('[role="group"][aria-labelledby="scenario-model-title"]'),
+    ).toHaveCount(1);
+    const liveResult = lab.locator('[aria-live="polite"]');
+    await expect(liveResult).toHaveCount(1);
+    await expect(lab.getByTestId('angular-http-cancellation-copy-suite')).toBeEnabled();
+
+    for (const scenario of ANGULAR_HTTP_CANCELLATION_LAB_SCENARIOS) {
+      await expect(lab.getByRole('button', { name: new RegExp(scenario, 'i') }).first()).toBeVisible();
+    }
+
+    const manualUnsubscribe = lab.getByRole('button', { name: /Manual unsubscribe/i }).first();
+    const mergeMap = lab.getByRole('button', { name: /mergeMap/i }).first();
+    await expect(manualUnsubscribe).toHaveAttribute('aria-pressed', 'true');
+    await mergeMap.click();
+    await expect(mergeMap).toHaveAttribute('aria-pressed', 'true');
+    await expect(manualUnsubscribe).toHaveAttribute('aria-pressed', 'false');
+    await lab.getByRole('button', { name: /Run model/i }).click();
+    await expect(liveResult).not.toHaveText(/^\s*$/);
+
+    for (const route of ANGULAR_HTTP_CANCELLATION_LAB_RESOURCES) {
+      await expect(page.locator(`a[href="${route}"]`)).toHaveCount(1);
+    }
+    await expect(
+      page.locator('a[href^="/javascript/trivia/js-async-race-conditions"]'),
+    ).toHaveCount(0);
+    await expect(page.locator('.source-check[data-nosnippet]')).toHaveCount(1);
+    await expect(page.getByTestId('trivia-prep-entry')).toHaveCount(0);
+
+    for (const viewport of [
+      { width: 360, height: 800 },
+      { width: 390, height: 844 },
+      { width: 834, height: 1112 },
+      { width: 1366, height: 900 },
+      { width: 1440, height: 900 },
+    ]) {
+      await page.setViewportSize(viewport);
+      const layout = await page.evaluate(() => {
+        const labRoot = document.querySelector('[data-testid="angular-http-cancellation-lab"]');
+        const detailRoot = document.querySelector('[data-testid="trivia-detail-main"]');
+        const tables = Array.from(
+          detailRoot?.querySelectorAll('[data-testid="trivia-full-answer"] table') || [],
+        );
+        const hasScrollProtection = (element: Element): boolean => {
+          let parent = element.parentElement;
+          while (parent && parent !== detailRoot) {
+            const overflowX = getComputedStyle(parent).overflowX;
+            if (overflowX === 'auto' || overflowX === 'scroll') return true;
+            parent = parent.parentElement;
+          }
+          return (element as HTMLElement).scrollWidth <= (element as HTMLElement).clientWidth + 1;
+        };
+        return {
+          documentOverflow:
+            document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          labOverflow: labRoot
+            ? (labRoot as HTMLElement).scrollWidth - (labRoot as HTMLElement).clientWidth
+            : Number.POSITIVE_INFINITY,
+          tableCount: tables.length,
+          tablesProtected: tables.every((table) => hasScrollProtection(table)),
+        };
+      });
+
+      expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.labOverflow, `lab overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.tableCount, `decision/debug tables at ${viewport.width}px`).toBeGreaterThanOrEqual(2);
+      expect(layout.tablesProtected, `table overflow protection at ${viewport.width}px`).toBe(true);
+    }
+
+    await page.waitForTimeout(300);
+    expectNoHydrationOrChunkIssues(runtimeIssues, ANGULAR_HTTP_CANCELLATION_LAB_PATH);
+  });
+
+  test('raw React stale closure case files expose six review exercises and supported schema', async ({ request }) => {
+    const html = await readRawHtml(request, STALE_CLOSURES_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(STALE_CLOSURES_TITLE);
+    expect(extractRawH1(html)).toBe(STALE_CLOSURES_H1);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawMeta(html, 'description')).toBe(STALE_CLOSURES_DESCRIPTION);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(STALE_CLOSURES_PATH));
+    expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+
+    expect(extractRawPropertyMeta(html, 'og:title')).toBe(STALE_CLOSURES_TITLE);
+    expect(extractRawPropertyMeta(html, 'og:description')).toBe(STALE_CLOSURES_DESCRIPTION);
+    expect(extractRawMeta(html, 'twitter:title')).toBe(STALE_CLOSURES_TITLE);
+    expect(extractRawMeta(html, 'twitter:description')).toBe(STALE_CLOSURES_DESCRIPTION);
+    expect(text).toContain(normalizeText(STALE_CLOSURES_TRUST_NOTE));
+    expect(text).toContain(normalizeText(STALE_CLOSURES_DIRECT_ANSWER_HEADING));
+    expect(text).toContain(normalizeText('Callback contract'));
+
+    const semanticHeadings = Array.from(
+      bodyMarkup.matchAll(/<h([23])\b[^>]*>([\s\S]*?)<\/h\1>/gi),
+      (match) => rawVisibleText(match[2]),
+    );
+    const orderedContent = [
+      STALE_CLOSURES_DIRECT_ANSWER_HEADING,
+      ...STALE_CLOSURES_SECTION_HEADINGS,
+    ].map((label) => ({ label, index: semanticHeadings.indexOf(normalizeText(label)) }));
+
+    orderedContent.forEach(({ label, index }) => {
+      expect(index, `raw HTML includes semantic heading ${label}`).toBeGreaterThanOrEqual(0);
+    });
+    for (let index = 1; index < orderedContent.length; index += 1) {
+      expect(
+        orderedContent[index].index,
+        `${orderedContent[index].label} follows ${orderedContent[index - 1].label}`,
+      ).toBeGreaterThan(orderedContent[index - 1].index);
+    }
+    for (const heading of STALE_CLOSURES_SECTION_HEADINGS) {
+      expect(semanticHeadings, `${heading} is a semantic H2/H3`).toContain(normalizeText(heading));
+    }
+
+    for (const caseFile of STALE_CLOSURES_CASE_FILES) {
+      expect(text, `${caseFile.title} is visible in raw HTML`).toContain(normalizeText(caseFile.title));
+      expect(bodyMarkup, `${caseFile.id} is a visible fragment target`).toMatch(
+        new RegExp(`\\bid=["']${escapeRegExp(caseFile.id)}["']`, 'i'),
+      );
+    }
+    expect(
+      (text.match(/choose the value-ownership contract/g) || []).length,
+      'all six PR files expose a callback ownership contract',
+    ).toBe(STALE_CLOSURES_CASE_FILES.length);
+    expect(
+      (bodyMarkup.match(/aria-label=["']minimal code change["']/gi) || []).length,
+      'all six PR files expose a minimal diff',
+    ).toBe(STALE_CLOSURES_CASE_FILES.length);
+    expect(
+      (text.match(/proof assertion/g) || []).length,
+      'all six PR files expose a proof test',
+    ).toBe(STALE_CLOSURES_CASE_FILES.length);
+
+    const commonMisdiagnosisLabel = normalizeText('Common misdiagnosis');
+    expect(
+      (text.match(new RegExp(escapeRegExp(commonMisdiagnosisLabel), 'g')) || []).length,
+      'raw HTML exposes exactly one common misdiagnosis per case file',
+    ).toBe(STALE_CLOSURES_CASE_FILES.length);
+
+    const caseStarts = STALE_CLOSURES_CASE_FILES.map((caseFile) => ({
+      caseFile,
+      index: bodyMarkup.search(new RegExp(`\\bid=["']${escapeRegExp(caseFile.id)}["']`, 'i')),
+    }));
+    caseStarts.forEach(({ caseFile, index }) => {
+      expect(index, `raw HTML starts the ${caseFile.id} case fragment`).toBeGreaterThanOrEqual(0);
+    });
+    const caseSegments = caseStarts.map(({ caseFile, index }, caseIndex) => {
+      const nextIndex = caseStarts[caseIndex + 1]?.index ?? bodyMarkup.length;
+      const markup = bodyMarkup.slice(index, nextIndex);
+      const visibleText = rawVisibleText(markup);
+      expect(
+        (visibleText.match(new RegExp(escapeRegExp(commonMisdiagnosisLabel), 'g')) || []).length,
+        `${caseFile.id} exposes one visible Common misdiagnosis`,
+      ).toBe(1);
+      return { id: caseFile.id, markup };
+    });
+
+    const autosaveMarkup = caseSegments.find(({ id }) => id === 'pr-debounced-autosave')?.markup || '';
+    const compactAutosaveText = rawVisibleTextPreserveCase(autosaveMarkup).replace(/\s+/g, '');
+    expect(compactAutosaveText, 'autosave patch cancels retained debounce work on cleanup').toContain(
+      'saveLater.cancel()',
+    );
+    let autosaveProofCursor = -1;
+    const autosaveProofSteps = [
+      'unmount();',
+      'advanceTimersByTime(300);',
+      "expect(onSave).not.toHaveBeenCalledWith('draftC');",
+    ].map((step) => {
+      const index = compactAutosaveText.indexOf(step, autosaveProofCursor + 1);
+      autosaveProofCursor = index;
+      return { step, index };
+    });
+    autosaveProofSteps.forEach(({ step, index }) => {
+      expect(index, `autosave proof includes ${step}`).toBeGreaterThanOrEqual(0);
+    });
+    for (let index = 1; index < autosaveProofSteps.length; index += 1) {
+      expect(
+        autosaveProofSteps[index].index,
+        `${autosaveProofSteps[index].step} follows ${autosaveProofSteps[index - 1].step}`,
+      ).toBeGreaterThan(autosaveProofSteps[index - 1].index);
+    }
+
+    expectCleanRawLink(html, ASYNC_RACE_PATH, STALE_CLOSURES_PATH);
+    expect(
+      (bodyMarkup.match(
+        /<a\b[^>]*href=["']\/javascript\/trivia\/js-async-race-conditions(?:[?#][^"']*)?["']/gi,
+      ) || []).length,
+      'React stale closure page preserves exactly one clean async-race bridge',
+    ).toBe(1);
+    for (const source of STALE_CLOSURES_OFFICIAL_SOURCES) {
+      expectCleanRawLink(html, source, STALE_CLOSURES_PATH);
+    }
+
+    expect(schemaTypes).toContain('BreadcrumbList');
+    expect(schemaTypes).toContain('TechArticle');
+    expect(schemaTypes).not.toContain('FAQPage');
+    expect(schemaTypes).not.toContain('QAPage');
+    expect(schemaTypes).not.toContain('Question');
+    expect(schemaTypes).not.toContain('Quiz');
+
+    const article = schemaNodes.find((node) => node['@type'] === 'TechArticle');
+    expect(article).toMatchObject({
       '@id': expectedCanonical(STALE_CLOSURES_PATH),
       headline: STALE_CLOSURES_H1,
       description: STALE_CLOSURES_DESCRIPTION,
       url: expectedCanonical(STALE_CLOSURES_PATH),
       mainEntityOfPage: expectedCanonical(STALE_CLOSURES_PATH),
       datePublished: '2026-01-25T00:00:00.000Z',
-      dateModified: '2026-07-20T00:00:00.000Z',
+      dateModified: '2026-08-03T00:00:00.000Z',
       isAccessibleForFree: true,
+      learningResourceType: 'Code review exercise',
     });
+    const aboutNames = (article?.about || []).map((item: any) => item?.name).join(' ');
+    const mentionNames = (article?.mentions || []).map((item: any) => item?.name).join(' ');
+    expect(aboutNames).toMatch(/react/i);
+    expect(aboutNames).toMatch(/stale closure|code review/i);
+    expect(mentionNames).toMatch(/dependenc|exhaustive-deps/i);
+    expect(mentionNames).toMatch(/ref|useeffectevent/i);
+
+    const hasPartUrls = (article?.hasPart || []).map((item: any) =>
+      String(item?.url || item?.['@id'] || ''),
+    );
+    for (const caseFile of STALE_CLOSURES_CASE_FILES) {
+      expect(hasPartUrls, `TechArticle hasPart targets #${caseFile.id}`).toContain(
+        `${expectedCanonical(STALE_CLOSURES_PATH)}#${caseFile.id}`,
+      );
+    }
+    expect((article?.citation || []).map((item: any) => item?.url)).toEqual(
+      expect.arrayContaining([...STALE_CLOSURES_OFFICIAL_SOURCES]),
+    );
   });
 
-  test('hydrated React stale closures landing page preserves developer-first content without runtime issues', async ({ page }) => {
+  test('hydrated React stale closure case files preserve review contracts and responsive containment', async ({ page }) => {
     await page.addInitScript(() => {
       (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
     });
@@ -888,10 +1303,13 @@ test.describe('seo-ssr', () => {
       indexable: true,
       singleHydratedH1: true,
       bodyTextIncludes: [
-        'React stale closure: direct answer',
-        'Quick fix chooser',
-        'How to test a stale closure bug',
-        'Interview focus',
+        STALE_CLOSURES_DIRECT_ANSWER_HEADING,
+        'Callback contract',
+        'React stale closure case files',
+        'Diagnosis table',
+        'Production code-review checklist',
+        'Source check',
+        '30-second interview answer',
       ],
     });
 
@@ -900,18 +1318,23 @@ test.describe('seo-ssr', () => {
       STALE_CLOSURES_DESCRIPTION,
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', STALE_CLOSURES_TITLE);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
+      'content',
+      STALE_CLOSURES_DESCRIPTION,
+    );
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', STALE_CLOSURES_TITLE);
-    await expect(page.locator('table.table--stacked-mobile')).toHaveCount(2);
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
+      'content',
+      STALE_CLOSURES_DESCRIPTION,
+    );
+    await expect(page.getByText(STALE_CLOSURES_TRUST_NOTE, { exact: true })).toBeVisible();
 
-    const bodyText = normalizeText(await page.locator('body').innerText());
+    const semanticHeadings = (await page.getByRole('heading').allTextContents()).map(normalizeText);
     const orderedLabels = [
-      'React stale closure: direct answer',
-      'Quick fix chooser',
-      'How to test a stale closure bug',
-      'React stale closure FAQ',
-      'Interview focus',
+      STALE_CLOSURES_DIRECT_ANSWER_HEADING,
+      ...STALE_CLOSURES_SECTION_HEADINGS,
     ];
-    const positions = orderedLabels.map((label) => bodyText.indexOf(normalizeText(label)));
+    const positions = orderedLabels.map((label) => semanticHeadings.indexOf(normalizeText(label)));
     positions.forEach((position, index) => {
       expect(position, `hydrated page includes ${orderedLabels[index]}`).toBeGreaterThanOrEqual(0);
     });
@@ -921,34 +1344,79 @@ test.describe('seo-ssr', () => {
       );
     }
 
+    for (const heading of STALE_CLOSURES_SECTION_HEADINGS) {
+      await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
+    }
+    for (const caseFile of STALE_CLOSURES_CASE_FILES) {
+      await expect(page.locator(`#${caseFile.id}`)).toHaveCount(1);
+      await expect(page.getByText(caseFile.title, { exact: false }).first()).toBeVisible();
+    }
+    await expect(
+      page.getByRole('heading', {
+        name: 'Choose the value-ownership contract',
+        exact: true,
+        includeHidden: true,
+      }),
+    ).toHaveCount(STALE_CLOSURES_CASE_FILES.length);
+    await expect(page.locator('[aria-label="Minimal code change"]')).toHaveCount(
+      STALE_CLOSURES_CASE_FILES.length,
+    );
+    await expect(page.getByText('Proof assertion', { exact: true })).toHaveCount(
+      STALE_CLOSURES_CASE_FILES.length,
+    );
+    for (const source of STALE_CLOSURES_OFFICIAL_SOURCES) {
+      await expect(page.locator(`a[href="${source}"]`)).toHaveCount(1);
+    }
+    await expect(page.locator(`a[href="${ASYNC_RACE_PATH}"]`)).toHaveCount(1);
+    await expect(page.locator(`a[href^="${ASYNC_RACE_PATH}"]`)).toHaveCount(1);
+
     for (const viewport of [
       { width: 360, height: 800 },
+      { width: 390, height: 844 },
       { width: 834, height: 1112 },
       { width: 1366, height: 900 },
+      { width: 1440, height: 900 },
     ]) {
       await page.setViewportSize(viewport);
       const layout = await page.evaluate(() => {
         const main = document.querySelector('[data-testid="trivia-detail-main"]');
-        const stackedTables = Array.from(document.querySelectorAll('table.table--stacked-mobile'));
-        const code = document.querySelector('pre.line-numbers');
+        const caseFiles = Array.from(
+          main?.querySelectorAll('[data-testid^="case-file-pr-"]') || [],
+        );
+        const tables = Array.from(main?.querySelectorAll('table') || []);
+        const codeBlocks = Array.from(main?.querySelectorAll('pre') || []);
+        const hasHorizontalContainment = (element: Element): boolean => {
+          if ((element as HTMLElement).scrollWidth <= (element as HTMLElement).clientWidth + 1) {
+            return true;
+          }
+          let current: Element | null = element;
+          while (current && current !== main) {
+            const overflowX = getComputedStyle(current).overflowX;
+            if (overflowX === 'auto' || overflowX === 'scroll') return true;
+            current = current.parentElement;
+          }
+          return false;
+        };
         return {
           documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           mainOverflow: main ? main.scrollWidth - main.clientWidth : 0,
-          tableDisplays: stackedTables.map((table) => getComputedStyle(table).display),
-          codeWhiteSpace: code ? getComputedStyle(code).whiteSpace : '',
-          codeOverflowX: code ? getComputedStyle(code).overflowX : '',
+          caseFileCount: caseFiles.length,
+          tableCount: tables.length,
+          codeBlockCount: codeBlocks.length,
+          tablesContained: tables.every((table) => hasHorizontalContainment(table)),
+          codeBlocksContained: codeBlocks.every((code) => hasHorizontalContainment(code)),
         };
       });
 
       expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
       expect(layout.mainOverflow, `main content overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
-      if (viewport.width <= 768) {
-        expect(layout.tableDisplays).toEqual(['block', 'block']);
-        expect(layout.codeWhiteSpace).toBe('pre-wrap');
-        expect(layout.codeOverflowX).toBe('hidden');
-      } else {
-        expect(layout.tableDisplays).toEqual(['table', 'table']);
-      }
+      expect(layout.caseFileCount, `six case files at ${viewport.width}px`).toBe(
+        STALE_CLOSURES_CASE_FILES.length,
+      );
+      expect(layout.tableCount, `diagnosis table at ${viewport.width}px`).toBeGreaterThanOrEqual(1);
+      expect(layout.codeBlockCount, `case-file code at ${viewport.width}px`).toBeGreaterThanOrEqual(6);
+      expect(layout.tablesContained, `table containment at ${viewport.width}px`).toBe(true);
+      expect(layout.codeBlocksContained, `code containment at ${viewport.width}px`).toBe(true);
     }
 
     await page.waitForTimeout(300);

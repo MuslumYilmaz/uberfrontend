@@ -1,0 +1,199 @@
+<section
+  class="cancellation-lab"
+  data-testid="angular-http-cancellation-lab"
+  aria-labelledby="angular-http-cancellation-lab-title"
+>
+  <header class="cancellation-lab__header">
+    <div class="cancellation-lab__eyebrow">
+      <app-fa-glyph icon="pi pi-bug" size="1rem" aria-hidden="true"></app-fa-glyph>
+      Interactive debugging lab
+    </div>
+    <h2 id="angular-http-cancellation-lab-title">Cancellation behavior model</h2>
+    <p>
+      Run a local RxJS model to see which owner unsubscribes, when transport teardown occurs,
+      and where stale UI can still enter the system. The model makes no HTTP request and does
+      not claim that server work stopped.
+    </p>
+  </header>
+
+  <section class="cancellation-lab__section" aria-labelledby="cancellation-layers-title">
+    <div class="cancellation-lab__section-heading">
+      <span class="cancellation-lab__step" aria-hidden="true">01</span>
+      <div>
+        <h3 id="cancellation-layers-title">Trace all four cancellation layers</h3>
+        <p>A canceled subscription is one fact in a chain, not the whole conclusion.</p>
+      </div>
+    </div>
+
+    <div class="cancellation-lab__layers">
+      <article
+        *ngFor="let layer of layers"
+        faCard
+        padding="md"
+        class="cancellation-lab__layer"
+        [attr.data-layer]="layer.id"
+      >
+        <h4>{{ layer.title }}</h4>
+        <p>{{ layer.question }}</p>
+        <div class="cancellation-lab__proof-line">
+          <strong>Proof:</strong> {{ layer.proof }}
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="cancellation-lab__section" aria-labelledby="scenario-model-title">
+    <div class="cancellation-lab__section-heading">
+      <span class="cancellation-lab__step" aria-hidden="true">02</span>
+      <div>
+        <h3 id="scenario-model-title">Run a deterministic RxJS model</h3>
+        <p>Choose a product contract, inspect its code, then run the subscription lifecycle.</p>
+      </div>
+    </div>
+
+    <div
+      class="cancellation-lab__scenario-picker"
+      role="group"
+      aria-labelledby="scenario-model-title"
+    >
+      <fa-chip
+        *ngFor="let scenario of scenarios"
+        [label]="scenario.label"
+        [selected]="selectedScenarioId() === scenario.id"
+        [testId]="'cancellation-scenario-' + scenario.id"
+        size="sm"
+        variant="outline"
+        (chipClick)="selectScenario(scenario.id)"
+      ></fa-chip>
+    </div>
+
+    <article faCard elevated padding="lg" class="cancellation-lab__scenario-card">
+      <div class="cancellation-lab__scenario-header">
+        <div>
+          <span class="cancellation-lab__pattern">{{ selectedScenario().pattern }}</span>
+          <h4>{{ selectedScenario().label }}</h4>
+          <p>{{ selectedScenario().intent }}</p>
+        </div>
+        <button
+          faButton
+          type="button"
+          variant="ghost"
+          size="sm"
+          data-testid="angular-http-cancellation-copy-scenario"
+          (click)="copyScenarioCode()"
+        >
+          <app-fa-glyph icon="pi pi-copy" size="1rem" aria-hidden="true"></app-fa-glyph>
+          Copy code
+        </button>
+      </div>
+
+      <p class="cancellation-lab__scenario-summary">{{ selectedScenario().summary }}</p>
+
+      <pre class="cancellation-lab__code" tabindex="0" [attr.aria-label]="selectedScenario().label + ' code example'"><code>{{ selectedScenario().code }}</code></pre>
+
+      <div
+        class="cancellation-lab__outcomes"
+        role="group"
+        aria-label="Expected behavior by cancellation layer"
+      >
+        <div class="cancellation-lab__outcome">
+          <span>Subscription</span>
+          <p>{{ selectedScenario().subscription }}</p>
+        </div>
+        <div class="cancellation-lab__outcome">
+          <span>Transport</span>
+          <p>{{ selectedScenario().transport }}</p>
+        </div>
+        <div class="cancellation-lab__outcome">
+          <span>UI commit</span>
+          <p>{{ selectedScenario().ui }}</p>
+        </div>
+        <div class="cancellation-lab__outcome">
+          <span>Server work</span>
+          <p>{{ selectedScenario().server }}</p>
+        </div>
+      </div>
+
+      <div class="cancellation-lab__actions">
+        <button
+          faButton
+          type="button"
+          variant="primary"
+          size="md"
+          data-testid="angular-http-cancellation-run"
+          (click)="runModel()"
+        >
+          <app-fa-glyph icon="pi pi-arrow-right" size="1rem" aria-hidden="true"></app-fa-glyph>
+          Run model
+        </button>
+        <button
+          faButton
+          type="button"
+          variant="neutral"
+          size="md"
+          data-testid="angular-http-cancellation-reset"
+          (click)="resetModel()"
+        >
+          Reset
+        </button>
+        <span class="cancellation-lab__run-summary">{{ runSummary() }}</span>
+      </div>
+
+      <div class="cancellation-lab__trace" [class.cancellation-lab__trace--complete]="runState() === 'complete'">
+        <div class="cancellation-lab__trace-heading">
+          <app-fa-glyph icon="pi pi-shuffle" size="1rem" aria-hidden="true"></app-fa-glyph>
+          Observable event trace
+        </div>
+        <ol *ngIf="modelTrace().length; else traceReady">
+          <li *ngFor="let event of modelTrace(); let index = index">
+            <span aria-hidden="true">{{ index + 1 }}</span>
+            <p>{{ event }}</p>
+          </li>
+        </ol>
+        <ng-template #traceReady>
+          <p class="cancellation-lab__trace-ready">
+            No events yet. Run the model to execute real RxJS subscription and teardown paths.
+          </p>
+        </ng-template>
+      </div>
+
+      <div class="cancellation-lab__assertions">
+        <div>
+          <span>DevTools expectation</span>
+          <p>{{ selectedScenario().devToolsSignal }}</p>
+        </div>
+        <div>
+          <span>Unit-test assertion</span>
+          <code>{{ selectedScenario().testAssertion }}</code>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <aside faCard padding="md" class="cancellation-lab__suite-callout" aria-labelledby="test-suite-copy-title">
+    <div class="cancellation-lab__suite-icon">
+      <app-fa-glyph icon="pi pi-code" size="1.25rem" aria-hidden="true"></app-fa-glyph>
+    </div>
+    <div>
+      <h3 id="test-suite-copy-title">Copy the complete http-cancellation.spec.ts</h3>
+      <p>
+        The full answer below explains all six assertions. Copy the complete TestBed suite
+        when you are ready to reproduce them in an Angular project.
+      </p>
+    </div>
+    <button
+      faButton
+      type="button"
+      variant="primary"
+      size="sm"
+      data-testid="angular-http-cancellation-copy-suite"
+      [disabled]="!testSuite.trim()"
+      (click)="copyTestSuite()"
+    >
+      <app-fa-glyph icon="pi pi-copy" size="1rem" aria-hidden="true"></app-fa-glyph>
+      Copy test suite
+    </button>
+  </aside>
+  <p class="cancellation-lab__copy-message" *ngIf="copyMessage()">{{ copyMessage() }}</p>
+  <p class="sr-only" aria-live="polite" aria-atomic="true">{{ liveMessage() }}</p>
+</section>

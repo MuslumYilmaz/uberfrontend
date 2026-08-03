@@ -1,0 +1,231 @@
+<section
+  class="case-files"
+  data-testid="react-stale-closure-case-files"
+  aria-labelledby="react-stale-closure-case-files-title"
+>
+  <header class="case-files__header">
+    <div class="case-files__eyebrow">
+      <app-fa-glyph icon="bug" size="1rem" aria-hidden="true"></app-fa-glyph>
+      Interactive code review
+    </div>
+    <h2 id="callback-contract-title">Callback contract</h2>
+    <p>
+      Before changing a dependency array, decide which value contract the callback needs.
+      That decision separates stale closures from intentional snapshots and ordering races.
+    </p>
+  </header>
+
+  <ul class="case-files__contracts" aria-label="Callback contract decision labels">
+    <li><strong>Previous state</strong><span>Derive the next state from React's committed value.</span></li>
+    <li><strong>Re-synchronization</strong><span>Restart an external synchronization when its inputs change.</span></li>
+    <li><strong>Latest read</strong><span>Read fresh committed data without expanding an Effect lifecycle.</span></li>
+    <li><strong>Invocation snapshot</strong><span>Pass or preserve the value that initiated delayed work.</span></li>
+    <li><strong>Completion ordering</strong><span>Decide which asynchronous result still owns the commit.</span></li>
+  </ul>
+
+  <aside faCard padding="md" class="case-files__trust-note" data-testid="case-files-trust-note">
+    <app-fa-glyph icon="info" size="1rem" aria-hidden="true"></app-fa-glyph>
+    <div>
+      <strong>Practice-material note</strong>
+      <p>{{ trustNote }}</p>
+      <p>
+        The controls reveal a reasoning model only. They do not mount React, start timers,
+        call a network, or execute the sample snippets. Test adapted code in your own app.
+      </p>
+    </div>
+  </aside>
+
+  <div class="case-files__list-heading">
+    <h2 id="react-stale-closure-case-files-title">React stale closure case files</h2>
+    <p>
+      Predict each failure, choose its contract, then reveal the minimal patch and proof.
+      Every case is deterministic and fully readable without running React code.
+    </p>
+  </div>
+
+  <div class="case-files__list">
+    <details
+      *ngFor="let caseFile of caseFiles; let index = index; trackBy: trackCase"
+      faCard
+      padding="none"
+      class="case-file"
+      [id]="caseFile.id"
+      [attr.open]="index === 0 ? '' : null"
+      [attr.data-testid]="'case-file-' + caseFile.id"
+    >
+      <summary
+        class="case-file__summary"
+        (click)="onCaseSummaryActivated(caseFile.id, $event)"
+      >
+        <span class="case-file__number" aria-hidden="true">{{ caseFile.number }}</span>
+        <span class="case-file__summary-copy">
+          <span class="case-file__label">Case file</span>
+          <span class="case-file__heading">{{ caseFile.heading }}</span>
+          <span class="case-file__question">{{ caseFile.reviewQuestion }}</span>
+        </span>
+        <app-fa-glyph
+          class="case-file__chevron"
+          icon="chevron-down"
+          size="1rem"
+          aria-hidden="true"
+        ></app-fa-glyph>
+      </summary>
+
+      <div class="case-file__body">
+        <section class="case-file__evidence" [attr.aria-labelledby]="caseFile.id + '-evidence-title'">
+          <div class="case-file__section-heading">
+            <span class="case-file__evidence-label">Evidence</span>
+            <h3 [id]="caseFile.id + '-evidence-title'">Trace before you patch</h3>
+          </div>
+          <p class="case-file__symptom"><strong>Observed:</strong> {{ caseFile.symptom }}</p>
+          <ol>
+            <li *ngFor="let step of caseFile.evidence; let evidenceIndex = index">
+              <span aria-hidden="true">{{ evidenceIndex + 1 }}</span>
+              <p>{{ step }}</p>
+            </li>
+          </ol>
+        </section>
+
+        <div class="case-file__decision-grid">
+          <section
+            class="case-file__decision"
+            [attr.aria-labelledby]="caseFile.id + '-prediction-title'"
+          >
+            <h3 [id]="caseFile.id + '-prediction-title'">Predict the observable result</h3>
+            <p>{{ caseFile.predictionPrompt }}</p>
+            <div
+              class="case-file__choices"
+              role="group"
+              [attr.aria-labelledby]="caseFile.id + '-prediction-title'"
+            >
+              <fa-chip
+                *ngFor="let prediction of caseFile.predictions"
+                [label]="prediction.label"
+                [selected]="selectedPrediction(caseFile.id) === prediction.id"
+                [testId]="caseFile.id + '-prediction-' + prediction.id"
+                size="sm"
+                variant="outline"
+                (chipClick)="selectPrediction(caseFile, prediction.id)"
+              ></fa-chip>
+            </div>
+            <p
+              class="case-file__choice-feedback"
+              [hidden]="!selectedPrediction(caseFile.id)"
+              [class.case-file__choice-feedback--correct]="predictionIsCorrect(caseFile)"
+            >
+              {{ predictionIsCorrect(caseFile) ? 'Prediction matches the trace.' : 'Re-read the three-step trace and try again.' }}
+            </p>
+          </section>
+
+          <section
+            class="case-file__decision"
+            [attr.aria-labelledby]="caseFile.id + '-contract-title'"
+          >
+            <h3 [id]="caseFile.id + '-contract-title'">Choose the value-ownership contract</h3>
+            <p>{{ caseFile.contractPrompt }}</p>
+            <div
+              class="case-file__choices"
+              role="group"
+              [attr.aria-labelledby]="caseFile.id + '-contract-title'"
+            >
+              <fa-chip
+                *ngFor="let contract of caseFile.contracts"
+                [label]="contract.label"
+                [selected]="selectedContract(caseFile.id) === contract.id"
+                [testId]="caseFile.id + '-contract-' + contract.id"
+                size="sm"
+                variant="outline"
+                (chipClick)="selectContract(caseFile, contract.id)"
+              ></fa-chip>
+            </div>
+            <p
+              class="case-file__choice-feedback"
+              [hidden]="!selectedContract(caseFile.id)"
+              [class.case-file__choice-feedback--correct]="contractIsCorrect(caseFile)"
+            >
+              {{ contractIsCorrect(caseFile) ? 'Contract matches the required ownership.' : 'This contract changes the intended ownership. Try again.' }}
+            </p>
+          </section>
+        </div>
+
+        <details
+          class="case-file__result"
+          [attr.data-testid]="caseFile.id + '-verdict'"
+          (toggle)="onVerdictToggle(caseFile, $event)"
+        >
+          <summary class="case-file__result-summary">
+            <div>
+              <span class="case-file__result-label">Verdict</span>
+              <strong>Reveal review prescription</strong>
+            </div>
+            <app-fa-glyph
+              class="case-file__result-chevron"
+              icon="chevron-down"
+              size="1rem"
+              aria-hidden="true"
+            ></app-fa-glyph>
+          </summary>
+
+          <div class="case-file__result-body">
+            <div class="case-file__result-header">
+              <h3 [id]="caseFile.id + '-prescription-title'">{{ caseFile.prescriptionTitle }}</h3>
+              <button
+                faButton
+                type="button"
+                variant="ghost"
+                size="sm"
+                [attr.data-testid]="caseFile.id + '-copy-prescription'"
+                (click)="copyPrescription(caseFile)"
+              >
+                <app-fa-glyph icon="copy" size="1rem" aria-hidden="true"></app-fa-glyph>
+                Copy patch
+              </button>
+            </div>
+
+            <div class="case-file__diagnosis">
+              <app-fa-glyph icon="target" size="1.1rem" aria-hidden="true"></app-fa-glyph>
+              <div>
+                <strong>Diagnosis</strong>
+                <p>{{ caseFile.diagnosis }}</p>
+                <strong>Common misdiagnosis</strong>
+                <p>{{ caseFile.commonMisdiagnosis }}</p>
+              </div>
+            </div>
+            <p>{{ caseFile.prescription }}</p>
+
+            <strong class="case-file__diff-heading">Minimal code change</strong>
+            <div class="case-file__diff" aria-label="Minimal code change">
+              <div>
+                <span class="case-file__code-label">Before</span>
+                <pre tabindex="0"><code prism [lang]="'typescript'" [code]="caseFile.beforeCode"></code></pre>
+              </div>
+              <div>
+                <span class="case-file__code-label case-file__code-label--after">After</span>
+                <pre tabindex="0"><code prism [lang]="'typescript'" [code]="caseFile.afterCode"></code></pre>
+              </div>
+            </div>
+
+            <div *ngIf="caseFile.compatibilityNote" class="case-file__compatibility">
+              <app-fa-glyph icon="info" size="1rem" aria-hidden="true"></app-fa-glyph>
+              <div>
+                <strong>Compatibility boundary</strong>
+                <p>{{ caseFile.compatibilityNote }}</p>
+                <pre *ngIf="caseFile.fallbackCode" tabindex="0"><code prism [lang]="'typescript'" [code]="caseFile.fallbackCode"></code></pre>
+              </div>
+            </div>
+
+            <div class="case-file__proof">
+              <div class="case-file__proof-title">
+                <app-fa-glyph icon="check-circle" size="1rem" aria-hidden="true"></app-fa-glyph>
+                <strong>Proof assertion</strong>
+              </div>
+              <pre tabindex="0"><code prism [lang]="'typescript'" [code]="caseFile.proofAssertion"></code></pre>
+            </div>
+          </div>
+        </details>
+      </div>
+    </details>
+  </div>
+
+  <p class="case-files__live" aria-live="polite" aria-atomic="true">{{ liveMessage() }}</p>
+</section>

@@ -102,6 +102,81 @@ const NETFLIX_PREVIEW_RESOURCE_ROUTES = [
   '/guides/system-design-blueprint/performance',
   '/guides/behavioral/stories',
 ];
+const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
+  '/angular/trivia/angular-http-what-actually-cancels-request';
+const ANGULAR_HTTP_CANCELLATION_LAB_CANONICAL =
+  `https://frontendatlas.com${ANGULAR_HTTP_CANCELLATION_LAB_ROUTE}`;
+const ANGULAR_HTTP_CANCELLATION_LAB_TITLE =
+  'Angular HttpClient Unsubscribe: 6 Tests & DevTools';
+const ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION =
+  'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.';
+const ANGULAR_HTTP_CANCELLATION_LAB_H1 =
+  'Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI';
+const ANGULAR_HTTP_CANCELLATION_LAB_CONTENT = [
+  '15-second answer',
+  'Cancellation behavior model',
+  'RxJS subscription',
+  'Browser transport',
+  'UI commit',
+  'Server work',
+  'Manual unsubscribe',
+  'switchMap',
+  'mergeMap',
+  'takeUntilDestroyed',
+  'AsyncPipe',
+  'shareReplay',
+  'Browser DevTools',
+  'HttpTestingController',
+  'TestRequest.cancelled',
+  'http-cancellation.spec.ts',
+  'Source check',
+  'Interview focus',
+];
+const ANGULAR_HTTP_CANCELLATION_LAB_RESOURCE_ROUTES = [
+  '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+  '/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns',
+  '/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app',
+  '/javascript/coding/js-take-latest',
+];
+const ANGULAR_HTTP_CANCELLATION_LAB_OFFICIAL_SOURCES = [
+  'https://angular.dev/guide/http/making-requests',
+  'https://angular.dev/guide/http/testing',
+  'https://angular.dev/api/common/http/testing/TestRequest',
+  'https://angular.dev/api/common/http/HttpRequest',
+];
+const REACT_STALE_CLOSURES_ROUTE = '/react/trivia/react-stale-state-closures';
+const REACT_STALE_CLOSURES_CANONICAL =
+  `https://frontendatlas.com${REACT_STALE_CLOSURES_ROUTE}`;
+const REACT_STALE_CLOSURES_TITLE = 'React Stale Closures: 6 PRs, Which Fix Is Right?';
+const REACT_STALE_CLOSURES_DESCRIPTION =
+  'Review six React pull requests: four stale closures, one intentional snapshot, and one async race. Predict the failure and reveal the minimal safe diff.';
+const REACT_STALE_CLOSURES_H1 =
+  'React Stale Closure Case Files: Diagnose Six Pull Requests';
+const REACT_STALE_CLOSURES_TRUST_NOTE =
+  'These are representative FrontendAtlas code-review scenarios, not real pull requests or leaked interview material.';
+const REACT_STALE_CLOSURE_CASE_FILES = [
+  { id: 'pr-interval-counter', title: 'Interval counter: update from previous state' },
+  { id: 'pr-chat-theme', title: 'Chat connection: read the latest theme without reconnecting' },
+  { id: 'pr-escape-listener', title: 'Escape listener: re-synchronize with isDirty' },
+  { id: 'pr-debounced-autosave', title: 'Debounced autosave: pass the invocation snapshot' },
+  { id: 'pr-export-snapshot', title: 'Export audit: preserve the initiating snapshot' },
+  { id: 'pr-search-ordering', title: 'Async search: diagnose a race, not a closure' },
+];
+const REACT_STALE_CLOSURES_SECTION_HEADINGS = [
+  'Callback contract',
+  'React stale closure case files',
+  'Diagnosis table',
+  'Production code-review checklist',
+  'Source check',
+  '30-second interview answer',
+];
+const REACT_STALE_CLOSURES_OFFICIAL_SOURCES = [
+  'https://react.dev/learn/state-as-a-snapshot',
+  'https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps',
+  'https://react.dev/reference/react/useEffectEvent',
+  'https://react.dev/reference/react/useRef',
+];
+const ASYNC_RACE_ROUTE = '/javascript/trivia/js-async-race-conditions';
 const execFileAsync = promisify(execFile);
 
 function pickSystemDesignSampleId() {
@@ -215,6 +290,15 @@ function extractInternalLinkPaths(html) {
     }
   }
   return paths;
+}
+
+function extractLinkHrefs(html) {
+  const hrefs = new Set();
+  for (const match of String(html || '').matchAll(/<a\b[^>]*>/gi)) {
+    const href = extractAttribute(match[0], 'href');
+    if (href) hrefs.add(href);
+  }
+  return hrefs;
 }
 
 function extractSeoJsonLd(html) {
@@ -358,6 +442,412 @@ try {
     name: 'guide detail has non-empty h1',
     ok: guideH1.length > 0,
     detail: `h1=${guideH1 || '(missing)'}`,
+  });
+
+  const angularCancellationUrl = `${base}${ANGULAR_HTTP_CANCELLATION_LAB_ROUTE}`;
+  const angularCancellationStatus = await curlStatus(angularCancellationUrl, {
+    followRedirects: true,
+    userAgent: GOOGLEBOT_USER_AGENT,
+  });
+  const angularCancellationBody = await curlBody(angularCancellationUrl, {
+    followRedirects: true,
+    userAgent: GOOGLEBOT_USER_AGENT,
+  });
+  const angularCancellationVisibleText = extractVisibleText(angularCancellationBody);
+  const angularCancellationLinks = extractLinkHrefs(angularCancellationBody);
+  const angularCancellationJsonLd = extractSeoJsonLd(angularCancellationBody);
+  const angularCancellationArticle = angularCancellationJsonLd.graph.find((node) =>
+    hasSchemaType(node, 'TechArticle'),
+  );
+  const angularCancellationSchemaTypes = angularCancellationJsonLd.graph.flatMap((node) => {
+    const type = node?.['@type'];
+    return Array.isArray(type) ? type : type ? [type] : [];
+  });
+
+  checks.push({
+    name: 'Googlebot receives the Angular HttpClient cancellation lab as 200',
+    ok: angularCancellationStatus === 200,
+    detail: `${angularCancellationStatus} ${ANGULAR_HTTP_CANCELLATION_LAB_ROUTE}`,
+  });
+  checks.push({
+    name: 'Angular HttpClient cancellation lab has exact search metadata',
+    ok:
+      extractTitle(angularCancellationBody) === ANGULAR_HTTP_CANCELLATION_LAB_TITLE &&
+      extractMetaContent(angularCancellationBody, 'name', 'description') ===
+        ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION &&
+      extractMetaContent(angularCancellationBody, 'property', 'og:title') ===
+        ANGULAR_HTTP_CANCELLATION_LAB_TITLE &&
+      extractMetaContent(angularCancellationBody, 'name', 'twitter:title') ===
+        ANGULAR_HTTP_CANCELLATION_LAB_TITLE,
+    detail: `title=${extractTitle(angularCancellationBody) || '(missing)'}`,
+  });
+  checks.push({
+    name: 'Angular HttpClient cancellation lab is self-canonical and indexable',
+    ok:
+      extractCanonical(angularCancellationBody) === ANGULAR_HTTP_CANCELLATION_LAB_CANONICAL &&
+      extractRobots(angularCancellationBody).replace(/\s+/g, '') === 'index,follow',
+    detail: `canonical=${extractCanonical(angularCancellationBody) || '(missing)'} robots=${
+      extractRobots(angularCancellationBody) || '(missing)'
+    }`,
+  });
+  const angularCancellationH1Count =
+    (String(angularCancellationBody).match(/<h1\b/gi) || []).length;
+  checks.push({
+    name: 'Angular HttpClient cancellation lab has one exact H1',
+    ok:
+      extractH1(angularCancellationBody) === ANGULAR_HTTP_CANCELLATION_LAB_H1 &&
+      angularCancellationH1Count === 1,
+    detail: `h1=${extractH1(angularCancellationBody) || '(missing)'} count=${angularCancellationH1Count}`,
+  });
+
+  const missingAngularCancellationContent = ANGULAR_HTTP_CANCELLATION_LAB_CONTENT.filter(
+    (expected) => !angularCancellationVisibleText.includes(normalizeText(expected)),
+  );
+  checks.push({
+    name: 'Angular HttpClient cancellation lab exposes the complete debugging model in raw HTML',
+    ok: missingAngularCancellationContent.length === 0,
+    detail: missingAngularCancellationContent.length
+      ? `missing=${missingAngularCancellationContent.join(' | ')}`
+      : 'all present',
+  });
+
+  const missingAngularCancellationResources =
+    ANGULAR_HTTP_CANCELLATION_LAB_RESOURCE_ROUTES.filter(
+      (route) => !angularCancellationLinks.has(route),
+    );
+  checks.push({
+    name: 'Angular HttpClient cancellation lab has four clean public practice links',
+    ok: missingAngularCancellationResources.length === 0,
+    detail: missingAngularCancellationResources.length
+      ? `missing=${missingAngularCancellationResources.join(', ')}`
+      : 'all present',
+  });
+  const hasAngularCancellationAsyncRaceLink = Array.from(angularCancellationLinks).some((href) => {
+    try {
+      const url = new URL(href, 'https://frontendatlas.com');
+      return url.pathname === '/javascript/trivia/js-async-race-conditions';
+    } catch {
+      return false;
+    }
+  });
+  checks.push({
+    name: 'Angular HttpClient cancellation lab does not confound the active async-race title experiment',
+    ok: !hasAngularCancellationAsyncRaceLink,
+    detail: hasAngularCancellationAsyncRaceLink ? 'unexpected async-race link present' : 'none present',
+  });
+  const missingAngularCancellationSources = ANGULAR_HTTP_CANCELLATION_LAB_OFFICIAL_SOURCES.filter(
+    (url) => !angularCancellationLinks.has(url),
+  );
+  checks.push({
+    name: 'Angular HttpClient cancellation lab cites all official Angular sources',
+    ok: missingAngularCancellationSources.length === 0,
+    detail: missingAngularCancellationSources.length
+      ? `missing=${missingAngularCancellationSources.join(', ')}`
+      : 'all present',
+  });
+  checks.push({
+    name: 'Angular HttpClient cancellation lab JSON-LD parses',
+    ok: !angularCancellationJsonLd.error && angularCancellationJsonLd.graph.length > 0,
+    detail:
+      angularCancellationJsonLd.error || `graph_nodes=${angularCancellationJsonLd.graph.length}`,
+  });
+  const requiredAngularCancellationSchemaTypes = ['BreadcrumbList', 'TechArticle'];
+  const missingAngularCancellationSchemaTypes = requiredAngularCancellationSchemaTypes.filter(
+    (type) => !angularCancellationSchemaTypes.includes(type),
+  );
+  const forbiddenAngularCancellationSchemaTypes = ['FAQPage', 'QAPage', 'Question'];
+  const presentForbiddenAngularCancellationSchemaTypes = forbiddenAngularCancellationSchemaTypes.filter(
+    (type) => angularCancellationSchemaTypes.includes(type),
+  );
+  checks.push({
+    name: 'Angular HttpClient cancellation lab uses only supported detail schema',
+    ok:
+      missingAngularCancellationSchemaTypes.length === 0 &&
+      presentForbiddenAngularCancellationSchemaTypes.length === 0,
+    detail: `missing=${missingAngularCancellationSchemaTypes.join(', ') || 'none'} forbidden=${
+      presentForbiddenAngularCancellationSchemaTypes.join(', ') || 'none'
+    }`,
+  });
+  checks.push({
+    name: 'Angular HttpClient cancellation TechArticle declares the public lab contract',
+    ok:
+      angularCancellationArticle?.['@id'] === ANGULAR_HTTP_CANCELLATION_LAB_CANONICAL &&
+      angularCancellationArticle?.headline === ANGULAR_HTTP_CANCELLATION_LAB_H1 &&
+      angularCancellationArticle?.description === ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION &&
+      angularCancellationArticle?.datePublished === '2026-01-25T00:00:00.000Z' &&
+      angularCancellationArticle?.dateModified === '2026-08-03T00:00:00.000Z' &&
+      angularCancellationArticle?.isAccessibleForFree === true &&
+      angularCancellationArticle?.learningResourceType === 'Interactive debugging lab' &&
+      Array.isArray(angularCancellationArticle?.hasPart) &&
+      angularCancellationArticle.hasPart.length >= 6 &&
+      Array.isArray(angularCancellationArticle?.citation) &&
+      angularCancellationArticle.citation.length >= 4,
+    detail: `dateModified=${angularCancellationArticle?.dateModified || '(missing)'}`,
+  });
+
+  const reactStaleClosuresUrl = `${base}${REACT_STALE_CLOSURES_ROUTE}`;
+  const reactStaleClosuresStatus = await curlStatus(reactStaleClosuresUrl, {
+    followRedirects: true,
+    userAgent: GOOGLEBOT_USER_AGENT,
+  });
+  const reactStaleClosuresBody = await curlBody(reactStaleClosuresUrl, {
+    followRedirects: true,
+    userAgent: GOOGLEBOT_USER_AGENT,
+  });
+  const reactStaleClosuresVisibleText = extractVisibleText(reactStaleClosuresBody);
+  const reactStaleClosuresLinks = extractLinkHrefs(reactStaleClosuresBody);
+  const reactStaleClosuresAllHrefs = Array.from(
+    String(reactStaleClosuresBody).matchAll(/<a\b[^>]*>/gi),
+    (match) => extractAttribute(match[0], 'href'),
+  ).filter(Boolean);
+  const reactStaleClosuresJsonLd = extractSeoJsonLd(reactStaleClosuresBody);
+  const reactStaleClosuresArticle = reactStaleClosuresJsonLd.graph.find((node) =>
+    hasSchemaType(node, 'TechArticle'),
+  );
+  const reactStaleClosuresSchemaTypes = reactStaleClosuresJsonLd.graph.flatMap((node) => {
+    const type = node?.['@type'];
+    return Array.isArray(type) ? type : type ? [type] : [];
+  });
+
+  checks.push({
+    name: 'Googlebot receives the React stale closure case files as 200',
+    ok: reactStaleClosuresStatus === 200,
+    detail: `${reactStaleClosuresStatus} ${REACT_STALE_CLOSURES_ROUTE}`,
+  });
+  checks.push({
+    name: 'React stale closure case files have exact search metadata',
+    ok:
+      extractTitle(reactStaleClosuresBody) === REACT_STALE_CLOSURES_TITLE &&
+      extractMetaContent(reactStaleClosuresBody, 'name', 'description') ===
+        REACT_STALE_CLOSURES_DESCRIPTION &&
+      extractMetaContent(reactStaleClosuresBody, 'property', 'og:title') ===
+        REACT_STALE_CLOSURES_TITLE &&
+      extractMetaContent(reactStaleClosuresBody, 'property', 'og:description') ===
+        REACT_STALE_CLOSURES_DESCRIPTION &&
+      extractMetaContent(reactStaleClosuresBody, 'name', 'twitter:title') ===
+        REACT_STALE_CLOSURES_TITLE &&
+      extractMetaContent(reactStaleClosuresBody, 'name', 'twitter:description') ===
+        REACT_STALE_CLOSURES_DESCRIPTION,
+    detail: `title=${extractTitle(reactStaleClosuresBody) || '(missing)'}`,
+  });
+  checks.push({
+    name: 'React stale closure case files are self-canonical and indexable',
+    ok:
+      extractCanonical(reactStaleClosuresBody) === REACT_STALE_CLOSURES_CANONICAL &&
+      extractRobots(reactStaleClosuresBody).replace(/\s+/g, '') === 'index,follow',
+    detail: `canonical=${extractCanonical(reactStaleClosuresBody) || '(missing)'} robots=${
+      extractRobots(reactStaleClosuresBody) || '(missing)'
+    }`,
+  });
+  const reactStaleClosuresH1Count =
+    (String(reactStaleClosuresBody).match(/<h1\b/gi) || []).length;
+  checks.push({
+    name: 'React stale closure case files have one exact H1',
+    ok:
+      extractH1(reactStaleClosuresBody) === REACT_STALE_CLOSURES_H1 &&
+      reactStaleClosuresH1Count === 1,
+    detail: `h1=${extractH1(reactStaleClosuresBody) || '(missing)'} count=${reactStaleClosuresH1Count}`,
+  });
+  checks.push({
+    name: 'React stale closure case files expose the visible trust note',
+    ok: reactStaleClosuresVisibleText.includes(normalizeText(REACT_STALE_CLOSURES_TRUST_NOTE)),
+    detail: reactStaleClosuresVisibleText.includes(normalizeText(REACT_STALE_CLOSURES_TRUST_NOTE))
+      ? 'present'
+      : 'missing',
+  });
+
+  const reactStaleClosuresHeadings = Array.from(
+    String(reactStaleClosuresBody).matchAll(/<h([23])\b[^>]*>([\s\S]*?)<\/h\1>/gi),
+    (match) => normalizeText(decodeHtml(match[2].replace(/<[^>]+>/g, ' '))),
+  );
+  const missingReactStaleClosuresHeadings = REACT_STALE_CLOSURES_SECTION_HEADINGS.filter(
+    (heading) => !reactStaleClosuresHeadings.includes(normalizeText(heading)),
+  );
+  const reactStaleClosuresMilestones = [
+    'React stale closures: direct answer',
+    ...REACT_STALE_CLOSURES_SECTION_HEADINGS,
+  ];
+  const reactStaleClosuresMilestonePositions = reactStaleClosuresMilestones.map((label) =>
+    reactStaleClosuresVisibleText.indexOf(normalizeText(label)),
+  );
+  const reactStaleClosuresOrderIsStable = reactStaleClosuresMilestonePositions.every(
+    (position, index) =>
+      position >= 0 &&
+      (index === 0 || position > reactStaleClosuresMilestonePositions[index - 1]),
+  );
+  checks.push({
+    name: 'React stale closure review sections are semantic and preserve content order',
+    ok: missingReactStaleClosuresHeadings.length === 0 && reactStaleClosuresOrderIsStable,
+    detail: missingReactStaleClosuresHeadings.length
+      ? `missing=${missingReactStaleClosuresHeadings.join(' | ')}`
+      : `positions=${reactStaleClosuresMilestonePositions.join(',')}`,
+  });
+
+  const missingReactStaleClosureCases = REACT_STALE_CLOSURE_CASE_FILES.filter((caseFile) => {
+    const hasTitle = reactStaleClosuresVisibleText.includes(normalizeText(caseFile.title));
+    const hasFragment = new RegExp(`\\bid=["']${caseFile.id}["']`, 'i').test(
+      reactStaleClosuresBody,
+    );
+    return !hasTitle || !hasFragment;
+  });
+  const reactReviewContractCount =
+    reactStaleClosuresVisibleText.split('Choose the value-ownership contract').length - 1;
+  const reactMinimalDiffCount =
+    (String(reactStaleClosuresBody).match(/aria-label=["']minimal code change["']/gi) || []).length;
+  const reactProofTestCount =
+    reactStaleClosuresVisibleText.split('Proof assertion').length - 1;
+  const reactReviewContractsComplete =
+    reactReviewContractCount === REACT_STALE_CLOSURE_CASE_FILES.length &&
+    reactMinimalDiffCount === REACT_STALE_CLOSURE_CASE_FILES.length &&
+    reactProofTestCount === REACT_STALE_CLOSURE_CASE_FILES.length;
+  checks.push({
+    name: 'React stale closure raw HTML contains six complete PR case files',
+    ok: missingReactStaleClosureCases.length === 0 && reactReviewContractsComplete,
+    detail:
+      missingReactStaleClosureCases.length || !reactReviewContractsComplete
+        ? `cases=${missingReactStaleClosureCases.map((item) => item.id).join(',') || 'none'} contracts=${reactReviewContractCount} diffs=${reactMinimalDiffCount} proofs=${reactProofTestCount}`
+        : 'all six present',
+  });
+
+  const reactCommonMisdiagnosisCount =
+    reactStaleClosuresVisibleText.split('Common misdiagnosis').length - 1;
+  const reactCaseStarts = REACT_STALE_CLOSURE_CASE_FILES.map((caseFile) => ({
+    caseFile,
+    index: String(reactStaleClosuresBody).search(
+      new RegExp(`\\bid=["']${caseFile.id}["']`, 'i'),
+    ),
+  }));
+  const reactCaseSegments = reactCaseStarts.map(({ caseFile, index }, caseIndex) => {
+    const nextIndex = reactCaseStarts[caseIndex + 1]?.index ?? reactStaleClosuresBody.length;
+    const markup = index >= 0 && nextIndex > index
+      ? reactStaleClosuresBody.slice(index, nextIndex)
+      : '';
+    return {
+      id: caseFile.id,
+      markup,
+      commonMisdiagnosisCount: extractVisibleText(markup).split('Common misdiagnosis').length - 1,
+    };
+  });
+  const reactCasesWithInvalidMisdiagnosis = reactCaseSegments.filter(
+    ({ commonMisdiagnosisCount }) => commonMisdiagnosisCount !== 1,
+  );
+  checks.push({
+    name: 'React stale closure raw HTML exposes one visible Common misdiagnosis per case',
+    ok:
+      reactCommonMisdiagnosisCount === REACT_STALE_CLOSURE_CASE_FILES.length &&
+      reactCasesWithInvalidMisdiagnosis.length === 0,
+    detail: reactCasesWithInvalidMisdiagnosis.length
+      ? `total=${reactCommonMisdiagnosisCount} invalid=${reactCasesWithInvalidMisdiagnosis
+          .map(({ id, commonMisdiagnosisCount }) => `${id}:${commonMisdiagnosisCount}`)
+          .join(',')}`
+      : `count=${reactCommonMisdiagnosisCount}`,
+  });
+
+  const reactAutosaveMarkup =
+    reactCaseSegments.find(({ id }) => id === 'pr-debounced-autosave')?.markup || '';
+  const compactReactAutosaveText = extractVisibleText(reactAutosaveMarkup).replace(/\s+/g, '');
+  const reactAutosaveProofSteps = [
+    'unmount();',
+    'advanceTimersByTime(300);',
+    "expect(onSave).not.toHaveBeenCalledWith('draftC');",
+  ];
+  let reactAutosaveProofCursor = -1;
+  const reactAutosaveProofPositions = reactAutosaveProofSteps.map((step) => {
+    const position = compactReactAutosaveText.indexOf(step, reactAutosaveProofCursor + 1);
+    reactAutosaveProofCursor = position;
+    return position;
+  });
+  const reactAutosaveProofIsOrdered = reactAutosaveProofPositions.every(
+    (position, index) =>
+      position >= 0 && (index === 0 || position > reactAutosaveProofPositions[index - 1]),
+  );
+  checks.push({
+    name: 'React debounced autosave raw patch cancels on unmount and proves pending work cannot save',
+    ok:
+      compactReactAutosaveText.includes('saveLater.cancel()') && reactAutosaveProofIsOrdered,
+    detail: `cancel=${compactReactAutosaveText.includes('saveLater.cancel()')} proof_positions=${reactAutosaveProofPositions.join(',')}`,
+  });
+
+  const reactAsyncRaceLinks = reactStaleClosuresAllHrefs.filter((href) => {
+    try {
+      return new URL(href, 'https://frontendatlas.com').pathname === ASYNC_RACE_ROUTE;
+    } catch {
+      return false;
+    }
+  });
+  checks.push({
+    name: 'React stale closure case files preserve exactly one clean async-race bridge',
+    ok: reactAsyncRaceLinks.length === 1 && reactAsyncRaceLinks[0] === ASYNC_RACE_ROUTE,
+    detail: reactAsyncRaceLinks.length ? reactAsyncRaceLinks.join(',') : 'missing',
+  });
+  const missingReactStaleClosureSources = REACT_STALE_CLOSURES_OFFICIAL_SOURCES.filter(
+    (url) => !reactStaleClosuresLinks.has(url),
+  );
+  checks.push({
+    name: 'React stale closure case files cite all four official React sources',
+    ok: missingReactStaleClosureSources.length === 0,
+    detail: missingReactStaleClosureSources.length
+      ? `missing=${missingReactStaleClosureSources.join(', ')}`
+      : 'all present',
+  });
+
+  const requiredReactStaleClosureSchemaTypes = ['BreadcrumbList', 'TechArticle'];
+  const missingReactStaleClosureSchemaTypes = requiredReactStaleClosureSchemaTypes.filter(
+    (type) => !reactStaleClosuresSchemaTypes.includes(type),
+  );
+  const forbiddenReactStaleClosureSchemaTypes = ['FAQPage', 'QAPage', 'Question', 'Quiz'];
+  const presentForbiddenReactStaleClosureSchemaTypes = forbiddenReactStaleClosureSchemaTypes.filter(
+    (type) => reactStaleClosuresSchemaTypes.includes(type),
+  );
+  checks.push({
+    name: 'React stale closure case files use only supported detail schema',
+    ok:
+      !reactStaleClosuresJsonLd.error &&
+      missingReactStaleClosureSchemaTypes.length === 0 &&
+      presentForbiddenReactStaleClosureSchemaTypes.length === 0,
+    detail:
+      reactStaleClosuresJsonLd.error ||
+      `missing=${missingReactStaleClosureSchemaTypes.join(',') || 'none'} forbidden=${
+        presentForbiddenReactStaleClosureSchemaTypes.join(',') || 'none'
+      }`,
+  });
+
+  const reactStaleClosuresAboutNames = (reactStaleClosuresArticle?.about || [])
+    .map((item) => item?.name)
+    .join(' ');
+  const reactStaleClosuresMentionNames = (reactStaleClosuresArticle?.mentions || [])
+    .map((item) => item?.name)
+    .join(' ');
+  const reactStaleClosuresHasPartUrls = (reactStaleClosuresArticle?.hasPart || []).map((item) =>
+    String(item?.url || item?.['@id'] || ''),
+  );
+  const reactStaleClosuresCitations = (reactStaleClosuresArticle?.citation || []).map(
+    (item) => item?.url,
+  );
+  const reactStaleClosuresHasAllCaseFragments = REACT_STALE_CLOSURE_CASE_FILES.every(
+    (caseFile) =>
+      reactStaleClosuresHasPartUrls.includes(`${REACT_STALE_CLOSURES_CANONICAL}#${caseFile.id}`),
+  );
+  const reactStaleClosuresHasAllCitations = REACT_STALE_CLOSURES_OFFICIAL_SOURCES.every(
+    (url) => reactStaleClosuresCitations.includes(url),
+  );
+  checks.push({
+    name: 'React stale closure TechArticle declares the complete code-review contract',
+    ok:
+      reactStaleClosuresArticle?.['@id'] === REACT_STALE_CLOSURES_CANONICAL &&
+      reactStaleClosuresArticle?.headline === REACT_STALE_CLOSURES_H1 &&
+      reactStaleClosuresArticle?.description === REACT_STALE_CLOSURES_DESCRIPTION &&
+      reactStaleClosuresArticle?.datePublished === '2026-01-25T00:00:00.000Z' &&
+      reactStaleClosuresArticle?.dateModified === '2026-08-03T00:00:00.000Z' &&
+      reactStaleClosuresArticle?.isAccessibleForFree === true &&
+      reactStaleClosuresArticle?.learningResourceType === 'Code review exercise' &&
+      /react/i.test(reactStaleClosuresAboutNames) &&
+      /stale closure|code review/i.test(reactStaleClosuresAboutNames) &&
+      /dependenc|exhaustive-deps/i.test(reactStaleClosuresMentionNames) &&
+      /ref|useeffectevent/i.test(reactStaleClosuresMentionNames) &&
+      reactStaleClosuresHasAllCaseFragments &&
+      reactStaleClosuresHasAllCitations,
+    detail: `dateModified=${reactStaleClosuresArticle?.dateModified || '(missing)'}`,
   });
 
   const googleUrl = `${base}${GOOGLE_PREVIEW_ROUTE}`;

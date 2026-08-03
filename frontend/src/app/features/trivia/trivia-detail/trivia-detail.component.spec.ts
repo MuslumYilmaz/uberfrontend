@@ -493,33 +493,41 @@ describe('TriviaDetailComponent', () => {
     expect(isBefore(practiceFrame, fullHead)).toBeTrue();
   });
 
-  it('renders the React stale closures landing page developer-first with established SEO schema', async () => {
-    const expectedTitle = 'React Stale Closures: Causes, Fixes, and Tests';
-    const expectedH1 = 'React Stale Closures: Why State Goes Stale and How to Fix It';
+  it('renders the React stale-closure case files before the editorial review with fragment schema', async () => {
+    const expectedTitle = 'React Stale Closures: 6 PRs, Which Fix Is Right?';
+    const expectedH1 = 'React Stale Closure Case Files: Diagnose Six Pull Requests';
     const expectedDescription =
-      'Learn why React closures read stale state and fix them with dependencies, functional updates, refs, and useEffectEvent, using real examples and tests.';
+      'Review six React pull requests: four stale closures, one intentional snapshot, and one async race. Predict the failure and reveal the minimal safe diff.';
+    const expectedFragments = [
+      'pr-interval-counter',
+      'pr-chat-theme',
+      'pr-escape-listener',
+      'pr-debounced-autosave',
+      'pr-export-snapshot',
+      'pr-search-ordering',
+    ];
     const resolved: any = makeResolved('free', {
       id: 'react-stale-state-closures',
       title: 'Why does React sometimes show stale state in closures? How do you fix it?',
       technology: 'react',
       description:
-        'Each React render creates new state and prop bindings. A callback created during that render keeps access to those bindings, even when it runs later.',
+        'A stale closure is a bug only when a callback contract requires a newer render value.',
       seo: {
         title: expectedTitle,
         h1: expectedH1,
         description: expectedDescription,
       },
       publishedAt: '2026-01-25',
-      updatedAt: '2026-07-20',
+      updatedAt: '2026-08-03',
       answer: {
         blocks: [
           {
             type: 'text',
-            text: '## Quick fix chooser\n\nChoose a fix from the callback lifecycle and the value it needs.',
+            text: '## Diagnosis table\n\nCompare the six callback contracts.',
           },
           {
             type: 'text',
-            text: '## How to test a stale closure bug\n\nAdvance fake timers and assert the corrected state.',
+            text: '## Source check\n\nUse the official React references.',
           },
         ],
       },
@@ -542,10 +550,12 @@ describe('TriviaDetailComponent', () => {
     const root = fixture.nativeElement as HTMLElement;
     const h1s = Array.from(root.querySelectorAll('h1')) as HTMLElement[];
     const heads = Array.from(root.querySelectorAll('h2.card-head')) as HTMLElement[];
-    const directHead = heads.find((head) => head.textContent?.trim() === 'React stale closure: direct answer') ?? null;
-    const fullHead = heads.find((head) => head.textContent?.trim() === 'React stale closure fixes and examples') ?? null;
+    const directHead = heads.find((head) => head.textContent?.trim() === 'React stale closures: direct answer') ?? null;
+    const fullHead = heads.find((head) => head.textContent?.trim() === 'Diagnosis table and production review') ?? null;
     const focusHead = heads.find((head) => head.textContent?.trim() === 'Interview focus') ?? null;
+    const caseFiles = root.querySelector('[data-testid="react-stale-closure-case-files"]') as HTMLElement | null;
     const practiceFrame = root.querySelector('[data-testid="trivia-practice-frame"]') as HTMLElement | null;
+    const prepEntry = root.querySelector('[data-testid="trivia-prep-entry"]') as HTMLElement | null;
     const isBefore = (left: Element | null, right: Element | null) =>
       Boolean(left && right && (left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING));
 
@@ -553,12 +563,23 @@ describe('TriviaDetailComponent', () => {
     expect(h1s[0]?.textContent?.trim()).toBe(expectedH1);
     expect(root.querySelector('.title-copy > .title__intent')).toBeNull();
     expect(directHead).toBeTruthy();
+    expect(caseFiles).toBeTruthy();
     expect(fullHead).toBeTruthy();
     expect(focusHead).toBeTruthy();
     expect(practiceFrame).toBeTruthy();
-    expect(isBefore(directHead, fullHead)).toBeTrue();
+    expect(prepEntry).toBeTruthy();
+    expect(isBefore(directHead, caseFiles)).toBeTrue();
+    expect(isBefore(caseFiles, fullHead)).toBeTrue();
     expect(isBefore(fullHead, focusHead)).toBeTrue();
     expect(isBefore(focusHead, practiceFrame)).toBeTrue();
+    expect(isBefore(practiceFrame, prepEntry)).toBeTrue();
+    expect(root.textContent).toContain(
+      'These are representative FrontendAtlas code-review scenarios, not real pull requests or leaked interview material.',
+    );
+    const renderedCaseFiles = Array.from(caseFiles?.querySelectorAll('details.case-file') || []);
+    expect(renderedCaseFiles.length).toBe(6);
+    expect((renderedCaseFiles[0] as HTMLDetailsElement | undefined)?.open).toBeTrue();
+    expect(renderedCaseFiles.map((element) => element.id)).toEqual(expectedFragments);
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
@@ -578,7 +599,170 @@ describe('TriviaDetailComponent', () => {
     expect(breadcrumb?.itemListElement?.[2]?.item).toBe(payload.canonical);
     expect(article?.headline).toBe(expectedH1);
     expect(article?.datePublished).toBe('2026-01-25T00:00:00.000Z');
-    expect(article?.dateModified).toBe('2026-07-20T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-08-03T00:00:00.000Z');
+    expect(article?.learningResourceType).toBe('Code review exercise');
+    expect((article?.about || []).map((item: any) => item.name)).toContain('React stale closures');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('useEffectEvent');
+    expect((article?.hasPart || []).map((item: any) => item.url)).toEqual(
+      expectedFragments.map((fragment) => `${payload.canonical}#${fragment}`),
+    );
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://react.dev/learn/state-as-a-snapshot',
+      'https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps',
+      'https://react.dev/reference/react/useEffectEvent',
+      'https://react.dev/reference/react/useRef',
+      'https://frontendatlas.com/legal/editorial-policy',
+    ]);
+  });
+
+  it('renders the Angular HttpClient cancellation lab developer-first with conservative SEO schema', async () => {
+    const expectedTitle = 'Angular HttpClient Unsubscribe: 6 Tests & DevTools';
+    const expectedH1 = 'Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI';
+    const expectedDescription =
+      'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.';
+    const question: any = {
+      id: 'angular-http-what-actually-cancels-request',
+      title: 'Does Angular HttpClient unsubscribe cancel requests?',
+      description:
+        'Unsubscribing from an active HttpClient Observable tears down the subscription and aborts the client request. That does not prove server work stopped or stale UI is impossible. The lab below shows how to verify each layer.',
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: '## Four-layer cancellation model\n\nSeparate RxJS teardown, browser transport, UI ownership, and server work.',
+          },
+          {
+            type: 'text',
+            text: '## Source check\n\nCompare the behavior with the Angular HTTP and testing guides.',
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: [
+              'HttpTestingController;',
+              'provideHttpClientTesting();',
+              "it('manual unsubscribe', () => {});",
+              "it('switchMap', () => {});",
+              "it('mergeMap', () => {});",
+              "it('takeUntilDestroyed', () => {});",
+              "it('AsyncPipe', () => {});",
+              "it('shareReplay', () => {});",
+            ].join('\n'),
+          },
+        ],
+      },
+      importance: 5,
+      difficulty: 'intermediate',
+      type: 'trivia',
+      technology: 'angular',
+      access: 'free',
+      tags: ['angular', 'rxjs', 'http', 'cancellation'],
+      publishedAt: '2026-01-25',
+      updatedAt: '2026-08-03',
+      seo: {
+        title: expectedTitle,
+        h1: expectedH1,
+        description: expectedDescription,
+      },
+      interviewFocus: {
+        summary: 'Prove which layer stopped instead of repeating that unsubscribe cancels.',
+        tests: ['RxJS teardown ownership', 'transport evidence', 'stale UI prevention'],
+      },
+    };
+
+    routeData$.next({
+      questionDetail: {
+        tech: 'angular',
+        kind: 'trivia',
+        id: question.id,
+        list: [question],
+        listSummaries: [toSummary(question)],
+        question,
+      },
+    });
+
+    const fixture = TestBed.createComponent(TriviaDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const h1s = Array.from(root.querySelectorAll('h1')) as HTMLElement[];
+    const heads = Array.from(root.querySelectorAll('h2.card-head')) as HTMLElement[];
+    const quickHead = heads.find((head) => head.textContent?.trim() === '15-second answer') ?? null;
+    const fullHead = heads.find((head) =>
+      head.textContent?.trim() === 'Cancellation patterns, proof, and production rules') ?? null;
+    const focusHead = heads.find((head) => head.textContent?.trim() === 'Interview focus') ?? null;
+    const lab = root.querySelector('[data-testid="angular-http-cancellation-lab"]') as HTMLElement | null;
+    const isBefore = (left: Element | null, right: Element | null) =>
+      Boolean(left && right && (left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING));
+
+    expect(h1s.length).toBe(1);
+    expect(h1s[0]?.textContent?.trim()).toBe(expectedH1);
+    expect(root.querySelector('.title-copy > .title__intent')).toBeNull();
+    expect(quickHead).toBeTruthy();
+    expect(quickHead?.parentElement?.textContent).toContain(
+      'That does not prove server work stopped or stale UI is impossible.',
+    );
+    expect(lab).toBeTruthy();
+    expect(fullHead).toBeTruthy();
+    expect(focusHead).toBeTruthy();
+    expect(isBefore(quickHead, lab)).toBeTrue();
+    expect(isBefore(lab, fullHead)).toBeTrue();
+    expect(isBefore(fullHead, focusHead)).toBeTrue();
+    expect(fixture.componentInstance.angularHttpCancellationTestSuite().match(/\bit\(/g)?.length).toBe(6);
+    expect(
+      (lab?.querySelector('[data-testid="angular-http-cancellation-copy-suite"]') as HTMLButtonElement)
+        ?.disabled,
+    ).toBeFalse();
+    expect(root.querySelector('[data-testid="trivia-prep-entry"]')).toBeNull();
+    expect(root.querySelector('[data-trivia-link-zone="similar"]')).toBeNull();
+    expect(Array.from(root.querySelectorAll('h2.card-head, .card-head')).some((node) =>
+      node.textContent?.trim() === 'Guides')).toBeFalse();
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const types = graph.map((node: any) => node?.['@type']);
+    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+
+    expect(payload.title).toBe(expectedTitle);
+    expect(payload.description).toBe(expectedDescription);
+    expect(payload.canonical).toBe(
+      'https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request',
+    );
+    expect(payload.robots).toBeUndefined();
+    expect(types).toEqual(['BreadcrumbList', 'TechArticle']);
+    expect(types).not.toContain('FAQPage');
+    expect(types).not.toContain('QAPage');
+    expect(types).not.toContain('Question');
+    expect(article?.headline).toBe(expectedH1);
+    expect(article?.datePublished).toBe('2026-01-25T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-08-03T00:00:00.000Z');
+    expect(article?.articleSection).toBe('Angular HTTP cancellation and RxJS');
+    expect(article?.learningResourceType).toBe('Interactive debugging lab');
+    expect((article?.about || []).map((item: any) => item.name)).toContain('Angular HttpClient cancellation');
+    expect((article?.mentions || []).map((item: any) => item.name)).toContain('TestRequest.cancelled');
+    expect((article?.hasPart || []).map((item: any) => item.name)).toContain('Cancellation behavior model');
+    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
+      'https://angular.dev/guide/http/making-requests',
+      'https://angular.dev/guide/http/testing',
+      'https://angular.dev/api/common/http/testing/TestRequest',
+      'https://angular.dev/api/common/http/HttpRequest',
+      'https://frontendatlas.com/legal/editorial-policy',
+    ]);
+  });
+
+  it('does not render the Angular HttpClient cancellation lab for generic trivia', async () => {
+    const fixture = await createLoadedFixture('free');
+
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="angular-http-cancellation-lab"]'),
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="react-stale-closure-case-files"]'),
+    ).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="trivia-prep-entry"]')).toBeTruthy();
   });
 
   it('adds mobile stacked-table labels to wide answer tables', async () => {

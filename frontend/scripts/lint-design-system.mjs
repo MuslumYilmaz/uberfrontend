@@ -22,6 +22,7 @@ const PRIME_PATTERNS = [
 ];
 
 const VISUAL_CLASS_PATTERN = /\bfa-(btn|chip|card)\b/g;
+const SHARED_VISUAL_ELEMENT_PATTERN = /<\/?\s*fa-(?:btn|chip|card)\b/gi;
 const NG_DEEP_PATTERN = /::ng-deep/g;
 const RAW_COLOR_LITERAL_PATTERN = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]+\)|hsla?\([^)]+\)/g;
 
@@ -58,6 +59,13 @@ function normalizeRel(fullPath) {
 function countMatches(text, regex) {
   const matches = text.match(regex);
   return matches ? matches.length : 0;
+}
+
+function countRawVisualClassMatches(text) {
+  // Shared primitives use element selectors such as <fa-chip>. Those are the
+  // desired abstraction, not raw visual utility classes. Remove element tags
+  // before checking class tokens such as fa-chip--label.
+  return countMatches(text.replace(SHARED_VISUAL_ELEMENT_PATTERN, ''), VISUAL_CLASS_PATTERN);
 }
 
 function uniqueSorted(arr) {
@@ -128,7 +136,7 @@ async function main() {
       rawPrimeCount += primeHits;
     }
 
-    const visualHits = countMatches(text, VISUAL_CLASS_PATTERN);
+    const visualHits = countRawVisualClassMatches(text);
     if (visualHits > 0) {
       visualClassFiles.push(rel);
       visualClassCount += visualHits;

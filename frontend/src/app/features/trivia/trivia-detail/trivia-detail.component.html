@@ -171,7 +171,16 @@
                 </div>
             </section>
 
-            <ng-container *ngIf="!isReactStaleClosuresLanding(q)">
+            <app-angular-http-cancellation-lab
+                *ngIf="showAngularHttpCancellationLab(q)"
+                [testSuite]="angularHttpCancellationTestSuite()">
+            </app-angular-http-cancellation-lab>
+
+            <app-react-stale-closure-case-files
+                *ngIf="isReactStaleClosuresLanding(q)">
+            </app-react-stale-closure-case-files>
+
+            <ng-container *ngIf="!isReactStaleClosuresLanding(q) && !showAngularHttpCancellationLab(q)">
                 <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
             </ng-container>
 
@@ -261,7 +270,7 @@
                 </div>
             </section>
 
-            <ng-container *ngIf="isReactStaleClosuresLanding(q)">
+            <ng-container *ngIf="isReactStaleClosuresLanding(q) || showAngularHttpCancellationLab(q)">
                 <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
             </ng-container>
 
@@ -665,7 +674,7 @@
             </section>
 
             <!-- Similar questions -->
-            <section class="card" *ngIf="similarItems().length">
+            <section class="card" *ngIf="similarItems().length && !showAngularHttpCancellationLab(q)">
                 <div class="card-head card-head-toggle" (click)="similarOpen.set(!similarOpen())">
                     <span>Similar questions</span>
                     <app-fa-glyph class="card-head-toggle__icon" [icon]="similarOpen() ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></app-fa-glyph>
@@ -684,7 +693,7 @@
             </section>
 
             <!-- Guides -->
-            <section class="card">
+            <section class="card" *ngIf="!showAngularHttpCancellationLab(q)">
                 <div class="card-head">Guides</div>
                 <div class="card-body">
                     <ul class="guide-links">
@@ -701,7 +710,7 @@
                 </div>
             </section>
 
-            <section class="card prep-bridge" data-testid="trivia-prep-entry">
+            <section class="card prep-bridge" data-testid="trivia-prep-entry" *ngIf="!showAngularHttpCancellationLab(q)">
                 <div class="card-head">Preparing for interviews?</div>
                 <div class="card-body prep-bridge__body">
                     <p class="prep-bridge__text">
