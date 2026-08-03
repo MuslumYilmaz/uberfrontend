@@ -182,7 +182,7 @@ describe('trivia-seo.util', () => {
       seo: {
         title: 'Angular HttpClient unsubscribe: 5 cancellation gotchas',
         description:
-          'See the 5 HttpClient cancellation gotchas: unsubscribe aborts, switchMap helps, mergeMap does not, ignored responses still run, and servers may continue.',
+          'Yes—unsubscribing aborts an in-flight Angular HttpClient request. Compare switchMap, takeUntil, AsyncPipe, mergeMap, and stale-response handling.',
       },
     } as any;
 
@@ -194,7 +194,7 @@ describe('trivia-seo.util', () => {
     );
     expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'See the 5 HttpClient cancellation gotchas: unsubscribe aborts, switchMap helps, mergeMap does not, ignored responses still run, and servers may continue.'
+      'Yes—unsubscribing aborts an in-flight Angular HttpClient request. Compare switchMap, takeUntil, AsyncPipe, mergeMap, and stale-response handling.'
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });

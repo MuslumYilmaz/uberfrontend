@@ -241,7 +241,7 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 18,
         summary: 'Practice frontend JavaScript coding interview questions with async, closures, DOM, promises, utility prompts, worked examples, and direct drills.',
         seo: {
-            title: 'JavaScript Coding Interview Questions: Frontend Practice',
+            title: 'JavaScript Coding Interview Practice: 25 Questions (2026)',
             description: 'Practice frontend JavaScript coding interview questions with debounce, throttle, Promise.all, event loop, closures, DOM delegation, EventEmitter, and drills.',
             primaryKeyword: 'javascript coding interview questions',
             keywords: [

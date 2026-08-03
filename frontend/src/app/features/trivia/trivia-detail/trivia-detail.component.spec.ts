@@ -363,7 +363,7 @@ describe('TriviaDetailComponent', () => {
       seo: {
         title: 'Angular HttpClient unsubscribe: 5 cancellation gotchas',
         description:
-          'See the 5 HttpClient cancellation gotchas: unsubscribe aborts, switchMap helps, mergeMap does not, ignored responses still run, and servers may continue.',
+          'Yes—unsubscribing aborts an in-flight Angular HttpClient request. Compare switchMap, takeUntil, AsyncPipe, mergeMap, and stale-response handling.',
         h1IntentLabel: 'Debugging interview answer',
       },
     });
