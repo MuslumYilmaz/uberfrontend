@@ -693,7 +693,7 @@
     "route": "/angular/trivia/angular-http-what-actually-cancels-request",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Yes. Unsubscribing from an HttpClient Observable aborts the in-progress browser request. switchMap, AsyncPipe, and takeUntil cancel because they unsubscribe; ignoring stale responses does not.",
+    "summary": "Unsubscribing from an active HttpClient Observable tears down the subscription and aborts the client request. That does not prove server work stopped or stale UI is impossible.",
     "tags": [
       "angular",
       "http",
@@ -703,7 +703,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-03",
+    "updatedAt": "2026-08-03",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-http-what-actually-cancels-request"
   },
@@ -8498,7 +8498,7 @@
     "route": "/react/trivia/react-stale-state-closures",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Each React render creates a new set of state and prop bindings. A callback created during that render keeps access to those bindings, even when it runs later.",
+    "summary": "A stale closure is a bug only when a callback's contract requires a newer render value.",
     "tags": [
       "react",
       "hooks",
@@ -8509,7 +8509,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-20",
+    "updatedAt": "2026-08-03",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-stale-state-closures"
   },

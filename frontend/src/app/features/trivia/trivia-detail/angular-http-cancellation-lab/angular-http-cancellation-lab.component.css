@@ -1,0 +1,451 @@
+:host {
+  display: block;
+  min-width: 0;
+  margin: var(--uf-space-6) 0;
+  color: var(--uf-text-primary);
+}
+
+.cancellation-lab {
+  min-width: 0;
+  padding: clamp(18px, 3vw, 32px);
+  border: 1px solid var(--uf-border-strong);
+  border-radius: var(--uf-radius-16);
+  background:
+    radial-gradient(circle at 92% 2%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 32%),
+    color-mix(in srgb, var(--uf-surface) 94%, var(--uf-bg));
+  box-shadow: var(--uf-shadow-md);
+}
+
+.cancellation-lab__header {
+  max-width: 760px;
+}
+
+.cancellation-lab__eyebrow,
+.cancellation-lab__trace-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--uf-space-2);
+}
+
+.cancellation-lab__eyebrow {
+  margin-bottom: var(--uf-space-3);
+  color: var(--uf-accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cancellation-lab h2,
+.cancellation-lab h3,
+.cancellation-lab h4,
+.cancellation-lab p {
+  margin-top: 0;
+}
+
+.cancellation-lab h2,
+.cancellation-lab h3,
+.cancellation-lab h4 {
+  color: var(--uf-text-primary);
+  font-family: var(--uf-font-heading);
+}
+
+.cancellation-lab h2 {
+  margin-bottom: var(--uf-space-3);
+  font-size: clamp(1.55rem, 3vw, 2.1rem);
+  line-height: 1.15;
+}
+
+.cancellation-lab__header > p,
+.cancellation-lab__section-heading p,
+.cancellation-lab__scenario-header p {
+  margin-bottom: 0;
+  color: var(--uf-text-secondary);
+  line-height: 1.65;
+}
+
+.cancellation-lab__section {
+  min-width: 0;
+  margin-top: clamp(30px, 5vw, 48px);
+}
+
+.cancellation-lab__section-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--uf-space-3);
+  align-items: start;
+  margin-bottom: var(--uf-space-4);
+}
+
+.cancellation-lab__section-heading h3 {
+  margin-bottom: var(--uf-space-1);
+  font-size: clamp(1.08rem, 2.3vw, 1.35rem);
+  line-height: 1.3;
+}
+
+.cancellation-lab__step {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-accent-soft);
+  color: var(--uf-accent-strong);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.cancellation-lab__layers,
+.cancellation-lab__outcomes,
+.cancellation-lab__assertions {
+  display: grid;
+  gap: var(--uf-space-3);
+}
+
+.cancellation-lab__layers,
+.cancellation-lab__outcomes {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cancellation-lab__layer {
+  min-width: 0;
+  border-inline-start: 3px solid var(--uf-border-strong);
+}
+
+.cancellation-lab__layer[data-layer='subscription'] {
+  border-inline-start-color: var(--uf-status-info-border);
+}
+
+.cancellation-lab__layer[data-layer='transport'] {
+  border-inline-start-color: var(--uf-badge-violet-b);
+}
+
+.cancellation-lab__layer[data-layer='ui'] {
+  border-inline-start-color: var(--uf-accent);
+}
+
+.cancellation-lab__layer[data-layer='server'] {
+  border-inline-start-color: var(--uf-badge-green-b);
+}
+
+.cancellation-lab__layer h4 {
+  margin-bottom: var(--uf-space-2);
+  font-size: 0.98rem;
+}
+
+.cancellation-lab__layer p,
+.cancellation-lab__outcome p,
+.cancellation-lab__assertions p {
+  margin-bottom: 0;
+  color: var(--uf-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.cancellation-lab__proof-line {
+  margin-top: var(--uf-space-3);
+  padding-top: var(--uf-space-3);
+  border-top: 1px solid var(--uf-border-subtle);
+  color: var(--uf-text-tertiary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.cancellation-lab__proof-line strong {
+  color: var(--uf-text-primary);
+}
+
+.cancellation-lab__scenario-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  margin-bottom: var(--uf-space-4);
+}
+
+.cancellation-lab__scenario-card {
+  min-width: 0;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--uf-accent) 35%, var(--uf-border-subtle));
+}
+
+.cancellation-lab__scenario-header {
+  display: flex;
+  gap: var(--uf-space-4);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cancellation-lab__scenario-header > div {
+  min-width: 0;
+}
+
+.cancellation-lab__scenario-header h4 {
+  margin: var(--uf-space-1) 0 var(--uf-space-2);
+  font-size: 1.25rem;
+}
+
+.cancellation-lab__pattern,
+.cancellation-lab__outcome > span,
+.cancellation-lab__assertions > div > span {
+  color: var(--uf-accent);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.cancellation-lab__scenario-summary {
+  max-width: 780px;
+  margin: var(--uf-space-4) 0;
+  color: var(--uf-text-secondary);
+  line-height: 1.65;
+}
+
+.cancellation-lab__code {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--uf-border-subtle);
+  background: var(--uf-bg);
+  color: var(--uf-text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(0.76rem, 1.7vw, 0.86rem);
+  line-height: 1.65;
+  tab-size: 2;
+  white-space: pre;
+}
+
+.cancellation-lab__code {
+  margin: 0 0 var(--uf-space-4);
+  padding: var(--uf-space-4);
+  border-radius: var(--uf-radius-12);
+}
+
+.cancellation-lab__code:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 2px;
+}
+
+.cancellation-lab__outcome,
+.cancellation-lab__assertions > div {
+  min-width: 0;
+  padding: var(--uf-space-3);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-8);
+  background: color-mix(in srgb, var(--uf-surface-alt) 84%, transparent);
+}
+
+.cancellation-lab__outcome p,
+.cancellation-lab__assertions p {
+  margin-top: var(--uf-space-1);
+}
+
+.cancellation-lab__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  align-items: center;
+  margin-top: var(--uf-space-4);
+}
+
+.cancellation-lab__run-summary {
+  flex: 1 1 260px;
+  color: var(--uf-text-tertiary);
+  font-size: 0.84rem;
+}
+
+.cancellation-lab__trace {
+  margin-top: var(--uf-space-4);
+  padding: var(--uf-space-4);
+  border: 1px dashed var(--uf-border-strong);
+  border-radius: var(--uf-radius-12);
+  background: color-mix(in srgb, var(--uf-bg) 70%, transparent);
+}
+
+.cancellation-lab__trace--complete {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--uf-badge-green-b) 40%, var(--uf-border-subtle));
+}
+
+.cancellation-lab__trace-heading {
+  color: var(--uf-text-primary);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.cancellation-lab__trace ol {
+  display: grid;
+  gap: var(--uf-space-2);
+  margin: var(--uf-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cancellation-lab__trace li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: var(--uf-space-2);
+  align-items: start;
+}
+
+.cancellation-lab__trace li > span {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--uf-radius-pill);
+  background: var(--uf-accent-soft);
+  color: var(--uf-accent-strong);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.cancellation-lab__trace li p,
+.cancellation-lab__trace-ready {
+  margin: 1px 0 0;
+  color: var(--uf-text-secondary);
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.cancellation-lab__trace-ready {
+  margin-top: var(--uf-space-3);
+}
+
+.cancellation-lab__assertions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: var(--uf-space-4);
+}
+
+.cancellation-lab__assertions code {
+  display: inline-block;
+  max-width: 100%;
+  margin-top: var(--uf-space-2);
+  overflow-wrap: anywhere;
+  color: var(--uf-status-info-text);
+  font-size: 0.84rem;
+}
+
+.cancellation-lab__suite-callout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--uf-space-3);
+  align-items: center;
+  margin-top: var(--uf-space-4);
+  border-color: color-mix(in srgb, var(--uf-accent) 32%, var(--uf-border-subtle));
+}
+
+.cancellation-lab__suite-icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-accent-soft);
+  color: var(--uf-accent-strong);
+}
+
+.cancellation-lab__suite-callout h3 {
+  margin-bottom: var(--uf-space-1);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.cancellation-lab__suite-callout p {
+  margin-bottom: 0;
+  color: var(--uf-text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.cancellation-lab__copy-message {
+  margin: var(--uf-space-4) 0 0;
+  color: var(--uf-status-info-text);
+  font-size: 0.84rem;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (max-width: 834px) {
+  .cancellation-lab__suite-callout {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .cancellation-lab__suite-callout > button {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 620px) {
+  :host {
+    margin: var(--uf-space-5) 0;
+  }
+
+  .cancellation-lab {
+    padding: var(--uf-space-4);
+    border-radius: var(--uf-radius-12);
+  }
+
+  .cancellation-lab__layers,
+  .cancellation-lab__outcomes,
+  .cancellation-lab__assertions {
+    grid-template-columns: 1fr;
+  }
+
+  .cancellation-lab__scenario-header {
+    flex-direction: column;
+  }
+
+  .cancellation-lab__scenario-picker {
+    flex-wrap: nowrap;
+    margin-inline: calc(var(--uf-space-4) * -1);
+    padding: 0 var(--uf-space-4) var(--uf-space-2);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .cancellation-lab__scenario-picker fa-chip {
+    flex: 0 0 auto;
+  }
+
+  .cancellation-lab__actions > button {
+    flex: 1 1 auto;
+  }
+
+  .cancellation-lab__run-summary {
+    flex-basis: 100%;
+  }
+
+  .cancellation-lab__suite-callout > button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cancellation-lab *,
+  .cancellation-lab *::before,
+  .cancellation-lab *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -2,8 +2,8 @@
   "contentId": "react-stale-state-closures",
   "tech": "react",
   "query": "React stale closures interview question",
-  "reviewedAt": "2026-04-10",
-  "reviewedBy": "Codex AI draft",
+  "reviewedAt": "2026-08-03",
+  "reviewedBy": "Codex editorial review",
   "selection": {
     "querySource": "manual",
     "greatFrontendRelevant": true
@@ -19,7 +19,7 @@
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
-      "winReason": "The official docs teach render snapshots clearly, but our page is more directly centered on stale-closure bugs in timers, async handlers, subscriptions, and the specific fixes interviewers ask for next.",
+      "winReason": "The official docs remain the source of truth for render snapshots. FrontendAtlas adds a representative six-case code-review clinic that tests callback-contract diagnosis, minimal diffs, and proof assertions.",
       "theirStrengths": [
         "It is the official baseline for the render-snapshot mental model behind stale closures."
       ],
@@ -28,10 +28,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "A browser listener or external subscription may live far longer than the render that registered it."
+          "Six case files, five callback contracts, and one important impostor"
         ],
         "followUpConfusion": [
-          "Choose the smallest tool that matches the callback's contract."
+          "A stale closure is a mismatch between a callback's captured render and the value its job requires later."
         ]
       },
       "theirEvidence": {
@@ -47,9 +47,7 @@
       },
       "nextActions": {
         "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one explicit async submit example alongside the timer example."
-        ],
+        "actionableExamples": [],
         "followUpConfusion": []
       }
     },
@@ -63,7 +61,7 @@
         "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
-      "winReason": "The hooks playbook is relevant, but our page is more explicitly organized around stale-closure incidents and the three practical fixes: dependencies, functional updates, and refs.",
+      "winReason": "The hooks playbook is broad; FrontendAtlas asks readers to distinguish four stale closures, one intentional snapshot, and one ordering race before revealing the safe review direction.",
       "theirStrengths": [
         "It is interview-oriented and covers hook pitfalls that lead into stale closure questions."
       ],
@@ -72,10 +70,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Debounce utilities, throttlers, modal libraries, and third-party widgets may retain a callback and invoke it later."
+          "Name the boundary: timer, Effect, listener, retained utility, promise, or request."
         ],
         "followUpConfusion": [
-          "When the timer only needs the previous state to calculate the next state, a functional update is the preferred React stale closure fix."
+          "Separate freshness from ordering: current state does not prevent an older request winning."
         ]
       },
       "theirEvidence": {
@@ -91,9 +89,7 @@
       },
       "nextActions": {
         "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one subscription callback example that reads a stale prop or state value."
-        ],
+        "actionableExamples": [],
         "followUpConfusion": []
       }
     },
@@ -115,10 +111,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "An async function keeps the bindings from the render in which the initiating handler ran."
+          "Preserve initiating filters while an export waits."
         ],
         "actionableExamples": [
-          "The first illustrative Jest and React Testing Library test advances fake timers: the broken interval remains at 1 after three ticks, while the functional update reaches 3."
+          "Resolve search B before A and prove A cannot overwrite B."
         ]
       },
       "theirEvidence": {
@@ -133,17 +129,11 @@
         ]
       },
       "nextActions": {
-        "realWorldUseCases": [
-          "Add one richer async example with a delayed submit or permission check, not only interval-style examples."
-        ],
-        "actionableExamples": [
-          "Add a before-and-after example using refs to avoid stale callbacks."
-        ],
-        "followUpConfusion": [
-          "Keep one extra one-liner that contrasts intentional snapshot behavior with true stale-state bugs."
-        ]
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": []
       },
-      "winReason": "Our page now covers a delayed-submit permission flow and a ref-based latest-state repair in a compact interview format, while the broader closure follow-up remains close."
+      "winReason": "The tutorial remains stronger as a long-form explanation. FrontendAtlas differentiates with a compact review workflow: predict the failure, classify the callback contract, reveal the minimal diff, and verify one observable assertion."
     }
   ]
 }

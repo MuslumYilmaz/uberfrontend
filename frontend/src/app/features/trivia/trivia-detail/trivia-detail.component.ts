@@ -57,6 +57,8 @@ import {
   timelineLabel,
 } from '../../../core/utils/onboarding-personalization.util';
 import { TAG_REGISTRY, TOPIC_REGISTRY } from '../../../generated/content-metadata';
+import { AngularHttpCancellationLabComponent } from './angular-http-cancellation-lab/angular-http-cancellation-lab.component';
+import { ReactStaleClosureCaseFilesComponent } from './react-stale-closure-case-files/react-stale-closure-case-files.component';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -190,6 +192,7 @@ const EQUALITY_PREDICTOR_QUESTION_ID = 'js-equality-vs-strict-equality';
 const NGRX_SELECTOR_TRACE_QUESTION_ID = 'ngrx-selectors-memoization-derived-state-performance';
 const NGRX_DATA_FLOW_TRACE_QUESTION_ID = 'ngrx-data-flow-end-to-end-angular';
 const ANGULAR_FORMS_FLOW_QUESTION_ID = 'angular-template-driven-vs-reactive-forms-which-scales';
+const ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID = 'angular-http-what-actually-cancels-request';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
     key: 'null',
@@ -601,6 +604,8 @@ function buildTagRegex(tag: string): RegExp {
     SafeHtmlPipe,
     FaGlyphComponent,
     OutputQuestionCardComponent,
+    AngularHttpCancellationLabComponent,
+    ReactStaleClosureCaseFilesComponent,
   ],
   templateUrl: './trivia-detail.component.html',
   styleUrls: ['./trivia-detail.component.css'],
@@ -830,6 +835,19 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return a.blocks.filter(b => !this.isExtraHelpBlock(b) && !this.isSummaryBlock(b));
   });
 
+  angularHttpCancellationTestSuite = computed<string>(() => {
+    const q = this.question();
+    if (!this.showAngularHttpCancellationLab(q)) return '';
+    const blocks = ((q?.answer as RichAnswer)?.blocks ?? []);
+    const suite = blocks.find((block): block is BlockCode =>
+      block.type === 'code'
+      && block.code.includes('HttpTestingController')
+      && block.code.includes('provideHttpClientTesting')
+      && (block.code.match(/\bit\(/g)?.length ?? 0) === 6,
+    );
+    return suite?.code ?? '';
+  });
+
   selectedReturnValueSimulatorOption = computed<ReturnValueSimulatorOption>(() => {
     const key = this.selectedReturnValueSimulatorKey();
     return RETURN_VALUE_SIMULATOR_OPTIONS.find((option) => option.key === key) ?? RETURN_VALUE_SIMULATOR_OPTIONS[0];
@@ -896,19 +914,25 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return q?.id === ASYNC_RACE_SIMULATOR_QUESTION_ID;
   }
 
+  showAngularHttpCancellationLab(q?: Question | null): boolean {
+    return q?.id === ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID;
+  }
+
   isReactStaleClosuresLanding(q?: Question | null): boolean {
     return q?.id === REACT_STALE_CLOSURES_QUESTION_ID;
   }
 
   primaryAnswerHeading(q?: Question | null): string {
+    if (this.showAngularHttpCancellationLab(q)) return '15-second answer';
     return this.isReactStaleClosuresLanding(q)
-      ? 'React stale closure: direct answer'
+      ? 'React stale closures: direct answer'
       : 'Interview quick answer';
   }
 
   fullAnswerHeading(q?: Question | null): string {
     if (this.isOutputQuestion(q)) return 'Deep dive';
-    if (this.isReactStaleClosuresLanding(q)) return 'React stale closure fixes and examples';
+    if (this.showAngularHttpCancellationLab(q)) return 'Cancellation patterns, proof, and production rules';
+    if (this.isReactStaleClosuresLanding(q)) return 'Diagnosis table and production review';
     if (this.showAsyncRaceSimulator(q)) return 'How to prevent stale async UI';
     return 'Full interview answer';
   }
@@ -1412,6 +1436,142 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private articleStructuredDataExtensions(q: Question): Record<string, any> {
+    if (q.id === ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID) {
+      return {
+        articleSection: 'Angular HTTP cancellation and RxJS',
+        educationalLevel: 'Intermediate',
+        learningResourceType: 'Interactive debugging lab',
+        educationalUse: ['Debugging', 'Testing', 'Interview preparation'],
+        about: [
+          { '@type': 'Thing', name: 'Angular HttpClient cancellation' },
+          { '@type': 'Thing', name: 'RxJS subscription teardown' },
+          { '@type': 'Thing', name: 'Stale UI prevention' },
+          { '@type': 'Thing', name: 'HTTP request testing' },
+        ],
+        mentions: [
+          { '@type': 'Thing', name: 'unsubscribe' },
+          { '@type': 'Thing', name: 'switchMap' },
+          { '@type': 'Thing', name: 'mergeMap' },
+          { '@type': 'Thing', name: 'takeUntilDestroyed' },
+          { '@type': 'Thing', name: 'AsyncPipe' },
+          { '@type': 'Thing', name: 'shareReplay' },
+          { '@type': 'Thing', name: 'HttpTestingController' },
+          { '@type': 'Thing', name: 'TestRequest.cancelled' },
+          { '@type': 'Thing', name: 'Browser DevTools' },
+          { '@type': 'Thing', name: 'HTTP timeout' },
+        ],
+        hasPart: [
+          { '@type': 'WebPageElement', name: '15-second answer' },
+          { '@type': 'WebPageElement', name: 'Cancellation behavior model' },
+          { '@type': 'WebPageElement', name: 'Four-layer cancellation model' },
+          { '@type': 'WebPageElement', name: 'Six cancellation patterns' },
+          { '@type': 'WebPageElement', name: 'Symptom-driven debugging matrix' },
+          { '@type': 'WebPageElement', name: 'Browser DevTools proof' },
+          { '@type': 'WebPageElement', name: 'RxJS teardown proof' },
+          { '@type': 'WebPageElement', name: 'HttpTestingController test suite' },
+          { '@type': 'WebPageElement', name: 'UX contract decision table' },
+          { '@type': 'WebPageElement', name: 'Production cancellation limits' },
+          { '@type': 'WebPageElement', name: 'Source check' },
+        ],
+        citation: [
+          {
+            '@type': 'WebPage',
+            name: 'Angular: Making requests',
+            url: 'https://angular.dev/guide/http/making-requests',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'Angular: Testing HTTP requests',
+            url: 'https://angular.dev/guide/http/testing',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'Angular TestRequest API',
+            url: 'https://angular.dev/api/common/http/testing/TestRequest',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'Angular HttpRequest API',
+            url: 'https://angular.dev/api/common/http/HttpRequest',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'FrontendAtlas Editorial Policy',
+            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
+          },
+        ],
+      };
+    }
+
+    if (q.id === REACT_STALE_CLOSURES_QUESTION_ID) {
+      const canonical = this.seo.buildCanonicalUrl('/react/trivia/react-stale-state-closures');
+      const caseFiles = [
+        ['pr-interval-counter', 'Interval counter functional update'],
+        ['pr-chat-theme', 'Chat connection Effect Event'],
+        ['pr-escape-listener', 'Escape listener dependency and cleanup'],
+        ['pr-debounced-autosave', 'Debounced autosave invocation snapshot'],
+        ['pr-export-snapshot', 'Intentional export snapshot'],
+        ['pr-search-ordering', 'Search result async ordering'],
+      ];
+
+      return {
+        articleSection: 'React stale closures and code review',
+        educationalLevel: 'Intermediate',
+        learningResourceType: 'Code review exercise',
+        educationalUse: ['Code review', 'Debugging', 'Interview preparation'],
+        about: [
+          { '@type': 'Thing', name: 'React stale closures' },
+          { '@type': 'Thing', name: 'JavaScript closure snapshots' },
+          { '@type': 'Thing', name: 'React callback contracts' },
+          { '@type': 'Thing', name: 'Frontend code review' },
+        ],
+        mentions: [
+          { '@type': 'Thing', name: 'functional state updater' },
+          { '@type': 'Thing', name: 'Effect dependencies' },
+          { '@type': 'Thing', name: 'useEffectEvent' },
+          { '@type': 'Thing', name: 'useRef' },
+          { '@type': 'Thing', name: 'intentional render snapshot' },
+          { '@type': 'Thing', name: 'async response ordering' },
+          { '@type': 'Thing', name: 'React 19.2' },
+          { '@type': 'Thing', name: 'React 18.3.1' },
+        ],
+        hasPart: caseFiles.map(([fragment, name]) => ({
+          '@type': 'WebPageElement',
+          '@id': `${canonical}#${fragment}`,
+          name,
+          url: `${canonical}#${fragment}`,
+          learningResourceType: 'Pull request review case',
+        })),
+        citation: [
+          {
+            '@type': 'WebPage',
+            name: 'React: State as a Snapshot',
+            url: 'https://react.dev/learn/state-as-a-snapshot',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'React: exhaustive-deps lint',
+            url: 'https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'React: useEffectEvent',
+            url: 'https://react.dev/reference/react/useEffectEvent',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'React: useRef',
+            url: 'https://react.dev/reference/react/useRef',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'FrontendAtlas Editorial Policy',
+            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
+          },
+        ],
+      };
+    }
+
     if (q.id === 'angular-template-driven-vs-reactive-forms-which-scales') {
       return {
         articleSection: 'Angular forms',

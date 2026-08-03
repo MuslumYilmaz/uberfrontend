@@ -7,6 +7,7 @@ const INTERVIEW_INTENT_RE = /\b(interview(?:s)?|interviewer(?:s)?|prep(?:aration
 const DOCS_INTENT_RE = /\b(?:official\s+docs?|docs\s+wording|memorized\s+docs\s+wording|official\s+documentation|documentation|official\s+guide|official\s+api|api\s+docs?|api\s+reference)\b/i;
 const ANSWER_FIRST_RE = /^(yes|no|it depends)\s*[:.—]/i;
 const PROBLEM_FIRST_RE = /\b(?:running|runs|called|firing)\s+twice\b|\bduplicate\s+(?:fetches|listeners|requests|api\s+calls)\b|\b(?:bugs?|fix(?:es|ing)?|gotchas?|leaks?|pitfalls?)\b/i;
+const APPLIED_REVIEW_INTENT_RE = /\b(?:code[\s-]?review|pull requests?|case files?|review clinic|predict (?:the )?(?:failure|result|output|behavior))\b/i;
 const BEHAVIOR_QUESTION_RE = /^(?:does|do|why|how)\b|\b(?:what\s+actually\s+happens|what\s+happens|how\s+(?:does|do).+\bwork|why\s+.+\bhappen|cancel(?:s|led|lation)?|unsubscribe|rerun|re-run|recompute|render(?:s|ing)?|execute(?:s|d)?|fire(?:s|d)?|update(?:s|d)?|mutate(?:s|d)?|leak(?:s|ed)?)\b/i;
 
 const TECH_LABELS: Record<string, string> = {
@@ -179,6 +180,7 @@ function hasRetargetedIntent(value: string): boolean {
   return hasInterviewIntent(text)
     || hasAnswerFirstIntent(text)
     || hasProblemFirstIntent(text)
+    || APPLIED_REVIEW_INTENT_RE.test(text)
     || hasBehaviorQuestionIntent(text)
     || /\b(?:quick answer|real examples?|examples?|common mistakes?|production pitfalls?|when to use|what actually happens)\b/i.test(text);
 }
