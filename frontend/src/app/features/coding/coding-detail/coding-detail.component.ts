@@ -62,6 +62,7 @@ import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { writeHtmlToIframe } from '../../../core/utils/iframe-preview.util';
+import { isProActive } from '../../../core/utils/entitlements.util';
 import {
   freeChallengeForFramework,
   frameworkLabel,
@@ -72,7 +73,10 @@ import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solutio
 import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
-import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
+import {
+  AuthPromptContext,
+  LoginRequiredDialogComponent,
+} from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
@@ -90,6 +94,16 @@ type CourseNavState =
   | null;
 
 type Kind = 'coding' | 'debug';
+type ChallengeWorkspaceType =
+  | 'js_tests'
+  | 'framework_checks'
+  | 'framework_manual'
+  | 'web_manual'
+  | 'pressure_checks';
+type ChallengeAccessState = 'available' | 'premium_locked' | 'mobile_blocked';
+type ChallengeActionType = 'run_tests' | 'run_checks' | 'mark_complete';
+type ChallengeOutcome = 'passed' | 'failed' | 'manual';
+type ChallengeAuthState = 'guest' | 'free' | 'premium';
 type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
 
@@ -297,10 +311,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private copyTimer?: any;
   private challengeSource = 'direct';
   private lastTrackedChallengeOpenKey: string | null = null;
-  private ahaFirstTestRunTracked = false;
-  private ahaFirstPassTracked = false;
-  private firstPassingTestTracked = false;
-  private allTestsPassedTracked = false;
+  private challengeAttemptNumber = 0;
   private solutionViewedTracked = false;
   quickWinActive = signal(false);
   quickWinEngaged = signal(false);
@@ -520,11 +531,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   lifecyclePromptSolvedTotal = 0;
   private lifecyclePromptQuestionId: string | null = null;
   private onboardingPromptReason: 'first_pass' | 'save_prompt' = 'first_pass';
-  private signupPromptVariant: 'control' | 'benefit' = 'control';
   private premiumGateVariant: 'control' | 'value' = 'control';
-  loginPromptTitle = 'Sign in to save progress';
-  loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
-  loginPromptCta = 'Go to login';
+  loginPromptContext: AuthPromptContext = 'coding_submit';
+  loginPromptTitle = 'Save this result';
+  loginPromptBody = 'Create a free account to save solved status and continue with personalized next steps. Already have an account? Sign in.';
+  loginPromptSignupLabel = 'Create free account';
+  loginPromptLoginLabel = 'Sign in';
   lockedMemberCopy = "You're on the free tier. Upgrade to unlock this challenge.";
   lockedGuestCopy = 'Upgrade to FrontendAtlas Premium to unlock this challenge. Already upgraded? Sign in to continue.';
   lockedPersonalizationLine = '';
@@ -573,22 +585,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return this.activity.isCompletionPending(this.kind, q.id);
   }
 
-  ensureAuthenticated(): boolean {
+  ensureAuthenticated(context: AuthPromptContext = 'coding_submit'): boolean {
     if (this.auth.isLoggedIn()) return true;
-    this.experiments.expose(
-      'signup_prompt_copy_v1',
-      this.signupPromptVariant,
-      'coding_submit_prompt',
-      'coding_detail',
-    );
-    const q = this.question();
-    this.analytics.track('signup_prompt_shown', {
-      context: 'coding_submit',
-      question_id: q?.id ?? null,
-      tech: this.tech,
-      src: this.challengeSource,
-      variant: this.signupPromptVariant,
-    });
+    this.configureAuthPrompt(context);
     this.onboarding.markPending('save_prompt');
     this.loginPromptOpen = true;
     return false;
@@ -597,7 +596,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   goToLogin() {
     this.loginPromptOpen = false;
     this.router.navigate(['/auth/login'], {
-      queryParams: { redirectTo: this.router.url || '/' },
+      queryParams: { redirectTo: this.router.url || '/', src: this.loginPromptContext },
     });
   }
 
@@ -917,9 +916,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       .subscribe(() => this.syncRouteContextsFromRoute());
     this.syncRouteContextsFromRoute();
 
-    this.signupPromptVariant = this.experiments.variant('signup_prompt_copy_v1', 'coding_detail');
     this.premiumGateVariant = this.experiments.variant('premium_gate_copy_v1', 'coding_detail');
-    this.applySignupPromptCopy();
     this.applyPremiumGateCopy();
 
     if (this.isBrowser) {
@@ -1579,12 +1576,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.quickWinQuestionId = null;
     }
     this.trackQuickWinStarted(q.id);
-    this.ahaFirstTestRunTracked = false;
-    this.ahaFirstPassTracked = false;
-    this.firstPassingTestTracked = false;
-    this.allTestsPassedTracked = false;
+    this.challengeAttemptNumber = 0;
     this.solutionViewedTracked = false;
-    this.trackChallengeOpened(q.id);
+    this.trackChallengeViewed(q);
     this.maybePromptOnboardingFromPending(q.id);
     this.refreshLockedPersonalization();
     if (isQuestionLockedForTier(q, this.auth.user())) {
@@ -1864,12 +1858,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   // ---------- run tests (JS/TS) ----------
-  async runTests(): Promise<void> {
+  async runTests(): Promise<boolean> {
     const q = this.question();
-    if (!q) return;
+    if (!q) return false;
 
-    if (this.isFrameworkTech() || this.isWebTech()) return;
+    if (this.isFrameworkTech() || this.isWebTech()) return false;
     this.markQuickWinEngaged('run_tests');
+    const attemptNumber = this.trackChallengeAttemptStarted('run_tests');
 
     // Plain JS/TS -> delegate to child panel
     this.subTab.set('console');
@@ -1879,30 +1874,22 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     await this.jsPanel?.runTests();
     this.hasRunTests = true;
 
-    if (!this.ahaFirstTestRunTracked) {
-      this.ahaFirstTestRunTracked = true;
-      this.analytics.track('aha_first_test_run', {
-        question_id: q.id,
-        tech: this.tech,
-        kind: this.kind,
-        src: this.challengeSource,
-      });
-    }
+    const passing = this.allPassing();
+    this.trackChallengeAttemptResult(
+      'run_tests',
+      passing ? 'passed' : 'failed',
+      attemptNumber,
+      this.passedCount(),
+      this.totalCount(),
+    );
 
-    if (this.allPassing() && !this.ahaFirstPassTracked) {
-      this.ahaFirstPassTracked = true;
-      this.analytics.track('aha_first_pass', {
-        question_id: q.id,
-        tech: this.tech,
-        kind: this.kind,
-        src: this.challengeSource,
-        elapsed_sec: Math.max(0, Math.round((Date.now() - this.sessionStart) / 1000)),
-      });
+    if (passing) {
       this.trackQuickWinCompleted(q.id, 'first_pass');
       this.maybePromptOnboarding('first_pass', q.id);
     }
 
     this.subTab.set('tests');
+    return passing;
   }
 
   // ---------- submit ----------
@@ -1937,12 +1924,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
 
-    if (!this.ensureAuthenticated()) {
-      return;
-    }
-
     // Toggle off if already completed
-    if (this.solved()) {
+    if (this.auth.isLoggedIn() && this.solved()) {
       await firstValueFrom(this.activity.uncomplete({
         kind: this.kind,
         tech: this.tech,
@@ -1954,6 +1937,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Angular/framework preview submissions are manual-complete.
     if (this.isFrameworkTech() || this.isWebTech()) {
+      const attemptNumber = this.trackChallengeAttemptStarted('mark_complete');
+      this.trackChallengeAttemptResult('mark_complete', 'manual', attemptNumber);
+      if (!this.ensureAuthenticated()) {
+        return;
+      }
       const completed = await this.recordCompletion('submit');
       if (!completed) {
         this.solved.set(false);
@@ -1968,12 +1956,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     // JS/TS: always run tests (delegates to the panel).
-    await this.runTests();
-
-    const passing = this.allPassing();
+    const passing = await this.runTests();
     this.solved.set(passing);
 
     if (!passing) {
+      return;
+    }
+
+    if (!this.ensureAuthenticated()) {
+      this.solved.set(false);
       return;
     }
 
@@ -2012,6 +2003,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const results = Array.isArray(event.results) ? event.results : [];
     const passCount = results.filter((result) => result.passed).length;
+    const attemptNumber = this.trackChallengeAttemptStarted('run_checks');
+    this.trackChallengeAttemptResult(
+      'run_checks',
+      event.passed ? 'passed' : 'failed',
+      attemptNumber,
+      passCount,
+      results.length,
+    );
     this.analytics.track('pressure_round_checks_run', {
       scenario_id: scenario.id,
       question_id: q.id,
@@ -2067,10 +2066,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       );
       this.activePanel.set(1);
       this.trackPressureCompleted(false);
-      this.loginPromptTitle = 'Sign in to save Pressure Mode';
-      this.loginPromptBody = `Your final checks passed. Sign in to save all ${scenario.rounds.length} rounds and claim the coding completion.`;
-      this.loginPromptCta = 'Sign in and save';
-      this.ensureAuthenticated();
+      this.ensureAuthenticated('coding_pressure');
       return;
     }
 
@@ -2126,39 +2122,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const results = Array.isArray(event.results) ? event.results : [];
     const passCount = results.filter((result) => result.passed).length;
     const totalCount = results.length;
-
-    this.analytics.track('run_checks', {
-      question_id: q.id,
-      tech: this.tech,
-      kind: this.kind,
-      src: this.challengeSource,
-      pass_count: passCount,
-      total_count: totalCount,
-    });
-
-    if (passCount > 0 && !this.firstPassingTestTracked) {
-      this.firstPassingTestTracked = true;
-      this.analytics.track('first_passing_test', {
-        question_id: q.id,
-        tech: this.tech,
-        kind: this.kind,
-        src: this.challengeSource,
-        pass_count: passCount,
-        total_count: totalCount,
-      });
-    }
-
-    if (event.passed && !this.allTestsPassedTracked) {
-      this.allTestsPassedTracked = true;
-      this.analytics.track('all_tests_passed', {
-        question_id: q.id,
-        tech: this.tech,
-        kind: this.kind,
-        src: this.challengeSource,
-        elapsed_sec: Math.max(0, Math.round((Date.now() - this.sessionStart) / 1000)),
-        total_count: totalCount,
-      });
-    }
+    const attemptNumber = this.trackChallengeAttemptStarted('run_checks');
+    this.trackChallengeAttemptResult(
+      'run_checks',
+      event.passed ? 'passed' : 'failed',
+      attemptNumber,
+      passCount,
+      totalCount,
+    );
   }
 
   private async completeFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
@@ -2497,8 +2468,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.pressureSolutionOpenPath.set('');
     this.pressureStartTrackedKey = null;
     this.activePanel.set(0);
-    if (this.loginPromptTitle === 'Sign in to save Pressure Mode') {
-      this.applySignupPromptCopy();
+    if (this.loginPromptContext === 'coding_pressure') {
+      this.configureAuthPrompt('coding_submit');
     }
 
     if (restoreLayout) {
@@ -2672,29 +2643,96 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
   }
 
-  private trackChallengeOpened(questionId: string) {
-    const key = `${questionId}|${this.challengeSource}|${this.kind}`;
+  private trackChallengeViewed(q: Question): void {
+    const workspaceType = this.challengeWorkspaceType(q);
+    const accessState = this.challengeAccessState(q);
+    const key = `${q.id}|${this.challengeSource}|${this.kind}|${workspaceType}|${accessState}`;
     if (this.lastTrackedChallengeOpenKey === key) return;
     this.lastTrackedChallengeOpenKey = key;
-    this.analytics.track('aha_challenge_opened', {
-      question_id: questionId,
-      tech: this.tech,
-      kind: this.kind,
-      src: this.challengeSource,
+    this.analytics.track('challenge_viewed', {
+      ...this.challengeEventParams(q),
+      workspace_type: workspaceType,
+      access_state: accessState,
     });
   }
 
-  private applySignupPromptCopy() {
-    if (this.signupPromptVariant === 'benefit') {
-      this.loginPromptTitle = 'Save this progress and keep momentum';
-      this.loginPromptBody = 'Create a free account to save solved status and continue with personalized next steps.';
-      this.loginPromptCta = 'Save progress free';
-      return;
-    }
+  private trackChallengeAttemptStarted(actionType: ChallengeActionType): number {
+    const q = this.question();
+    if (!q) return 0;
+    const attemptNumber = ++this.challengeAttemptNumber;
+    this.analytics.track('challenge_attempt_started', {
+      ...this.challengeEventParams(q),
+      workspace_type: this.challengeWorkspaceType(q),
+      access_state: this.challengeAccessState(q),
+      action_type: actionType,
+      attempt_number: attemptNumber,
+    });
+    return attemptNumber;
+  }
 
-    this.loginPromptTitle = 'Sign in to save progress';
-    this.loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
-    this.loginPromptCta = 'Go to login';
+  private trackChallengeAttemptResult(
+    actionType: ChallengeActionType,
+    outcome: ChallengeOutcome,
+    attemptNumber: number,
+    passCount?: number,
+    totalCount?: number,
+  ): void {
+    const q = this.question();
+    if (!q) return;
+    this.analytics.track('challenge_attempt_result', {
+      ...this.challengeEventParams(q),
+      workspace_type: this.challengeWorkspaceType(q),
+      access_state: this.challengeAccessState(q),
+      action_type: actionType,
+      outcome,
+      attempt_number: attemptNumber,
+      ...(typeof passCount === 'number' ? { pass_count: passCount } : {}),
+      ...(typeof totalCount === 'number' ? { total_count: totalCount } : {}),
+      elapsed_sec: Math.max(0, Math.round((Date.now() - this.sessionStart) / 1000)),
+    });
+  }
+
+  private challengeEventParams(q: Question): Record<string, unknown> {
+    return {
+      question_id: q.id,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+      auth_state: this.challengeAuthState(),
+    };
+  }
+
+  private challengeWorkspaceType(q: Question): ChallengeWorkspaceType {
+    if (this.pressureRequested()) return 'pressure_checks';
+    if (!this.isFrameworkTech() && !this.isWebTech()) return 'js_tests';
+    if (this.hasFrameworkStructuredChecks(q)) return 'framework_checks';
+    if (this.isFrameworkTech()) return 'framework_manual';
+    return 'web_manual';
+  }
+
+  private challengeAccessState(q: Question): ChallengeAccessState {
+    if (isQuestionLockedForTier(q, this.auth.user())) return 'premium_locked';
+    if (this.showMobileDesktopGuard()) return 'mobile_blocked';
+    return 'available';
+  }
+
+  private challengeAuthState(): ChallengeAuthState {
+    const user = this.auth.user();
+    if (!user || !this.auth.isLoggedIn()) return 'guest';
+    return isProActive(user) ? 'premium' : 'free';
+  }
+
+  private configureAuthPrompt(context: AuthPromptContext): void {
+    this.loginPromptContext = context;
+    this.loginPromptSignupLabel = context === 'coding_pressure'
+      ? 'Create account and save'
+      : 'Create free account';
+    this.loginPromptLoginLabel = context === 'coding_pressure' ? 'Sign in and save' : 'Sign in';
+    this.loginPromptTitle = context === 'coding_pressure' ? 'Save Pressure Mode' : 'Save this result';
+    const pressureRoundCount = this.pressureScenario()?.rounds.length ?? 0;
+    this.loginPromptBody = context === 'coding_pressure'
+      ? `Your final checks passed. Create a free account or sign in to save all ${pressureRoundCount} rounds and claim the completion.`
+      : 'Create a free account to save solved status and continue with personalized next steps. Already have an account? Sign in.';
   }
 
   private applyPremiumGateCopy() {
@@ -3167,7 +3205,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private xpFor(q: Question): number {
     return Number((q as any).xp ?? 20);
   }
-  private async recordCompletion(_reason: 'tests' | 'submit'): Promise<boolean> {
+  private async recordCompletion(reason: 'tests' | 'submit'): Promise<boolean> {
     const q = this.question();
     if (!q) return false;
     if (this.recorded) return true;
@@ -3199,6 +3237,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       }
 
       this.recorded = true;
+      const actionType: ChallengeActionType = reason === 'tests'
+        ? (this.isFrameworkTech() ? 'run_checks' : 'run_tests')
+        : (this.isFrameworkTech() || this.isWebTech() ? 'mark_complete' : 'run_tests');
+      this.analytics.track('challenge_completion_saved', {
+        ...this.challengeEventParams(q),
+        workspace_type: this.challengeWorkspaceType(q),
+        access_state: this.challengeAccessState(q),
+        action_type: actionType,
+        outcome: actionType === 'mark_complete' ? 'manual' : 'passed',
+        elapsed_sec: Math.max(0, Math.round((Date.now() - this.sessionStart) / 1000)),
+      });
       return true;
     } catch {
       return false;

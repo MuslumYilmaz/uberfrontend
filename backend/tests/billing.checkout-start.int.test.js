@@ -200,6 +200,28 @@ describe('billing checkout start route', () => {
     expect(res.body.planId).toBe('monthly');
   });
 
+  test('stores only a normalized analytics source on the checkout attempt', async () => {
+    const user = await seedUser();
+
+    const safe = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly', analyticsSource: 'Pricing_Page' });
+
+    expect(safe.status).toBe(200);
+    const safeAttempt = await CheckoutAttempt.findOne({ attemptId: safe.body.attemptId }).lean();
+    expect(safeAttempt.analyticsSource).toBe('pricing_page');
+
+    const invalid = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly', analyticsSource: 'pricing page?<script>' });
+
+    expect(invalid.status).toBe(200);
+    const invalidAttempt = await CheckoutAttempt.findOne({ attemptId: invalid.body.attemptId }).lean();
+    expect(invalidAttempt.analyticsSource).toBe('pricing');
+  });
+
   test('reuses a recent active checkout attempt for the same user and plan', async () => {
     const user = await seedUser();
 

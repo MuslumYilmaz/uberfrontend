@@ -123,6 +123,104 @@ describe('billing checkout attempt status route', () => {
     expect(res.body.entitlementActive).toBe(true);
     expect(res.body.accessTierEffective).toBe('premium');
     expect(res.body.billingEventId).toBe('test:event_applied_123');
+    expect(res.body.purchase).toBeNull();
+  });
+
+  test('returns a PII-free GA4 purchase only for a verified live order', async () => {
+    const user = await seedUser({
+      accessTier: 'premium',
+      entitlements: {
+        pro: { status: 'active', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+    });
+    const verifiedAt = new Date('2026-08-05T10:00:00.000Z');
+    await CheckoutAttempt.create({
+      attemptId: 'chk_live_purchase',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'annual',
+      mode: 'live',
+      analyticsSource: 'pricing_page',
+      status: 'applied',
+      billingEventId: 'live:subscription_created:sub_annual',
+      paymentEventId: 'live:order_created:order_annual',
+      providerOrderId: 'order_annual_123',
+      paymentCurrency: 'USD',
+      paymentSubtotalCents: 7900,
+      paymentDiscountCents: 1000,
+      paymentTaxCents: 1242,
+      paymentTotalCents: 8142,
+      paymentVerifiedAt: verifiedAt,
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/live-annual',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_live_purchase',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_live_purchase',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    });
+
+    const res = await request(app)
+      .get('/api/billing/checkout/attempts/chk_live_purchase/status')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.purchase).toEqual({
+      transactionId: 'order_annual_123',
+      currency: 'USD',
+      value: 69,
+      tax: 12.42,
+      total: 81.42,
+      items: [{
+        item_id: 'frontendatlas_annual',
+        item_name: 'Annual Premium',
+        affiliation: 'FrontendAtlas',
+        price: 69,
+        quantity: 1,
+      }],
+      source: 'pricing_page',
+      verifiedAt: verifiedAt.toISOString(),
+    });
+    expect(Object.keys(res.body.purchase).sort()).toEqual([
+      'currency', 'items', 'source', 'tax', 'total', 'transactionId', 'value', 'verifiedAt',
+    ]);
+    expect(JSON.stringify(res.body.purchase)).not.toContain(user.email);
+    expect(JSON.stringify(res.body.purchase)).not.toContain(user.username);
+  });
+
+  test('does not expose purchase when stored amounts do not reconcile', async () => {
+    const user = await seedUser({
+      accessTier: 'premium',
+      entitlements: {
+        pro: { status: 'active', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+    });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_bad_amounts',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'live',
+      status: 'applied',
+      paymentEventId: 'live:order_bad',
+      providerOrderId: 'order_bad',
+      paymentCurrency: 'USD',
+      paymentSubtotalCents: 1200,
+      paymentDiscountCents: 0,
+      paymentTaxCents: 240,
+      paymentTotalCents: 9999,
+      paymentVerifiedAt: new Date(),
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/live-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_bad_amounts',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_bad_amounts',
+    });
+
+    const res = await request(app)
+      .get('/api/billing/checkout/attempts/chk_bad_amounts/status')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.purchase).toBeNull();
   });
 
   test('returns pending_user_match when the webhook could not be safely linked to this account', async () => {

@@ -258,6 +258,7 @@ describe('PricingPlansSectionComponent', () => {
       ok: true,
       provider: 'lemonsqueezy',
       mode: 'blocked',
+      checkoutMode: 'test',
       url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test',
       attemptId: 'chk_blocked',
       reused: false,
@@ -275,12 +276,21 @@ describe('PricingPlansSectionComponent', () => {
     await component.onCta('monthly');
 
     expect(component.checkoutNotice).toBe('Your browser blocked the checkout window. Allow popups and try again.');
-    const checkoutStarted = analytics.track.calls.allArgs().find(([event]) => event === 'checkout_started');
-    expect(checkoutStarted?.[1]).toEqual(jasmine.objectContaining({
+    const beginCheckout = analytics.track.calls.allArgs().find(([event]) => event === 'begin_checkout');
+    expect(beginCheckout?.[1]).toEqual(jasmine.objectContaining({
       plan_id: 'monthly',
       page_layout: 'interview_sprint_v1',
       recommended_plan: 'quarterly',
+      checkout_mode: 'test',
+      provider: 'lemonsqueezy',
+      currency: 'USD',
+      value: 12,
     }));
+    expect(billingCheckout.checkout).toHaveBeenCalledWith(
+      'monthly',
+      jasmine.objectContaining({ userId: 'user_1' }),
+      'pricing',
+    );
   });
 
   it('tells an unverified Gumroad user how to unblock checkout', async () => {

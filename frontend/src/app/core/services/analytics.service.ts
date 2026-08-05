@@ -11,6 +11,20 @@ type AnalyticsWindow = Window & {
   Cypress?: unknown;
 };
 
+const RESERVED_ACQUISITION_PARAMS = new Set([
+  'source',
+  'medium',
+  'campaign',
+  'campaign_id',
+  'campaign_source',
+  'campaign_medium',
+  'campaign_name',
+  'campaign_term',
+  'campaign_content',
+]);
+
+const PII_PARAM_PATTERN = /(^|_)(email|username|password|token|authorization|credential|secret)($|_)/i;
+
 @Injectable({ providedIn: 'root' })
 export class AnalyticsService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -23,14 +37,16 @@ export class AnalyticsService {
   private pendingEvents: Array<{ name: string; params?: Record<string, unknown> }> = [];
   private pendingPageViews: string[] = [];
 
-  track(name: string, params?: Record<string, unknown>) {
-    if (!this.analyticsEnabled) return;
+  track(name: string, params?: Record<string, unknown>): boolean {
+    if (!this.analyticsEnabled) return false;
+    const safeParams = this.sanitizeEventParams(params);
     if (!this.initialized) {
-      this.pendingEvents.push({ name, params });
-      return;
+      this.pendingEvents.push({ name, params: safeParams });
+      return true;
     }
 
-    this.dispatchEvent(name, params);
+    this.dispatchEvent(name, safeParams);
+    return true;
   }
 
   trackPageView(path?: string) {
@@ -84,6 +100,45 @@ export class AnalyticsService {
       page_title: this.document.title || undefined,
       ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
+  }
+
+  private sanitizeEventParams(params?: Record<string, unknown>): Record<string, unknown> | undefined {
+    if (!params) return undefined;
+    return this.sanitizeObject(params);
+  }
+
+  private sanitizeObject(value: Record<string, unknown>): Record<string, unknown> | undefined {
+    const safeEntries: Array<[string, unknown]> = [];
+    for (const [rawKey, rawValue] of Object.entries(value)) {
+      const key = String(rawKey || '').trim();
+      const normalizedKey = key
+        .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+        .replace(/[^a-zA-Z0-9]+/g, '_')
+        .toLowerCase();
+      if (
+        !key
+        || RESERVED_ACQUISITION_PARAMS.has(normalizedKey)
+        || PII_PARAM_PATTERN.test(normalizedKey)
+      ) {
+        continue;
+      }
+
+      const safeValue = this.sanitizeValue(rawValue);
+      if (safeValue !== undefined) safeEntries.push([key, safeValue]);
+    }
+    return safeEntries.length ? Object.fromEntries(safeEntries) : undefined;
+  }
+
+  private sanitizeValue(value: unknown): unknown {
+    if (Array.isArray(value)) {
+      return value
+        .map((entry) => this.sanitizeValue(entry))
+        .filter((entry) => entry !== undefined);
+    }
+    if (value && typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
+      return this.sanitizeObject(value as Record<string, unknown>);
+    }
+    return value;
   }
 
   private flushPending() {

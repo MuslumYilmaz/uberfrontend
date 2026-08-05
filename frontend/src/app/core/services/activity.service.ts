@@ -588,7 +588,7 @@ export class ActivityService {
 
     if (xpAwarded > 0) {
       this.analytics.track('xp_awarded', {
-        source: entry.kind === 'incident' ? 'incident_complete' : 'question_complete',
+        reward_source: entry.kind === 'incident' ? 'incident_complete' : 'question_complete',
         kind: entry.kind,
         tech: entry.tech,
         item_id: entry.itemId,
@@ -609,7 +609,7 @@ export class ActivityService {
     }
 
     if (res?.levelUp) {
-      this.analytics.track('level_up', { source: entry.kind === 'incident' ? 'incident_complete' : 'question_complete' });
+      this.analytics.track('level_up', { reward_source: entry.kind === 'incident' ? 'incident_complete' : 'question_complete' });
     }
   }
 

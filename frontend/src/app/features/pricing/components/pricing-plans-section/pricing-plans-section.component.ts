@@ -294,11 +294,13 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 
       <app-login-required-dialog
         [(visible)]="loginRequiredOpen"
-      [title]="loginRequiredTitle"
-      [body]="loginRequiredBody"
-      [ctaLabel]="loginRequiredCta"
-      [redirectTo]="loginRedirectTo">
-    </app-login-required-dialog>
+        context="pricing_checkout"
+        [title]="loginRequiredTitle"
+        [body]="loginRequiredBody"
+        [signupLabel]="loginRequiredSignupLabel"
+        [loginLabel]="loginRequiredLoginLabel"
+        [redirectTo]="loginRedirectTo">
+      </app-login-required-dialog>
   `,
 })
 export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -323,9 +325,10 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
   private checkoutLoading: PlanId | null = null;
   loginRequiredOpen = false;
   loginRedirectTo = '/pricing';
-  loginRequiredTitle = 'Sign in to purchase';
-  loginRequiredBody = 'To buy a subscription, please sign in or create a free account.';
-  loginRequiredCta = 'Sign in / create account';
+  loginRequiredTitle = 'Create an account to continue';
+  loginRequiredBody = 'Create a free account to keep your purchase connected to your progress. Already have an account? Sign in.';
+  loginRequiredSignupLabel = 'Create free account';
+  loginRequiredLoginLabel = 'Sign in';
   checkoutNotice: string | null = null;
   private checkoutNoticeTimer?: number;
   private visibilityObserver?: IntersectionObserver;
@@ -863,12 +866,29 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     });
   }
 
-  private trackCheckoutStarted(planId: PlanId, method: string, mode: string) {
-    this.analytics.track('checkout_started', {
+  private trackBeginCheckout(planId: PlanId, provider: string, checkoutMode: string, launchMode: string) {
+    const prices: Record<PlanId, number> = {
+      monthly: 12,
+      quarterly: 29,
+      annual: 79,
+      lifetime: 199,
+    };
+    const value = prices[planId];
+    this.analytics.track('begin_checkout', {
       plan_id: planId,
       ...this.pricingAnalyticsBase(),
-      method,
-      checkout_mode: mode,
+      provider,
+      checkout_mode: checkoutMode,
+      launch_mode: launchMode,
+      currency: 'USD',
+      value,
+      items: [{
+        item_id: `frontendatlas_${planId}`,
+        item_name: `${planId.charAt(0).toUpperCase()}${planId.slice(1)} Premium`,
+        affiliation: 'FrontendAtlas',
+        price: value,
+        quantity: 1,
+      }],
     });
   }
 
@@ -925,7 +945,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
             userId: user._id,
             email: user.email,
             username: user.username,
-          });
+          }, source);
           if (!result.ok) {
             this.clearCheckoutContext();
             if (result.reason === 'verification-required') {
@@ -937,7 +957,12 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
             }
             return;
           }
-          this.trackCheckoutStarted(planId, result.provider, result.mode);
+          this.trackBeginCheckout(
+            planId,
+            result.provider,
+            result.checkoutMode,
+            result.mode,
+          );
           const launchNotice = getCheckoutLaunchNotice(result.mode, result.reused);
           if (launchNotice) {
             this.setCheckoutNotice(launchNotice);

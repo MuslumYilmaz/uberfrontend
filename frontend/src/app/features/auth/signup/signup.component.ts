@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { classifyAuthFailure, normalizeAuthAnalyticsSource } from '../../../core/utils/auth-analytics.util';
 import { getAuthDisplayError } from '../../../core/utils/auth-error.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
@@ -14,12 +15,14 @@ import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css'],
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit {
   loading = false;
   error = '';
   submitted = false;
   redirectTo = '/dashboard';
   redirectToPresent = false;
+  analyticsSource = 'direct';
+  authSwitchQueryParams: Record<string, string> = { src: 'direct' };
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -39,6 +42,15 @@ export class SignupComponent {
   ) {
     this.redirectTo = sanitizeRedirectTarget(this.route.snapshot.queryParamMap.get('redirectTo'));
     this.redirectToPresent = this.redirectTo !== '/dashboard';
+    this.analyticsSource = normalizeAuthAnalyticsSource(this.route.snapshot.queryParamMap.get('src'));
+    this.authSwitchQueryParams = {
+      ...(this.redirectToPresent ? { redirectTo: this.redirectTo } : {}),
+      src: this.analyticsSource,
+    };
+  }
+
+  ngOnInit(): void {
+    this.analytics.track('auth_page_viewed', this.authAnalyticsParams('password'));
   }
 
   get emailCtrl() { return this.form.get('email'); }
@@ -80,15 +92,12 @@ export class SignupComponent {
 
     this.loading = true;
     this.error = '';
-    this.analytics.track('signup_started', {
-      method: 'password',
-      redirect_to_present: this.redirectToPresent,
-    });
+    this.analytics.track('auth_submit_started', this.authAnalyticsParams('password'));
     this.auth.signup({ email, username, password }).subscribe({
       next: () => {
-        this.analytics.track('signup_completed', {
+        this.analytics.track('sign_up', {
+          ...this.authAnalyticsParams('password'),
           method: 'password',
-          redirect_to_present: this.redirectToPresent,
         });
         this.router.navigateByUrl(this.redirectTo);
       },
@@ -104,25 +113,35 @@ export class SignupComponent {
         } else {
           this.error = getAuthDisplayError(err, 'Sign up failed');
         }
+        this.analytics.track('auth_submit_failed', {
+          ...this.authAnalyticsParams('password'),
+          failure_reason: classifyAuthFailure(err, 'signup'),
+        });
         this.loading = false;
       }
     });
   }
 
   continueWithGoogle() {
-    this.analytics.track('signup_started', {
-      method: 'oauth_google',
-      redirect_to_present: this.redirectToPresent,
-    });
-    this.auth.oauthStart('google', 'signup', this.redirectTo);
+    this.startOAuth('google');
   }
 
   continueWithGithub() {
-    this.analytics.track('signup_started', {
-      method: 'oauth_github',
+    this.startOAuth('github');
+  }
+
+  private startOAuth(provider: 'google' | 'github'): void {
+    this.analytics.track('auth_submit_started', this.authAnalyticsParams(provider));
+    this.auth.oauthStart(provider, 'signup', this.redirectTo, this.analyticsSource);
+  }
+
+  private authAnalyticsParams(provider: 'password' | 'google' | 'github'): Record<string, unknown> {
+    return {
+      auth_mode: 'signup',
+      provider,
+      src: this.analyticsSource,
       redirect_to_present: this.redirectToPresent,
-    });
-    this.auth.oauthStart('github', 'signup', this.redirectTo);
+    };
   }
 
   private setCtrlError(ctrl: any, key: string) {

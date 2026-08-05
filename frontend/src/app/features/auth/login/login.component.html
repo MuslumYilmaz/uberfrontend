@@ -46,7 +46,7 @@
 
       <p class="meta">
         Don’t have an account?
-        <a routerLink="/auth/signup" [queryParams]="redirectToPresent ? { redirectTo: redirectTo } : null" data-testid="login-link-signup">Sign up</a>
+        <a routerLink="/auth/signup" [queryParams]="authSwitchQueryParams" data-testid="login-link-signup">Sign up</a>
       </p>
     </div>
   </section>

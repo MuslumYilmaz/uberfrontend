@@ -35,7 +35,15 @@ export type CheckoutAttemptState =
   | 'failed'
   | 'expired';
 export type CheckoutResult =
-  | { ok: true; mode: CheckoutMode; provider: PaymentsProvider; url: string; attemptId: string; reused: boolean }
+  | {
+    ok: true;
+    mode: CheckoutMode;
+    checkoutMode: 'test' | 'live';
+    provider: PaymentsProvider;
+    url: string;
+    attemptId: string;
+    reused: boolean;
+  }
   | {
     ok: false;
     reason: CheckoutFailureReason;
@@ -53,6 +61,17 @@ type CheckoutStartResponse = {
   reused?: boolean;
 };
 
+export type VerifiedPurchase = {
+  transactionId: string;
+  currency: string;
+  value: number;
+  tax: number;
+  total: number;
+  items: Array<Record<string, unknown>>;
+  source: string;
+  verifiedAt: string;
+};
+
 export type CheckoutAttemptStatus = {
   attemptId: string;
   provider: PaymentsProvider;
@@ -65,6 +84,7 @@ export type CheckoutAttemptStatus = {
   billingEventId: string | null;
   lastErrorCode: string | null;
   lastErrorMessage: string | null;
+  purchase: VerifiedPurchase | null;
 };
 
 export type CheckoutAttemptStatusResult = {
@@ -154,7 +174,11 @@ export class BillingCheckoutService {
     }
   }
 
-  async checkout(planId: PlanId, context?: CheckoutContext): Promise<CheckoutResult> {
+  async checkout(
+    planId: PlanId,
+    context?: CheckoutContext,
+    analyticsSource = 'pricing',
+  ): Promise<CheckoutResult> {
     const fallbackProvider =
       (await this.getCheckoutConfig())?.provider ||
       resolveCheckoutPaymentsProvider(environment) ||
@@ -165,7 +189,7 @@ export class BillingCheckoutService {
       start = await firstValueFrom(
         this.http.post<CheckoutStartResponse>(
           apiUrl('/billing/checkout/start'),
-          { planId },
+          { planId, analyticsSource },
           { withCredentials: true }
         )
       );
@@ -196,6 +220,7 @@ export class BillingCheckoutService {
     return {
       ok: true,
       mode,
+      checkoutMode: start.mode,
       provider: start.provider,
       url: start.checkoutUrl,
       attemptId: start.attemptId,

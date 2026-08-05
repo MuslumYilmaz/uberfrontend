@@ -266,7 +266,12 @@ describe('ProfileComponent', () => {
     expect(github.disabled).toBeFalse();
 
     github.click();
-    expect(authStub.oauthStart).toHaveBeenCalledWith('github', 'link', '/profile?tab=security');
+    expect(authStub.oauthStart).toHaveBeenCalledWith(
+      'github',
+      'link',
+      '/profile?tab=security',
+      'profile_security',
+    );
   });
 
   it('requests verification instead of sending email through generic profile update', () => {

@@ -63,9 +63,10 @@ export class TradeoffDetailComponent {
   readonly analysisRevealed = signal(false);
   readonly completed = signal(false);
   loginPromptOpen = false;
-  readonly loginPromptTitle = 'Sign in to save completed tradeoff battles';
-  readonly loginPromptBody = 'To track completed tradeoff battles and keep your progress synced, sign in or create a free account.';
-  readonly loginPromptCta = 'Go to login';
+  readonly loginPromptTitle = 'Save this tradeoff decision';
+  readonly loginPromptBody = 'Create a free account to keep completed battles and continue with your decision history. Already have an account? Sign in.';
+  readonly loginPromptSignupLabel = 'Create free account';
+  readonly loginPromptLoginLabel = 'Sign in';
 
   readonly selectedOption = computed<TradeoffBattleOption | null>(() => {
     const scenario = this.battle();
@@ -180,7 +181,7 @@ export class TradeoffDetailComponent {
 
   goToLoginFromLocked(): void {
     this.router.navigate(['/auth/login'], {
-      queryParams: { redirectTo: this.router.url || '/' },
+      queryParams: { redirectTo: this.router.url || '/', src: 'tradeoff_complete' },
     });
   }
 

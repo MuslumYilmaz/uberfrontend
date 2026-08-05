@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter, Router, withDisabledInitialNavigation } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { VerifyEmailComponent } from './verify-email.component';
@@ -19,7 +19,10 @@ describe('VerifyEmailComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [VerifyEmailComponent],
-      providers: [provideRouter([]), { provide: AuthService, useValue: auth }],
+      providers: [
+        provideRouter([], withDisabledInitialNavigation()),
+        { provide: AuthService, useValue: auth },
+      ],
     }).compileComponents();
   });
 

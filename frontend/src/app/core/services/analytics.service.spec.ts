@@ -80,6 +80,40 @@ describe('AnalyticsService', () => {
     }));
   });
 
+  it('drops acquisition overrides and PII before events enter the queue', () => {
+    const service = TestBed.inject(AnalyticsService);
+
+    expect(service.track('xp_awarded', {
+      source: 'question_complete',
+      campaign_source: 'dashboard',
+      customer_email: 'person@example.com',
+      access_token: 'secret',
+      refreshToken: 'also-secret',
+      reward_source: 'question_complete',
+      gap_source: 'catalog',
+      items: [{ item_id: 'monthly', customerEmail: 'person@example.com' }],
+    })).toBeTrue();
+
+    service.ensureInitialized();
+
+    const eventCall = Array.from(win.dataLayer?.[2] as IArguments);
+    expect(eventCall[0]).toBe('event');
+    expect(eventCall[1]).toBe('xp_awarded');
+    expect(eventCall[2]).toEqual(jasmine.objectContaining({
+      reward_source: 'question_complete',
+      gap_source: 'catalog',
+      items: [{ item_id: 'monthly' }],
+      send_to: 'G-TEST123',
+    }));
+    expect(eventCall[2]).not.toEqual(jasmine.objectContaining({
+      source: jasmine.anything(),
+      campaign_source: jasmine.anything(),
+      customer_email: jasmine.anything(),
+      access_token: jasmine.anything(),
+      refreshToken: jasmine.anything(),
+    }));
+  });
+
   it('skips analytics bootstrap in Playwright-like automation contexts', () => {
     win.__playwright__binding__ = {};
 

@@ -6,6 +6,7 @@ const PLAN_IDS = ['monthly', 'quarterly', 'annual', 'lifetime'];
 const PLANS = new Set(PLAN_IDS);
 const PROVIDER_UNAVAILABLE = new Set(['stripe']);
 const REUSABLE_ATTEMPT_STATUSES = new Set(['created', 'webhook_received', 'pending_user_match']);
+const ANALYTICS_SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
 
 class CheckoutStartError extends Error {
   constructor(code, message, status = 400) {
@@ -36,6 +37,11 @@ function resolveMode() {
 function resolvePlanId(raw) {
   const value = String(raw || '').trim().toLowerCase();
   return PLANS.has(value) ? value : null;
+}
+
+function normalizeAnalyticsSource(raw) {
+  const value = String(raw || '').trim().toLowerCase();
+  return value && ANALYTICS_SOURCE_PATTERN.test(value) ? value : 'pricing';
 }
 
 function resolveAttemptReuseWindowMs() {
@@ -172,13 +178,14 @@ function buildFinalCheckoutUrl(provider, baseUrl, user, attemptId) {
   return { checkoutUrl: baseUrl, successUrl, cancelUrl };
 }
 
-async function findReusableCheckoutAttempt(CheckoutAttempt, { user, provider, planId, mode }) {
+async function findReusableCheckoutAttempt(CheckoutAttempt, { user, provider, planId, mode, analyticsSource }) {
   const threshold = new Date(Date.now() - resolveAttemptReuseWindowMs());
   return CheckoutAttempt.findOne({
     userId: user._id,
     provider,
     planId,
     mode,
+    analyticsSource,
     status: { $in: Array.from(REUSABLE_ATTEMPT_STATUSES) },
     startedAt: { $gte: threshold },
   })
@@ -186,9 +193,13 @@ async function findReusableCheckoutAttempt(CheckoutAttempt, { user, provider, pl
     .lean();
 }
 
-async function createCheckoutAttempt(CheckoutAttempt, { user, provider: rawProvider, planId: rawPlanId }) {
+async function createCheckoutAttempt(
+  CheckoutAttempt,
+  { user, provider: rawProvider, planId: rawPlanId, analyticsSource: rawAnalyticsSource }
+) {
   const provider = resolveProvider(rawProvider);
   const planId = resolvePlanId(rawPlanId);
+  const analyticsSource = normalizeAnalyticsSource(rawAnalyticsSource);
 
   if (!provider) {
     throw new CheckoutStartError('UNSUPPORTED_PROVIDER', 'Provider not supported', 400);
@@ -221,6 +232,7 @@ async function createCheckoutAttempt(CheckoutAttempt, { user, provider: rawProvi
     provider,
     planId,
     mode,
+    analyticsSource,
   });
   if (reusableAttempt?.attemptId && isValidHostedCheckoutUrl(provider, reusableAttempt.checkoutUrl)) {
     return {
@@ -249,15 +261,13 @@ async function createCheckoutAttempt(CheckoutAttempt, { user, provider: rawProvi
     provider,
     planId,
     mode,
+    analyticsSource,
     status: 'created',
     checkoutUrl,
     successUrl,
     cancelUrl,
     customerEmail: user.email,
     customerUserId: String(user._id),
-    metadata: {
-      username: user.username || '',
-    },
   });
 
   return {
@@ -281,4 +291,5 @@ module.exports = {
   resolveMode,
   resolveCheckoutUrl,
   isValidHostedCheckoutUrl,
+  normalizeAnalyticsSource,
 };
