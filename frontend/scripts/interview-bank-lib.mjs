@@ -26,6 +26,22 @@ export function assertSafeInterviewBankOutputDir(outputDir) {
   }
 }
 
+export function assertInterviewBankLifecycleOutputDir(outputDir, manifest) {
+  assertSafeInterviewBankOutputDir(outputDir);
+  if (manifest?.status !== "candidate") return;
+
+  const expectedCandidateDir = path.resolve(
+    interviewBankDefaults.outputDir,
+    `candidate-${manifest.bankVersion}`,
+  );
+  const resolvedOutputDir = path.resolve(outputDir);
+  if (resolvedOutputDir !== expectedCandidateDir) {
+    throw new Error(
+      `Candidate interview-bank output must use ${expectedCandidateDir}; refusing ${resolvedOutputDir}.`,
+    );
+  }
+}
+
 const PUBLIC_ITEM_FIELDS = Object.freeze([
   "technology",
   "level",

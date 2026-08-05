@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-indexeddb-transaction-lifetime-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "indexeddb-transaction-lifetime",
+    "prompt": "A sync routine fetches a remote patch, compares its base revision with the current IndexedDB record, and conditionally writes the result. A production bug opens a readwrite transaction, awaits the network, then gets `TransactionInactiveError`. Which restructuring preserves the check-and-write boundary?",
+    "options": [
+      {
+        "id": "choice-ace94e02e2",
+        "label": "Open the transaction first, await the patch, then issue both the revision read and conditional write."
+      },
+      {
+        "id": "choice-7eefb97611",
+        "label": "Await the patch first, read the revision in a readonly transaction, then use that cached revision in a later readwrite transaction."
+      },
+      {
+        "id": "choice-486564aa8e",
+        "label": "Await the patch first, then open a transaction and queue the revision read plus conditional write there."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-486564aa8e",
+    "answerProof": {
+      "summary": "The unrelated network wait belongs before transaction creation. A fresh transaction can then read the current revision and enqueue any conditional write from its request callback, keeping the database decision atomic within one transaction lifetime.",
+      "decisiveConstraints": [
+        "Network latency is unrelated asynchronous work and may span event-loop turns.",
+        "The revision check must observe the record inside the same transaction as the write.",
+        "The write is queued while the fresh transaction is active."
+      ],
+      "claims": [
+        {
+          "statement": "IndexedDB transactions are tied to the event loop and become inactive when control returns without an outstanding request that extends their work.",
+          "sourceIds": [
+            "mdn-using-indexeddb"
+          ]
+        },
+        {
+          "statement": "After an IndexedDB request succeeds, its event callback provides another opportunity to make requests within the active transaction.",
+          "sourceIds": [
+            "mdn-using-indexeddb"
+          ]
+        },
+        {
+          "statement": "Transactions auto-commit when they are active and no new requests remain to be made, and using a completed transaction throws.",
+          "sourceIds": [
+            "mdn-indexeddb-terminology"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ace94e02e2",
+        "verdict": "incorrect",
+        "explanation": "The network await returns control to the event loop without IndexedDB work, allowing the transaction to become inactive first.",
+        "plausibility": "Opening the transaction before every operation appears to put the complete sync routine inside one atomic boundary.",
+        "misconceptionTag": "transaction-survives-unrelated-await",
+        "falsifyingConstraint": "Database requests must be enqueued during the transaction's active event-loop opportunities."
+      },
+      {
+        "optionId": "choice-7eefb97611",
+        "verdict": "incorrect",
+        "explanation": "A different writer can change the record after the readonly transaction completes, so the later write may apply a decision based on a stale revision.",
+        "plausibility": "Fetching first avoids the inactive-transaction bug, and separating reads from writes can appear to minimize write-lock time.",
+        "misconceptionTag": "separate-transactions-preserve-check-and-write-atomicity",
+        "falsifyingConstraint": "The revision read and conditional mutation must share one transaction so no writer can interleave between them."
+      },
+      {
+        "optionId": "choice-486564aa8e",
+        "verdict": "correct",
+        "explanation": "Fetching first removes the lifecycle gap, and one fresh transaction owns both the current-revision read and conditional write.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "indexeddb-transactions",
+      "transaction-lifetimes",
+      "event-loop-boundaries",
+      "conditional-writes"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Using IndexedDB",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB",
+        "sourceId": "mdn-using-indexeddb"
+      },
+      {
+        "title": "MDN: IndexedDB key characteristics and basic terminology",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology",
+        "sourceId": "mdn-indexeddb-terminology"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-using-indexeddb",
+          "title": "MDN: Using IndexedDB",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-indexeddb-terminology",
+          "title": "MDN: IndexedDB key characteristics and basic terminology",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

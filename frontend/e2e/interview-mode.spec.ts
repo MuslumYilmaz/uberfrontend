@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Page, Request, Route } from '@playwright/test';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 import { expect, test } from './fixtures';
@@ -24,6 +26,17 @@ type MockQuestion = {
   codeLanguage?: string;
   options: Array<{ id: string; label: string }>;
   selectedOptionId: string | null;
+};
+
+type CandidatePublicQuestion = {
+  id: string;
+  revision: number;
+  technology: string;
+  level: InterviewLevel;
+  difficultyBand: 'foundation' | 'core' | 'stretch';
+  competency: string;
+  prompt: string;
+  options: Array<{ id: string; label: string }>;
 };
 
 type MockSession = {
@@ -978,6 +991,87 @@ test.describe('Interview Mode setup selection matrix', () => {
         expect(api.currentSession?.questions.map((question) => question.technology))
           .toEqual(questionTechnologies(track.value));
       });
+    }
+  }
+});
+
+test('loads the staged 170-question candidate contract into the MCQ UI', async ({ page }) => {
+  const candidateRoot = path.resolve(
+    process.cwd(),
+    '../content-drafts/interview-mcq/generated/candidate-1.2.0',
+  );
+  const publicArtifact = JSON.parse(fs.readFileSync(
+    path.join(candidateRoot, 'frontend-interview-bank-v1.public.json'),
+    'utf8',
+  )) as {
+    bankVersion: string;
+    status: string;
+    items: CandidatePublicQuestion[];
+  };
+  const releaseArtifact = JSON.parse(fs.readFileSync(
+    path.join(candidateRoot, 'frontend-interview-bank-v1.release.json'),
+    'utf8',
+  )) as { itemCount: number; contentHash: string; status: string };
+
+  expect(publicArtifact.bankVersion).toBe('1.2.0');
+  expect(publicArtifact.status).toBe('candidate');
+  expect(publicArtifact.items).toHaveLength(170);
+  expect(releaseArtifact).toEqual(expect.objectContaining({
+    itemCount: 170,
+    status: 'candidate',
+    contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+  }));
+
+  const selectedIds = [
+    'int-js-number-finite-input-validation-jr-v1',
+    'int-js-urlsearchparams-repeated-value-contract-jr-v1',
+    'int-js-optional-chain-side-effect-short-circuit-jr-v1',
+    'int-html-details-summary-disclosure-jr-v1',
+    'int-css-custom-property-fallback-resolution-jr-v1',
+  ];
+  const byId = new Map(publicArtifact.items.map((item) => [item.id, item]));
+  const selected = selectedIds.map((id) => {
+    const item = byId.get(id);
+    expect(item, `${id} must exist in the candidate artifact`).toBeTruthy();
+    return item as CandidatePublicQuestion;
+  });
+  expect(selected.map((item) => item.technology)).toEqual([
+    'javascript',
+    'javascript',
+    'javascript',
+    'html',
+    'css',
+  ]);
+  expect(selected.map((item) => item.difficultyBand).sort()).toEqual([
+    'core',
+    'core',
+    'core',
+    'foundation',
+    'stretch',
+  ]);
+
+  const session = buildSession('junior', 'core-web', 'candidate-1-2-ui-session');
+  session.bankVersion = publicArtifact.bankVersion;
+  session.questions = selected.map((item) => ({
+    id: item.id,
+    revision: item.revision,
+    technology: item.technology,
+    competency: item.competency,
+    prompt: item.prompt,
+    options: item.options,
+    selectedOptionId: null,
+  }));
+  const api = new InterviewApiMock({ initialSession: session });
+  await seedAuthenticatedInterview(page, api);
+
+  await page.goto(`/interview/${session.id}`);
+  await expect(page.getByTestId('interview-session')).toBeVisible();
+  for (let index = 0; index < selected.length; index += 1) {
+    await page.locator('.question-nav button').nth(index).click();
+    await expect(page.getByText(selected[index].prompt, { exact: true })).toBeVisible();
+    await expect(page.locator('fieldset input[type="radio"]')).toHaveCount(3);
+    for (const option of selected[index].options) {
+      await expect(page.getByText(option.label, { exact: true })).toBeVisible();
     }
   }
 });

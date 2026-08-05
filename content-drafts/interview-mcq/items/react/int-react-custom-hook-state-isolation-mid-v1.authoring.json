@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-custom-hook-state-isolation-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "custom-hook-state-isolation",
+    "prompt": "`useDraftName()` contains `useState` and is called by two sibling React 19.2 editors. Updating one editor leaves the other unchanged, but product now requires one shared draft. What does the current behavior mean, and where should the shared value move?",
+    "options": [
+      {
+        "id": "choice-0c9bcc5d12",
+        "label": "Each Hook call owns separate state; lift the draft to their common parent or a shared external store."
+      },
+      {
+        "id": "choice-7516ab19e4",
+        "label": "Both Hook calls share one state slot; wrap the returned setter with `useCallback` to publish updates."
+      },
+      {
+        "id": "choice-e463149867",
+        "label": "Custom Hooks cannot own state; replace the Hook with duplicated `useState` calls in both editors."
+      }
+    ],
+    "estimatedSeconds": 95
+  },
+  "private": {
+    "correctOptionId": "choice-0c9bcc5d12",
+    "optionRationales": [
+      {
+        "optionId": "choice-0c9bcc5d12",
+        "verdict": "correct",
+        "explanation": "The custom Hook shares its stateful implementation, while each call receives independent state until ownership is lifted or externalized.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-7516ab19e4",
+        "verdict": "incorrect",
+        "explanation": "Memoizing a setter reference does not connect the separate state slots created by two custom Hook calls.",
+        "plausibility": "A stable callback can be passed between components without changing identity on each render.",
+        "misconceptionTag": "stable-setter-shares-hook-state",
+        "falsifyingConstraint": "The sibling components currently observe independent values after one setter runs."
+      },
+      {
+        "optionId": "choice-e463149867",
+        "verdict": "incorrect",
+        "explanation": "Custom Hooks may call `useState`; duplicating that call in each component would preserve the same isolation instead of sharing data.",
+        "plausibility": "Extracting state calls back into components can make the ownership locations visible in each file.",
+        "misconceptionTag": "custom-hooks-cannot-contain-state",
+        "falsifyingConstraint": "The requirement is one shared draft rather than two independently declared values."
+      }
+    ],
+    "answerProof": {
+      "summary": "Custom Hooks reuse stateful logic, not a state instance. Each call remains independent, so the single draft must be owned above both editors or by a shared store they both subscribe to.",
+      "decisiveConstraints": [
+        "Two sibling components call the custom Hook separately.",
+        "Their current updates are isolated.",
+        "The new requirement is a single shared draft value."
+      ],
+      "claims": [
+        {
+          "statement": "Custom Hooks share stateful logic but not state itself, and separate calls to the same Hook are independent.",
+          "sourceIds": [
+            "react19-custom-hooks"
+          ]
+        },
+        {
+          "statement": "When multiple components need to coordinate the same state, React recommends lifting that state to their common owner.",
+          "sourceIds": [
+            "react19-custom-hooks"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "custom Hook state isolation",
+      "lifting state",
+      "shared store ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Reusing Logic with Custom Hooks",
+        "url": "https://react.dev/learn/reusing-logic-with-custom-hooks",
+        "sourceId": "react19-custom-hooks"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-custom-hooks",
+          "title": "React: Reusing Logic with Custom Hooks",
+          "url": "https://react.dev/learn/reusing-logic-with-custom-hooks",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

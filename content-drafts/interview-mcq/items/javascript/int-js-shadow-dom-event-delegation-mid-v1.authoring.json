@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-shadow-dom-event-delegation-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "shadow-dom-event-delegation",
+    "prompt": "A document-level click delegate must identify a `[data-action]` button rendered inside an open shadow root. The composed click reaches the document, but `event.target` is retargeted to the custom-element host. Which lookup preserves delegation across the boundary?",
+    "options": [
+      {
+        "id": "choice-0a91c9db45",
+        "label": "Call `event.target.closest('[data-action]')` because bubbling restores the original inner target."
+      },
+      {
+        "id": "choice-9f74d6456d",
+        "label": "Inspect `event.composedPath()` and select the first Element that matches `[data-action]`."
+      },
+      {
+        "id": "choice-ad9468f978",
+        "label": "Call `event.currentTarget.closest('[data-action]')` because it tracks the click origin while bubbling."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-9f74d6456d",
+    "answerProof": {
+      "summary": "Outside a shadow tree, event.target can be retargeted to preserve encapsulation. For a composed event from an open shadow root, composedPath exposes the propagation path and allows the delegate to find the inner action element.",
+      "decisiveConstraints": [
+        "The action button is inside an open shadow root.",
+        "The click is composed and reaches the document delegate.",
+        "The visible event target at the document is the component host."
+      ],
+      "claims": [
+        {
+          "statement": "Event.composedPath returns the event's path, while nodes in closed shadow trees are omitted from the returned path.",
+          "sourceIds": [
+            "mdn-event-composedpath"
+          ]
+        },
+        {
+          "statement": "Events crossing a shadow boundary can be retargeted so listeners outside the shadow DOM observe the host instead of the internal target.",
+          "sourceIds": [
+            "mdn-shadow-dom-events"
+          ]
+        },
+        {
+          "statement": "Event.currentTarget identifies the element whose event handler is currently running, not the element where the event originated.",
+          "sourceIds": [
+            "mdn-event-currenttarget"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-0a91c9db45",
+        "verdict": "incorrect",
+        "explanation": "At the document listener the target is the host, so closest cannot traverse down into the host's shadow tree to find the button.",
+        "plausibility": "Closest-based delegation works for ordinary light-DOM descendants and bubbling events.",
+        "misconceptionTag": "bubbling-reverses-shadow-retargeting",
+        "falsifyingConstraint": "The document listener observes the custom-element host as event.target."
+      },
+      {
+        "optionId": "choice-9f74d6456d",
+        "verdict": "correct",
+        "explanation": "The composed path includes the open shadow tree's internal route, allowing the delegate to locate the matching action element.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-ad9468f978",
+        "verdict": "incorrect",
+        "explanation": "CurrentTarget is the document while that listener runs, so it does not identify the button or the component host.",
+        "plausibility": "The property changes as an event moves through listeners, which can sound like origin tracking.",
+        "misconceptionTag": "currenttarget-is-original-dispatch-node",
+        "falsifyingConstraint": "The lookup must inspect the event's origin path rather than the listener registration node."
+      }
+    ],
+    "remediationTopics": [
+      "shadow-dom-event-retargeting",
+      "event-composed-path",
+      "event-delegation"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Event.composedPath()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Event/composedPath",
+        "sourceId": "mdn-event-composedpath"
+      },
+      {
+        "title": "MDN: Using shadow DOM — Events",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM#events",
+        "sourceId": "mdn-shadow-dom-events"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-event-composedpath",
+          "title": "MDN: Event.composedPath()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Event/composedPath",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-shadow-dom-events",
+          "title": "MDN: Using shadow DOM — Events",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM#events",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-event-currenttarget",
+          "title": "MDN: Event.currentTarget",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

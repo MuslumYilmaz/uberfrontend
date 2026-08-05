@@ -23,8 +23,11 @@ const systemDesignArtifactNames = Object.freeze({
 });
 const expectedScenarios = Object.freeze({
   "int-sd-toast-lifecycle-jr-v1": { level: "junior", timeLimitSeconds: 600 },
+  "int-sd-image-upload-lifecycle-jr-v1": { level: "junior", timeLimitSeconds: 600 },
   "int-sd-autocomplete-race-mid-v1": { level: "mid", timeLimitSeconds: 900 },
   "int-sd-ai-chat-composer-mid-v1": { level: "mid", timeLimitSeconds: 900 },
+  "int-sd-live-chart-pipeline-mid-v1": { level: "mid", timeLimitSeconds: 900 },
+  "int-sd-dashboard-layout-sr-v1": { level: "senior", timeLimitSeconds: 1200 },
   "int-sd-ranked-feed-sr-v1": { level: "senior", timeLimitSeconds: 1200 },
 });
 const expectedScenarioCount = Object.keys(expectedScenarios).length;
@@ -1136,6 +1139,8 @@ export function validateBuiltSystemDesignContent(built) {
         || !Array.isArray(contradiction.axisIds)
         || !contradiction.axisIds.length
         || contradiction.axisIds.some((id) => !expectedAxisIds.includes(id))
+        || typeof contradiction.summary !== "string"
+        || !contradiction.summary.trim()
       ) {
         errors.push(`${scenario.id}/${contradiction.id}: contradiction metadata is invalid.`);
       }

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-callback-ref-cleanup-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "callback-ref-cleanup",
+    "prompt": "React 19.2 list virtualization stores each mounted row node in a `Map` through a callback ref. Rows can be replaced, and Strict Mode probes setup and cleanup. Which callback contract keeps the registry aligned without depending on a later `null` callback?",
+    "options": [
+      {
+        "id": "choice-1809451564",
+        "label": "Insert each node into the map and clear the entire registry from the parent component's passive Effect."
+      },
+      {
+        "id": "choice-45603210d0",
+        "label": "Insert each node into the map and remove its key only when the list's item count changes."
+      },
+      {
+        "id": "choice-a49841ae0c",
+        "label": "Insert the received node and return a cleanup function that removes that row's exact map entry."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-a49841ae0c",
+    "optionRationales": [
+      {
+        "optionId": "choice-1809451564",
+        "verdict": "incorrect",
+        "explanation": "Clearing the whole registry is not paired with one ref attachment and can discard entries for rows that remain mounted.",
+        "plausibility": "A parent Effect cleanup is a familiar place to release resources owned by a mounted component.",
+        "misconceptionTag": "parent-effect-owns-row-ref-entry",
+        "falsifyingConstraint": "Each row replacement needs cleanup scoped to that row's attachment lifetime."
+      },
+      {
+        "optionId": "choice-45603210d0",
+        "verdict": "incorrect",
+        "explanation": "A row can be replaced while the item count stays constant, leaving a stale node registered under that key.",
+        "plausibility": "List length changes often accompany insertions and removals that alter mounted row nodes.",
+        "misconceptionTag": "item-count-represents-ref-lifetime",
+        "falsifyingConstraint": "Replacement can detach a node without changing the number of rows."
+      },
+      {
+        "optionId": "choice-a49841ae0c",
+        "verdict": "correct",
+        "explanation": "React invokes the returned function when that ref detaches, so setup and cleanup own the same keyed map entry.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "React 19 callback refs may return cleanup functions. Registering the row and returning deletion of that exact entry pairs ownership with attachment, including replacement and Strict Mode's development probe.",
+      "decisiveConstraints": [
+        "Rows may detach without changing list length.",
+        "Cleanup must correspond to one row-node attachment.",
+        "The implementation targets React 19.2 callback-ref semantics."
+      ],
+      "claims": [
+        {
+          "statement": "React 19 permits a callback ref to return a cleanup function that React invokes when the ref is detached.",
+          "sourceIds": [
+            "react19-callback-ref"
+          ]
+        },
+        {
+          "statement": "Strict Mode runs an extra development-only setup and cleanup cycle for callback refs to test symmetric cleanup.",
+          "sourceIds": [
+            "react19-callback-ref"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "callback ref cleanup",
+      "DOM registry ownership",
+      "Strict Mode ref probes"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Ref callbacks",
+        "url": "https://react.dev/reference/react-dom/components/common#ref-callback",
+        "sourceId": "react19-callback-ref"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-callback-ref",
+          "title": "React: Ref callbacks",
+          "url": "https://react.dev/reference/react-dom/components/common#ref-callback",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

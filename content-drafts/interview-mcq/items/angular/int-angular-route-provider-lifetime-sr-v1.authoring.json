@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-route-provider-lifetime-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "route-provider-lifetime",
+    "prompt": "An Angular 22 workspace has separate top-level `editor` and `review` route branches. Each branch needs one draft session shared by its descendants, the two branches must never share a session, and editor state must survive while its detached route handle is cached for reattachment. Which ownership design aligns those lifetimes?",
+    "options": [
+      {
+        "id": "choice-35ca2dd78d",
+        "label": "Provide one root draft session, reset it on every `NavigationEnd`, and let both branches share the application injector while handles retain components."
+      },
+      {
+        "id": "choice-0708dfca59",
+        "label": "Provide a draft session in every routed component and serialize each child before the reuse strategy detaches its top-level branch."
+      },
+      {
+        "id": "choice-cc726ebfc7",
+        "label": "Provide a session on each top-level route and let the reuse strategy retain that route's detached handle for its branch-cache lifetime."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-cc726ebfc7",
+    "optionRationales": [
+      {
+        "optionId": "choice-35ca2dd78d",
+        "verdict": "incorrect",
+        "explanation": "A root provider makes editor and review share one mutable instance, while navigation-event resets race with detached branches whose state remains cached.",
+        "plausibility": "A root service offers one stable application-lifetime instance that any routed descendant can inject.",
+        "misconceptionTag": "navigation-events-create-route-scoped-lifetime",
+        "falsifyingConstraint": "The two route branches require isolated sessions whose retained lifetimes can overlap."
+      },
+      {
+        "optionId": "choice-0708dfca59",
+        "verdict": "incorrect",
+        "explanation": "Per-component providers fragment one branch session across descendants, while serialization substitutes for the live branch ownership already retained by the route handle.",
+        "plausibility": "Component providers isolate local state, and serialization can preserve state across component destruction.",
+        "misconceptionTag": "component-providers-form-one-route-session",
+        "falsifyingConstraint": "All descendants of a top-level branch must share the same live session instance."
+      },
+      {
+        "optionId": "choice-cc726ebfc7",
+        "verdict": "correct",
+        "explanation": "Each top-level route provider creates an isolated branch injector shared by its descendants, and retaining the detached handle deliberately keeps that branch state available for reattachment.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "Route-level providers align each session with one branch injector, while the reuse strategy's cached detached handle extends the editor branch lifetime for reattachment without moving ownership to the application root.",
+      "decisiveConstraints": [
+        "Editor and review need distinct service instances.",
+        "Descendants inside one route branch need the same instance.",
+        "A cached detached handle must retain the editor branch state for later reattachment."
+      ],
+      "claims": [
+        {
+          "statement": "Angular creates an EnvironmentInjector for a route's providers and makes those providers available to that route and its children.",
+          "sourceIds": [
+            "angular22-route-api"
+          ]
+        },
+        {
+          "statement": "A detached route handle preserves the route component hierarchy and associated state for later reattachment.",
+          "sourceIds": [
+            "angular22-route-reuse"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular route providers",
+      "EnvironmentInjector ownership",
+      "detached route state retention"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Route API",
+        "url": "https://angular.dev/api/router/Route",
+        "sourceId": "angular22-route-api"
+      },
+      {
+        "title": "Angular 22: Customizing route behavior",
+        "url": "https://angular.dev/guide/routing/customizing-route-behavior",
+        "sourceId": "angular22-route-reuse"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-route-api",
+          "title": "Angular 22: Route API",
+          "url": "https://angular.dev/api/router/Route",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-route-reuse",
+          "title": "Angular 22: Customizing route behavior",
+          "url": "https://angular.dev/guide/routing/customizing-route-behavior",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

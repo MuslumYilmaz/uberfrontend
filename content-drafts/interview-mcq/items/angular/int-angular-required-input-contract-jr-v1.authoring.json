@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-required-input-contract-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "required-input-contract",
+    "prompt": "In Angular 22, `ProductCard` cannot render meaningfully without a `Product`. Consumers should get a template build error when they omit the binding, and the component should read the latest bound value as a signal. Which declaration matches that contract?",
+    "options": [
+      {
+        "id": "choice-ad29ecc3fb",
+        "label": "Declare `product = input<Product | undefined>()` and throw from `ngOnInit` when the first value is missing."
+      },
+      {
+        "id": "choice-78ae080df9",
+        "label": "Declare `product = input.required<Product>()` and read the current bound value by calling `product()`."
+      },
+      {
+        "id": "choice-1d7a233d74",
+        "label": "Declare `@Input({ required: true }) product!: Product` and read updates from the assigned class property."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-78ae080df9",
+    "optionRationales": [
+      {
+        "optionId": "choice-ad29ecc3fb",
+        "verdict": "incorrect",
+        "explanation": "An optional signal input permits the binding to be omitted, and a runtime lifecycle check cannot provide the requested template build-time contract.",
+        "plausibility": "The component can inspect an optional input during initialization and report a missing value at runtime.",
+        "misconceptionTag": "runtime-check-enforces-required-binding",
+        "falsifyingConstraint": "A consumer that omits the input must be rejected while its template is built."
+      },
+      {
+        "optionId": "choice-78ae080df9",
+        "verdict": "correct",
+        "explanation": "A required signal input makes the binding mandatory to Angular's template checks and exposes the parent's latest value through the signal getter.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-1d7a233d74",
+        "verdict": "incorrect",
+        "explanation": "The decorator metadata makes the binding required, but it exposes an assigned class property rather than the requested InputSignal getter.",
+        "plausibility": "Angular supports required decorator inputs when a component prefers property-based input access.",
+        "misconceptionTag": "required-decorator-input-is-input-signal",
+        "falsifyingConstraint": "Component code must read the latest binding through a signal getter."
+      }
+    ],
+    "answerProof": {
+      "summary": "Angular 22's `input.required` creates a required `InputSignal`, so template consumers must bind it and component code reads its current value through the signal getter.",
+      "decisiveConstraints": [
+        "The input has no meaningful fallback value.",
+        "Omission must fail during template compilation rather than component initialization.",
+        "The component wants signal-based access to the latest parent binding."
+      ],
+      "claims": [
+        {
+          "statement": "Angular reports a build-time error when a template uses a component without setting each input declared through `input.required`.",
+          "sourceIds": [
+            "angular22-component-inputs"
+          ]
+        },
+        {
+          "statement": "Signal inputs expose their latest bound value through an `InputSignal` getter.",
+          "sourceIds": [
+            "angular22-component-inputs"
+          ]
+        },
+        {
+          "statement": "A decorator input can declare required metadata, but it remains a property-based input rather than an InputSignal.",
+          "sourceIds": [
+            "angular22-component-inputs"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular signal inputs",
+      "required component inputs",
+      "template type checking"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Accepting data with input properties",
+        "url": "https://angular.dev/guide/components/inputs",
+        "sourceId": "angular22-component-inputs"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-component-inputs",
+          "title": "Angular 22: Accepting data with input properties",
+          "url": "https://angular.dev/guide/components/inputs",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

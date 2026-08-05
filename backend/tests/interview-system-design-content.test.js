@@ -91,6 +91,9 @@ describe('guided system-design interview content', () => {
     ])).toEqual([
       ['int-sd-ai-chat-composer-mid-v1', 'mid', 900],
       ['int-sd-autocomplete-race-mid-v1', 'mid', 900],
+      ['int-sd-dashboard-layout-sr-v1', 'senior', 1200],
+      ['int-sd-image-upload-lifecycle-jr-v1', 'junior', 600],
+      ['int-sd-live-chart-pipeline-mid-v1', 'mid', 900],
       ['int-sd-ranked-feed-sr-v1', 'senior', 1200],
       ['int-sd-toast-lifecycle-jr-v1', 'junior', 600],
     ]);
@@ -169,6 +172,23 @@ describe('guided system-design interview content', () => {
     ]));
   });
 
+  test('rejects contradiction metadata that runtime artifact loading requires', () => {
+    const errors = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-image-upload-lifecycle-jr-v1"
+      );
+      delete scenario.rubric.contradictions[0].summary;
+      console.log(JSON.stringify(content.validateBuiltSystemDesignContent(built)));
+    `);
+    expect(errors).toEqual(expect.arrayContaining([
+      expect.stringContaining(
+        'int-sd-image-upload-lifecycle-jr-v1/upload-critical-preview-as-asset: '
+        + 'contradiction metadata is invalid'
+      ),
+    ]));
+  });
+
   test('keeps generated public, private, and release artifacts deterministic', () => {
     const filesMatch = runContentProbe(`
       import fs from 'node:fs';
@@ -223,6 +243,918 @@ describe('guided system-design interview content', () => {
         ]),
       }));
     }
+  });
+
+  test('scores both dashboard ownership paths as distinct revision-safe architectures', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-dashboard-layout-sr-v1"
+      );
+      console.log(JSON.stringify({
+        sourceContentId: scenario.sourceEvidence.sourceContentId,
+        sourceBundleHash: scenario.sourceEvidence.bundleHash,
+        fixtures: scenario.validationFixtures
+          .filter((entry) => entry.kind === "strong")
+          .map((fixture) => ({
+            signal: content.scoreSystemDesignFixture(scenario, fixture).practiceSignal,
+            contradictions: content.scoreSystemDesignFixture(scenario, fixture).contradictions,
+            ownershipOptionId: fixture.draft.decisions.find(
+              (entry) => entry.decisionId === "dash-state-ownership"
+            )?.optionId,
+            responsiveOptionId: fixture.draft.decisions.find(
+              (entry) => entry.decisionId === "dash-coordinate-model"
+            )?.optionId,
+            previewOptionId: fixture.draft.decisions.find(
+              (entry) => entry.decisionId === "dash-preview-model"
+            )?.optionId,
+            conflictOptionId: fixture.draft.decisions.find(
+              (entry) => entry.decisionId === "dash-conflict-policy"
+            )?.optionId,
+            changedDecisionIds: fixture.draft.decisions
+              .filter((decision) => fixture.baseline.decisions.some(
+                (baseline) => baseline.decisionId === decision.decisionId
+                  && baseline.optionId !== decision.optionId
+              ))
+              .map((entry) => entry.decisionId),
+            twistActionIds: [...fixture.draft.twistResponseActionIds].sort(),
+          })),
+      }));
+    `);
+
+    expect(result.sourceContentId).toBe('dashboard-widgets-draggable-resizable');
+    expect(result.sourceBundleHash).toBe(
+      '7df74b1748773e5d5d38d3a375d87dd38cea4eeb059b2654b3352abdcaf95cf4'
+    );
+    expect(result.fixtures).toHaveLength(2);
+    expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId)).size).toBe(2);
+    expect(new Set(result.fixtures.map((entry) => entry.responsiveOptionId)).size).toBe(2);
+    expect(new Set(result.fixtures.map((entry) => entry.previewOptionId)).size).toBe(2);
+    for (const fixture of result.fixtures) {
+      expect(fixture).toEqual(expect.objectContaining({
+        signal: 'Strong System Design Session',
+        contradictions: [],
+        conflictOptionId: 'dash-conflict-revision-rebase',
+        changedDecisionIds: ['dash-conflict-policy'],
+        twistActionIds: [
+          'dash-twist-preserve-preview',
+          'dash-twist-rebase-commit',
+        ],
+      }));
+    }
+  });
+
+  test('accepts an already revision-aware dashboard decision before the twist', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-dashboard-layout-sr-v1"
+      );
+      const fixture = structuredClone(scenario.validationFixtures.find(
+        (entry) => entry.kind === "strong"
+      ));
+      const accepted = fixture.draft.decisions.find(
+        (entry) => entry.decisionId === "dash-conflict-policy"
+      );
+      fixture.baseline.decisions = fixture.baseline.decisions.map((entry) => (
+        entry.decisionId === accepted.decisionId ? structuredClone(accepted) : entry
+      ));
+      const score = content.scoreSystemDesignFixture(scenario, fixture);
+      console.log(JSON.stringify({
+        signal: score.practiceSignal,
+        adaptation: score.axes.find(
+          (axis) => axis.id === "adaptation-tradeoffs"
+        ).status,
+        rules: scenario.rubric.axes.find(
+          (axis) => axis.id === "adaptation-tradeoffs"
+        ).criteria.map((criterion) => criterion.rule),
+      }));
+    `);
+
+    expect(result.signal).toBe('Strong System Design Session');
+    expect(result.adaptation).toBe('strong-evidence');
+    expect(JSON.stringify(result.rules)).not.toContain('changedFromBaseline');
+  });
+
+  test('requires the dashboard engine, controller, and accessible controls for strong axes', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.publicPackage.scenarios.find(
+        (entry) => entry.id === "int-sd-dashboard-layout-sr-v1"
+      );
+      const privateScenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === scenario.id
+      );
+      const targets = [
+        ["dash-layout-engine", "architecture-ownership"],
+        ["dash-interaction-controller", "architecture-ownership"],
+        ["dash-accessible-layout-controls", "accessibility-product-ux"],
+      ];
+      const removeCard = (draft, cardId) => {
+        draft.placements = draft.placements.filter(
+          (entry) => entry.cardId !== cardId
+        );
+        draft.connections = draft.connections.filter(
+          (entry) => entry.fromCardId !== cardId && entry.toCardId !== cardId
+        );
+        const nextOrder = new Map();
+        for (const placement of draft.placements) {
+          const order = nextOrder.get(placement.laneId) || 0;
+          placement.order = order;
+          nextOrder.set(placement.laneId, order + 1);
+        }
+      };
+      const outcomes = [];
+      for (const strong of privateScenario.validationFixtures.filter(
+        (entry) => entry.kind === "strong"
+      )) {
+        for (const [cardId, axisId] of targets) {
+          const fixture = structuredClone(strong);
+          removeCard(fixture.draft, cardId);
+          const score = content.scoreSystemDesignFixture(privateScenario, fixture);
+          outcomes.push({
+            fixtureId: strong.id,
+            cardId,
+            validation: content.validateSystemDesignDraft({
+              scenario,
+              privateScenario,
+              draft: fixture.draft,
+              baseline: fixture.baseline,
+            }),
+            signal: score.practiceSignal,
+            axisStatus: score.axes.find((axis) => axis.id === axisId).status,
+          });
+        }
+      }
+      console.log(JSON.stringify(outcomes));
+    `);
+
+    expect(outcomes).toHaveLength(6);
+    for (const outcome of outcomes) {
+      expect(outcome.validation).toEqual([]);
+      expect(outcome.signal).not.toBe('Strong System Design Session');
+      expect(outcome.axisStatus).toBe('needs-focus');
+    }
+  });
+
+  test('caps the dashboard hot-path overwrite conflict as critical', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-dashboard-layout-sr-v1"
+      );
+      const fixture = scenario.validationFixtures.find(
+        (entry) => entry.kind === "critical-conflict"
+      );
+      const score = content.scoreSystemDesignFixture(scenario, fixture);
+      console.log(JSON.stringify({
+        signal: score.practiceSignal,
+        contradictions: score.contradictions,
+        axisStatuses: Object.fromEntries(score.axes.map((axis) => [axis.id, axis.status])),
+        previewOptionId: fixture.draft.decisions.find(
+          (entry) => entry.decisionId === "dash-preview-model"
+        )?.optionId,
+        conflictOptionId: fixture.draft.decisions.find(
+          (entry) => entry.decisionId === "dash-conflict-policy"
+        )?.optionId,
+      }));
+    `);
+
+    expect(result).toEqual(expect.objectContaining({
+      signal: 'Needs Focus',
+      contradictions: expect.arrayContaining([
+        expect.objectContaining({
+          id: 'dash-critical-hot-overwrite',
+          severity: 'critical',
+        }),
+        expect.objectContaining({
+          id: 'dash-critical-widget-pointer',
+          severity: 'critical',
+        }),
+        expect.objectContaining({
+          id: 'dash-critical-twist-overwrite',
+          severity: 'critical',
+        }),
+      ]),
+      previewOptionId: 'dash-preview-per-event-commit',
+      conflictOptionId: 'dash-conflict-force-overwrite',
+      axisStatuses: expect.objectContaining({
+        'data-interface-contracts': 'needs-focus',
+        'resilience-performance': 'needs-focus',
+      }),
+    }));
+  });
+
+  test('scores both live-chart pipelines as distinct burst-safe architectures', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-live-chart-pipeline-mid-v1"
+      );
+      const decision = (draft, decisionId) => draft.decisions.find(
+        (entry) => entry.decisionId === decisionId
+      )?.optionId;
+      console.log(JSON.stringify({
+        sourceContentId: scenario.sourceEvidence.sourceContentId,
+        sourceBundleHash: scenario.sourceEvidence.bundleHash,
+        fixtures: scenario.validationFixtures
+          .filter((entry) => entry.kind === "strong")
+          .map((fixture) => ({
+            id: fixture.id,
+            signal: content.scoreSystemDesignFixture(scenario, fixture).practiceSignal,
+            contradictions: content.scoreSystemDesignFixture(scenario, fixture).contradictions,
+            ownershipOptionId: decision(fixture.draft, "chart-flow-ownership"),
+            retentionOptionId: decision(fixture.draft, "chart-retention-projection"),
+            baselinePaintOptionId: decision(fixture.baseline, "chart-paint-policy"),
+            paintOptionId: decision(fixture.draft, "chart-paint-policy"),
+            baselineRecoveryOptionId: decision(fixture.baseline, "chart-gap-recovery"),
+            recoveryOptionId: decision(fixture.draft, "chart-gap-recovery"),
+            changedDecisionIds: fixture.draft.decisions
+              .filter((entry) => decision(fixture.baseline, entry.decisionId) !== entry.optionId)
+              .map((entry) => entry.decisionId),
+            twistActionIds: [...fixture.draft.twistResponseActionIds].sort(),
+          })),
+      }));
+    `);
+
+    expect(result.sourceContentId).toBe('live-chart-high-frequency-updates');
+    expect(result.sourceBundleHash).toBe(
+      'e16f1020291f83596e2ff5959bad5596a0369fabb1df4c26cffc92e459ebc65f'
+    );
+    expect(result.fixtures).toHaveLength(2);
+    expect(new Set(result.fixtures.map((entry) => [
+      entry.ownershipOptionId,
+      entry.retentionOptionId,
+      entry.paintOptionId,
+      entry.recoveryOptionId,
+    ].join(':'))).size).toBe(2);
+
+    const controllerPath = result.fixtures.find(
+      (entry) => entry.id === 'chart-strong-controller-raw'
+    );
+    const featureStorePath = result.fixtures.find(
+      (entry) => entry.id === 'chart-strong-store-aggregate'
+    );
+    expect(controllerPath).toEqual(expect.objectContaining({
+      signal: 'Strong System Design Session',
+      contradictions: [],
+      ownershipOptionId: 'chart-owner-controller',
+      retentionOptionId: 'chart-retention-bounded-raw',
+      baselinePaintOptionId: 'chart-paint-per-ingress',
+      paintOptionId: 'chart-paint-dirty-frame',
+      baselineRecoveryOptionId: 'chart-recovery-next-live',
+      recoveryOptionId: 'chart-recovery-resume-gap',
+      changedDecisionIds: [
+        'chart-paint-policy',
+        'chart-gap-recovery',
+      ],
+      twistActionIds: [
+        'chart-twist-catch-up-projection',
+        'chart-twist-reconcile-gap',
+      ],
+    }));
+    expect(featureStorePath).toEqual(expect.objectContaining({
+      signal: 'Strong System Design Session',
+      contradictions: [],
+      ownershipOptionId: 'chart-owner-feature-store',
+      retentionOptionId: 'chart-retention-bounded-aggregate',
+      baselinePaintOptionId: 'chart-paint-bounded-commit',
+      paintOptionId: 'chart-paint-bounded-commit',
+      baselineRecoveryOptionId: 'chart-recovery-snapshot',
+      recoveryOptionId: 'chart-recovery-snapshot',
+      changedDecisionIds: [],
+      twistActionIds: [
+        'chart-twist-catch-up-projection',
+        'chart-twist-reconcile-gap',
+      ],
+    }));
+  });
+
+  test('requires the live-chart pipeline boundaries for strong axes', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.publicPackage.scenarios.find(
+        (entry) => entry.id === "int-sd-live-chart-pipeline-mid-v1"
+      );
+      const privateScenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === scenario.id
+      );
+      const targets = [
+        ["live-chart-coordinator", "architecture-ownership"],
+        ["paint-scheduler", "resilience-performance"],
+        ["series-window", "data-interface-contracts"],
+        ["viewport-projector", "data-interface-contracts"],
+        ["accessible-chart-inspector", "accessibility-product-ux"],
+      ];
+      const removeCard = (draft, cardId) => {
+        draft.placements = draft.placements.filter(
+          (entry) => entry.cardId !== cardId
+        );
+        draft.connections = draft.connections.filter(
+          (entry) => entry.fromCardId !== cardId && entry.toCardId !== cardId
+        );
+        const nextOrder = new Map();
+        for (const placement of draft.placements) {
+          const order = nextOrder.get(placement.laneId) || 0;
+          placement.order = order;
+          nextOrder.set(placement.laneId, order + 1);
+        }
+      };
+      const outcomes = [];
+      for (const strong of privateScenario.validationFixtures.filter(
+        (entry) => entry.kind === "strong"
+      )) {
+        for (const [cardId, axisId] of targets) {
+          const fixture = structuredClone(strong);
+          removeCard(fixture.draft, cardId);
+          const score = content.scoreSystemDesignFixture(privateScenario, fixture);
+          outcomes.push({
+            fixtureId: strong.id,
+            cardId,
+            validation: content.validateSystemDesignDraft({
+              scenario,
+              privateScenario,
+              draft: fixture.draft,
+              baseline: fixture.baseline,
+            }),
+            signal: score.practiceSignal,
+            axisStatus: score.axes.find((axis) => axis.id === axisId).status,
+          });
+        }
+      }
+      console.log(JSON.stringify(outcomes));
+    `);
+
+    expect(outcomes).toHaveLength(10);
+    for (const outcome of outcomes) {
+      expect(outcome.validation).toEqual([]);
+      expect(outcome.signal).not.toBe('Strong System Design Session');
+      expect(outcome.axisStatus).not.toBe('strong-evidence');
+    }
+  });
+
+  test('requires accepted gap recovery and a catch-up projection after the chart twist', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-live-chart-pipeline-mid-v1"
+      );
+      const outcomes = [];
+      for (const strong of scenario.validationFixtures.filter(
+        (entry) => entry.kind === "strong"
+      )) {
+        const deletedRecovery = structuredClone(strong);
+        deletedRecovery.draft.decisions = deletedRecovery.draft.decisions.filter(
+          (entry) => entry.decisionId !== "chart-gap-recovery"
+        );
+        const wrongRecovery = structuredClone(strong);
+        wrongRecovery.draft.decisions = wrongRecovery.draft.decisions.map((entry) => (
+          entry.decisionId === "chart-gap-recovery"
+            ? {
+              decisionId: entry.decisionId,
+              optionId: "chart-recovery-next-live",
+              rationaleIds: ["chart-rationale-fast-live"],
+            }
+            : entry
+        ));
+        const missingGapReconciliation = structuredClone(strong);
+        missingGapReconciliation.draft.twistResponseActionIds = (
+          missingGapReconciliation.draft.twistResponseActionIds.filter(
+            (id) => id !== "chart-twist-reconcile-gap"
+          )
+        );
+        const wrongGapReconciliation = structuredClone(strong);
+        wrongGapReconciliation.draft.twistResponseActionIds = (
+          wrongGapReconciliation.draft.twistResponseActionIds.map((id) => (
+            id === "chart-twist-reconcile-gap"
+              ? "chart-twist-mark-live"
+              : id
+          ))
+        );
+        const missingCatchUp = structuredClone(strong);
+        missingCatchUp.draft.twistResponseActionIds = (
+          missingCatchUp.draft.twistResponseActionIds.filter(
+            (id) => id !== "chart-twist-catch-up-projection"
+          )
+        );
+        const wrongCatchUp = structuredClone(strong);
+        wrongCatchUp.draft.twistResponseActionIds = (
+          wrongCatchUp.draft.twistResponseActionIds.map((id) => (
+            id === "chart-twist-catch-up-projection"
+              ? "chart-twist-replay-paints"
+              : id
+          ))
+        );
+        for (const [mutation, fixture] of [
+          ["deleted-recovery", deletedRecovery],
+          ["wrong-recovery", wrongRecovery],
+          ["missing-gap-reconciliation", missingGapReconciliation],
+          ["wrong-gap-reconciliation", wrongGapReconciliation],
+          ["missing-catch-up", missingCatchUp],
+          ["wrong-catch-up", wrongCatchUp],
+        ]) {
+          const score = content.scoreSystemDesignFixture(scenario, fixture);
+          outcomes.push({
+            fixtureId: strong.id,
+            mutation,
+            signal: score.practiceSignal,
+            adaptation: score.axes.find(
+              (axis) => axis.id === "adaptation-tradeoffs"
+            ).status,
+          });
+        }
+      }
+      console.log(JSON.stringify(outcomes));
+    `);
+
+    expect(outcomes).toHaveLength(12);
+    for (const outcome of outcomes) {
+      expect(outcome.signal).not.toBe('Strong System Design Session');
+      expect(outcome.adaptation).toBe('needs-focus');
+    }
+  });
+
+  test('caps each isolated live-chart conflict as critical', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-live-chart-pipeline-mid-v1"
+      );
+      const strong = scenario.validationFixtures.find(
+        (entry) => entry.id === "chart-strong-controller-raw"
+      );
+      const withDecision = (fixture, decisionId, optionId, rationaleId) => {
+        fixture.draft.decisions = fixture.draft.decisions.map((entry) => (
+          entry.decisionId === decisionId
+            ? { decisionId, optionId, rationaleIds: [rationaleId] }
+            : entry
+        ));
+      };
+
+      const paintRetentionGap = structuredClone(strong);
+      withDecision(
+        paintRetentionGap,
+        "chart-retention-projection",
+        "chart-retention-paint-driven",
+        "chart-rationale-display-memory"
+      );
+      withDecision(
+        paintRetentionGap,
+        "chart-gap-recovery",
+        "chart-recovery-next-live",
+        "chart-rationale-fast-live"
+      );
+
+      const ingressReplay = structuredClone(strong);
+      withDecision(
+        ingressReplay,
+        "chart-paint-policy",
+        "chart-paint-per-ingress",
+        "chart-rationale-lowest-latency"
+      );
+      ingressReplay.draft.twistResponseActionIds = [
+        "chart-twist-reconcile-gap",
+        "chart-twist-replay-paints",
+      ];
+
+      const inaccessibleFreshGap = structuredClone(strong);
+      inaccessibleFreshGap.draft.placements = inaccessibleFreshGap.draft.placements.filter(
+        (entry) => entry.cardId !== "accessible-chart-inspector"
+      );
+      inaccessibleFreshGap.draft.connections = inaccessibleFreshGap.draft.connections.filter(
+        (entry) => entry.fromCardId !== "accessible-chart-inspector"
+          && entry.toCardId !== "accessible-chart-inspector"
+      );
+      withDecision(
+        inaccessibleFreshGap,
+        "chart-gap-recovery",
+        "chart-recovery-next-live",
+        "chart-rationale-fast-live"
+      );
+      inaccessibleFreshGap.draft.twistResponseActionIds = [
+        "chart-twist-catch-up-projection",
+        "chart-twist-mark-live",
+      ];
+
+      console.log(JSON.stringify([
+        ["paint-retention-gap", paintRetentionGap],
+        ["ingress-replay", ingressReplay],
+        ["inaccessible-fresh-gap", inaccessibleFreshGap],
+      ].map(([mutation, fixture]) => {
+        const score = content.scoreSystemDesignFixture(scenario, fixture);
+        return {
+          mutation,
+          signal: score.practiceSignal,
+          contradictions: score.contradictions,
+        };
+      })));
+    `);
+
+    expect(outcomes).toEqual([
+      expect.objectContaining({
+        mutation: 'paint-retention-gap',
+        signal: 'Needs Focus',
+        contradictions: expect.arrayContaining([
+          { id: 'chart-critical-paint-retention-gap', severity: 'critical' },
+        ]),
+      }),
+      expect.objectContaining({
+        mutation: 'ingress-replay',
+        signal: 'Needs Focus',
+        contradictions: expect.arrayContaining([
+          { id: 'chart-critical-ingress-replay', severity: 'critical' },
+        ]),
+      }),
+      expect.objectContaining({
+        mutation: 'inaccessible-fresh-gap',
+        signal: 'Needs Focus',
+        contradictions: expect.arrayContaining([
+          { id: 'chart-critical-inaccessible-fresh-gap', severity: 'critical' },
+        ]),
+      }),
+    ]);
+  });
+
+  test('caps the combined live-chart replay, retention, and freshness conflicts as critical', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-live-chart-pipeline-mid-v1"
+      );
+      const fixture = scenario.validationFixtures.find(
+        (entry) => entry.kind === "critical-conflict"
+      );
+      const score = content.scoreSystemDesignFixture(scenario, fixture);
+      console.log(JSON.stringify({
+        fixtureId: fixture.id,
+        signal: score.practiceSignal,
+        contradictions: score.contradictions,
+      }));
+    `);
+
+    expect(result).toEqual(expect.objectContaining({
+      fixtureId: 'chart-critical-surface-replay',
+      signal: 'Needs Focus',
+      contradictions: expect.arrayContaining([
+        { id: 'chart-critical-paint-retention-gap', severity: 'critical' },
+        { id: 'chart-critical-ingress-replay', severity: 'critical' },
+        { id: 'chart-critical-inaccessible-fresh-gap', severity: 'critical' },
+      ]),
+    }));
+  });
+
+  test('scores both image-upload ownership and transfer paths as reliable architectures', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-image-upload-lifecycle-jr-v1"
+      );
+      console.log(JSON.stringify({
+        sourceContentId: scenario.sourceEvidence.sourceContentId,
+        sourceBundleHash: scenario.sourceEvidence.bundleHash,
+        fixtures: scenario.validationFixtures
+          .filter((entry) => entry.kind === "strong")
+          .map((fixture) => {
+            const decision = (draft, decisionId) => draft.decisions.find(
+              (entry) => entry.decisionId === decisionId
+            )?.optionId;
+            return {
+              signal: content.scoreSystemDesignFixture(scenario, fixture).practiceSignal,
+              contradictions: content.scoreSystemDesignFixture(scenario, fixture).contradictions,
+              ownershipOptionId: decision(fixture.draft, "upload-workflow-ownership"),
+              transferOptionId: decision(fixture.draft, "upload-transfer-contract"),
+              baselineReplacementOptionId: decision(
+                fixture.baseline,
+                "upload-replacement-policy"
+              ),
+              replacementOptionId: decision(fixture.draft, "upload-replacement-policy"),
+              changedReplacement: decision(fixture.baseline, "upload-replacement-policy")
+                !== decision(fixture.draft, "upload-replacement-policy"),
+              twistActionIds: [...fixture.draft.twistResponseActionIds].sort(),
+            };
+          }),
+      }));
+    `);
+
+    expect(result.sourceContentId).toBe('image-upload-preview');
+    expect(result.sourceBundleHash).toBe(
+      '599ee39973678520354d6d7fbeac020b54b5964b0a8c0cb98035b032a4dbb348'
+    );
+    expect(result.fixtures).toHaveLength(2);
+    expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId))).toEqual(new Set([
+      'upload-owner-controller',
+      'upload-owner-feature-store',
+    ]));
+    expect(new Set(result.fixtures.map((entry) => entry.transferOptionId))).toEqual(new Set([
+      'upload-transfer-direct-asset',
+      'upload-transfer-session-finalize',
+    ]));
+
+    const controllerPath = result.fixtures.find(
+      (entry) => entry.ownershipOptionId === 'upload-owner-controller'
+    );
+    const featureStorePath = result.fixtures.find(
+      (entry) => entry.ownershipOptionId === 'upload-owner-feature-store'
+    );
+    expect(controllerPath).toEqual(expect.objectContaining({
+      signal: 'Strong System Design Session',
+      contradictions: [],
+      transferOptionId: 'upload-transfer-direct-asset',
+      replacementOptionId: 'upload-replace-attempt-identity',
+      changedReplacement: true,
+      twistActionIds: [
+        'upload-twist-cleanup-a',
+        'upload-twist-obsolete-a',
+      ],
+    }));
+    expect(featureStorePath).toEqual(expect.objectContaining({
+      signal: 'Strong System Design Session',
+      contradictions: [],
+      transferOptionId: 'upload-transfer-session-finalize',
+      baselineReplacementOptionId: 'upload-replace-attempt-identity',
+      replacementOptionId: 'upload-replace-attempt-identity',
+      changedReplacement: false,
+      twistActionIds: [
+        'upload-twist-cleanup-a',
+        'upload-twist-obsolete-a',
+      ],
+    }));
+  });
+
+  test('requires the acceptance-critical image-upload boundaries for strong axes', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.publicPackage.scenarios.find(
+        (entry) => entry.id === "int-sd-image-upload-lifecycle-jr-v1"
+      );
+      const privateScenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === scenario.id
+      );
+      const targets = [
+        ["accessible-upload-status", "accessibility-product-ux"],
+        ["upload-attempt-controller", "architecture-ownership"],
+        ["upload-client", "data-interface-contracts"],
+      ];
+      const removeCard = (draft, cardId) => {
+        draft.placements = draft.placements.filter(
+          (entry) => entry.cardId !== cardId
+        );
+        draft.connections = draft.connections.filter(
+          (entry) => entry.fromCardId !== cardId && entry.toCardId !== cardId
+        );
+        const nextOrder = new Map();
+        for (const placement of draft.placements) {
+          const order = nextOrder.get(placement.laneId) || 0;
+          placement.order = order;
+          nextOrder.set(placement.laneId, order + 1);
+        }
+      };
+      const outcomes = [];
+      for (const strong of privateScenario.validationFixtures.filter(
+        (entry) => entry.kind === "strong"
+      )) {
+        for (const [cardId, axisId] of targets) {
+          const fixture = structuredClone(strong);
+          removeCard(fixture.draft, cardId);
+          const score = content.scoreSystemDesignFixture(privateScenario, fixture);
+          outcomes.push({
+            fixtureId: strong.id,
+            cardId,
+            validation: content.validateSystemDesignDraft({
+              scenario,
+              privateScenario,
+              draft: fixture.draft,
+              baseline: fixture.baseline,
+            }),
+            signal: score.practiceSignal,
+            axisStatus: score.axes.find((axis) => axis.id === axisId).status,
+          });
+        }
+      }
+      console.log(JSON.stringify(outcomes));
+    `);
+
+    expect(outcomes).toHaveLength(6);
+    for (const outcome of outcomes) {
+      expect(outcome.validation).toEqual([]);
+      expect(outcome.signal).not.toBe('Strong System Design Session');
+      expect(outcome.axisStatus).toBe('needs-focus');
+    }
+  });
+
+  test('requires an accepted image replacement policy after the twist', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-image-upload-lifecycle-jr-v1"
+      );
+      const outcomes = [];
+      for (const strong of scenario.validationFixtures.filter(
+        (entry) => entry.kind === "strong"
+      )) {
+        const deleted = structuredClone(strong);
+        deleted.draft.decisions = deleted.draft.decisions.filter(
+          (entry) => entry.decisionId !== "upload-replacement-policy"
+        );
+        const stale = structuredClone(strong);
+        stale.draft.decisions = stale.draft.decisions.map((entry) => (
+          entry.decisionId === "upload-replacement-policy"
+            ? {
+              decisionId: entry.decisionId,
+              optionId: "upload-replace-callback-order",
+              rationaleIds: [],
+            }
+            : entry
+        ));
+        for (const [mutation, fixture] of [["deleted", deleted], ["stale", stale]]) {
+          const score = content.scoreSystemDesignFixture(scenario, fixture);
+          outcomes.push({
+            fixtureId: strong.id,
+            mutation,
+            signal: score.practiceSignal,
+            adaptation: score.axes.find(
+              (axis) => axis.id === "adaptation-tradeoffs"
+            ).status,
+          });
+        }
+      }
+      console.log(JSON.stringify(outcomes));
+    `);
+
+    expect(outcomes).toHaveLength(4);
+    for (const outcome of outcomes) {
+      expect(outcome.signal).not.toBe('Strong System Design Session');
+      expect(outcome.adaptation).toBe('needs-focus');
+    }
+  });
+
+  test('caps isolated preview-as-asset and stale-overwrite mutations as critical', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-image-upload-lifecycle-jr-v1"
+      );
+      const strong = scenario.validationFixtures.find(
+        (entry) => entry.id === "upload-strong-controller-direct"
+      );
+      const previewAsAsset = structuredClone(strong);
+      previewAsAsset.draft.decisions = previewAsAsset.draft.decisions.map((entry) => (
+        entry.decisionId === "upload-transfer-contract"
+          ? {
+            decisionId: entry.decisionId,
+            optionId: "upload-transfer-preview-complete",
+            rationaleIds: ["upload-rationale-early-value"],
+          }
+          : entry
+      ));
+      const staleOverwrite = structuredClone(strong);
+      staleOverwrite.draft.decisions = staleOverwrite.draft.decisions.map((entry) => (
+        entry.decisionId === "upload-replacement-policy"
+          ? {
+            decisionId: entry.decisionId,
+            optionId: "upload-replace-callback-order",
+            rationaleIds: ["upload-rationale-response-order"],
+          }
+          : entry
+      ));
+      staleOverwrite.draft.twistResponseActionIds = [
+        "upload-twist-commit-a",
+        "upload-twist-latest-callback",
+      ];
+      console.log(JSON.stringify([
+        ["preview", content.scoreSystemDesignFixture(scenario, previewAsAsset)],
+        ["stale", content.scoreSystemDesignFixture(scenario, staleOverwrite)],
+      ].map(([mutation, score]) => ({
+        mutation,
+        signal: score.practiceSignal,
+        contradictions: score.contradictions,
+      }))));
+    `);
+
+    expect(outcomes).toEqual([
+      expect.objectContaining({
+        mutation: 'preview',
+        signal: 'Needs Focus',
+        contradictions: expect.arrayContaining([
+          { id: 'upload-critical-preview-as-asset', severity: 'critical' },
+        ]),
+      }),
+      expect.objectContaining({
+        mutation: 'stale',
+        signal: 'Needs Focus',
+        contradictions: expect.arrayContaining([
+          { id: 'upload-critical-stale-overwrite', severity: 'critical' },
+        ]),
+      }),
+    ]);
+  });
+
+  test('caps preview-as-asset, stale overwrite, and inaccessible leaks as critical', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-image-upload-lifecycle-jr-v1"
+      );
+      const fixture = scenario.validationFixtures.find(
+        (entry) => entry.kind === "critical-conflict"
+      );
+      const score = content.scoreSystemDesignFixture(scenario, fixture);
+      console.log(JSON.stringify({
+        signal: score.practiceSignal,
+        contradictions: score.contradictions,
+        axisStatuses: Object.fromEntries(score.axes.map((axis) => [axis.id, axis.status])),
+        cardIds: fixture.draft.placements.map((placement) => placement.cardId),
+      }));
+    `);
+
+    expect(result).toEqual(expect.objectContaining({
+      signal: 'Needs Focus',
+      contradictions: expect.arrayContaining([
+        expect.objectContaining({
+          id: 'upload-critical-preview-as-asset',
+          severity: 'critical',
+        }),
+        expect.objectContaining({
+          id: 'upload-critical-stale-overwrite',
+          severity: 'critical',
+        }),
+        expect.objectContaining({
+          id: 'upload-critical-leak-inaccessible',
+          severity: 'critical',
+        }),
+      ]),
+      axisStatuses: expect.objectContaining({
+        'data-interface-contracts': 'needs-focus',
+        'resilience-performance': 'needs-focus',
+        'accessibility-product-ux': 'needs-focus',
+        'adaptation-tradeoffs': 'needs-focus',
+      }),
+      cardIds: expect.not.arrayContaining([
+        'image-picker',
+        'accessible-upload-status',
+        'browser-file-runtime',
+      ]),
+    }));
+  });
+
+  test('requires an inaccessible picker path before preview leaks become a critical accessibility contradiction', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-image-upload-lifecycle-jr-v1"
+      );
+      const strong = scenario.validationFixtures.find(
+        (entry) => entry.id === "upload-strong-controller-direct"
+      );
+      const inaccessibleLeak = structuredClone(strong);
+      inaccessibleLeak.draft.decisions = inaccessibleLeak.draft.decisions.map((entry) => {
+        if (entry.decisionId === "upload-workflow-ownership") {
+          return {
+            decisionId: entry.decisionId,
+            optionId: "upload-owner-ui-handlers",
+            rationaleIds: ["upload-rationale-local-handlers"],
+          };
+        }
+        if (entry.decisionId === "upload-preview-lifecycle") {
+          return {
+            decisionId: entry.decisionId,
+            optionId: "upload-preview-shared-retained",
+            rationaleIds: ["upload-rationale-reuse-retained"],
+          };
+        }
+        return entry;
+      });
+      const removeCards = (fixture, cardIds) => {
+        fixture.draft.placements = fixture.draft.placements.filter(
+          (placement) => !cardIds.includes(placement.cardId)
+        );
+        fixture.draft.connections = fixture.draft.connections.filter(
+          (connection) => (
+            !cardIds.includes(connection.fromCardId)
+            && !cardIds.includes(connection.toCardId)
+          )
+        );
+      };
+      removeCards(inaccessibleLeak, [
+        "browser-file-runtime",
+        "accessible-upload-status",
+      ]);
+      const labeledPicker = content.scoreSystemDesignFixture(scenario, inaccessibleLeak);
+      removeCards(inaccessibleLeak, ["image-picker"]);
+      const dropOnly = content.scoreSystemDesignFixture(scenario, inaccessibleLeak);
+      console.log(JSON.stringify({
+        labeledPicker: labeledPicker.contradictions,
+        dropOnly: dropOnly.contradictions,
+      }));
+    `);
+
+    expect(outcomes.labeledPicker).not.toContainEqual(expect.objectContaining({
+      id: 'upload-critical-leak-inaccessible',
+    }));
+    expect(outcomes.dropOnly).toContainEqual(expect.objectContaining({
+      id: 'upload-critical-leak-inaccessible',
+      severity: 'critical',
+    }));
   });
 
   test('requires every scored composer boundary before the chat fixture can remain strong', () => {
@@ -669,10 +1601,17 @@ describe('guided system-design interview content', () => {
       for (const fixture of privateScenario.validationFixtures.filter(
         (entry) => entry.kind === 'strong'
       )) {
-        const targetId = changedDecisionId(fixture)
-          || (privateScenario.id === 'int-sd-ai-chat-composer-mid-v1'
-            ? 'chat-send-identity'
-            : undefined);
+        const fallbackDecisionIds = {
+          'int-sd-ai-chat-composer-mid-v1': 'chat-send-identity',
+          'int-sd-image-upload-lifecycle-jr-v1': 'upload-replacement-policy',
+          'int-sd-live-chart-pipeline-mid-v1': 'chart-gap-recovery',
+        };
+        const fixedDecisionIds = {
+          'int-sd-live-chart-pipeline-mid-v1': 'chart-gap-recovery',
+        };
+        const targetId = fixedDecisionIds[privateScenario.id]
+          || changedDecisionId(fixture)
+          || fallbackDecisionIds[privateScenario.id];
         expect(targetId).toBeDefined();
         const currentDecision = fixture.draft.decisions.find(
           (entry) => entry.decisionId === targetId
@@ -680,9 +1619,16 @@ describe('guided system-design interview content', () => {
         const decisionDefinition = publicScenario.decisions.find(
           (entry) => entry.id === targetId
         );
-        const wrongOption = decisionDefinition.options.find(
-          (entry) => entry.id !== currentDecision.optionId
-        );
+        const explicitWrongOptionIds = {
+          'int-sd-live-chart-pipeline-mid-v1': 'chart-recovery-next-live',
+        };
+        const wrongOption = explicitWrongOptionIds[privateScenario.id]
+          ? decisionDefinition.options.find(
+            (entry) => entry.id === explicitWrongOptionIds[privateScenario.id]
+          )
+          : decisionDefinition.options.find(
+            (entry) => entry.id !== currentDecision.optionId
+          );
         expect(wrongOption).toBeDefined();
 
         const deletedDraft = {
@@ -756,7 +1702,14 @@ describe('guided system-design interview content', () => {
   });
 
   test('does not treat adding a rationale to the same decision as a design change', () => {
+    let changeSensitiveFixtureCount = 0;
     for (const privateScenario of privatePackage.scenarios) {
+      const adaptationDefinition = privateScenario.rubric.axes.find(
+        (entry) => entry.id === 'adaptation-tradeoffs'
+      );
+      if (!JSON.stringify(adaptationDefinition).includes('changedFromBaseline')) {
+        continue;
+      }
       const publicScenario = publicPackage.scenarios.find(
         (scenario) => scenario.id === privateScenario.id
       );
@@ -765,6 +1718,7 @@ describe('guided system-design interview content', () => {
       )) {
         const targetId = changedDecisionId(fixture);
         if (!targetId) continue;
+        changeSensitiveFixtureCount += 1;
         const currentDecision = fixture.draft.decisions.find(
           (entry) => entry.decisionId === targetId
         );
@@ -796,6 +1750,7 @@ describe('guided system-design interview content', () => {
           .not.toBe('strong-system-design-session');
       }
     }
+    expect(changeSensitiveFixtureCount).toBeGreaterThan(0);
   });
 
   test('rejects unknown rule operators instead of interpreting executable content', () => {
@@ -920,7 +1875,7 @@ describe('guided system-design interview content', () => {
 
   test('pins every source bundle and invalidates candidate approval by default', () => {
     expect(release.finalApproval).toBeNull();
-    expect(release.scenarioRefs).toHaveLength(4);
+    expect(release.scenarioRefs).toHaveLength(7);
     expect(
       privatePackage.scenarios.find(
         (scenario) => scenario.id === 'int-sd-ai-chat-composer-mid-v1'

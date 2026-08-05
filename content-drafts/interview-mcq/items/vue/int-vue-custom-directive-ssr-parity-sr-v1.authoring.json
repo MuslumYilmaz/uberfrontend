@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-custom-directive-ssr-parity-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "custom-directive-ssr-parity",
+    "prompt": "A Vue 3 custom `v-busy` directive sets `aria-busy` in its client `mounted` and `updated` hooks. On SSR pages, the initial HTML lacks the attribute even though the same binding is already true, creating semantic and hydration disagreement. Which directive contract restores parity?",
+    "options": [
+      {
+        "id": "choice-d68558f3fd",
+        "label": "Move the attribute write into the directive's `created` hook so the same element mutation executes during server rendering."
+      },
+      {
+        "id": "choice-acf21384d8",
+        "label": "Add `getSSRProps(binding)` that returns the matching `aria-busy` prop, while retaining client hooks for later updates."
+      },
+      {
+        "id": "choice-97e99c0eca",
+        "label": "Keep the server attribute absent and add `data-allow-mismatch` so hydration suppresses the difference before `mounted` runs."
+      }
+    ],
+    "estimatedSeconds": 195
+  },
+  "private": {
+    "correctOptionId": "choice-acf21384d8",
+    "optionRationales": [
+      {
+        "optionId": "choice-d68558f3fd",
+        "verdict": "incorrect",
+        "explanation": "Vue ignores ordinary DOM-manipulating directive hooks during SSR, so moving the mutation to another client directive hook does not add server attributes.",
+        "plausibility": "The created hook runs earlier than mounted during normal client-side directive setup.",
+        "misconceptionTag": "client-directive-hooks-run-during-ssr",
+        "falsifyingConstraint": "The server renderer needs a directive-specific return value rather than access to a browser element."
+      },
+      {
+        "optionId": "choice-acf21384d8",
+        "verdict": "correct",
+        "explanation": "GetSSRProps translates the binding into server-rendered element props, while mounted and updated continue to own subsequent browser mutations.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-97e99c0eca",
+        "verdict": "incorrect",
+        "explanation": "Suppressing a warning does not provide the missing accessibility state in initial HTML and treats an avoidable contract mismatch as intentional.",
+        "plausibility": "Vue can selectively suppress hydration warnings for differences that cannot be made deterministic.",
+        "misconceptionTag": "mismatch-suppression-creates-server-semantic-parity",
+        "falsifyingConstraint": "Assistive technology must receive the true busy state before client hooks execute."
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue's getSSRProps hook is the directive's server-rendering boundary: it emits the same bound accessibility prop that client hooks maintain after hydration.",
+      "decisiveConstraints": [
+        "The busy binding is deterministic during server rendering.",
+        "Initial HTML must expose the correct accessibility state.",
+        "Client updates still need mounted and updated directive behavior."
+      ],
+      "claims": [
+        {
+          "statement": "Vue ignores most custom directive DOM manipulation during SSR because there is no browser element to mutate.",
+          "sourceIds": [
+            "vue3-ssr-directives"
+          ]
+        },
+        {
+          "statement": "A custom directive can implement getSSRProps to return attributes or other props that Vue includes in server-rendered output.",
+          "sourceIds": [
+            "vue3-ssr-directives"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue custom directives",
+      "getSSRProps",
+      "SSR hydration parity",
+      "accessible server markup"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Server-Side Rendering - Custom Directives",
+        "url": "https://vuejs.org/guide/scaling-up/ssr.html#custom-directives",
+        "sourceId": "vue3-ssr-directives"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-ssr-directives",
+          "title": "Vue 3: Server-Side Rendering - Custom Directives",
+          "url": "https://vuejs.org/guide/scaling-up/ssr.html#custom-directives",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

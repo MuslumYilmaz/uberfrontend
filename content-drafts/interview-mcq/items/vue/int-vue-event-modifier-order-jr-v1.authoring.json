@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-event-modifier-order-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "event-modifier-order",
+    "prompt": "A Vue 3 link contains styled child elements. Product wants a click directly on the link element to run `select` without navigation, while a click whose target is a child must keep the link's default navigation and skip `select`. Which listener has that exact behavior?",
+    "options": [
+      {
+        "id": "choice-0dc47a044b",
+        "label": "Write `@click.prevent.self=\"select\"`; its first modifier cancels navigation before the later target-only guard can exit."
+      },
+      {
+        "id": "choice-ea4c9c5a6f",
+        "label": "Use `@click.self.prevent=\"select\"` so Vue checks the event target before applying default prevention."
+      },
+      {
+        "id": "choice-90c90b5677",
+        "label": "Use `@click.stop.self=\"select\"` so propagation stops before Vue checks whether the link is the target."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-ea4c9c5a6f",
+    "optionRationales": [
+      {
+        "optionId": "choice-0dc47a044b",
+        "verdict": "incorrect",
+        "explanation": "With `prevent` first, Vue prevents the link's default action before `self` rejects child-targeted clicks, so those clicks no longer navigate.",
+        "plausibility": "The `self` guard still prevents the `select` handler from running for a child target.",
+        "misconceptionTag": "modifier-order-does-not-affect-side-effects",
+        "falsifyingConstraint": "A child-targeted click must retain the link's default navigation."
+      },
+      {
+        "optionId": "choice-ea4c9c5a6f",
+        "verdict": "correct",
+        "explanation": "Placing `self` first exits for child targets before prevention, while a direct link target proceeds to `prevent` and then invokes `select`.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-90c90b5677",
+        "verdict": "incorrect",
+        "explanation": "The `stop` modifier changes propagation but does not cancel the direct link click's default navigation, so the direct-target case fails.",
+        "plausibility": "The `self` guard still limits `select` to clicks whose target is the link itself.",
+        "misconceptionTag": "stop-propagation-prevents-default-navigation",
+        "falsifyingConstraint": "A direct click must suppress navigation, which requires default prevention rather than propagation control."
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue generates modifier guards in source order, so `self` must run before `prevent` to leave child-targeted clicks untouched while preventing the direct link click.",
+      "decisiveConstraints": [
+        "Child-targeted clicks must exit before any default prevention occurs.",
+        "Direct link clicks must both prevent navigation and invoke the handler.",
+        "The behavior depends on Vue's left-to-right modifier generation."
+      ],
+      "claims": [
+        {
+          "statement": "Vue generates event-modifier logic in the written order; `prevent.self` prevents default behavior for the element and its children, whereas `self.prevent` prevents it only for events targeting the element itself.",
+          "sourceIds": [
+            "vue3-event-handling"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue event modifiers",
+      "self versus prevent",
+      "DOM event targets"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Event Handling",
+        "url": "https://vuejs.org/guide/essentials/event-handling.html",
+        "sourceId": "vue3-event-handling"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-event-handling",
+          "title": "Vue 3: Event Handling",
+          "url": "https://vuejs.org/guide/essentials/event-handling.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

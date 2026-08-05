@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-context-provider-resolution-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "context-provider-resolution",
+    "prompt": "In React 19.2, an app-level `ThemeContext` provides `\"light\"`. A nested settings panel provides `\"dark\"`. A button component declared in another module is rendered inside that panel and calls `useContext(ThemeContext)`. Which value does it read?",
+    "options": [
+      {
+        "id": "choice-0fec69c51e",
+        "label": "`\"light\"`, because the first provider mounted for a context remains the source for every consumer below it."
+      },
+      {
+        "id": "choice-69b99859e1",
+        "label": "`\"dark\"`, because React reads the closest matching provider in the rendered tree rather than the button's declaration module."
+      },
+      {
+        "id": "choice-a19a8fd7db",
+        "label": "The context default, because provider lookup follows the module where the button was declared rather than where it renders."
+      }
+    ],
+    "estimatedSeconds": 60
+  },
+  "private": {
+    "correctOptionId": "choice-69b99859e1",
+    "optionRationales": [
+      {
+        "optionId": "choice-0fec69c51e",
+        "verdict": "incorrect",
+        "explanation": "Context lookup is based on the nearest matching provider above the consumer, not the provider mounted first.",
+        "plausibility": "The app-level provider covers the whole subtree and is mounted before the nested settings panel.",
+        "misconceptionTag": "first-provider-wins",
+        "falsifyingConstraint": "A matching provider exists closer to the button in its rendered ancestry."
+      },
+      {
+        "optionId": "choice-69b99859e1",
+        "verdict": "correct",
+        "explanation": "The nested panel is the closest matching provider above the button, so its dark value shadows the outer value there.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-a19a8fd7db",
+        "verdict": "incorrect",
+        "explanation": "Context lookup follows the button's rendered ancestry, not the module where its component function was declared, so the nested provider covers it.",
+        "plausibility": "JavaScript lexical scope and module imports often determine which bindings a function can access.",
+        "misconceptionTag": "context-lookup-follows-module-scope",
+        "falsifyingConstraint": "The button's rendered position is inside the nested provider's subtree."
+      }
+    ],
+    "answerProof": {
+      "summary": "A context consumer searches upward through its rendered ancestry and reads the value from the closest matching provider, so the settings panel's dark value shadows the app-level value for this button.",
+      "decisiveConstraints": [
+        "Both providers use the same context object.",
+        "The button is inside the nested provider's subtree.",
+        "The component's declaration module does not replace its rendered provider ancestry."
+      ],
+      "claims": [
+        {
+          "statement": "`useContext` reads the value from the closest matching provider above the component that calls the Hook.",
+          "sourceIds": [
+            "react19-use-context"
+          ]
+        },
+        {
+          "statement": "The context default is used when there is no matching provider above the component.",
+          "sourceIds": [
+            "react19-use-context"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "React context",
+      "provider nesting",
+      "context default values"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useContext",
+        "url": "https://react.dev/reference/react/useContext",
+        "sourceId": "react19-use-context"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-context",
+          "title": "React: useContext",
+          "url": "https://react.dev/reference/react/useContext",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -2,8 +2,8 @@
   "schemaVersion": "2.0.0",
   "manifestId": "frontend-interview-bank-v1",
   "bankId": "frontend-interview-gold-bank",
-  "bankVersion": "1.1.0",
-  "status": "editorial-gold",
+  "bankVersion": "1.2.0",
+  "status": "candidate",
   "language": "en",
   "blueprintId": "frontend-interview-bank-v1",
   "itemRefs": [
@@ -12,12 +12,20 @@
       "revision": 3
     },
     {
+      "id": "int-angular-async-validator-latest-result-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-angular-auth-refresh-single-flight-sr-v1",
       "revision": 1
     },
     {
       "id": "int-angular-binding-direction-jr-v1",
       "revision": 2
+    },
+    {
+      "id": "int-angular-content-projection-selection-jr-v1",
+      "revision": 1
     },
     {
       "id": "int-angular-control-value-accessor-contract-jr-v1",
@@ -36,6 +44,14 @@
       "revision": 1
     },
     {
+      "id": "int-angular-guard-redirect-contract-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-http-context-policy-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-angular-http-request-immutability-mid-v1",
       "revision": 1
     },
@@ -44,11 +60,19 @@
       "revision": 2
     },
     {
+      "id": "int-angular-incremental-hydration-replay-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-angular-onpush-reference-sr-v1",
       "revision": 4
     },
     {
       "id": "int-angular-output-nonbubbling-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-prerender-parameter-boundary-sr-v1",
       "revision": 1
     },
     {
@@ -60,7 +84,15 @@
       "revision": 2
     },
     {
+      "id": "int-angular-required-input-contract-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-angular-route-parameter-reuse-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-route-provider-lifetime-sr-v1",
       "revision": 1
     },
     {
@@ -96,6 +128,14 @@
       "revision": 2
     },
     {
+      "id": "int-angular-untracked-incidental-read-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-angular-view-encapsulation-boundary-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-angular-viewchild-chart-lifecycle-mid-v1",
       "revision": 1
     },
@@ -116,8 +156,24 @@
       "revision": 1
     },
     {
+      "id": "int-css-content-visibility-scroll-estimation-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-css-custom-property-fallback-resolution-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-css-flex-min-width-jr-v1",
       "revision": 3
+    },
+    {
+      "id": "int-css-focus-visible-modality-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-css-font-metric-fallback-stability-sr-v1",
+      "revision": 1
     },
     {
       "id": "int-css-image-intrinsic-ratio-sr-v1",
@@ -148,6 +204,10 @@
       "revision": 1
     },
     {
+      "id": "int-css-subgrid-alignment-boundary-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-css-user-preferences-containment-sr-v1",
       "revision": 2
     },
@@ -157,6 +217,10 @@
     },
     {
       "id": "int-html-data-table-header-association-mid-v1",
+      "revision": 2
+    },
+    {
+      "id": "int-html-decorative-image-alt-contract-jr-v1",
       "revision": 1
     },
     {
@@ -164,8 +228,16 @@
       "revision": 4
     },
     {
+      "id": "int-html-details-summary-disclosure-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-html-dialog-focus-contract-sr-v1",
       "revision": 4
+    },
+    {
+      "id": "int-html-form-associated-custom-element-sr-v1",
+      "revision": 1
     },
     {
       "id": "int-html-icon-button-name-mid-v1",
@@ -180,11 +252,19 @@
       "revision": 2
     },
     {
+      "id": "int-html-live-region-status-update-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-html-native-button-jr-v1",
       "revision": 3
     },
     {
       "id": "int-html-nonmodal-popover-interaction-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-html-preload-cors-reuse-mid-v1",
       "revision": 1
     },
     {
@@ -202,6 +282,10 @@
     {
       "id": "int-js-abort-ownership-sr-v1",
       "revision": 3
+    },
+    {
+      "id": "int-js-async-generator-early-exit-mid-v1",
+      "revision": 1
     },
     {
       "id": "int-js-async-iteration-completion-mid-v1",
@@ -252,6 +336,10 @@
       "revision": 1
     },
     {
+      "id": "int-js-indexeddb-transaction-lifetime-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-listener-cleanup-mid-v1",
       "revision": 3
     },
@@ -264,11 +352,31 @@
       "revision": 1
     },
     {
+      "id": "int-js-number-finite-input-validation-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-observer-lifecycle-mid-v1",
       "revision": 1
     },
     {
+      "id": "int-js-optional-chain-side-effect-short-circuit-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-own-property-presence-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-readable-stream-reader-ownership-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-service-worker-response-clone-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-shadow-dom-event-delegation-mid-v1",
       "revision": 1
     },
     {
@@ -288,6 +396,18 @@
       "revision": 1
     },
     {
+      "id": "int-js-thenable-assimilation-order-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-urlsearchparams-repeated-value-contract-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-web-lock-cross-tab-write-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-worker-long-task-sr-v1",
       "revision": 3
     },
@@ -296,8 +416,36 @@
       "revision": 1
     },
     {
+      "id": "int-react-action-state-form-contract-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-activity-hidden-lifecycle-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-cache-request-lifetime-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-callback-ref-cleanup-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-context-provider-resolution-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-react-controlled-input-jr-v1",
       "revision": 3
+    },
+    {
+      "id": "int-react-custom-hook-state-isolation-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-deferred-value-staleness-mid-v1",
+      "revision": 1
     },
     {
       "id": "int-react-derived-filter-mid-v1",
@@ -364,6 +512,14 @@
       "revision": 1
     },
     {
+      "id": "int-react-ref-nonrendering-state-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-react-render-purity-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-react-server-client-serialization-boundary-sr-v1",
       "revision": 1
     },
@@ -388,11 +544,19 @@
       "revision": 1
     },
     {
+      "id": "int-react-streaming-suspense-shell-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-react-transition-input-priority-sr-v1",
       "revision": 1
     },
     {
       "id": "int-vue-async-component-retry-boundary-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-component-registration-scope-jr-v1",
       "revision": 1
     },
     {
@@ -408,7 +572,27 @@
       "revision": 1
     },
     {
+      "id": "int-vue-custom-directive-ssr-parity-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-vue-custom-input-model-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-effect-scope-disposal-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-emits-listener-fallthrough-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-error-capture-propagation-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-event-modifier-order-jr-v1",
       "revision": 1
     },
     {
@@ -425,7 +609,7 @@
     },
     {
       "id": "int-vue-next-tick-dom-read-timing-mid-v1",
-      "revision": 1
+      "revision": 2
     },
     {
       "id": "int-vue-pinia-optimistic-transaction-sr-v1",
@@ -472,8 +656,16 @@
       "revision": 1
     },
     {
+      "id": "int-vue-ssr-teleport-coordination-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-vue-stable-row-props-sr-v1",
       "revision": 3
+    },
+    {
+      "id": "int-vue-teleport-logical-ownership-mid-v1",
+      "revision": 1
     },
     {
       "id": "int-vue-template-ref-keyed-registry-mid-v1",
@@ -481,6 +673,14 @@
     },
     {
       "id": "int-vue-timezone-hydration-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-vmemo-dependency-contract-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-vue-watcheffect-async-dependency-window-mid-v1",
       "revision": 1
     },
     {

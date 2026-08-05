@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-content-projection-selection-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "content-projection-selection",
+    "prompt": "An Angular 22 `Panel` component must render consumer children marked with the static `panel-actions` attribute in its footer and render every unmatched child in its body. The component does not inspect or recreate those children at runtime. Which template implements the boundary?",
+    "options": [
+      {
+        "id": "choice-92e6626faa",
+        "label": "Wrap one `<ng-content>` in `@if (showActions)` and change its `select` binding between `[panel-actions]` and `*`."
+      },
+      {
+        "id": "choice-24854c683c",
+        "label": "Query projected nodes in `ngAfterContentInit`, then move matching elements into the footer with native DOM methods."
+      },
+      {
+        "id": "choice-2869388d11",
+        "label": "Place `<ng-content />` as the fallback in the panel body and `<ng-content select=\"[panel-actions]\" />` in its footer."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-2869388d11",
+    "optionRationales": [
+      {
+        "optionId": "choice-92e6626faa",
+        "verdict": "incorrect",
+        "explanation": "Angular processes projection placeholders at build time; their selectors cannot be rebound or conditionally introduced as a runtime routing mechanism.",
+        "plausibility": "Ordinary elements and directives can use control flow and property bindings to change rendered behavior.",
+        "misconceptionTag": "projection-slots-are-runtime-directives",
+        "falsifyingConstraint": "Projection destinations are fixed by the receiving component's compiled template."
+      },
+      {
+        "optionId": "choice-24854c683c",
+        "verdict": "incorrect",
+        "explanation": "Moving consumer nodes manually bypasses Angular's declarative projection ownership and adds lifecycle work that the static selector contract does not require.",
+        "plausibility": "A content query can discover projected children after Angular initializes content.",
+        "misconceptionTag": "manual-dom-move-is-content-projection",
+        "falsifyingConstraint": "The component must route existing consumer content without inspecting or recreating it at runtime."
+      },
+      {
+        "optionId": "choice-2869388d11",
+        "verdict": "correct",
+        "explanation": "The selected placeholder receives children matching the marker attribute, while the unselected placeholder captures the remaining projected content.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "Angular's compiled projection slots route statically marked children into a matching selected placeholder and send unmatched children to an unselected fallback placeholder.",
+      "decisiveConstraints": [
+        "The action marker is a static attribute that can be matched by a CSS selector.",
+        "Unmatched consumer children need a fallback projection destination.",
+        "Projection must remain declarative and build-time defined."
+      ],
+      "claims": [
+        {
+          "statement": "The `select` attribute on `ng-content` projects consumer elements that match its supported CSS selector.",
+          "sourceIds": [
+            "angular22-content-projection"
+          ]
+        },
+        {
+          "statement": "An `ng-content` placeholder without `select` captures content that did not match a selected placeholder, and projection placeholders are processed at build time.",
+          "sourceIds": [
+            "angular22-content-projection"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular content projection",
+      "ng-content selectors",
+      "fallback projection slots"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Content projection with ng-content",
+        "url": "https://angular.dev/guide/components/content-projection",
+        "sourceId": "angular22-content-projection"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-content-projection",
+          "title": "Angular 22: Content projection with ng-content",
+          "url": "https://angular.dev/guide/components/content-projection",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

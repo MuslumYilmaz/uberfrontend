@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-urlsearchparams-repeated-value-contract-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "urlsearchparams-repeated-value-contract",
+    "prompt": "A filter URL contains `?tag=accessibility&tag=performance`. Adding `tag=testing` must preserve all three values as separate `tag` entries so the server's repeated-key parser receives them. Which update keeps that representation?",
+    "options": [
+      {
+        "id": "choice-cf33e80a12",
+        "label": "Call `set('tag', 'testing')` on the existing parameters, then serialize the result without rebuilding the URL."
+      },
+      {
+        "id": "choice-3ba2b7dbd7",
+        "label": "Keep the existing parameters, add the new value with `append('tag', 'testing')`, then serialize."
+      },
+      {
+        "id": "choice-a26fdbb91c",
+        "label": "Read every tag with `getAll()`, join them with `testing` using commas, then store the combined text with `set()`."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-3ba2b7dbd7",
+    "answerProof": {
+      "summary": "URLSearchParams.append adds another value under an existing key, whereas get observes only the first value and set deletes the other values before replacing the key.",
+      "decisiveConstraints": [
+        "Each selected tag must remain a separate query entry.",
+        "Both existing tag values must survive the update.",
+        "The server contract consumes repeated keys rather than a comma-delimited convention."
+      ],
+      "claims": [
+        {
+          "statement": "URLSearchParams.append adds a new key-value pair even when the same key already exists, so serialization can contain the key multiple times.",
+          "sourceIds": [
+            "mdn-urlsearchparams-append"
+          ]
+        },
+        {
+          "statement": "URLSearchParams.get returns the first value associated with a key, while getAll returns every associated value.",
+          "sourceIds": [
+            "mdn-urlsearchparams-get",
+            "mdn-urlsearchparams-getall"
+          ]
+        },
+        {
+          "statement": "URLSearchParams.set removes other values for an existing key and leaves one updated value.",
+          "sourceIds": [
+            "mdn-urlsearchparams-set"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-cf33e80a12",
+        "verdict": "incorrect",
+        "explanation": "Set removes the existing values for tag before storing testing, so neither previously selected tag survives the update.",
+        "plausibility": "Set is the direct API for replacing a query parameter with a new value.",
+        "misconceptionTag": "set-appends-to-existing-values",
+        "falsifyingConstraint": "Both existing tag values must survive the update."
+      },
+      {
+        "optionId": "choice-3ba2b7dbd7",
+        "verdict": "correct",
+        "explanation": "Append adds another tag pair without deleting the two pairs already present, preserving the parser's repeated-key contract.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-a26fdbb91c",
+        "verdict": "incorrect",
+        "explanation": "GetAll preserves the three text values, but joining and set encode them as one comma-delimited tag value rather than three repeated entries.",
+        "plausibility": "GetAll is the correct way to read every existing value, and comma-delimited lists are common application conventions.",
+        "misconceptionTag": "delimited-value-equals-repeated-key",
+        "falsifyingConstraint": "The server contract requires each selected tag to remain a separate query entry."
+      }
+    ],
+    "remediationTopics": [
+      "urlsearchparams-append",
+      "repeated-query-keys",
+      "query-serialization-contracts"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: URLSearchParams.append()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/append",
+        "sourceId": "mdn-urlsearchparams-append"
+      },
+      {
+        "title": "MDN: URLSearchParams.getAll()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/getAll",
+        "sourceId": "mdn-urlsearchparams-getall"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-urlsearchparams-append",
+          "title": "MDN: URLSearchParams.append()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/append",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-urlsearchparams-get",
+          "title": "MDN: URLSearchParams.get()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-urlsearchparams-getall",
+          "title": "MDN: URLSearchParams.getAll()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/getAll",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-urlsearchparams-set",
+          "title": "MDN: URLSearchParams.set()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/set",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

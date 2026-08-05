@@ -2,21 +2,21 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "9a7aa6d284c04a5db97ad335833541562da876eefc7626d276600cf28d877f4f"
+      "sha256": "61fec1c674bb5a5199684146d9fb6146ce3d8736f37e49b250845a82b111ee07"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "4c3a7d3f04fe12df25ec461dbbba844c89a0d90b93c7eaf7b1ebc47a44915ee7"
+      "sha256": "c68d93d297bd89f01436bf9c1397a298e767b0e0976c2910f5eb3fc6429a0080"
     }
   },
-  "contentHash": "51fe1a33def572049d50a98780329ffed7a11004acfc0e55a07ef5f584aed1cc",
-  "definitionHash": "562d9fb1f36bcf977f662cb8fd762ea89e17d420776917234d2ad39ef8673e77",
-  "enabledScenarioCount": 4,
+  "contentHash": "15ac7c352c10b5eef01c86765b8b829601177b7f51315779cbc9fbd7908118e9",
+  "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+  "enabledScenarioCount": 7,
   "finalApproval": null,
-  "registryContentHash": "51fe1a33def572049d50a98780329ffed7a11004acfc0e55a07ef5f584aed1cc",
+  "registryContentHash": "15ac7c352c10b5eef01c86765b8b829601177b7f51315779cbc9fbd7908118e9",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.0.0",
-  "scenarioCount": 4,
+  "scenarioCount": 7,
   "scenarioRefs": [
     {
       "contentHash": "60be16613d6499dd7896ffb7d14924ec7633dc3b427b4bef668e7857b7faafcb",
@@ -33,6 +33,30 @@
       "level": "mid",
       "revision": 3,
       "sourceBundleHash": "46e9e5bb8daf0372d8638d2aef97f5a1299b1d071bcba0dc3c2b42599f0b967e"
+    },
+    {
+      "contentHash": "975649af4bad43d9c7a616a967d32464401351d414716c98cbab5ab221a6b01a",
+      "enabled": true,
+      "id": "int-sd-dashboard-layout-sr-v1",
+      "level": "senior",
+      "revision": 1,
+      "sourceBundleHash": "7df74b1748773e5d5d38d3a375d87dd38cea4eeb059b2654b3352abdcaf95cf4"
+    },
+    {
+      "contentHash": "b490a8f10b6b9e278581750111a316ff137996408631c3c14c63f512d0c6e3f9",
+      "enabled": true,
+      "id": "int-sd-image-upload-lifecycle-jr-v1",
+      "level": "junior",
+      "revision": 1,
+      "sourceBundleHash": "599ee39973678520354d6d7fbeac020b54b5964b0a8c0cb98035b032a4dbb348"
+    },
+    {
+      "contentHash": "7a63f89b2589af3a2f1d681bf6a1366971072285774078038299bb50bcd13f79",
+      "enabled": true,
+      "id": "int-sd-live-chart-pipeline-mid-v1",
+      "level": "mid",
+      "revision": 1,
+      "sourceBundleHash": "e16f1020291f83596e2ff5959bad5596a0369fabb1df4c26cffc92e459ebc65f"
     },
     {
       "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",

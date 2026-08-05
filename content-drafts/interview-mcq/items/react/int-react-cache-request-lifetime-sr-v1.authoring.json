@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-cache-request-lifetime-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "cache-request-lifetime",
+    "prompt": "A React 19.2 Server Components app wraps `readProduct` once at module scope with `cache`. Two components in one render request call it with the same ID, and a later HTTP request calls it again. What lifetime should the architecture assume?",
+    "options": [
+      {
+        "id": "choice-1d3d5989d0",
+        "label": "The result is shared for the browser session, so client navigation keeps one product object until reload."
+      },
+      {
+        "id": "choice-dbfb8ccf1c",
+        "label": "The result is shared for the server process, so later requests reuse it until the deployment restarts."
+      },
+      {
+        "id": "choice-19f2d1c34e",
+        "label": "Matching calls deduplicate within one server request; React invalidates the memoized cache before the next request."
+      }
+    ],
+    "estimatedSeconds": 145
+  },
+  "private": {
+    "correctOptionId": "choice-19f2d1c34e",
+    "optionRationales": [
+      {
+        "optionId": "choice-1d3d5989d0",
+        "verdict": "incorrect",
+        "explanation": "React's server cache is not a browser-session object cache and does not establish client-side persistence across navigations.",
+        "plausibility": "Client navigation can reuse application state and previously fetched data when another cache layer owns it.",
+        "misconceptionTag": "server-cache-is-browser-session-cache",
+        "falsifyingConstraint": "The memoized function executes in the Server Components request environment."
+      },
+      {
+        "optionId": "choice-dbfb8ccf1c",
+        "verdict": "incorrect",
+        "explanation": "A module-scope wrapper preserves the memoized function identity, but React still invalidates its memoized entries for each server request.",
+        "plausibility": "Ordinary module-level memoization often retains entries for the lifetime of a server process.",
+        "misconceptionTag": "module-scope-cache-is-process-cache",
+        "falsifyingConstraint": "React specifies request invalidation for functions memoized with `cache`."
+      },
+      {
+        "optionId": "choice-19f2d1c34e",
+        "verdict": "correct",
+        "explanation": "Components share matching work during one server request, but a subsequent request starts with invalidated React cache entries.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "The module-scope wrapper lets components call the same memoized function, but React's memoized entries are scoped to server-request work. Cross-request persistence requires a separate cache owned outside this React contract.",
+      "decisiveConstraints": [
+        "Both same-ID calls use the same memoized function within one request.",
+        "The later call occurs in a different server request.",
+        "No separate process or data cache is declared."
+      ],
+      "claims": [
+        {
+          "statement": "React `cache` memoizes calls to a function so matching calls can share a result in Server Components.",
+          "sourceIds": [
+            "react19-cache"
+          ]
+        },
+        {
+          "statement": "React invalidates the caches of memoized functions for each server request.",
+          "sourceIds": [
+            "react19-cache"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "React cache",
+      "server request lifetime",
+      "cross-request cache ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "React: cache",
+        "url": "https://react.dev/reference/react/cache",
+        "sourceId": "react19-cache"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-cache",
+          "title": "React: cache",
+          "url": "https://react.dev/reference/react/cache",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

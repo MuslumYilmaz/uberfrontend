@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-async-generator-early-exit-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "async-generator-early-exit",
+    "prompt": "An async generator subscribes to a message source and yields messages. Consumers commonly stop with `break` inside `for await...of`, and the subscription must be released on normal completion, early exit, or an error. Where should the cleanup live?",
+    "options": [
+      {
+        "id": "choice-bb76c30af9",
+        "label": "Dispose after each consumer's loop, relying on statements after `break` to cover every exit path."
+      },
+      {
+        "id": "choice-0178920815",
+        "label": "Dispose in a catch around each `yield`, relying on rejected iterations to signal every early exit."
+      },
+      {
+        "id": "choice-fa94ba2b95",
+        "label": "Dispose in the generator's `finally`, relying on iterator `return()` when the loop exits early."
+      }
+    ],
+    "estimatedSeconds": 125
+  },
+  "private": {
+    "correctOptionId": "choice-fa94ba2b95",
+    "answerProof": {
+      "summary": "Cleanup belongs beside acquisition in the async generator's try/finally. A for-await loop that exits early calls and awaits the iterator's return method, which closes the generator and runs its finally block.",
+      "decisiveConstraints": [
+        "The generator owns creation of the message subscription.",
+        "Consumers may exit through break, completion, or an exception.",
+        "Cleanup must not depend on every consumer duplicating a disposal protocol."
+      ],
+      "claims": [
+        {
+          "statement": "When a for-await-of loop exits early, the iterator's return method is called and its returned promise is awaited before the loop exits.",
+          "sourceIds": [
+            "mdn-for-await-of"
+          ]
+        },
+        {
+          "statement": "A finally block executes as control flow leaves its associated try statement, including through an exception or a control-flow statement.",
+          "sourceIds": [
+            "mdn-try-catch-finally"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-bb76c30af9",
+        "verdict": "incorrect",
+        "explanation": "Consumer-side statements are skipped if the loop body throws and they duplicate ownership knowledge across every caller.",
+        "plausibility": "A break continues execution after the loop, so a simple consumer can appear to release the resource correctly.",
+        "misconceptionTag": "post-loop-cleanup-covers-exceptions",
+        "falsifyingConstraint": "Cleanup must also occur when the consumer throws and must remain owned by the generator."
+      },
+      {
+        "optionId": "choice-0178920815",
+        "verdict": "incorrect",
+        "explanation": "A consumer break closes the iterator through return rather than making the suspended yield reject, so this catch misses that path.",
+        "plausibility": "Errors from asynchronous iteration do reject operations, making catch seem like the shared termination boundary.",
+        "misconceptionTag": "break-rejects-suspended-yield",
+        "falsifyingConstraint": "Normal early exit with break must release the subscription even though no iteration rejects."
+      },
+      {
+        "optionId": "choice-fa94ba2b95",
+        "verdict": "correct",
+        "explanation": "The generator's finally co-locates release with acquisition and runs when early iterator return closes the generator.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "async-generators",
+      "for-await-of",
+      "iterator-return",
+      "resource-cleanup"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: for await...of",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of",
+        "sourceId": "mdn-for-await-of"
+      },
+      {
+        "title": "MDN: try...catch...finally",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch",
+        "sourceId": "mdn-try-catch-finally"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-for-await-of",
+          "title": "MDN: for await...of",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-try-catch-finally",
+          "title": "MDN: try...catch...finally",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

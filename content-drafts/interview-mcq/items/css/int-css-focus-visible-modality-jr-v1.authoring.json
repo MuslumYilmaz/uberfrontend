@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-focus-visible-modality-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "css",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "focus-visible-modality",
+    "prompt": "A toolbar uses native buttons. Keyboard users need a strong focus indicator, while pointer clicks should follow the browser's modality heuristics instead of forcing the same ring. Which styling policy preserves that behavior?",
+    "options": [
+      {
+        "id": "choice-e4776fabfd",
+        "label": "Style the native button with `:focus-visible`, retaining a clear outline when browser heuristics expose focus."
+      },
+      {
+        "id": "choice-7bf26ff4ba",
+        "label": "Style every focused button with `:focus`, keeping the same strong outline for keyboard navigation and pointer clicks."
+      },
+      {
+        "id": "choice-9110363372",
+        "label": "Remove the native outline and style `:active` so a ring appears only while the button is being pressed."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-e4776fabfd",
+    "optionRationales": [
+      {
+        "optionId": "choice-e4776fabfd",
+        "verdict": "correct",
+        "explanation": "The pseudo-class lets the user agent expose focus when its interaction heuristics indicate that a visible indicator is appropriate.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-7bf26ff4ba",
+        "verdict": "incorrect",
+        "explanation": "Focus supplies a keyboard cue, but it matches focused buttons without expressing the user agent's focus-visible modality decision, forcing the same ring after pointer focus.",
+        "plausibility": "The `:focus` pseudo-class reliably matches the element that currently owns focus and can provide a strong cue.",
+        "misconceptionTag": "focus-equals-focus-visible-modality",
+        "falsifyingConstraint": "Pointer focus must follow the browser's modality heuristic instead of receiving the forced keyboard ring."
+      },
+      {
+        "optionId": "choice-9110363372",
+        "verdict": "incorrect",
+        "explanation": "Active represents the activation interval rather than persistent keyboard focus, and removing the native outline leaves keyboard navigation without its required cue.",
+        "plausibility": "The active pseudo-class can show immediate visual feedback while a control is pressed.",
+        "misconceptionTag": "active-state-replaces-focus-indicator",
+        "falsifyingConstraint": "Keyboard focus must retain a strong indicator after activation ends or when focus moves without activation."
+      }
+    ],
+    "answerProof": {
+      "summary": "`:focus-visible` represents focused elements for which the user agent determines that a visible focus indicator should be shown, preserving keyboard discoverability without hard-coding pointer behavior.",
+      "decisiveConstraints": [
+        "The controls remain native buttons.",
+        "Keyboard focus requires a visible indicator.",
+        "Pointer focus should follow user-agent modality heuristics."
+      ],
+      "claims": [
+        {
+          "statement": "`:focus-visible` matches a focused element when the user agent determines through its heuristics that focus should be visibly indicated.",
+          "sourceIds": [
+            "mdn-focus-visible"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "focus-visible",
+      "keyboard focus indicators",
+      "input modality heuristics"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: :focus-visible",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:focus-visible",
+        "sourceId": "mdn-focus-visible"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-focus-visible",
+          "title": "MDN: :focus-visible",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:focus-visible",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

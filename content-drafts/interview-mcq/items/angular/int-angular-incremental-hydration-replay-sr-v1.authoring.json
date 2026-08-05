@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-incremental-hydration-replay-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "incremental-hydration-replay",
+    "prompt": "An Angular 22 SSR product page must send the real review controls in its initial HTML but delay their client code until a user interacts. A click that occurs before ownership transfers must be replayed after hydration rather than lost. Which configuration establishes that boundary?",
+    "options": [
+      {
+        "id": "choice-b0846f49a4",
+        "label": "Configure `provideClientHydration()` with `@defer (hydrate on interaction)` so Angular 22 replays the captured event after hydration."
+      },
+      {
+        "id": "choice-299b5aa530",
+        "label": "Use `@defer (on interaction)` with a review placeholder and add a document click listener that recreates the first action."
+      },
+      {
+        "id": "choice-761cefcc54",
+        "label": "Disable incremental hydration for the review controls and dispatch stored clicks to their server-rendered elements manually."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-b0846f49a4",
+    "optionRationales": [
+      {
+        "optionId": "choice-b0846f49a4",
+        "verdict": "correct",
+        "explanation": "Angular 22 enables incremental hydration through the client hydration provider by default; the hydrate trigger renders the main template on the server, delays client ownership to interaction, and uses the replay pipeline.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-299b5aa530",
+        "verdict": "incorrect",
+        "explanation": "A regular defer trigger uses its placeholder for the deferred client-rendering case and a document listener cannot reproduce Angular's component event semantics safely.",
+        "plausibility": "The regular interaction trigger can postpone loading a deferrable view until the user acts.",
+        "misconceptionTag": "regular-defer-is-incremental-hydration",
+        "falsifyingConstraint": "The main interactive review markup must already be present in the server response."
+      },
+      {
+        "optionId": "choice-761cefcc54",
+        "verdict": "incorrect",
+        "explanation": "Disabling incremental hydration leaves no interaction-triggered transfer for this subtree, so manual DOM dispatch cannot establish the requested component ownership boundary.",
+        "plausibility": "Server-rendered content can remain visible before its Angular component code becomes interactive.",
+        "misconceptionTag": "event-dispatch-can-replace-component-hydration",
+        "falsifyingConstraint": "The controls must become client-owned and execute their Angular handlers after interaction."
+      }
+    ],
+    "answerProof": {
+      "summary": "Angular 22 client hydration enables incremental hydration by default; it renders the real deferred view during SSR, transfers ownership on the interaction trigger, and replays pre-hydration events.",
+      "decisiveConstraints": [
+        "Initial HTML must contain the main review controls instead of a placeholder.",
+        "Client dependencies should load only at an interaction boundary.",
+        "Interactions captured before hydration must reach the hydrated Angular handlers."
+      ],
+      "claims": [
+        {
+          "statement": "In Angular 22, `provideClientHydration()` enables incremental hydration by default, and a hydrate trigger makes SSR render the defer block's main template while the client keeps it dehydrated until the trigger fires.",
+          "sourceIds": [
+            "angular22-incremental-hydration"
+          ]
+        },
+        {
+          "statement": "Angular incremental hydration depends on and automatically enables event replay, which queues supported events before hydration and replays them afterward.",
+          "sourceIds": [
+            "angular22-incremental-hydration"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular incremental hydration",
+      "hydrate triggers",
+      "pre-hydration event replay"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Incremental Hydration",
+        "url": "https://angular.dev/guide/incremental-hydration",
+        "sourceId": "angular22-incremental-hydration"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-incremental-hydration",
+          "title": "Angular 22: Incremental Hydration",
+          "url": "https://angular.dev/guide/incremental-hydration",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

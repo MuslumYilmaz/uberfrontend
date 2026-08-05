@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-view-encapsulation-boundary-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "view-encapsulation-boundary",
+    "prompt": "An Angular 22 reusable card defines a `.title` rule that must not style unrelated `.title` elements elsewhere. The team also requires ordinary global inheritance and does not want a native shadow root because an integration queries the card's DOM. Which encapsulation mode fits?",
+    "options": [
+      {
+        "id": "choice-ddc2f4329d",
+        "label": "Use `ViewEncapsulation.Emulated` so Angular scopes the card's selectors with generated attributes without creating a shadow root."
+      },
+      {
+        "id": "choice-ab5cd6c20a",
+        "label": "Use `ViewEncapsulation.None` so the card's selectors join the global stylesheet while the component keeps a light-DOM tree."
+      },
+      {
+        "id": "choice-9677a138cb",
+        "label": "Use `ViewEncapsulation.ShadowDom` so the browser isolates the card's selectors inside a native shadow-root tree."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-ddc2f4329d",
+    "optionRationales": [
+      {
+        "optionId": "choice-ddc2f4329d",
+        "verdict": "correct",
+        "explanation": "Emulated encapsulation rewrites component selectors with scoped attributes, containing the card's styles while preserving a regular light-DOM structure.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-ab5cd6c20a",
+        "verdict": "incorrect",
+        "explanation": "None preserves light DOM but applies the component stylesheet globally, so its `.title` selector can affect unrelated elements.",
+        "plausibility": "Disabling encapsulation avoids a shadow root and permits normal document-level styling behavior.",
+        "misconceptionTag": "light-dom-implies-style-scoping",
+        "falsifyingConstraint": "The component's own `.title` rule must be contained to that component's rendered view."
+      },
+      {
+        "optionId": "choice-9677a138cb",
+        "verdict": "incorrect",
+        "explanation": "ShadowDom provides native isolation but creates the shadow-root boundary that the integration explicitly cannot accept.",
+        "plausibility": "A browser shadow root strongly prevents the component's internal rules from leaking into the document.",
+        "misconceptionTag": "strongest-style-isolation-fits-every-integration",
+        "falsifyingConstraint": "The rendered card must remain available as a normal light-DOM subtree."
+      }
+    ],
+    "answerProof": {
+      "summary": "Emulated encapsulation satisfies both constraints by scoping component selectors with Angular attributes while avoiding the native Shadow DOM tree introduced by ShadowDom mode.",
+      "decisiveConstraints": [
+        "The card stylesheet must not leak its `.title` rule globally.",
+        "The integration requires light DOM rather than a ShadowRoot.",
+        "Global inheritance should continue through the normal document tree."
+      ],
+      "claims": [
+        {
+          "statement": "`ViewEncapsulation.Emulated` scopes component styles by adding component-specific attributes to the host, rendered elements, and selectors, and it is Angular's default mode.",
+          "sourceIds": [
+            "angular22-view-encapsulation"
+          ]
+        },
+        {
+          "statement": "`ViewEncapsulation.None` applies component styles globally, whereas `ViewEncapsulation.ShadowDom` creates a native ShadowRoot for style encapsulation.",
+          "sourceIds": [
+            "angular22-view-encapsulation"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular view encapsulation",
+      "Emulated selector scoping",
+      "Shadow DOM boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: ViewEncapsulation API",
+        "url": "https://angular.dev/api/core/ViewEncapsulation",
+        "sourceId": "angular22-view-encapsulation"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-view-encapsulation",
+          "title": "Angular 22: ViewEncapsulation API",
+          "url": "https://angular.dev/api/core/ViewEncapsulation",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

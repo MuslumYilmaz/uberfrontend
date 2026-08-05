@@ -6,6 +6,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
+  assertInterviewBankLifecycleOutputDir,
   assertSafeInterviewBankOutputDir,
   bankContentHash,
   buildGeneratedPackages,
@@ -26,49 +27,76 @@ const blueprint = JSON.parse(fs.readFileSync(
   "utf8",
 ));
 const policies = loadInterviewBankPolicies();
-const NOW = new Date("2026-07-22T12:00:00.000Z");
+const NOW = new Date("2026-08-05T12:00:00.000Z");
 const V1_FIXTURE_HASHES = Object.freeze({
   public: "1f1aa6192519ed98af9b232276111745a89a711036dd9e8aaf8edf225df3980e",
   private: "b226a5b4168ffb2b94b075c62deac5cc3251719ff32b804127f031a8a739ff2e",
 });
 const LEVELS = ["junior", "mid", "senior"];
-const NON_OUTPUT_TECHNOLOGIES = [
-  ...Array(6).fill("javascript"),
-  ...Array(4).fill("html"),
-  ...Array(4).fill("css"),
-  ...Array(8).fill("react"),
-  ...Array(8).fill("angular"),
-  ...Array(8).fill("vue"),
-];
-const FORMATS_BY_LEVEL = {
-  junior: [
-    "code-output", "code-output",
-    ...Array(15).fill("conceptual"),
-    ...Array(23).fill("production-scenario"),
-  ],
-  mid: [
-    "code-output", "code-output",
-    ...Array(11).fill("conceptual"),
-    ...Array(27).fill("production-scenario"),
-  ],
-  senior: [
-    "code-output", "code-output",
-    ...Array(5).fill("conceptual"),
-    ...Array(33).fill("production-scenario"),
-  ],
-};
-const BANDS = [
-  ...Array(10).fill("foundation"),
-  ...Array(20).fill("core"),
-  ...Array(10).fill("stretch"),
-];
+const EXPECTED_V12_EXPANSION_IDS = Object.freeze([
+  "int-js-number-finite-input-validation-jr-v1",
+  "int-js-urlsearchparams-repeated-value-contract-jr-v1",
+  "int-js-optional-chain-side-effect-short-circuit-jr-v1",
+  "int-html-decorative-image-alt-contract-jr-v1",
+  "int-html-details-summary-disclosure-jr-v1",
+  "int-css-custom-property-fallback-resolution-jr-v1",
+  "int-css-focus-visible-modality-jr-v1",
+  "int-react-context-provider-resolution-jr-v1",
+  "int-react-render-purity-jr-v1",
+  "int-react-ref-nonrendering-state-jr-v1",
+  "int-angular-required-input-contract-jr-v1",
+  "int-angular-content-projection-selection-jr-v1",
+  "int-angular-view-encapsulation-boundary-jr-v1",
+  "int-vue-component-registration-scope-jr-v1",
+  "int-vue-emits-listener-fallthrough-jr-v1",
+  "int-vue-event-modifier-order-jr-v1",
+  "int-js-readable-stream-reader-ownership-mid-v1",
+  "int-js-shadow-dom-event-delegation-mid-v1",
+  "int-js-async-generator-early-exit-mid-v1",
+  "int-html-preload-cors-reuse-mid-v1",
+  "int-html-live-region-status-update-mid-v1",
+  "int-css-subgrid-alignment-boundary-mid-v1",
+  "int-react-custom-hook-state-isolation-mid-v1",
+  "int-react-deferred-value-staleness-mid-v1",
+  "int-react-callback-ref-cleanup-mid-v1",
+  "int-angular-http-context-policy-mid-v1",
+  "int-angular-untracked-incidental-read-mid-v1",
+  "int-angular-guard-redirect-contract-mid-v1",
+  "int-angular-async-validator-latest-result-mid-v1",
+  "int-vue-watcheffect-async-dependency-window-mid-v1",
+  "int-vue-teleport-logical-ownership-mid-v1",
+  "int-vue-effect-scope-disposal-mid-v1",
+  "int-vue-vmemo-dependency-contract-mid-v1",
+  "int-js-web-lock-cross-tab-write-sr-v1",
+  "int-js-service-worker-response-clone-sr-v1",
+  "int-js-indexeddb-transaction-lifetime-sr-v1",
+  "int-js-thenable-assimilation-order-sr-v1",
+  "int-html-form-associated-custom-element-sr-v1",
+  "int-css-font-metric-fallback-stability-sr-v1",
+  "int-css-content-visibility-scroll-estimation-sr-v1",
+  "int-react-action-state-form-contract-sr-v1",
+  "int-react-cache-request-lifetime-sr-v1",
+  "int-react-streaming-suspense-shell-sr-v1",
+  "int-react-activity-hidden-lifecycle-sr-v1",
+  "int-angular-route-provider-lifetime-sr-v1",
+  "int-angular-incremental-hydration-replay-sr-v1",
+  "int-angular-prerender-parameter-boundary-sr-v1",
+  "int-vue-error-capture-propagation-sr-v1",
+  "int-vue-ssr-teleport-coordination-sr-v1",
+  "int-vue-custom-directive-ssr-parity-sr-v1",
+]);
+function repeatedDistribution(distribution) {
+  return Object.entries(distribution)
+    .flatMap(([value, count]) => Array(count).fill(value));
+}
 
 {
   const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, "frontend", "package.json"), "utf8"));
   for (const scriptName of ["verify:unit-and-content", "verify:unit-and-content:prepush"]) {
     const command = packageJson.scripts[scriptName];
-    assert.match(command, /generate:interview-bank:check/);
+    assert.match(command, /generate:interview-bank:candidate:check/);
     assert.match(command, /lint:interview-bank/);
+    assert.doesNotMatch(command, /lint:interview-gold/);
   }
   const prePush = fs.readFileSync(path.join(repoRoot, ".githooks", "pre-push"), "utf8");
   assert.match(prePush, /content-drafts\/interview-mcq\//);
@@ -78,6 +106,106 @@ const BANDS = [
   );
   assert.match(workflow, /playwright install --with-deps chromium/);
   assert.match(workflow, /npm run verify:unit-and-content/);
+}
+
+{
+  const bankRoot = path.join(repoRoot, "content-drafts", "interview-mcq");
+  const itemEntries = loadAuthoringItems(path.join(bankRoot, "items"));
+  const manifest = JSON.parse(fs.readFileSync(
+    path.join(bankRoot, "manifests", "bank-v1.manifest.json"),
+    "utf8",
+  ));
+  const reviews = JSON.parse(fs.readFileSync(
+    path.join(bankRoot, "reviews", "bank-v1.reviews.json"),
+    "utf8",
+  ));
+  const result = await validateInterviewBank({
+    itemEntries,
+    manifest,
+    reviews,
+    blueprint,
+    policies,
+  }, { executeBrowser: false, now: NOW });
+
+  assert.deepEqual(result.errors, []);
+  assert.equal(itemEntries.length, 170);
+  assert.equal(manifest.itemRefs.length, 170);
+  assert.equal(reviews.items.length, 170);
+  assert.equal(manifest.bankVersion, "1.2.0");
+  assert.equal(manifest.status, "candidate");
+  assert.equal(reviews.finalApproval, null);
+  for (const review of reviews.items) {
+    assert.equal(review.technical.checklistVersion, "1.3.0");
+    assert.equal(review.editorial.checklistVersion, "1.3.0");
+    assert.equal(review.blind.checklistVersion, "1.3.0");
+  }
+
+  const goldRelease = JSON.parse(fs.readFileSync(
+    path.join(repoRoot, "backend", "content", "interview", "frontend-interview-bank-v1.release.json"),
+    "utf8",
+  ));
+  assert.equal(goldRelease.bankVersion, "1.1.0");
+  assert.equal(goldRelease.status, "editorial-gold");
+  assert.equal(goldRelease.itemRefs.length, 120);
+  const authoredById = new Map(itemEntries.map(({ item }) => [item.id, item]));
+  const approvedCandidateRevisionBumps = new Map([
+    ["int-html-data-table-header-association-mid-v1", 2],
+    ["int-vue-next-tick-dom-read-timing-mid-v1", 2],
+  ]);
+  for (const reference of goldRelease.itemRefs) {
+    const item = authoredById.get(reference.id);
+    assert.ok(item, `${reference.id} from the active Gold bank must remain authored`);
+    if (approvedCandidateRevisionBumps.has(reference.id)) {
+      assert.equal(
+        item.revision,
+        approvedCandidateRevisionBumps.get(reference.id),
+        `${reference.id} must retain its approved candidate revision bump`,
+      );
+      assert.notEqual(
+        contentHashForItem(item),
+        reference.contentHash,
+        `${reference.id} candidate repair must not masquerade as the Gold revision`,
+      );
+      continue;
+    }
+    assert.equal(item.revision, reference.revision, `${reference.id} revision drifted from Gold`);
+    assert.equal(
+      contentHashForItem(item),
+      reference.contentHash,
+      `${reference.id} content drifted from Gold`,
+    );
+  }
+  assert.equal(approvedCandidateRevisionBumps.size, 2);
+
+  const goldIds = new Set(goldRelease.itemRefs.map((reference) => reference.id));
+  const expansion = itemEntries
+    .map(({ item }) => item)
+    .filter((item) => !goldIds.has(item.id));
+  assert.equal(expansion.length, 50);
+  assert.deepEqual(
+    expansion.map((item) => item.id).sort(),
+    [...EXPECTED_V12_EXPANSION_IDS].sort(),
+  );
+  assert.equal(expansion.filter((item) => item.revision === 1).length, 50);
+  assert.equal(expansion.filter((item) => item.public.format === "conceptual").length, 12);
+  assert.equal(
+    expansion.filter((item) => item.public.format === "production-scenario").length,
+    38,
+  );
+  const expectedExpansionPositions = {
+    junior: [5, 6, 5],
+    mid: [6, 5, 6],
+    senior: [6, 6, 5],
+  };
+  for (const level of LEVELS) {
+    const positions = [0, 0, 0];
+    for (const item of expansion.filter((candidateItem) => candidateItem.public.level === level)) {
+      positions[item.public.options.findIndex(
+        (option) => option.id === item.private.correctOptionId,
+      )] += 1;
+    }
+    assert.deepEqual(positions, expectedExpansionPositions[level]);
+  }
 }
 
 {
@@ -247,18 +375,30 @@ function makeCandidateContext() {
   const items = [];
   let itemNumber = 0;
   for (const level of LEVELS) {
+    const formatDistribution = blueprint.distributions.formatByLevel[level];
+    const formats = [
+      ...Array(formatDistribution['code-output']).fill('code-output'),
+      ...Array(formatDistribution.conceptual).fill('conceptual'),
+      ...Array(formatDistribution['production-scenario']).fill('production-scenario'),
+    ];
+    const technologyDistribution = blueprint.distributions.technologyByLevel[level];
+    const nonOutputTechnologies = Object.entries(technologyDistribution)
+      .flatMap(([technology, count]) => Array(
+        technology === "javascript" ? count - blueprint.codeOutputConstraint.count / LEVELS.length : count,
+      ).fill(technology));
+    const bands = repeatedDistribution(blueprint.distributions.difficultyBandByLevel[level]);
     let nonOutputIndex = 0;
-    FORMATS_BY_LEVEL[level].forEach((format, levelIndex) => {
+    formats.forEach((format, levelIndex) => {
       itemNumber += 1;
       const technology = format === "code-output"
         ? "javascript"
-        : NON_OUTPUT_TECHNOLOGIES[nonOutputIndex++];
+        : nonOutputTechnologies[nonOutputIndex++];
       items.push(makeItem({
         itemNumber,
         level,
         format,
         technology,
-        band: BANDS[levelIndex],
+        band: bands[levelIndex],
         correctPosition: (itemNumber - 1) % 3,
       }));
     });
@@ -272,7 +412,7 @@ function makeCandidateContext() {
     schemaVersion: "2.0.0",
     manifestId: "bank-v1",
     bankId: blueprint.bankId,
-    bankVersion: "1.1.0",
+    bankVersion: "1.2.0",
     status: "candidate",
     language: "en",
     blueprintId: blueprint.blueprintId,
@@ -364,7 +504,7 @@ function expectError(result, expected) {
 }
 
 const candidate = makeCandidateContext();
-assert.equal(candidate.itemEntries.length, 120);
+assert.equal(candidate.itemEntries.length, 170);
 assert.deepEqual((await validate(candidate)).errors, []);
 expectError(await validate(candidate, { requireGold: true }), /gold lint requires/);
 
@@ -393,18 +533,41 @@ expectError(await validate(candidate, { requireGold: true }), /gold lint require
 }
 
 {
+  const weakenedReviewIntegrity = copy(candidate);
+  weakenedReviewIntegrity.policies.quality.reviewIntegrity.stageReviewersMustBeDistinct = false;
+  expectError(
+    await validate(weakenedReviewIntegrity),
+    /quality\.reviewIntegrity: must require all three independent/,
+  );
+}
+
+{
+  const weakenedDifficultyPolicy = copy(candidate);
+  weakenedDifficultyPolicy.policies.quality.difficultyRubric
+    .perItemLevelDisagreementPolicy = "blocker";
+  expectError(
+    await validate(weakenedDifficultyPolicy),
+    /quality\.difficultyRubric: must retain warning-level per-item blind level and band disagreements/,
+  );
+}
+
+{
   const weakenedOptionContract = copy(candidate);
   weakenedOptionContract.policies.quality.options.count = 4;
   weakenedOptionContract.policies.quality.options.permutationsRequired = 24;
   weakenedOptionContract.policies.quality.reviewRules.optionSimilarity.reviewThreshold = 0.81;
+  weakenedOptionContract.policies.quality.reviewRules.optionSimilarity.exemptFormats = [];
   weakenedOptionContract.policies.quality.reviewRules.optionSimilarity.waivable = true;
+  weakenedOptionContract.policies.quality.reviewRules.optionLengthClue.metric = "raw-characters";
   weakenedOptionContract.policies.quality.reviewRules.absoluteWording.terms = [];
   weakenedOptionContract.policies.quality.reviewRules.stemEchoClue.minimumContentWordNgram = 99;
   const result = await validate(weakenedOptionContract);
   expectError(result, /quality\.options\.count: must remain exactly 3/);
   expectError(result, /quality\.options\.permutationsRequired: must remain exactly 6/);
   expectError(result, /optionSimilarity\.reviewThreshold: must remain exactly 0\.8/);
+  expectError(result, /optionSimilarity\.exemptFormats: must exempt exactly code-output/);
   expectError(result, /optionSimilarity\.waivable: must remain false/);
+  expectError(result, /optionLengthClue\.metric: must match the validator's normalized visible-length metric/);
   expectError(result, /absoluteWording\.terms: must remain exactly always and never/);
   expectError(result, /stemEchoClue\.minimumContentWordNgram: must remain exactly 3/);
 }
@@ -514,6 +677,33 @@ expectError(await validate(candidate, { requireGold: true }), /gold lint require
 }
 
 {
+  const authorReviewed = copy(candidate);
+  const item = authorReviewed.itemEntries[0].item;
+  authorReviewed.reviews.items[0].technical.reviewer = item.author.id;
+  expectError(
+    await validate(authorReviewed),
+    /technical reviewer must differ from the author/,
+  );
+
+  const sharedReviewer = copy(candidate);
+  sharedReviewer.reviews.items[0].blind.reviewer =
+    sharedReviewer.reviews.items[0].editorial.reviewer;
+  expectError(
+    await validate(sharedReviewer),
+    /technical, editorial, and blind reviewers must be independent/,
+  );
+
+  const provisionalPassedReview = copy(candidate);
+  provisionalPassedReview.reviews.items[0].blind.notes = [
+    "Provisional review; replace after independent assessment.",
+  ];
+  expectError(
+    await validate(provisionalPassedReview),
+    /blind passed review retains provisional evidence/,
+  );
+}
+
+{
   const staleChecklist = copy(candidate);
   staleChecklist.reviews.items[0].technical.checklistVersion = "1.0.0";
   expectError(await validate(staleChecklist), /does not use the current quality checklist/);
@@ -562,16 +752,48 @@ expectError(await validate(candidate, { requireGold: true }), /gold lint require
   ).id;
   review.alternativeValidOptionIds = [item.private.correctOptionId];
   review.clueFlags = ["answer length"];
-  review.assessedLevel = item.public.level === "junior" ? "mid" : "junior";
   review.assessedDifficultyBand = item.public.difficultyBand === "core" ? "stretch" : "core";
   const result = await validate(blindMismatch);
   expectError(result, /must independently select the keyed option/);
   expectError(result, /may not identify alternative valid options/);
   expectError(result, /may not retain clue flags/);
-  expectError(result, /assessedLevel must match/);
   assert.match(
     result.warnings.join("\n"),
     /blind assessedDifficultyBand .* differs from authored/,
+  );
+}
+
+{
+  const blindLevelSwap = copy(candidate);
+  const first = blindLevelSwap.itemEntries.find(
+    ({ item }) => item.public.technology === "javascript"
+      && item.public.level === "junior"
+      && item.public.difficultyBand === "foundation"
+      && item.public.format === "code-output",
+  ).item;
+  const second = blindLevelSwap.itemEntries.find(
+    ({ item }) => item.public.technology === "javascript"
+      && item.public.level === "mid"
+      && item.public.difficultyBand === "foundation"
+      && item.public.format === "code-output",
+  ).item;
+  blindLevelSwap.reviews.items.find((review) => review.id === first.id)
+    .blind.assessedLevel = "mid";
+  blindLevelSwap.reviews.items.find((review) => review.id === second.id)
+    .blind.assessedLevel = "junior";
+  const result = await validate(blindLevelSwap);
+  assert.deepEqual(result.errors, []);
+  assert.equal(
+    result.warnings.filter((warning) => warning.includes("blind assessedLevel")).length,
+    2,
+  );
+
+  const brokenBlindCohort = copy(candidate);
+  brokenBlindCohort.reviews.items[0].blind.assessedLevel =
+    brokenBlindCohort.itemEntries[0].item.public.level === "junior" ? "mid" : "junior";
+  expectError(
+    await validate(brokenBlindCohort),
+    /blind assessed levels must preserve the exact blueprint cohorts/,
   );
 }
 
@@ -774,7 +996,7 @@ console.log("completed-after-deadline");`;
     }
   }
   expectError(await validate(skewedLevelTechnology), /technology distribution mismatch/);
-  expectError(await validate(skewedLevelTechnology), /eligible interview pool must be/);
+  expectError(await validate(skewedLevelTechnology), /eligible interview pool is/);
 }
 
 {
@@ -902,6 +1124,23 @@ console.log("completed-after-deadline");`;
     () => assertSafeInterviewBankOutputDir(path.join(repoRoot, "cdn", "interview-bank")),
     /output must stay under/,
   );
+  assert.throws(
+    () => assertInterviewBankLifecycleOutputDir(
+      path.join(repoRoot, "content-drafts", "interview-mcq", "generated"),
+      candidate.manifest,
+    ),
+    /Candidate interview-bank output must use/,
+  );
+  assert.doesNotThrow(() => assertInterviewBankLifecycleOutputDir(
+    path.join(
+      repoRoot,
+      "content-drafts",
+      "interview-mcq",
+      "generated",
+      "candidate-1.2.0",
+    ),
+    candidate.manifest,
+  ));
 
   const nestedLeak = copy(candidate.itemEntries[0].item);
   nestedLeak.public.options[0].correctOptionId = "nested-answer-leak";

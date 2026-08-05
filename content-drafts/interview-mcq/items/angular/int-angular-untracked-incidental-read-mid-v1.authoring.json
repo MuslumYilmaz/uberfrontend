@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-untracked-incidental-read-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "untracked-incidental-read",
+    "prompt": "An Angular 22 effect sends an audit entry whenever `activeUser` changes. The entry should include the current `debugCounter` value for context, but counter increments alone must not resend the audit. Which implementation gives the effect the intended dependency graph?",
+    "options": [
+      {
+        "id": "choice-6fb24856f4",
+        "label": "Read `activeUser()` and `debugCounter()` normally inside the effect, then ignore runs where the user object is unchanged."
+      },
+      {
+        "id": "choice-8ed768f342",
+        "label": "Read `activeUser()` normally, read `debugCounter` with `untracked`, then send both captured values to the audit client."
+      },
+      {
+        "id": "choice-20c6147d57",
+        "label": "Wrap both signal reads and the audit call in `untracked`, then keep the surrounding effect for lifecycle cleanup."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-8ed768f342",
+    "optionRationales": [
+      {
+        "optionId": "choice-6fb24856f4",
+        "verdict": "incorrect",
+        "explanation": "A normal counter read registers it as an effect dependency, so each counter change schedules another effect run even if application code later suppresses the send.",
+        "plausibility": "A remembered user identity can prevent duplicate network calls after the effect has rerun.",
+        "misconceptionTag": "post-run-guard-removes-reactive-dependency",
+        "falsifyingConstraint": "Counter updates must not be part of the effect's invalidation graph."
+      },
+      {
+        "optionId": "choice-8ed768f342",
+        "verdict": "correct",
+        "explanation": "The normal user read tracks the trigger, while the untracked counter read samples incidental context without registering another reactive dependency.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-20c6147d57",
+        "verdict": "incorrect",
+        "explanation": "Untracking both reads leaves the effect with no dependency on `activeUser`, so later user changes do not schedule the required audit entry.",
+        "plausibility": "The effect still runs once and can retain cleanup ownership around the audit operation.",
+        "misconceptionTag": "untracked-only-excludes-secondary-signals",
+        "falsifyingConstraint": "The user signal must remain a tracked dependency that retriggers the effect."
+      }
+    ],
+    "answerProof": {
+      "summary": "Angular tracks normal signal reads made by an effect, while `untracked` allows the effect to sample incidental context without adding that signal to its invalidation dependencies.",
+      "decisiveConstraints": [
+        "Changes to activeUser must schedule the effect.",
+        "Changes to debugCounter must not schedule the effect.",
+        "The audit payload still needs the counter's value at the time of a user-triggered run."
+      ],
+      "claims": [
+        {
+          "statement": "Angular effects track signal reads performed in their reactive context and rerun when a tracked dependency changes.",
+          "sourceIds": [
+            "angular22-signals"
+          ]
+        },
+        {
+          "statement": "Reading a signal through `untracked` returns its value without recording that read as a dependency of the surrounding reactive consumer.",
+          "sourceIds": [
+            "angular22-signals",
+            "angular22-untracked-api"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular effect dependencies",
+      "untracked signal reads",
+      "incidental reactive context"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Signals",
+        "url": "https://angular.dev/guide/signals",
+        "sourceId": "angular22-signals"
+      },
+      {
+        "title": "Angular 22: untracked API",
+        "url": "https://angular.dev/api/core/untracked",
+        "sourceId": "angular22-untracked-api"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-signals",
+          "title": "Angular 22: Signals",
+          "url": "https://angular.dev/guide/signals",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-untracked-api",
+          "title": "Angular 22: untracked API",
+          "url": "https://angular.dev/api/core/untracked",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

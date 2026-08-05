@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-watcheffect-async-dependency-window-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "watcheffect-async-dependency-window",
+    "prompt": "A Vue 3 `watchEffect` reads `query.value`, awaits a cached-token lookup, then reads `locale.value` to fetch results. Query changes rerun the effect, but locale changes do not. Both values must invalidate the request, and each run must use its captured query-locale pair. Which change fixes the boundary?",
+    "options": [
+      {
+        "id": "choice-314e7b9d4d",
+        "label": "Read both refs before the await, but build the request from captured query and a fresh locale read afterward."
+      },
+      {
+        "id": "choice-fb80f7a3ec",
+        "label": "Read and capture both refs before the first await, then use those captured values for the asynchronous request."
+      },
+      {
+        "id": "choice-6885992618",
+        "label": "Replace `watchEffect` with `watch(query, callback)` while reading locale only after the callback's first await."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-fb80f7a3ec",
+    "optionRationales": [
+      {
+        "optionId": "choice-314e7b9d4d",
+        "verdict": "incorrect",
+        "explanation": "The preliminary reads register both dependencies, but combining a captured query with a later locale read can make one run issue a request from two different reactive snapshots.",
+        "plausibility": "Reading both refs synchronously is sufficient to make both refs invalidate watchEffect.",
+        "misconceptionTag": "tracked-dependencies-guarantee-snapshot-consistency",
+        "falsifyingConstraint": "Each asynchronous run must use the query-locale pair captured for that run."
+      },
+      {
+        "optionId": "choice-fb80f7a3ec",
+        "verdict": "correct",
+        "explanation": "Reading both refs synchronously registers both dependencies, and captured values keep one run's asynchronous request internally consistent.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-6885992618",
+        "verdict": "incorrect",
+        "explanation": "Watch tracks its declared source rather than reactive reads inside the callback, so declaring only query leaves locale unable to invalidate the request.",
+        "plausibility": "Watch is useful when dependencies should be declared explicitly instead of collected from synchronous effect execution.",
+        "misconceptionTag": "watch-callback-reads-become-sources",
+        "falsifyingConstraint": "Locale must be declared as a watch source or synchronously tracked so locale changes rerun the request."
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue tracks `watchEffect` dependencies only during synchronous execution, so every ref that should invalidate an async run must be read before that run crosses its first await.",
+      "decisiveConstraints": [
+        "Both query and locale must become reactive dependencies.",
+        "The token lookup creates an asynchronous boundary.",
+        "Each request should use one captured query-locale pair."
+      ],
+      "claims": [
+        {
+          "statement": "An async Vue watchEffect tracks only reactive properties accessed before its first await tick.",
+          "sourceIds": [
+            "vue3-watchers"
+          ]
+        },
+        {
+          "statement": "WatchEffect automatically tracks reactive values accessed during its synchronous execution, while watch can instead declare explicit sources.",
+          "sourceIds": [
+            "vue3-watchers"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue watchEffect",
+      "async dependency tracking",
+      "captured request parameters"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Watchers",
+        "url": "https://vuejs.org/guide/essentials/watchers.html",
+        "sourceId": "vue3-watchers"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-watchers",
+          "title": "Vue 3: Watchers",
+          "url": "https://vuejs.org/guide/essentials/watchers.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

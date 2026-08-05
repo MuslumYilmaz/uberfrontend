@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-error-capture-propagation-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "error-capture-propagation",
+    "prompt": "A Vue 3 feature boundary uses `onErrorCaptured`. It can recover locally from a known `InvalidReportError`, and policy says that handled error must not reach higher boundaries or `app.config.errorHandler`. Every unknown error must continue to centralized reporting. Which hook result enforces that split?",
+    "options": [
+      {
+        "id": "choice-2eb2b856af",
+        "label": "Render the local fallback and return `false` for every captured error so the feature owns the complete descendant error channel."
+      },
+      {
+        "id": "choice-4af03addf4",
+        "label": "Render the fallback for the known error but return nothing; return `false` only when the captured error type is unknown."
+      },
+      {
+        "id": "choice-a18ddffa43",
+        "label": "Render the fallback and return `false` for the known error; return nothing for unknown errors so they keep propagating."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-a18ddffa43",
+    "optionRationales": [
+      {
+        "optionId": "choice-2eb2b856af",
+        "verdict": "incorrect",
+        "explanation": "Returning false for unknown failures suppresses the higher errorCaptured hooks and application handler that must receive those failures for centralized reporting.",
+        "plausibility": "Returning false marks an error as handled and prevents duplicate handling farther up the component chain.",
+        "misconceptionTag": "local-boundary-should-swallow-all-errors",
+        "falsifyingConstraint": "Unknown errors must continue to ancestor and application-level reporting."
+      },
+      {
+        "optionId": "choice-4af03addf4",
+        "verdict": "incorrect",
+        "explanation": "The return behavior is inverted: the handled known error still propagates, while the unknown error is suppressed from centralized reporting.",
+        "plausibility": "The hook can update component state to show a fallback before deciding how the error propagates.",
+        "misconceptionTag": "false-means-continue-error-propagation",
+        "falsifyingConstraint": "Only the locally handled error should stop, and unknown failures should continue."
+      },
+      {
+        "optionId": "choice-a18ddffa43",
+        "verdict": "correct",
+        "explanation": "Vue interprets false as handled and stops further propagation; returning no false value lets unknown failures continue through the remaining error pipeline.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue error boundaries stop a selected error by returning false, so the boundary should do that only after rendering its known recovery and leave unknown errors to propagate normally.",
+      "decisiveConstraints": [
+        "The known error has a complete local recovery path.",
+        "Handled errors must not be reported again by higher handlers.",
+        "Unknown errors require centralized visibility."
+      ],
+      "claims": [
+        {
+          "statement": "Vue onErrorCaptured can update component state to render a fallback for a descendant error.",
+          "sourceIds": [
+            "vue3-lifecycle-error-capture"
+          ]
+        },
+        {
+          "statement": "Returning false from an errorCaptured hook prevents additional ancestor error hooks and app.config.errorHandler from receiving that error; otherwise propagation continues.",
+          "sourceIds": [
+            "vue3-lifecycle-error-capture"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue error boundaries",
+      "onErrorCaptured",
+      "selective error propagation"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Composition API Lifecycle Hooks",
+        "url": "https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured",
+        "sourceId": "vue3-lifecycle-error-capture"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-lifecycle-error-capture",
+          "title": "Vue 3: Composition API Lifecycle Hooks",
+          "url": "https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

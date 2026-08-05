@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-render-purity-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "render-purity",
+    "prompt": "A React 19.2 checkout component calls `orders.submit(cart)` while rendering after `ready` becomes true. Development Strict Mode exposes duplicate submissions, and React may retry rendering. The submission should happen only when the shopper presses Place order. Which refactor respects React's contract?",
+    "options": [
+      {
+        "id": "choice-eacf677635",
+        "label": "Move the call to `useEffect` keyed by `ready` and `cart`, treating readiness as the submission trigger."
+      },
+      {
+        "id": "choice-0d9f5d65b0",
+        "label": "Move the call into `useMemo` keyed by the cart, using memo reuse to suppress repeated submissions."
+      },
+      {
+        "id": "choice-1c7f57d5ce",
+        "label": "Invoke the call from the Place order event handler, then update state from the submission result."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-1c7f57d5ce",
+    "optionRationales": [
+      {
+        "optionId": "choice-eacf677635",
+        "verdict": "incorrect",
+        "explanation": "An Effect moves the call out of render, but tying it to readiness can submit without the shopper's Place order event and can rerun when its dependencies change.",
+        "plausibility": "Effects synchronize external systems with committed React state after rendering.",
+        "misconceptionTag": "reactive-readiness-owns-user-command",
+        "falsifyingConstraint": "Only the shopper's Place order event may initiate the submission."
+      },
+      {
+        "optionId": "choice-0d9f5d65b0",
+        "verdict": "incorrect",
+        "explanation": "A memo calculation still runs as part of rendering and is not an effect boundary for an external submission.",
+        "plausibility": "Memoization can reuse a calculated result while its dependency remains unchanged.",
+        "misconceptionTag": "usememo-is-side-effect-boundary",
+        "falsifyingConstraint": "Rendering and render-time memo calculations must remain free of external order submissions."
+      },
+      {
+        "optionId": "choice-1c7f57d5ce",
+        "verdict": "correct",
+        "explanation": "The explicit user event owns the side effect, leaving render free to calculate UI from the resulting state.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "Submitting an order changes an external system and is tied to a specific user action. Running it from that event handler keeps render pure and prevents render retries from becoming submission attempts.",
+      "decisiveConstraints": [
+        "Order submission changes an external system.",
+        "React may execute rendering more than once.",
+        "The shopper's Place order action is the submission trigger."
+      ],
+      "claims": [
+        {
+          "statement": "React components and Hooks must keep side effects out of render because React may render components multiple times.",
+          "sourceIds": [
+            "react19-render-purity"
+          ]
+        },
+        {
+          "statement": "React recommends event handlers for side effects caused by a specific user interaction.",
+          "sourceIds": [
+            "react19-render-purity"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "React render purity",
+      "event-owned side effects",
+      "Strict Mode render probes"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Components and Hooks must be pure",
+        "url": "https://react.dev/reference/rules/components-and-hooks-must-be-pure",
+        "sourceId": "react19-render-purity"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-render-purity",
+          "title": "React: Components and Hooks must be pure",
+          "url": "https://react.dev/reference/rules/components-and-hooks-must-be-pure",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

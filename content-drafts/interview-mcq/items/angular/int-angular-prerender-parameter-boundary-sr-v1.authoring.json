@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-prerender-parameter-boundary-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "prerender-parameter-boundary",
+    "prompt": "An Angular 22 hybrid app has `product/:sku`. Public catalog SKUs are discoverable during the build and should become static pages; a newly added SKU not in that build must fall back to SSR. Parameter generation cannot depend on request cookies. Which server-route contract fits?",
+    "options": [
+      {
+        "id": "choice-efda02a161",
+        "label": "Read the current request cookie inside `getPrerenderParams` after an await, then return the SKUs visible to that request's user."
+      },
+      {
+        "id": "choice-fb8d249218",
+        "label": "Use `RenderMode.Prerender`, inject the catalog before awaiting, return `{ sku }` entries, and choose `PrerenderFallback.Server`."
+      },
+      {
+        "id": "choice-7bb4bb5830",
+        "label": "Prerender one wildcard document with `PrerenderFallback.None`, then look up any requested SKU from browser state at hydration time."
+      }
+    ],
+    "estimatedSeconds": 195
+  },
+  "private": {
+    "correctOptionId": "choice-fb8d249218",
+    "optionRationales": [
+      {
+        "optionId": "choice-efda02a161",
+        "verdict": "incorrect",
+        "explanation": "Prerender parameter generation runs at build time without a user's request, and Angular injection must occur synchronously before an await boundary.",
+        "plausibility": "Server-side rendering can ordinarily read request-specific data and use injected services for route decisions.",
+        "misconceptionTag": "prerender-params-have-request-context",
+        "falsifyingConstraint": "The static parameter list must be reproducible at build time and independent of user cookies."
+      },
+      {
+        "optionId": "choice-fb8d249218",
+        "verdict": "correct",
+        "explanation": "The build enumerates public parameter maps through the prerender hook, while Server fallback renders valid paths that were absent from that build's static output.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-7bb4bb5830",
+        "verdict": "incorrect",
+        "explanation": "A wildcard document does not generate one static path per SKU, and None fallback gives the server no rendering path for an unbuilt product URL.",
+        "plausibility": "A client-rendered application can resolve route data after hydration from browser-visible state.",
+        "misconceptionTag": "one-prerendered-wildcard-covers-parameter-pages",
+        "falsifyingConstraint": "Known SKUs need distinct static documents and unknown build-time SKUs need server rendering."
+      }
+    ],
+    "answerProof": {
+      "summary": "Angular 22 prerender parameters enumerate build-time public SKU documents, while Server fallback covers later paths; synchronous injection before awaiting respects the hook's injection context.",
+      "decisiveConstraints": [
+        "Catalog identifiers are available during the build without a user request.",
+        "Each known SKU needs its own generated static document.",
+        "Paths missing from the build require SSR rather than no response or client-only recovery."
+      ],
+      "claims": [
+        {
+          "statement": "For a parameterized Prerender route, Angular's getPrerenderParams returns build-time parameter maps that generate separate static documents.",
+          "sourceIds": [
+            "angular22-hybrid-rendering"
+          ]
+        },
+        {
+          "statement": "Dependency injection inside getPrerenderParams must occur synchronously before any await, and PrerenderFallback.Server handles paths not generated at build time with SSR.",
+          "sourceIds": [
+            "angular22-hybrid-rendering"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular hybrid rendering",
+      "getPrerenderParams",
+      "prerender fallback strategies",
+      "synchronous injection context"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Server-side and hybrid rendering",
+        "url": "https://angular.dev/guide/prerendering",
+        "sourceId": "angular22-hybrid-rendering"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-hybrid-rendering",
+          "title": "Angular 22: Server-side and hybrid rendering",
+          "url": "https://angular.dev/guide/prerendering",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

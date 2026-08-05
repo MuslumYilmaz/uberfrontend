@@ -17,6 +17,7 @@ describe('interview runtime artifact gate', () => {
   const originalCandidate = process.env.INTERVIEW_ALLOW_CANDIDATE_BANK;
   const originalAccess = process.env.INTERVIEW_MODE_ACCESS;
   const originalBankPublicPath = process.env.INTERVIEW_BANK_PUBLIC_PATH;
+  const originalBankPrivatePath = process.env.INTERVIEW_BANK_PRIVATE_PATH;
   const originalBankReleasePath = process.env.INTERVIEW_BANK_RELEASE_PATH;
   const originalDesignPublicPath = process.env.INTERVIEW_SYSTEM_DESIGN_PUBLIC_PATH;
   const temporaryDirectories = [];
@@ -29,6 +30,8 @@ describe('interview runtime artifact gate', () => {
     else process.env.INTERVIEW_MODE_ACCESS = originalAccess;
     if (originalBankPublicPath == null) delete process.env.INTERVIEW_BANK_PUBLIC_PATH;
     else process.env.INTERVIEW_BANK_PUBLIC_PATH = originalBankPublicPath;
+    if (originalBankPrivatePath == null) delete process.env.INTERVIEW_BANK_PRIVATE_PATH;
+    else process.env.INTERVIEW_BANK_PRIVATE_PATH = originalBankPrivatePath;
     if (originalBankReleasePath == null) delete process.env.INTERVIEW_BANK_RELEASE_PATH;
     else process.env.INTERVIEW_BANK_RELEASE_PATH = originalBankReleasePath;
     if (originalDesignPublicPath == null) delete process.env.INTERVIEW_SYSTEM_DESIGN_PUBLIC_PATH;
@@ -56,8 +59,64 @@ describe('interview runtime artifact gate', () => {
     expect(artifacts.coding.variants.filter((variant) => variant.enabled)).not.toHaveLength(0);
     const systemDesign = loadSystemDesignArtifacts({ force: true });
     expect(systemDesign.status).toBe('candidate');
-    expect(systemDesign.scenarios).toHaveLength(4);
+    expect(systemDesign.scenarios).toHaveLength(7);
     expect(systemDesign.scenarios.every((scenario) => scenario.enabled)).toBe(true);
+  });
+
+  test('loads the explicit 170-question MCQ candidate only in authorized test mode', () => {
+    const candidateRoot = path.resolve(
+      __dirname,
+      '../../content-drafts/interview-mcq/generated/candidate-1.2.0'
+    );
+    process.env.NODE_ENV = 'test';
+    process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+    process.env.INTERVIEW_BANK_PUBLIC_PATH = path.join(
+      candidateRoot,
+      'frontend-interview-bank-v1.public.json'
+    );
+    process.env.INTERVIEW_BANK_PRIVATE_PATH = path.join(
+      candidateRoot,
+      'frontend-interview-bank-v1.private.json'
+    );
+    process.env.INTERVIEW_BANK_RELEASE_PATH = path.join(
+      candidateRoot,
+      'frontend-interview-bank-v1.release.json'
+    );
+    resetInterviewArtifactsCache();
+
+    const artifacts = loadInterviewArtifacts({ force: true });
+    expect(artifacts.bank.version).toBe('1.2.0');
+    expect(artifacts.bank.status).toBe('candidate');
+    expect(artifacts.bank.questions).toHaveLength(170);
+    expect(fs.readFileSync(process.env.INTERVIEW_BANK_PUBLIC_PATH, 'utf8'))
+      .not.toMatch(/correctOptionId|answerProof|optionRationales|provenance/);
+  });
+
+  test('production public mode rejects the staged 170-question MCQ candidate', () => {
+    const candidateRoot = path.resolve(
+      __dirname,
+      '../../content-drafts/interview-mcq/generated/candidate-1.2.0'
+    );
+    process.env.NODE_ENV = 'production';
+    process.env.INTERVIEW_MODE_ACCESS = 'public';
+    process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+    process.env.INTERVIEW_BANK_PUBLIC_PATH = path.join(
+      candidateRoot,
+      'frontend-interview-bank-v1.public.json'
+    );
+    process.env.INTERVIEW_BANK_PRIVATE_PATH = path.join(
+      candidateRoot,
+      'frontend-interview-bank-v1.private.json'
+    );
+    process.env.INTERVIEW_BANK_RELEASE_PATH = path.join(
+      candidateRoot,
+      'frontend-interview-bank-v1.release.json'
+    );
+    resetInterviewArtifactsCache();
+
+    expect(() => loadInterviewArtifacts({ force: true })).toThrow(
+      'bank artifact is not approved for runtime use'
+    );
   });
 
   test.each([

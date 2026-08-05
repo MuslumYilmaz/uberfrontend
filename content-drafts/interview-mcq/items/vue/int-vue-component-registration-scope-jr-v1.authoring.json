@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-component-registration-scope-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "component-registration-scope",
+    "prompt": "A Vue 3 single-file component is the only place that renders `DateBadge`. Its descendants do not use that component, and the build should be able to omit it from entry points that never import this screen. Which registration expresses that dependency?",
+    "options": [
+      {
+        "id": "choice-7ec7a1af9b",
+        "label": "Register `DateBadge` with `app.component()` before mounting so every component in the application can resolve it."
+      },
+      {
+        "id": "choice-4d6611a3f7",
+        "label": "Import `DateBadge` inside the screen's `<script setup>` and reference it directly in that screen's template."
+      },
+      {
+        "id": "choice-3f0172abb2",
+        "label": "Reference `<DateBadge>` in the screen template and rely on SFC compilation to discover and import the sibling file."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-4d6611a3f7",
+    "optionRationales": [
+      {
+        "optionId": "choice-7ec7a1af9b",
+        "verdict": "incorrect",
+        "explanation": "Global registration broadens availability to the whole application and can keep an otherwise unused component in the application bundle.",
+        "plausibility": "An app-level registration lets any descendant template resolve the registered component name.",
+        "misconceptionTag": "single-consumer-needs-global-registration",
+        "falsifyingConstraint": "The dependency belongs to one screen and should remain explicit and locally tree-shakeable."
+      },
+      {
+        "optionId": "choice-4d6611a3f7",
+        "verdict": "correct",
+        "explanation": "An imported component in `<script setup>` is available directly to that SFC's template, preserving a local and explicit dependency.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-3f0172abb2",
+        "verdict": "incorrect",
+        "explanation": "Vue does not discover sibling component files from template tags; the screen must import and expose or locally register `DateBadge`.",
+        "plausibility": "Single-file component compilers resolve template syntax, so filesystem-based component discovery can appear built in.",
+        "misconceptionTag": "sfc-template-tags-auto-import-sibling-components",
+        "falsifyingConstraint": "The dependency must be explicitly imported by the only screen that uses it."
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue SFC imports in `<script setup>` are locally available to that component's template, which keeps the dependency explicit without expanding registration to the application or descendants.",
+      "decisiveConstraints": [
+        "Only the importing screen needs the component.",
+        "The dependency should remain visible to build-time tree shaking.",
+        "Descendant templates do not need inherited registration."
+      ],
+      "claims": [
+        {
+          "statement": "Components imported in an SFC's `<script setup>` can be used directly in that SFC's template as a local registration.",
+          "sourceIds": [
+            "vue3-component-registration"
+          ]
+        },
+        {
+          "statement": "Local registration is scoped to the current component and does not make the component available in descendants, while global registration can inhibit tree shaking.",
+          "sourceIds": [
+            "vue3-component-registration"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue component registration",
+      "script setup imports",
+      "local dependency scope"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Component Registration",
+        "url": "https://vuejs.org/guide/components/registration",
+        "sourceId": "vue3-component-registration"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-component-registration",
+          "title": "Vue 3: Component Registration",
+          "url": "https://vuejs.org/guide/components/registration",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

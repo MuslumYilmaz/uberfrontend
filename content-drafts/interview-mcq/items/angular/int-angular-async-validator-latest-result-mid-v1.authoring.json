@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-async-validator-latest-result-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "async-validator-latest-result",
+    "prompt": "An Angular 22 Signal Form checks username availability. Users type quickly, and a slower response for an older value must not replace the current field's validity. The UI also needs the field's real pending state. Which validation boundary supplies both behaviors?",
+    "options": [
+      {
+        "id": "choice-2442dcc2f2",
+        "label": "Use Signal Forms `validateHttp`, derive request params from the field, and render the form-owned `pending()` state."
+      },
+      {
+        "id": "choice-ce344aaddd",
+        "label": "Use `mergeMap` for requests, count active checks for pending, and apply each response to the field as it arrives."
+      },
+      {
+        "id": "choice-3c73305aab",
+        "label": "Set a shared pending flag before `switchMap`, then clear it in each canceled or completed inner request's `finalize`."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-2442dcc2f2",
+    "optionRationales": [
+      {
+        "optionId": "choice-2442dcc2f2",
+        "verdict": "correct",
+        "explanation": "Angular's Signal Forms async-validation boundary ties request params, cancellation, result mapping, and pending state to the current field value.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-ce344aaddd",
+        "verdict": "incorrect",
+        "explanation": "The active-request count can represent pending work, but mergeMap keeps older checks active and commits every response, so a late obsolete result can replace current validity.",
+        "plausibility": "An active-request counter can accurately describe whether any availability checks remain in flight.",
+        "misconceptionTag": "concurrent-validator-results-are-commutative",
+        "falsifyingConstraint": "Only the validation result associated with the current field value may control validity."
+      },
+      {
+        "optionId": "choice-3c73305aab",
+        "verdict": "incorrect",
+        "explanation": "SwitchMap prevents an obsolete response from committing, but its cancellation finalize runs after the shared flag was set for the new value and clears that flag while the replacement request remains active.",
+        "plausibility": "SwitchMap is an appropriate latest-request primitive when obsolete results must be discarded.",
+        "misconceptionTag": "shared-boolean-models-overlapping-pending",
+        "falsifyingConstraint": "Pending must remain true for the lifecycle of the current field validation."
+      }
+    ],
+    "answerProof": {
+      "summary": "Angular 22 Signal Forms owns async validation per field: parameter changes cancel obsolete work, only current results map to errors, and the field exposes pending while its active check runs.",
+      "decisiveConstraints": [
+        "Rapid value changes create overlapping validation attempts.",
+        "Obsolete attempts must not update current validity.",
+        "Pending feedback must come from the form's active validation lifecycle."
+      ],
+      "claims": [
+        {
+          "statement": "Angular 22 Signal Forms async validation exposes a field-level pending signal while validation executes.",
+          "sourceIds": [
+            "angular22-signal-form-async-validation"
+          ]
+        },
+        {
+          "statement": "Signal Forms cancels a field's pending async validation request when that field value changes, preventing stale results from becoming current validation state.",
+          "sourceIds": [
+            "angular22-signal-form-async-validation"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular Signal Forms",
+      "async validation cancellation",
+      "pending field state"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Signal Forms async operations",
+        "url": "https://angular.dev/guide/forms/signals/async-operations",
+        "sourceId": "angular22-signal-form-async-validation"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-signal-form-async-validation",
+          "title": "Angular 22: Signal Forms async operations",
+          "url": "https://angular.dev/guide/forms/signals/async-operations",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

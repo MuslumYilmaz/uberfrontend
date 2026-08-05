@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-activity-hidden-lifecycle-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "activity-hidden-lifecycle",
+    "prompt": "A React 19.2 workspace keeps several heavy tab panels mounted so their local form state returns instantly. Hidden panels still run subscription Effects and compete with the active tab. The DOM and local state should survive, but those Effects should stop until a panel is shown again. Which boundary fits?",
+    "options": [
+      {
+        "id": "choice-3261425732",
+        "label": "Render each panel normally and use CSS `visibility: hidden`; React will clean up Effects for invisible DOM."
+      },
+      {
+        "id": "choice-9e3ea2c7dc",
+        "label": "Wrap each panel in `<Activity mode={active ? 'visible' : 'hidden'}>` and give its Effects symmetric cleanup."
+      },
+      {
+        "id": "choice-20a87c8edf",
+        "label": "Conditionally omit inactive panels from JSX and store their complete component state in a module variable."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-9e3ea2c7dc",
+    "optionRationales": [
+      {
+        "optionId": "choice-3261425732",
+        "verdict": "incorrect",
+        "explanation": "CSS visibility does not notify React to tear down subscription Effects, so hidden panels can keep running their external work.",
+        "plausibility": "Keeping a panel in the DOM with a visibility rule preserves its local state and layout object identity.",
+        "misconceptionTag": "css-visibility-controls-effect-lifecycle",
+        "falsifyingConstraint": "Subscriptions must stop while the panel is hidden."
+      },
+      {
+        "optionId": "choice-9e3ea2c7dc",
+        "verdict": "correct",
+        "explanation": "A hidden Activity preserves state and DOM while React cleans up its Effects, then recreates those Effects when visible again.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-20a87c8edf",
+        "verdict": "incorrect",
+        "explanation": "Omitting a panel unmounts it and destroys component-owned state, while a module variable cannot capture React's complete state and DOM lifetimes.",
+        "plausibility": "Unmounting reliably cleans up well-formed Effects, and external storage can preserve selected business values.",
+        "misconceptionTag": "module-variable-preserves-component-instance",
+        "falsifyingConstraint": "The existing DOM and complete local component state must survive hiding."
+      }
+    ],
+    "answerProof": {
+      "summary": "A hidden Activity visually hides its subtree and cleans up its Effects while preserving its DOM and React state. Revealing it restores the prior state and recreates Effects, matching the tab lifetime contract.",
+      "decisiveConstraints": [
+        "Panel DOM and local state must survive the hidden interval.",
+        "Subscription Effects must be inactive while hidden.",
+        "Effects must resume when the same panel becomes visible."
+      ],
+      "claims": [
+        {
+          "statement": "When an Activity boundary is hidden, React hides its children and destroys their Effects, cleaning up active subscriptions.",
+          "sourceIds": [
+            "react19-activity"
+          ]
+        },
+        {
+          "statement": "When the Activity becomes visible again, React restores its previous state and recreates its Effects.",
+          "sourceIds": [
+            "react19-activity"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "React Activity",
+      "hidden subtree lifecycle",
+      "Effect cleanup symmetry"
+    ],
+    "learnMore": [
+      {
+        "title": "React: Activity",
+        "url": "https://react.dev/reference/react/Activity",
+        "sourceId": "react19-activity"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-activity",
+          "title": "React: Activity",
+          "url": "https://react.dev/reference/react/Activity",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -29,32 +29,32 @@ export const interviewBankPolicyPaths = Object.freeze({
 });
 
 const EXPECTED_BLUEPRINT = Object.freeze({
-  questionCount: 120,
-  level: { junior: 40, mid: 40, senior: 40 },
-  technology: { javascript: 24, html: 12, css: 12, react: 24, angular: 24, vue: 24 },
+  questionCount: 170,
+  level: { junior: 56, mid: 57, senior: 57 },
+  technology: { javascript: 34, html: 17, css: 17, react: 34, angular: 34, vue: 34 },
   technologyByLevel: {
-    junior: { javascript: 8, html: 4, css: 4, react: 8, angular: 8, vue: 8 },
-    mid: { javascript: 8, html: 4, css: 4, react: 8, angular: 8, vue: 8 },
-    senior: { javascript: 8, html: 4, css: 4, react: 8, angular: 8, vue: 8 },
+    junior: { javascript: 11, html: 6, css: 6, react: 11, angular: 11, vue: 11 },
+    mid: { javascript: 11, html: 6, css: 5, react: 11, angular: 12, vue: 12 },
+    senior: { javascript: 12, html: 5, css: 6, react: 12, angular: 11, vue: 11 },
   },
   difficultyBandByLevel: {
-    junior: { foundation: 10, core: 20, stretch: 10 },
-    mid: { foundation: 10, core: 20, stretch: 10 },
-    senior: { foundation: 10, core: 20, stretch: 10 },
+    junior: { foundation: 14, core: 28, stretch: 14 },
+    mid: { foundation: 14, core: 29, stretch: 14 },
+    senior: { foundation: 14, core: 29, stretch: 14 },
   },
   formatByLevel: {
-    junior: { conceptual: 15, "code-output": 2, "production-scenario": 23 },
-    mid: { conceptual: 11, "code-output": 2, "production-scenario": 27 },
-    senior: { conceptual: 5, "code-output": 2, "production-scenario": 33 },
+    junior: { conceptual: 21, "code-output": 2, "production-scenario": 33 },
+    mid: { conceptual: 15, "code-output": 2, "production-scenario": 40 },
+    senior: { conceptual: 7, "code-output": 2, "production-scenario": 48 },
   },
-  correctOptionPosition: { first: 40, second: 40, third: 40 },
+  correctOptionPosition: { first: 57, second: 57, third: 56 },
   competencyDistinctByTechnology: {
-    javascript: 24,
-    html: 12,
-    css: 12,
-    react: 24,
-    angular: 24,
-    vue: 24,
+    javascript: 34,
+    html: 17,
+    css: 17,
+    react: 34,
+    angular: 34,
+    vue: 34,
   },
   selectionPolicy: {
     sessionQuestionCount: 5,
@@ -62,7 +62,11 @@ const EXPECTED_BLUEPRINT = Object.freeze({
     frameworkQuestionsPerSession: 2,
     coreTechnologies: ["javascript", "html", "css"],
     frameworkTechnologies: ["react", "angular", "vue"],
-    eligiblePoolPerLevel: { core: 16, selectedFramework: 8, total: 24 },
+    eligiblePoolByLevelAndTrack: {
+      junior: { "core-web": 23, react: 34, angular: 34, vue: 34 },
+      mid: { "core-web": 22, react: 33, angular: 34, vue: 34 },
+      senior: { "core-web": 23, react: 35, angular: 34, vue: 34 },
+    },
   },
   codeOutputConstraint: {
     count: 6,
@@ -78,6 +82,7 @@ const APPROVED_BANK_STATUSES = Object.freeze([
   "editorial-gold",
   "calibrated-gold",
 ]);
+const INCOMPLETE_REVIEW_NOTE_PATTERN = /\bprovisional\b|replace after independent|pending review|not yet reviewed/i;
 const APPROVED_OFFICIAL_SOURCE_LICENSES = Object.freeze([
   Object.freeze({
     hostname: "developer.mozilla.org",
@@ -286,11 +291,29 @@ export function validatePolicyInvariants(policies, errors = []) {
         "must remain exactly 0.15.",
       );
     }
+    if (quality.reviewRules.optionLengthClue?.metric
+      !== "normalized-alphanumeric-character-count-excluding-whitespace") {
+      addPolicyError(
+        errors,
+        "quality.reviewRules.optionLengthClue.metric",
+        "must match the validator's normalized visible-length metric.",
+      );
+    }
     if (quality.reviewRules.optionSimilarity?.reviewThreshold !== 0.8) {
       addPolicyError(
         errors,
         "quality.reviewRules.optionSimilarity.reviewThreshold",
         "must remain exactly 0.8.",
+      );
+    }
+    if (!hasExactStringMembers(
+      quality.reviewRules.optionSimilarity?.exemptFormats,
+      ["code-output"],
+    )) {
+      addPolicyError(
+        errors,
+        "quality.reviewRules.optionSimilarity.exemptFormats",
+        "must exempt exactly code-output ordering choices.",
       );
     }
     if (!hasExactStringMembers(
@@ -310,6 +333,28 @@ export function validatePolicyInvariants(policies, errors = []) {
         "must remain exactly 3.",
       );
     }
+  }
+
+  if (!isPlainObject(quality.reviewIntegrity)
+    || quality.reviewIntegrity.requireTechnicalEditorialAndBlind !== true
+    || quality.reviewIntegrity.everyReviewerMustDifferFromAuthor !== true
+    || quality.reviewIntegrity.stageReviewersMustBeDistinct !== true
+    || quality.reviewIntegrity.bindReviewsAndWaiversToRevisionAndContentHash !== true
+    || quality.reviewIntegrity.finalApprovalScope !== "bank") {
+    addPolicyError(
+      errors,
+      "quality.reviewIntegrity",
+      "must require all three independent, author-separated, content-bound review stages and bank-scoped approval.",
+    );
+  }
+  if (!isPlainObject(quality.difficultyRubric)
+    || quality.difficultyRubric.perItemLevelDisagreementPolicy !== "warning"
+    || quality.difficultyRubric.perItemBandDisagreementPolicy !== "warning") {
+    addPolicyError(
+      errors,
+      "quality.difficultyRubric",
+      "must retain warning-level per-item blind level and band disagreements while exact cohorts remain mandatory.",
+    );
   }
 
   const calibration = quality.calibration;
@@ -664,7 +709,7 @@ function validateBlueprint(blueprint, errors) {
   }
   for (const field of ["level", "technology", "correctOptionPosition"]) {
     if (!exactCounts(blueprint.distributions[field], EXPECTED_BLUEPRINT[field])) {
-      errors.push(`blueprint.distributions.${field} does not match the approved 120-item plan.`);
+      errors.push(`blueprint.distributions.${field} does not match the approved 170-item plan.`);
     }
   }
   for (const level of Object.keys(EXPECTED_BLUEPRINT.level)) {
@@ -695,7 +740,7 @@ function validateBlueprint(blueprint, errors) {
     blueprint.competencyConstraint.distinctByTechnology,
     EXPECTED_BLUEPRINT.competencyDistinctByTechnology,
   )) {
-    errors.push("blueprint competency coverage does not match the approved 120-item plan.");
+    errors.push("blueprint competency coverage does not match the approved 170-item plan.");
   }
   if (canonicalJson(blueprint.selectionPolicy)
     !== canonicalJson(EXPECTED_BLUEPRINT.selectionPolicy)) {
@@ -973,6 +1018,11 @@ function validateReviews(items, reviews, manifest, qualityPolicy, errors, warnin
       if (stage.reviewedAt && new Date(`${stage.reviewedAt}T00:00:00.000Z`) > now) {
         errors.push(`${item.id}: ${stageName} review date may not be in the future.`);
       }
+      if (stage.status === "passed" && stage.notes.some(
+        (note) => INCOMPLETE_REVIEW_NOTE_PATTERN.test(String(note)),
+      )) {
+        errors.push(`${item.id}: ${stageName} passed review retains provisional evidence.`);
+      }
     }
 
     const optionIds = item.public.options.map((option) => option.id);
@@ -1031,7 +1081,9 @@ function validateReviews(items, reviews, manifest, qualityPolicy, errors, warnin
         errors.push(`${item.id}: passed blind review may not retain low confidence.`);
       }
       if (review.blind.assessedLevel !== item.public.level) {
-        errors.push(`${item.id}: blind assessedLevel must match the authored level.`);
+        warnings.push(
+          `${item.id}: blind assessedLevel ${review.blind.assessedLevel} differs from authored ${item.public.level}; retain for comparative editorial calibration.`,
+        );
       }
       if (review.blind.assessedDifficultyBand !== item.public.difficultyBand) {
         warnings.push(
@@ -1039,11 +1091,18 @@ function validateReviews(items, reviews, manifest, qualityPolicy, errors, warnin
         );
       }
     }
-    if (review.blind.reviewer === item.author.id) {
-      errors.push(`${item.id}: blind reviewer must differ from the author.`);
+    for (const stageName of ["technical", "editorial", "blind"]) {
+      if (review[stageName].reviewer === item.author.id) {
+        errors.push(`${item.id}: ${stageName} reviewer must differ from the author.`);
+      }
     }
-    if (review.blind.reviewer === review.editorial.reviewer) {
-      errors.push(`${item.id}: blind reviewer must differ from the editorial reviewer.`);
+    const stageReviewers = [
+      review.technical.reviewer,
+      review.editorial.reviewer,
+      review.blind.reviewer,
+    ];
+    if (new Set(stageReviewers).size !== stageReviewers.length) {
+      errors.push(`${item.id}: technical, editorial, and blind reviewers must be independent.`);
     }
     for (const waiver of review.waivers) {
       if (waiver.revision !== item.revision || waiver.contentHash !== contentHash) {
@@ -1052,6 +1111,30 @@ function validateReviews(items, reviews, manifest, qualityPolicy, errors, warnin
       if (new Date(`${waiver.reviewedAt}T00:00:00.000Z`) > now) {
         errors.push(`${item.id}: waiver ${waiver.ruleId} date may not be in the future.`);
       }
+    }
+  }
+
+  const blindAssessments = items.map((item) => {
+    const blind = reviewsById.get(item.id).blind;
+    return {
+      level: blind.assessedLevel,
+      difficultyBand: blind.assessedDifficultyBand,
+      technology: item.public.technology,
+    };
+  });
+  const blindLevelCounts = countBy(blindAssessments, (entry) => entry.level);
+  if (!exactCounts(blindLevelCounts, EXPECTED_BLUEPRINT.level)) {
+    errors.push("blind assessed levels must preserve the exact blueprint cohorts.");
+  }
+  for (const level of Object.keys(EXPECTED_BLUEPRINT.level)) {
+    const levelAssessments = blindAssessments.filter((entry) => entry.level === level);
+    const technologyCounts = countBy(levelAssessments, (entry) => entry.technology);
+    if (!exactCounts(technologyCounts, EXPECTED_BLUEPRINT.technologyByLevel[level])) {
+      errors.push(`blind assessed ${level} technology quotas must match the exact blueprint cohort.`);
+    }
+    const bandCounts = countBy(levelAssessments, (entry) => entry.difficultyBand);
+    if (!exactCounts(bandCounts, EXPECTED_BLUEPRINT.difficultyBandByLevel[level])) {
+      errors.push(`blind assessed ${level} difficulty-band quotas must match the exact blueprint cohort.`);
     }
   }
 
@@ -1196,17 +1279,20 @@ function validateBankDistributions(items, blueprint, errors) {
     const levelItems = items.filter((item) => item.public.level === level);
     const coreCount = levelItems.filter((item) =>
       selectionPolicy.coreTechnologies.includes(item.public.technology)).length;
-    if (coreCount !== selectionPolicy.eligiblePoolPerLevel.core) {
-      errors.push(`${level}: eligible core pool is ${coreCount}; expected 16.`);
+    const expectedPools = selectionPolicy.eligiblePoolByLevelAndTrack[level];
+    if (coreCount !== expectedPools["core-web"]) {
+      errors.push(
+        `${level}: eligible Core Web pool is ${coreCount}; expected ${expectedPools["core-web"]}.`,
+      );
     }
     for (const framework of selectionPolicy.frameworkTechnologies) {
       const frameworkCount = levelItems.filter(
         (item) => item.public.technology === framework,
       ).length;
-      if (frameworkCount !== selectionPolicy.eligiblePoolPerLevel.selectedFramework
-        || coreCount + frameworkCount !== selectionPolicy.eligiblePoolPerLevel.total) {
+      const actualPool = coreCount + frameworkCount;
+      if (actualPool !== expectedPools[framework]) {
         errors.push(
-          `${level}/${framework}: eligible interview pool must be 16 core + 8 framework = 24.`,
+          `${level}/${framework}: eligible interview pool is ${actualPool}; expected ${expectedPools[framework]}.`,
         );
       }
     }

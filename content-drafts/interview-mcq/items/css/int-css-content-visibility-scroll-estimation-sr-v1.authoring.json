@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-content-visibility-scroll-estimation-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "css",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "content-visibility-scroll-estimation",
+    "prompt": "A documentation reader contains hundreds of off-screen sections with uneven heights. `content-visibility: auto` cuts initial rendering work, but the scrollbar thumb and scroll position shift before sections are visited. After a section is rendered once, future skips should reuse its measured size. Which sizing contract fits?",
+    "options": [
+      {
+        "id": "choice-f5f60f7d53",
+        "label": "Pair `content-visibility: auto` with `contain-intrinsic-size: auto <estimate>` tuned from representative sections."
+      },
+      {
+        "id": "choice-a3b94a5a1a",
+        "label": "Pair `content-visibility: hidden` with fixed heights on each section and reveal only the active heading."
+      },
+      {
+        "id": "choice-af9684fd5e",
+        "label": "Pair `content-visibility: auto` with `overflow: hidden` and measure every section height during startup."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-f5f60f7d53",
+    "optionRationales": [
+      {
+        "optionId": "choice-f5f60f7d53",
+        "verdict": "correct",
+        "explanation": "The estimate supplies layout space before rendering, and the `auto` form lets a later off-screen skip use the section's remembered size.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-a3b94a5a1a",
+        "verdict": "incorrect",
+        "explanation": "Hidden content remains skipped regardless of viewport relevance, while fixed heights cannot model the stated uneven sections accurately.",
+        "plausibility": "Explicit heights reserve deterministic scroll space and hidden content avoids rendering work.",
+        "misconceptionTag": "fixed-height-replaces-intrinsic-estimation",
+        "falsifyingConstraint": "Full sections must become available as users scroll and their heights vary."
+      },
+      {
+        "optionId": "choice-af9684fd5e",
+        "verdict": "incorrect",
+        "explanation": "Measuring every section up front defeats the deferred rendering budget, and overflow clipping does not provide remembered intrinsic sizing.",
+        "plausibility": "Known section heights would make the scrollbar stable before the user begins scrolling.",
+        "misconceptionTag": "eager-measurement-preserves-render-savings",
+        "falsifyingConstraint": "Initial work must remain bounded instead of rendering or measuring the full document."
+      }
+    ],
+    "answerProof": {
+      "summary": "The intrinsic-size placeholder reserves approximate space while off-screen content is skipped. With the `auto` form, the browser can replace that estimate with the last rendered size when the same section becomes off-screen again.",
+      "decisiveConstraints": [
+        "Off-screen rendering must remain deferred.",
+        "Unvisited sections need an estimated layout contribution.",
+        "Previously rendered sections should reuse their measured size."
+      ],
+      "claims": [
+        {
+          "statement": "`content-visibility: auto` can skip rendering work for content that is not relevant to the user while preserving the element in document features.",
+          "sourceIds": [
+            "mdn-content-visibility"
+          ]
+        },
+        {
+          "statement": "The `auto <length>` intrinsic-size form uses a placeholder before rendering and can use the element's last remembered size after actual size information exists.",
+          "sourceIds": [
+            "mdn-contain-intrinsic-size"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "content visibility",
+      "intrinsic size placeholders",
+      "long-document rendering performance"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: content-visibility",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/content-visibility",
+        "sourceId": "mdn-content-visibility"
+      },
+      {
+        "title": "MDN: contain-intrinsic-size",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/contain-intrinsic-size",
+        "sourceId": "mdn-contain-intrinsic-size"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-content-visibility",
+          "title": "MDN: content-visibility",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/content-visibility",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-contain-intrinsic-size",
+          "title": "MDN: contain-intrinsic-size",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/contain-intrinsic-size",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

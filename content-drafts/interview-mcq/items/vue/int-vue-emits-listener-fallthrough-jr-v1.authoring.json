@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-emits-listener-fallthrough-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "emits-listener-fallthrough",
+    "prompt": "A single-root Vue 3 `SaveButton` validates a click and emits a normalized `click` payload. A parent's `@click` handler currently runs twice: once for the emitted event and once as a native listener falling through to the root button. Other attributes must keep their default fallthrough. Which fix preserves the component contract?",
+    "options": [
+      {
+        "id": "choice-b8de3c055f",
+        "label": "Keep the event undeclared and call `stopPropagation()` before emitting the normalized payload from the root handler."
+      },
+      {
+        "id": "choice-70cda40947",
+        "label": "Remove the component emission and let the parent's listener receive only the root button's native event object."
+      },
+      {
+        "id": "choice-b1e0e68f8f",
+        "label": "Declare `click` with `defineEmits`, then emit the normalized payload once from the root button's handler."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-b1e0e68f8f",
+    "optionRationales": [
+      {
+        "optionId": "choice-b8de3c055f",
+        "verdict": "incorrect",
+        "explanation": "Stopping propagation does not reclassify the undeclared listener, so Vue can still attach it to the same root element as a fallthrough native listener.",
+        "plausibility": "Propagation control can prevent an event from reaching listeners on ancestor DOM elements.",
+        "misconceptionTag": "stop-propagation-removes-root-fallthrough-listener",
+        "falsifyingConstraint": "The duplicate listener is attached to the component's root rather than reached through ancestor bubbling."
+      },
+      {
+        "optionId": "choice-70cda40947",
+        "verdict": "incorrect",
+        "explanation": "Relying only on the native event removes the component-owned validation and normalized payload that its public event contract requires.",
+        "plausibility": "An undeclared listener can fall through to a single root element and receive its native click.",
+        "misconceptionTag": "native-fallthrough-preserves-custom-event-payload",
+        "falsifyingConstraint": "Consumers require the component's validated, normalized event rather than the raw DOM event."
+      },
+      {
+        "optionId": "choice-b1e0e68f8f",
+        "verdict": "correct",
+        "explanation": "Declaring the event removes its listener from fallthrough attributes, leaving the explicit component emission as the single delivery path.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "A declared Vue component event is excluded from fallthrough listeners, so the wrapper can retain ordinary attribute inheritance while delivering its normalized click exactly once through `emit`.",
+      "decisiveConstraints": [
+        "The normalized component event must remain the public API.",
+        "The parent listener must not also attach natively to the root button.",
+        "Unrelated attributes should retain default fallthrough behavior."
+      ],
+      "claims": [
+        {
+          "statement": "Vue removes listeners for events declared through `emits` or `defineEmits` from the component's fallthrough attributes.",
+          "sourceIds": [
+            "vue3-component-events"
+          ]
+        },
+        {
+          "statement": "If a native event name is declared as a component event, a parent listener responds to component emissions of that name rather than the root element's native event.",
+          "sourceIds": [
+            "vue3-component-events"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue component events",
+      "emits declarations",
+      "fallthrough listeners"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Component Events",
+        "url": "https://vuejs.org/guide/components/events",
+        "sourceId": "vue3-component-events"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-component-events",
+          "title": "Vue 3: Component Events",
+          "url": "https://vuejs.org/guide/components/events",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

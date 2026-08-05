@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-action-state-form-contract-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "action-state-form-contract",
+    "prompt": "A React 19.2 app server-renders an account form that may be submitted before hydration. It wraps a server `save` Action with `useActionState(save, initialState, '/account')` so validation state survives the permalink navigation and pending status follows hydrated submissions. After a refactor, `save` mistakes previous state for `FormData`. Which contract preserves the full boundary?",
+    "options": [
+      {
+        "id": "choice-1eaf5dc478",
+        "label": "Keep `FormData` first, put the returned `formAction` on the form, render the same form at the permalink, and read the third tuple value."
+      },
+      {
+        "id": "choice-5a78d98535",
+        "label": "Define `save(previousState, formData)`, put the returned `formAction` on the form, render the same Action at the permalink, and read the third tuple value."
+      },
+      {
+        "id": "choice-f5c6e218cf",
+        "label": "Define `save(previousState, formData)`, put the original `save` on the form, render a different destination form, and derive pending from its Promise."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-5a78d98535",
+    "optionRationales": [
+      {
+        "optionId": "choice-1eaf5dc478",
+        "verdict": "incorrect",
+        "explanation": "The dispatch and permalink ownership are correct, but `useActionState` prepends previous state to the wrapped Action's original arguments.",
+        "plausibility": "Unwrapped form Actions commonly receive submitted FormData as their first argument.",
+        "misconceptionTag": "wrapped-action-keeps-formdata-first",
+        "falsifyingConstraint": "The wrapped Action must receive previous state before submitted FormData."
+      },
+      {
+        "optionId": "choice-5a78d98535",
+        "verdict": "correct",
+        "explanation": "The returned dispatch Action belongs on the form, React supplies prior state before submitted `FormData`, and the same form/Action identity at the permalink lets pre-hydration state carry forward.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-f5c6e218cf",
+        "verdict": "incorrect",
+        "explanation": "The reducer signature is correct, but passing the original function bypasses the dispatch Action, while a different destination form cannot receive the permalink-carried state.",
+        "plausibility": "The original server Action is a valid form target, and a dedicated post-submit destination can appear to own the response.",
+        "misconceptionTag": "original-action-is-observed-by-wrapper",
+        "falsifyingConstraint": "Returned state requires the `useActionState` dispatch, and pre-hydration permalink continuity requires the same form and Action identity at the destination."
+      }
+    ],
+    "answerProof": {
+      "summary": "`useActionState` returns current state, a dispatch Action, and pending status in that order. The dispatch supplies previous state before `FormData`; rendering the same form and Action at the permalink preserves server-returned state when submission precedes hydration.",
+      "decisiveConstraints": [
+        "The form must dispatch through the function returned by `useActionState`.",
+        "Returned validation state must update after the Action resolves.",
+        "The wrapped Action must distinguish previous state from submitted form data.",
+        "A pre-hydration submission must reach a permalink that renders the same form and Action identity."
+      ],
+      "claims": [
+        {
+          "statement": "`useActionState` returns current state, a dispatch Action, and an `isPending` value in that order.",
+          "sourceIds": [
+            "react19-use-action-state"
+          ]
+        },
+        {
+          "statement": "When its dispatch Action is passed to a form action prop, the reducer Action receives previous state followed by the submitted `FormData`.",
+          "sourceIds": [
+            "react19-use-action-state"
+          ]
+        },
+        {
+          "statement": "Before hydration, a form using the optional permalink navigates there, and React can pass the returned state when the destination renders the same form component with the same Action and permalink.",
+          "sourceIds": [
+            "react19-use-action-state"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "useActionState",
+      "form Action dispatch",
+      "Action reducer signatures",
+      "pre-hydration Action permalinks"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useActionState",
+        "url": "https://react.dev/reference/react/useActionState",
+        "sourceId": "react19-use-action-state"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-action-state",
+          "title": "React: useActionState",
+          "url": "https://react.dev/reference/react/useActionState",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

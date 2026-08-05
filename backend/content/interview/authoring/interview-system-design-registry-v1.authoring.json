@@ -4,41 +4,41 @@
   "registryVersion": "1.0.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "562d9fb1f36bcf977f662cb8fd762ea89e17d420776917234d2ad39ef8673e77",
+  "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
   "reviewBatch": {
-    "reviewedDefinitionHash": "562d9fb1f36bcf977f662cb8fd762ea89e17d420776917234d2ad39ef8673e77",
-    "reviewedAt": "2026-07-29",
+    "reviewedDefinitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+    "reviewedAt": "2026-08-04",
     "technical": {
-      "reviewer": "codex-system-design-technical-v2",
+      "reviewer": "codex-system-design-technical-v5",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
-        "Each scoring claim is bound to an allowlisted rule tree and a pinned source-content bundle.",
-        "Two distinct strong paths, one developing path, and one critical-conflict path are executable for every scenario.",
-        "Lane placement and rationale limits preserve scoreable evidence without exposing the private rubric.",
-        "AI chat scoring distinguishes transport cancellation from authoritative terminal state and requires stable command, message, conversation, and stream identity."
+        "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
+        "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
+        "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
+        "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
       ]
     },
     "blind": {
-      "reviewer": "codex-system-design-blind-v2",
+      "reviewer": "codex-system-design-blind-v5",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
-        "Prompts, visible cards, and decision choices were reviewed without the private rubric.",
-        "The scenarios permit more than one coherent architecture and do not expose a single answer-shaped clue.",
-        "Candidate-facing alternatives use parallel length and avoid conspicuous absolute-language distractors.",
-        "The AI chat prompt supports split-lifetime and serialized feature-controller designs while keeping unsafe view ownership plausible."
+        "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
+        "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
+        "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
+        "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
       ]
     },
     "editorial": {
-      "reviewer": "codex-system-design-editorial-v2",
+      "reviewer": "codex-system-design-editorial-v5",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
-        "All interview prompts, labels, choices, and distractor-like alternatives are original wording.",
-        "The guided interactions test ownership, failure behavior, accessibility, and adaptation without requiring essay-length input.",
-        "Cards can be placed in any public lane; placement quality is evaluated only by private ID-based rules.",
-        "The AI chat scenario remains scoped to composer and current-turn behavior instead of expanding into model or database design."
+        "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
+        "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
+        "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
+        "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
       ]
     }
   },
@@ -2470,6 +2470,2897 @@
               "license": "W3C Document License",
               "role": "Validate focus, loading, and feed accessibility considerations",
               "accessedAt": "2026-07-29"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "int-sd-dashboard-layout-sr-v1",
+      "revision": 1,
+      "level": "senior",
+      "timeLimitSeconds": 1200,
+      "public": {
+        "title": "Design a Revision-Safe Customizable Dashboard",
+        "prompt": "Design the frontend boundaries for a customizable dashboard where users move and resize data-heavy widgets with pointer or keyboard controls. Interactions must stay smooth, layouts must adapt across breakpoints, and committed changes must reconcile with newer saved revisions without losing user intent.",
+        "clarifications": [
+          {
+            "id": "dash-widget-scale",
+            "prompt": "How many widgets may appear, and how expensive is their content to render?"
+          },
+          {
+            "id": "dash-grid-breakpoints",
+            "prompt": "Which viewports support editing, and how should layouts adapt between them?"
+          },
+          {
+            "id": "dash-collision-expectation",
+            "prompt": "What should users observe when moved or resized tiles would overlap?"
+          },
+          {
+            "id": "dash-persistence-scope",
+            "prompt": "Which layout, undo, and save states must persist, and when should a settled edit be saved?"
+          },
+          {
+            "id": "dash-concurrency",
+            "prompt": "Can the same dashboard change elsewhere while an edit is underway?"
+          },
+          {
+            "id": "dash-accessibility",
+            "prompt": "What non-pointer editing and feedback must be supported?"
+          }
+        ],
+        "requirements": [
+          {
+            "id": "dash-logical-geometry",
+            "title": "Layout continuity across sizes",
+            "description": "Widget positions remain meaningful when container measurements and supported viewport widths change."
+          },
+          {
+            "id": "dash-smooth-preview",
+            "title": "Smooth editing at scale",
+            "description": "Pointer and keyboard feedback stays responsive across twenty to fifty heavy widgets with bounded work per input."
+          },
+          {
+            "id": "dash-preview-commit-separation",
+            "title": "Recoverable edit lifecycle",
+            "description": "Active feedback remains outside undo and save history until the user completes the edit."
+          },
+          {
+            "id": "dash-revision-safe-save",
+            "title": "Concurrent save integrity",
+            "description": "Completed edits survive reloads, while stale saves produce an explicit recoverable outcome."
+          },
+          {
+            "id": "dash-responsive-layout",
+            "title": "Responsive operability",
+            "description": "Desktop and tablet edits yield a readable, operable phone arrangement as width changes."
+          },
+          {
+            "id": "dash-accessible-editing",
+            "title": "Equivalent editing and recovery",
+            "description": "Keyboard controls, focus retention, concise announcements, and a non-spatial fallback cover the workflow."
+          }
+        ],
+        "cards": [
+          {
+            "id": "dash-dashboard-surface",
+            "title": "Dashboard surface",
+            "description": "Shows the current arrangement, active edit feedback, and save status."
+          },
+          {
+            "id": "dash-widget-frame",
+            "title": "Widget frame",
+            "description": "Frames data-heavy content with editing affordances and boundary feedback."
+          },
+          {
+            "id": "dash-accessible-layout-controls",
+            "title": "Accessible layout controls",
+            "description": "Offers non-pointer move and resize actions with focus and status feedback."
+          },
+          {
+            "id": "dash-interaction-controller",
+            "title": "Interaction controller",
+            "description": "Translates active input into layout intent and manages the interaction lifetime."
+          },
+          {
+            "id": "dash-layout-engine",
+            "title": "Layout engine",
+            "description": "Evaluates candidate positions and sizes against the layout rules."
+          },
+          {
+            "id": "dash-persistence-coordinator",
+            "title": "Persistence coordinator",
+            "description": "Coordinates local edits with load, save, and concurrent-update outcomes."
+          },
+          {
+            "id": "dash-layout-store",
+            "title": "Layout document store",
+            "description": "Holds layout data, edit history, revision metadata, and request status."
+          },
+          {
+            "id": "dash-layout-client",
+            "title": "Layout client",
+            "description": "Invokes transport operations and maps their responses into layout results."
+          },
+          {
+            "id": "dash-layout-api",
+            "title": "Layout API",
+            "description": "Exposes layout reads and writes for the signed-in user."
+          },
+          {
+            "id": "dash-browser-runtime",
+            "title": "Browser interaction runtime",
+            "description": "Provides input, frame, measurement, viewport, and lifecycle signals."
+          }
+        ],
+        "decisions": [
+          {
+            "id": "dash-coordinate-model",
+            "title": "Responsive and accessible layout model",
+            "prompt": "How should editable layouts remain operable across supported breakpoints?",
+            "options": [
+              {
+                "id": "dash-coordinate-raw-pixels",
+                "label": "Scaled pixel rectangles",
+                "description": "Scale measured pixel rectangles with each viewport and edit them through pointer manipulation."
+              },
+              {
+                "id": "dash-coordinate-logical-grid",
+                "label": "Canonical grid with derived phone order",
+                "description": "Persist one logical grid and derive a deterministic phone order with equivalent controls."
+              },
+              {
+                "id": "dash-coordinate-breakpoint-layouts",
+                "label": "Logical layouts by breakpoint",
+                "description": "Store explicit grid rectangles for editing breakpoints and preserve equivalent keyboard constraints."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "dash-rationale-portable-geometry",
+                "label": "Reduce stored variants through deterministic responsive projection"
+              },
+              {
+                "id": "dash-rationale-direct-measurements",
+                "label": "Preserve visual fidelity within each measured viewport"
+              },
+              {
+                "id": "dash-rationale-responsive-authorship",
+                "label": "Preserve authored compositions across supported editing widths"
+              }
+            ]
+          },
+          {
+            "id": "dash-preview-model",
+            "title": "Interaction preview boundary",
+            "prompt": "How should frequent pointer input become visible layout feedback?",
+            "options": [
+              {
+                "id": "dash-preview-per-event-commit",
+                "label": "Continuously persisted layout state",
+                "description": "Route input samples through the shared store and persist successive coalesced snapshots during interaction."
+              },
+              {
+                "id": "dash-preview-raf-transform",
+                "label": "Frame-batched transform preview",
+                "description": "Capture latest input outside framework state and apply one composited preview before settled commits."
+              },
+              {
+                "id": "dash-preview-cell-commit",
+                "label": "Grid-cell state transitions",
+                "description": "Resolve snapped cells in transient feature state and promote only settled layouts to committed state."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "dash-rationale-shared-preview",
+                "label": "Keep candidate geometry observable to the application"
+              },
+              {
+                "id": "dash-rationale-single-update-path",
+                "label": "Prefer one observable state path over specialized transient state"
+              },
+              {
+                "id": "dash-rationale-frame-budget",
+                "label": "Protect frame time from framework and persistence work"
+              }
+            ]
+          },
+          {
+            "id": "dash-state-ownership",
+            "title": "Interaction and layout ownership",
+            "prompt": "Which boundary should own interaction sessions and deterministic layout transitions?",
+            "options": [
+              {
+                "id": "dash-owner-feature-store",
+                "label": "Serialized feature store",
+                "description": "A feature store serializes layout transitions while a separate adapter handles frame-frequency preview input."
+              },
+              {
+                "id": "dash-owner-widget-shells",
+                "label": "Independent widget ownership",
+                "description": "Each widget owns input, collision checks, layout mutation, and persistence for its rectangle."
+              },
+              {
+                "id": "dash-owner-controller-engine",
+                "label": "Session controller with pure engine",
+                "description": "A session controller owns input lifetime while a pure engine returns constrained candidate layouts."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "dash-rationale-separated-lifetimes",
+                "label": "Separate interaction lifetime from deterministic layout calculation"
+              },
+              {
+                "id": "dash-rationale-widget-locality",
+                "label": "Minimize central coordination for independently rendered widgets"
+              },
+              {
+                "id": "dash-rationale-serialized-transitions",
+                "label": "Serialize feature transitions behind one shared state boundary"
+              }
+            ]
+          },
+          {
+            "id": "dash-conflict-policy",
+            "title": "Concurrent save recovery",
+            "prompt": "How should the client respond when its base revision is stale?",
+            "options": [
+              {
+                "id": "dash-conflict-remote-replace",
+                "label": "Authoritative remote replacement",
+                "description": "Adopt the returned layout, retain the local edit as a retryable draft, and restore focus with conflict feedback."
+              },
+              {
+                "id": "dash-conflict-force-overwrite",
+                "label": "Client completion ordering",
+                "description": "Choose by comparing client completion timestamps and return the selected layout with a conflict notice."
+              },
+              {
+                "id": "dash-conflict-revision-rebase",
+                "label": "Revisioned idempotent commit",
+                "description": "Send commandId and basedOnRevision, then reconcile settled intent with the authoritative snapshot returned by the API."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "dash-rationale-local-priority",
+                "label": "Use perceived completion order to settle conflict ownership"
+              },
+              {
+                "id": "dash-rationale-preserve-remote",
+                "label": "Preserve newer remote work while replaying local intent"
+              },
+              {
+                "id": "dash-rationale-authoritative-reset",
+                "label": "Prefer authoritative recovery while retaining an explicit retry"
+              }
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {
+            "title": "Core Web implementation lens",
+            "prompt": "Compare lifecycle boundaries for pointer capture, frame scheduling, measurements, focus, and cleanup relative to completed layout state."
+          },
+          "react": {
+            "title": "React implementation lens",
+            "prompt": "Compare refs, component state, and store state for active input versus completed layout rendering, including stale-read and rerender trade-offs."
+          },
+          "angular": {
+            "title": "Angular implementation lens",
+            "prompt": "Compare signals and RxJS streams for input and layout ownership; where would OnPush boundaries and cleanup matter?"
+          },
+          "vue": {
+            "title": "Vue implementation lens",
+            "prompt": "Compare composable-local and shallow reactive state for active geometry versus completed layout, including listener and observer cleanup."
+          }
+        }
+      },
+      "private": {
+        "sourceContentId": "dashboard-widgets-draggable-resizable",
+        "expectedSourceBundleHash": "7df74b1748773e5d5d38d3a375d87dd38cea4eeb059b2654b3352abdcaf95cf4",
+        "clarificationAnswers": [
+          {
+            "clarificationId": "dash-widget-scale",
+            "answer": "A dashboard normally contains twenty to fifty charts or tables. Their data loads independently, and several visualizations are costly to rerender."
+          },
+          {
+            "clarificationId": "dash-grid-breakpoints",
+            "answer": "Desktop and tablet permit spatial editing. A phone needs a readable single-column order and a non-spatial reorder path; pixel-perfect parity is unnecessary."
+          },
+          {
+            "clarificationId": "dash-collision-expectation",
+            "answer": "Overlap is prohibited. The outcome must be predictable and reversible; either displacement or a blocked placement is acceptable if the interface explains it."
+          },
+          {
+            "clarificationId": "dash-persistence-scope",
+            "answer": "The layout follows the signed-in user across devices. Saving begins after a completed move, resize, reset, or undo, while editing remains available during the request."
+          },
+          {
+            "clarificationId": "dash-concurrency",
+            "answer": "Yes. Another tab can publish a newer revision. The service detects a stale precondition and returns the latest document rather than accepting a silent overwrite."
+          },
+          {
+            "clarificationId": "dash-accessibility",
+            "answer": "A keyboard user can move or resize by grid steps, retain focus on the tile, hear concise position and size updates, and use a list-style fallback."
+          }
+        ],
+        "twist": {
+          "id": "dash-remote-update-mid-drag",
+          "title": "Production change: a newer layout during drag",
+          "prompt": "A user begins moving Revenue on revision 12. Another tab saves revision 13, removes a different widget, and changes grid constraints before the pointer is released. Adapt the design so the tile does not jump during interaction and neither tab's accepted work disappears silently.",
+          "responseActions": [
+            {
+              "id": "dash-twist-preserve-preview",
+              "label": "Freeze the active interaction base",
+              "description": "Keep visual movement tied to captured metrics until the user settles or cancels."
+            },
+            {
+              "id": "dash-twist-rebase-commit",
+              "label": "Replay intent on revision 13",
+              "description": "Apply the semantic move to the returned document and rerun constraints before saving."
+            },
+            {
+              "id": "dash-twist-swap-base",
+              "label": "Swap the preview to revision 13",
+              "description": "Replace the active geometry as soon as the newer document arrives."
+            },
+            {
+              "id": "dash-twist-force-save",
+              "label": "Resubmit revision 12 as authoritative",
+              "description": "Send the local snapshot again with precedence over the returned document."
+            }
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": [
+                "Concurrent layout ownership",
+                "Save timing and revision constraints"
+              ],
+              "criteria": [
+                {
+                  "id": "dash-discover-concurrency",
+                  "weight": 1,
+                  "evidence": "Clarified whether another client can change the layout.",
+                  "rule": {
+                    "predicate": "clarificationSelected",
+                    "clarificationId": "dash-concurrency"
+                  }
+                },
+                {
+                  "id": "dash-conditional-save",
+                  "weight": 1,
+                  "evidence": "When concurrent editing was investigated, revision-safe persistence was prioritized.",
+                  "rule": {
+                    "when": {
+                      "if": {
+                        "predicate": "clarificationSelected",
+                        "clarificationId": "dash-concurrency"
+                      },
+                      "then": {
+                        "predicate": "requirementPrioritized",
+                        "requirementId": "dash-revision-safe-save"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": [
+                "Pure layout-engine ownership",
+                "Interaction intent boundaries"
+              ],
+              "criteria": [
+                {
+                  "id": "dash-place-engine",
+                  "weight": 1,
+                  "evidence": "Placed deterministic layout resolution in the state boundary.",
+                  "rule": {
+                    "predicate": "cardInLane",
+                    "cardId": "dash-layout-engine",
+                    "laneId": "state"
+                  }
+                },
+                {
+                  "id": "dash-controller-engine",
+                  "weight": 3,
+                  "evidence": "Kept a coherent interaction owner in front of deterministic layout resolution.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "connectionExists",
+                        "fromCardId": "dash-interaction-controller",
+                        "toCardId": "dash-layout-engine",
+                        "typeId": "event-flow"
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "dash-state-ownership",
+                            "optionId": "dash-owner-controller-engine"
+                          },
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "dash-state-ownership",
+                            "optionId": "dash-owner-feature-store"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": [
+                "Logical layout documents",
+                "Revision-precondition reconciliation"
+              ],
+              "criteria": [
+                {
+                  "id": "dash-logical-contract",
+                  "weight": 1,
+                  "evidence": "Selected a logical responsive model with equivalent non-pointer controls.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "dash-coordinate-model",
+                        "optionId": "dash-coordinate-breakpoint-layouts"
+                      },
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "dash-coordinate-model",
+                        "optionId": "dash-coordinate-logical-grid"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "dash-revision-contract",
+                  "weight": 1,
+                  "evidence": "Selected a revision check followed by intent replay.",
+                  "rule": {
+                    "predicate": "decisionSelected",
+                    "decisionId": "dash-conflict-policy",
+                    "optionId": "dash-conflict-revision-rebase"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": [
+                "Frame-batched interaction work",
+                "Revision-aware synchronization"
+              ],
+              "criteria": [
+                {
+                  "id": "dash-frame-preview",
+                  "weight": 1,
+                  "evidence": "Selected a bounded preview path outside durable per-event commits.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "dash-preview-model",
+                        "optionId": "dash-preview-raf-transform"
+                      },
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "dash-preview-model",
+                        "optionId": "dash-preview-cell-commit"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "dash-sync-api",
+                  "weight": 1,
+                  "evidence": "Connected the synchronization owner to the revision-aware API.",
+                  "rule": {
+                    "predicate": "connectionExists",
+                    "fromCardId": "dash-persistence-coordinator",
+                    "toCardId": "dash-layout-api",
+                    "typeId": "data-flow"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": [
+                "Keyboard move and resize parity",
+                "Focus and status feedback"
+              ],
+              "criteria": [
+                {
+                  "id": "dash-prioritize-access",
+                  "weight": 1,
+                  "evidence": "Prioritized the accessible editing workflow.",
+                  "rule": {
+                    "predicate": "requirementPrioritized",
+                    "requirementId": "dash-accessible-editing"
+                  }
+                },
+                {
+                  "id": "dash-place-keyboard-editor",
+                  "weight": 3,
+                  "evidence": "Connected keyboard editing through the shared constraint path under a logical responsive model.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "dash-accessible-layout-controls",
+                        "laneId": "ui"
+                      },
+                      {
+                        "predicate": "connectionExists",
+                        "fromCardId": "dash-accessible-layout-controls",
+                        "toCardId": "dash-interaction-controller",
+                        "typeId": "event-flow"
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "dash-coordinate-model",
+                            "optionId": "dash-coordinate-breakpoint-layouts"
+                          },
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "dash-coordinate-model",
+                            "optionId": "dash-coordinate-logical-grid"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": [
+                "Stable active interaction bases",
+                "Conflict-time intent replay"
+              ],
+              "criteria": [
+                {
+                  "id": "dash-preserve-active-preview",
+                  "weight": 1,
+                  "evidence": "Preserved the active preview while the remote revision arrived.",
+                  "rule": {
+                    "predicate": "twistActionSelected",
+                    "actionId": "dash-twist-preserve-preview"
+                  }
+                },
+                {
+                  "id": "dash-replay-on-latest",
+                  "weight": 1,
+                  "evidence": "Replayed the settled intent on the newer revision.",
+                  "rule": {
+                    "predicate": "twistActionSelected",
+                    "actionId": "dash-twist-rebase-commit"
+                  }
+                },
+                {
+                  "id": "dash-revision-aware-save",
+                  "weight": 3,
+                  "evidence": "Selected a revision-aware save contract that preserves accepted remote work.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "dash-conflict-policy",
+                        "optionId": "dash-conflict-revision-rebase"
+                      },
+                      {
+                        "predicate": "rationaleSelected",
+                        "decisionId": "dash-conflict-policy",
+                        "rationaleId": "dash-rationale-preserve-remote"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "dash-authoritative-reconciliation",
+                  "weight": 3,
+                  "evidence": "Kept the preview stable and reconciled settled intent through the revision-aware contract.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "twistActionSelected",
+                        "actionId": "dash-twist-preserve-preview"
+                      },
+                      {
+                        "predicate": "twistActionSelected",
+                        "actionId": "dash-twist-rebase-commit"
+                      },
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "dash-conflict-policy",
+                        "optionId": "dash-conflict-revision-rebase"
+                      },
+                      {
+                        "predicate": "rationaleSelected",
+                        "decisionId": "dash-conflict-policy",
+                        "rationaleId": "dash-rationale-preserve-remote"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "dash-critical-hot-overwrite",
+              "severity": "critical",
+              "axisIds": [
+                "data-interface-contracts",
+                "resilience-performance"
+              ],
+              "summary": "Per-event durable commits combined with timestamp overwrite can lose accepted remote work while saturating the interaction path.",
+              "rule": {
+                "allOf": [
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "dash-preview-model",
+                    "optionId": "dash-preview-per-event-commit"
+                  },
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "dash-conflict-policy",
+                    "optionId": "dash-conflict-force-overwrite"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "dash-critical-widget-pointer",
+              "severity": "critical",
+              "axisIds": [
+                "architecture-ownership",
+                "data-interface-contracts",
+                "accessibility-product-ux"
+              ],
+              "summary": "Widget-owned interaction and pointer-only pixel geometry fragment collision rules and exclude equivalent editing paths.",
+              "rule": {
+                "allOf": [
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "dash-state-ownership",
+                    "optionId": "dash-owner-widget-shells"
+                  },
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "dash-coordinate-model",
+                    "optionId": "dash-coordinate-raw-pixels"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "dash-critical-twist-overwrite",
+              "severity": "critical",
+              "axisIds": [
+                "data-interface-contracts",
+                "adaptation-tradeoffs"
+              ],
+              "summary": "Forcing revision 12 over a confirmed revision 13 discards accepted remote work instead of reconciling intent.",
+              "rule": {
+                "allOf": [
+                  {
+                    "predicate": "decisionSelected",
+                    "decisionId": "dash-conflict-policy",
+                    "optionId": "dash-conflict-force-overwrite"
+                  },
+                  {
+                    "predicate": "twistActionSelected",
+                    "actionId": "dash-twist-force-save"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "dash-strong-controller-breakpoints",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-widget-scale",
+                "dash-accessibility"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-smooth-preview",
+                "dash-accessible-editing"
+              ],
+              "placements": [
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 0},
+                {"cardId": "dash-widget-frame", "laneId": "ui", "order": 1},
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 2},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-persistence-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 0},
+                {"cardId": "dash-browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "dash-layout-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "dash-browser-runtime", "toCardId": "dash-interaction-controller", "typeId": "event-flow"},
+                {"fromCardId": "dash-accessible-layout-controls", "toCardId": "dash-interaction-controller", "typeId": "event-flow"},
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"},
+                {"fromCardId": "dash-layout-engine", "toCardId": "dash-persistence-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-store", "toCardId": "dash-dashboard-surface", "typeId": "data-flow"},
+                {"fromCardId": "dash-persistence-coordinator", "toCardId": "dash-layout-api", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-api", "toCardId": "dash-layout-store", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-breakpoint-layouts", "rationaleIds": ["dash-rationale-responsive-authorship"]},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-raf-transform", "rationaleIds": ["dash-rationale-frame-budget"]},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-controller-engine", "rationaleIds": ["dash-rationale-separated-lifetimes"]},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-remote-replace", "rationaleIds": ["dash-rationale-authoritative-reset"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-widget-scale",
+                "dash-accessibility"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-smooth-preview",
+                "dash-accessible-editing"
+              ],
+              "placements": [
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 0},
+                {"cardId": "dash-widget-frame", "laneId": "ui", "order": 1},
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 2},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-persistence-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 0},
+                {"cardId": "dash-browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "dash-layout-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "dash-browser-runtime", "toCardId": "dash-interaction-controller", "typeId": "event-flow"},
+                {"fromCardId": "dash-accessible-layout-controls", "toCardId": "dash-interaction-controller", "typeId": "event-flow"},
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"},
+                {"fromCardId": "dash-layout-engine", "toCardId": "dash-persistence-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-store", "toCardId": "dash-dashboard-surface", "typeId": "data-flow"},
+                {"fromCardId": "dash-persistence-coordinator", "toCardId": "dash-layout-api", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-api", "toCardId": "dash-layout-store", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-breakpoint-layouts", "rationaleIds": ["dash-rationale-responsive-authorship"]},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-raf-transform", "rationaleIds": ["dash-rationale-frame-budget"]},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-controller-engine", "rationaleIds": ["dash-rationale-separated-lifetimes"]},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-revision-rebase", "rationaleIds": ["dash-rationale-preserve-remote"]}
+              ],
+              "twistResponseActionIds": [
+                "dash-twist-preserve-preview",
+                "dash-twist-rebase-commit"
+              ],
+              "scratchpad": "Hold the active geometry, then replay the settled move on revision 13."
+            }
+          },
+          {
+            "id": "dash-strong-store-derived",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-grid-breakpoints",
+                "dash-collision-expectation"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-preview-commit-separation",
+                "dash-accessible-editing"
+              ],
+              "placements": [
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 0},
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 1},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-persistence-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "dash-layout-client", "laneId": "data", "order": 0},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 1},
+                {"cardId": "dash-layout-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "dash-accessible-layout-controls", "toCardId": "dash-interaction-controller", "typeId": "event-flow"},
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"},
+                {"fromCardId": "dash-layout-engine", "toCardId": "dash-persistence-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "dash-persistence-coordinator", "toCardId": "dash-layout-api", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-api", "toCardId": "dash-layout-client", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-client", "toCardId": "dash-layout-store", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-store", "toCardId": "dash-dashboard-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-logical-grid", "rationaleIds": ["dash-rationale-portable-geometry"]},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-cell-commit", "rationaleIds": ["dash-rationale-shared-preview"]},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-feature-store", "rationaleIds": ["dash-rationale-serialized-transitions"]},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-force-overwrite", "rationaleIds": ["dash-rationale-local-priority"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-grid-breakpoints",
+                "dash-collision-expectation"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-preview-commit-separation",
+                "dash-accessible-editing"
+              ],
+              "placements": [
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 0},
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 1},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-persistence-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "dash-layout-client", "laneId": "data", "order": 0},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 1},
+                {"cardId": "dash-layout-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "dash-accessible-layout-controls", "toCardId": "dash-interaction-controller", "typeId": "event-flow"},
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"},
+                {"fromCardId": "dash-layout-engine", "toCardId": "dash-persistence-coordinator", "typeId": "data-flow"},
+                {"fromCardId": "dash-persistence-coordinator", "toCardId": "dash-layout-api", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-api", "toCardId": "dash-layout-client", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-client", "toCardId": "dash-layout-store", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-store", "toCardId": "dash-dashboard-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-logical-grid", "rationaleIds": ["dash-rationale-portable-geometry"]},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-cell-commit", "rationaleIds": ["dash-rationale-shared-preview"]},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-feature-store", "rationaleIds": ["dash-rationale-serialized-transitions"]},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-revision-rebase", "rationaleIds": ["dash-rationale-preserve-remote"]}
+              ],
+              "twistResponseActionIds": [
+                "dash-twist-preserve-preview",
+                "dash-twist-rebase-commit"
+              ],
+              "scratchpad": "Keep neighbors fixed, then test the requested target against revision 13."
+            }
+          },
+          {
+            "id": "dash-developing",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-collision-expectation",
+                "dash-accessibility"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-preview-commit-separation",
+                "dash-accessible-editing"
+              ],
+              "placements": [
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 0},
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 1},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"},
+                {"fromCardId": "dash-layout-store", "toCardId": "dash-dashboard-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-logical-grid", "rationaleIds": []},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-raf-transform", "rationaleIds": []},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-controller-engine", "rationaleIds": []},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-remote-replace", "rationaleIds": ["dash-rationale-authoritative-reset"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-collision-expectation",
+                "dash-accessibility"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-preview-commit-separation",
+                "dash-accessible-editing"
+              ],
+              "placements": [
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 0},
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 1},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-logical-grid", "rationaleIds": []},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-raf-transform", "rationaleIds": []},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-controller-engine", "rationaleIds": []},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-revision-rebase", "rationaleIds": ["dash-rationale-preserve-remote"]}
+              ],
+              "twistResponseActionIds": [
+                "dash-twist-preserve-preview"
+              ],
+              "scratchpad": "Keep the drag stable and use the revision-aware save, with shared keyboard and API wiring still unresolved."
+            }
+          },
+          {
+            "id": "dash-critical",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-widget-scale",
+                "dash-accessibility"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-accessible-editing",
+                "dash-preview-commit-separation"
+              ],
+              "placements": [
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 0},
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 1},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-persistence-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 0},
+                {"cardId": "dash-layout-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"},
+                {"fromCardId": "dash-persistence-coordinator", "toCardId": "dash-layout-api", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-store", "toCardId": "dash-dashboard-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-raw-pixels", "rationaleIds": ["dash-rationale-direct-measurements"]},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-per-event-commit", "rationaleIds": ["dash-rationale-single-update-path"]},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-widget-shells", "rationaleIds": ["dash-rationale-widget-locality"]},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-force-overwrite", "rationaleIds": ["dash-rationale-local-priority"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "dash-concurrency",
+                "dash-widget-scale",
+                "dash-accessibility"
+              ],
+              "priorityRequirementIds": [
+                "dash-revision-safe-save",
+                "dash-accessible-editing",
+                "dash-preview-commit-separation"
+              ],
+              "placements": [
+                {"cardId": "dash-accessible-layout-controls", "laneId": "ui", "order": 0},
+                {"cardId": "dash-dashboard-surface", "laneId": "ui", "order": 1},
+                {"cardId": "dash-interaction-controller", "laneId": "state", "order": 0},
+                {"cardId": "dash-layout-engine", "laneId": "state", "order": 1},
+                {"cardId": "dash-persistence-coordinator", "laneId": "state", "order": 2},
+                {"cardId": "dash-layout-store", "laneId": "data", "order": 0},
+                {"cardId": "dash-layout-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "dash-interaction-controller", "toCardId": "dash-layout-engine", "typeId": "event-flow"},
+                {"fromCardId": "dash-persistence-coordinator", "toCardId": "dash-layout-api", "typeId": "data-flow"},
+                {"fromCardId": "dash-layout-store", "toCardId": "dash-dashboard-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "dash-coordinate-model", "optionId": "dash-coordinate-raw-pixels", "rationaleIds": ["dash-rationale-direct-measurements"]},
+                {"decisionId": "dash-preview-model", "optionId": "dash-preview-per-event-commit", "rationaleIds": ["dash-rationale-single-update-path"]},
+                {"decisionId": "dash-state-ownership", "optionId": "dash-owner-widget-shells", "rationaleIds": ["dash-rationale-widget-locality"]},
+                {"decisionId": "dash-conflict-policy", "optionId": "dash-conflict-force-overwrite", "rationaleIds": ["dash-rationale-local-priority"]}
+              ],
+              "twistResponseActionIds": [
+                "dash-twist-swap-base",
+                "dash-twist-force-save"
+              ],
+              "scratchpad": "Replace the drag base and send the local snapshot again."
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-08-04",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt and choices are original.",
+          "references": [
+            {
+              "title": "MDN Pointer Events",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events",
+              "license": "CC BY-SA 2.5 or later",
+              "role": "Validate unified pointer input and capture lifecycle considerations",
+              "accessedAt": "2026-08-04"
+            },
+            {
+              "title": "WAI-ARIA Authoring Practices Grid Pattern",
+              "url": "https://www.w3.org/WAI/ARIA/apg/patterns/grid/",
+              "license": "W3C Document License",
+              "role": "Validate keyboard operation and focus-management considerations",
+              "accessedAt": "2026-08-04"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "int-sd-image-upload-lifecycle-jr-v1",
+      "revision": 1,
+      "level": "junior",
+      "timeLimitSeconds": 600,
+      "public": {
+        "title": "Design a Reliable Image Upload Preview",
+        "prompt": "Design the frontend boundaries for a reusable single-image upload field where users validate a selected file, see a local preview, follow honest upload progress, retry or cancel failures, and finish with a server-confirmed asset. Users may replace or remove the image, and the flow must remain responsive and accessible without leaking browser resources.",
+        "clarifications": [
+          {
+            "id": "upload-file-policy",
+            "prompt": "What file types, byte limits, and image dimensions apply?"
+          },
+          {
+            "id": "upload-value-semantics",
+            "prompt": "When may a preview appear, and what should the form expose before and after upload?"
+          },
+          {
+            "id": "upload-progress-support",
+            "prompt": "What progress and cancellation information does the transport provide?"
+          },
+          {
+            "id": "upload-replacement",
+            "prompt": "What should happen if the file is replaced or removed during upload?"
+          },
+          {
+            "id": "upload-retry-scope",
+            "prompt": "Which failures may retry the same selection?"
+          },
+          {
+            "id": "upload-accessibility",
+            "prompt": "What keyboard, announcement, focus, and small-screen behavior is expected?"
+          }
+        ],
+        "requirements": [
+          {
+            "id": "upload-explicit-state",
+            "title": "Clear upload status",
+            "description": "The field communicates its current status consistently."
+          },
+          {
+            "id": "upload-local-validation",
+            "title": "Selection validation",
+            "description": "Invalid selections receive specific, timely feedback."
+          },
+          {
+            "id": "upload-preview-asset-separation",
+            "title": "Preview and submitted value",
+            "description": "The UI distinguishes locally displayed content from the value exposed through the upload contract."
+          },
+          {
+            "id": "upload-progress-recovery",
+            "title": "Progress and recovery",
+            "description": "Feedback reflects the information actually available, with usable actions after failure or cancellation."
+          },
+          {
+            "id": "upload-attempt-cleanup",
+            "title": "Replacement and cleanup",
+            "description": "Replacement, removal, and teardown leave no stale UI, stale completion, or retained browser resource."
+          },
+          {
+            "id": "upload-accessible-recovery",
+            "title": "Accessible responsive flow",
+            "description": "The full flow remains understandable and operable across input modes and screen sizes."
+          }
+        ],
+        "cards": [
+          {
+            "id": "image-picker",
+            "title": "File selection",
+            "description": "Accepts a file through a labelled picker, with optional drop support."
+          },
+          {
+            "id": "preview-actions",
+            "title": "Preview and actions",
+            "description": "Shows selected-image feedback and the actions currently available."
+          },
+          {
+            "id": "accessible-upload-status",
+            "title": "Status and feedback",
+            "description": "Communicates progress, completion, and actionable errors."
+          },
+          {
+            "id": "upload-attempt-controller",
+            "title": "Flow coordination",
+            "description": "Connects selection, validation, transfer, replacement, and removal."
+          },
+          {
+            "id": "upload-state",
+            "title": "Flow information",
+            "description": "Provides the information needed to render and submit the current flow."
+          },
+          {
+            "id": "file-validator",
+            "title": "Selection checks",
+            "description": "Evaluates the configured file rules."
+          },
+          {
+            "id": "upload-client",
+            "title": "Upload transport",
+            "description": "Starts upload work and exposes the transport's available updates and result."
+          },
+          {
+            "id": "browser-file-runtime",
+            "title": "Browser file support",
+            "description": "Provides local-file and preview facilities, including cleanup operations."
+          },
+          {
+            "id": "upload-api",
+            "title": "Upload service",
+            "description": "Receives file data and returns the result defined by the server contract."
+          }
+        ],
+        "decisions": [
+          {
+            "id": "upload-workflow-ownership",
+            "title": "Workflow ownership",
+            "prompt": "Where should upload phases and asynchronous effects be coordinated?",
+            "options": [
+              {
+                "id": "upload-owner-feature-store",
+                "label": "Scoped store and effects",
+                "description": "A feature-scoped store holds flow information and starts asynchronous work through effects."
+              },
+              {
+                "id": "upload-owner-ui-handlers",
+                "label": "Field component",
+                "description": "The field component holds flow information and starts asynchronous work directly."
+              },
+              {
+                "id": "upload-owner-controller",
+                "label": "Controller and reducer",
+                "description": "A feature controller starts work while a reducer records transitions."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "upload-rationale-local-handlers",
+                "label": "Keep behavior close to the field"
+              },
+              {
+                "id": "upload-rationale-explicit-transitions",
+                "label": "Make phase changes easy to inspect"
+              },
+              {
+                "id": "upload-rationale-serialized-effects",
+                "label": "Share coordination outside one view"
+              }
+            ]
+          },
+          {
+            "id": "upload-preview-lifecycle",
+            "title": "Preview resource lifecycle",
+            "prompt": "Which boundary should own the local preview resource?",
+            "options": [
+              {
+                "id": "upload-preview-shared-retained",
+                "label": "Feature preview service",
+                "description": "A scoped service retains previews and releases them under a documented policy."
+              },
+              {
+                "id": "upload-preview-controller-url",
+                "label": "Flow owner",
+                "description": "The upload-flow owner creates and releases the local preview for the active selection."
+              },
+              {
+                "id": "upload-preview-view-dispose",
+                "label": "Preview UI",
+                "description": "The preview surface creates the resource and releases it on change or teardown."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "upload-rationale-render-lifecycle",
+                "label": "Align cleanup with the rendered view"
+              },
+              {
+                "id": "upload-rationale-reuse-retained",
+                "label": "Support controlled reuse across views"
+              },
+              {
+                "id": "upload-rationale-attempt-resource",
+                "label": "Align cleanup with the upload flow"
+              }
+            ]
+          },
+          {
+            "id": "upload-transfer-contract",
+            "title": "Upload result contract",
+            "prompt": "How should the client turn selected bytes into the parent value?",
+            "options": [
+              {
+                "id": "upload-transfer-direct-asset",
+                "label": "Single cancellable asset request",
+                "description": "One transport call reports available byte progress and resolves with the finalized asset."
+              },
+              {
+                "id": "upload-transfer-preview-complete",
+                "label": "Pending upload reference",
+                "description": "The parent holds a distinct pending value, then replaces it with the completed server result."
+              },
+              {
+                "id": "upload-transfer-session-finalize",
+                "label": "Session-based upload flow",
+                "description": "The client requests a session, transfers bytes, then asks for the completed server asset."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "upload-rationale-explicit-phases",
+                "label": "Expose transfer and durable completion separately"
+              },
+              {
+                "id": "upload-rationale-simple-transport",
+                "label": "Keep one request for one file"
+              },
+              {
+                "id": "upload-rationale-early-value",
+                "label": "Use one asset shape before confirmation"
+              }
+            ]
+          },
+          {
+            "id": "upload-replacement-policy",
+            "title": "Active replacement policy",
+            "prompt": "How should completions be handled when the selection changes during upload?",
+            "options": [
+              {
+                "id": "upload-replace-cancel-switch",
+                "label": "Cancel, then switch",
+                "description": "Request cancellation before starting the replacement."
+              },
+              {
+                "id": "upload-replace-callback-order",
+                "label": "Queue replacements",
+                "description": "Record replacements and process them after current work settles."
+              },
+              {
+                "id": "upload-replace-attempt-identity",
+                "label": "Overlapping attempts",
+                "description": "Start the replacement immediately and define which result applies."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "upload-rationale-current-attempt",
+                "label": "Prefer newest selection"
+              },
+              {
+                "id": "upload-rationale-response-order",
+                "label": "Preserve request order"
+              },
+              {
+                "id": "upload-rationale-serialized-switch",
+                "label": "Limit concurrent work"
+              }
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {
+            "title": "Core Web implementation lens",
+            "prompt": "How would you choose among native input events, object URLs, and AbortController, and where should teardown run?"
+          },
+          "react": {
+            "title": "React implementation lens",
+            "prompt": "How would you choose among reducer state, refs, and effects, and where should teardown run?"
+          },
+          "angular": {
+            "title": "Angular implementation lens",
+            "prompt": "How would you choose among signals, RxJS, DestroyRef, and OnPush updates, and where should teardown run?"
+          },
+          "vue": {
+            "title": "Vue implementation lens",
+            "prompt": "How would you choose among component state, a composable, shallow refs, and watchers, and where should teardown run?"
+          }
+        }
+      },
+      "private": {
+        "sourceContentId": "image-upload-preview",
+        "expectedSourceBundleHash": "599ee39973678520354d6d7fbeac020b54b5964b0a8c0cb98035b032a4dbb348",
+        "clarificationAnswers": [
+          {
+            "clarificationId": "upload-file-policy",
+            "answer": "The field accepts one JPEG, PNG, or WebP under product-defined byte and decoded-dimension limits. Server checks remain authoritative."
+          },
+          {
+            "clarificationId": "upload-value-semantics",
+            "answer": "A checked local image may be shown immediately, but the form stores only the asset returned after server completion."
+          },
+          {
+            "clarificationId": "upload-progress-support",
+            "answer": "The adapter exposes cancellation and transferred bytes when the browser transport knows the total; otherwise the transfer state is indeterminate."
+          },
+          {
+            "clarificationId": "upload-replacement",
+            "answer": "Replace and remove remain available during work. Starting another file makes prior asynchronous work obsolete."
+          },
+          {
+            "clarificationId": "upload-retry-scope",
+            "answer": "A current file can retry recoverable session, transfer, or completion failures; invalid content requires a new selection."
+          },
+          {
+            "clarificationId": "upload-accessibility",
+            "answer": "A visible label and native control are primary. Status text, errors, and real action buttons support keyboard use and reliable mobile targets."
+          }
+        ],
+        "twist": {
+          "id": "upload-late-finalize",
+          "title": "Production change: an obsolete upload finishes",
+          "prompt": "Photo A has transferred and is awaiting finalization. The user selects Photo B and its preview becomes current, then Photo A returns a successful finalized asset. Adapt the design without replacing Photo B or leaking Photo A's resources.",
+          "responseActions": [
+            {
+              "id": "upload-twist-obsolete-a",
+              "label": "Mark Photo A obsolete",
+              "description": "Check attempt identity before applying its completion and preserve Photo B as the current selection."
+            },
+            {
+              "id": "upload-twist-cleanup-a",
+              "label": "Release Photo A resources",
+              "description": "Cancel remaining work when possible and revoke the preview owned by the replaced attempt."
+            },
+            {
+              "id": "upload-twist-commit-a",
+              "label": "Commit Photo A result",
+              "description": "Apply the finalized asset first and let Photo B continue as a following replacement."
+            },
+            {
+              "id": "upload-twist-latest-callback",
+              "label": "Follow callback completion order",
+              "description": "Let each successful response update the form value when that asynchronous callback resolves."
+            }
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": ["File policy and durable-value semantics", "Replacement and recovery expectations"],
+              "criteria": [
+                {
+                  "id": "upload-discover-file-policy",
+                  "weight": 1,
+                  "evidence": "Clarified accepted file constraints.",
+                  "rule": {"predicate": "clarificationSelected", "clarificationId": "upload-file-policy"}
+                },
+                {
+                  "id": "upload-discover-value",
+                  "weight": 1,
+                  "evidence": "Clarified the distinction between preview and durable form value.",
+                  "rule": {"predicate": "clarificationSelected", "clarificationId": "upload-value-semantics"}
+                },
+                {
+                  "id": "upload-discover-replacement",
+                  "weight": 1,
+                  "evidence": "Clarified replacement during active work.",
+                  "rule": {"predicate": "clarificationSelected", "clarificationId": "upload-replacement"}
+                },
+                {
+                  "id": "upload-prioritize-separation",
+                  "weight": 1,
+                  "evidence": "Prioritized preview and asset separation.",
+                  "rule": {"predicate": "requirementPrioritized", "requirementId": "upload-preview-asset-separation", "maxRank": 2}
+                }
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": ["Single upload workflow owner", "Intent flow from controls"],
+              "criteria": [
+                {
+                  "id": "upload-own-attempt-lifecycle",
+                  "weight": 3,
+                  "evidence": "Placed the controller and state under a defensible workflow owner.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "upload-attempt-controller", "laneId": "state"},
+                      {"predicate": "cardInLane", "cardId": "upload-state", "laneId": "state"},
+                      {
+                        "anyOf": [
+                          {"predicate": "decisionSelected", "decisionId": "upload-workflow-ownership", "optionId": "upload-owner-controller"},
+                          {"predicate": "decisionSelected", "decisionId": "upload-workflow-ownership", "optionId": "upload-owner-feature-store"}
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-route-picker-intent",
+                  "weight": 1,
+                  "evidence": "Routed file-selection intent into the attempt controller.",
+                  "rule": {"predicate": "connectionExists", "fromCardId": "image-picker", "toCardId": "upload-attempt-controller", "typeId": "event-flow"}
+                },
+                {
+                  "id": "upload-route-action-intent",
+                  "weight": 1,
+                  "evidence": "Routed recovery actions into the attempt controller.",
+                  "rule": {"predicate": "connectionExists", "fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"}
+                }
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": ["Cancellable upload adapter", "Local preview versus authoritative asset"],
+              "criteria": [
+                {
+                  "id": "upload-connect-authoritative-client",
+                  "weight": 3,
+                  "evidence": "Connected a cancellable client to an API contract that returns an authoritative asset.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "file-validator", "laneId": "data"},
+                      {"predicate": "connectionExists", "fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                      {"predicate": "cardInLane", "cardId": "upload-client", "laneId": "data"},
+                      {"predicate": "cardInLane", "cardId": "upload-api", "laneId": "external"},
+                      {"predicate": "connectionExists", "fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                      {
+                        "anyOf": [
+                          {"predicate": "decisionSelected", "decisionId": "upload-transfer-contract", "optionId": "upload-transfer-direct-asset"},
+                          {"predicate": "decisionSelected", "decisionId": "upload-transfer-contract", "optionId": "upload-transfer-session-finalize"}
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-controller-client-command",
+                  "weight": 1,
+                  "evidence": "Sent checked attempt commands through the upload-client boundary.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "connectionExists", "fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                      {"predicate": "connectionExists", "fromCardId": "upload-attempt-controller", "toCardId": "upload-client", "typeId": "event-flow"},
+                      {"predicate": "cardInLane", "cardId": "upload-api", "laneId": "external"}
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-protect-parent-value",
+                  "weight": 1,
+                  "evidence": "Kept the preview-to-asset distinction among the top priorities.",
+                  "rule": {"predicate": "requirementPrioritized", "requirementId": "upload-preview-asset-separation"}
+                }
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": ["Attempt identity and late callbacks", "Object URL and cancellation cleanup"],
+              "criteria": [
+                {
+                  "id": "upload-contain-obsolete-attempt",
+                  "weight": 3,
+                  "evidence": "Contained obsolete callbacks and released replaced-attempt resources.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "browser-file-runtime", "laneId": "external"},
+                      {"predicate": "decisionSelected", "decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity"},
+                      {"predicate": "twistActionSelected", "actionId": "upload-twist-obsolete-a"},
+                      {"predicate": "twistActionSelected", "actionId": "upload-twist-cleanup-a"}
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-preview-resource-owner",
+                  "weight": 1,
+                  "evidence": "Selected a preview model with an explicit resource owner.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "decisionSelected", "decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-controller-url"},
+                      {"predicate": "decisionSelected", "decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-view-dispose"},
+                      {"predicate": "decisionSelected", "decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-shared-retained"}
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-honest-transfer",
+                  "weight": 1,
+                  "evidence": "Selected a transport that separates network work from local preview state.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "decisionSelected", "decisionId": "upload-transfer-contract", "optionId": "upload-transfer-direct-asset"},
+                      {"predicate": "decisionSelected", "decisionId": "upload-transfer-contract", "optionId": "upload-transfer-session-finalize"}
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-connect-browser-runtime",
+                  "weight": 1,
+                  "evidence": "Connected cancellation and local resources to the browser runtime.",
+                  "rule": {"predicate": "connectionExists", "fromCardId": "upload-attempt-controller", "toCardId": "browser-file-runtime", "typeId": "event-flow"}
+                }
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": ["Native file-control enhancement", "Progress, errors, and recovery actions"],
+              "criteria": [
+                {
+                  "id": "upload-accessible-control-loop",
+                  "weight": 3,
+                  "evidence": "Built a complete picker, action, and status surface.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "image-picker", "laneId": "ui"},
+                      {"predicate": "cardInLane", "cardId": "preview-actions", "laneId": "ui"},
+                      {"predicate": "cardInLane", "cardId": "accessible-upload-status", "laneId": "ui"},
+                      {"predicate": "connectionExists", "fromCardId": "upload-state", "toCardId": "accessible-upload-status", "typeId": "data-flow"}
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-status-data-flow",
+                  "weight": 1,
+                  "evidence": "Drove accessible status from the upload state.",
+                  "rule": {"predicate": "connectionExists", "fromCardId": "upload-state", "toCardId": "accessible-upload-status", "typeId": "data-flow"}
+                },
+                {
+                  "id": "upload-prioritize-accessible-recovery",
+                  "weight": 1,
+                  "evidence": "Prioritized keyboard-accessible responsive recovery.",
+                  "rule": {"predicate": "requirementPrioritized", "requirementId": "upload-accessible-recovery"}
+                }
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": ["Safe replacement during finalization", "Best-effort cancellation versus identity guards"],
+              "criteria": [
+                {
+                  "id": "upload-adapt-current-attempt",
+                  "weight": 3,
+                  "evidence": "Kept the current selection authoritative when the prior attempt completed.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "decisionSelected", "decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity"},
+                      {"predicate": "twistActionSelected", "actionId": "upload-twist-obsolete-a"}
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-adapt-resource-cleanup",
+                  "weight": 3,
+                  "evidence": "Paired stale-result protection with cleanup of the replaced attempt.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "decisionSelected", "decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity"},
+                      {"predicate": "twistActionSelected", "actionId": "upload-twist-cleanup-a"}
+                    ]
+                  }
+                },
+                {
+                  "id": "upload-defend-replacement",
+                  "weight": 1,
+                  "evidence": "Defended the attempt-aware replacement decision.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "decisionSelected", "decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity"},
+                      {"predicate": "rationaleSelected", "decisionId": "upload-replacement-policy", "rationaleId": "upload-rationale-current-attempt"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "upload-critical-preview-as-asset",
+              "severity": "critical",
+              "axisIds": ["data-interface-contracts", "resilience-performance"],
+              "summary": "A local preview is committed as the durable asset before the server confirms completion.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "upload-transfer-contract", "optionId": "upload-transfer-preview-complete"},
+                  {"predicate": "rationaleSelected", "decisionId": "upload-transfer-contract", "rationaleId": "upload-rationale-early-value"}
+                ]
+              }
+            },
+            {
+              "id": "upload-critical-stale-overwrite",
+              "severity": "critical",
+              "axisIds": ["resilience-performance", "adaptation-tradeoffs"],
+              "summary": "An obsolete upload result can overwrite the image the user selected as its replacement.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "upload-replacement-policy", "optionId": "upload-replace-callback-order"},
+                  {"predicate": "twistActionSelected", "actionId": "upload-twist-commit-a"}
+                ]
+              }
+            },
+            {
+              "id": "upload-critical-leak-inaccessible",
+              "severity": "critical",
+              "axisIds": ["architecture-ownership", "accessibility-product-ux"],
+              "summary": "Retained preview resources lack a browser owner while selection and recovery omit a keyboard-accessible, announced path.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "upload-workflow-ownership", "optionId": "upload-owner-ui-handlers"},
+                  {"predicate": "decisionSelected", "decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-shared-retained"},
+                  {"not": {"predicate": "cardInLane", "cardId": "browser-file-runtime", "laneId": "external"}},
+                  {"not": {"predicate": "cardInLane", "cardId": "image-picker", "laneId": "ui"}},
+                  {"not": {"predicate": "cardInLane", "cardId": "accessible-upload-status", "laneId": "ui"}}
+                ]
+              }
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "upload-strong-controller-direct",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "image-picker", "laneId": "ui", "order": 0},
+                {"cardId": "preview-actions", "laneId": "ui", "order": 1},
+                {"cardId": "accessible-upload-status", "laneId": "ui", "order": 2},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "browser-file-runtime", "laneId": "external", "order": 0},
+                {"cardId": "upload-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "image-picker", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "browser-file-runtime", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "accessible-upload-status", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-controller", "rationaleIds": ["upload-rationale-explicit-transitions"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-controller-url", "rationaleIds": ["upload-rationale-attempt-resource"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-direct-asset", "rationaleIds": ["upload-rationale-simple-transport"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-cancel-switch", "rationaleIds": ["upload-rationale-serialized-switch"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "Cancel and hand off before beginning another file."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "image-picker", "laneId": "ui", "order": 0},
+                {"cardId": "preview-actions", "laneId": "ui", "order": 1},
+                {"cardId": "accessible-upload-status", "laneId": "ui", "order": 2},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "browser-file-runtime", "laneId": "external", "order": 0},
+                {"cardId": "upload-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "image-picker", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "browser-file-runtime", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "accessible-upload-status", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-controller", "rationaleIds": ["upload-rationale-explicit-transitions"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-controller-url", "rationaleIds": ["upload-rationale-attempt-resource"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-direct-asset", "rationaleIds": ["upload-rationale-simple-transport"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity", "rationaleIds": ["upload-rationale-current-attempt"]}
+              ],
+              "twistResponseActionIds": ["upload-twist-obsolete-a", "upload-twist-cleanup-a"],
+              "scratchpad": "Treat Photo A as obsolete and let only Photo B commit."
+            }
+          },
+          {
+            "id": "upload-strong-store-session",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "image-picker", "laneId": "ui", "order": 0},
+                {"cardId": "preview-actions", "laneId": "ui", "order": 1},
+                {"cardId": "accessible-upload-status", "laneId": "ui", "order": 2},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "browser-file-runtime", "laneId": "external", "order": 0},
+                {"cardId": "upload-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "image-picker", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-state", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "browser-file-runtime", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "accessible-upload-status", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-feature-store", "rationaleIds": ["upload-rationale-serialized-effects"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-view-dispose", "rationaleIds": ["upload-rationale-render-lifecycle"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-session-finalize", "rationaleIds": ["upload-rationale-explicit-phases"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity", "rationaleIds": ["upload-rationale-current-attempt"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "The store already keys effects and commits by active attempt."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "image-picker", "laneId": "ui", "order": 0},
+                {"cardId": "preview-actions", "laneId": "ui", "order": 1},
+                {"cardId": "accessible-upload-status", "laneId": "ui", "order": 2},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "browser-file-runtime", "laneId": "external", "order": 0},
+                {"cardId": "upload-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "image-picker", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-state", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "browser-file-runtime", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "accessible-upload-status", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-feature-store", "rationaleIds": ["upload-rationale-serialized-effects"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-view-dispose", "rationaleIds": ["upload-rationale-render-lifecycle"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-session-finalize", "rationaleIds": ["upload-rationale-explicit-phases"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity", "rationaleIds": ["upload-rationale-current-attempt"]}
+              ],
+              "twistResponseActionIds": ["upload-twist-obsolete-a", "upload-twist-cleanup-a"],
+              "scratchpad": "Ignore Photo A by attempt identity and release its local resources."
+            }
+          },
+          {
+            "id": "upload-developing-basic-pipeline",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "preview-actions", "laneId": "ui", "order": 0},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "browser-file-runtime", "laneId": "external", "order": 0},
+                {"cardId": "upload-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "browser-file-runtime", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-controller", "rationaleIds": ["upload-rationale-explicit-transitions"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-controller-url", "rationaleIds": ["upload-rationale-attempt-resource"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-direct-asset", "rationaleIds": ["upload-rationale-simple-transport"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity", "rationaleIds": ["upload-rationale-current-attempt"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "The basic state and transport path are present."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "image-picker", "laneId": "ui", "order": 0},
+                {"cardId": "preview-actions", "laneId": "ui", "order": 1},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "browser-file-runtime", "laneId": "external", "order": 0},
+                {"cardId": "upload-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "image-picker", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "browser-file-runtime", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-controller", "rationaleIds": ["upload-rationale-explicit-transitions"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-controller-url", "rationaleIds": ["upload-rationale-attempt-resource"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-direct-asset", "rationaleIds": ["upload-rationale-simple-transport"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-attempt-identity", "rationaleIds": ["upload-rationale-current-attempt"]}
+              ],
+              "twistResponseActionIds": ["upload-twist-obsolete-a"],
+              "scratchpad": "Ignore Photo A, with status announcements and resource release still incomplete."
+            }
+          },
+          {
+            "id": "upload-critical-stale-preview",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "image-picker", "laneId": "ui", "order": 0},
+                {"cardId": "preview-actions", "laneId": "ui", "order": 1},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "upload-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "image-picker", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-ui-handlers", "rationaleIds": ["upload-rationale-local-handlers"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-shared-retained", "rationaleIds": ["upload-rationale-reuse-retained"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-preview-complete", "rationaleIds": ["upload-rationale-early-value"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-callback-order", "rationaleIds": ["upload-rationale-response-order"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "Use the preview as a drop-only surface with icon-only actions, and let it stand in for the form value."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["upload-file-policy", "upload-value-semantics", "upload-replacement"],
+              "priorityRequirementIds": ["upload-preview-asset-separation", "upload-attempt-cleanup", "upload-accessible-recovery"],
+              "placements": [
+                {"cardId": "preview-actions", "laneId": "ui", "order": 0},
+                {"cardId": "upload-attempt-controller", "laneId": "state", "order": 0},
+                {"cardId": "upload-state", "laneId": "state", "order": 1},
+                {"cardId": "file-validator", "laneId": "data", "order": 0},
+                {"cardId": "upload-client", "laneId": "data", "order": 1},
+                {"cardId": "upload-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "preview-actions", "toCardId": "upload-attempt-controller", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "file-validator", "typeId": "event-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-attempt-controller", "toCardId": "upload-client", "typeId": "event-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-api", "typeId": "data-flow"},
+                {"fromCardId": "upload-client", "toCardId": "upload-state", "typeId": "data-flow"},
+                {"fromCardId": "upload-state", "toCardId": "preview-actions", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "upload-workflow-ownership", "optionId": "upload-owner-ui-handlers", "rationaleIds": ["upload-rationale-local-handlers"]},
+                {"decisionId": "upload-preview-lifecycle", "optionId": "upload-preview-shared-retained", "rationaleIds": ["upload-rationale-reuse-retained"]},
+                {"decisionId": "upload-transfer-contract", "optionId": "upload-transfer-preview-complete", "rationaleIds": ["upload-rationale-early-value"]},
+                {"decisionId": "upload-replacement-policy", "optionId": "upload-replace-callback-order", "rationaleIds": ["upload-rationale-response-order"]}
+              ],
+              "twistResponseActionIds": ["upload-twist-commit-a", "upload-twist-latest-callback"],
+              "scratchpad": "Keep drop-only, icon-only controls; commit Photo A when it resolves and retain the local preview data."
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-08-04",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt and choices are original.",
+          "references": [
+            {
+              "title": "MDN URL.createObjectURL()",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static",
+              "license": "CC BY-SA 2.5 or later",
+              "role": "Validate object URL creation and lifecycle considerations",
+              "accessedAt": "2026-08-04"
+            },
+            {
+              "title": "W3C WAI Form Labels",
+              "url": "https://www.w3.org/WAI/tutorials/forms/labels/",
+              "license": "W3C Document License",
+              "role": "Validate visible labels and native file-control accessibility",
+              "accessedAt": "2026-08-04"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "int-sd-live-chart-pipeline-mid-v1",
+      "revision": 1,
+      "level": "mid",
+      "timeLimitSeconds": 900,
+      "public": {
+        "title": "Design a Burst-Safe Live Chart",
+        "prompt": "Design the frontend boundaries for a live line chart that receives timestamped samples for up to four series, normally about twice per second but occasionally in bursts. It must remain responsive over long-running sessions, keep a useful recent window, adapt its visible projection to the viewport, recover honestly from source and browser-lifecycle gaps, and support keyboard and nonvisual inspection.",
+        "clarifications": [
+          {
+            "id": "chart-workload",
+            "prompt": "How many series, samples per second, burst samples, and target device classes should the chart support?"
+          },
+          {
+            "id": "chart-history",
+            "prompt": "How much recent history stays available, and may users pause or inspect older points?"
+          },
+          {
+            "id": "chart-source-continuity",
+            "prompt": "Which identities, ordering signals, duplicates, gaps, and repair capabilities does the source expose?"
+          },
+          {
+            "id": "chart-fidelity",
+            "prompt": "Which source samples must remain exact, and where is explicit aggregation acceptable?"
+          },
+          {
+            "id": "chart-browser-lifecycle",
+            "prompt": "What may happen to transport, paint scheduling, and viewport size while the tab is hidden?"
+          },
+          {
+            "id": "chart-accessibility",
+            "prompt": "Which keyboard, nonvisual data, freshness, motion, and announcement behaviors are required?"
+          }
+        ],
+        "requirements": [
+          {
+            "id": "chart-sample-envelope",
+            "title": "Explicit sample and freshness envelope",
+            "description": "Series identity, time, continuity, duplicates, and freshness remain observable instead of being inferred from pixels."
+          },
+          {
+            "id": "chart-bounded-window",
+            "title": "Bounded series window",
+            "description": "Long-running sessions retain data under an explicit time, point, or aggregate-window policy."
+          },
+          {
+            "id": "chart-data-paint-separation",
+            "title": "Accepted sample custody",
+            "description": "Retained samples remain trustworthy when viewport projection and visual commit timing change."
+          },
+          {
+            "id": "chart-bounded-visual-work",
+            "title": "Responsive visual updates",
+            "description": "Bursts stay within a measured renderer budget without blocking unrelated interaction."
+          },
+          {
+            "id": "chart-lifecycle-recovery",
+            "title": "Lifecycle and continuity state",
+            "description": "Visibility, resize, missing updates, and source repair produce a useful current projection with explicit freshness."
+          },
+          {
+            "id": "chart-accessible-inspection",
+            "title": "Accessible chart inspection",
+            "description": "Values, units, ranges, trends, and gaps remain available without pointer hover, color, or continuous animation."
+          }
+        ],
+        "cards": [
+          {
+            "id": "chart-surface",
+            "title": "Chart surface",
+            "description": "Displays the current projected series and visible freshness state."
+          },
+          {
+            "id": "accessible-chart-inspector",
+            "title": "Accessible chart inspector",
+            "description": "Provides named values, units, ranges, freshness, and keyboard inspection."
+          },
+          {
+            "id": "live-chart-coordinator",
+            "title": "Live chart coordinator",
+            "description": "Connects source intake, accepted state, projection, and lifecycle intent."
+          },
+          {
+            "id": "paint-scheduler",
+            "title": "Paint scheduler",
+            "description": "Controls when a changed visible projection is committed to the renderer."
+          },
+          {
+            "id": "series-window",
+            "title": "Series window",
+            "description": "Holds accepted series data under the declared retention policy."
+          },
+          {
+            "id": "viewport-projector",
+            "title": "Viewport projector",
+            "description": "Builds display-ready data for the current size and inspection range."
+          },
+          {
+            "id": "stream-adapter",
+            "title": "Stream adapter",
+            "description": "Validates source envelopes, ordering, duplicates, and continuity signals."
+          },
+          {
+            "id": "browser-runtime",
+            "title": "Browser runtime",
+            "description": "Provides frame, visibility, resize, and teardown lifecycle signals."
+          },
+          {
+            "id": "live-sample-api",
+            "title": "Live sample source",
+            "description": "Produces timestamped series envelopes and repair or snapshot responses."
+          }
+        ],
+        "decisions": [
+          {
+            "id": "chart-flow-ownership",
+            "title": "Pipeline ownership",
+            "prompt": "Where should accepted samples, projection, and browser-scheduled commits be coordinated?",
+            "options": [
+              {
+                "id": "chart-owner-feature-store",
+                "label": "Feature store with effects",
+                "description": "A scoped store records transitions while effects coordinate source and browser work."
+              },
+              {
+                "id": "chart-owner-surface",
+                "label": "Surface-contained pipeline",
+                "description": "The chart boundary owns subscription, client window, projection, and renderer calls for this feature."
+              },
+              {
+                "id": "chart-owner-controller",
+                "label": "Controller with scheduler",
+                "description": "A feature controller owns accepted state while a separate scheduler owns visible commits."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "chart-rationale-explicit-lifetimes",
+                "label": "Evolve accepted data and visual lifecycles independently"
+              },
+              {
+                "id": "chart-rationale-local-renderer",
+                "label": "Keep the feature within one rendered boundary"
+              },
+              {
+                "id": "chart-rationale-serialized-feature",
+                "label": "Expose transitions through one serialized state boundary"
+              }
+            ]
+          },
+          {
+            "id": "chart-retention-projection",
+            "title": "Retention and projection",
+            "prompt": "What determines which accepted samples remain available and which points are drawn?",
+            "options": [
+              {
+                "id": "chart-retention-bounded-raw",
+                "label": "Recent raw sample window",
+                "description": "A fixed policy keeps recent accepted envelopes, then derives the subset needed for the viewport."
+              },
+              {
+                "id": "chart-retention-paint-driven",
+                "label": "Display-coupled rolling window",
+                "description": "Completed visual commits advance both the retained client window and the points available for display."
+              },
+              {
+                "id": "chart-retention-bounded-aggregate",
+                "label": "Recent aggregate sample window",
+                "description": "Declared buckets keep a bounded recent history, then derive the subset needed for the viewport."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "chart-rationale-exact-recent",
+                "label": "Keep recent source fidelity available for inspection"
+              },
+              {
+                "id": "chart-rationale-display-memory",
+                "label": "Use one cadence for retained and displayed state"
+              },
+              {
+                "id": "chart-rationale-declared-aggregation",
+                "label": "Trade declared fidelity for predictable client cost"
+              }
+            ]
+          },
+          {
+            "id": "chart-paint-policy",
+            "title": "Visual commit policy",
+            "prompt": "How should changed projections reach the renderer when samples arrive in bursts?",
+            "options": [
+              {
+                "id": "chart-paint-dirty-frame",
+                "label": "Browser-frame commits",
+                "description": "Changed projections request a browser-aligned commit that reads the most recent retained view."
+              },
+              {
+                "id": "chart-paint-per-ingress",
+                "label": "Source-cadence commits",
+                "description": "Accepted envelopes request renderer work using the stream's delivery cadence."
+              },
+              {
+                "id": "chart-paint-bounded-commit",
+                "label": "Measured adapter commits",
+                "description": "A renderer adapter publishes the latest projection under an explicit measured cadence."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "chart-rationale-browser-lifecycle",
+                "label": "Coordinate commits with browser presentation timing"
+              },
+              {
+                "id": "chart-rationale-lowest-latency",
+                "label": "Favor sample-to-pixel latency at ordinary rates"
+              },
+              {
+                "id": "chart-rationale-measured-budget",
+                "label": "Keep renderer cost within a measured budget"
+              }
+            ]
+          },
+          {
+            "id": "chart-gap-recovery",
+            "title": "Suspension and gap recovery",
+            "prompt": "What should restore trustworthy live state after suspension or a detected sequence gap?",
+            "options": [
+              {
+                "id": "chart-recovery-resume-gap",
+                "label": "Repair window with gap state",
+                "description": "Resume from the last sequence and retain a gap state if continuity cannot be reconstructed."
+              },
+              {
+                "id": "chart-recovery-next-live",
+                "label": "Forward-only current window",
+                "description": "Start a new current window at the first post-resume envelope and omit earlier continuity from active state."
+              },
+              {
+                "id": "chart-recovery-snapshot",
+                "label": "Authoritative recent snapshot",
+                "description": "Replace the uncertain range with a bounded source snapshot and label any remaining discontinuity."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "chart-rationale-continuity-truth",
+                "label": "Retain sequence context across browser suspension"
+              },
+              {
+                "id": "chart-rationale-fast-live",
+                "label": "Favor a smaller forward-only source contract"
+              },
+              {
+                "id": "chart-rationale-bounded-repair",
+                "label": "Bound recovery work with authoritative recent state"
+              }
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {
+            "title": "Core Web implementation lens",
+            "prompt": "How would you divide responsibilities across requestAnimationFrame, Page Visibility, ResizeObserver, optional workers, and teardown?"
+          },
+          "react": {
+            "title": "React implementation lens",
+            "prompt": "How would you divide responsibilities across external state or a reducer, refs, subscriptions, Effects, and teardown?"
+          },
+          "angular": {
+            "title": "Angular implementation lens",
+            "prompt": "How would you divide responsibilities across signals, RxJS, zone or OnPush boundaries, DestroyRef, and teardown?"
+          },
+          "vue": {
+            "title": "Vue implementation lens",
+            "prompt": "How would you divide responsibilities across a composable, shallow state, watchers or effect scopes, and teardown?"
+          }
+        }
+      },
+      "private": {
+        "sourceContentId": "live-chart-high-frequency-updates",
+        "expectedSourceBundleHash": "e16f1020291f83596e2ff5959bad5596a0369fabb1df4c26cffc92e459ebc65f",
+        "clarificationAnswers": [
+          {
+            "clarificationId": "chart-workload",
+            "answer": "The chart shows up to four series. Each normally emits about two samples per second, with an occasional burst of one hundred accepted samples. It must remain usable for hours on desktop and mid-range mobile devices."
+          },
+          {
+            "clarificationId": "chart-history",
+            "answer": "The live client keeps a five-minute window. Users may pause and inspect that window; older history is an abstract server query outside this design."
+          },
+          {
+            "clarificationId": "chart-source-continuity",
+            "answer": "Each envelope has series identity, timestamp, stable sample identity, and an optional monotonic per-series sequence. Duplicates and gaps can occur; the source supports a cursor repair window or authoritative recent snapshot."
+          },
+          {
+            "clarificationId": "chart-fidelity",
+            "answer": "Exact bounded recent retention or an explicitly configured aggregate-window policy is acceptable. Visual commit cadence never decides which accepted samples survive, and gaps are never synthesized away."
+          },
+          {
+            "clarificationId": "chart-browser-lifecycle",
+            "answer": "Animation frames may pause while hidden, transport may continue or reconnect, and the container may resize before the tab returns. No renderer primitive or worker is mandatory without measurement."
+          },
+          {
+            "clarificationId": "chart-accessibility",
+            "answer": "The chart exposes its name, units, current values, range or trend, and freshness through a keyboard-usable semantic inspector. Reduced motion is respected and live regions summarize state changes instead of announcing every sample."
+          }
+        ],
+        "twist": {
+          "id": "chart-hidden-burst-gap",
+          "title": "Production change: a hidden-tab burst exposes a gap",
+          "prompt": "A one-hundred-sample burst arrives just before the tab becomes hidden. Browser-frame callbacks stop while transport may continue. When the tab returns, the chart container is narrower and the next envelope exposes a sequence gap. Adapt the design without replaying one visual commit per sample or presenting unknown continuity as live.",
+          "responseActions": [
+            {
+              "id": "chart-twist-reconcile-gap",
+              "label": "Reconcile or preserve the gap",
+              "description": "Request a repair window or bounded snapshot and keep freshness unresolved when continuity cannot be restored."
+            },
+            {
+              "id": "chart-twist-catch-up-projection",
+              "label": "Build one catch-up projection",
+              "description": "Apply retention, measure the current viewport, commit the latest projection once, and summarize freshness."
+            },
+            {
+              "id": "chart-twist-replay-paints",
+              "label": "Replay buffered visual commits",
+              "description": "Render each accepted background sample in arrival order before showing current data."
+            },
+            {
+              "id": "chart-twist-mark-live",
+              "label": "Mark the next sample live",
+              "description": "Clear continuity state and restore the live indicator when the next envelope appears."
+            }
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": ["Stream scale and continuity", "Retention and accessible inspection"],
+              "criteria": [
+                {
+                  "id": "chart-discover-workload",
+                  "weight": 1,
+                  "evidence": "Clarified the source and device workload.",
+                  "rule": {"predicate": "clarificationSelected", "clarificationId": "chart-workload"}
+                },
+                {
+                  "id": "chart-discover-continuity",
+                  "weight": 1,
+                  "evidence": "Clarified ordering, gaps, and source repair.",
+                  "rule": {"predicate": "clarificationSelected", "clarificationId": "chart-source-continuity"}
+                },
+                {
+                  "id": "chart-prioritize-bounded-window",
+                  "weight": 1,
+                  "evidence": "Prioritized an explicitly bounded series window.",
+                  "rule": {"predicate": "requirementPrioritized", "requirementId": "chart-bounded-window", "maxRank": 2}
+                },
+                {
+                  "id": "chart-prioritize-accessible-inspection",
+                  "weight": 1,
+                  "evidence": "Prioritized keyboard and nonvisual inspection.",
+                  "rule": {"predicate": "requirementPrioritized", "requirementId": "chart-accessible-inspection", "maxRank": 3}
+                }
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": ["Accepted-data ownership", "Browser-scheduled render boundaries"],
+              "criteria": [
+                {
+                  "id": "chart-end-to-end-pipeline",
+                  "weight": 3,
+                  "evidence": "Built a complete source, state, projection, and visual-commit pipeline.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "live-chart-coordinator", "laneId": "state"},
+                      {"predicate": "cardInLane", "cardId": "paint-scheduler", "laneId": "state"},
+                      {"predicate": "cardInLane", "cardId": "series-window", "laneId": "data"},
+                      {"predicate": "cardInLane", "cardId": "viewport-projector", "laneId": "data"},
+                      {"predicate": "cardInLane", "cardId": "stream-adapter", "laneId": "data"},
+                      {"predicate": "connectionExists", "fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                      {"predicate": "connectionExists", "fromCardId": "stream-adapter", "toCardId": "live-chart-coordinator", "typeId": "event-flow"},
+                      {"predicate": "connectionExists", "fromCardId": "live-chart-coordinator", "toCardId": "series-window", "typeId": "event-flow"},
+                      {"predicate": "connectionExists", "fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"},
+                      {"predicate": "connectionExists", "fromCardId": "live-chart-coordinator", "toCardId": "paint-scheduler", "typeId": "event-flow"},
+                      {"predicate": "connectionExists", "fromCardId": "viewport-projector", "toCardId": "chart-surface", "typeId": "data-flow"}
+                    ]
+                  }
+                },
+                {
+                  "id": "chart-valid-owner",
+                  "weight": 1,
+                  "evidence": "Selected a feature-level pipeline owner.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "decisionSelected", "decisionId": "chart-flow-ownership", "optionId": "chart-owner-controller"},
+                      {"predicate": "decisionSelected", "decisionId": "chart-flow-ownership", "optionId": "chart-owner-feature-store"}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": ["Sample envelope boundary", "Retention and viewport projection"],
+              "criteria": [
+                {
+                  "id": "chart-source-adapter-contract",
+                  "weight": 1,
+                  "evidence": "Connected the live source to its validation adapter.",
+                  "rule": {"predicate": "connectionExists", "fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"}
+                },
+                {
+                  "id": "chart-window-projection-contract",
+                  "weight": 1,
+                  "evidence": "Derived the viewport projection from accepted series data.",
+                  "rule": {"predicate": "connectionExists", "fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"}
+                },
+                {
+                  "id": "chart-explicit-retention",
+                  "weight": 1,
+                  "evidence": "Selected an explicit bounded retention and projection policy.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "decisionSelected", "decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-raw"},
+                      {"predicate": "decisionSelected", "decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-aggregate"}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": ["Burst-safe commit scheduling", "Visibility and resize lifecycle"],
+              "criteria": [
+                {
+                  "id": "chart-burst-safe-render-loop",
+                  "weight": 3,
+                  "evidence": "Connected an accepted paint policy to browser lifecycle scheduling.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "paint-scheduler", "laneId": "state"},
+                      {"predicate": "cardInLane", "cardId": "browser-runtime", "laneId": "external"},
+                      {"predicate": "connectionExists", "fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"},
+                      {
+                        "anyOf": [
+                          {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-dirty-frame"},
+                          {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-bounded-commit"}
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "chart-browser-runtime-flow",
+                  "weight": 1,
+                  "evidence": "Connected the visual scheduler to browser lifecycle signals.",
+                  "rule": {"predicate": "connectionExists", "fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"}
+                },
+                {
+                  "id": "chart-explicit-paint-policy",
+                  "weight": 1,
+                  "evidence": "Made the visual commit policy explicit.",
+                  "rule": {
+                    "anyOf": [
+                      {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-dirty-frame"},
+                      {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-bounded-commit"},
+                      {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-per-ingress"}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": ["Semantic chart alternatives", "Keyboard inspection and freshness"],
+              "criteria": [
+                {
+                  "id": "chart-accessible-inspection-loop",
+                  "weight": 3,
+                  "evidence": "Built a complete visible and semantic chart-inspection loop.",
+                  "rule": {
+                    "allOf": [
+                      {"predicate": "cardInLane", "cardId": "chart-surface", "laneId": "ui"},
+                      {"predicate": "cardInLane", "cardId": "accessible-chart-inspector", "laneId": "ui"},
+                      {"predicate": "connectionExists", "fromCardId": "series-window", "toCardId": "accessible-chart-inspector", "typeId": "data-flow"}
+                    ]
+                  }
+                },
+                {
+                  "id": "chart-inspector-boundary",
+                  "weight": 1,
+                  "evidence": "Placed a semantic chart-inspection boundary.",
+                  "rule": {"predicate": "cardInLane", "cardId": "accessible-chart-inspector", "laneId": "ui"}
+                },
+                {
+                  "id": "chart-surface-boundary",
+                  "weight": 1,
+                  "evidence": "Placed the visible chart surface.",
+                  "rule": {"predicate": "cardInLane", "cardId": "chart-surface", "laneId": "ui"}
+                },
+                {
+                  "id": "chart-accessible-priority",
+                  "weight": 1,
+                  "evidence": "Prioritized accessible chart inspection.",
+                  "rule": {"predicate": "requirementPrioritized", "requirementId": "chart-accessible-inspection"}
+                }
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": ["Gap-aware background recovery", "Single catch-up projection"],
+              "criteria": [
+                {
+                  "id": "chart-complete-resume-adaptation",
+                  "weight": 3,
+                  "evidence": "Reconciled continuity and produced one current projection after suspension.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {"predicate": "decisionSelected", "decisionId": "chart-gap-recovery", "optionId": "chart-recovery-resume-gap"},
+                          {"predicate": "decisionSelected", "decisionId": "chart-gap-recovery", "optionId": "chart-recovery-snapshot"}
+                        ]
+                      },
+                      {
+                        "anyOf": [
+                          {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-dirty-frame"},
+                          {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-bounded-commit"}
+                        ]
+                      },
+                      {"predicate": "twistActionSelected", "actionId": "chart-twist-reconcile-gap"},
+                      {"predicate": "twistActionSelected", "actionId": "chart-twist-catch-up-projection"}
+                    ]
+                  }
+                },
+                {
+                  "id": "chart-defend-recovery",
+                  "weight": 1,
+                  "evidence": "Defended the selected recovery contract.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "allOf": [
+                          {"predicate": "decisionSelected", "decisionId": "chart-gap-recovery", "optionId": "chart-recovery-resume-gap"},
+                          {"predicate": "rationaleSelected", "decisionId": "chart-gap-recovery", "rationaleId": "chart-rationale-continuity-truth"}
+                        ]
+                      },
+                      {
+                        "allOf": [
+                          {"predicate": "decisionSelected", "decisionId": "chart-gap-recovery", "optionId": "chart-recovery-snapshot"},
+                          {"predicate": "rationaleSelected", "decisionId": "chart-gap-recovery", "rationaleId": "chart-rationale-bounded-repair"}
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "chart-critical-paint-retention-gap",
+              "severity": "critical",
+              "axisIds": ["data-interface-contracts", "resilience-performance"],
+              "summary": "Visual commit timing decides which samples survive while a detected continuity gap is cleared by the next event.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "chart-retention-projection", "optionId": "chart-retention-paint-driven"},
+                  {"predicate": "decisionSelected", "decisionId": "chart-gap-recovery", "optionId": "chart-recovery-next-live"}
+                ]
+              }
+            },
+            {
+              "id": "chart-critical-ingress-replay",
+              "severity": "critical",
+              "axisIds": ["resilience-performance", "adaptation-tradeoffs"],
+              "summary": "Synchronous ingress rendering is combined with replaying background samples as visual commits after resume.",
+              "rule": {
+                "allOf": [
+                  {"predicate": "decisionSelected", "decisionId": "chart-paint-policy", "optionId": "chart-paint-per-ingress"},
+                  {"predicate": "twistActionSelected", "actionId": "chart-twist-replay-paints"}
+                ]
+              }
+            },
+            {
+              "id": "chart-critical-inaccessible-fresh-gap",
+              "severity": "critical",
+              "axisIds": ["accessibility-product-ux", "adaptation-tradeoffs"],
+              "summary": "An unresolved continuity gap is presented as fresh without a semantic chart-inspection path.",
+              "rule": {
+                "allOf": [
+                  {"not": {"predicate": "cardInLane", "cardId": "accessible-chart-inspector", "laneId": "ui"}},
+                  {"predicate": "decisionSelected", "decisionId": "chart-gap-recovery", "optionId": "chart-recovery-next-live"},
+                  {"predicate": "twistActionSelected", "actionId": "chart-twist-mark-live"}
+                ]
+              }
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "chart-strong-controller-raw",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chart-workload", "chart-source-continuity", "chart-accessibility"],
+              "priorityRequirementIds": ["chart-bounded-window", "chart-data-paint-separation", "chart-accessible-inspection"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "accessible-chart-inspector", "laneId": "ui", "order": 1},
+                {"cardId": "live-chart-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "paint-scheduler", "laneId": "state", "order": 1},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "viewport-projector", "laneId": "data", "order": 1},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 2},
+                {"cardId": "browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "live-chart-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "paint-scheduler", "typeId": "event-flow"},
+                {"fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"},
+                {"fromCardId": "viewport-projector", "toCardId": "chart-surface", "typeId": "data-flow"},
+                {"fromCardId": "series-window", "toCardId": "accessible-chart-inspector", "typeId": "data-flow"},
+                {"fromCardId": "accessible-chart-inspector", "toCardId": "live-chart-coordinator", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-controller", "rationaleIds": ["chart-rationale-explicit-lifetimes"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-raw", "rationaleIds": ["chart-rationale-exact-recent"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-per-ingress", "rationaleIds": ["chart-rationale-lowest-latency"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-next-live", "rationaleIds": ["chart-rationale-fast-live"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "Start with direct commits at the normal rate; revisit lifecycle behavior after the production change."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chart-workload", "chart-source-continuity", "chart-accessibility"],
+              "priorityRequirementIds": ["chart-bounded-window", "chart-data-paint-separation", "chart-accessible-inspection"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "accessible-chart-inspector", "laneId": "ui", "order": 1},
+                {"cardId": "live-chart-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "paint-scheduler", "laneId": "state", "order": 1},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "viewport-projector", "laneId": "data", "order": 1},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 2},
+                {"cardId": "browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "live-chart-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "paint-scheduler", "typeId": "event-flow"},
+                {"fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"},
+                {"fromCardId": "viewport-projector", "toCardId": "chart-surface", "typeId": "data-flow"},
+                {"fromCardId": "series-window", "toCardId": "accessible-chart-inspector", "typeId": "data-flow"},
+                {"fromCardId": "accessible-chart-inspector", "toCardId": "live-chart-coordinator", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-controller", "rationaleIds": ["chart-rationale-explicit-lifetimes"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-raw", "rationaleIds": ["chart-rationale-exact-recent"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-dirty-frame", "rationaleIds": ["chart-rationale-browser-lifecycle"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-resume-gap", "rationaleIds": ["chart-rationale-continuity-truth"]}
+              ],
+              "twistResponseActionIds": ["chart-twist-reconcile-gap", "chart-twist-catch-up-projection"],
+              "scratchpad": "Retain accepted data independently, repair or expose the gap, then commit one projection for the current viewport."
+            }
+          },
+          {
+            "id": "chart-strong-store-aggregate",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chart-workload", "chart-source-continuity", "chart-accessibility"],
+              "priorityRequirementIds": ["chart-bounded-window", "chart-data-paint-separation", "chart-accessible-inspection"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "accessible-chart-inspector", "laneId": "ui", "order": 1},
+                {"cardId": "live-chart-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "paint-scheduler", "laneId": "state", "order": 1},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "viewport-projector", "laneId": "data", "order": 1},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 2},
+                {"cardId": "browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "live-chart-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "paint-scheduler", "typeId": "event-flow"},
+                {"fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"},
+                {"fromCardId": "viewport-projector", "toCardId": "chart-surface", "typeId": "data-flow"},
+                {"fromCardId": "series-window", "toCardId": "accessible-chart-inspector", "typeId": "data-flow"},
+                {"fromCardId": "accessible-chart-inspector", "toCardId": "live-chart-coordinator", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-feature-store", "rationaleIds": ["chart-rationale-serialized-feature"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-aggregate", "rationaleIds": ["chart-rationale-declared-aggregation"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-bounded-commit", "rationaleIds": ["chart-rationale-measured-budget"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-snapshot", "rationaleIds": ["chart-rationale-bounded-repair"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "The feature already treats continuity, aggregation, and visual commits as separate bounded policies."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chart-workload", "chart-source-continuity", "chart-accessibility"],
+              "priorityRequirementIds": ["chart-bounded-window", "chart-data-paint-separation", "chart-accessible-inspection"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "accessible-chart-inspector", "laneId": "ui", "order": 1},
+                {"cardId": "live-chart-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "paint-scheduler", "laneId": "state", "order": 1},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "viewport-projector", "laneId": "data", "order": 1},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 2},
+                {"cardId": "browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "live-chart-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "paint-scheduler", "typeId": "event-flow"},
+                {"fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"},
+                {"fromCardId": "viewport-projector", "toCardId": "chart-surface", "typeId": "data-flow"},
+                {"fromCardId": "series-window", "toCardId": "accessible-chart-inspector", "typeId": "data-flow"},
+                {"fromCardId": "accessible-chart-inspector", "toCardId": "live-chart-coordinator", "typeId": "event-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-feature-store", "rationaleIds": ["chart-rationale-serialized-feature"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-aggregate", "rationaleIds": ["chart-rationale-declared-aggregation"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-bounded-commit", "rationaleIds": ["chart-rationale-measured-budget"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-snapshot", "rationaleIds": ["chart-rationale-bounded-repair"]}
+              ],
+              "twistResponseActionIds": ["chart-twist-reconcile-gap", "chart-twist-catch-up-projection"],
+              "scratchpad": "Replace the uncertain window from authoritative state, preserve the discontinuity, and commit one measured projection."
+            }
+          },
+          {
+            "id": "chart-developing-bounded",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chart-workload", "chart-history", "chart-fidelity"],
+              "priorityRequirementIds": ["chart-bounded-window", "chart-bounded-visual-work", "chart-accessible-inspection"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "accessible-chart-inspector", "laneId": "ui", "order": 1},
+                {"cardId": "live-chart-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "paint-scheduler", "laneId": "state", "order": 1},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "viewport-projector", "laneId": "data", "order": 1},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 2},
+                {"cardId": "browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "live-chart-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "paint-scheduler", "typeId": "event-flow"},
+                {"fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"},
+                {"fromCardId": "viewport-projector", "toCardId": "chart-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-controller", "rationaleIds": ["chart-rationale-explicit-lifetimes"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-raw", "rationaleIds": ["chart-rationale-exact-recent"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-dirty-frame", "rationaleIds": ["chart-rationale-browser-lifecycle"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-next-live", "rationaleIds": ["chart-rationale-fast-live"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "The bounded render pipeline is clear; semantic data flow and source-gap recovery still need detail."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chart-workload", "chart-history", "chart-fidelity"],
+              "priorityRequirementIds": ["chart-bounded-window", "chart-bounded-visual-work", "chart-accessible-inspection"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "accessible-chart-inspector", "laneId": "ui", "order": 1},
+                {"cardId": "live-chart-coordinator", "laneId": "state", "order": 0},
+                {"cardId": "paint-scheduler", "laneId": "state", "order": 1},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "viewport-projector", "laneId": "data", "order": 1},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 2},
+                {"cardId": "browser-runtime", "laneId": "external", "order": 0},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 1}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "live-chart-coordinator", "typeId": "event-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "viewport-projector", "typeId": "data-flow"},
+                {"fromCardId": "live-chart-coordinator", "toCardId": "paint-scheduler", "typeId": "event-flow"},
+                {"fromCardId": "paint-scheduler", "toCardId": "browser-runtime", "typeId": "event-flow"},
+                {"fromCardId": "viewport-projector", "toCardId": "chart-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-controller", "rationaleIds": ["chart-rationale-explicit-lifetimes"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-bounded-raw", "rationaleIds": ["chart-rationale-exact-recent"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-dirty-frame", "rationaleIds": ["chart-rationale-browser-lifecycle"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-next-live", "rationaleIds": ["chart-rationale-fast-live"]}
+              ],
+              "twistResponseActionIds": ["chart-twist-catch-up-projection"],
+              "scratchpad": "Reproject once after resume, but continuity repair and the semantic inspector data path remain unresolved."
+            }
+          },
+          {
+            "id": "chart-critical-surface-replay",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": ["chart-workload", "chart-source-continuity", "chart-browser-lifecycle"],
+              "priorityRequirementIds": ["chart-sample-envelope", "chart-bounded-visual-work", "chart-lifecycle-recovery"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "chart-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-surface", "rationaleIds": ["chart-rationale-local-renderer"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-paint-driven", "rationaleIds": ["chart-rationale-display-memory"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-per-ingress", "rationaleIds": ["chart-rationale-lowest-latency"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-next-live", "rationaleIds": ["chart-rationale-fast-live"]}
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": "Let the chart view retain whatever it paints and restore live status on the next sample."
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": ["chart-workload", "chart-source-continuity", "chart-browser-lifecycle"],
+              "priorityRequirementIds": ["chart-sample-envelope", "chart-bounded-visual-work", "chart-lifecycle-recovery"],
+              "placements": [
+                {"cardId": "chart-surface", "laneId": "ui", "order": 0},
+                {"cardId": "series-window", "laneId": "data", "order": 0},
+                {"cardId": "stream-adapter", "laneId": "data", "order": 1},
+                {"cardId": "live-sample-api", "laneId": "external", "order": 0}
+              ],
+              "connections": [
+                {"fromCardId": "live-sample-api", "toCardId": "stream-adapter", "typeId": "data-flow"},
+                {"fromCardId": "stream-adapter", "toCardId": "series-window", "typeId": "event-flow"},
+                {"fromCardId": "series-window", "toCardId": "chart-surface", "typeId": "data-flow"}
+              ],
+              "decisions": [
+                {"decisionId": "chart-flow-ownership", "optionId": "chart-owner-surface", "rationaleIds": ["chart-rationale-local-renderer"]},
+                {"decisionId": "chart-retention-projection", "optionId": "chart-retention-paint-driven", "rationaleIds": ["chart-rationale-display-memory"]},
+                {"decisionId": "chart-paint-policy", "optionId": "chart-paint-per-ingress", "rationaleIds": ["chart-rationale-lowest-latency"]},
+                {"decisionId": "chart-gap-recovery", "optionId": "chart-recovery-next-live", "rationaleIds": ["chart-rationale-fast-live"]}
+              ],
+              "twistResponseActionIds": ["chart-twist-replay-paints", "chart-twist-mark-live"],
+              "scratchpad": "Replay each background visual update and mark live on the next envelope; pointer hover remains the only inspection path."
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-08-04",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt and choices are original.",
+          "references": [
+            {
+              "title": "MDN Window.requestAnimationFrame()",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame",
+              "license": "CC BY-SA 2.5 or later",
+              "role": "Validate browser-aligned animation callbacks and hidden-tab scheduling behavior",
+              "accessedAt": "2026-08-04"
+            },
+            {
+              "title": "W3C WAI Complex Images",
+              "url": "https://www.w3.org/WAI/tutorials/images/complex/",
+              "license": "W3C Document License",
+              "role": "Validate semantic alternatives and detailed descriptions for charts",
+              "accessedAt": "2026-08-04"
             }
           ]
         }

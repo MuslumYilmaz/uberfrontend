@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-optional-chain-side-effect-short-circuit-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "optional-chain-side-effect-short-circuit",
+    "prompt": "A cache lookup returns either a session object with an `events` array or `undefined`. Reading the next event increments `cursor`, but a missing session must return `undefined` without incrementing the cursor or throwing. Which expression preserves that behavior?",
+    "options": [
+      {
+        "id": "choice-69d894a609",
+        "label": "Group `(sessions.get(id)?.events)` before `[cursor++]` so the computed access follows the optional lookup."
+      },
+      {
+        "id": "choice-4976bc8a15",
+        "label": "Put `?.[cursor++]` after `sessions.get(id).events` so only the computed array access is optional."
+      },
+      {
+        "id": "choice-bcc193641c",
+        "label": "Keep `sessions.get(id)?.events[cursor++]` continuous so a missing session skips the computed key."
+      }
+    ],
+    "estimatedSeconds": 95
+  },
+  "private": {
+    "correctOptionId": "choice-bcc193641c",
+    "answerProof": {
+      "summary": "A continuous optional chain stops evaluation when its guarded value is nullish, so the computed property expression cursor++ is not evaluated when the cache lookup returns undefined.",
+      "decisiveConstraints": [
+        "The cache lookup may return undefined.",
+        "A missing session must not evaluate cursor++.",
+        "The expression must not access a property of undefined."
+      ],
+      "claims": [
+        {
+          "statement": "When optional chaining short-circuits, later property accesses in the same continuous chain are not evaluated, including a computed property's expression.",
+          "sourceIds": [
+            "mdn-optional-chaining"
+          ]
+        },
+        {
+          "statement": "Grouping part of an optional chain ends that continuous chain, so a following property access can still be evaluated against undefined.",
+          "sourceIds": [
+            "mdn-optional-chaining"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-69d894a609",
+        "verdict": "incorrect",
+        "explanation": "The parentheses end the optional chain, so the following computed access still evaluates cursor++ and then attempts to index undefined.",
+        "plausibility": "The optional operator visibly guards the cache lookup before the expression reaches the array access.",
+        "misconceptionTag": "grouping-preserves-optional-chain",
+        "falsifyingConstraint": "No computed access may run after the lookup produces undefined."
+      },
+      {
+        "optionId": "choice-4976bc8a15",
+        "verdict": "incorrect",
+        "explanation": "The ordinary `.events` access occurs before the optional computed access and therefore throws when the lookup returns undefined.",
+        "plausibility": "Placing the optional operator nearest the side-effecting key suggests that it controls the whole lookup.",
+        "misconceptionTag": "late-optional-access-guards-base",
+        "falsifyingConstraint": "The session itself, not merely its events array, is the value that may be undefined."
+      },
+      {
+        "optionId": "choice-bcc193641c",
+        "verdict": "correct",
+        "explanation": "The continuous chain guards the missing session and skips the computed key expression, leaving cursor unchanged.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "optional-chaining",
+      "short-circuit-evaluation",
+      "computed-property-side-effects"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Optional chaining",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining",
+        "sourceId": "mdn-optional-chaining"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-optional-chaining",
+          "title": "MDN: Optional chaining",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}
