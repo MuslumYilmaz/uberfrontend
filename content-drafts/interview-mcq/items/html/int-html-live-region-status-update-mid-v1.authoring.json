@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-live-region-status-update-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "html",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "live-region-status-update",
+    "prompt": "An autocomplete keeps focus in its text field while results load. After each settled request, assistive technology should announce a short result count without interrupting typing or moving focus. Which status pattern fits?",
+    "options": [
+      {
+        "id": "choice-6688c92ee4",
+        "label": "Create a new `role=\"alert\"` node for each result count, then focus it after insertion."
+      },
+      {
+        "id": "choice-43dbbd8483",
+        "label": "Keep an existing `role=\"status\"` node and replace its text when the active query finishes."
+      },
+      {
+        "id": "choice-445aa366ab",
+        "label": "Insert the result text first, then add `aria-live=\"polite\"` to that node after the update."
+      }
+    ],
+    "estimatedSeconds": 110
+  },
+  "private": {
+    "correctOptionId": "choice-43dbbd8483",
+    "answerProof": {
+      "summary": "A persistent status region provides polite, atomic status announcements when its text changes. Updating it after a settled request preserves input focus and avoids assertive interruption.",
+      "decisiveConstraints": [
+        "The text field retains keyboard focus.",
+        "Announcements occur after settled requests rather than for every transient state.",
+        "The result count is informative and does not require assertive interruption."
+      ],
+      "claims": [
+        {
+          "statement": "The status role has implicit aria-live polite and aria-atomic true semantics for advisory information that is not important enough to justify an alert.",
+          "sourceIds": [
+            "mdn-status-role"
+          ]
+        },
+        {
+          "statement": "A live region should normally be present before its content changes because assistive technologies announce subsequent dynamic changes to the region.",
+          "sourceIds": [
+            "mdn-aria-live-regions"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-6688c92ee4",
+        "verdict": "incorrect",
+        "explanation": "Alert is assertive and focusing each message disrupts the user's editing position instead of providing advisory status.",
+        "plausibility": "New alert nodes are commonly announced promptly, making delivery of the message seem reliable.",
+        "misconceptionTag": "routine-status-requires-alert-and-focus",
+        "falsifyingConstraint": "The result count must not interrupt typing or move focus from the text field."
+      },
+      {
+        "optionId": "choice-43dbbd8483",
+        "verdict": "correct",
+        "explanation": "Changing an established status region produces an advisory announcement while focus remains in the input.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-445aa366ab",
+        "verdict": "incorrect",
+        "explanation": "Adding the live-region property after inserting the message may not expose that already-completed mutation as an announcement.",
+        "plausibility": "The final DOM contains both the message and a polite live-region declaration.",
+        "misconceptionTag": "late-live-region-registration-announces-past-change",
+        "falsifyingConstraint": "The live-region semantics must exist before the result text mutation occurs."
+      }
+    ],
+    "remediationTopics": [
+      "aria-status-role",
+      "live-region-timing",
+      "polite-announcements",
+      "focus-preservation"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: ARIA status role",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role",
+        "sourceId": "mdn-status-role"
+      },
+      {
+        "title": "MDN: ARIA live regions",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions",
+        "sourceId": "mdn-aria-live-regions"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-status-role",
+          "title": "MDN: ARIA status role",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-aria-live-regions",
+          "title": "MDN: ARIA live regions",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

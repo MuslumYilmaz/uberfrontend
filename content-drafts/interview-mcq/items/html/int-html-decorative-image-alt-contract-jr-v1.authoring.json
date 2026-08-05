@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-decorative-image-alt-contract-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "html",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "decorative-image-alt-contract",
+    "prompt": "A flourish beside an article heading is purely decorative: removing it would not remove information or functionality. The image must remain visible but should contribute no redundant text alternative. Which markup policy expresses that intent?",
+    "options": [
+      {
+        "id": "choice-b1b363e89a",
+        "label": "Keep the `img` and provide `alt=\"\"` to mark its text alternative as intentionally empty."
+      },
+      {
+        "id": "choice-38622abc99",
+        "label": "Keep the `img` and omit `alt` so user agents infer that its text alternative is empty."
+      },
+      {
+        "id": "choice-5022fc1052",
+        "label": "Keep the `img` and provide `alt=\"Decorative flourish\"` to describe its visual purpose."
+      }
+    ],
+    "estimatedSeconds": 65
+  },
+  "private": {
+    "correctOptionId": "choice-b1b363e89a",
+    "answerProof": {
+      "summary": "An empty alt attribute explicitly identifies an image as decorative, allowing assistive technology to ignore it while the browser still renders the image.",
+      "decisiveConstraints": [
+        "The image communicates no information or function.",
+        "The visual asset must continue to render.",
+        "Assistive output should not add a redundant description."
+      ],
+      "claims": [
+        {
+          "statement": "For an image that does not add content, an empty alt attribute can cause screen readers not to announce it.",
+          "sourceIds": [
+            "mdn-img-element"
+          ]
+        },
+        {
+          "statement": "Omitting alt does not express the same contract because assistive technology may announce the image's URL or another fallback.",
+          "sourceIds": [
+            "mdn-img-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-b1b363e89a",
+        "verdict": "correct",
+        "explanation": "The empty attribute explicitly supplies a null text alternative without removing the visible image.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-38622abc99",
+        "verdict": "incorrect",
+        "explanation": "A missing alt attribute leaves the fallback ambiguous and can expose a filename or URL instead of silencing the decoration.",
+        "plausibility": "Omitting an attribute can look equivalent to assigning it no text value.",
+        "misconceptionTag": "missing-alt-equals-empty-alt",
+        "falsifyingConstraint": "The markup must explicitly declare that the image has no textual contribution."
+      },
+      {
+        "optionId": "choice-5022fc1052",
+        "verdict": "incorrect",
+        "explanation": "Naming the decorative flourish adds output that does not communicate useful content and repeats the purely visual role.",
+        "plausibility": "Images generally need alternative text, so describing every visible asset can seem safer.",
+        "misconceptionTag": "decorative-images-need-descriptive-alt",
+        "falsifyingConstraint": "The image should contribute no redundant text alternative."
+      }
+    ],
+    "remediationTopics": [
+      "image-alt-text",
+      "decorative-images",
+      "accessible-images"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: img element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+        "sourceId": "mdn-img-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-img-element",
+          "title": "MDN: img element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

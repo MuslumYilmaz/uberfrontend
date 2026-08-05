@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-next-tick-dom-read-timing-mid-v1",
-  "revision": 1,
+  "revision": 2,
   "author": {
     "id": "codex-vue-expansion-author",
     "type": "ai",
@@ -30,7 +30,7 @@
       },
       {
         "id": "choice-03dacc67f6",
-        "label": "Read `scrollHeight`, set `expanded`, then place the overlay in `requestAnimationFrame`."
+        "label": "Set `expanded`, then read `scrollHeight` and place the overlay in `onUpdated()`."
       }
     ],
     "estimatedSeconds": 105
@@ -48,6 +48,12 @@
           "statement": "Vue buffers DOM updates caused by reactive mutations, and `nextTick()` awaited after a mutation resolves after that DOM update flush.",
           "sourceIds": [
             "vue35-next-tick"
+          ]
+        },
+        {
+          "statement": "A component's `onUpdated()` hook runs after DOM updates caused by any reactive state change in that component, so it is not scoped to one click handler.",
+          "sourceIds": [
+            "vue35-on-updated"
           ]
         }
       ]
@@ -72,10 +78,10 @@
       {
         "optionId": "choice-03dacc67f6",
         "verdict": "incorrect",
-        "explanation": "The animation-frame callback delays only the overlay placement; the height was captured from the collapsed panel before the expansion.",
-        "misconceptionTag": "deferred-write-refreshes-earlier-read",
-        "plausibility": "Animation frames are a common boundary for coordinating visual updates with browser rendering.",
-        "falsifyingConstraint": "The height read itself must occur after Vue patches the expanded panel."
+        "explanation": "The component-wide hook reads updated DOM, but it also reruns after unrelated later component patches instead of measuring exactly once for this handler.",
+        "misconceptionTag": "component-updated-hook-is-action-scoped",
+        "plausibility": "The updated hook runs after Vue patches the component DOM, so its measurement reflects rendered state.",
+        "falsifyingConstraint": "This handler must own exactly one measurement for its specific expansion rather than a persistent component-wide hook."
       }
     ],
     "remediationTopics": [
@@ -88,6 +94,11 @@
         "title": "Vue: Global API - nextTick",
         "url": "https://vuejs.org/api/general.html#nexttick",
         "sourceId": "vue35-next-tick"
+      },
+      {
+        "title": "Vue: onUpdated",
+        "url": "https://vuejs.org/api/composition-api-lifecycle.html#onupdated",
+        "sourceId": "vue35-on-updated"
       }
     ],
     "provenance": {
@@ -103,6 +114,18 @@
           "licenseId": "CC-BY-4.0",
           "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
           "retrievedAt": "2026-07-29",
+          "revision": "Vue 3.5 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "vue35-on-updated",
+          "title": "Vue: onUpdated",
+          "url": "https://vuejs.org/api/composition-api-lifecycle.html#onupdated",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
           "revision": "Vue 3.5 documentation",
           "official": true,
           "copiedText": false

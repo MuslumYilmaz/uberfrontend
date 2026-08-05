@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-service-worker-response-clone-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "service-worker-response-clone",
+    "prompt": "A service worker's fetch handler gets a network `Response`. It should return the body to the page immediately and populate a cache in parallel. The cache operation must survive beyond the handler, and each consumer needs a readable body. Which ownership sequence is correct?",
+    "options": [
+      {
+        "id": "choice-ba26437507",
+        "label": "Pass the original to both `respondWith()` and `cache.put()`, wrapping the cache promise with `waitUntil()`."
+      },
+      {
+        "id": "choice-fe10599182",
+        "label": "Clone before consumption, return the original, and pass `cache.put(request, clone)` to `waitUntil()`."
+      },
+      {
+        "id": "choice-d48350335c",
+        "label": "Clone before consumption, return the original, and start `cache.put(request, clone)` without `waitUntil()`."
+      }
+    ],
+    "estimatedSeconds": 160
+  },
+  "private": {
+    "correctOptionId": "choice-fe10599182",
+    "answerProof": {
+      "summary": "The page and cache need separate response bodies, so the response is cloned before either consumer reads it. Passing the cache promise to waitUntil extends the fetch event's work until caching settles without delaying the returned original.",
+      "decisiveConstraints": [
+        "The page and cache each consume a response body once.",
+        "The original response is returned without waiting for cache population.",
+        "The service worker remains alive for the asynchronous cache operation."
+      ],
+      "claims": [
+        {
+          "statement": "Response.clone creates a clone for a second consumer and throws if the response body has already been used.",
+          "sourceIds": [
+            "mdn-response-clone"
+          ]
+        },
+        {
+          "statement": "A service worker can return a network response and cache its clone because response streams can only be read once by each consumer.",
+          "sourceIds": [
+            "mdn-using-service-workers"
+          ]
+        },
+        {
+          "statement": "ExtendableEvent.waitUntil extends the event lifetime until the supplied promise settles, preventing termination before the associated work completes.",
+          "sourceIds": [
+            "mdn-extendableevent-waituntil"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-ba26437507",
+        "verdict": "incorrect",
+        "explanation": "The original response exposes one body stream, so the page and cache cannot both consume that same response successfully.",
+        "plausibility": "WaitUntil correctly protects the asynchronous cache operation and a Response looks like a reusable data object.",
+        "misconceptionTag": "response-body-is-multiconsumer",
+        "falsifyingConstraint": "The page and cache each require their own readable response body."
+      },
+      {
+        "optionId": "choice-fe10599182",
+        "verdict": "correct",
+        "explanation": "Cloning provides two body consumers, while waitUntil keeps the worker responsible for the parallel cache write.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-d48350335c",
+        "verdict": "incorrect",
+        "explanation": "The body ownership is correct, but an untracked cache promise may be abandoned after the fetch event finishes.",
+        "plausibility": "Starting the promise before returning can look sufficient because JavaScript promises continue independently in a page.",
+        "misconceptionTag": "service-worker-background-promise-needs-no-lifetime-extension",
+        "falsifyingConstraint": "The cache write must remain protected after the handler returns the page response."
+      }
+    ],
+    "remediationTopics": [
+      "response-body-ownership",
+      "response-clone",
+      "service-worker-event-lifetime",
+      "cache-write-through"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Response.clone()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Response/clone",
+        "sourceId": "mdn-response-clone"
+      },
+      {
+        "title": "MDN: Using Service Workers",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers",
+        "sourceId": "mdn-using-service-workers"
+      },
+      {
+        "title": "MDN: ExtendableEvent.waitUntil()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil",
+        "sourceId": "mdn-extendableevent-waituntil"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-response-clone",
+          "title": "MDN: Response.clone()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Response/clone",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-using-service-workers",
+          "title": "MDN: Using Service Workers",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-extendableevent-waituntil",
+          "title": "MDN: ExtendableEvent.waitUntil()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

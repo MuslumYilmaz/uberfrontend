@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-custom-property-fallback-resolution-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "css",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "custom-property-fallback-resolution",
+    "prompt": "An unthemed badge defines `--badge-fallback: rebeccapurple` but does not define `--badge-color`. Its rule is `color: var(--badge-color, var(--badge-fallback, teal))`. Which color is used?",
+    "options": [
+      {
+        "id": "choice-829d2f4452",
+        "label": "Teal, because nested fallbacks skip another custom property when the first property is missing."
+      },
+      {
+        "id": "choice-00b5c060c4",
+        "label": "The inherited color, because a missing outer custom property invalidates the entire declaration."
+      },
+      {
+        "id": "choice-4ca89e0df8",
+        "label": "Rebeccapurple, because the outer fallback runs and its nested custom property has a usable value."
+      }
+    ],
+    "estimatedSeconds": 65
+  },
+  "private": {
+    "correctOptionId": "choice-4ca89e0df8",
+    "optionRationales": [
+      {
+        "optionId": "choice-829d2f4452",
+        "verdict": "incorrect",
+        "explanation": "The nested fallback first resolves `--badge-fallback`, so its declared rebeccapurple value is used before teal is considered.",
+        "plausibility": "The last literal in a fallback chain can look like the default for the entire declaration.",
+        "misconceptionTag": "nested-fallback-skips-custom-property",
+        "falsifyingConstraint": "The nested custom property is declared with a usable color value."
+      },
+      {
+        "optionId": "choice-00b5c060c4",
+        "verdict": "incorrect",
+        "explanation": "A missing custom property activates the supplied fallback instead of invalidating a declaration that has a usable fallback.",
+        "plausibility": "A `var()` reference without any fallback would make this property resolve to an invalid value.",
+        "misconceptionTag": "missing-variable-ignores-fallback",
+        "falsifyingConstraint": "The outer `var()` explicitly supplies a syntactically valid fallback expression."
+      },
+      {
+        "optionId": "choice-4ca89e0df8",
+        "verdict": "correct",
+        "explanation": "The missing outer variable selects the nested `var()`, which resolves the declared rebeccapurple value without reaching teal.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "The missing outer custom property activates its fallback. That fallback is another `var()` whose referenced property is defined, so rebeccapurple becomes the computed color.",
+      "decisiveConstraints": [
+        "`--badge-color` has no usable declaration on the badge.",
+        "The outer `var()` supplies a nested fallback.",
+        "`--badge-fallback` resolves to a usable color."
+      ],
+      "claims": [
+        {
+          "statement": "A `var()` fallback is used when the referenced custom property has no usable value, and that fallback may itself contain another `var()` expression.",
+          "sourceIds": [
+            "mdn-css-var"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "CSS custom properties",
+      "nested var fallbacks",
+      "computed-value resolution"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: var()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var",
+        "sourceId": "mdn-css-var"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-css-var",
+          "title": "MDN: var()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-details-summary-disclosure-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "html",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "details-summary-disclosure",
+    "prompt": "An FAQ answer should start collapsed and be operable with native keyboard behavior. The implementation must use no custom animation, cross-item coordination, or JavaScript state. Which structure supplies the disclosure behavior?",
+    "options": [
+      {
+        "id": "choice-b6d545d48c",
+        "label": "Use a native `button` with `aria-expanded` and JavaScript that toggles the answer's `hidden` state."
+      },
+      {
+        "id": "choice-fea759b0ea",
+        "label": "Place the question in `summary` as the first child of `details`, followed by the answer."
+      },
+      {
+        "id": "choice-55a95611a4",
+        "label": "Add `open` to a `details` element, then place the question in `summary` and the answer after it."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-fea759b0ea",
+    "answerProof": {
+      "summary": "The details element provides a built-in disclosure whose summary is its label and interactive control, so this simple FAQ does not require custom state or keyboard handling.",
+      "decisiveConstraints": [
+        "The answer starts in a collapsed state.",
+        "Users must be able to operate the control with native keyboard behavior.",
+        "No custom state or coordination is required."
+      ],
+      "claims": [
+        {
+          "statement": "A details element creates a disclosure widget, and its summary child provides the label that toggles the contents.",
+          "sourceIds": [
+            "mdn-details-element",
+            "mdn-summary-element"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-b6d545d48c",
+        "verdict": "incorrect",
+        "explanation": "A button and synchronized attributes can implement an accessible disclosure, but this option introduces the JavaScript state that the scenario excludes.",
+        "plausibility": "A native button supplies keyboard activation and can drive a custom disclosure when custom behavior is needed.",
+        "misconceptionTag": "custom-disclosure-required-for-native-behavior",
+        "falsifyingConstraint": "The disclosure must operate without JavaScript-managed state."
+      },
+      {
+        "optionId": "choice-fea759b0ea",
+        "verdict": "correct",
+        "explanation": "Summary supplies the native control for its details parent, which manages the collapsed and expanded content.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-55a95611a4",
+        "verdict": "incorrect",
+        "explanation": "The native disclosure is operable without JavaScript, but the open attribute makes its initial state expanded rather than collapsed.",
+        "plausibility": "The open attribute controls whether a details disclosure's contents are currently shown.",
+        "misconceptionTag": "open-attribute-enables-disclosure-control",
+        "falsifyingConstraint": "The answer must start collapsed."
+      }
+    ],
+    "remediationTopics": [
+      "details-element",
+      "summary-element",
+      "native-disclosure-controls"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: details element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details",
+        "sourceId": "mdn-details-element"
+      },
+      {
+        "title": "MDN: summary element",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/summary",
+        "sourceId": "mdn-summary-element"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-details-element",
+          "title": "MDN: details element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-summary-element",
+          "title": "MDN: summary element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/summary",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

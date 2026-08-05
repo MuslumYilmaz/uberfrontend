@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-readable-stream-reader-ownership-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "readable-stream-reader-ownership",
+    "prompt": "A decoder acquires a `ReadableStreamDefaultReader`, consumes a header, and must hand the unread remainder to a body parser. Its last `read()` has settled, and neither phase should cancel the source. Which ownership transition is valid?",
+    "options": [
+      {
+        "id": "choice-41b7f97f02",
+        "label": "Release the first reader's lock, then let the body parser acquire a new reader from the stream."
+      },
+      {
+        "id": "choice-25f550d122",
+        "label": "Cancel the first reader after the header, then let the body parser acquire a replacement reader."
+      },
+      {
+        "id": "choice-1c41ed6e42",
+        "label": "Retain the first reader after the header, then let the body parser call `getReader()` again."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-41b7f97f02",
+    "answerProof": {
+      "summary": "A stream has one reader lock at a time. Once the first phase has no pending read, releasing that lock permits the next phase to acquire its own reader without canceling the underlying stream.",
+      "decisiveConstraints": [
+        "The header reader has no pending read request.",
+        "The unread body must remain available from the same stream.",
+        "The body parser must become the sole active reader."
+      ],
+      "claims": [
+        {
+          "statement": "Calling getReader locks a ReadableStream to the returned reader, and another reader cannot be acquired while that lock remains.",
+          "sourceIds": [
+            "mdn-readablestream-getreader"
+          ]
+        },
+        {
+          "statement": "ReadableStreamDefaultReader.releaseLock releases the reader's lock; pending read requests would be rejected, which is why the handoff waits for the last read to settle.",
+          "sourceIds": [
+            "mdn-default-reader-releaselock"
+          ]
+        },
+        {
+          "statement": "Canceling a reader returns a promise and signals that the consumer has lost interest in the stream, allowing the underlying source to react to cancellation.",
+          "sourceIds": [
+            "mdn-default-reader-cancel"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-41b7f97f02",
+        "verdict": "correct",
+        "explanation": "Releasing the settled reader transfers exclusive read ownership without requesting cancellation of the source.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-25f550d122",
+        "verdict": "incorrect",
+        "explanation": "Cancel communicates that the stream is no longer needed and can cause the source to discard the unread remainder.",
+        "plausibility": "Cancellation appears to be a direct way to finish one reader before creating another.",
+        "misconceptionTag": "cancel-is-reader-only-release",
+        "falsifyingConstraint": "The unread body must remain available and the source must not be canceled."
+      },
+      {
+        "optionId": "choice-1c41ed6e42",
+        "verdict": "incorrect",
+        "explanation": "Keeping the first reader retains the stream lock, so a second getReader call throws instead of completing the handoff.",
+        "plausibility": "The first reader is idle after parsing the header, which can look equivalent to relinquishing ownership.",
+        "misconceptionTag": "idle-reader-does-not-lock-stream",
+        "falsifyingConstraint": "The body parser must acquire a reader while only one stream lock is permitted."
+      }
+    ],
+    "remediationTopics": [
+      "readable-stream-locking",
+      "reader-release-lock",
+      "stream-cancellation",
+      "resource-ownership-handoffs"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: ReadableStream.getReader()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/getReader",
+        "sourceId": "mdn-readablestream-getreader"
+      },
+      {
+        "title": "MDN: ReadableStreamDefaultReader.releaseLock()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader/releaseLock",
+        "sourceId": "mdn-default-reader-releaselock"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-readablestream-getreader",
+          "title": "MDN: ReadableStream.getReader()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/getReader",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-default-reader-releaselock",
+          "title": "MDN: ReadableStreamDefaultReader.releaseLock()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader/releaseLock",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-default-reader-cancel",
+          "title": "MDN: ReadableStreamDefaultReader.cancel()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader/cancel",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

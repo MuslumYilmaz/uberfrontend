@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {
-  assertSafeInterviewBankOutputDir,
+  assertInterviewBankLifecycleOutputDir,
   buildGeneratedPackages,
   interviewBankDefaults,
   loadAuthoringItems,
@@ -18,9 +18,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export async function generateInterviewBank(paths) {
-  assertSafeInterviewBankOutputDir(paths.outputDir);
   const itemEntries = loadAuthoringItems(paths.itemsDir);
   const manifest = readJson(paths.manifestPath);
+  assertInterviewBankLifecycleOutputDir(paths.outputDir, manifest);
   const reviews = readJson(paths.reviewsPath);
   const blueprint = readJson(paths.blueprintPath);
   const validation = await validateInterviewBank({

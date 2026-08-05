@@ -1,8 +1,95 @@
 'use strict';
 
+const path = require('path');
+
+const {
+  loadInterviewArtifacts,
+  resetInterviewArtifactsCache,
+} = require('../services/interview/artifacts');
+const { selectQuestions } = require('../services/interview/selection');
 const { serializeSession } = require('../services/interview/session-service');
 
 describe('interview session serialization', () => {
+  test('serializes a selected five-question candidate snapshot without answer data', () => {
+    const original = {
+      nodeEnv: process.env.NODE_ENV,
+      allowCandidate: process.env.INTERVIEW_ALLOW_CANDIDATE_BANK,
+      publicPath: process.env.INTERVIEW_BANK_PUBLIC_PATH,
+      privatePath: process.env.INTERVIEW_BANK_PRIVATE_PATH,
+      releasePath: process.env.INTERVIEW_BANK_RELEASE_PATH,
+    };
+    const candidateRoot = path.resolve(
+      __dirname,
+      '../../content-drafts/interview-mcq/generated/candidate-1.2.0'
+    );
+    try {
+      process.env.NODE_ENV = 'test';
+      process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+      process.env.INTERVIEW_BANK_PUBLIC_PATH = path.join(
+        candidateRoot,
+        'frontend-interview-bank-v1.public.json'
+      );
+      process.env.INTERVIEW_BANK_PRIVATE_PATH = path.join(
+        candidateRoot,
+        'frontend-interview-bank-v1.private.json'
+      );
+      process.env.INTERVIEW_BANK_RELEASE_PATH = path.join(
+        candidateRoot,
+        'frontend-interview-bank-v1.release.json'
+      );
+      resetInterviewArtifactsCache();
+      const bank = loadInterviewArtifacts({ force: true }).bank;
+      const questions = selectQuestions({
+        questions: bank.questions,
+        track: 'core-web',
+        level: 'junior',
+        seed: 'candidate-1.2.0:serialization',
+      });
+      const serialized = serializeSession({
+        _id: 'candidate-session-snapshot',
+        __v: 1,
+        format: 'coding',
+        status: 'mcq_active',
+        active: true,
+        level: 'junior',
+        track: 'core-web',
+        timingMode: 'standard',
+        bank: {
+          id: bank.id,
+          version: bank.version,
+          contentHash: bank.contentHash,
+        },
+        questions,
+        mcqResponses: [],
+        codingOutcome: 'pending',
+        entitlementSnapshot: {
+          tier: 'free',
+          capturedAt: new Date('2026-08-05T12:00:00.000Z'),
+        },
+      }, { now: new Date('2026-08-05T12:00:00.000Z') });
+
+      expect(serialized.bank).toEqual(expect.objectContaining({
+        version: '1.2.0',
+        contentHash: bank.contentHash,
+      }));
+      expect(serialized.questions).toHaveLength(5);
+      expect(JSON.stringify(serialized.questions)).not.toMatch(
+        /correctOptionId|answerProof|optionRationales|provenance/
+      );
+    } finally {
+      const restore = (name, value) => {
+        if (value == null) delete process.env[name];
+        else process.env[name] = value;
+      };
+      restore('NODE_ENV', original.nodeEnv);
+      restore('INTERVIEW_ALLOW_CANDIDATE_BANK', original.allowCandidate);
+      restore('INTERVIEW_BANK_PUBLIC_PATH', original.publicPath);
+      restore('INTERVIEW_BANK_PRIVATE_PATH', original.privatePath);
+      restore('INTERVIEW_BANK_RELEASE_PATH', original.releasePath);
+      resetInterviewArtifactsCache();
+    }
+  });
+
   test('preserves flattened snippet source and language without exposing runtime metadata', () => {
     const serialized = serializeSession({
       _id: 'session-with-snippet',

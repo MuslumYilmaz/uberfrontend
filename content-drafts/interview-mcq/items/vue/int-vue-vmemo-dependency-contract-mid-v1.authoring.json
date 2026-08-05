@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-vmemo-dependency-contract-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "vmemo-dependency-contract",
+    "prompt": "A Vue 3.2+ table uses `v-for`, a stable `:key`, and `v-memo=\"[item.id === selectedId]\"` on each row. Selection updates efficiently, but a row also renders `item.price`, which can change independently and now stays stale. Which correction preserves safe memoization?",
+    "options": [
+      {
+        "id": "choice-b20f74194c",
+        "label": "Keep the current memo array and call `nextTick()` after price writes so Vue revisits every skipped row subtree."
+      },
+      {
+        "id": "choice-be0fce7ce0",
+        "label": "Move `v-memo` to a child inside each row and keep only the selection expression in its dependency array."
+      },
+      {
+        "id": "choice-6632911b94",
+        "label": "Keep `v-memo` on the keyed `v-for` row and include both the selection expression and `item.price` as dependencies."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-6632911b94",
+    "optionRationales": [
+      {
+        "optionId": "choice-b20f74194c",
+        "verdict": "incorrect",
+        "explanation": "NextTick waits for already scheduled updates; it does not invalidate a memoized subtree whose declared dependencies remained equal.",
+        "plausibility": "NextTick is useful when code needs to observe the DOM after Vue applies reactive updates.",
+        "misconceptionTag": "nexttick-invalidates-memoized-subtree",
+        "falsifyingConstraint": "A price change must alter a declared memo dependency before the row can update."
+      },
+      {
+        "optionId": "choice-be0fce7ce0",
+        "verdict": "incorrect",
+        "explanation": "The dependency list still omits price, and Vue requires v-memo used with v-for to be placed on the same element as v-for.",
+        "plausibility": "Narrowing memoization to a smaller child subtree can sometimes reduce the amount of skipped rendering.",
+        "misconceptionTag": "moving-vmemo-fixes-missing-dependency",
+        "falsifyingConstraint": "The price-rendering subtree still needs price in its invalidation contract, with v-memo on the loop element."
+      },
+      {
+        "optionId": "choice-6632911b94",
+        "verdict": "correct",
+        "explanation": "Adding price makes every value that can change the rendered row part of the fixed memo comparison while preserving keyed list reuse.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue can safely skip a memoized row only when every independently changing value that affects its output is represented in the fixed dependency array.",
+      "decisiveConstraints": [
+        "Row selection and row price change independently.",
+        "Both values affect rendered output beneath the memo boundary.",
+        "The memo directive must remain on the same element as its v-for."
+      ],
+      "claims": [
+        {
+          "statement": "Vue v-memo reuses a subtree when every value in its fixed-length dependency array compares equal to the previous render.",
+          "sourceIds": [
+            "vue3-built-in-directives"
+          ]
+        },
+        {
+          "statement": "The v-memo directive is supported in Vue 3.2 and later.",
+          "sourceIds": [
+            "vue3-built-in-directives"
+          ]
+        },
+        {
+          "statement": "An incomplete v-memo dependency array can skip required updates, and v-memo used with v-for must appear on the same element.",
+          "sourceIds": [
+            "vue3-built-in-directives"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue v-memo",
+      "memo invalidation dependencies",
+      "keyed list optimization"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Built-in Directives - v-memo",
+        "url": "https://vuejs.org/api/built-in-directives.html#v-memo",
+        "sourceId": "vue3-built-in-directives"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-built-in-directives",
+          "title": "Vue 3: Built-in Directives - v-memo",
+          "url": "https://vuejs.org/api/built-in-directives.html#v-memo",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3.2+ documentation (v-memo compatibility)",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

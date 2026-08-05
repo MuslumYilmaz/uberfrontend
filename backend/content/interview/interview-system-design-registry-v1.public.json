@@ -670,6 +670,1055 @@
     {
       "cards": [
         {
+          "description": "Shows the current arrangement, active edit feedback, and save status.",
+          "id": "dash-dashboard-surface",
+          "title": "Dashboard surface"
+        },
+        {
+          "description": "Frames data-heavy content with editing affordances and boundary feedback.",
+          "id": "dash-widget-frame",
+          "title": "Widget frame"
+        },
+        {
+          "description": "Offers non-pointer move and resize actions with focus and status feedback.",
+          "id": "dash-accessible-layout-controls",
+          "title": "Accessible layout controls"
+        },
+        {
+          "description": "Translates active input into layout intent and manages the interaction lifetime.",
+          "id": "dash-interaction-controller",
+          "title": "Interaction controller"
+        },
+        {
+          "description": "Evaluates candidate positions and sizes against the layout rules.",
+          "id": "dash-layout-engine",
+          "title": "Layout engine"
+        },
+        {
+          "description": "Coordinates local edits with load, save, and concurrent-update outcomes.",
+          "id": "dash-persistence-coordinator",
+          "title": "Persistence coordinator"
+        },
+        {
+          "description": "Holds layout data, edit history, revision metadata, and request status.",
+          "id": "dash-layout-store",
+          "title": "Layout document store"
+        },
+        {
+          "description": "Invokes transport operations and maps their responses into layout results.",
+          "id": "dash-layout-client",
+          "title": "Layout client"
+        },
+        {
+          "description": "Exposes layout reads and writes for the signed-in user.",
+          "id": "dash-layout-api",
+          "title": "Layout API"
+        },
+        {
+          "description": "Provides input, frame, measurement, viewport, and lifecycle signals.",
+          "id": "dash-browser-runtime",
+          "title": "Browser interaction runtime"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "dash-widget-scale",
+          "prompt": "How many widgets may appear, and how expensive is their content to render?"
+        },
+        {
+          "id": "dash-grid-breakpoints",
+          "prompt": "Which viewports support editing, and how should layouts adapt between them?"
+        },
+        {
+          "id": "dash-collision-expectation",
+          "prompt": "What should users observe when moved or resized tiles would overlap?"
+        },
+        {
+          "id": "dash-persistence-scope",
+          "prompt": "Which layout, undo, and save states must persist, and when should a settled edit be saved?"
+        },
+        {
+          "id": "dash-concurrency",
+          "prompt": "Can the same dashboard change elsewhere while an edit is underway?"
+        },
+        {
+          "id": "dash-accessibility",
+          "prompt": "What non-pointer editing and feedback must be supported?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "975649af4bad43d9c7a616a967d32464401351d414716c98cbab5ab221a6b01a",
+      "decisions": [
+        {
+          "id": "dash-coordinate-model",
+          "options": [
+            {
+              "description": "Scale measured pixel rectangles with each viewport and edit them through pointer manipulation.",
+              "id": "dash-coordinate-raw-pixels",
+              "label": "Scaled pixel rectangles"
+            },
+            {
+              "description": "Persist one logical grid and derive a deterministic phone order with equivalent controls.",
+              "id": "dash-coordinate-logical-grid",
+              "label": "Canonical grid with derived phone order"
+            },
+            {
+              "description": "Store explicit grid rectangles for editing breakpoints and preserve equivalent keyboard constraints.",
+              "id": "dash-coordinate-breakpoint-layouts",
+              "label": "Logical layouts by breakpoint"
+            }
+          ],
+          "prompt": "How should editable layouts remain operable across supported breakpoints?",
+          "rationales": [
+            {
+              "id": "dash-rationale-portable-geometry",
+              "label": "Reduce stored variants through deterministic responsive projection"
+            },
+            {
+              "id": "dash-rationale-direct-measurements",
+              "label": "Preserve visual fidelity within each measured viewport"
+            },
+            {
+              "id": "dash-rationale-responsive-authorship",
+              "label": "Preserve authored compositions across supported editing widths"
+            }
+          ],
+          "title": "Responsive and accessible layout model"
+        },
+        {
+          "id": "dash-preview-model",
+          "options": [
+            {
+              "description": "Route input samples through the shared store and persist successive coalesced snapshots during interaction.",
+              "id": "dash-preview-per-event-commit",
+              "label": "Continuously persisted layout state"
+            },
+            {
+              "description": "Capture latest input outside framework state and apply one composited preview before settled commits.",
+              "id": "dash-preview-raf-transform",
+              "label": "Frame-batched transform preview"
+            },
+            {
+              "description": "Resolve snapped cells in transient feature state and promote only settled layouts to committed state.",
+              "id": "dash-preview-cell-commit",
+              "label": "Grid-cell state transitions"
+            }
+          ],
+          "prompt": "How should frequent pointer input become visible layout feedback?",
+          "rationales": [
+            {
+              "id": "dash-rationale-shared-preview",
+              "label": "Keep candidate geometry observable to the application"
+            },
+            {
+              "id": "dash-rationale-single-update-path",
+              "label": "Prefer one observable state path over specialized transient state"
+            },
+            {
+              "id": "dash-rationale-frame-budget",
+              "label": "Protect frame time from framework and persistence work"
+            }
+          ],
+          "title": "Interaction preview boundary"
+        },
+        {
+          "id": "dash-state-ownership",
+          "options": [
+            {
+              "description": "A feature store serializes layout transitions while a separate adapter handles frame-frequency preview input.",
+              "id": "dash-owner-feature-store",
+              "label": "Serialized feature store"
+            },
+            {
+              "description": "Each widget owns input, collision checks, layout mutation, and persistence for its rectangle.",
+              "id": "dash-owner-widget-shells",
+              "label": "Independent widget ownership"
+            },
+            {
+              "description": "A session controller owns input lifetime while a pure engine returns constrained candidate layouts.",
+              "id": "dash-owner-controller-engine",
+              "label": "Session controller with pure engine"
+            }
+          ],
+          "prompt": "Which boundary should own interaction sessions and deterministic layout transitions?",
+          "rationales": [
+            {
+              "id": "dash-rationale-separated-lifetimes",
+              "label": "Separate interaction lifetime from deterministic layout calculation"
+            },
+            {
+              "id": "dash-rationale-widget-locality",
+              "label": "Minimize central coordination for independently rendered widgets"
+            },
+            {
+              "id": "dash-rationale-serialized-transitions",
+              "label": "Serialize feature transitions behind one shared state boundary"
+            }
+          ],
+          "title": "Interaction and layout ownership"
+        },
+        {
+          "id": "dash-conflict-policy",
+          "options": [
+            {
+              "description": "Adopt the returned layout, retain the local edit as a retryable draft, and restore focus with conflict feedback.",
+              "id": "dash-conflict-remote-replace",
+              "label": "Authoritative remote replacement"
+            },
+            {
+              "description": "Choose by comparing client completion timestamps and return the selected layout with a conflict notice.",
+              "id": "dash-conflict-force-overwrite",
+              "label": "Client completion ordering"
+            },
+            {
+              "description": "Send commandId and basedOnRevision, then reconcile settled intent with the authoritative snapshot returned by the API.",
+              "id": "dash-conflict-revision-rebase",
+              "label": "Revisioned idempotent commit"
+            }
+          ],
+          "prompt": "How should the client respond when its base revision is stale?",
+          "rationales": [
+            {
+              "id": "dash-rationale-local-priority",
+              "label": "Use perceived completion order to settle conflict ownership"
+            },
+            {
+              "id": "dash-rationale-preserve-remote",
+              "label": "Preserve newer remote work while replaying local intent"
+            },
+            {
+              "id": "dash-rationale-authoritative-reset",
+              "label": "Prefer authoritative recovery while retaining an explicit retry"
+            }
+          ],
+          "title": "Concurrent save recovery"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "Compare signals and RxJS streams for input and layout ownership; where would OnPush boundaries and cleanup matter?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "Compare lifecycle boundaries for pointer capture, frame scheduling, measurements, focus, and cleanup relative to completed layout state.",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "Compare refs, component state, and store state for active input versus completed layout rendering, including stale-read and rerender trade-offs.",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "Compare composable-local and shallow reactive state for active geometry versus completed layout, including listener and observer cleanup.",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-dashboard-layout-sr-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "senior",
+      "prompt": "Design the frontend boundaries for a customizable dashboard where users move and resize data-heavy widgets with pointer or keyboard controls. Interactions must stay smooth, layouts must adapt across breakpoints, and committed changes must reconcile with newer saved revisions without losing user intent.",
+      "requirements": [
+        {
+          "description": "Widget positions remain meaningful when container measurements and supported viewport widths change.",
+          "id": "dash-logical-geometry",
+          "title": "Layout continuity across sizes"
+        },
+        {
+          "description": "Pointer and keyboard feedback stays responsive across twenty to fifty heavy widgets with bounded work per input.",
+          "id": "dash-smooth-preview",
+          "title": "Smooth editing at scale"
+        },
+        {
+          "description": "Active feedback remains outside undo and save history until the user completes the edit.",
+          "id": "dash-preview-commit-separation",
+          "title": "Recoverable edit lifecycle"
+        },
+        {
+          "description": "Completed edits survive reloads, while stale saves produce an explicit recoverable outcome.",
+          "id": "dash-revision-safe-save",
+          "title": "Concurrent save integrity"
+        },
+        {
+          "description": "Desktop and tablet edits yield a readable, operable phone arrangement as width changes.",
+          "id": "dash-responsive-layout",
+          "title": "Responsive operability"
+        },
+        {
+          "description": "Keyboard controls, focus retention, concise announcements, and a non-spatial fallback cover the workflow.",
+          "id": "dash-accessible-editing",
+          "title": "Equivalent editing and recovery"
+        }
+      ],
+      "revision": 1,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 1200,
+      "title": "Design a Revision-Safe Customizable Dashboard"
+    },
+    {
+      "cards": [
+        {
+          "description": "Accepts a file through a labelled picker, with optional drop support.",
+          "id": "image-picker",
+          "title": "File selection"
+        },
+        {
+          "description": "Shows selected-image feedback and the actions currently available.",
+          "id": "preview-actions",
+          "title": "Preview and actions"
+        },
+        {
+          "description": "Communicates progress, completion, and actionable errors.",
+          "id": "accessible-upload-status",
+          "title": "Status and feedback"
+        },
+        {
+          "description": "Connects selection, validation, transfer, replacement, and removal.",
+          "id": "upload-attempt-controller",
+          "title": "Flow coordination"
+        },
+        {
+          "description": "Provides the information needed to render and submit the current flow.",
+          "id": "upload-state",
+          "title": "Flow information"
+        },
+        {
+          "description": "Evaluates the configured file rules.",
+          "id": "file-validator",
+          "title": "Selection checks"
+        },
+        {
+          "description": "Starts upload work and exposes the transport's available updates and result.",
+          "id": "upload-client",
+          "title": "Upload transport"
+        },
+        {
+          "description": "Provides local-file and preview facilities, including cleanup operations.",
+          "id": "browser-file-runtime",
+          "title": "Browser file support"
+        },
+        {
+          "description": "Receives file data and returns the result defined by the server contract.",
+          "id": "upload-api",
+          "title": "Upload service"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "upload-file-policy",
+          "prompt": "What file types, byte limits, and image dimensions apply?"
+        },
+        {
+          "id": "upload-value-semantics",
+          "prompt": "When may a preview appear, and what should the form expose before and after upload?"
+        },
+        {
+          "id": "upload-progress-support",
+          "prompt": "What progress and cancellation information does the transport provide?"
+        },
+        {
+          "id": "upload-replacement",
+          "prompt": "What should happen if the file is replaced or removed during upload?"
+        },
+        {
+          "id": "upload-retry-scope",
+          "prompt": "Which failures may retry the same selection?"
+        },
+        {
+          "id": "upload-accessibility",
+          "prompt": "What keyboard, announcement, focus, and small-screen behavior is expected?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "b490a8f10b6b9e278581750111a316ff137996408631c3c14c63f512d0c6e3f9",
+      "decisions": [
+        {
+          "id": "upload-workflow-ownership",
+          "options": [
+            {
+              "description": "A feature-scoped store holds flow information and starts asynchronous work through effects.",
+              "id": "upload-owner-feature-store",
+              "label": "Scoped store and effects"
+            },
+            {
+              "description": "The field component holds flow information and starts asynchronous work directly.",
+              "id": "upload-owner-ui-handlers",
+              "label": "Field component"
+            },
+            {
+              "description": "A feature controller starts work while a reducer records transitions.",
+              "id": "upload-owner-controller",
+              "label": "Controller and reducer"
+            }
+          ],
+          "prompt": "Where should upload phases and asynchronous effects be coordinated?",
+          "rationales": [
+            {
+              "id": "upload-rationale-local-handlers",
+              "label": "Keep behavior close to the field"
+            },
+            {
+              "id": "upload-rationale-explicit-transitions",
+              "label": "Make phase changes easy to inspect"
+            },
+            {
+              "id": "upload-rationale-serialized-effects",
+              "label": "Share coordination outside one view"
+            }
+          ],
+          "title": "Workflow ownership"
+        },
+        {
+          "id": "upload-preview-lifecycle",
+          "options": [
+            {
+              "description": "A scoped service retains previews and releases them under a documented policy.",
+              "id": "upload-preview-shared-retained",
+              "label": "Feature preview service"
+            },
+            {
+              "description": "The upload-flow owner creates and releases the local preview for the active selection.",
+              "id": "upload-preview-controller-url",
+              "label": "Flow owner"
+            },
+            {
+              "description": "The preview surface creates the resource and releases it on change or teardown.",
+              "id": "upload-preview-view-dispose",
+              "label": "Preview UI"
+            }
+          ],
+          "prompt": "Which boundary should own the local preview resource?",
+          "rationales": [
+            {
+              "id": "upload-rationale-render-lifecycle",
+              "label": "Align cleanup with the rendered view"
+            },
+            {
+              "id": "upload-rationale-reuse-retained",
+              "label": "Support controlled reuse across views"
+            },
+            {
+              "id": "upload-rationale-attempt-resource",
+              "label": "Align cleanup with the upload flow"
+            }
+          ],
+          "title": "Preview resource lifecycle"
+        },
+        {
+          "id": "upload-transfer-contract",
+          "options": [
+            {
+              "description": "One transport call reports available byte progress and resolves with the finalized asset.",
+              "id": "upload-transfer-direct-asset",
+              "label": "Single cancellable asset request"
+            },
+            {
+              "description": "The parent holds a distinct pending value, then replaces it with the completed server result.",
+              "id": "upload-transfer-preview-complete",
+              "label": "Pending upload reference"
+            },
+            {
+              "description": "The client requests a session, transfers bytes, then asks for the completed server asset.",
+              "id": "upload-transfer-session-finalize",
+              "label": "Session-based upload flow"
+            }
+          ],
+          "prompt": "How should the client turn selected bytes into the parent value?",
+          "rationales": [
+            {
+              "id": "upload-rationale-explicit-phases",
+              "label": "Expose transfer and durable completion separately"
+            },
+            {
+              "id": "upload-rationale-simple-transport",
+              "label": "Keep one request for one file"
+            },
+            {
+              "id": "upload-rationale-early-value",
+              "label": "Use one asset shape before confirmation"
+            }
+          ],
+          "title": "Upload result contract"
+        },
+        {
+          "id": "upload-replacement-policy",
+          "options": [
+            {
+              "description": "Request cancellation before starting the replacement.",
+              "id": "upload-replace-cancel-switch",
+              "label": "Cancel, then switch"
+            },
+            {
+              "description": "Record replacements and process them after current work settles.",
+              "id": "upload-replace-callback-order",
+              "label": "Queue replacements"
+            },
+            {
+              "description": "Start the replacement immediately and define which result applies.",
+              "id": "upload-replace-attempt-identity",
+              "label": "Overlapping attempts"
+            }
+          ],
+          "prompt": "How should completions be handled when the selection changes during upload?",
+          "rationales": [
+            {
+              "id": "upload-rationale-current-attempt",
+              "label": "Prefer newest selection"
+            },
+            {
+              "id": "upload-rationale-response-order",
+              "label": "Preserve request order"
+            },
+            {
+              "id": "upload-rationale-serialized-switch",
+              "label": "Limit concurrent work"
+            }
+          ],
+          "title": "Active replacement policy"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "How would you choose among signals, RxJS, DestroyRef, and OnPush updates, and where should teardown run?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "How would you choose among native input events, object URLs, and AbortController, and where should teardown run?",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "How would you choose among reducer state, refs, and effects, and where should teardown run?",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "How would you choose among component state, a composable, shallow refs, and watchers, and where should teardown run?",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-image-upload-lifecycle-jr-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "junior",
+      "prompt": "Design the frontend boundaries for a reusable single-image upload field where users validate a selected file, see a local preview, follow honest upload progress, retry or cancel failures, and finish with a server-confirmed asset. Users may replace or remove the image, and the flow must remain responsive and accessible without leaking browser resources.",
+      "requirements": [
+        {
+          "description": "The field communicates its current status consistently.",
+          "id": "upload-explicit-state",
+          "title": "Clear upload status"
+        },
+        {
+          "description": "Invalid selections receive specific, timely feedback.",
+          "id": "upload-local-validation",
+          "title": "Selection validation"
+        },
+        {
+          "description": "The UI distinguishes locally displayed content from the value exposed through the upload contract.",
+          "id": "upload-preview-asset-separation",
+          "title": "Preview and submitted value"
+        },
+        {
+          "description": "Feedback reflects the information actually available, with usable actions after failure or cancellation.",
+          "id": "upload-progress-recovery",
+          "title": "Progress and recovery"
+        },
+        {
+          "description": "Replacement, removal, and teardown leave no stale UI, stale completion, or retained browser resource.",
+          "id": "upload-attempt-cleanup",
+          "title": "Replacement and cleanup"
+        },
+        {
+          "description": "The full flow remains understandable and operable across input modes and screen sizes.",
+          "id": "upload-accessible-recovery",
+          "title": "Accessible responsive flow"
+        }
+      ],
+      "revision": 1,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 600,
+      "title": "Design a Reliable Image Upload Preview"
+    },
+    {
+      "cards": [
+        {
+          "description": "Displays the current projected series and visible freshness state.",
+          "id": "chart-surface",
+          "title": "Chart surface"
+        },
+        {
+          "description": "Provides named values, units, ranges, freshness, and keyboard inspection.",
+          "id": "accessible-chart-inspector",
+          "title": "Accessible chart inspector"
+        },
+        {
+          "description": "Connects source intake, accepted state, projection, and lifecycle intent.",
+          "id": "live-chart-coordinator",
+          "title": "Live chart coordinator"
+        },
+        {
+          "description": "Controls when a changed visible projection is committed to the renderer.",
+          "id": "paint-scheduler",
+          "title": "Paint scheduler"
+        },
+        {
+          "description": "Holds accepted series data under the declared retention policy.",
+          "id": "series-window",
+          "title": "Series window"
+        },
+        {
+          "description": "Builds display-ready data for the current size and inspection range.",
+          "id": "viewport-projector",
+          "title": "Viewport projector"
+        },
+        {
+          "description": "Validates source envelopes, ordering, duplicates, and continuity signals.",
+          "id": "stream-adapter",
+          "title": "Stream adapter"
+        },
+        {
+          "description": "Provides frame, visibility, resize, and teardown lifecycle signals.",
+          "id": "browser-runtime",
+          "title": "Browser runtime"
+        },
+        {
+          "description": "Produces timestamped series envelopes and repair or snapshot responses.",
+          "id": "live-sample-api",
+          "title": "Live sample source"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "chart-workload",
+          "prompt": "How many series, samples per second, burst samples, and target device classes should the chart support?"
+        },
+        {
+          "id": "chart-history",
+          "prompt": "How much recent history stays available, and may users pause or inspect older points?"
+        },
+        {
+          "id": "chart-source-continuity",
+          "prompt": "Which identities, ordering signals, duplicates, gaps, and repair capabilities does the source expose?"
+        },
+        {
+          "id": "chart-fidelity",
+          "prompt": "Which source samples must remain exact, and where is explicit aggregation acceptable?"
+        },
+        {
+          "id": "chart-browser-lifecycle",
+          "prompt": "What may happen to transport, paint scheduling, and viewport size while the tab is hidden?"
+        },
+        {
+          "id": "chart-accessibility",
+          "prompt": "Which keyboard, nonvisual data, freshness, motion, and announcement behaviors are required?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "7a63f89b2589af3a2f1d681bf6a1366971072285774078038299bb50bcd13f79",
+      "decisions": [
+        {
+          "id": "chart-flow-ownership",
+          "options": [
+            {
+              "description": "A scoped store records transitions while effects coordinate source and browser work.",
+              "id": "chart-owner-feature-store",
+              "label": "Feature store with effects"
+            },
+            {
+              "description": "The chart boundary owns subscription, client window, projection, and renderer calls for this feature.",
+              "id": "chart-owner-surface",
+              "label": "Surface-contained pipeline"
+            },
+            {
+              "description": "A feature controller owns accepted state while a separate scheduler owns visible commits.",
+              "id": "chart-owner-controller",
+              "label": "Controller with scheduler"
+            }
+          ],
+          "prompt": "Where should accepted samples, projection, and browser-scheduled commits be coordinated?",
+          "rationales": [
+            {
+              "id": "chart-rationale-explicit-lifetimes",
+              "label": "Evolve accepted data and visual lifecycles independently"
+            },
+            {
+              "id": "chart-rationale-local-renderer",
+              "label": "Keep the feature within one rendered boundary"
+            },
+            {
+              "id": "chart-rationale-serialized-feature",
+              "label": "Expose transitions through one serialized state boundary"
+            }
+          ],
+          "title": "Pipeline ownership"
+        },
+        {
+          "id": "chart-retention-projection",
+          "options": [
+            {
+              "description": "A fixed policy keeps recent accepted envelopes, then derives the subset needed for the viewport.",
+              "id": "chart-retention-bounded-raw",
+              "label": "Recent raw sample window"
+            },
+            {
+              "description": "Completed visual commits advance both the retained client window and the points available for display.",
+              "id": "chart-retention-paint-driven",
+              "label": "Display-coupled rolling window"
+            },
+            {
+              "description": "Declared buckets keep a bounded recent history, then derive the subset needed for the viewport.",
+              "id": "chart-retention-bounded-aggregate",
+              "label": "Recent aggregate sample window"
+            }
+          ],
+          "prompt": "What determines which accepted samples remain available and which points are drawn?",
+          "rationales": [
+            {
+              "id": "chart-rationale-exact-recent",
+              "label": "Keep recent source fidelity available for inspection"
+            },
+            {
+              "id": "chart-rationale-display-memory",
+              "label": "Use one cadence for retained and displayed state"
+            },
+            {
+              "id": "chart-rationale-declared-aggregation",
+              "label": "Trade declared fidelity for predictable client cost"
+            }
+          ],
+          "title": "Retention and projection"
+        },
+        {
+          "id": "chart-paint-policy",
+          "options": [
+            {
+              "description": "Changed projections request a browser-aligned commit that reads the most recent retained view.",
+              "id": "chart-paint-dirty-frame",
+              "label": "Browser-frame commits"
+            },
+            {
+              "description": "Accepted envelopes request renderer work using the stream's delivery cadence.",
+              "id": "chart-paint-per-ingress",
+              "label": "Source-cadence commits"
+            },
+            {
+              "description": "A renderer adapter publishes the latest projection under an explicit measured cadence.",
+              "id": "chart-paint-bounded-commit",
+              "label": "Measured adapter commits"
+            }
+          ],
+          "prompt": "How should changed projections reach the renderer when samples arrive in bursts?",
+          "rationales": [
+            {
+              "id": "chart-rationale-browser-lifecycle",
+              "label": "Coordinate commits with browser presentation timing"
+            },
+            {
+              "id": "chart-rationale-lowest-latency",
+              "label": "Favor sample-to-pixel latency at ordinary rates"
+            },
+            {
+              "id": "chart-rationale-measured-budget",
+              "label": "Keep renderer cost within a measured budget"
+            }
+          ],
+          "title": "Visual commit policy"
+        },
+        {
+          "id": "chart-gap-recovery",
+          "options": [
+            {
+              "description": "Resume from the last sequence and retain a gap state if continuity cannot be reconstructed.",
+              "id": "chart-recovery-resume-gap",
+              "label": "Repair window with gap state"
+            },
+            {
+              "description": "Start a new current window at the first post-resume envelope and omit earlier continuity from active state.",
+              "id": "chart-recovery-next-live",
+              "label": "Forward-only current window"
+            },
+            {
+              "description": "Replace the uncertain range with a bounded source snapshot and label any remaining discontinuity.",
+              "id": "chart-recovery-snapshot",
+              "label": "Authoritative recent snapshot"
+            }
+          ],
+          "prompt": "What should restore trustworthy live state after suspension or a detected sequence gap?",
+          "rationales": [
+            {
+              "id": "chart-rationale-continuity-truth",
+              "label": "Retain sequence context across browser suspension"
+            },
+            {
+              "id": "chart-rationale-fast-live",
+              "label": "Favor a smaller forward-only source contract"
+            },
+            {
+              "id": "chart-rationale-bounded-repair",
+              "label": "Bound recovery work with authoritative recent state"
+            }
+          ],
+          "title": "Suspension and gap recovery"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "How would you divide responsibilities across signals, RxJS, zone or OnPush boundaries, DestroyRef, and teardown?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "How would you divide responsibilities across requestAnimationFrame, Page Visibility, ResizeObserver, optional workers, and teardown?",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "How would you divide responsibilities across external state or a reducer, refs, subscriptions, Effects, and teardown?",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "How would you divide responsibilities across a composable, shallow state, watchers or effect scopes, and teardown?",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-live-chart-pipeline-mid-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "mid",
+      "prompt": "Design the frontend boundaries for a live line chart that receives timestamped samples for up to four series, normally about twice per second but occasionally in bursts. It must remain responsive over long-running sessions, keep a useful recent window, adapt its visible projection to the viewport, recover honestly from source and browser-lifecycle gaps, and support keyboard and nonvisual inspection.",
+      "requirements": [
+        {
+          "description": "Series identity, time, continuity, duplicates, and freshness remain observable instead of being inferred from pixels.",
+          "id": "chart-sample-envelope",
+          "title": "Explicit sample and freshness envelope"
+        },
+        {
+          "description": "Long-running sessions retain data under an explicit time, point, or aggregate-window policy.",
+          "id": "chart-bounded-window",
+          "title": "Bounded series window"
+        },
+        {
+          "description": "Retained samples remain trustworthy when viewport projection and visual commit timing change.",
+          "id": "chart-data-paint-separation",
+          "title": "Accepted sample custody"
+        },
+        {
+          "description": "Bursts stay within a measured renderer budget without blocking unrelated interaction.",
+          "id": "chart-bounded-visual-work",
+          "title": "Responsive visual updates"
+        },
+        {
+          "description": "Visibility, resize, missing updates, and source repair produce a useful current projection with explicit freshness.",
+          "id": "chart-lifecycle-recovery",
+          "title": "Lifecycle and continuity state"
+        },
+        {
+          "description": "Values, units, ranges, trends, and gaps remain available without pointer hover, color, or continuous animation.",
+          "id": "chart-accessible-inspection",
+          "title": "Accessible chart inspection"
+        }
+      ],
+      "revision": 1,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 900,
+      "title": "Design a Burst-Safe Live Chart"
+    },
+    {
+      "cards": [
+        {
           "description": "Renders ordered item identities and terminal states.",
           "id": "feed-view",
           "title": "Feed view"

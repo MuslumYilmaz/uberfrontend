@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-guard-redirect-contract-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "guard-redirect-contract",
+    "prompt": "An Angular 22 `CanActivateFn` finds an expired session. It currently returns `false` and separately calls `router.navigate`, producing competing navigation lifecycles. The router should cancel the protected navigation and redirect to login with a return URL as one guard result. What should the guard do?",
+    "options": [
+      {
+        "id": "choice-283a09e7b7",
+        "label": "Return `false`, then queue the login navigation in a microtask so it starts after the guard result is processed."
+      },
+      {
+        "id": "choice-26c4368454",
+        "label": "Return `true`, start `router.navigate` immediately, and let the newer login navigation replace the protected route."
+      },
+      {
+        "id": "choice-1e103ee373",
+        "label": "Return a login `UrlTree` or `RedirectCommand` containing the return URL instead of calling `navigate` inside the guard."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-1e103ee373",
+    "optionRationales": [
+      {
+        "optionId": "choice-283a09e7b7",
+        "verdict": "incorrect",
+        "explanation": "Deferring an imperative navigation still creates a second navigation outside the guard's result and leaves ordering dependent on scheduling.",
+        "plausibility": "A microtask can let the router finish processing the rejected navigation before another call begins.",
+        "misconceptionTag": "deferred-imperative-navigation-becomes-guard-redirect",
+        "falsifyingConstraint": "The redirect must be represented as the result of the in-flight guard evaluation."
+      },
+      {
+        "optionId": "choice-26c4368454",
+        "verdict": "incorrect",
+        "explanation": "Returning true authorizes the protected navigation while starting another one as a side effect, preserving the competing lifecycle and possible transient activation.",
+        "plausibility": "Angular can cancel an older navigation when a later imperative navigation starts.",
+        "misconceptionTag": "new-navigation-safely-replaces-authorized-route",
+        "falsifyingConstraint": "The protected route must not be authorized or activated for an expired session."
+      },
+      {
+        "optionId": "choice-1e103ee373",
+        "verdict": "correct",
+        "explanation": "A UrlTree or RedirectCommand tells the router to replace the guarded navigation with the redirect under one declarative navigation contract.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "Angular guards express redirects by returning a UrlTree or RedirectCommand, allowing the router to cancel and replace the in-flight navigation without an imperative side effect.",
+      "decisiveConstraints": [
+        "The protected navigation must be rejected.",
+        "The login destination and return URL belong to the same guard outcome.",
+        "The guard must not initiate a competing Router navigation call."
+      ],
+      "claims": [
+        {
+          "statement": "Angular route guards can return a UrlTree or RedirectCommand to redirect instead of allowing or merely blocking the current navigation.",
+          "sourceIds": [
+            "angular22-route-guards"
+          ]
+        },
+        {
+          "statement": "Angular advises returning a UrlTree or RedirectCommand rather than returning false and then programmatically navigating from a guard.",
+          "sourceIds": [
+            "angular22-route-guards"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular route guards",
+      "UrlTree redirects",
+      "declarative navigation outcomes"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Control route access with guards",
+        "url": "https://angular.dev/guide/routing/route-guards",
+        "sourceId": "angular22-route-guards"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-route-guards",
+          "title": "Angular 22: Control route access with guards",
+          "url": "https://angular.dev/guide/routing/route-guards",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

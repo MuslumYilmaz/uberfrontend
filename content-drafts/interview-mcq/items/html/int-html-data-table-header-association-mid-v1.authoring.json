@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-data-table-header-association-mid-v1",
-  "revision": 1,
+  "revision": 2,
   "author": {
     "id": "codex-core-author",
     "type": "ai",
@@ -17,7 +17,7 @@
     "options": [
       {
         "id": "choice-b532cfa3aa",
-        "label": "Replace the table with a `role=\"grid\"`, cache header positions on first render, and reuse those indexes after each reorder."
+        "label": "Derive stable IDs for every `th`, but omit the quarter ID from each cell's `headers` because its visual tier implies that label."
       },
       {
         "id": "choice-8cc9c8c619",
@@ -59,10 +59,10 @@
       {
         "optionId": "choice-b532cfa3aa",
         "verdict": "incorrect",
-        "explanation": "Cached visual positions become stale after reordering, while replacing native table semantics creates unrelated grid interaction obligations.",
-        "plausibility": "Position indexes can appear sufficient when the initial visual and semantic column orders match.",
-        "misconceptionTag": "cached-visual-position-owns-header-identity",
-        "falsifyingConstraint": "Associations must follow the current semantic keys after each reorder."
+        "explanation": "Stable IDs do not help when the cell omits its applicable quarter header; the prompt forbids relying on visual position to infer that missing tier.",
+        "plausibility": "Explicit row and measure IDs can appear sufficient when the quarter grouping is visually obvious above the measure columns.",
+        "misconceptionTag": "partial-explicit-headers-make-omitted-tier-inferable",
+        "falsifyingConstraint": "Every cell must explicitly reference its row, quarter, and measure labels without relying on inferred positions."
       },
       {
         "optionId": "choice-8cc9c8c619",

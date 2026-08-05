@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-web-lock-cross-tab-write-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "web-lock-cross-tab-write",
+    "prompt": "Two same-origin tabs increment the same IndexedDB counter. Every participating tab supports Web Locks and uses the same protocol. Concurrent increments must not overwrite one another, including when both tabs observed the same old value before requesting a lock. Which write boundary is safe?",
+    "options": [
+      {
+        "id": "choice-bc3ac4aa48",
+        "label": "Request one exclusive named lock, re-read inside its callback, apply the delta, and await the commit there."
+      },
+      {
+        "id": "choice-f851a3cbfc",
+        "label": "Read before requesting one exclusive named lock, then write that cached value from inside its callback."
+      },
+      {
+        "id": "choice-cd3c51f1c2",
+        "label": "Request one shared named lock, read inside its callback, then write the increment before it resolves."
+      }
+    ],
+    "estimatedSeconds": 145
+  },
+  "private": {
+    "correctOptionId": "choice-bc3ac4aa48",
+    "answerProof": {
+      "summary": "An exclusive named lock serializes participating tabs, but the read-modify-write baseline must also be acquired inside the lock. Awaiting the commit in the callback keeps the lock until the mutation finishes.",
+      "decisiveConstraints": [
+        "Every writer uses the same same-origin lock name and protocol.",
+        "Each increment must use the value committed by the previous lock holder.",
+        "The exclusive lock must cover the complete asynchronous read-modify-write operation."
+      ],
+      "claims": [
+        {
+          "statement": "The Web Locks API coordinates work among same-origin tabs and workers by granting a requested named lock to a callback.",
+          "sourceIds": [
+            "mdn-web-locks-api"
+          ]
+        },
+        {
+          "statement": "LockManager.request uses exclusive mode by default, and a granted lock is released when the callback's returned promise settles.",
+          "sourceIds": [
+            "mdn-lockmanager-request"
+          ]
+        },
+        {
+          "statement": "Shared locks with the same name may be held concurrently, whereas an exclusive lock is not granted alongside another held lock of that name.",
+          "sourceIds": [
+            "mdn-lockmanager-request"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-bc3ac4aa48",
+        "verdict": "correct",
+        "explanation": "The exclusive callback serializes writers and obtains a fresh baseline before keeping ownership through the awaited commit.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-f851a3cbfc",
+        "verdict": "incorrect",
+        "explanation": "Two tabs can cache the same value before either lock is granted, so their serialized writes can still overwrite one increment.",
+        "plausibility": "The actual database write occurs under an exclusive lock, which appears to serialize the critical mutation.",
+        "misconceptionTag": "prelock-read-is-part-of-critical-section",
+        "falsifyingConstraint": "The new value must be derived from the latest value after the tab receives the lock."
+      },
+      {
+        "optionId": "choice-cd3c51f1c2",
+        "verdict": "incorrect",
+        "explanation": "Shared mode permits multiple holders of the same name, allowing both tabs to read one baseline and race their writes.",
+        "plausibility": "Each callback remains inside a named lock and waits for its database operation to finish.",
+        "misconceptionTag": "shared-lock-serializes-writers",
+        "falsifyingConstraint": "Only one read-modify-write callback may hold the named lock at a time."
+      }
+    ],
+    "remediationTopics": [
+      "web-locks-api",
+      "cross-tab-coordination",
+      "exclusive-locks",
+      "read-modify-write-boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Web Locks API",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Locks_API",
+        "sourceId": "mdn-web-locks-api"
+      },
+      {
+        "title": "MDN: LockManager.request()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/LockManager/request",
+        "sourceId": "mdn-lockmanager-request"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-web-locks-api",
+          "title": "MDN: Web Locks API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Locks_API",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-lockmanager-request",
+          "title": "MDN: LockManager.request()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/LockManager/request",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

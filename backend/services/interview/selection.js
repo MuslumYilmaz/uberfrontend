@@ -57,6 +57,17 @@ function combinations(values, count, start = 0, prefix = [], out = []) {
   return out;
 }
 
+function cartesianProduct(groups, index = 0, prefix = [], out = []) {
+  if (index === groups.length) {
+    out.push(prefix);
+    return out;
+  }
+  for (const group of groups[index]) {
+    cartesianProduct(groups, index + 1, [...prefix, ...group], out);
+  }
+  return out;
+}
+
 function exactCounts(values, field, expected) {
   const counts = Object.create(null);
   for (const value of values) {
@@ -91,8 +102,26 @@ function eligibleQuestionForms({ questions, track, level }) {
   const eligible = questions.filter(
     (question) => question.level === level && question.technology in expectedTech
   );
-  return combinations(eligible, 5)
-    .filter((combo) => questionCombinationEligible(combo, track, level));
+  const sourceOrder = new Map(eligible.map((question, index) => [question, index]));
+  const technologyGroups = Object.entries(expectedTech).map(([technology, count]) =>
+    combinations(
+      eligible.filter((question) => question.technology === technology),
+      count
+    )
+  );
+  if (technologyGroups.some((group) => group.length === 0)) return [];
+  return cartesianProduct(technologyGroups)
+    .map((combo) => combo.sort(
+      (left, right) => sourceOrder.get(left) - sourceOrder.get(right)
+    ))
+    .filter((combo) => questionCombinationEligible(combo, track, level))
+    .sort((left, right) => {
+      for (let index = 0; index < left.length; index += 1) {
+        const difference = sourceOrder.get(left[index]) - sourceOrder.get(right[index]);
+        if (difference !== 0) return difference;
+      }
+      return 0;
+    });
 }
 
 function compareCandidateScores(left, right) {

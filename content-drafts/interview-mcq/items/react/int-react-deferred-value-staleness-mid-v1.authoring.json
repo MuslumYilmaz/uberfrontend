@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-deferred-value-staleness-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "deferred-value-staleness",
+    "prompt": "A React 19.2 search page controls an input with `query`, while a large results tree is expensive to rerender. The input must remain current, but the existing results may stay visibly stale while React prepares results for the new query. Which boundary uses `useDeferredValue` correctly?",
+    "options": [
+      {
+        "id": "choice-0ca0e47e84",
+        "label": "Control the input from `deferredQuery` and pass `query` to results so typing waits for deferred state."
+      },
+      {
+        "id": "choice-1f2558b51b",
+        "label": "Control the input from `query`, pass `deferredQuery` to results, and mark stale results with a visual cue."
+      },
+      {
+        "id": "choice-b4accb2e3d",
+        "label": "Control both input and results from `query`, then wrap the input change handler with `useDeferredValue`."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-1f2558b51b",
+    "optionRationales": [
+      {
+        "optionId": "choice-0ca0e47e84",
+        "verdict": "incorrect",
+        "explanation": "Driving the controlled input from the deferred value makes the visible text lag, reversing the required urgent and deferred boundaries.",
+        "plausibility": "The deferred value is designed to remain behind the newest value while background work proceeds.",
+        "misconceptionTag": "defer-controlled-input-value",
+        "falsifyingConstraint": "The input must display the current query immediately."
+      },
+      {
+        "optionId": "choice-1f2558b51b",
+        "verdict": "correct",
+        "explanation": "The current query keeps input feedback urgent while the results consume a lagging value and disclose that they are stale.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-b4accb2e3d",
+        "verdict": "incorrect",
+        "explanation": "`useDeferredValue` accepts a value at the component's top level; it does not wrap an event handler or defer unchanged consumers by itself.",
+        "plausibility": "Other React scheduling APIs accept callbacks, making a handler wrapper look like a consistent interface.",
+        "misconceptionTag": "deferred-value-wraps-handler",
+        "falsifyingConstraint": "The expensive result subtree must receive a deferred value distinct from the current input value."
+      }
+    ],
+    "answerProof": {
+      "summary": "The controlled input continues to use the current query, while the expensive subtree receives a deferred copy. Comparing the two values lets the UI honestly indicate that displayed results lag the latest input.",
+      "decisiveConstraints": [
+        "Input feedback must reflect the newest query.",
+        "The results subtree may display an older query temporarily.",
+        "The stale state must remain visible to the user."
+      ],
+      "claims": [
+        {
+          "statement": "`useDeferredValue` lets a component defer updating part of the UI by returning a value that may lag during a background render.",
+          "sourceIds": [
+            "react19-use-deferred-value"
+          ]
+        },
+        {
+          "statement": "React documents keeping the input on the current query while passing the deferred query to results and visually indicating stale content.",
+          "sourceIds": [
+            "react19-use-deferred-value"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "useDeferredValue",
+      "urgent input feedback",
+      "stale content disclosure"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useDeferredValue",
+        "url": "https://react.dev/reference/react/useDeferredValue",
+        "sourceId": "react19-use-deferred-value"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-deferred-value",
+          "title": "React: useDeferredValue",
+          "url": "https://react.dev/reference/react/useDeferredValue",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

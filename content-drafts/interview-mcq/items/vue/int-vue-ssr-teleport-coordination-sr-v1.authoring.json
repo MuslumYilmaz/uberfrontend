@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-ssr-teleport-coordination-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "ssr-teleport-coordination",
+    "prompt": "A Vue 3 SSR page renders a modal through `<Teleport to=\"#modals\">`. The main app string arrives, but the modal is absent from the response and hydration needs an unambiguous target. The HTML shell already has an empty dedicated `#modals` container. What should the renderer do?",
+    "options": [
+      {
+        "id": "choice-389b5924b6",
+        "label": "Pass an SSR context to `renderToString`, inject `ctx.teleports['#modals']` into that container, then hydrate the same app."
+      },
+      {
+        "id": "choice-3975a0fa76",
+        "label": "Append the main app string to `body` twice so Vue can discover the missing Teleport nodes during client hydration."
+      },
+      {
+        "id": "choice-cc653e9486",
+        "label": "Leave the server target empty and mount a second client-only Vue app in `#modals` after the main app hydrates."
+      }
+    ],
+    "estimatedSeconds": 180
+  },
+  "private": {
+    "correctOptionId": "choice-389b5924b6",
+    "optionRationales": [
+      {
+        "optionId": "choice-389b5924b6",
+        "verdict": "correct",
+        "explanation": "Vue exposes each Teleport fragment through the SSR context, allowing the shell to place it in its matching dedicated target before the same component tree hydrates.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-3975a0fa76",
+        "verdict": "incorrect",
+        "explanation": "The main render string does not contain Teleport output, and duplicating it produces unrelated duplicate app markup rather than target-specific modal nodes.",
+        "plausibility": "The browser body can contain both the application root and overlay containers.",
+        "misconceptionTag": "teleport-content-is-inside-main-ssr-string",
+        "falsifyingConstraint": "The missing fragment is stored separately under its Teleport target in the SSR context."
+      },
+      {
+        "optionId": "choice-cc653e9486",
+        "verdict": "incorrect",
+        "explanation": "A second client app discards the modal's original logical ownership and fails the requirement to send and hydrate its server-rendered markup.",
+        "plausibility": "Vue permits independent application instances to mount on separate page regions.",
+        "misconceptionTag": "client-app-can-hydrate-missing-teleport-fragment",
+        "falsifyingConstraint": "The modal must be rendered by the original SSR component tree and hydrated in place."
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue SSR emits Teleport fragments separately in the render context, so the server must place the target-specific fragment in a dedicated container before the original app hydrates.",
+      "decisiveConstraints": [
+        "The Teleport belongs to the original server-rendered app.",
+        "The modal markup must be present in the initial response.",
+        "Hydration needs a dedicated target containing only the matching Teleport content."
+      ],
+      "claims": [
+        {
+          "statement": "Vue SSR omits Teleport output from the main rendered string and exposes target-keyed fragments on the SSR context's teleports property.",
+          "sourceIds": [
+            "vue3-ssr"
+          ]
+        },
+        {
+          "statement": "To hydrate Teleports, the server must inject each fragment into its correct final-page target, and Vue recommends a dedicated container instead of body.",
+          "sourceIds": [
+            "vue3-ssr"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue SSR Teleports",
+      "SSR render context",
+      "hydration target coordination"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Server-Side Rendering",
+        "url": "https://vuejs.org/guide/scaling-up/ssr.html#teleports",
+        "sourceId": "vue3-ssr"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-ssr",
+          "title": "Vue 3: Server-Side Rendering",
+          "url": "https://vuejs.org/guide/scaling-up/ssr.html#teleports",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

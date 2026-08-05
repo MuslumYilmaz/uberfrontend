@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-streaming-suspense-shell-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "streaming-suspense-shell",
+    "prompt": "A React 19.2 Node server uses `renderToPipeableStream` with Suspense around a slow recommendations panel. The header and product details form a usable shell, so the response should start before recommendations finish while retaining their fallback. Which callback policy implements that streaming boundary?",
+    "options": [
+      {
+        "id": "choice-8eb3221f5f",
+        "label": "Set headers and call `pipe(response)` from `onShellReady`; reserve `onAllReady` for crawlers or buffered output."
+      },
+      {
+        "id": "choice-703a09d55e",
+        "label": "Wait for `onAllReady`, then call `pipe(response)` so each Suspense boundary resolves before any shell byte is sent."
+      },
+      {
+        "id": "choice-14537c6c17",
+        "label": "Call `pipe(response)` immediately after `renderToPipeableStream`, before React reports that the shell can be emitted."
+      }
+    ],
+    "estimatedSeconds": 155
+  },
+  "private": {
+    "correctOptionId": "choice-8eb3221f5f",
+    "optionRationales": [
+      {
+        "optionId": "choice-8eb3221f5f",
+        "verdict": "correct",
+        "explanation": "The shell callback marks the point when the usable shell and Suspense fallbacks can begin streaming without waiting for slow content.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-703a09d55e",
+        "verdict": "incorrect",
+        "explanation": "Waiting for all content converts this user response into buffered output and loses the requested early shell delivery.",
+        "plausibility": "`onAllReady` is useful when the consumer should receive complete HTML instead of progressive streaming.",
+        "misconceptionTag": "all-ready-preserves-early-shell",
+        "falsifyingConstraint": "The response must start while the recommendations boundary is still pending."
+      },
+      {
+        "optionId": "choice-14537c6c17",
+        "verdict": "incorrect",
+        "explanation": "The server should wait until React signals that the shell is ready rather than piping before a streamable shell exists.",
+        "plausibility": "Starting the pipe at the earliest code location can look like the lowest-latency streaming strategy.",
+        "misconceptionTag": "pipe-before-shell-signal",
+        "falsifyingConstraint": "React must first complete the shell that is safe to emit."
+      }
+    ],
+    "answerProof": {
+      "summary": "`onShellReady` fires when React has rendered the application shell even if nested Suspense content is pending. Piping there sends the shell and its fallbacks early; `onAllReady` is for consumers that need complete buffered HTML.",
+      "decisiveConstraints": [
+        "The header and product details are a usable shell.",
+        "Recommendations may remain suspended when the response begins.",
+        "The user response should stream rather than buffer all content."
+      ],
+      "claims": [
+        {
+          "statement": "`onShellReady` fires when the entire shell is rendered, while components inside nested Suspense boundaries may still be loading.",
+          "sourceIds": [
+            "react19-render-to-pipeable-stream"
+          ]
+        },
+        {
+          "statement": "React recommends beginning ordinary streaming from `onShellReady` and using `onAllReady` when complete output must be buffered.",
+          "sourceIds": [
+            "react19-render-to-pipeable-stream"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "streaming server rendering",
+      "Suspense shell boundaries",
+      "onShellReady versus onAllReady"
+    ],
+    "learnMore": [
+      {
+        "title": "React: renderToPipeableStream",
+        "url": "https://react.dev/reference/react-dom/server/renderToPipeableStream",
+        "sourceId": "react19-render-to-pipeable-stream"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-render-to-pipeable-stream",
+          "title": "React: renderToPipeableStream",
+          "url": "https://react.dev/reference/react-dom/server/renderToPipeableStream",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

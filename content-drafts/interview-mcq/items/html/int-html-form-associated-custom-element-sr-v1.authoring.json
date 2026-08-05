@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-html-form-associated-custom-element-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "html",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "form-associated-custom-element",
+    "prompt": "A reusable `<date-range name=\"travel\">` custom element must contribute normalized values to `FormData`, restore its original state on form reset, and react when a fieldset disables it. Which integration owns the complete native form lifecycle?",
+    "options": [
+      {
+        "id": "choice-cb3e4489a2",
+        "label": "Mirror edits into hidden inputs and rely on their submission, reset, and disabled behavior without element callbacks."
+      },
+      {
+        "id": "choice-8a8f5a2d7c",
+        "label": "Enable form association, attach `ElementInternals`, set the form value, and implement lifecycle callbacks."
+      },
+      {
+        "id": "choice-5a592c422a",
+        "label": "Reflect `name`, `value`, and `disabled` on the custom-element host and let the form discover those attributes."
+      }
+    ],
+    "estimatedSeconds": 175
+  },
+  "private": {
+    "correctOptionId": "choice-8a8f5a2d7c",
+    "answerProof": {
+      "summary": "A form-associated custom element opts in through static formAssociated, obtains ElementInternals, and publishes its submission value with setFormValue. Its form callbacks receive reset and disabled lifecycle changes at the component boundary.",
+      "decisiveConstraints": [
+        "The custom element itself owns normalized form submission data.",
+        "Form reset restores component state, not only a mirrored field value.",
+        "Disabled state inherited from a fieldset reaches the component lifecycle."
+      ],
+      "claims": [
+        {
+          "statement": "A custom element opts into form association with a static formAssociated property and can obtain ElementInternals through attachInternals.",
+          "sourceIds": [
+            "mdn-using-custom-elements"
+          ]
+        },
+        {
+          "statement": "ElementInternals.setFormValue sets a form-associated custom element's submission value and can accept a string, File, or FormData.",
+          "sourceIds": [
+            "mdn-elementinternals-setformvalue"
+          ]
+        },
+        {
+          "statement": "Form-associated custom elements can implement callbacks for form reset and disabled-state changes, including disabled state inherited from a fieldset.",
+          "sourceIds": [
+            "mdn-using-custom-elements"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-cb3e4489a2",
+        "verdict": "incorrect",
+        "explanation": "Mirrored inputs can submit values, but without explicit coordination their reset and fieldset state do not restore the custom element's internal UI lifecycle.",
+        "plausibility": "Native hidden controls already participate in FormData and inherit common form behavior.",
+        "misconceptionTag": "hidden-inputs-automatically-own-component-lifecycle",
+        "falsifyingConstraint": "The custom element must update its own state when the owner form resets or a fieldset disables it."
+      },
+      {
+        "optionId": "choice-8a8f5a2d7c",
+        "verdict": "correct",
+        "explanation": "ElementInternals connects submission state to the form, while the form callbacks make reset and disabled transitions explicit component responsibilities.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-5a592c422a",
+        "verdict": "incorrect",
+        "explanation": "Arbitrary custom-element attributes do not by themselves make the host a listed form control or publish a FormData value.",
+        "plausibility": "Native input elements derive their submission contract from these familiar reflected attributes.",
+        "misconceptionTag": "form-control-attributes-confer-form-association",
+        "falsifyingConstraint": "The custom element must explicitly opt into and implement native form association."
+      }
+    ],
+    "remediationTopics": [
+      "form-associated-custom-elements",
+      "elementinternals",
+      "setformvalue",
+      "custom-element-form-callbacks"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Using custom elements",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements",
+        "sourceId": "mdn-using-custom-elements"
+      },
+      {
+        "title": "MDN: ElementInternals.setFormValue()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue",
+        "sourceId": "mdn-elementinternals-setformvalue"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-using-custom-elements",
+          "title": "MDN: Using custom elements",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-elementinternals-setformvalue",
+          "title": "MDN: ElementInternals.setFormValue()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

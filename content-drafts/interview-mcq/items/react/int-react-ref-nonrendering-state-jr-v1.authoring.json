@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-react-ref-nonrendering-state-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-react-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "react",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "ref-nonrendering-state",
+    "prompt": "A React 19.2 audio player keeps a timeout handle used only to cancel a pending fade. Replacing the handle should not repaint the UI, and the value must survive renders. Where should this handle live?",
+    "options": [
+      {
+        "id": "choice-df1214c942",
+        "label": "Store it in `useRef`, replace `.current` while scheduling, and clear the saved handle when canceling."
+      },
+      {
+        "id": "choice-28b32ef29a",
+        "label": "Store it in `useState`, update state for each schedule, and ignore the renders caused by the handle."
+      },
+      {
+        "id": "choice-17cd3b92f5",
+        "label": "Store it in a local variable inside the component, assigning a new value on each rendered call."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-df1214c942",
+    "optionRationales": [
+      {
+        "optionId": "choice-df1214c942",
+        "verdict": "correct",
+        "explanation": "A ref retains the handle for later cancellation while changing `.current` does not request another render.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-28b32ef29a",
+        "verdict": "incorrect",
+        "explanation": "State survives renders, but updating it schedules rendering even though the timeout handle does not affect visual output.",
+        "plausibility": "State is the familiar React mechanism for retaining values between component renders.",
+        "misconceptionTag": "all-persistent-values-require-state",
+        "falsifyingConstraint": "Replacing the handle must not repaint the player."
+      },
+      {
+        "optionId": "choice-17cd3b92f5",
+        "verdict": "incorrect",
+        "explanation": "A local variable is initialized again on each component call, so later events can lose the handle that needs cancellation.",
+        "plausibility": "The timeout is scheduled by code inside the component, making a nearby local variable seem sufficient.",
+        "misconceptionTag": "component-local-variable-persists",
+        "falsifyingConstraint": "The handle must remain available after the component renders again."
+      }
+    ],
+    "answerProof": {
+      "summary": "A timeout handle is instance-local operational data rather than rendered state. A ref retains it across renders and permits replacement without scheduling a new render.",
+      "decisiveConstraints": [
+        "The handle must survive component renders.",
+        "The handle is not displayed in the UI.",
+        "Changing the handle must not trigger rendering."
+      ],
+      "claims": [
+        {
+          "statement": "A ref stores information between renders, and changing its `current` property does not trigger a re-render.",
+          "sourceIds": [
+            "react19-use-ref"
+          ]
+        },
+        {
+          "statement": "React documents timer identifiers as an appropriate ref use when the identifier is needed later but does not affect visual output.",
+          "sourceIds": [
+            "react19-use-ref"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "useRef",
+      "non-rendering component data",
+      "timer handle ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "React: useRef",
+        "url": "https://react.dev/reference/react/useRef",
+        "sourceId": "react19-use-ref"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "react19-use-ref",
+          "title": "React: useRef",
+          "url": "https://react.dev/reference/react/useRef",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/reactjs/react.dev/blob/main/LICENSE-DOCS.md",
+          "retrievedAt": "2026-08-05",
+          "revision": "React 19.2 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

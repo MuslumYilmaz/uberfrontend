@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-subgrid-alignment-boundary-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "css",
+    "level": "mid",
+    "difficultyBand": "foundation",
+    "format": "production-scenario",
+    "competency": "subgrid-alignment-boundary",
+    "prompt": "A two-column settings panel defines parent tracks as `minmax(12rem, 1fr) auto`. A nested `.advanced-row` spans both columns, and its label and control must align to those same tracks while retaining the parent's gap. Which CSS boundary provides that alignment?",
+    "options": [
+      {
+        "id": "choice-1fd4fbeb64",
+        "label": "Give `.advanced-row` copied column sizes and repeat the parent's gap value in its nested grid."
+      },
+      {
+        "id": "choice-38d5b0425b",
+        "label": "Make `.advanced-row` a flex container and calculate both child widths from the viewport."
+      },
+      {
+        "id": "choice-e14b885e5a",
+        "label": "Make `.advanced-row` span both tracks, display it as grid, and set `grid-template-columns: subgrid`."
+      }
+    ],
+    "estimatedSeconds": 110
+  },
+  "private": {
+    "correctOptionId": "choice-e14b885e5a",
+    "optionRationales": [
+      {
+        "optionId": "choice-1fd4fbeb64",
+        "verdict": "incorrect",
+        "explanation": "Copied values create a second track definition that can drift when the parent columns or gap change.",
+        "plausibility": "Repeating the same declarations can produce matching tracks in the panel's initial configuration.",
+        "misconceptionTag": "duplicated-tracks-share-sizing",
+        "falsifyingConstraint": "The nested row must stay aligned to the parent's resolved tracks as that parent changes."
+      },
+      {
+        "optionId": "choice-38d5b0425b",
+        "verdict": "incorrect",
+        "explanation": "Viewport-derived flex widths do not inherit the grid's locally resolved columns or its track gap.",
+        "plausibility": "Flexbox can place a label and control on one row and accept explicit child sizes.",
+        "misconceptionTag": "viewport-width-reconstructs-grid-tracks",
+        "falsifyingConstraint": "The alignment source is the parent grid's track sizing, not the viewport."
+      },
+      {
+        "optionId": "choice-e14b885e5a",
+        "verdict": "correct",
+        "explanation": "The spanning child becomes a grid whose column tracks and default gap come from the corresponding parent grid tracks.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "A column subgrid adopts the sizing of the parent tracks that the child spans. The parent's gap also passes into the subgrid by default, keeping nested controls aligned without duplicated values.",
+      "decisiveConstraints": [
+        "The nested row spans the parent's two columns.",
+        "Its children must use the parent's resolved track sizing.",
+        "The parent gap should remain the default nested spacing."
+      ],
+      "claims": [
+        {
+          "statement": "A grid item using `grid-template-columns: subgrid` adopts the column track sizing of the parent grid tracks that it spans.",
+          "sourceIds": [
+            "mdn-css-subgrid"
+          ]
+        },
+        {
+          "statement": "Gap values specified on the parent grid pass into its subgrid by default and may be overridden on the subgrid.",
+          "sourceIds": [
+            "mdn-css-subgrid"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "CSS subgrid",
+      "nested grid track alignment",
+      "grid gap inheritance"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Subgrid",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Subgrid",
+        "sourceId": "mdn-css-subgrid"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-css-subgrid",
+          "title": "MDN: Subgrid",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Subgrid",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-thenable-assimilation-order-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "thenable-assimilation-order",
+    "prompt": "Two independent request coordinators receive the same legacy SDK thenable and each calls `Promise.resolve(thenable)`. Every invocation of its `then(resolve, reject)` calls `resolve(cachedValue)`, then `reject(error)`, and finally throws another error. Which cross-instance result follows the native settlement contract?",
+    "options": [
+      {
+        "id": "choice-048e17c8ee",
+        "label": "Each call assimilates the thenable into its own native promise and fulfills with `cachedValue`; later failure attempts replace neither settlement."
+      },
+      {
+        "id": "choice-83570f82ee",
+        "label": "Each call fulfills with the shared thenable object, because `Promise.resolve` preserves non-native promise-like objects instead of invoking `then`."
+      },
+      {
+        "id": "choice-da0fe551b7",
+        "label": "The first wrapper fulfills with `cachedValue`, but the second rejects with the throw because settlement state is stored on the shared thenable."
+      }
+    ],
+    "estimatedSeconds": 155
+  },
+  "private": {
+    "correctOptionId": "choice-048e17c8ee",
+    "answerProof": {
+      "summary": "Each `Promise.resolve` call creates its own native assimilation boundary and supplies that wrapper's resolving functions. In both wrappers the fulfillment callback wins, so later rejection callbacks and caught throws cannot change either outcome.",
+      "decisiveConstraints": [
+        "Each coordinator independently uses native Promise.resolve assimilation.",
+        "The thenable invokes the fulfillment callback before any failure path.",
+        "The two returned promises have independent settlement state even though they invoke the same thenable."
+      ],
+      "claims": [
+        {
+          "statement": "Resolving a promise with a thenable saves its then method and later calls it with resolving callbacks that follow the native promise resolution behavior.",
+          "sourceIds": [
+            "mdn-promise-constructor"
+          ]
+        },
+        {
+          "statement": "After a promise's resolving function has been called, subsequent calls to either its resolve or reject function have no effect.",
+          "sourceIds": [
+            "mdn-promise-constructor"
+          ]
+        },
+        {
+          "statement": "Promise.resolve assimilates a thenable into the native promise returned by that call, so separate calls establish separate promise settlement boundaries.",
+          "sourceIds": [
+            "mdn-promise-resolve"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-048e17c8ee",
+        "verdict": "correct",
+        "explanation": "Each call invokes the thenable for a distinct native wrapper; each wrapper's fulfillment callback wins before its later failure attempts.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-83570f82ee",
+        "verdict": "incorrect",
+        "explanation": "Promise.resolve invokes a callable `then` on a non-native thenable instead of treating that object as the final fulfillment value.",
+        "plausibility": "Promise identity is preserved when Promise.resolve receives a native Promise from the same constructor, which can be overgeneralized to all promise-like objects.",
+        "misconceptionTag": "promise-resolve-ignores-foreign-thenables",
+        "falsifyingConstraint": "The adapter uses native thenable assimilation, so the SDK object's then method must be invoked."
+      },
+      {
+        "optionId": "choice-da0fe551b7",
+        "verdict": "incorrect",
+        "explanation": "Settlement belongs to each returned native promise, not to the shared thenable, and both invocations fulfill their wrapper before throwing.",
+        "plausibility": "A stateful SDK object can make repeated calls interact, so its thenable may appear to carry one shared settlement record.",
+        "misconceptionTag": "thenable-object-owns-shared-settlement-state",
+        "falsifyingConstraint": "Each coordinator receives a distinct native promise whose first fulfillment occurs before that invocation's throw."
+      }
+    ],
+    "remediationTopics": [
+      "promise-resolution-procedure",
+      "thenable-assimilation",
+      "first-settlement-wins",
+      "legacy-promise-interop"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Promise() constructor",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise",
+        "sourceId": "mdn-promise-constructor"
+      },
+      {
+        "title": "MDN: Promise.resolve()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve",
+        "sourceId": "mdn-promise-resolve"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-promise-constructor",
+          "title": "MDN: Promise() constructor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-promise-resolve",
+          "title": "MDN: Promise.resolve()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

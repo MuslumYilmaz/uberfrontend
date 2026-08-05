@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-angular-http-context-policy-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-angular-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "angular",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "conceptual",
+    "competency": "http-context-policy",
+    "prompt": "An Angular 22 caching interceptor caches ordinary GET requests. One account request must opt out, but the policy marker must stay inside the client and must not become a header sent to the server. Which design carries this per-request policy through the interceptor chain?",
+    "options": [
+      {
+        "id": "choice-0b5105809c",
+        "label": "Define a typed `HttpContextToken`, set it in that request's `HttpContext`, and read it in the caching interceptor."
+      },
+      {
+        "id": "choice-ea449f7e8d",
+        "label": "Clone that request with an `X-Skip-Cache` header, then remove the header in a response interceptor after transport."
+      },
+      {
+        "id": "choice-55c0ff9676",
+        "label": "Create a second component-level `HttpClient` configuration that omits the caching interceptor for the account screen."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-0b5105809c",
+    "optionRationales": [
+      {
+        "optionId": "choice-0b5105809c",
+        "verdict": "correct",
+        "explanation": "HttpContext is typed request metadata available to interceptors without being serialized as an HTTP header, so it expresses a local per-request cache policy.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-ea449f7e8d",
+        "verdict": "incorrect",
+        "explanation": "Removing a header after the response cannot stop that header from having already crossed the network boundary with the outgoing request.",
+        "plausibility": "Interceptors commonly clone immutable requests to add headers that later interceptors can inspect.",
+        "misconceptionTag": "response-cleanup-prevents-request-header-transport",
+        "falsifyingConstraint": "The policy marker must not be transmitted to the server."
+      },
+      {
+        "optionId": "choice-55c0ff9676",
+        "verdict": "incorrect",
+        "explanation": "A second client configuration broadens a one-request exception into an injector-level behavior split and can diverge from the shared interceptor chain.",
+        "plausibility": "A separately configured HttpClient can have a different interceptor set for consumers in its injector branch.",
+        "misconceptionTag": "per-request-policy-needs-separate-http-client",
+        "falsifyingConstraint": "Only one request needs an exception while the shared client pipeline should remain intact."
+      }
+    ],
+    "answerProof": {
+      "summary": "A typed HttpContextToken keeps cache policy attached to one Angular request for interceptor consumption without adding wire-visible request data or duplicating HttpClient configuration.",
+      "decisiveConstraints": [
+        "The cache exception applies to one request rather than an injector subtree.",
+        "The marker must remain client-only metadata.",
+        "The existing shared interceptor chain should still process the request."
+      ],
+      "claims": [
+        {
+          "statement": "Angular HttpRequest context is a typed metadata map designed for values that interceptors can read without transmitting them to the backend.",
+          "sourceIds": [
+            "angular22-http-interceptors",
+            "angular22-http-context"
+          ]
+        },
+        {
+          "statement": "A request can set an HttpContextToken value and an interceptor can branch by reading that token from the captured request.",
+          "sourceIds": [
+            "angular22-http-interceptors"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Angular HttpContext",
+      "functional interceptors",
+      "per-request client metadata"
+    ],
+    "learnMore": [
+      {
+        "title": "Angular 22: Intercepting requests and responses",
+        "url": "https://angular.dev/guide/http/interceptors",
+        "sourceId": "angular22-http-interceptors"
+      },
+      {
+        "title": "Angular 22: HttpContext API",
+        "url": "https://angular.dev/api/common/http/HttpContext",
+        "sourceId": "angular22-http-context"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "angular22-http-interceptors",
+          "title": "Angular 22: Intercepting requests and responses",
+          "url": "https://angular.dev/guide/http/interceptors",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "angular22-http-context",
+          "title": "Angular 22: HttpContext API",
+          "url": "https://angular.dev/api/common/http/HttpContext",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://angular.dev/license",
+          "retrievedAt": "2026-08-05",
+          "revision": "Angular 22 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

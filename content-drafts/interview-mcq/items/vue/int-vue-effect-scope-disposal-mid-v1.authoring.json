@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-effect-scope-disposal-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "effect-scope-disposal",
+    "prompt": "A Vue 3 composable starts a preview session containing several watchers, computed values, and one WebSocket. A component can start and stop multiple sessions without unmounting. Stopping a session must dispose its complete reactive graph and socket together. Which ownership model fits?",
+    "options": [
+      {
+        "id": "choice-b4829799e2",
+        "label": "Create an `effectScope`, build the session inside `scope.run`, register socket closure with `onScopeDispose`, and call `scope.stop`."
+      },
+      {
+        "id": "choice-c88372d309",
+        "label": "Store the latest watch stop handle, call it when the session ends, and let computed values and the socket expire independently."
+      },
+      {
+        "id": "choice-3c397d21b2",
+        "label": "Create the session effects in component setup and rely on `onUnmounted` to close every socket after the component eventually leaves."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-b4829799e2",
+    "optionRationales": [
+      {
+        "optionId": "choice-b4829799e2",
+        "verdict": "correct",
+        "explanation": "The effect scope captures every reactive effect created for one session, and its disposal callback brings the non-reactive socket into the same stop boundary.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-c88372d309",
+        "verdict": "incorrect",
+        "explanation": "Stopping one remembered watcher leaves the other session effects active and gives the socket no deterministic ownership or teardown point.",
+        "plausibility": "Each Vue watch call returns a handle that can stop that individual watcher.",
+        "misconceptionTag": "one-watch-handle-owns-entire-reactive-graph",
+        "falsifyingConstraint": "Every effect and the socket created by the session must share one disposal boundary."
+      },
+      {
+        "optionId": "choice-3c397d21b2",
+        "verdict": "incorrect",
+        "explanation": "Component unmount occurs later than a session stop, so replaced sessions continue reacting and keep their sockets open inside the still-mounted component.",
+        "plausibility": "Effects created synchronously in setup are normally stopped when their owner component unmounts.",
+        "misconceptionTag": "component-lifetime-matches-restartable-session",
+        "falsifyingConstraint": "A preview session can end while the component that launched it remains mounted."
+      }
+    ],
+    "answerProof": {
+      "summary": "An effect scope gives each restartable preview session its own reactive lifetime, while onScopeDispose attaches WebSocket cleanup to the same explicit stop operation.",
+      "decisiveConstraints": [
+        "One component can own several sequential session lifetimes.",
+        "All watchers and computed effects from an ended session must stop together.",
+        "The WebSocket requires non-reactive cleanup at the same boundary."
+      ],
+      "claims": [
+        {
+          "statement": "Vue effectScope captures computed values and watchers created inside its run callback so `scope.stop()` can dispose them together.",
+          "sourceIds": [
+            "vue3-reactivity-advanced"
+          ]
+        },
+        {
+          "statement": "Vue onScopeDispose registers a callback that runs when the current active effect scope is stopped.",
+          "sourceIds": [
+            "vue3-reactivity-advanced"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue effect scopes",
+      "onScopeDispose",
+      "restartable resource ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Reactivity API - Advanced",
+        "url": "https://vuejs.org/api/reactivity-advanced.html",
+        "sourceId": "vue3-reactivity-advanced"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-reactivity-advanced",
+          "title": "Vue 3: Reactivity API - Advanced",
+          "url": "https://vuejs.org/api/reactivity-advanced.html",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

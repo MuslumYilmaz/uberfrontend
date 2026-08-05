@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-number-finite-input-validation-jr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "foundation",
+    "format": "conceptual",
+    "competency": "number-finite-input-validation",
+    "prompt": "A validation boundary accepts a value only when it is already a JavaScript number that is neither `Infinity`, `-Infinity`, nor `NaN`. Numeric strings such as `\"42\"` must be rejected rather than coerced. Which check matches that contract?",
+    "options": [
+      {
+        "id": "choice-c1649e26b1",
+        "label": "Use `Number.isFinite(value)`, which tests finite values without converting non-number inputs."
+      },
+      {
+        "id": "choice-1339bd0e55",
+        "label": "Use global `isFinite(value)`, which converts the supplied input before checking its result."
+      },
+      {
+        "id": "choice-5927f75047",
+        "label": "Use `!Number.isNaN(value)`, which excludes numeric `NaN` while allowing other input types."
+      }
+    ],
+    "estimatedSeconds": 70
+  },
+  "private": {
+    "correctOptionId": "choice-c1649e26b1",
+    "answerProof": {
+      "summary": "Number.isFinite returns true only for finite values whose type is Number, so it rejects numeric strings as well as NaN and both infinities without a separate coercion step.",
+      "decisiveConstraints": [
+        "The accepted value must already have JavaScript's Number type.",
+        "NaN and positive or negative Infinity must be rejected.",
+        "Numeric strings must not be converted at the validation boundary."
+      ],
+      "claims": [
+        {
+          "statement": "Number.isFinite returns false for non-number values and does not first coerce them, unlike the global isFinite function.",
+          "sourceIds": [
+            "mdn-number-isfinite"
+          ]
+        },
+        {
+          "statement": "Number.isNaN returns true only when its argument is the Number value NaN, so negating it does not establish that another value is a finite number.",
+          "sourceIds": [
+            "mdn-number-isnan"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-c1649e26b1",
+        "verdict": "correct",
+        "explanation": "This check enforces both the Number-type requirement and the finite-value requirement without coercion.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-1339bd0e55",
+        "verdict": "incorrect",
+        "explanation": "The global function coerces its argument, so a numeric string can pass even though the boundary requires an existing number.",
+        "plausibility": "Its name directly describes the desired finite-number check and it rejects NaN and infinities.",
+        "misconceptionTag": "global-isfinite-does-not-coerce",
+        "falsifyingConstraint": "The string \"42\" must remain a string and be rejected."
+      },
+      {
+        "optionId": "choice-5927f75047",
+        "verdict": "incorrect",
+        "explanation": "Negating Number.isNaN accepts strings, objects, and infinities because those values are not the Number value NaN.",
+        "plausibility": "NaN is a prominent invalid numeric result, so excluding it can look equivalent to validating a usable number.",
+        "misconceptionTag": "not-nan-means-finite-number",
+        "falsifyingConstraint": "Every accepted value must be a finite Number, not merely a value other than NaN."
+      }
+    ],
+    "remediationTopics": [
+      "number-isfinite",
+      "number-isnan",
+      "numeric-coercion",
+      "input-validation"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Number.isFinite()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite",
+        "sourceId": "mdn-number-isfinite"
+      },
+      {
+        "title": "MDN: Number.isNaN()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN",
+        "sourceId": "mdn-number-isnan"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-number-isfinite",
+          "title": "MDN: Number.isFinite()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-number-isnan",
+          "title": "MDN: Number.isNaN()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-page-snapshot-2026-08-05",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

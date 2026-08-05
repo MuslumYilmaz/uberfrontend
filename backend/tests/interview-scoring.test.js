@@ -1,5 +1,11 @@
 'use strict';
 
+const path = require('path');
+
+const {
+  loadInterviewArtifacts,
+  resetInterviewArtifactsCache,
+} = require('../services/interview/artifacts');
 const { buildResultSnapshot } = require('../services/interview/scoring');
 
 function scoringFixture(overrides = {}) {
@@ -66,6 +72,78 @@ function scoringFixture(overrides = {}) {
 }
 
 describe('Interview result remediation', () => {
+  test('scores an opaque answer from the staged 170-question candidate', () => {
+    const original = {
+      nodeEnv: process.env.NODE_ENV,
+      allowCandidate: process.env.INTERVIEW_ALLOW_CANDIDATE_BANK,
+      publicPath: process.env.INTERVIEW_BANK_PUBLIC_PATH,
+      privatePath: process.env.INTERVIEW_BANK_PRIVATE_PATH,
+      releasePath: process.env.INTERVIEW_BANK_RELEASE_PATH,
+    };
+    const candidateRoot = path.resolve(
+      __dirname,
+      '../../content-drafts/interview-mcq/generated/candidate-1.2.0'
+    );
+    try {
+      process.env.NODE_ENV = 'test';
+      process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+      process.env.INTERVIEW_BANK_PUBLIC_PATH = path.join(
+        candidateRoot,
+        'frontend-interview-bank-v1.public.json'
+      );
+      process.env.INTERVIEW_BANK_PRIVATE_PATH = path.join(
+        candidateRoot,
+        'frontend-interview-bank-v1.private.json'
+      );
+      process.env.INTERVIEW_BANK_RELEASE_PATH = path.join(
+        candidateRoot,
+        'frontend-interview-bank-v1.release.json'
+      );
+      resetInterviewArtifactsCache();
+
+      const artifacts = loadInterviewArtifacts({ force: true });
+      const question = artifacts.bank.questions.find(
+        (entry) => entry.id === 'int-js-number-finite-input-validation-jr-v1'
+      );
+      const answer = artifacts.bank.answerByKey.get(
+        `${question.id}@${question.revision}`
+      );
+      const results = buildResultSnapshot(scoringFixture({
+        questions: [question],
+        answerKey: [{ id: question.id, ...answer }],
+        mcqResponses: [{
+          questionId: question.id,
+          selectedOptionId: answer.correctOptionId,
+          answeredAt: new Date('2026-08-05T12:00:30.000Z'),
+        }],
+      }), { finalizedAt: new Date('2026-08-05T12:01:00.000Z') });
+
+      expect(artifacts.bank.version).toBe('1.2.0');
+      expect(results.mcq).toEqual(expect.objectContaining({
+        total: 1,
+        correct: 1,
+        incorrect: 0,
+        unanswered: 0,
+      }));
+      expect(results.mcq.questions[0]).toEqual(expect.objectContaining({
+        id: question.id,
+        selectedOptionId: answer.correctOptionId,
+        outcome: 'correct',
+      }));
+    } finally {
+      const restore = (name, value) => {
+        if (value == null) delete process.env[name];
+        else process.env[name] = value;
+      };
+      restore('NODE_ENV', original.nodeEnv);
+      restore('INTERVIEW_ALLOW_CANDIDATE_BANK', original.allowCandidate);
+      restore('INTERVIEW_BANK_PUBLIC_PATH', original.publicPath);
+      restore('INTERVIEW_BANK_PRIVATE_PATH', original.privatePath);
+      restore('INTERVIEW_BANK_RELEASE_PATH', original.releasePath);
+      resetInterviewArtifactsCache();
+    }
+  });
+
   test('does not recommend coding topics when coding was never evaluated', () => {
     const results = buildResultSnapshot(scoringFixture(), {
       finalizedAt: new Date('2026-07-27T12:02:00.000Z'),

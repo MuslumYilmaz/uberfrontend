@@ -275,7 +275,7 @@
         "frameworkQuestionsPerSession",
         "coreTechnologies",
         "frameworkTechnologies",
-        "eligiblePoolPerLevel"
+        "eligiblePoolByLevelAndTrack"
       ],
       "properties": {
         "sessionQuestionCount": {
@@ -313,25 +313,49 @@
             ]
           }
         },
-        "eligiblePoolPerLevel": {
+        "eligiblePoolByLevelAndTrack": {
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "core",
-            "selectedFramework",
-            "total"
+            "junior",
+            "mid",
+            "senior"
           ],
           "properties": {
-            "core": {
-              "const": 16
+            "junior": {
+              "$ref": "#/$defs/trackPoolQuota"
             },
-            "selectedFramework": {
-              "const": 8
+            "mid": {
+              "$ref": "#/$defs/trackPoolQuota"
             },
-            "total": {
-              "const": 24
+            "senior": {
+              "$ref": "#/$defs/trackPoolQuota"
             }
           }
+        }
+      }
+    },
+    "trackPoolQuota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "core-web",
+        "react",
+        "angular",
+        "vue"
+      ],
+      "properties": {
+        "core-web": {
+          "$ref": "#/$defs/quota"
+        },
+        "react": {
+          "$ref": "#/$defs/quota"
+        },
+        "angular": {
+          "$ref": "#/$defs/quota"
+        },
+        "vue": {
+          "$ref": "#/$defs/quota"
         }
       }
     },

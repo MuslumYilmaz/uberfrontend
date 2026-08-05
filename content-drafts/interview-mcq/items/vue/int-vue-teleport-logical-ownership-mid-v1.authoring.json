@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-vue-teleport-logical-ownership-mid-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-vue-expansion-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "vue",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "teleport-logical-ownership",
+    "prompt": "A Vue 3 dialog is authored under a feature component but teleported into an existing `#overlays` element near `body`. The dialog must still inject the feature's theme and emit `close` to its direct component parent. How should those relationships be wired?",
+    "options": [
+      {
+        "id": "choice-898e6fe4e3",
+        "label": "Provide the theme again from the root app and dispatch a bubbling DOM `CustomEvent` from the teleported dialog."
+      },
+      {
+        "id": "choice-34a82fe9e0",
+        "label": "Mount a second Vue app on `#overlays`, pass the theme through its root props, and bridge close through a shared store."
+      },
+      {
+        "id": "choice-aef279ab76",
+        "label": "Keep the dialog inside the feature's Teleport; use the existing injection and component emit relationships unchanged."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-aef279ab76",
+    "optionRationales": [
+      {
+        "optionId": "choice-898e6fe4e3",
+        "verdict": "incorrect",
+        "explanation": "Re-providing at the app root broadens feature-owned state, and a DOM event replaces a component relationship that Teleport already preserves.",
+        "plausibility": "The rendered dialog sits near body, where DOM bubbling and app-level providers are both reachable.",
+        "misconceptionTag": "teleported-dom-location-defines-component-parent",
+        "falsifyingConstraint": "The dialog remains logically owned by the feature that declared the Teleport."
+      },
+      {
+        "optionId": "choice-34a82fe9e0",
+        "verdict": "incorrect",
+        "explanation": "A second application creates a separate component and provide/inject scope, forcing synchronization that is unnecessary for a Teleport target.",
+        "plausibility": "Vue supports multiple application instances mounted to different page regions.",
+        "misconceptionTag": "teleport-target-requires-separate-vue-app",
+        "falsifyingConstraint": "The overlay should retain the original feature component's ownership and communication graph."
+      },
+      {
+        "optionId": "choice-aef279ab76",
+        "verdict": "correct",
+        "explanation": "Teleport changes rendered DOM placement only; the dialog stays a logical child, so injection and component event delivery keep their original paths.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "Vue Teleport relocates DOM nodes without reparenting the component tree, so the teleported dialog retains its feature-owned injection and direct component event relationships.",
+      "decisiveConstraints": [
+        "The overlay target already exists when the Teleport mounts.",
+        "Theme ownership belongs to the declaring feature component chain.",
+        "Close remains a direct child-to-parent component event."
+      ],
+      "claims": [
+        {
+          "statement": "Vue Teleport changes rendered DOM structure without changing the logical component hierarchy.",
+          "sourceIds": [
+            "vue3-teleport"
+          ]
+        },
+        {
+          "statement": "Components inside a Teleport retain normal props, emits, and ancestor injections despite their relocated DOM nodes.",
+          "sourceIds": [
+            "vue3-teleport"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "Vue Teleport",
+      "logical versus DOM hierarchy",
+      "provide and inject ownership"
+    ],
+    "learnMore": [
+      {
+        "title": "Vue 3: Teleport",
+        "url": "https://vuejs.org/guide/built-ins/teleport",
+        "sourceId": "vue3-teleport"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "vue3-teleport",
+          "title": "Vue 3: Teleport",
+          "url": "https://vuejs.org/guide/built-ins/teleport",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-4.0",
+          "licenseUrl": "https://github.com/vuejs/docs/blob/main/LICENSE",
+          "retrievedAt": "2026-08-05",
+          "revision": "Vue 3 documentation",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

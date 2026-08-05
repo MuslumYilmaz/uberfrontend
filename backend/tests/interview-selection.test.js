@@ -13,6 +13,7 @@ const {
   '../services/interview/artifacts'
 );
 const {
+  TRACK_TECH_COUNTS,
   bandProfileFor,
   buildSystemDesignPresentationOrder,
   deterministicShuffle,
@@ -21,6 +22,39 @@ const {
   selectQuestions,
   selectSystemDesignScenario,
 } = require('../services/interview/selection');
+
+function bruteCombinations(values, count, start = 0, prefix = [], out = []) {
+  if (prefix.length === count) {
+    out.push(prefix);
+    return out;
+  }
+  for (let index = start; index <= values.length - (count - prefix.length); index += 1) {
+    bruteCombinations(values, count, index + 1, [...prefix, values[index]], out);
+  }
+  return out;
+}
+
+function exactCountsFor(rows, field, expected) {
+  return Object.keys(expected).every(
+    (key) => rows.filter((row) => row[field] === key).length === expected[key]
+  ) && rows.every((row) => Object.hasOwn(expected, row[field]));
+}
+
+function bruteEligibleQuestionForms({ questions, track, level }) {
+  const expectedTech = TRACK_TECH_COUNTS[track];
+  const expectedBands = bandProfileFor(track, level);
+  return bruteCombinations(
+    questions.filter(
+      (question) => question.level === level && Object.hasOwn(expectedTech, question.technology)
+    ),
+    5
+  ).filter((combo) =>
+    exactCountsFor(combo, 'technology', expectedTech)
+    && exactCountsFor(combo, 'difficultyBand', expectedBands)
+    && combo.some((item) => item.format === 'production-scenario')
+    && combo.filter((item) => item.format === 'code-output').length <= 1
+  );
+}
 
 function countsBy(rows, field) {
   return rows.reduce((counts, row) => {
@@ -110,7 +144,7 @@ describe('interview form selection', () => {
     const questions = loadAuthoringQuestions();
     const reachableIds = new Set();
 
-    expect(questions).toHaveLength(120);
+    expect(questions).toHaveLength(170);
     for (const level of ['junior', 'mid', 'senior']) {
       for (const track of ['core-web', 'react', 'angular', 'vue']) {
         const forms = eligibleQuestionForms({ questions, track, level });
@@ -125,11 +159,24 @@ describe('interview form selection', () => {
       .toEqual([]);
   });
 
+  test('optimized form enumeration matches the brute-force contract for the 170-item bank', () => {
+    const questions = loadAuthoringQuestions();
+    for (const level of ['junior', 'mid', 'senior']) {
+      for (const track of ['core-web', 'react', 'angular', 'vue']) {
+        const signature = (forms) => forms.map(
+          (form) => form.map((question) => question.id).join('|')
+        );
+        expect(signature(eligibleQuestionForms({ questions, track, level })))
+          .toEqual(signature(bruteEligibleQuestionForms({ questions, track, level })));
+      }
+    }
+  });
+
   test('prioritizes newly added unseen questions when they can form a valid interview', () => {
     const candidateQuestions = loadAuthoringQuestions();
     const expansionIds = new Set(
       candidateQuestions
-        .filter((question) => question.authoredAt === '2026-07-29')
+        .filter((question) => question.authoredAt === '2026-08-05')
         .map((question) => question.id)
     );
     const priorCorpusIds = candidateQuestions
@@ -149,8 +196,62 @@ describe('interview form selection', () => {
     });
 
     expect(selected).toHaveLength(5);
-    expect(expansionIds.size).toBe(60);
+    expect(expansionIds.size).toBe(50);
     expect(selected.every((question) => expansionIds.has(question.id))).toBe(true);
+  });
+
+  test('prefers the minimum-seen valid MCQ form before applying seeded ties', () => {
+    const questions = loadAuthoringQuestions();
+    const target = eligibleQuestionForms({
+      questions,
+      track: 'react',
+      level: 'mid',
+    })[0];
+    const targetIds = new Set(target.map((question) => question.id));
+    const seenCounts = new Map(questions.map((question) => [
+      question.id,
+      {
+        count: targetIds.has(question.id) ? 1 : 4,
+        lastSeenAt: '2026-08-01T12:00:00.000Z',
+      },
+    ]));
+
+    const selected = selectQuestions({
+      questions,
+      track: 'react',
+      level: 'mid',
+      seed: 'candidate-minimum-seen',
+      seenCounts,
+    });
+    expect(new Set(selected.map((question) => question.id))).toEqual(targetIds);
+  });
+
+  test('prefers the oldest-seen valid MCQ form when seen counts are equal', () => {
+    const questions = loadAuthoringQuestions();
+    const target = eligibleQuestionForms({
+      questions,
+      track: 'vue',
+      level: 'senior',
+    })[0];
+    const targetIds = new Set(target.map((question) => question.id));
+    const seenCounts = new Map(questions.map((question) => [
+      question.id,
+      {
+        count: 2,
+        lastSeenAt: targetIds.has(question.id)
+          ? '2026-05-01T12:00:00.000Z'
+          : '2026-08-01T12:00:00.000Z',
+      },
+    ]));
+
+    const selected = selectQuestions({
+      questions,
+      track: 'vue',
+      level: 'senior',
+      seed: 'candidate-oldest-seen',
+      seenCounts,
+    });
+    expect(new Set(selected.map((question) => question.id))).toEqual(targetIds);
   });
 
   test('the 60-question expansion rotates source answer positions per technology', () => {
@@ -173,6 +274,22 @@ describe('interview form selection', () => {
     }
 
     expect(positionCounts).toEqual([20, 20, 20]);
+  });
+
+  test('the 50-question candidate expansion preserves the approved source-position quotas', () => {
+    const expansion = loadAuthoringQuestions()
+      .filter((question) => question.authoredAt === '2026-08-05');
+    const positionCounts = [0, 0, 0];
+
+    expect(expansion).toHaveLength(50);
+    for (const question of expansion) {
+      const position = question.options.findIndex(
+        (option) => option.id === question.correctOptionId
+      );
+      positionCounts[position] += 1;
+    }
+
+    expect(positionCounts).toEqual([17, 17, 16]);
   });
 
   test('same seed is stable while option ids remain tied to their labels', () => {
@@ -275,12 +392,13 @@ describe('interview form selection', () => {
     }
   });
 
-  test('rotates the two Mid System Design scenarios by least-seen and deterministic ties', () => {
+  test('rotates the three Mid System Design scenarios by least-seen and deterministic ties', () => {
     const registry = loadSystemDesignArtifacts({ force: true });
     const midScenarios = registry.scenarios.filter((scenario) => scenario.level === 'mid');
     expect(midScenarios.map((scenario) => scenario.id).sort()).toEqual([
       'int-sd-ai-chat-composer-mid-v1',
       'int-sd-autocomplete-race-mid-v1',
+      'int-sd-live-chart-pipeline-mid-v1',
     ]);
 
     const newlyUnseen = selectSystemDesignScenario({
@@ -292,9 +410,34 @@ describe('interview form selection', () => {
           count: 1,
           lastSeenAt: '2026-07-28T12:00:00.000Z',
         }],
+        ['int-sd-ai-chat-composer-mid-v1', {
+          count: 1,
+          lastSeenAt: '2026-07-29T12:00:00.000Z',
+        }],
       ]),
     });
-    expect(newlyUnseen.id).toBe('int-sd-ai-chat-composer-mid-v1');
+    expect(newlyUnseen.id).toBe('int-sd-live-chart-pipeline-mid-v1');
+
+    const leastSeen = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'mid',
+      seed: 'design:mid:least-seen',
+      seenCounts: new Map([
+        ['int-sd-ai-chat-composer-mid-v1', {
+          count: 4,
+          lastSeenAt: '2026-05-01T00:00:00.000Z',
+        }],
+        ['int-sd-autocomplete-race-mid-v1', {
+          count: 2,
+          lastSeenAt: '2026-07-25T00:00:00.000Z',
+        }],
+        ['int-sd-live-chart-pipeline-mid-v1', {
+          count: 3,
+          lastSeenAt: '2026-04-01T00:00:00.000Z',
+        }],
+      ]),
+    });
+    expect(leastSeen.id).toBe('int-sd-autocomplete-race-mid-v1');
 
     const oldestSeen = selectSystemDesignScenario({
       scenarios: registry.scenarios,
@@ -308,6 +451,10 @@ describe('interview form selection', () => {
         ['int-sd-autocomplete-race-mid-v1', {
           count: 2,
           lastSeenAt: '2026-07-25T00:00:00.000Z',
+        }],
+        ['int-sd-live-chart-pipeline-mid-v1', {
+          count: 2,
+          lastSeenAt: '2026-06-15T00:00:00.000Z',
         }],
       ]),
     });
@@ -323,6 +470,7 @@ describe('interview form selection', () => {
     expect(new Set(tieSelections)).toEqual(new Set([
       'int-sd-ai-chat-composer-mid-v1',
       'int-sd-autocomplete-race-mid-v1',
+      'int-sd-live-chart-pipeline-mid-v1',
     ]));
     expect(selectSystemDesignScenario({
       scenarios: registry.scenarios,
@@ -332,6 +480,130 @@ describe('interview form selection', () => {
       scenarios: registry.scenarios,
       level: 'mid',
       seed: 'design:mid:stable-tie',
+    }).id);
+  });
+
+  test('rotates the two Junior System Design scenarios by least-seen and deterministic ties', () => {
+    const registry = loadSystemDesignArtifacts({ force: true });
+    const juniorScenarios = registry.scenarios.filter(
+      (scenario) => scenario.level === 'junior'
+    );
+    expect(juniorScenarios.map((scenario) => scenario.id).sort()).toEqual([
+      'int-sd-image-upload-lifecycle-jr-v1',
+      'int-sd-toast-lifecycle-jr-v1',
+    ]);
+
+    const newlyUnseen = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'junior',
+      seed: 'design:junior:newly-unseen',
+      seenCounts: new Map([
+        ['int-sd-toast-lifecycle-jr-v1', {
+          count: 1,
+          lastSeenAt: '2026-07-28T12:00:00.000Z',
+        }],
+      ]),
+    });
+    expect(newlyUnseen.id).toBe('int-sd-image-upload-lifecycle-jr-v1');
+
+    const oldestSeen = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'junior',
+      seed: 'design:junior:oldest-seen',
+      seenCounts: new Map([
+        ['int-sd-image-upload-lifecycle-jr-v1', {
+          count: 2,
+          lastSeenAt: '2026-05-01T00:00:00.000Z',
+        }],
+        ['int-sd-toast-lifecycle-jr-v1', {
+          count: 2,
+          lastSeenAt: '2026-07-25T00:00:00.000Z',
+        }],
+      ]),
+    });
+    expect(oldestSeen.id).toBe('int-sd-image-upload-lifecycle-jr-v1');
+
+    const tieSelections = Array.from({ length: 32 }, (_, index) =>
+      selectSystemDesignScenario({
+        scenarios: registry.scenarios,
+        level: 'junior',
+        seed: `design:junior:tie:${index}`,
+      }).id
+    );
+    expect(new Set(tieSelections)).toEqual(new Set([
+      'int-sd-image-upload-lifecycle-jr-v1',
+      'int-sd-toast-lifecycle-jr-v1',
+    ]));
+    expect(selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'junior',
+      seed: 'design:junior:stable-tie',
+    }).id).toBe(selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'junior',
+      seed: 'design:junior:stable-tie',
+    }).id);
+  });
+
+  test('rotates the two Senior System Design scenarios by least-seen and deterministic ties', () => {
+    const registry = loadSystemDesignArtifacts({ force: true });
+    const seniorScenarios = registry.scenarios.filter(
+      (scenario) => scenario.level === 'senior'
+    );
+    expect(seniorScenarios.map((scenario) => scenario.id).sort()).toEqual([
+      'int-sd-dashboard-layout-sr-v1',
+      'int-sd-ranked-feed-sr-v1',
+    ]);
+
+    const newlyUnseen = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'senior',
+      seed: 'design:senior:newly-unseen',
+      seenCounts: new Map([
+        ['int-sd-ranked-feed-sr-v1', {
+          count: 1,
+          lastSeenAt: '2026-07-28T12:00:00.000Z',
+        }],
+      ]),
+    });
+    expect(newlyUnseen.id).toBe('int-sd-dashboard-layout-sr-v1');
+
+    const oldestSeen = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'senior',
+      seed: 'design:senior:oldest-seen',
+      seenCounts: new Map([
+        ['int-sd-dashboard-layout-sr-v1', {
+          count: 2,
+          lastSeenAt: '2026-05-01T00:00:00.000Z',
+        }],
+        ['int-sd-ranked-feed-sr-v1', {
+          count: 2,
+          lastSeenAt: '2026-07-25T00:00:00.000Z',
+        }],
+      ]),
+    });
+    expect(oldestSeen.id).toBe('int-sd-dashboard-layout-sr-v1');
+
+    const tieSelections = Array.from({ length: 32 }, (_, index) =>
+      selectSystemDesignScenario({
+        scenarios: registry.scenarios,
+        level: 'senior',
+        seed: `design:senior:tie:${index}`,
+      }).id
+    );
+    expect(new Set(tieSelections)).toEqual(new Set([
+      'int-sd-dashboard-layout-sr-v1',
+      'int-sd-ranked-feed-sr-v1',
+    ]));
+    expect(selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'senior',
+      seed: 'design:senior:stable-tie',
+    }).id).toBe(selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      level: 'senior',
+      seed: 'design:senior:stable-tie',
     }).id);
   });
 

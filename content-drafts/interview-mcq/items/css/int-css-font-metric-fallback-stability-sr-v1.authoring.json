@@ -1,0 +1,168 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-css-font-metric-fallback-stability-sr-v1",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-05"
+  },
+  "public": {
+    "technology": "css",
+    "level": "senior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "font-metric-fallback-stability",
+    "prompt": "A global UI serves a brand web font, but first paint uses a system fallback. When the brand font loads, line boxes and card heights shift even though text sizes look similar. The fallback and final faces have measured metric differences across scripts. Which `@font-face` policy most directly stabilizes the swap without delaying all text?",
+    "options": [
+      {
+        "id": "choice-d0425874e9",
+        "label": "Preload every brand file and keep `font-display: block` so fallback text stays hidden until each file arrives."
+      },
+      {
+        "id": "choice-ff4c3cde5d",
+        "label": "Apply one `transform: scale()` to text containers and reserve fixed heights from the default locale."
+      },
+      {
+        "id": "choice-08e68dcdab",
+        "label": "Define an adjusted fallback face with `size-adjust` plus ascent, descent, and line-gap metric overrides."
+      }
+    ],
+    "estimatedSeconds": 155
+  },
+  "private": {
+    "correctOptionId": "choice-08e68dcdab",
+    "optionRationales": [
+      {
+        "optionId": "choice-d0425874e9",
+        "verdict": "incorrect",
+        "explanation": "Blocking fallback visibility trades the measured shift for invisible text and does not align fallback metrics across scripts.",
+        "plausibility": "Preloading can reduce the interval during which a fallback face is displayed before the brand font arrives.",
+        "misconceptionTag": "font-preload-corrects-fallback-metrics",
+        "falsifyingConstraint": "The policy must stabilize fallback geometry without delaying all readable text."
+      },
+      {
+        "optionId": "choice-ff4c3cde5d",
+        "verdict": "incorrect",
+        "explanation": "A visual transform does not make the fallback font's glyph advances and vertical metrics match the final face.",
+        "plausibility": "Scaling a container can make one sampled line appear close to the intended visual size.",
+        "misconceptionTag": "container-transform-aligns-font-metrics",
+        "falsifyingConstraint": "Line boxes must remain stable across different strings and writing scripts."
+      },
+      {
+        "optionId": "choice-08e68dcdab",
+        "verdict": "correct",
+        "explanation": "The fallback face can be calibrated to the brand face's horizontal scale and vertical line metrics before the swap occurs.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "answerProof": {
+      "summary": "An adjusted local fallback can approximate the brand face's glyph scale and line metrics. Applying size and metric overrides at the font-face boundary reduces geometry changes while text remains available during loading.",
+      "decisiveConstraints": [
+        "Fallback text must remain readable during font loading.",
+        "The shift comes from measured differences between two font faces.",
+        "Both horizontal glyph scale and vertical line metrics affect layout."
+      ],
+      "claims": [
+        {
+          "statement": "The `size-adjust` descriptor scales glyph outlines and the metrics associated with a font face and can help a fallback match a primary web font.",
+          "sourceIds": [
+            "mdn-font-size-adjust-descriptor"
+          ]
+        },
+        {
+          "statement": "Font-face metric override descriptors can replace the ascent, descent, and line gap used for layout calculations.",
+          "sourceIds": [
+            "mdn-font-ascent-override",
+            "mdn-font-descent-override",
+            "mdn-font-line-gap-override"
+          ]
+        }
+      ]
+    },
+    "remediationTopics": [
+      "font metric overrides",
+      "fallback font calibration",
+      "web font layout stability"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: size-adjust descriptor",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/size-adjust",
+        "sourceId": "mdn-font-size-adjust-descriptor"
+      },
+      {
+        "title": "MDN: ascent-override descriptor",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/ascent-override",
+        "sourceId": "mdn-font-ascent-override"
+      },
+      {
+        "title": "MDN: descent-override descriptor",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/descent-override",
+        "sourceId": "mdn-font-descent-override"
+      },
+      {
+        "title": "MDN: line-gap-override descriptor",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/line-gap-override",
+        "sourceId": "mdn-font-line-gap-override"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-font-size-adjust-descriptor",
+          "title": "MDN: size-adjust descriptor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/size-adjust",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-font-ascent-override",
+          "title": "MDN: ascent-override descriptor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/ascent-override",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-font-descent-override",
+          "title": "MDN: descent-override descriptor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/descent-override",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-font-line-gap-override",
+          "title": "MDN: line-gap-override descriptor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/line-gap-override",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-05",
+          "revision": "mdn-content@4b63d71105e55a4d488b8f8bf8b338d42577a0e6",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}
