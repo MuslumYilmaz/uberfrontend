@@ -858,7 +858,7 @@ export class ProfileComponent implements OnInit {
 
   linkProvider(provider: 'google' | 'github'): void {
     if (this.isProviderLinked(provider)) return;
-    this.auth.oauthStart(provider, 'link', '/profile?tab=security');
+    this.auth.oauthStart(provider, 'link', '/profile?tab=security', 'profile_security');
   }
 
   formatTech(t: string): string {

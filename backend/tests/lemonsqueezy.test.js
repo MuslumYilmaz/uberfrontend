@@ -104,6 +104,60 @@ describe('lemonsqueezy event normalization', () => {
     expect(out.entitlement.validUntil).toBeNull();
   });
 
+  test('verifies paid order currency and cent-based totals', () => {
+    const body = {
+      meta: { event_name: 'order_created' },
+      data: {
+        id: 'order_verified',
+        attributes: {
+          user_email: 'user@example.com',
+          status: 'paid',
+          currency: 'usd',
+          subtotal: 2900,
+          discount_total: 500,
+          tax: 480,
+          total: 2880,
+          product_name: 'FrontendAtlas Premium',
+          variant_name: 'Quarterly',
+        },
+      },
+    };
+
+    const out = normalizeLemonSqueezyEvent(body, JSON.stringify(body));
+
+    expect(out.orderPayment).toEqual({
+      status: 'paid',
+      currency: 'USD',
+      subtotalCents: 2900,
+      discountCents: 500,
+      taxCents: 480,
+      totalCents: 2880,
+      verified: true,
+    });
+  });
+
+  test.each([
+    ['failed status', { status: 'failed', currency: 'USD', subtotal: 1200, discount_total: 0, tax: 240, total: 1440 }],
+    ['negative amount', { status: 'paid', currency: 'USD', subtotal: 1200, discount_total: -1, tax: 240, total: 1440 }],
+    ['inconsistent total', { status: 'paid', currency: 'USD', subtotal: 1200, discount_total: 0, tax: 240, total: 9999 }],
+    ['invalid currency', { status: 'paid', currency: 'US', subtotal: 1200, discount_total: 0, tax: 240, total: 1440 }],
+  ])('rejects order payment verification for %s', (_label, attributes) => {
+    const body = {
+      meta: { event_name: 'order_created' },
+      data: {
+        id: 'order_invalid',
+        attributes: {
+          user_email: 'user@example.com',
+          product_name: 'FrontendAtlas Premium',
+          variant_name: 'Monthly',
+          ...attributes,
+        },
+      },
+    };
+
+    expect(normalizeLemonSqueezyEvent(body, JSON.stringify(body)).orderPayment.verified).toBe(false);
+  });
+
   test('applies lifetime order created events as lifetime entitlements', () => {
     const body = {
       meta: { event_name: 'order_created' },

@@ -940,9 +940,11 @@
 </fa-dialog>
 
 <app-login-required-dialog [(visible)]="loginPromptOpen"
+  [context]="loginPromptContext"
   [title]="loginPromptTitle"
   [body]="loginPromptBody"
-  [ctaLabel]="loginPromptCta"
+  [signupLabel]="loginPromptSignupLabel"
+  [loginLabel]="loginPromptLoginLabel"
   [redirectTo]="router.url">
 </app-login-required-dialog>
 

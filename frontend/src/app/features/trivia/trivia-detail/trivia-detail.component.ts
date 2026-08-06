@@ -641,10 +641,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   lifecyclePromptMilestone: LifecycleMilestoneId | null = null;
   lifecyclePromptSolvedTotal = 0;
   private lifecyclePromptQuestionId: string | null = null;
-  loginPromptTitle = 'Sign in to save progress';
-  loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
-  loginPromptCta = 'Go to login';
-  private signupPromptVariant: 'control' | 'benefit' = 'control';
+  loginPromptTitle = 'Save this answer and keep momentum';
+  loginPromptBody = 'Create a free account to keep solved progress and continue with personalized next steps. Already have an account? Sign in.';
+  loginPromptSignupLabel = 'Create free account';
+  loginPromptLoginLabel = 'Sign in';
   private premiumGateVariant: 'control' | 'value' = 'control';
   lockedPersonalizationLine = '';
   lockedPaths: LockedPath[] = [];
@@ -1014,9 +1014,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    this.signupPromptVariant = this.experiments.variant('signup_prompt_copy_v1', 'trivia_detail');
     this.premiumGateVariant = this.experiments.variant('premium_gate_copy_v1', 'trivia_detail');
-    this.applySignupPromptCopy();
 
     this.hydrateState();
 
@@ -2679,18 +2677,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private async applyCompletionState(q: Question) {
     if (!this.auth.isLoggedIn()) {
-      this.experiments.expose(
-        'signup_prompt_copy_v1',
-        this.signupPromptVariant,
-        'trivia_mark_complete_prompt',
-        'trivia_detail',
-      );
-      this.analytics.track('signup_prompt_shown', {
-        context: 'trivia_mark_complete',
-        question_id: q.id,
-        tech: this.tech,
-        variant: this.signupPromptVariant,
-      });
       this.onboarding.markPending('save_prompt');
       this.loginPromptOpen = true;
       return;
@@ -2737,7 +2723,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   goToLogin() {
     this.loginPromptOpen = false;
     this.router.navigate(['/auth/login'], {
-      queryParams: { redirectTo: this.router.url || '/' },
+      queryParams: { redirectTo: this.router.url || '/', src: 'trivia_complete' },
     });
   }
 
@@ -2852,19 +2838,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       framework: profile?.framework ?? null,
       timeline: profile?.timeline ?? null,
     });
-  }
-
-  private applySignupPromptCopy() {
-    if (this.signupPromptVariant === 'benefit') {
-      this.loginPromptTitle = 'Save this streak and keep momentum';
-      this.loginPromptBody = 'Create a free account to keep solved progress and continue with personalized next steps.';
-      this.loginPromptCta = 'Save progress free';
-      return;
-    }
-
-    this.loginPromptTitle = 'Sign in to save progress';
-    this.loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
-    this.loginPromptCta = 'Go to login';
   }
 
   private personalizedMemberCopy(variant: 'control' | 'value'): string {

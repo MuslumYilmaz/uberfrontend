@@ -424,7 +424,7 @@ export class DashboardComponent {
   openManageProgress(): void {
     if (!this.authService.isLoggedIn()) return;
     this.isManageProgressOpen.set(true);
-    this.analytics.track('progress_manage_opened', { source: 'dashboard' });
+    this.analytics.track('progress_manage_opened', { surface: 'dashboard' });
   }
 
   closeManageProgress(): void {
@@ -473,11 +473,11 @@ export class DashboardComponent {
           }
           if ((res.xpAwarded || 0) > 0) {
             this.analytics.track('xp_awarded', {
-              source: 'daily_challenge',
+              reward_source: 'daily_challenge',
               xp: res.xpAwarded,
             });
           }
-          if (res.levelUp) this.analytics.track('level_up', { source: 'daily_challenge' });
+          if (res.levelUp) this.analytics.track('level_up', { reward_source: 'daily_challenge' });
           this.loadGamification(true, { preserveDailyCompleteFeedback: true });
         },
         error: (err) => {
@@ -606,7 +606,7 @@ export class DashboardComponent {
       this.analytics.track('prep_coverage_gap_selected', {
         gap_id: gap.id,
         kind: gap.kind,
-        source: gap.source || 'catalog',
+        gap_source: gap.source || 'catalog',
         goal_tech: this.prepGoalTech(),
         goal_level: this.prepGoalLevel(),
       });

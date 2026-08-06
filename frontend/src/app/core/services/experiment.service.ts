@@ -4,14 +4,12 @@ import { AuthService } from './auth.service';
 
 export type ExperimentId =
   | 'hero_headline_cta_v1'
-  | 'signup_prompt_copy_v1'
   | 'premium_gate_copy_v1'
   | 'assist_intervention_timing_v1'
   | 'assist_hint_density_v1';
 
 export type ExperimentVariantMap = {
   hero_headline_cta_v1: 'control' | 'outcome';
-  signup_prompt_copy_v1: 'control' | 'benefit';
   premium_gate_copy_v1: 'control' | 'value';
   assist_intervention_timing_v1: 'early_l1' | 'late_l2';
   assist_hint_density_v1: 'full' | 'compact';
@@ -27,10 +25,6 @@ const DEFINITIONS: {
 } = {
   hero_headline_cta_v1: {
     variants: ['control', 'outcome'],
-    weights: [50, 50],
-  },
-  signup_prompt_copy_v1: {
-    variants: ['control', 'benefit'],
     weights: [50, 50],
   },
   premium_gate_copy_v1: {

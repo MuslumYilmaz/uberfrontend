@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
@@ -34,14 +34,6 @@ describe('PricingComponent', () => {
           provide: AnalyticsService,
           useValue: analyticsStub,
         },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              queryParamMap: convertToParamMap({ src: 'pricing_test' }),
-            },
-          },
-        },
       ],
     }).compileComponents();
   });
@@ -58,7 +50,7 @@ describe('PricingComponent', () => {
     expect(component.paymentsEnabled).toBeFalse();
     expect(component.checkoutAvailability).toBeNull();
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_viewed', jasmine.objectContaining({
-      src: 'pricing_test',
+      src: 'pricing_page',
       page: 'pricing',
       page_layout: 'interview_sprint_v1',
       recommended_plan: 'quarterly',

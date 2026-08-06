@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { apiUrl, getFrontendBase } from '../utils/api-base';
 import { resolvePaymentsProvider } from '../utils/payments-provider.util';
 import { sanitizeRedirectTarget } from '../utils/redirect.util';
+import { normalizeAuthAnalyticsSource } from '../utils/auth-analytics.util';
 import { AttemptInsightsService } from './attempt-insights.service';
 import { AuthSessionAuthorityService, AuthSyncEvent } from './auth-session-authority.service';
 
@@ -93,6 +94,13 @@ export interface User {
 
 type AuthBootstrapContext = 'login' | 'signup' | 'oauth';
 
+export type OAuthContext = {
+  mode: 'login' | 'signup' | 'link' | null;
+  provider: 'google' | 'github' | null;
+  redirectTo: string;
+  source: string;
+};
+
 function buildSessionBootstrapError(context: AuthBootstrapContext) {
   const action =
     context === 'login' ? 'sign you in' :
@@ -114,6 +122,10 @@ export class AuthService {
   private static readonly OAUTH_STATE_KEY = 'oauth:state';
   private static readonly OAUTH_REDIRECT_KEY = 'oauth:redirect';
   private static readonly OAUTH_MODE_KEY = 'oauth:mode';
+  private static readonly OAUTH_LEGACY_PROVIDER_KEY = 'oauth:provider';
+  private static readonly OAUTH_GOOGLE_PROVIDER_MARKER_KEY = 'oauth:provider:google';
+  private static readonly OAUTH_GITHUB_PROVIDER_MARKER_KEY = 'oauth:provider:github';
+  private static readonly OAUTH_SOURCE_KEY = 'oauth:source';
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
   private readonly authAuthority = inject(AuthSessionAuthorityService);
 
@@ -365,6 +377,7 @@ export class AuthService {
     provider: 'google' | 'github',
     mode: 'login' | 'signup' | 'link' = 'login',
     redirectTo?: string | null,
+    analyticsSource?: string | null,
   ) {
     const base = this.frontendBase || (typeof window !== 'undefined' ? window.location.origin : '');
     const redirectUri = `${base}/auth/callback`;
@@ -373,6 +386,18 @@ export class AuthService {
     try {
       sessionStorage.setItem(AuthService.OAUTH_STATE_KEY, state);
       sessionStorage.setItem(AuthService.OAUTH_MODE_KEY, mode);
+      sessionStorage.removeItem(AuthService.OAUTH_LEGACY_PROVIDER_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_GOOGLE_PROVIDER_MARKER_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_GITHUB_PROVIDER_MARKER_KEY);
+      if (provider === 'google') {
+        sessionStorage.setItem(AuthService.OAUTH_GOOGLE_PROVIDER_MARKER_KEY, '1');
+      } else {
+        sessionStorage.setItem(AuthService.OAUTH_GITHUB_PROVIDER_MARKER_KEY, '1');
+      }
+      sessionStorage.setItem(
+        AuthService.OAUTH_SOURCE_KEY,
+        normalizeAuthAnalyticsSource(analyticsSource),
+      );
       if (safeRedirect) sessionStorage.setItem(AuthService.OAUTH_REDIRECT_KEY, safeRedirect);
       else sessionStorage.removeItem(AuthService.OAUTH_REDIRECT_KEY);
     } catch { }
@@ -471,24 +496,42 @@ export class AuthService {
     } catch { }
   }
 
-  consumeOAuthRedirect(fallback = '/dashboard'): string {
+  consumeOAuthContext(fallbackRedirect = '/dashboard'): OAuthContext {
+    let storedMode: string | null = null;
+    let storedProvider: string | null = null;
+    let storedRedirect: string | null = null;
+    let storedSource: string | null = null;
     try {
-      const stored = sessionStorage.getItem(AuthService.OAUTH_REDIRECT_KEY);
-      sessionStorage.removeItem(AuthService.OAUTH_REDIRECT_KEY);
-      return sanitizeRedirectTarget(stored, fallback);
-    } catch {
-      return fallback;
-    }
-  }
-
-  consumeOAuthMode(): 'login' | 'signup' | 'link' | null {
-    try {
-      const stored = sessionStorage.getItem(AuthService.OAUTH_MODE_KEY);
+      storedMode = sessionStorage.getItem(AuthService.OAUTH_MODE_KEY);
+      const hasGoogleMarker = sessionStorage.getItem(
+        AuthService.OAUTH_GOOGLE_PROVIDER_MARKER_KEY,
+      ) === '1';
+      const hasGithubMarker = sessionStorage.getItem(
+        AuthService.OAUTH_GITHUB_PROVIDER_MARKER_KEY,
+      ) === '1';
+      storedProvider = hasGoogleMarker !== hasGithubMarker
+        ? (hasGoogleMarker ? 'google' : 'github')
+        : sessionStorage.getItem(AuthService.OAUTH_LEGACY_PROVIDER_KEY);
+      storedRedirect = sessionStorage.getItem(AuthService.OAUTH_REDIRECT_KEY);
+      storedSource = sessionStorage.getItem(AuthService.OAUTH_SOURCE_KEY);
       sessionStorage.removeItem(AuthService.OAUTH_MODE_KEY);
-      return stored === 'login' || stored === 'signup' || stored === 'link' ? stored : null;
-    } catch {
-      return null;
-    }
+      sessionStorage.removeItem(AuthService.OAUTH_LEGACY_PROVIDER_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_GOOGLE_PROVIDER_MARKER_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_GITHUB_PROVIDER_MARKER_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_REDIRECT_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_SOURCE_KEY);
+    } catch { }
+
+    return {
+      mode: storedMode === 'login' || storedMode === 'signup' || storedMode === 'link'
+        ? storedMode
+        : null,
+      provider: storedProvider === 'google' || storedProvider === 'github'
+        ? storedProvider
+        : null,
+      redirectTo: sanitizeRedirectTarget(storedRedirect, fallbackRedirect),
+      source: normalizeAuthAnalyticsSource(storedSource),
+    };
   }
 
   forceSignOut(reason: 'logout' | 'session_expired' = 'session_expired'): void {

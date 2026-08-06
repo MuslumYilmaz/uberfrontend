@@ -51,12 +51,12 @@ describe('BillingCheckoutService', () => {
       userId: 'user_1',
       email: 'billing@example.com',
       username: 'billing_user',
-    });
+    }, 'pricing_page');
     await Promise.resolve();
 
     const req = httpMock.expectOne(apiUrl('/billing/checkout/start'));
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ planId: 'monthly' });
+    expect(req.request.body).toEqual({ planId: 'monthly', analyticsSource: 'pricing_page' });
 
     req.flush({
       attemptId: 'chk_123',
@@ -72,6 +72,7 @@ describe('BillingCheckoutService', () => {
     expect(result).toEqual({
       ok: true,
       mode: 'new-tab',
+      checkoutMode: 'test',
       provider: 'lemonsqueezy',
       url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly?checkout%5Bcustom_data%5D%5Bfa_checkout_attempt_id%5D=chk_123',
       attemptId: 'chk_123',
@@ -109,6 +110,7 @@ describe('BillingCheckoutService', () => {
     await expectAsync(checkoutPromise).toBeResolvedTo({
       ok: true,
       mode: 'new-tab',
+      checkoutMode: 'test',
       provider: 'lemonsqueezy',
       url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly?checkout%5Bcustom_data%5D%5Bfa_checkout_attempt_id%5D=chk_reused_123',
       attemptId: 'chk_reused_123',
@@ -146,6 +148,7 @@ describe('BillingCheckoutService', () => {
     await expectAsync(checkoutPromise).toBeResolvedTo({
       ok: true,
       mode: 'blocked',
+      checkoutMode: 'test',
       provider: 'lemonsqueezy',
       url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly?checkout%5Bcustom_data%5D%5Bfa_checkout_attempt_id%5D=chk_blocked_123',
       attemptId: 'chk_blocked_123',
@@ -277,6 +280,7 @@ describe('BillingCheckoutService', () => {
           billingEventId: null,
           lastErrorCode: null,
           lastErrorMessage: null,
+          purchase: null,
         },
         status: 200,
       });
@@ -297,6 +301,7 @@ describe('BillingCheckoutService', () => {
       billingEventId: null,
       lastErrorCode: null,
       lastErrorMessage: null,
+      purchase: null,
     });
   });
 

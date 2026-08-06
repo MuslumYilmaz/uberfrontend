@@ -497,18 +497,20 @@ describe('CodingDetailComponent', () => {
       results: [{ name: 'ARIA', passed: true }],
     });
 
-    expect(analytics.track).toHaveBeenCalledWith('run_checks', jasmine.objectContaining({
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_started', jasmine.objectContaining({
       question_id: 'react-autocomplete-search-starter',
+      workspace_type: 'framework_checks',
+      action_type: 'run_checks',
+    }));
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_result', jasmine.objectContaining({
+      question_id: 'react-autocomplete-search-starter',
+      workspace_type: 'framework_checks',
+      action_type: 'run_checks',
+      outcome: 'passed',
       pass_count: 1,
       total_count: 1,
     }));
-    expect(analytics.track).toHaveBeenCalledWith('first_passing_test', jasmine.objectContaining({
-      question_id: 'react-autocomplete-search-starter',
-    }));
-    expect(analytics.track).toHaveBeenCalledWith('all_tests_passed', jasmine.objectContaining({
-      question_id: 'react-autocomplete-search-starter',
-      total_count: 1,
-    }));
+    expect(analytics.track).not.toHaveBeenCalledWith('run_checks', jasmine.anything());
     expect(activity.complete).not.toHaveBeenCalled();
   });
 
@@ -675,6 +677,73 @@ describe('CodingDetailComponent', () => {
 
     expect(activity.complete).not.toHaveBeenCalled();
     expect(component.loginPromptOpen).toBeTrue();
+  });
+
+  it('runs guest JS tests and does not show auth when the attempt fails', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const runTests = jasmine.createSpy('runTests').and.callFake(async () => {
+      component.testResults.set([{ name: 'returns the sum', passed: false }]);
+    });
+
+    auth.isLoggedIn.and.returnValue(false);
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'two-sum',
+      access: 'free',
+      difficulty: 'easy',
+    } as any);
+    component.jsPanel = { runTests } as any;
+
+    await component.submitCode();
+
+    expect(runTests).toHaveBeenCalled();
+    expect(component.loginPromptOpen).toBeFalse();
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_result', jasmine.objectContaining({
+      workspace_type: 'js_tests',
+      action_type: 'run_tests',
+      outcome: 'failed',
+    }));
+  });
+
+  it('shows auth only after guest JS tests pass and does not save completion first', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const callOrder: string[] = [];
+    const runTests = jasmine.createSpy('runTests').and.callFake(async () => {
+      callOrder.push('tests');
+      component.testResults.set([{ name: 'returns the sum', passed: true }]);
+    });
+    const originalEnsureAuthenticated = component.ensureAuthenticated.bind(component);
+    const ensureAuthenticated = spyOn(component, 'ensureAuthenticated').and.callFake((context) => {
+      callOrder.push('auth');
+      return originalEnsureAuthenticated(context);
+    });
+
+    auth.isLoggedIn.and.returnValue(false);
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'two-sum',
+      access: 'free',
+      difficulty: 'easy',
+    } as any);
+    component.jsPanel = { runTests } as any;
+
+    await component.submitCode();
+
+    expect(runTests).toHaveBeenCalled();
+    expect(ensureAuthenticated).toHaveBeenCalled();
+    expect(callOrder).toEqual(['tests', 'auth']);
+    expect(component.loginPromptOpen).toBeTrue();
+    expect(component.solved()).toBeFalse();
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_result', jasmine.objectContaining({
+      outcome: 'passed',
+      auth_state: 'guest',
+    }));
   });
 
   it('clears an intermediate pressure round without completing the normal question', async () => {

@@ -802,9 +802,11 @@
 <div id="sr-announcer" aria-live="polite" class="sr-announcer-fixed"></div>
 
 <app-login-required-dialog [(visible)]="loginPromptOpen"
+    context="trivia_complete"
     [title]="loginPromptTitle"
     [body]="loginPromptBody"
-    [ctaLabel]="loginPromptCta"
+    [signupLabel]="loginPromptSignupLabel"
+    [loginLabel]="loginPromptLoginLabel"
     [redirectTo]="router.url">
 </app-login-required-dialog>
 

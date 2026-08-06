@@ -577,6 +577,11 @@ describe('LemonSqueezy webhook integration', () => {
           user_email: 'test@example.com',
           status: 'paid',
           order_id: 'order_then_sub_monthly',
+          currency: 'USD',
+          subtotal: 1200,
+          discount_total: 0,
+          tax: 240,
+          total: 1440,
           product_name: 'FrontendAtlas Premium',
           variant_name: 'Monthly',
           custom_data: {
@@ -600,6 +605,9 @@ describe('LemonSqueezy webhook integration', () => {
     expect(afterOrderAttempt.status).toBe('webhook_received');
     expect(afterOrderAttempt.completedAt).toBeFalsy();
     expect(afterOrderAttempt.providerOrderId).toBe('order_then_sub_monthly');
+    expect(afterOrderAttempt.paymentCurrency).toBe('USD');
+    expect(afterOrderAttempt.paymentTotalCents).toBe(1440);
+    expect(afterOrderAttempt.paymentVerifiedAt).toBeTruthy();
 
     const afterOrderUser = await User.findById(user._id).lean();
     expect(afterOrderUser.entitlements.pro.status).toBe('none');
@@ -635,6 +643,8 @@ describe('LemonSqueezy webhook integration', () => {
     const afterSubscriptionAttempt = await CheckoutAttempt.findOne({ attemptId: 'chk_order_then_sub' }).lean();
     expect(afterSubscriptionAttempt.status).toBe('applied');
     expect(afterSubscriptionAttempt.providerSubscriptionId).toBe('sub_order_then_sub_monthly');
+    expect(afterSubscriptionAttempt.providerOrderId).toBe('order_then_sub_monthly');
+    expect(afterSubscriptionAttempt.paymentTotalCents).toBe(1440);
     expect(afterSubscriptionAttempt.completedAt).toBeTruthy();
 
     const afterSubscriptionUser = await User.findById(user._id).lean();
@@ -642,6 +652,72 @@ describe('LemonSqueezy webhook integration', () => {
     expect(new Date(afterSubscriptionUser.entitlements.pro.validUntil).toISOString())
       .toBe('2099-01-01T00:00:00.000Z');
     expect(afterSubscriptionUser.accessTier).toBe('premium');
+  });
+
+  test('writes verified order metadata after entitlement already made the attempt terminal', async () => {
+    const user = await User.findOne({ email: 'test@example.com' });
+    user.accessTier = 'premium';
+    user.entitlements.pro = { status: 'active', validUntil: null };
+    await user.save();
+    await CheckoutAttempt.create({
+      attemptId: 'chk_sub_then_order',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'applied',
+      billingEventId: 'test:subscription_created:sub_first',
+      providerSubscriptionId: 'sub_first',
+      completedAt: new Date(),
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_sub_then_order',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_sub_then_order',
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+    });
+
+    const payload = {
+      meta: { event_name: 'order_created', test_mode: true },
+      data: {
+        id: 'order_after_subscription',
+        attributes: {
+          user_email: user.email,
+          status: 'paid',
+          currency: 'USD',
+          subtotal: 1200,
+          discount_total: 200,
+          tax: 200,
+          total: 1200,
+          product_name: 'FrontendAtlas Premium',
+          variant_name: 'Monthly',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_sub_then_order',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, ignored: true });
+
+    const attempt = await CheckoutAttempt.findOne({ attemptId: 'chk_sub_then_order' }).lean();
+    expect(attempt.status).toBe('applied');
+    expect(attempt.billingEventId).toBe('test:subscription_created:sub_first');
+    expect(attempt.providerSubscriptionId).toBe('sub_first');
+    expect(attempt.providerOrderId).toBe('order_after_subscription');
+    expect(attempt.paymentCurrency).toBe('USD');
+    expect(attempt.paymentSubtotalCents).toBe(1200);
+    expect(attempt.paymentDiscountCents).toBe(200);
+    expect(attempt.paymentTaxCents).toBe(200);
+    expect(attempt.paymentTotalCents).toBe(1200);
+    expect(attempt.paymentVerifiedAt).toBeTruthy();
   });
 
   test('lifetime order created grants lifetime premium', async () => {

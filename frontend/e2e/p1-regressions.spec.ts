@@ -66,9 +66,16 @@ test('Monaco keyboard listener tolerates generic keydown after SPA navigation to
   await expect(page.getByTestId('js-panel')).toBeVisible();
   await waitForMonacoModel(page, modelKey);
 
+  await setMonacoModelValue(page, modelKey, [
+    'export default function clamp(value, lower, upper) {',
+    '  return Math.min(Math.max(value, lower), upper);',
+    '}',
+    '',
+  ].join('\n'));
+
   await page.getByTestId('footer-submit').click();
   await expect(page.getByTestId('login-required-title')).toBeVisible();
-  await page.locator('.login-dialog__footer .btn-primary').click();
+  await page.getByTestId('login-required-login').click();
 
   await expect(page).toHaveURL((url) => (
     url.pathname === '/auth/login'

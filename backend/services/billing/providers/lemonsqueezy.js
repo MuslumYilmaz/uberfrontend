@@ -245,9 +245,9 @@ function extractManageUrl(body) {
   return '';
 }
 
-function extractOrderId(body) {
+function extractOrderId(body, eventType) {
   const attr = body?.data?.attributes?.order_id || body?.data?.attributes?.order_number;
-  const candidate = attr || body?.data?.id;
+  const candidate = attr || (isOrderCreatedEvent(eventType) ? body?.data?.id : '');
   return candidate ? String(candidate).trim() : '';
 }
 
@@ -268,6 +268,45 @@ function isLifetimePurchase(attrs) {
 
 function isOrderCreatedEvent(eventType) {
   return String(eventType || '').toLowerCase() === 'order_created';
+}
+
+function parseCentAmount(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const amount = Number(value);
+  return Number.isFinite(amount) && amount >= 0 ? amount : null;
+}
+
+function extractOrderPayment(eventType, attrs) {
+  const currency = String(attrs?.currency || '').trim().toUpperCase();
+  const subtotalCents = parseCentAmount(attrs?.subtotal);
+  const discountCents = parseCentAmount(attrs?.discount_total);
+  const taxCents = parseCentAmount(attrs?.tax);
+  const totalCents = parseCentAmount(attrs?.total);
+  const status = String(attrs?.status || '').trim().toLowerCase();
+  const amounts = [subtotalCents, discountCents, taxCents, totalCents];
+  const amountsPresent = amounts.every((amount) => amount !== null);
+  const expectedTotal = amountsPresent
+    ? subtotalCents - discountCents + taxCents
+    : null;
+  const totalsReconcile = expectedTotal !== null
+    && Math.abs(expectedTotal - totalCents) <= 0.01;
+
+  return {
+    status,
+    currency,
+    subtotalCents,
+    discountCents,
+    taxCents,
+    totalCents,
+    verified: isOrderCreatedEvent(eventType)
+      && status === 'paid'
+      && /^[A-Z]{3}$/.test(currency)
+      && amountsPresent
+      && totalCents > 0
+      && discountCents <= subtotalCents
+      && totalCents >= taxCents
+      && totalsReconcile,
+  };
 }
 
 function resolveStatus(eventType, attrs, lifetime) {
@@ -346,6 +385,7 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
   const purchaseEmail = extractEmail(body);
   const customEmail = extractCustomEmail(body);
   const email = customEmail || purchaseEmail;
+  const orderPayment = extractOrderPayment(eventType, attrs);
 
   return {
     eventId: extractEventId(body, rawBody, eventType),
@@ -359,9 +399,10 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
     customerId: extractCustomerId(body),
     subscriptionId: extractSubscriptionId(body),
     manageUrl: extractManageUrl(body),
-    orderId: extractOrderId(body),
+    orderId: extractOrderId(body, eventType),
     variantId: extractVariantId(body),
     productId: extractProductId(body),
+    orderPayment,
     entitlement: { status, validUntil: validUntilResult.value },
     shouldApplyEntitlement,
     eventTypeKnown: isEventTypeKnown(eventType),
@@ -375,4 +416,5 @@ module.exports = {
   parseDateValue,
   resolveStatus,
   isEventTypeKnown,
+  extractOrderPayment,
 };

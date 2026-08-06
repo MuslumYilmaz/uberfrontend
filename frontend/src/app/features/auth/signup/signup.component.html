@@ -74,7 +74,7 @@
 
       <p class="meta">
         Already have an account?
-        <a routerLink="/auth/login" [queryParams]="redirectToPresent ? { redirectTo: redirectTo } : null" data-testid="signup-link-login">Sign in</a>
+        <a routerLink="/auth/login" [queryParams]="authSwitchQueryParams" data-testid="signup-link-login">Sign in</a>
       </p>
     </div>
   </section>

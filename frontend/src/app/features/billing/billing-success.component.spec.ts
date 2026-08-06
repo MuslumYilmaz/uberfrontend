@@ -12,6 +12,7 @@ describe('BillingSuccessComponent', () => {
   let router: Router;
   let billingCheckoutStub: jasmine.SpyObj<BillingCheckoutService>;
   let authStub: jasmine.SpyObj<AuthService>;
+  let analyticsStub: jasmine.SpyObj<AnalyticsService>;
 
   beforeEach(async () => {
     (window as any).__billingPollConfig = { maxAttempts: 3, intervalMs: 25 };
@@ -20,6 +21,7 @@ describe('BillingSuccessComponent', () => {
       'fetchAttemptStatus',
     ]);
     authStub = jasmine.createSpyObj<AuthService>('AuthService', ['fetchMeStatus']);
+    analyticsStub = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
     await TestBed.configureTestingModule({
       imports: [BillingSuccessComponent],
@@ -29,7 +31,7 @@ describe('BillingSuccessComponent', () => {
         { provide: AuthService, useValue: authStub },
         {
           provide: AnalyticsService,
-          useValue: jasmine.createSpyObj('AnalyticsService', ['track']),
+          useValue: analyticsStub,
         },
         {
           provide: ActivatedRoute,
@@ -48,12 +50,15 @@ describe('BillingSuccessComponent', () => {
 
   afterEach(() => {
     delete (window as any).__billingPollConfig;
+    localStorage.removeItem('fa:analytics:purchase:order_live_123');
   });
 
   it('polls attempt status until checkout is applied, then redirects to profile', fakeAsync(() => {
-    billingCheckoutStub.fetchAttemptStatus.and.returnValues(
-      of({
-        attempt: {
+    let pollCount = 0;
+    billingCheckoutStub.fetchAttemptStatus.and.callFake(() => {
+      pollCount += 1;
+      return of({
+        attempt: pollCount === 1 ? {
           attemptId: 'chk_success_123',
           provider: 'lemonsqueezy',
           planId: 'monthly',
@@ -65,11 +70,8 @@ describe('BillingSuccessComponent', () => {
           billingEventId: null,
           lastErrorCode: null,
           lastErrorMessage: null,
-        },
-        status: 200,
-      }),
-      of({
-        attempt: {
+          purchase: null,
+        } : {
           attemptId: 'chk_success_123',
           provider: 'lemonsqueezy',
           planId: 'monthly',
@@ -81,20 +83,85 @@ describe('BillingSuccessComponent', () => {
           billingEventId: 'test:event_123',
           lastErrorCode: null,
           lastErrorMessage: null,
+          purchase: null,
         },
         status: 200,
-      })
-    );
+      });
+    });
 
     fixture = TestBed.createComponent(BillingSuccessComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     tick();
-    tick(25);
+    tick(99);
+
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    tick(1);
 
     expect(billingCheckoutStub.fetchAttemptStatus).toHaveBeenCalledWith('chk_success_123');
+    expect(pollCount).toBe(5);
     expect(router.navigateByUrl).toHaveBeenCalledWith('/profile');
     expect(component.state()).toBe('syncing');
+    expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.objectContaining({
+      checkout_mode: 'test',
+      entitlement_applied: true,
+    }));
+    expect(analyticsStub.track).not.toHaveBeenCalledWith('purchase', jasmine.anything());
+    expect(analyticsStub.track).not.toHaveBeenCalledWith('checkout_completed', jasmine.anything());
+  }));
+
+  it('tracks a verified live purchase once per transaction id across success-page reloads', fakeAsync(() => {
+    const liveAttempt = {
+      attemptId: 'chk_success_123',
+      provider: 'lemonsqueezy' as const,
+      planId: 'annual' as const,
+      mode: 'live' as const,
+      state: 'applied' as const,
+      rawStatus: 'applied',
+      entitlementActive: true,
+      accessTierEffective: 'premium' as const,
+      billingEventId: 'live:subscription_created:sub_123',
+      lastErrorCode: null,
+      lastErrorMessage: null,
+      purchase: {
+        transactionId: 'order_live_123',
+        currency: 'USD',
+        value: 69,
+        tax: 12.42,
+        total: 81.42,
+        items: [{
+          item_id: 'frontendatlas_annual',
+          item_name: 'Annual Premium',
+          price: 69,
+          quantity: 1,
+        }],
+        source: 'pricing_page',
+        verifiedAt: '2026-08-05T10:00:00.000Z',
+      },
+    };
+    billingCheckoutStub.fetchAttemptStatus.and.returnValue(of({ attempt: liveAttempt, status: 200 }));
+
+    fixture = TestBed.createComponent(BillingSuccessComponent);
+    fixture.detectChanges();
+    tick();
+
+    expect(analyticsStub.track).toHaveBeenCalledWith('purchase', jasmine.objectContaining({
+      transaction_id: 'order_live_123',
+      currency: 'USD',
+      value: 69,
+      tax: 12.42,
+      checkout_mode: 'live',
+    }));
+    expect(analyticsStub.track.calls.allArgs().filter(([name]) => name === 'purchase')).toHaveSize(1);
+
+    fixture.destroy();
+    analyticsStub.track.calls.reset();
+    fixture = TestBed.createComponent(BillingSuccessComponent);
+    fixture.detectChanges();
+    tick();
+
+    expect(analyticsStub.track.calls.allArgs().filter(([name]) => name === 'purchase')).toHaveSize(0);
+    expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.anything());
   }));
 
   it('shows a pending-user-match state when the payment cannot be safely linked', fakeAsync(() => {
@@ -112,6 +179,7 @@ describe('BillingSuccessComponent', () => {
           billingEventId: 'test:event_456',
           lastErrorCode: null,
           lastErrorMessage: null,
+          purchase: null,
         },
         status: 200,
       })

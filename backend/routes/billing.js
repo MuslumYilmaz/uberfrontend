@@ -7,6 +7,7 @@ const { createBillingEventStore } = require('../services/billing/billing-events'
 const {
   CheckoutStartError,
   createCheckoutAttempt,
+  normalizeAnalyticsSource,
   resolveCheckoutConfig,
 } = require('../services/billing/checkout-start');
 const { isProEntitlementActive } = require('../services/billing/entitlements');
@@ -146,7 +147,109 @@ function serializeCheckoutAttemptStatus(attempt, user) {
     billingEventId: attempt.billingEventId || null,
     lastErrorCode: attempt.lastErrorCode || null,
     lastErrorMessage: attempt.lastErrorMessage || null,
+    purchase: serializeVerifiedPurchase(attempt),
   };
+}
+
+function centsToCurrencyValue(cents) {
+  return Number((Number(cents) / 100).toFixed(6));
+}
+
+function serializeVerifiedPurchase(attempt) {
+  if (attempt?.mode !== 'live' || !attempt?.paymentVerifiedAt) return null;
+  const transactionId = String(attempt.providerOrderId || '').trim();
+  const currency = String(attempt.paymentCurrency || '').trim().toUpperCase();
+  const subtotalCents = Number(attempt.paymentSubtotalCents);
+  const discountCents = Number(attempt.paymentDiscountCents);
+  const taxCents = Number(attempt.paymentTaxCents);
+  const totalCents = Number(attempt.paymentTotalCents);
+  const amounts = [subtotalCents, discountCents, taxCents, totalCents];
+  const validAmounts = amounts.every((amount) => Number.isFinite(amount) && amount >= 0);
+  const totalsReconcile = validAmounts
+    && Math.abs((subtotalCents - discountCents + taxCents) - totalCents) <= 0.01;
+  if (
+    !attempt.paymentEventId
+    || !transactionId
+    || !/^[A-Z]{3}$/.test(currency)
+    || !validAmounts
+    || totalCents <= 0
+    || discountCents > subtotalCents
+    || totalCents < taxCents
+    || !totalsReconcile
+  ) {
+    return null;
+  }
+
+  const value = centsToCurrencyValue(totalCents - taxCents);
+  const planId = String(attempt.planId || 'premium');
+  const planName = `${planId.charAt(0).toUpperCase()}${planId.slice(1)} Premium`;
+  return {
+    transactionId,
+    currency,
+    value,
+    tax: centsToCurrencyValue(taxCents),
+    total: centsToCurrencyValue(totalCents),
+    items: [
+      {
+        item_id: `frontendatlas_${planId}`,
+        item_name: planName,
+        affiliation: 'FrontendAtlas',
+        price: value,
+        quantity: 1,
+      },
+    ],
+    source: normalizeAnalyticsSource(attempt.analyticsSource),
+    verifiedAt: new Date(attempt.paymentVerifiedAt).toISOString(),
+  };
+}
+
+async function persistVerifiedOrderPayment({
+  attemptId,
+  customerUserId,
+  eventId,
+  eventMode,
+  normalized,
+  verifiedAt,
+}) {
+  const payment = normalized?.orderPayment;
+  const transactionId = String(normalized?.orderId || '').trim();
+  if (
+    !attemptId
+    || !customerUserId
+    || !eventId
+    || !transactionId
+    || !['test', 'live'].includes(eventMode)
+    || payment?.verified !== true
+  ) {
+    return;
+  }
+
+  await CheckoutAttempt.updateOne(
+    {
+      attemptId,
+      provider: 'lemonsqueezy',
+      mode: eventMode,
+      customerUserId,
+      $or: [
+        { paymentEventId: eventId },
+        { paymentEventId: null },
+        { paymentEventId: { $exists: false } },
+      ],
+    },
+    {
+      $set: {
+        paymentEventId: eventId,
+        providerOrderId: transactionId,
+        paymentCurrency: payment.currency,
+        paymentSubtotalCents: payment.subtotalCents,
+        paymentDiscountCents: payment.discountCents,
+        paymentTaxCents: payment.taxCents,
+        paymentTotalCents: payment.totalCents,
+        paymentVerifiedAt: verifiedAt || new Date(),
+        updatedAt: new Date(),
+      },
+    },
+  );
 }
 
 async function handleGumroadWebhook(req, res) {
@@ -448,6 +551,15 @@ async function handleLemonSqueezyWebhook(req, res) {
       return respondToUnacquiredEvent(res, acquisition);
     }
 
+    await persistVerifiedOrderPayment({
+      attemptId: normalizedAttemptId,
+      customerUserId: normalizedUserId,
+      eventId,
+      eventMode,
+      normalized,
+      verifiedAt: acquisition.event.receivedAt,
+    });
+
     await updateCheckoutAttempt(normalizedAttemptId, {
       status: 'webhook_received',
       billingEventId: eventId,
@@ -627,6 +739,7 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       await createCheckoutAttempt(CheckoutAttempt, {
         user,
         planId: req.body?.planId,
+        analyticsSource: req.body?.analyticsSource,
       });
 
     return res.status(200).json({

@@ -1,244 +1,190 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
+import { FaButtonComponent } from '../../ui/button/fa-button.component';
+import { FaDialogComponent } from '../../ui/dialog/fa-dialog.component';
+
+export type AuthPromptContext =
+  | 'coding_submit'
+  | 'coding_pressure'
+  | 'trivia_complete'
+  | 'tradeoff_complete'
+  | 'pricing_checkout'
+  | 'unknown';
 
 @Component({
   selector: 'app-login-required-dialog',
   standalone: true,
-  imports: [CommonModule, DialogModule, ButtonModule],
+  imports: [CommonModule, FaButtonComponent, FaDialogComponent],
   styles: [`
-  :host { display: block; }
+    :host { display: block; }
 
-  /* Darken + blur overlay so dialog pops from page */
-  :host ::ng-deep .p-dialog-mask.p-component-overlay {
-    background: rgba(0, 0, 0, .55) !important;
-    backdrop-filter: blur(2px);
-  }
+    .auth-prompt__body {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      color: var(--uf-text-secondary);
+      line-height: 1.55;
+    }
 
-  /* Dialog shell: elevation, border, distinct surface */
-  :host ::ng-deep .login-dialog.p-dialog {
-    width: min(640px, calc(100vw - 32px)) !important;
-    border-radius: 18px;
-    overflow: hidden;
+    .auth-prompt__icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--uf-accent);
+      background: var(--uf-surface-muted);
+    }
 
-    border: 1px solid color-mix(in srgb, var(--uf-text-primary) 10%, transparent);
-    box-shadow:
-      0 24px 80px rgba(0, 0, 0, .55),
-      0 2px 0 rgba(255, 255, 255, .03) inset;
+    .auth-prompt__body p { margin: 0; max-width: 52ch; }
 
-    /* slightly different from page surface */
-    background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-text-primary) 8%);
-  }
+    .auth-prompt__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      width: 100%;
+    }
 
-  /* Let dialog shell background show through */
-  :host ::ng-deep .login-dialog .p-dialog-content {
-    background: transparent !important;
-    color: var(--uf-text-primary);
-    padding: 0 !important;
-  }
-
-  /* We’re not using Prime header at all */
-  :host ::ng-deep .login-dialog .p-dialog-header {
-    display: none !important;
-  }
-
-  /* Inner panel: subtle gradient highlight */
-  .login-dialog__panel {
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--uf-surface) 88%, var(--uf-text-primary) 12%),
-      color-mix(in srgb, var(--uf-surface) 96%, var(--uf-text-primary) 4%)
-    );
-    position: relative;
-    padding: 22px 22px 20px;
-    display: grid;
-    gap: 16px;
-  }
-
-  .login-dialog__close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--uf-text-secondary);
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
-  }
-  .login-dialog__close:hover {
-    background: color-mix(in srgb, var(--uf-text-primary) 8%, transparent);
-    color: var(--uf-text-primary);
-  }
-  .login-dialog__close:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 55%, transparent);
-  }
-
-  .login-dialog__header-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 16px;
-    align-items: center;
-    padding-right: 44px; /* space for the close button */
-  }
-
-  .login-dialog__icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    display: grid;
-    place-items: center;
-
-    /* make the icon container feel “raised” too */
-    background: color-mix(in srgb, var(--uf-accent-soft) 85%, var(--uf-surface));
-    border: 1px solid color-mix(in srgb, var(--uf-text-primary) 10%, transparent);
-
-    color: var(--uf-text-primary);
-    font-size: 20px;
-  }
-
-  .login-dialog__title {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-  }
-
-  .login-dialog__text {
-    margin: 6px 0 0;
-    color: var(--uf-text-secondary);
-    font-size: 16px;
-    line-height: 1.5;
-    max-width: 52ch;
-  }
-
-  .login-dialog__footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 6px;
-  }
-
-  .btn-secondary, .btn-primary {
-    appearance: none;
-    border: 1px solid var(--uf-border-subtle);
-    border-radius: 14px;
-    height: 44px;
-    padding: 0 18px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 140px;
-  }
-
-  .btn-secondary {
-    background: color-mix(in srgb, var(--uf-text-primary) 4%, transparent);
-    color: var(--uf-text-primary);
-    border-color: color-mix(in srgb, var(--uf-text-primary) 12%, transparent);
-  }
-  .btn-secondary:hover {
-    background: color-mix(in srgb, var(--uf-text-primary) 7%, transparent);
-  }
-
-  .btn-primary {
-    background: var(--uf-accent);
-    border-color: var(--uf-accent);
-    color: #111;
-    box-shadow: 0 10px 22px color-mix(in srgb, var(--uf-accent) 35%, transparent);
-  }
-  .btn-primary:hover {
-    background: var(--uf-accent-strong);
-    border-color: var(--uf-accent-strong);
-  }
-
-  .btn-primary:active, .btn-secondary:active { transform: translateY(1px); }
-
-  .btn-primary:focus-visible, .btn-secondary:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 55%, transparent);
-  }
-
-  @media (max-width: 600px) {
-    .login-dialog__panel { padding: 16px; gap: 14px; }
-    .login-dialog__title { font-size: 22px; }
-    .login-dialog__footer { flex-direction: column-reverse; }
-    .btn-secondary, .btn-primary { width: 100%; min-width: 0; }
-  }
-`],
+    @media (max-width: 600px) {
+      .auth-prompt__body { grid-template-columns: 1fr; }
+      .auth-prompt__actions { flex-direction: column-reverse; }
+      .auth-prompt__actions button { width: 100%; }
+    }
+  `],
   template: `
-    <p-dialog
-      [(visible)]="visible"
+    <fa-dialog
+      [visible]="visible"
+      (visibleChange)="onVisibleChange($event)"
       [modal]="true"
       [dismissableMask]="true"
-      [draggable]="false"
-      [resizable]="false"
-      [closable]="false"
-      [showHeader]="false"
-      styleClass="login-dialog"
-      (onHide)="onClose()"
-    >
-      <div
-        class="login-dialog__panel"
-        role="dialog"
-        [attr.aria-labelledby]="dialogTitleId"
-        [attr.aria-describedby]="dialogDescId"
-      >
-        <button class="login-dialog__close" type="button" aria-label="Close" (click)="onClose()">
-          <i class="pi pi-times"></i>
-        </button>
+      [closable]="true"
+      [showFooter]="true"
+      width="min(560px, calc(100vw - 32px))"
+      closeAriaLabel="Close account prompt">
+      <span faDialogHeader data-testid="login-required-title">{{ title }}</span>
 
-        <div class="login-dialog__header-row">
-          <div class="login-dialog__icon"><i class="pi pi-lock"></i></div>
-          <div>
-            <h3 class="login-dialog__title" [id]="dialogTitleId" data-testid="login-required-title">{{ title }}</h3>
-            <p class="login-dialog__text" [id]="dialogDescId">{{ body }}</p>
-          </div>
-        </div>
-
-        <div class="login-dialog__footer">
-          <button class="btn-secondary" type="button" (click)="onClose()">Cancel</button>
-          <button class="btn-primary" type="button" (click)="goToLogin()">{{ ctaLabel }}</button>
-        </div>
+      <div class="auth-prompt__body" data-testid="login-required-dialog">
+        <span class="auth-prompt__icon" aria-hidden="true"><i class="pi pi-user-plus"></i></span>
+        <p data-testid="login-required-body">{{ body }}</p>
       </div>
-    </p-dialog>
-  `
+
+      <div faDialogFooter class="auth-prompt__actions">
+        <button
+          type="button"
+          faButton
+          variant="neutral"
+          data-testid="login-required-login"
+          (click)="choose('login')">
+          {{ loginLabel }}
+        </button>
+        <button
+          type="button"
+          faButton
+          variant="primary"
+          data-testid="login-required-signup"
+          (click)="choose('sign_up')">
+          {{ signupLabel }}
+        </button>
+      </div>
+    </fa-dialog>
+  `,
 })
-export class LoginRequiredDialogComponent {
+export class LoginRequiredDialogComponent implements OnChanges {
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
 
-  @Input() title = 'Sign in to save progress';
-  @Input() body = 'To track completed questions and keep your progress synced, sign in or create a free account.';
-  @Input() ctaLabel = 'Go to login';
+  @Input() context: AuthPromptContext = 'unknown';
+  @Input() title = 'Save your progress';
+  @Input() body = 'Create a free account to keep this result and continue where you left off. Already have an account? Sign in.';
+  @Input() signupLabel = 'Create free account';
+  @Input() loginLabel = 'Sign in';
   @Input() redirectTo?: string;
 
-  dialogTitleId = 'login-dialog-title';
-  dialogDescId = 'login-dialog-desc';
+  private shownForOpenCycle = false;
+  private actionInFlight = false;
 
-  constructor(private router: Router) { }
+  constructor(
+    private readonly router: Router,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
-  onClose() {
-    this.visible = false;
-    this.visibleChange.emit(false);
+  ngOnChanges(changes: SimpleChanges): void {
+    const visibleChange = changes['visible'];
+    if (!visibleChange) return;
+    if (visibleChange.currentValue === true && visibleChange.previousValue !== true) {
+      this.trackShown();
+    }
+    if (visibleChange.currentValue === false) {
+      this.shownForOpenCycle = false;
+      this.actionInFlight = false;
+    }
   }
 
-  goToLogin() {
-    this.onClose();
+  onVisibleChange(nextVisible: boolean): void {
+    if (nextVisible) {
+      this.visible = true;
+      this.trackShown();
+      this.visibleChange.emit(true);
+      return;
+    }
+
+    if (this.visible && !this.actionInFlight) {
+      this.trackAction('dismiss');
+    }
+    this.visible = false;
+    this.visibleChange.emit(false);
+    this.shownForOpenCycle = false;
+    this.actionInFlight = false;
+  }
+
+  choose(action: 'sign_up' | 'login'): void {
+    this.actionInFlight = true;
+    this.trackAction(action);
     const redirectTo = sanitizeRedirectTarget(this.redirectTo || this.router.url || '/');
-    this.router.navigate(['/auth/login'], {
-      queryParams: { redirectTo },
+    const route = action === 'sign_up' ? '/auth/signup' : '/auth/login';
+    const src = this.normalizedContext();
+    this.visible = false;
+    this.visibleChange.emit(false);
+    this.router.navigate([route], { queryParams: { redirectTo, src } });
+  }
+
+  private trackShown(): void {
+    if (this.shownForOpenCycle) return;
+    this.shownForOpenCycle = true;
+    this.analytics.track('auth_prompt_shown', {
+      prompt_context: this.normalizedContext(),
+      src: this.normalizedContext(),
+      primary_action: 'sign_up',
+      auth_state: 'guest',
     });
+  }
+
+  private trackAction(authAction: 'sign_up' | 'login' | 'dismiss'): void {
+    this.analytics.track('auth_prompt_action', {
+      prompt_context: this.normalizedContext(),
+      src: this.normalizedContext(),
+      primary_action: 'sign_up',
+      auth_action: authAction,
+      auth_state: 'guest',
+    });
+  }
+
+  private normalizedContext(): AuthPromptContext {
+    const value = String(this.context || '').trim().toLowerCase();
+    switch (value) {
+      case 'coding_submit':
+      case 'coding_pressure':
+      case 'trivia_complete':
+      case 'tradeoff_complete':
+      case 'pricing_checkout':
+        return value;
+      default:
+        return 'unknown';
+    }
   }
 }

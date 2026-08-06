@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { getAuthDisplayError } from '../../../core/utils/auth-error.util';
+import { classifyAuthFailure } from '../../../core/utils/auth-analytics.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
@@ -14,7 +15,7 @@ import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
     <div class="min-h-screen flex items-center justify-center bg-neutral-900 text-gray-100 p-6" data-testid="oauth-callback-page">
       <div class="max-w-md w-full text-center">
         <h1 class="text-xl font-semibold mb-3">Signing you in…</h1>
-        <p class="text-white/70">Completing Google authentication.</p>
+        <p class="text-white/70">Completing authentication.</p>
         <p *ngIf="error" class="mt-4 text-red-400" data-testid="oauth-callback-error">{{ error }}</p>
         <div *ngIf="error" class="mt-6 flex flex-col items-center gap-3">
           <button
@@ -32,6 +33,7 @@ import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 export class OAuthCallbackComponent implements OnInit {
   error = '';
   private redirectTo = '/dashboard';
+  private analyticsSource = 'direct';
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor(
@@ -46,20 +48,30 @@ export class OAuthCallbackComponent implements OnInit {
 
     const qp = this.route.snapshot.queryParams || {};
     const queryRedirect = sanitizeRedirectTarget(this.route.snapshot.queryParamMap.get('redirectTo'));
-    const oauthMode = this.auth.consumeOAuthMode();
-    const redirectTo = this.auth.consumeOAuthRedirect(queryRedirect);
-    this.redirectTo = redirectTo;
+    const oauthContext = this.auth.consumeOAuthContext(queryRedirect);
+    this.redirectTo = oauthContext.redirectTo;
+    this.analyticsSource = oauthContext.source;
     this.auth.completeOAuthCallback(qp).subscribe({
       next: () => {
-        if (oauthMode === 'signup') {
-          this.analytics.track('signup_completed', {
-            method: 'oauth',
-            redirect_to_present: redirectTo !== '/dashboard',
+        if (oauthContext.mode === 'signup' || oauthContext.mode === 'login') {
+          this.analytics.track(oauthContext.mode === 'signup' ? 'sign_up' : 'login', {
+            method: oauthContext.provider || 'oauth',
+            provider: oauthContext.provider || 'unknown',
+            auth_mode: oauthContext.mode,
+            src: oauthContext.source,
+            redirect_to_present: oauthContext.redirectTo !== '/dashboard',
           });
         }
-        this.router.navigateByUrl(redirectTo);
+        this.router.navigateByUrl(oauthContext.redirectTo);
       },
       error: (e) => {
+        this.analytics.track('auth_submit_failed', {
+          auth_mode: oauthContext.mode || 'login',
+          provider: oauthContext.provider || 'unknown',
+          src: oauthContext.source,
+          redirect_to_present: oauthContext.redirectTo !== '/dashboard',
+          failure_reason: classifyAuthFailure(e, oauthContext.mode || 'login'),
+        });
         this.error = getAuthDisplayError(
           e,
           e?.message || 'We could not finish authentication. Please try again.',
@@ -70,7 +82,7 @@ export class OAuthCallbackComponent implements OnInit {
 
   goToLogin(): void {
     this.router.navigate(['/auth/login'], {
-      queryParams: { redirectTo: this.redirectTo },
+      queryParams: { redirectTo: this.redirectTo, src: this.analyticsSource },
     });
   }
 }

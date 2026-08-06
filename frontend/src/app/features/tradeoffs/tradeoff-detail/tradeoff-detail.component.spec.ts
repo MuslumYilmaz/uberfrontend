@@ -270,7 +270,7 @@ describe('TradeoffDetailComponent', () => {
 
     expect(progress.markCompleted).not.toHaveBeenCalled();
     expect(component.loginPromptOpen).toBeTrue();
-    expect(fixture.nativeElement.textContent || '').toContain('Sign in to save completed tradeoff battles');
+    expect(fixture.nativeElement.textContent || '').toContain('Create a free account to keep completed battles');
   });
 
   it('renders the locked premium preview on premium tradeoff battles', async () => {

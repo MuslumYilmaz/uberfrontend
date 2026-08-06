@@ -9,6 +9,7 @@ import {
   BillingCheckoutService,
   CheckoutAttemptStatus,
   CheckoutAttemptStatusResult,
+  VerifiedPurchase,
 } from '../../core/services/billing-checkout.service';
 import { isProActive } from '../../core/utils/entitlements.util';
 import { sanitizeRedirectTarget } from '../../core/utils/redirect.util';
@@ -23,6 +24,7 @@ import { sanitizeRedirectTarget } from '../../core/utils/redirect.util';
 export class BillingSuccessComponent implements OnInit, OnDestroy {
   private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';
   private static readonly CHECKOUT_SOURCE_KEY = 'fa:checkout:last_source';
+  private static readonly PURCHASE_TRACKED_PREFIX = 'fa:analytics:purchase:';
 
   state = signal<'syncing' | 'timeout' | 'error' | 'login-required' | 'pending-user-match'>('syncing');
   errorMessage = signal<string | null>(null);
@@ -33,6 +35,12 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
 
   private pollSub?: Subscription;
   private readonly pollConfig = this.resolvePollConfig();
+  private checkoutPlanId: string | null = null;
+  private checkoutSource = 'billing_success';
+  private checkoutVerifiedTracked = false;
+  private purchaseTracked = false;
+  private entitlementAppliedSeen = false;
+  private appliedGracePolls = 0;
 
   constructor(
     private auth: AuthService,
@@ -43,7 +51,7 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.trackCheckoutCompleted();
+    this.hydrateCheckoutContext();
     this.startPolling();
   }
 
@@ -65,16 +73,10 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
     return { maxAttempts: 15, intervalMs: 2000 };
   }
 
-  private trackCheckoutCompleted() {
-    const event: Record<string, unknown> = {
-      src: 'billing_success',
-      method: 'billing_success_page',
-    };
-
+  private hydrateCheckoutContext(): void {
     const attemptId = this.route.snapshot.queryParamMap.get('attempt');
     if (attemptId) {
       this.attemptId.set(attemptId);
-      event['attempt_id'] = attemptId;
     }
     this.loginRedirectTo.set(this.resolveLoginRedirectTarget(attemptId));
 
@@ -82,14 +84,14 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
       try {
         const planId = sessionStorage.getItem(BillingSuccessComponent.CHECKOUT_PLAN_KEY);
         const source = sessionStorage.getItem(BillingSuccessComponent.CHECKOUT_SOURCE_KEY);
-        if (planId) event['plan_id'] = planId;
-        if (source) event['src'] = source;
+        if (planId) this.checkoutPlanId = planId;
+        if (source && /^[a-z0-9_-]{1,64}$/i.test(source)) {
+          this.checkoutSource = source.toLowerCase();
+        }
         sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_PLAN_KEY);
         sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_SOURCE_KEY);
       } catch { }
     }
-
-    this.analytics.track('checkout_completed', event);
   }
 
   private resolveLoginRedirectTarget(attemptId: string | null): string {
@@ -161,8 +163,23 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
       this.attemptStatus.set(result.attempt);
 
       if (result.attempt.state === 'applied' && result.attempt.entitlementActive) {
-        this.router.navigateByUrl('/profile').catch(() => void 0);
-        this.pollSub?.unsubscribe();
+        this.trackCheckoutVerified(result.attempt);
+        if (result.attempt.purchase && result.attempt.mode === 'live') {
+          this.trackPurchaseOnce(result.attempt.purchase, result.attempt);
+          this.finishPolling();
+          return;
+        }
+
+        if (!this.entitlementAppliedSeen) {
+          this.entitlementAppliedSeen = true;
+          this.appliedGracePolls = 0;
+          return;
+        }
+
+        this.appliedGracePolls += 1;
+        if (this.appliedGracePolls >= 3) {
+          this.finishPolling();
+        }
         return;
       }
 
@@ -202,8 +219,8 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
     }
 
     if (result.user && isProActive(result.user)) {
-      this.router.navigateByUrl('/profile').catch(() => void 0);
-      this.pollSub?.unsubscribe();
+      this.trackCheckoutVerified();
+      this.finishPolling();
       return;
     }
 
@@ -212,5 +229,57 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
       this.state.set('timeout');
       this.pollSub?.unsubscribe();
     }
+  }
+
+  private trackCheckoutVerified(attempt?: CheckoutAttemptStatus): void {
+    if (this.checkoutVerifiedTracked) return;
+    this.checkoutVerifiedTracked = true;
+    this.analytics.track('checkout_verified', {
+      src: attempt?.purchase?.source || this.checkoutSource,
+      plan_id: attempt?.planId || this.checkoutPlanId,
+      provider: attempt?.provider || 'unknown',
+      checkout_mode: attempt?.mode || 'unknown',
+      entitlement_applied: true,
+    });
+  }
+
+  private trackPurchaseOnce(purchase: VerifiedPurchase, attempt: CheckoutAttemptStatus): void {
+    if (this.purchaseTracked || !purchase?.transactionId) return;
+    const storageKey = `${BillingSuccessComponent.PURCHASE_TRACKED_PREFIX}${purchase.transactionId}`;
+    if (typeof window !== 'undefined') {
+      try {
+        if (localStorage.getItem(storageKey) === '1') {
+          this.purchaseTracked = true;
+          return;
+        }
+      } catch { }
+    }
+
+    const accepted = this.analytics.track('purchase', {
+      transaction_id: purchase.transactionId,
+      currency: purchase.currency,
+      value: purchase.value,
+      tax: purchase.tax,
+      total: purchase.total,
+      items: purchase.items,
+      src: purchase.source,
+      plan_id: attempt.planId,
+      provider: attempt.provider,
+      checkout_mode: attempt.mode,
+      verified_at: purchase.verifiedAt,
+    });
+    if (accepted === false) return;
+
+    this.purchaseTracked = true;
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(storageKey, '1');
+      } catch { }
+    }
+  }
+
+  private finishPolling(): void {
+    this.router.navigateByUrl('/profile').catch(() => void 0);
+    this.pollSub?.unsubscribe();
   }
 }
