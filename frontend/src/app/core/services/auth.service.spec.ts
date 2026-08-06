@@ -260,7 +260,7 @@ describe('AuthService', () => {
 
   it('atomically consumes the OAuth mode, provider, redirect, and analytics source', () => {
     sessionStorage.setItem('oauth:mode', 'signup');
-    sessionStorage.setItem('oauth:provider', 'github');
+    sessionStorage.setItem('oauth:provider:github', '1');
     sessionStorage.setItem('oauth:redirect', '/javascript/coding/two-sum');
     sessionStorage.setItem('oauth:source', 'coding_submit');
 
@@ -272,7 +272,16 @@ describe('AuthService', () => {
     });
     expect(sessionStorage.getItem('oauth:mode')).toBeNull();
     expect(sessionStorage.getItem('oauth:provider')).toBeNull();
+    expect(sessionStorage.getItem('oauth:provider:google')).toBeNull();
+    expect(sessionStorage.getItem('oauth:provider:github')).toBeNull();
     expect(sessionStorage.getItem('oauth:redirect')).toBeNull();
     expect(sessionStorage.getItem('oauth:source')).toBeNull();
+  });
+
+  it('consumes and removes the legacy OAuth provider value', () => {
+    sessionStorage.setItem('oauth:provider', 'google');
+
+    expect(service.consumeOAuthContext().provider).toBe('google');
+    expect(sessionStorage.getItem('oauth:provider')).toBeNull();
   });
 });

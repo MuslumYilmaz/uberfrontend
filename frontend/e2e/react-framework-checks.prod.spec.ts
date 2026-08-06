@@ -263,11 +263,26 @@ async function loadCanonicalFile(page: Page, path: string, code: string): Promis
 }
 
 async function openFrameworkFile(page: Page, path: string): Promise<void> {
-  await page.getByTitle('File tree', { exact: true }).click();
-  const file = page.locator(`.file-drawer .file-row[title="${path}"]`);
+  const drawer = page.locator('.file-drawer');
+  if (!await drawer.getAttribute('class').then((value) => value?.includes('open')).catch(() => false)) {
+    await page.getByTitle('File tree', { exact: true }).click();
+  }
+  await expect(drawer).toHaveClass(/open/);
+
+  const panel = drawer.locator('.panel');
+  await expect.poll(async () => {
+    const [drawerBox, panelBox] = await Promise.all([
+      drawer.boundingBox(),
+      panel.boundingBox(),
+    ]);
+    if (!drawerBox || !panelBox) return Number.POSITIVE_INFINITY;
+    return Math.abs(panelBox.x - drawerBox.x);
+  }).toBeLessThanOrEqual(1);
+
+  const file = drawer.locator(`.file-row[title="${path}"]`);
   await expect(file).toBeVisible();
   await file.click();
-  await expect(page.locator('.file-drawer')).not.toHaveClass(/open/);
+  await expect(drawer).not.toHaveClass(/open/);
 }
 
 async function loadCanonicalBundle(
@@ -407,6 +422,15 @@ async function expectAssertionLayer(resultsPanel: Locator): Promise<void> {
 async function dismissPostPassPrompt(page: Page): Promise<void> {
   // Anonymous visitors receive the sign-in prompt; signed-in visitors can receive
   // the progress prompt. Both are deliberately dismissible before rebuilding.
+  const accountPrompt = page.getByTestId('login-required-dialog');
+  const closeAccountPrompt = page.getByRole('button', { name: 'Close account prompt' });
+  await closeAccountPrompt.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => undefined);
+  if (await closeAccountPrompt.isVisible().catch(() => false)) {
+    await closeAccountPrompt.click();
+    await expect(accountPrompt).toBeHidden();
+    return;
+  }
+
   const cancel = page.getByRole('button', { name: 'Cancel', exact: true }).last();
   await cancel.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => undefined);
   if (await cancel.isVisible().catch(() => false)) {
