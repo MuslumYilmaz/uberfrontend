@@ -118,6 +118,15 @@
   gap: 12px;
 }
 
+.sd-skip-bank {
+  display: inline-flex;
+  margin-top: 16px;
+  color: var(--uf-accent-strong);
+  font-size: 13px;
+  font-weight: 800;
+  text-underline-offset: 3px;
+}
+
 .sd-start-card,
 .sd-question-link,
 .sd-rubric-card,
@@ -373,10 +382,34 @@
 
 .sd-filter-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
-  gap: 14px;
-  align-items: center;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(3, minmax(126px, 0.72fr)) minmax(190px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
   padding: 16px;
+}
+
+.sd-filter-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sd-filter-label {
+  color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.sd-filter-field fa-select {
+  display: block;
+  min-width: 0;
+}
+
+.sd-filter-actions {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
 }
 
 .sd-search-wrap {
@@ -412,6 +445,7 @@
   display: grid;
   gap: 16px;
   padding: 18px;
+  scroll-margin-top: 16px;
 }
 
 .sd-bank__head {
@@ -436,6 +470,13 @@
   padding: 28px 0;
   color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
   font-size: 13px;
+}
+
+.sd-result-count {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .sd-prompt-grid {
@@ -466,8 +507,6 @@
 }
 
 .sd-prompt-card__topline,
-.sd-focus-row,
-.sd-tag-row,
 .sd-prompt-card__actions {
   display: flex;
   flex-wrap: wrap;
@@ -475,9 +514,7 @@
   align-items: center;
 }
 
-.sd-chip,
-.sd-focus-row span,
-.sd-tag-row span {
+.sd-chip {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -490,13 +527,9 @@
   line-height: 1.2;
 }
 
-.sd-chip--format {
+.sd-chip--level {
   color: var(--uf-text-primary);
   background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
-}
-
-.sd-chip--difficulty {
-  text-transform: capitalize;
 }
 
 .sd-chip--premium {
@@ -530,9 +563,23 @@
   line-height: 1.55;
 }
 
-.sd-tag-row span {
-  color: color-mix(in srgb, var(--uf-text-tertiary) 90%, transparent);
-  font-size: 11px;
+.sd-prompt-card__format {
+  margin: 0;
+  color: var(--uf-accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.sd-skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0;
+  padding-left: 18px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .sd-prompt-card__actions {
@@ -558,88 +605,6 @@
   text-underline-offset: 3px;
 }
 
-::ng-deep .tag-filter {
-  min-width: 220px;
-  width: 100%;
-}
-
-::ng-deep .tag-filter .p-multiselect {
-  display: flex;
-  flex: 1;
-  width: 100%;
-  background: color-mix(in srgb, var(--uf-surface-alt) 90%, var(--uf-surface));
-  border: 1px solid var(--uf-border-subtle);
-  border-radius: 8px;
-  color: var(--uf-text-primary);
-}
-
-::ng-deep .tag-filter .p-multiselect .p-multiselect-label,
-::ng-deep .tag-filter .p-multiselect .p-placeholder {
-  background: transparent;
-  color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
-}
-
-::ng-deep .tag-filter .p-multiselect .p-multiselect-trigger {
-  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
-}
-
-::ng-deep .tag-filter .p-multiselect-token {
-  background: color-mix(in srgb, var(--uf-accent) 20%, var(--uf-surface));
-  color: var(--uf-text-primary);
-  border-radius: 9999px;
-  padding: 2px 8px;
-  margin-right: 4px;
-  font-size: 12px;
-}
-
-::ng-deep .dark-multiselect-panel {
-  min-width: 260px;
-  background: color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-surface)) !important;
-  border: 1px solid var(--uf-border-subtle) !important;
-  color: var(--uf-text-primary) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-header {
-  background: color-mix(in srgb, var(--uf-surface-alt) 94%, var(--uf-surface));
-  border-bottom: 1px solid var(--uf-border-subtle);
-  padding: 6px 8px;
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-filter-container input {
-  background: color-mix(in srgb, var(--uf-surface) 84%, var(--uf-surface-alt));
-  border: 1px solid var(--uf-border-subtle);
-  color: var(--uf-text-primary);
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-item {
-  background: transparent;
-  padding: 0.5rem 1rem;
-  color: var(--uf-text-primary);
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-item:hover {
-  background: color-mix(in srgb, var(--uf-text-primary) 6%, transparent);
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight {
-  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-close {
-  color: var(--uf-text-primary);
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-item .p-checkbox-box {
-  background: transparent;
-  border: 1px solid var(--uf-border-subtle);
-}
-
-::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox-box {
-  background: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
-  border-color: var(--uf-accent);
-}
-
 @media (max-width: 1100px) {
   .sd-start-grid,
   .sd-rubric-grid,
@@ -647,6 +612,15 @@
   .sd-info-grid--five,
   .sd-related-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sd-filter-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sd-filter-field--search,
+  .sd-filter-field--tags {
+    grid-column: span 2;
   }
 }
 
@@ -664,7 +638,12 @@
   }
 
   .sd-filter-bar {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sd-filter-field--search,
+  .sd-filter-field--tags {
+    grid-column: 1 / -1;
   }
 
   .sd-radio-flow__steps {
@@ -693,6 +672,15 @@
   .sd-radio-cta,
   .sd-premium-preview {
     padding: 14px;
+  }
+
+  .sd-filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .sd-filter-field--search,
+  .sd-filter-field--tags {
+    grid-column: auto;
   }
 
   .sd-prompt-card {

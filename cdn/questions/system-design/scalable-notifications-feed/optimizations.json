@@ -197,10 +197,16 @@
       "text": "Notification importance must not be inferred from arrival frequency. A quiet security event may deserve a persistent surface while a large batch of low-priority updates may collapse into one summary. Keep delivery state, read state, and presentation urgency separate so reconnects cannot replay alerts or mark unseen items as read. If the active filter excludes a new item, update the relevant count without moving the reader's anchor."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Scalable Notifications Feed (Real-time) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "scalable notifications feed answer rubric",
+      "items": [
+        "Must — Merge snapshot and resumable events by notification identity and contiguous sequence.",
+        "Must — Keep unread markers and removal events authoritative across reconnect and pagination.",
+        "Strong signal — Batch projection updates without dropping accepted notifications during bursts.",
+        "Strong signal — Preserve scroll anchor, focus, and restrained announcements as new items arrive.",
+        "Expert stretch — Explain bounded storage, multi-tab coordination, and catch-up after cursor expiry.",
+        "Red flag — Advancing the resume cursor past a gap or treating unread count as a client-only increment."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

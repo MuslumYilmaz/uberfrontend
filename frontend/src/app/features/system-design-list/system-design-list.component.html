@@ -3,7 +3,7 @@
     <p class="fa-page-kicker">Architecture interview prep</p>
     <h1 class="fa-page-title">Frontend System Design Interview Questions</h1>
     <p class="fa-page-subtitle">
-      Practice UI architecture, state, API contracts, performance, accessibility, and tradeoff scenarios with a bank that maps every prompt back to the 45-minute answer template.
+      Use each card's timebox for a focused first pass, then expand the same decisions with the separate 45-minute RADIO interview template.
     </p>
 
     <div class="sd-hero__stats" *ngIf="stats$ | async as stats" aria-label="System design bank coverage">
@@ -26,38 +26,101 @@
     </div>
   </header>
 
-  <section class="sd-radio-cta fa-section-shell" aria-label="Frontend system design answer template">
-    <div>
-      <div class="sd-radio-cta__eyebrow">Blueprint first</div>
-      <a
-        class="sd-radio-cta__link"
-        [routerLink]="['/guides/system-design-blueprint/radio-framework']">
-        Start with the frontend system design interview answer template
-      </a>
+  <section class="sd-section sd-start-here fa-section-shell" aria-labelledby="sd-start-title" data-testid="system-design-start-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Start here</p>
+      <h2 id="sd-start-title">Build from a junior UI boundary to a senior architecture case</h2>
+      <p>
+        Follow this four-step path when you are new to the bank, then use the filters to choose focused practice.
+      </p>
     </div>
-    <p class="sd-radio-cta__copy">
-      The template gives each answer a sequence: requirements, architecture, data model, interface, and optimizations before you open a problem prompt.
-    </p>
+    <div class="sd-start-grid">
+      <article class="sd-start-card" *ngFor="let step of startSteps">
+        <span>{{ step.step }}</span>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.detail }}</p>
+        <a [routerLink]="step.route">{{ step.cta }}</a>
+      </article>
+    </div>
+    <a class="sd-skip-bank" href="#system-design-bank">Skip to question bank</a>
   </section>
 
   <section class="sd-filter-bar fa-section-shell" aria-label="System design prompt filters">
-    <div class="sd-search-wrap">
+    <div class="sd-filter-field sd-filter-field--search">
+      <label class="sd-filter-label" for="system-design-search">Search</label>
+      <div class="sd-search-wrap">
       <i class="pi pi-search sd-search-icon"></i>
-      <input pInputText type="text" placeholder="Search by title, format, focus, or tag"
+      <input id="system-design-search" pInputText type="search" placeholder="Search prompts"
         class="sd-search-input"
         [(ngModel)]="searchTerm"
-        (ngModelChange)="search$.next($event)" [ngModelOptions]="{ standalone: true }" />
+        (ngModelChange)="onSearchChanged($event)" [ngModelOptions]="{ standalone: true }" />
+      </div>
     </div>
 
-    <div class="sd-tag-filter-wrap">
-      <p-multiSelect class="tag-filter w-full" [options]="(tagOptions$ | async) ?? []" placeholder="Tags"
-        display="chip" panelStyleClass="dark-multiselect-panel rounded-lg" (onChange)="tags$.next($event.value || [])"
-        optionLabel="label" optionValue="value">
-      </p-multiSelect>
+    <div class="sd-filter-field">
+      <label class="sd-filter-label" id="system-design-level-label">Level</label>
+      <fa-select
+        inputId="system-design-level"
+        ariaLabelledBy="system-design-level-label"
+        [options]="levelOptions"
+        [value]="selectedLevel"
+        (valueChange)="onLevelChanged($event)"
+        styleClass="w-full">
+      </fa-select>
+    </div>
+
+    <div class="sd-filter-field">
+      <label class="sd-filter-label" id="system-design-access-label">Access</label>
+      <fa-select
+        inputId="system-design-access"
+        ariaLabelledBy="system-design-access-label"
+        [options]="accessOptions"
+        [value]="selectedAccess"
+        (valueChange)="onAccessChanged($event)"
+        styleClass="w-full">
+      </fa-select>
+    </div>
+
+    <div class="sd-filter-field">
+      <label class="sd-filter-label" id="system-design-format-label">Format</label>
+      <fa-select
+        inputId="system-design-format"
+        ariaLabelledBy="system-design-format-label"
+        [options]="formatOptions"
+        [value]="selectedFormat"
+        (valueChange)="onFormatChanged($event)"
+        styleClass="w-full">
+      </fa-select>
+    </div>
+
+    <div class="sd-filter-field sd-filter-field--tags">
+      <label class="sd-filter-label" id="system-design-tags-label">Tags</label>
+      <fa-select
+        inputId="system-design-tags"
+        ariaLabelledBy="system-design-tags-label"
+        ariaFilterLabel="Filter system design tags"
+        [options]="(tagOptions$ | async) ?? []"
+        [value]="selectedTags"
+        (valueChange)="onTagsChanged($event)"
+        [multiple]="true"
+        [filter]="true"
+        styleClass="w-full">
+      </fa-select>
+    </div>
+
+    <div class="sd-filter-actions">
+      <button
+        faButton
+        variant="ghost"
+        size="sm"
+        [disabled]="!hasActiveFilters()"
+        (click)="clearFilters()">
+        Clear filters
+      </button>
     </div>
   </section>
 
-  <section class="sd-bank fa-section-shell" aria-labelledby="sd-bank-title" data-testid="system-design-bank">
+  <section id="system-design-bank" class="sd-bank fa-section-shell" aria-labelledby="sd-bank-title" data-testid="system-design-bank">
     <div class="sd-bank__head">
       <div>
         <p class="sd-section__eyebrow">Question bank</p>
@@ -76,8 +139,12 @@
 
     <ng-template #loaded>
       <ng-container *ngIf="filtered$ | async as questions">
+        <p class="sd-result-count" aria-live="polite" aria-atomic="true">
+          {{ questions.length }} {{ questions.length === 1 ? 'prompt' : 'prompts' }} shown
+        </p>
         <div *ngIf="questions.length === 0" class="fa-empty-state">
-          No prompts match your filters.
+          <p>No prompts match your filters.</p>
+          <button faButton variant="ghost" size="sm" (click)="clearFilters()">Clear filters</button>
         </div>
 
         <div class="sd-prompt-grid">
@@ -88,10 +155,12 @@
             [attr.data-format]="q.formatCategory"
             [attr.data-testid]="'system-design-prompt-card-' + q.id">
             <div class="sd-prompt-card__topline">
-              <span class="sd-chip sd-chip--format" data-testid="system-design-format-chip">{{ q.formatLabel }}</span>
-              <span class="sd-chip sd-chip--difficulty" data-testid="system-design-difficulty-chip">{{ q.difficulty }}</span>
+              <span class="sd-chip sd-chip--level" data-testid="system-design-level-chip">{{ levelLabel(q.practice.targetLevel) }}</span>
+              <span class="sd-chip sd-chip--timebox" data-testid="system-design-timebox-chip">{{ q.practice.timeboxMinutes }} min first pass</span>
               <span class="sd-chip" [class.sd-chip--premium]="q.access === 'premium'">{{ q.access === 'premium' ? 'Premium' : 'Free' }}</span>
             </div>
+
+            <p class="sd-prompt-card__format">{{ q.formatLabel }}</p>
 
             <h3>
               <a [routerLink]="[q.id]" [attr.data-testid]="'system-design-card-link-' + q.id">
@@ -100,19 +169,18 @@
             </h3>
             <p class="sd-prompt-card__summary">{{ q.summary }}</p>
 
-            <div class="sd-focus-row" aria-label="Answer focus">
-              <span *ngFor="let focus of q.answerFocus">{{ focus }}</span>
-            </div>
-
-            <div class="sd-tag-row" aria-label="Prompt tags">
-              <span *ngFor="let tag of q.tags | slice:0:5">#{{ tag }}</span>
-            </div>
+            <ul class="sd-skill-list" aria-label="Core skills">
+              <li *ngFor="let skill of q.practice.coreSkills | slice:0:3">{{ skill }}</li>
+            </ul>
 
             <div class="sd-prompt-card__actions">
               <a class="sd-prompt-card__primary" [routerLink]="[q.id]">
                 {{ isLocked(q) ? 'View prompt preview' : 'Open prompt' }}
               </a>
-              <a class="sd-prompt-card__guide" [routerLink]="q.guideRoute">
+              <a
+                class="sd-prompt-card__guide"
+                [routerLink]="q.guideRoute"
+                [attr.aria-label]="q.guideLabel + ' for ' + q.title">
                 {{ q.guideLabel }}
               </a>
             </div>
@@ -135,24 +203,6 @@
         <strong>{{ link.label }}</strong>
         <span>{{ link.detail }}</span>
       </a>
-    </div>
-  </section>
-
-  <section class="sd-section sd-start-here fa-section-shell" aria-labelledby="sd-start-title" data-testid="system-design-start-section">
-    <div class="sd-section__head">
-      <p class="sd-section__eyebrow">Frontend system design interview preparation</p>
-      <h2 id="sd-start-title">Start here, then move through harder prompt types</h2>
-      <p>
-        Use this sequence to turn frontend system design interview questions into deliberate practice instead of random browsing.
-      </p>
-    </div>
-    <div class="sd-start-grid">
-      <article class="sd-start-card" *ngFor="let step of startSteps">
-        <span>{{ step.step }}</span>
-        <h3>{{ step.title }}</h3>
-        <p>{{ step.detail }}</p>
-        <a [routerLink]="step.route">{{ step.cta }}</a>
-      </article>
     </div>
   </section>
 

@@ -1,9 +1,10 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { SeoService } from '../../core/services/seo.service';
@@ -30,6 +31,21 @@ describe('SystemDesignListComponent', () => {
       access: 'free',
       difficulty: 'intermediate',
       companies: ['google'],
+      discovery: {
+        teaser: 'A timer race must remove one toast once while announcements stay quiet after rerenders.',
+        guideLabel: 'Trace toast cleanup',
+      },
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'junior',
+        timeboxMinutes: 10,
+        candidatePrompt: 'Design a toast system that bounds visible messages and cleans up every timer.',
+        constraints: ['At most three visible toasts.', 'Announcements must not repeat.'],
+        expectedDecisions: ['Command boundary', 'Lifecycle ownership', 'Announcement policy'],
+        prerequisites: ['Component state', 'Accessible status messages'],
+        coreSkills: ['Global state', 'Timer lifecycle', 'Accessibility'],
+        guidedMock: true,
+      },
     },
     {
       id: 'ai-chat-textarea-design',
@@ -40,6 +56,21 @@ describe('SystemDesignListComponent', () => {
       access: 'free',
       difficulty: 'intermediate',
       companies: ['openai'],
+      discovery: {
+        teaser: 'An old stream event must never replace the active reply while IME input remains intact.',
+        guideLabel: 'Trace stream identity',
+      },
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'mid',
+        timeboxMinutes: 15,
+        candidatePrompt: 'Design an AI chat composer with safe sends and stale stream protection.',
+        constraints: ['IME composition must remain safe.', 'Only one logical send can commit.'],
+        expectedDecisions: ['Send command', 'Stream identity', 'Retry behavior'],
+        prerequisites: ['Async state', 'Input events'],
+        coreSkills: ['IME safety', 'Streaming state', 'Race handling', 'Recovery'],
+        guidedMock: true,
+      },
     },
     {
       id: 'image-upload-preview',
@@ -53,7 +84,10 @@ describe('SystemDesignListComponent', () => {
     },
   ];
 
-  async function createComponent(items = resolvedItems) {
+  async function createComponent(
+    items: unknown[] = resolvedItems,
+    queryParams: Record<string, string | string[]> = {},
+  ) {
     const questionService = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadSystemDesign']);
     questionService.loadSystemDesign.and.returnValue(of([]));
 
@@ -74,6 +108,8 @@ describe('SystemDesignListComponent', () => {
         items,
       },
     };
+    const queryParamMap$ = new BehaviorSubject(convertToParamMap(queryParams));
+    const analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -86,22 +122,29 @@ describe('SystemDesignListComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             data: of(routeData),
-            snapshot: { data: routeData },
+            queryParamMap: queryParamMap$.asObservable(),
+            snapshot: {
+              data: routeData,
+              queryParamMap: queryParamMap$.value,
+            },
             parent: { snapshot: { data: {} } },
           },
         },
         { provide: QuestionService, useValue: questionService },
         { provide: AuthService, useValue: { user: signal(null) } },
         { provide: SeoService, useValue: seo },
+        { provide: AnalyticsService, useValue: analytics },
       ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(SystemDesignListComponent);
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate').and.resolveTo(true);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
-    return { fixture, questionService, seo };
+    return { fixture, questionService, seo, analytics, queryParamMap$, router };
   }
 
   function text(fixture: ComponentFixture<SystemDesignListComponent>): string {
@@ -123,38 +166,61 @@ describe('SystemDesignListComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="system-design-list-loading"]')).toBeNull();
   });
 
-  it('shows format category, difficulty, access, and answer focus chips', async () => {
+  it('shows level, first-pass time, access, format, and at most three core skills', async () => {
     const { fixture } = await createComponent();
     const host = fixture.nativeElement as HTMLElement;
     const premiumCard = host.querySelector('[data-testid="system-design-prompt-card-ai-chat-textarea-design"]') as HTMLElement | null;
 
     expect(premiumCard).not.toBeNull();
     expect(premiumCard?.textContent || '').toContain('AI product workflows');
-    expect(premiumCard?.textContent || '').toContain('intermediate');
+    expect(premiumCard?.textContent || '').toContain('Mid');
+    expect(premiumCard?.textContent || '').toContain('15 min first pass');
     expect(premiumCard?.textContent || '').toContain('Free');
-    expect(premiumCard?.textContent || '').toContain('State');
-    expect(premiumCard?.textContent || '').toContain('Realtime');
-    expect(premiumCard?.textContent || '').toContain('UX');
+    expect(premiumCard?.textContent || '').toContain('IME safety');
+    expect(premiumCard?.textContent || '').toContain('Streaming state');
+    expect(premiumCard?.textContent || '').toContain('Race handling');
+    expect(premiumCard?.textContent || '').not.toContain('Recovery');
+    expect(premiumCard?.textContent || '').not.toContain('#real-time');
   });
 
   it('keeps search and tag filtering client-side after hydration', async () => {
     const { fixture } = await createComponent();
     const component = fixture.componentInstance;
 
-    component.search$.next('toast');
+    component.onSearchChanged('toast');
+    await new Promise((resolve) => setTimeout(resolve, 275));
     fixture.detectChanges();
 
     expect(bankText(fixture)).toContain('Design a Toast Notification System');
     expect(bankText(fixture)).not.toContain('Infinite Scroll List System Design');
     expect(bankText(fixture)).not.toContain('AI Chat Textarea Design');
 
-    component.search$.next('');
-    component.tags$.next(['real-time']);
+    component.onSearchChanged('');
+    await new Promise((resolve) => setTimeout(resolve, 275));
+    component.onTagsChanged(['real-time']);
     fixture.detectChanges();
 
     expect(bankText(fixture)).toContain('AI Chat Textarea Design');
     expect(bankText(fixture)).not.toContain('Design a Toast Notification System');
     expect(bankText(fixture)).not.toContain('Infinite Scroll List System Design');
+  });
+
+  it('uses discovery copy, searches both teaser and original description, and names the guide link with the question', async () => {
+    const { fixture } = await createComponent();
+    const component = fixture.componentInstance;
+    const host = fixture.nativeElement as HTMLElement;
+    const toastCard = host.querySelector('[data-testid="system-design-prompt-card-notification-toast-system"]') as HTMLElement;
+
+    expect(toastCard.textContent || '').toContain('A timer race must remove one toast once');
+    expect(toastCard.textContent || '').not.toContain('Design a global toast API with stacking');
+    const guide = Array.from(toastCard.querySelectorAll('a')).find((link) =>
+      link.textContent?.includes('Trace toast cleanup')) as HTMLAnchorElement | undefined;
+    expect(guide?.getAttribute('aria-label')).toContain('Design a Toast Notification System');
+
+    component.onSearchChanged('accessible announcements');
+    await new Promise((resolve) => setTimeout(resolve, 275));
+    fixture.detectChanges();
+    expect(bankText(fixture)).toContain('Design a Toast Notification System');
   });
 
   it('shows premium value copy while locked prompts still link to detail previews', async () => {
@@ -254,7 +320,7 @@ describe('SystemDesignListComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     const pageText = text(fixture);
 
-    expect(pageText).toContain('Frontend system design interview preparation');
+    expect(pageText).toContain('Build from a junior UI boundary to a senior architecture case');
     expect(pageText).toContain('Connect system design to the rest of frontend interview prep');
     expect(pageText).toContain('Core frontend system design patterns');
     expect(pageText).toContain('Frontend system design interview rubric');
@@ -275,42 +341,209 @@ describe('SystemDesignListComponent', () => {
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
   });
 
-  it('places the filter and question bank directly after the compact RADIO entry', async () => {
+  it('places the start path above the filters and question bank', async () => {
     const { fixture } = await createComponent();
     const host = fixture.nativeElement as HTMLElement;
-    const radio = host.querySelector('.sd-radio-cta');
+    const start = host.querySelector('[data-testid="system-design-start-section"]');
     const filter = host.querySelector('.sd-filter-bar');
     const bank = host.querySelector('[data-testid="system-design-bank"]');
     const related = host.querySelector('[data-testid="system-design-related-focus-section"]');
 
-    expect(radio?.nextElementSibling).toBe(filter);
+    expect(start?.nextElementSibling).toBe(filter);
     expect(filter?.nextElementSibling).toBe(bank);
     expect(bank?.nextElementSibling).toBe(related);
     expect(text(fixture)).toContain('free full solutions');
     expect(text(fixture)).not.toContain('Most asked frontend system design questions');
   });
 
-  it('uses the public Netflix guide for the fourth start step', async () => {
+  it('orders the start path Toast, RADIO, AI Chat, then the senior dashboard', async () => {
     const { fixture } = await createComponent();
     const startSection = (fixture.nativeElement as HTMLElement).querySelector(
       '[data-testid="system-design-start-section"]',
     );
-    const netflixGuide = startSection?.querySelector<HTMLAnchorElement>(
-      'a[href="/companies/netflix/preview"]',
-    );
+    const hrefs = Array.from(startSection?.querySelectorAll('a') ?? [])
+      .map((link) => link.getAttribute('href'));
 
-    expect(netflixGuide).toBeTruthy();
-    expect(netflixGuide?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
-      'Netflix frontend interview questions',
+    expect(hrefs).toEqual([
+      '/system-design/notification-toast-system',
+      '/guides/system-design-blueprint/radio-framework',
+      '/system-design/ai-chat-textarea-design',
+      '/system-design/dashboard-widgets-draggable-resizable',
+      '#system-design-bank',
+    ]);
+  });
+
+  it('uses legacy difficulty fallbacks and stable beginner-first source ordering', async () => {
+    const { fixture } = await createComponent([
+      {
+        id: 'senior-first',
+        title: 'Senior first in source',
+        description: 'Senior prompt',
+        tags: ['architecture'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'hard',
+      },
+      {
+        id: 'mid-first',
+        title: 'Mid first in source',
+        description: 'Mid prompt',
+        tags: ['state'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'intermediate',
+      },
+      {
+        id: 'junior',
+        title: 'Junior prompt',
+        description: 'Junior prompt description',
+        tags: ['components'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'easy',
+      },
+      {
+        id: 'mid-second',
+        title: 'Mid second in source',
+        description: 'Second mid prompt',
+        tags: ['events'],
+        type: 'system-design',
+        access: 'free',
+        difficulty: 'intermediate',
+      },
+    ]);
+
+    const cards = Array.from(
+      fixture.nativeElement.querySelectorAll('.sd-prompt-card'),
+    ) as HTMLElement[];
+    expect(cards.map((card) => card.getAttribute('data-testid'))).toEqual([
+      'system-design-prompt-card-junior',
+      'system-design-prompt-card-mid-first',
+      'system-design-prompt-card-mid-second',
+      'system-design-prompt-card-senior-first',
+    ]);
+    expect(cards[0]?.textContent || '').toContain('Junior');
+    expect(cards[0]?.textContent || '').toContain('10 min first pass');
+    expect(cards[1]?.textContent || '').toContain('Mid');
+    expect(cards[1]?.textContent || '').toContain('15 min first pass');
+    expect(cards[3]?.textContent || '').toContain('Senior');
+    expect(cards[3]?.textContent || '').toContain('20 min first pass');
+  });
+
+  it('restores valid URL dimensions, ignores unknown values, and treats selected tags as OR', async () => {
+    const { fixture } = await createComponent(resolvedItems, {
+      level: 'mid',
+      access: 'free',
+      format: 'ai-product',
+      tag: ['real-time', 'unknown-tag'],
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.selectedLevel).toBe('mid');
+    expect(component.selectedAccess).toBe('free');
+    expect(component.selectedFormat).toBe('ai-product');
+    expect(component.selectedTags).toEqual(['real-time']);
+    expect(bankText(fixture)).toContain('AI Chat Textarea Design');
+    expect(bankText(fixture)).not.toContain('Design a Toast Notification System');
+
+    component.onLevelChanged(null);
+    component.onFormatChanged(null);
+    component.onTagsChanged(['real-time', 'virtualization']);
+    fixture.detectChanges();
+
+    expect(bankText(fixture)).toContain('AI Chat Textarea Design');
+    expect(bankText(fixture)).toContain('Infinite Scroll List System Design');
+    expect(bankText(fixture)).not.toContain('Design a Toast Notification System');
+  });
+
+  it('ignores unknown level, access, format, and tag query values', async () => {
+    const { fixture } = await createComponent(resolvedItems, {
+      level: 'staff',
+      access: 'enterprise',
+      format: 'backend',
+      tag: ['not-in-bank'],
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.selectedLevel).toBeNull();
+    expect(component.selectedAccess).toBeNull();
+    expect(component.selectedFormat).toBeNull();
+    expect(component.selectedTags).toEqual([]);
+    expect(fixture.nativeElement.querySelectorAll('.sd-prompt-card').length).toBe(4);
+  });
+
+  it('debounces search URL updates and emits filter analytics without the search text', async () => {
+    const { fixture, router, analytics } = await createComponent();
+    const component = fixture.componentInstance;
+
+    component.onSearchChanged('toast private text');
+    expect(router.navigate).not.toHaveBeenCalled();
+
+    await new Promise((resolve) => setTimeout(resolve, 275));
+    fixture.detectChanges();
+
+    expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+      queryParams: jasmine.objectContaining({ q: 'toast private text' }),
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    }));
+    expect(analytics.track).toHaveBeenCalledWith(
+      'system_design_filter_changed',
+      jasmine.objectContaining({ has_search: true, tag_count: 0 }),
     );
-    expect(netflixGuide?.getAttribute('href')).not.toContain('?');
-    expect(
-      startSection?.querySelector('a[href="/system-design/netflix-scale-expansion"]'),
-    ).toBeNull();
+    const analyticsPayload = analytics.track.calls.mostRecent().args[1];
+    expect(JSON.stringify(analyticsPayload)).not.toContain('toast private text');
+  });
+
+  it('cancels a pending debounced search when filters are cleared', async () => {
+    const { fixture, router } = await createComponent();
+    const component = fixture.componentInstance;
+
+    component.onSearchChanged('toast');
+    expect(component.hasActiveFilters()).toBeTrue();
+    component.clearFilters();
+    await new Promise((resolve) => setTimeout(resolve, 275));
+    fixture.detectChanges();
+
+    expect(component.searchTerm).toBe('');
+    expect(component.hasActiveFilters()).toBeFalse();
+    expect(router.navigate).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelectorAll('.sd-prompt-card').length).toBe(4);
+  });
+
+  it('preserves a pending search when another filter changes before the debounce', async () => {
+    const { fixture, router } = await createComponent();
+    const component = fixture.componentInstance;
+
+    component.onSearchChanged('toast');
+    component.onLevelChanged('junior');
+    await new Promise((resolve) => setTimeout(resolve, 275));
+    fixture.detectChanges();
+
+    expect(component.searchTerm).toBe('toast');
+    expect(component.selectedLevel).toBe('junior');
+    expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+      queryParams: jasmine.objectContaining({ q: 'toast', level: 'junior' }),
+      replaceUrl: true,
+    }));
+    expect(fixture.nativeElement.querySelectorAll('.sd-prompt-card').length).toBe(1);
+    expect(bankText(fixture)).toContain('Design a Toast Notification System');
+  });
+
+  it('reacts to back-forward query restoration without emitting a new analytics event', async () => {
+    const { fixture, analytics, queryParamMap$ } = await createComponent();
+
+    queryParamMap$.next(convertToParamMap({ level: 'junior' }));
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.selectedLevel).toBe('junior');
+    expect(bankText(fixture)).toContain('Design a Toast Notification System');
+    expect(bankText(fixture)).not.toContain('AI Chat Textarea Design');
+    expect(analytics.track).not.toHaveBeenCalled();
   });
 
   it('publishes ItemList and FAQ schema for the system design hub', async () => {
-    const { seo } = await createComponent();
+    const { seo } = await createComponent(resolvedItems, { level: 'junior' });
 
     expect(seo.updateTags).toHaveBeenCalled();
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -319,9 +552,22 @@ describe('SystemDesignListComponent', () => {
     const faq = schema.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(itemList).toBeTruthy();
-    expect(itemList?.itemListElement?.[0]?.name).toBe('Infinite Scroll List System Design');
+    expect(payload.canonical).toBe('https://frontendatlas.com/system-design');
+    expect(itemList?.itemListElement?.[0]?.name).toBe('Design a Toast Notification System');
+    expect(itemList?.itemListElement?.length).toBe(4);
     expect(faq).toBeTruthy();
     expect(faq?.mainEntity?.length).toBe(5);
     expect(faq?.mainEntity?.[0]?.name).toBe('What is a frontend system design interview?');
+  });
+
+  it('keeps the base canonical and FAQ schema when the bank resolves empty', async () => {
+    const { seo } = await createComponent([], { q: 'toast' });
+
+    expect(seo.updateTags).toHaveBeenCalled();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const schema = Array.isArray(payload.jsonLd) ? payload.jsonLd : [payload.jsonLd];
+    expect(payload.canonical).toBe('https://frontendatlas.com/system-design');
+    expect(schema.some((entry: any) => entry?.['@type'] === 'FAQPage')).toBeTrue();
+    expect(schema.some((entry: any) => entry?.['@type'] === 'ItemList')).toBeFalse();
   });
 });

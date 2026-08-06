@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">AI chat composer command and stream boundaries</title>
+  <desc id="desc">The composer owns text, transient IME composition, and attachment readiness. Send freezes one command snapshot. The turn store accepts a snapshot or ordered stream event only when its conversation, message, and stream identities match.</desc>
+  <rect width="960" height="540" rx="24" fill="#f8fafc"/>
+  <text x="48" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#172033">Composer state stops at the command boundary</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="48" y="118" width="246" height="214" rx="18" fill="#e8efff" stroke="#315ee8" stroke-width="2"/>
+    <text x="72" y="158" font-size="19" font-weight="700" fill="#172033">Composer</text>
+    <text x="72" y="193" font-size="15" fill="#526078">persisted draft text</text>
+    <text x="72" y="221" font-size="15" fill="#526078">transient isComposing</text>
+    <text x="72" y="249" font-size="15" fill="#526078">attachment readiness</text>
+    <text x="72" y="277" font-size="15" fill="#526078">keyboard and mobile intent</text>
+    <text x="72" y="305" font-size="15" fill="#526078">send enabled only when ready</text>
+
+    <rect x="356" y="154" width="248" height="142" rx="18" fill="#fff7e8" stroke="#c47a18" stroke-width="2"/>
+    <text x="380" y="194" font-size="19" font-weight="700" fill="#172033">Frozen send command</text>
+    <text x="380" y="229" font-size="15" fill="#526078">commandId + clientMessageId</text>
+    <text x="380" y="257" font-size="15" fill="#526078">text + ready attachment IDs</text>
+
+    <rect x="666" y="118" width="246" height="214" rx="18" fill="#effaf4" stroke="#268455" stroke-width="2"/>
+    <text x="690" y="158" font-size="19" font-weight="700" fill="#172033">Current turn store</text>
+    <text x="690" y="193" font-size="15" fill="#526078">conversationId</text>
+    <text x="690" y="221" font-size="15" fill="#526078">messageId + streamId</text>
+    <text x="690" y="249" font-size="15" fill="#526078">lastSequence</text>
+    <text x="690" y="277" font-size="15" fill="#526078">snapshot or next event</text>
+    <text x="690" y="305" font-size="15" fill="#526078">terminal phase</text>
+  </g>
+  <g stroke="#315ee8" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M294 225H356"/>
+    <path d="m344 215 12 10-12 10"/>
+    <path d="M604 225H666"/>
+    <path d="m654 215 12 10-12 10"/>
+  </g>
+  <g font-family="Arial, sans-serif">
+    <rect x="120" y="390" width="720" height="82" rx="16" fill="#f3edff" stroke="#7950b8" stroke-width="2"/>
+    <text x="480" y="423" text-anchor="middle" font-size="17" font-weight="700" fill="#172033">Acceptance gate</text>
+    <text x="480" y="451" text-anchor="middle" font-size="15" fill="#526078">active conversation + message + stream, then exactly next sequence; otherwise ignore and reconcile</text>
+  </g>
+</svg>

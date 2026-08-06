@@ -62,22 +62,22 @@
       ],
       "rows": [
         [
-          "POST /generate",
+          "POST /api/images/generations",
           "202 + Location + statusUrl + job version",
           "Creates or recovers one long-running job for the idempotency key."
         ],
         [
-          "GET /jobs/:id",
+          "GET /api/images/jobs/{id}",
           "versioned status + optional progress",
           "UI polls with backoff or resumes a stream. Progress can be indeterminate."
         ],
         [
-          "GET /jobs/:id/stream",
+          "GET /api/images/jobs/{id}/stream",
           "versioned lifecycle events",
           "Optional realtime updates that may omit a numeric percentage."
         ],
         [
-          "POST /jobs/:id/retry or /cancel",
+          "POST /api/images/jobs/{id}/retry or /cancel",
           "idempotency key + based-on version",
           "Retry requeues a confirmed failed job; cancel records intent, and both return a newer job version."
         ],
@@ -143,7 +143,7 @@
       "items": [
         {
           "label": "Main endpoint",
-          "value": "/generate",
+          "value": "/api/images/generations",
           "helperText": "Creates the generation job."
         },
         {

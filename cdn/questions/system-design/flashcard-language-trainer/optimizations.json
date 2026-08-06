@@ -211,10 +211,16 @@
       "text": "Ship deterministic sessions and local command IDs before offline persistence. Test IME and multilingual content, RTL, large text, reduced motion, cross-device conflicts, partial sync, cache migration, and lost responses. Measure first-card readiness, draft queue age, conflict recovery, and study completion."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Flashcard-based Language Learning App assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "flashcard language trainer answer rubric",
+      "items": [
+        "Must — Model prompt, reveal, grading, and next-card transitions as explicit learning states.",
+        "Must — Support pointer, touch, Enter, and Space without making animation the only state cue.",
+        "Strong signal — Persist review outcomes idempotently and recover an interrupted session.",
+        "Strong signal — Keep card identity stable while scheduling and optimistic progress update.",
+        "Expert stretch — Tune prefetch and animation from measurements while respecting reduced motion.",
+        "Red flag — Advancing on any keypress or using a flip animation as the source of answer visibility."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

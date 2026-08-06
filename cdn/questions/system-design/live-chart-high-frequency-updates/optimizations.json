@@ -208,10 +208,16 @@
       "text": "Baseline the simplest renderer with representative series, points, viewport sizes, refresh rates, and hardware. Add downsampling, worker transforms, Canvas, or WebGL only after profile evidence. Monitor long tasks, input delay, buffer evictions, gaps, paint count per accepted sample, memory, and summary freshness."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Live Chart Rendering (High Frequency Updates) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "live chart high frequency updates answer rubric",
+      "items": [
+        "Must — Decouple event ingestion from rendering with a bounded data buffer and one scheduled frame.",
+        "Must — Preserve sequence or cursor continuity and expose stale state during reconnect recovery.",
+        "Strong signal — Aggregate data for the visible time range without rewriting authoritative samples.",
+        "Strong signal — Choose SVG, canvas, or another renderer only after representative profiling.",
+        "Expert stretch — Adapt sampling and visual detail to device capability and interaction state.",
+        "Red flag — Starting an unbounded animation loop or rendering the full history for every incoming point."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

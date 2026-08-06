@@ -180,6 +180,8 @@ function getSystemDesignBundle(slug) {
     label: relFromRepo(metaPath),
     editorial: meta.editorial,
     text: combinedText,
+    contentSchemaVersion: meta.contentSchemaVersion,
+    practice: meta.practice,
   };
 }
 
@@ -281,6 +283,72 @@ function validateConvertedDraft(draftPath) {
   const shippedText = normalizeKey(shipped.text);
   if (draftPrimaryKeyword && !shippedText.includes(draftPrimaryKeyword)) {
     addError(`${draftLabel}: shipped content does not contain the draft primary keyword in ${shipped.label}`);
+  }
+
+  if (family === 'system-design') {
+    const draftVersion = Number(frontmatter.content_schema_version || 0);
+    const shippedVersion = Number(shipped.contentSchemaVersion || 0);
+    if (draftVersion === 2 || shippedVersion === 2) {
+      if (draftVersion !== 2 || shippedVersion !== 2) {
+        addError(`${draftLabel}: V2 content_schema_version must match the shipped system-design metadata`);
+      }
+      const practice = shipped.practice;
+      if (!practice || typeof practice !== 'object' || Array.isArray(practice)) {
+        addError(`${draftLabel}: shipped V2 system-design metadata is missing practice`);
+      } else {
+        const scalarComparisons = [
+          ['targetLevel', frontmatter.target_level],
+          ['timeboxMinutes', frontmatter.timebox_minutes],
+          ['candidatePrompt', frontmatter.candidate_prompt],
+        ];
+        scalarComparisons.forEach(([field, draftValue]) => {
+          if (normalizeKey(practice[field]) !== normalizeKey(draftValue)) {
+            addError(`${draftLabel}: practice.${field} does not match V2 draft frontmatter in ${shipped.label}`);
+          }
+        });
+        const arrayComparisons = [
+          ['constraints', frontmatter.constraints],
+          ['expectedDecisions', frontmatter.expected_decisions],
+          ['prerequisites', frontmatter.prerequisites],
+          ['coreSkills', frontmatter.core_skills],
+        ];
+        arrayComparisons.forEach(([field, draftValue]) => {
+          const shippedItems = Array.isArray(practice[field]) ? practice[field].map(normalizeKey) : [];
+          const draftItems = Array.isArray(draftValue) ? draftValue.map(normalizeKey) : [];
+          if (JSON.stringify(shippedItems) !== JSON.stringify(draftItems)) {
+            addError(`${draftLabel}: practice.${field} does not match V2 draft frontmatter in ${shipped.label}`);
+          }
+        });
+        const spine = practice.evaluationSpine;
+        if (!spine || typeof spine !== 'object' || Array.isArray(spine)) {
+          addError(`${draftLabel}: practice.evaluationSpine is missing from V2 shipped metadata in ${shipped.label}`);
+        } else {
+          const spineArrayComparisons = [
+            ['mustCover', frontmatter.evaluation_must_cover],
+            ['strongSignals', frontmatter.evaluation_strong_signals],
+          ];
+          spineArrayComparisons.forEach(([field, draftValue]) => {
+            const shippedItems = Array.isArray(spine[field]) ? spine[field].map(normalizeKey) : [];
+            const draftItems = Array.isArray(draftValue) ? draftValue.map(normalizeKey) : [];
+            if (JSON.stringify(shippedItems) !== JSON.stringify(draftItems)) {
+              addError(`${draftLabel}: practice.evaluationSpine.${field} does not match V2 draft frontmatter in ${shipped.label}`);
+            }
+          });
+          const spineScalarComparisons = [
+            ['expertStretch', frontmatter.evaluation_expert_stretch],
+            ['redFlag', frontmatter.evaluation_red_flag],
+          ];
+          spineScalarComparisons.forEach(([field, draftValue]) => {
+            if (normalizeKey(spine[field]) !== normalizeKey(draftValue)) {
+              addError(`${draftLabel}: practice.evaluationSpine.${field} does not match V2 draft frontmatter in ${shipped.label}`);
+            }
+          });
+        }
+        if (String(Boolean(practice.guidedMock)) !== String(frontmatter.guided_mock).toLowerCase()) {
+          addError(`${draftLabel}: practice.guidedMock does not match V2 draft frontmatter in ${shipped.label}`);
+        }
+      }
+    }
   }
 
   if (family === 'trivia') {

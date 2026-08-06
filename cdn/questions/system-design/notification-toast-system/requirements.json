@@ -3,8 +3,31 @@
   "title": "Requirements",
   "blocks": [
     {
-      "type": "text",
-      "text": "Design a global toast system with a typed command API, top-level rendering layer, predictable stacking, bounded duplicate handling, manual dismissal, optional timing for low-risk status messages, persistent actionable or critical messages, responsive placement, and restrained screen-reader announcements."
+      "type": "steps",
+      "title": "A 10-minute answer",
+      "steps": [
+        {
+          "title": "Open with the user story",
+          "text": "A user saves a profile and sees Profile saved without losing focus. A later edit conflict shows Review or Undo and must remain available until it is resolved or safely dismissed. Either event may come from a component or a service, so callers need one global command API rather than a toast container on every page. This gives the design two concrete records to follow instead of starting with an abstract notification platform."
+        },
+        {
+          "title": "Set the boundary",
+          "text": "Keep the scope on the client feedback layer. It accepts typed commands, keeps at most three records visible, and puts additional distinct records into an ordered overflow queue. Low-risk status messages may expire. Actionable and critical messages are persistent because a timer must not remove the user’s only recovery path. A server owns the profile save or conflict itself; the toast only reports its result and exposes a command such as Review."
+        },
+        {
+          "title": "Assign one owner per job",
+          "text": "The store owns normalized records plus the visible and queued order. A lifecycle coordinator owns every expiry handle and all cleanup. The viewport renders the store through one root portal, applies the three-item limit, and sends dismiss or action intent back; it never starts a timer. A separate announcer tracks announcement identity and writes eligible messages to a stable live region once, so visual rerenders do not repeat speech."
+        },
+        {
+          "title": "Resolve the required race",
+          "text": "Manual dismiss and timeout both request remove(toastId, cause). The first request marks that ID removed, tells the lifecycle coordinator to clear its handle, and lets the store promote the next queued record. The second request reads the terminal state and does nothing. Cleanup is therefore idempotent: there is one removal transition, one timer disposal, and no late callback that can delete a newer toast or mutate an unmounted viewport."
+        },
+        {
+          "title": "Close with observable behavior",
+          "text": "A burst never renders more than three toasts, but distinct results remain ordered in the queue. The viewport becomes full-width on a narrow screen without changing record identity. Ordinary feedback uses a polite status announcement; genuinely urgent feedback may use an alert. Appearance never steals focus, action controls remain keyboard reachable, and the announcer suppresses a repeated ID even when React rerenders, reorders, or moves its visual element."
+        }
+      ],
+      "editorialRole": "timeboxed-answer"
     },
     {
       "type": "columns",
@@ -13,15 +36,12 @@
           "blocks": [
             {
               "type": "checklist",
-              "title": "Scope",
+              "title": "Questions for the profile scenario",
               "items": [
-                "A global toast API.",
-                "A ToastProvider / ToastContainer layer.",
-                "Stacked toast rendering.",
-                "Persistent and timed lifetime behavior with safe manual close.",
-                "Accessible announcements.",
-                "Timer cleanup and lifecycle handling.",
-                "Responsive placement rules."
+                "Can services outside the component tree trigger feedback?",
+                "Which outcomes are safe to expire, and which expose an action?",
+                "Is three the product’s visible-stack limit on every breakpoint?",
+                "Which events have a stable key that makes duplicate collapse safe?"
               ]
             }
           ]
@@ -30,157 +50,23 @@
           "blocks": [
             {
               "type": "checklist",
-              "title": "Design outline",
+              "title": "Baseline constraints",
               "items": [
-                "Requirements and constraints.",
-                "High-level architecture.",
-                "Toast data model.",
-                "Public API contract.",
-                "Rendering and portal strategy.",
-                "Timer lifecycle.",
-                "Accessibility behavior.",
-                "Performance and edge cases."
+                "One root viewport renders non-blocking feedback.",
+                "The ordered overflow queue does not lose a distinct outcome.",
+                "Persistent actions never inherit a generic expiry.",
+                "One eligible message produces at most one live-region update."
               ]
             }
           ]
         }
       ]
-    },
-    {
-      "type": "callout",
-      "variant": "success",
-      "title": "Scenario",
-      "text": "Worked example: a profile save emits a non-actionable success status with a product-configured timed lifetime. The store creates one status toast and the renderer announces it politely. If the user focuses or hovers it, the remaining-time countdown pauses. An Undo message would instead be persistent until the action expires or the user dismisses it."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "Toast system vs notification feed",
-      "text": "A toast system is for short-lived, non-blocking feedback. A notification feed is persistent, user-specific, often server-backed, and may need unread state, pagination, realtime updates, and retention. This page focuses on designing the Toast Notification System, not a persistent notifications feed."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Any authorized part of the app can emit a small non-blocking status message. Variants affect presentation but do not determine urgency by themselves. Low-risk informational feedback may use an adjustable timed lifetime; actionable, critical, or user-decision messages remain persistent. The system supports manual close, predictable stacking, placement, deduplication, accessible announcements, and complete cleanup."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Cover global ownership, stacking and overflow, persistent versus timed lifetime, complete timer cleanup, layering, restrained announcements, non-stealing focus behavior, and responsive placement."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "steps",
-      "title": "User flow",
-      "steps": [
-        {
-          "title": "1. Trigger",
-          "text": "Some part of the app calls toast.success('Profile saved', { lifetime: { kind: 'timed' } }) after an action completes. Provider policy resolves the measured default duration."
-        },
-        {
-          "title": "2. Show toast",
-          "text": "A new toast appears in the chosen corner (e.g. top-right), with the correct style and icon for its type."
-        },
-        {
-          "title": "3. Lifetime",
-          "text": "A timed status begins a remaining-time countdown; focus, hover, page hiding, or relevant user timing preferences pause it without resetting elapsed time. Persistent messages have no timer. A clearly labeled close button remains available when dismissal is safe."
-        },
-        {
-          "title": "4. Stack behavior",
-          "text": "If more toasts appear, they stack in a consistent order (e.g. newest on top). Old ones disappear as timers finish or the user closes them."
-        },
-        {
-          "title": "5. Edge cases",
-          "text": "On small screens, the layout adapts (e.g. full-width at the top/bottom). Screen readers get the message, and timers are cleaned up on unmount or route changes."
-        }
-      ]
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Clarifying questions",
-              "items": [
-                "From where can toasts be triggered? Only from React components, or also from plain JS utilities / services?",
-                "Do we need different variants (success, error, warning, info) with different icons and colors?",
-                "Which low-risk messages may be timed, which messages must persist, and how can timing be adjusted?",
-                "What is the visible-stack budget, and how should overflow queue without losing distinct outcomes or recovery actions?",
-                "Which placements do we need to support (top-right, top-center, bottom-right, bottom-left, mobile full-width)?",
-                "Do we need actions inside toasts (e.g. an \"Undo\" button) that require focus and keyboard support?"
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Explicit assumptions",
-              "items": [
-                "The toast system is global and should not require prop-drilling.",
-                "Toasts are non-blocking: they should not stop the user from interacting with the page.",
-                "Each toast has a message, presentation variant, urgency, and explicit persistent or timed lifetime.",
-                "Multiple toasts can be visible and must stack predictably.",
-                "Timers must be cleaned up on unmount or when the toast is removed.",
-                "Use status and polite announcement by default, reserve alert for genuinely urgent information, never move focus merely because a toast appeared, and keep interactive actions keyboard reachable."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Main concept",
-          "value": "Global toast layer",
-          "helperText": "One place in the app renders all toasts."
-        },
-        {
-          "label": "Key UX goal",
-          "value": "Non-blocking feedback",
-          "helperText": "Users keep working while seeing notifications."
-        },
-        {
-          "label": "Key technical concern",
-          "value": "Timers & cleanup",
-          "helperText": "No dangling intervals/timeouts when toasts disappear or routes change."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Scope checkpoint",
-      "text": "A toast system is more than just \"show a div\". In requirements, highlight that it must be global, stack correctly, clean up timers reliably, respect z-index layers, and stay accessible and readable on both desktop and mobile."
-    },
-    {
-      "type": "heading",
-      "text": "Frontend boundary"
-    },
-    {
-      "type": "text",
-      "text": "The toast layer owns client command normalization, stacking, lifetime, deduplication, announcements, and cleanup. The server-side business operation is an abstract contract; persistence and domain recovery stay outside this transient feedback channel."
+      "title": "Client/server ownership",
+      "text": "The backend contract owns profile persistence, conflict resolution, and Undo. The toast layer owns command normalization, order, expiry cleanup, rendering, and announcements. We reject feature-owned containers because they can remove a user’s visible recovery action when the feature unmounts."
     }
   ]
 }

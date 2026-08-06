@@ -10,7 +10,7 @@
       "type": "checklist",
       "title": "Performance techniques",
       "items": [
-        "Virtualize the list; cap DOM nodes.",
+        "Keep rendering bounded; add list windowing only when representative measurements justify it.",
         "Retain accepted events and coalesce visible projection updates at a measured cadence.",
         "Lazy-load media and use placeholders to avoid layout shifts.",
         "Memoize row components to reduce re-rendering.",
@@ -30,7 +30,7 @@
         [
           "Janky scroll",
           "Too many DOM nodes",
-          "Virtualize + reduce row complexity"
+          "Reduce row complexity; add measured windowing if DOM cost remains high"
         ],
         [
           "Layout shift",
@@ -148,10 +148,16 @@
       "text": "Cache isolation includes account, locale, filters, and experiment assignment when they affect content. Signing out clears personal feed state. Telemetry records cursor, rank revision, merge outcome, gap, layout shift, and user-visible recovery without copying post bodies. Rollout can separate new rank projection, live buffering, media policy, and windowing behind independent flags so a scroll-jump regression does not require disabling basic pagination."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how News Feed / Timeline Front-End System Design assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "news feed timeline answer rubric",
+      "items": [
+        "Must — Merge cursor pages and live updates by stable identity under a server-authoritative rank revision.",
+        "Must — Preserve the reading anchor while keeping rendering work bounded on representative devices.",
+        "Strong signal — Buffer disruptive inserts behind a new-items affordance instead of moving the viewport.",
+        "Strong signal — Reserve media geometry and accept pagination only for the active query generation.",
+        "Expert stretch — Add list windowing only when measurements justify its accessibility and restoration cost.",
+        "Red flag — Re-sorting ranked posts by client timestamps or assuming virtualization is a requirement."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

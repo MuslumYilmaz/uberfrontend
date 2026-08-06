@@ -3,211 +3,104 @@
   "title": "Architecture",
   "blocks": [
     {
-      "type": "text",
-      "text": "Separate command normalization, durable toast records, lifecycle scheduling, rendering, and announcements so that one owner controls each transition."
-    },
-    {
-      "type": "callout",
-      "variant": "info",
-      "title": "Store, viewport, and announcer boundary",
-      "text": "toast.success() -> toast store -> ToastProvider -> portal-based ToastContainer -> ToastItem with timer and dismiss behavior"
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Use a global toast store, a root ToastProvider that renders through a portal, and one lifecycle coordinator for every deadline. The public API emits typed commands; the container renders state and sends interactions back without owning independent timers."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Boundary checks:\n- One global store owns visible and queued records.\n- One lifecycle coordinator owns deadlines, pause reasons, and cleanup.\n- A portal or equivalent root layer provides predictable stacking.\n- The layer contract defines how toasts relate to dialogs and popovers.\n- The public API stays small while preserving typed lifetime and action semantics."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
       "type": "table",
-      "title": "Core building blocks",
+      "title": "Ownership map",
       "columns": [
-        "Piece",
-        "Responsibility",
-        "Design rationale"
+        "Owner",
+        "Keeps",
+        "Does not own"
       ],
       "rows": [
         [
-          "Toast API (toast helper)",
-          "Public functions like toast.success(message, options?) and toast.error(message, options?) that push toasts into global state.",
-          "Authorized callers emit a normalized add command and receive the stable toast ID."
+          "Toast store",
+          "Normalized records, visible order, overflow order, and terminal removal state.",
+          "Browser timeout handles or DOM nodes."
         ],
         [
-          "Global toast store / context",
-          "Keeps an array of active toasts and handles add/remove/clear actions.",
-          "The store is the single source of truth for visible and queued toast records."
+          "Lifecycle coordinator",
+          "One expiry handle per timed record and idempotent disposal by ID.",
+          "Visual stacking, focus, or live-region text."
         ],
         [
-          "ToastProvider",
-          "Top-level component that subscribes to the store and renders the ToastContainer via a portal.",
-          "The root provider subscribes once and renders the configured placement through a portal."
+          "Toast viewport",
+          "A portal view of at most three records plus keyboard-operable actions.",
+          "Independent timers, copied records, or announcement history."
         ],
         [
-          "ToastContainer",
-          "Positions and stacks toasts for a given placement (top-right, bottom-left, etc.).",
-          "The container applies placement, bounded stacking, and the documented layer policy."
-        ],
-        [
-          "ToastItem",
-          "Renders a single toast: icon, message, optional actions, close button, ARIA/focus behavior.",
-          "Each item renders semantics and emits pause, resume, action, and dismiss intent; it does not create a competing timer."
+          "Announcer",
+          "A stable live region and a set of announcement IDs already emitted.",
+          "Toast lifetime or visual placement."
         ]
       ]
     },
     {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Toast policy decisions",
-              "items": [
-                "There is one global toast layer mounted near the root of the app.",
-                "Toasts are stored in a global store/context, not per-page state.",
-                "The toast API is just a thin wrapper over that store (no UI logic inside helpers).",
-                "The ToastProvider uses a portal (or similar) to render a fixed-position container above the main app.",
-                "ToastContainer handles placement and stacking order (newest on top or bottom).",
-                "The lifecycle coordinator owns every deadline and cleanup; ToastItem reports focus, hover, action, and dismiss intent."
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Architecture failure patterns",
-              "items": [
-                "Spreading toast state across many unrelated components.",
-                "Requiring every page to include its own toast container.",
-                "Triggering DOM queries (document.querySelector) all over instead of a clean portal.",
-                "Letting every ToastItem create an independent timer, which makes pause and cleanup race.",
-                "Hard-coding placements and not leaving room for a simple config.",
-                "No clear z-index strategy (toasts randomly appear behind headers or modals)."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "steps",
-      "title": "High-level flow",
-      "steps": [
-        {
-          "title": "1. App initialization",
-          "text": "The root renders <ToastProvider> once, which mounts a ToastContainer in a fixed overlay using a portal."
-        },
-        {
-          "title": "2. Triggering a toast",
-          "text": "Any component or service calls toast.success(message, options?). The helper dispatches an addToast action with a new toast object (id, variant, message, options)."
-        },
-        {
-          "title": "3. Rendering & stacking",
-          "text": "The ToastProvider subscribes to the toast store, receives the updated list, and ToastContainer renders a stack of ToastItem components in the correct corner."
-        },
-        {
-          "title": "4. Lifetime and manual close",
-          "text": "A lifecycle coordinator manages timed status messages with remaining-time pause and cleanup. Persistent, actionable, and critical messages have no automatic timer. ToastItem renders state and emits interaction intent rather than owning competing timers."
-        },
-        {
-          "title": "5. Unmount / navigation",
-          "text": "If the ToastProvider unmounts (e.g. full app teardown), it clears remaining toasts and timers to avoid leaks."
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "State ownership",
-          "value": "Global store",
-          "helperText": "All toasts live in one place and are easy to observe."
-        },
-        {
-          "label": "Rendering strategy",
-          "value": "Portal overlay",
-          "helperText": "Toasts render above the main layout without breaking it."
-        },
-        {
-          "label": "Developer experience",
-          "value": "toast.*() API",
-          "helperText": "Callers don’t care about implementation details, only about a simple function."
-        }
-      ]
-    },
-    {
       "type": "callout",
-      "variant": "warning",
-      "title": "Toast lifecycle ownership",
-      "text": "A good toast architecture gives you one global place for state and rendering, plus a tiny, ergonomic API for the rest of the app. If you can explain that clearly with 3–4 boxes, you’re already giving a strong senior signal.",
+      "variant": "success",
+      "title": "Canonical model",
+      "text": "toast.success(...) creates a command. The store assigns an ID and places its record in the visible stack or ordered queue. The lifecycle coordinator schedules expiry only when the normalized lifetime is timed. The viewport renders store state and returns user intent. The announcer receives an eligible announcement event once; it does not infer new speech from every render.",
       "editorialRole": "canonical-model"
     },
     {
-      "type": "heading",
-      "text": "Worked example: save success followed by an actionable conflict"
-    },
-    {
-      "type": "text",
-      "text": "A profile save emits a low-risk success status, then a later edit conflict needs a persistent Review action. The system must avoid announcement overlap and must not let a generic duration delete the only path to resolve the conflict."
+      "type": "steps",
+      "title": "Profile-save flow",
+      "steps": [
+        {
+          "title": "Accept the command",
+          "text": "A feature or service calls toast.success('Profile saved', { dedupeKey: 'profile-save:42' }). The API validates the options and sends an add command to the store."
+        },
+        {
+          "title": "Admit the record",
+          "text": "The store assigns a stable ID. If fewer than three records are visible it appends the record there; otherwise it appends the distinct record to the ordered queue."
+        },
+        {
+          "title": "Schedule and render",
+          "text": "The lifecycle coordinator schedules the expiry for this timed status. The viewport renders the same record through the root portal, while the announcer publishes Profile saved only if that ID has not been announced."
+        },
+        {
+          "title": "Converge removal",
+          "text": "Dismiss and timeout submit the same ID. The store accepts the first transition, the coordinator clears the handle, and a queued record may become visible. Any late signal is a no-op."
+        }
+      ]
     },
     {
       "type": "table",
-      "title": "Scenario walkthrough",
+      "title": "Worked example: profile save and edit conflict",
       "columns": [
         "Event",
-        "Store change",
-        "Visible UI",
-        "Invariant"
+        "State change",
+        "User-visible result"
       ],
       "rows": [
         [
-          "Save succeeds",
-          "Insert a polite timed status with one dedupe key.",
-          "Profile saved appears without moving focus.",
-          "Noncritical feedback may be timed."
+          "Profile save succeeds",
+          "Insert one polite, timed status record.",
+          "Profile saved appears without moving focus."
         ],
         [
-          "Duplicate success arrives",
-          "Increment or replace the existing dedupe record.",
-          "The stack does not repeat the same sentence.",
-          "Deduplication preserves meaning."
+          "The same success event repeats",
+          "Match its safe dedupe key instead of inserting another record.",
+          "The sentence is not duplicated visually or audibly."
         ],
         [
-          "Conflict arrives",
-          "Insert a persistent action toast with command identity.",
-          "Review remains until resolved or safely dismissed.",
-          "Actions do not expire invisibly."
+          "An edit conflict arrives",
+          "Insert a persistent action record with a Review command.",
+          "Review remains available until resolution or safe dismissal."
         ],
         [
-          "Page is hidden",
-          "Pause remaining timed lifetime and suppress repeat announcement.",
-          "Returning users still have time to read.",
-          "Timing reflects actual opportunity."
+          "Dismiss races with expiry",
+          "Only the first remove transition changes store state; cleanup runs once.",
+          "The toast disappears once and the next queued record is stable."
         ]
       ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/notification-toast-system/toast-command-lifecycle.svg",
+      "alt": "Flow from a global toast command through the store, lifecycle coordinator, viewport, and one-time live-region announcer.",
+      "caption": "Command and lifecycle ownership: rendering never owns timers or announcement identity.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: A global command enters the toast store. The lifecycle coordinator schedules or cancels expiry, the viewport renders at most three records, and the announcer speaks each eligible toast ID once."
     }
   ]
 }

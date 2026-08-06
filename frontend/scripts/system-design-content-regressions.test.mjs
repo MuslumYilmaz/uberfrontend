@@ -8,6 +8,7 @@ import { repoRoot } from './content-paths.mjs';
 const root = path.join(repoRoot, 'cdn', 'questions', 'system-design');
 const sectionFiles = ['meta', 'requirements', 'architecture', 'data', 'interfaces', 'optimizations'];
 const index = JSON.parse(fs.readFileSync(path.join(root, 'index.json'), 'utf8'));
+const practiceRegistry = JSON.parse(fs.readFileSync(path.join(repoRoot, 'cdn', 'practice', 'registry.json'), 'utf8'));
 
 function read(id, section) {
   return JSON.parse(fs.readFileSync(path.join(root, id, `${section}.json`), 'utf8'));
@@ -15,6 +16,176 @@ function read(id, section) {
 
 function bundleText(id) {
   return sectionFiles.map((section) => JSON.stringify(read(id, section))).join('\n');
+}
+
+function wordCount(value) {
+  const normalized = String(value || '')
+    .replace(/[^\p{L}\p{N}\s'-]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return normalized ? normalized.split(/\s+/).length : 0;
+}
+
+function visibleBlockText(block) {
+  const values = [];
+  const add = (value) => typeof value === 'string' && values.push(value);
+  if (block.type === 'text' || block.type === 'heading') add(block.text);
+  if (block.type === 'code') add(block.code);
+  if (block.type === 'image') {
+    add(block.alt);
+    add(block.caption);
+    add(block.fallbackText);
+  }
+  if (block.type === 'checklist') {
+    add(block.title);
+    (block.items || []).forEach(add);
+  }
+  if (block.type === 'callout') {
+    add(block.title);
+    add(block.text);
+  }
+  if (block.type === 'links') {
+    add(block.title);
+    (block.items || []).forEach((item) => {
+      add(item.label);
+      add(item.description);
+    });
+  }
+  if (block.type === 'table') {
+    add(block.title);
+    (block.columns || []).forEach(add);
+    (block.rows || []).flat().forEach(add);
+  }
+  if (block.type === 'stats') {
+    (block.items || []).forEach((item) => {
+      add(item.label);
+      add(item.value);
+      add(item.helperText);
+    });
+  }
+  if (block.type === 'steps') {
+    add(block.title);
+    (block.steps || []).forEach((step) => {
+      add(step.title);
+      add(step.text);
+    });
+  }
+  if (block.type === 'columns') {
+    (block.columns || []).flatMap((column) => column.blocks || []).forEach((child) => {
+      values.push(...visibleBlockText(child));
+    });
+  }
+  return values;
+}
+
+const pilotExpectations = {
+  'notification-toast-system': { targetLevel: 'junior', timeboxMinutes: 10, guidedMock: true },
+  'ai-chat-textarea-design': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: true },
+  'ai-ux-considerations': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: false },
+};
+
+for (const [id, expected] of Object.entries(pilotExpectations)) {
+  const entry = index.find((item) => item.id === id);
+  const meta = read(id, 'meta');
+  assert.equal(entry.contentSchemaVersion, 2, `${id}: index must opt into V2`);
+  assert.equal(meta.contentSchemaVersion, 2, `${id}: meta must opt into V2`);
+  assert.deepEqual(entry.practice, meta.practice, `${id}: V2 practice metadata must have exact parity`);
+  assert.equal(meta.practice.targetLevel, expected.targetLevel);
+  assert.equal(meta.practice.timeboxMinutes, expected.timeboxMinutes);
+  assert.equal(meta.practice.guidedMock, expected.guidedMock);
+  assert.ok(wordCount(meta.practice.candidatePrompt) >= 60 && wordCount(meta.practice.candidatePrompt) <= 110);
+  String(meta.practice.candidatePrompt).split(/(?<=[.!?])\s+/).forEach((sentence) => {
+    assert.ok(wordCount(sentence) <= 30, `${id}: candidate prompt sentences must not exceed 30 words`);
+  });
+  assert.ok(meta.practice.constraints.length >= 2 && meta.practice.constraints.length <= 4);
+  assert.equal(meta.practice.expectedDecisions.length, 3);
+  assert.ok(meta.practice.prerequisites.length >= 2 && meta.practice.prerequisites.length <= 4);
+  assert.ok(meta.practice.coreSkills.length >= 2 && meta.practice.coreSkills.length <= 4);
+  assert.deepEqual(Object.keys(meta.practice.evaluationSpine).sort(), [
+    'expertStretch',
+    'mustCover',
+    'redFlag',
+    'strongSignals',
+  ]);
+  assert.equal(meta.practice.evaluationSpine.mustCover.length, 2);
+  assert.equal(meta.practice.evaluationSpine.strongSignals.length, 2);
+  assert.ok(meta.practice.evaluationSpine.expertStretch);
+  assert.ok(meta.practice.evaluationSpine.redFlag);
+  const firstScreenWords = wordCount([
+    meta.practice.candidatePrompt,
+    ...meta.practice.constraints,
+    ...meta.practice.prerequisites,
+    ...meta.practice.evaluationSpine.mustCover,
+    ...meta.practice.evaluationSpine.strongSignals,
+    meta.practice.evaluationSpine.expertStretch,
+    meta.practice.evaluationSpine.redFlag,
+  ].join(' '));
+  assert.ok(firstScreenWords <= 160, `${id}: first-screen metadata must fit 160 words`);
+
+  const sectionBundles = ['requirements', 'architecture', 'data', 'interfaces', 'optimizations']
+    .map((section) => read(id, section));
+  const visibleWords = sectionBundles.flatMap((section) => section.blocks.flatMap(visibleBlockText));
+  assert.ok(
+    wordCount(visibleWords.join(' ')) >= 1500 && wordCount(visibleWords.join(' ')) <= 2100,
+    `${id}: V2 answer must remain within the visible word budget`,
+  );
+  const firstAnswer = sectionBundles[0].blocks[0];
+  assert.equal(firstAnswer.type, 'steps', `${id}: first Requirements block must use steps`);
+  assert.equal(firstAnswer.editorialRole, 'timeboxed-answer');
+  assert.equal(firstAnswer.steps.length, 5);
+  assert.ok(wordCount(visibleBlockText(firstAnswer).join(' ')) >= 250);
+  assert.ok(wordCount(visibleBlockText(firstAnswer).join(' ')) <= 400);
+  assert.equal(
+    sectionBundles.flatMap((section) => section.blocks).filter((block) => block.editorialRole === 'answer-checkpoint').length,
+    0,
+    `${id}: V2 rubric must live only in evaluationSpine`,
+  );
+
+  const images = ['requirements', 'architecture', 'data', 'interfaces', 'optimizations']
+    .flatMap((section) => read(id, section).blocks)
+    .filter((block) => block.type === 'image');
+  assert.equal(images.length, 2, `${id}: V2 pilots require two diagrams`);
+  images.forEach((block) => {
+    assert.ok(block.alt && block.caption && block.fallbackText && block.width > 0 && block.height > 0);
+    const assetPath = path.join(repoRoot, 'cdn', block.src);
+    assert.ok(fs.existsSync(assetPath), `${id}: missing ${block.src}`);
+    const svg = fs.readFileSync(assetPath, 'utf8');
+    assert.doesNotMatch(svg, /<\s*(?:script|foreignObject|animate|animateMotion|animateTransform|set|image)\b/i);
+    assert.doesNotMatch(svg, /\son[a-z]+\s*=|\b(?:href|xlink:href)\s*=\s*["'](?!#)/i);
+  });
+
+  const registryEntry = practiceRegistry.find((item) => item.tech === 'system-design' && item.id === id);
+  assert.equal(registryEntry?.estimatedMinutes, expected.timeboxMinutes, `${id}: practice registry must use V2 timebox`);
+}
+
+const topicRubricIds = [
+  'ai-image-generation-mvp',
+  'component-design-system-architecture',
+  'cross-device-preferences-sync',
+  'dashboard-widgets-draggable-resizable',
+  'endless-short-video-feed',
+  'flashcard-language-trainer',
+  'image-upload-preview',
+  'live-chart-high-frequency-updates',
+  'live-comments-global-stream',
+  'model-training-progress-dashboard',
+  'multi-step-form-autosave',
+  'news-feed-timeline',
+  'realtime-search-debounce-cache',
+  'scalable-notifications-feed',
+];
+const rubricSignatures = new Set();
+for (const id of topicRubricIds) {
+  const checkpoint = read(id, 'optimizations').blocks.find((block) => block.editorialRole === 'answer-checkpoint');
+  assert.equal(checkpoint?.type, 'checklist', `${id}: generic checkpoint must become a rubric`);
+  assert.equal(checkpoint.items.length, 6, `${id}: rubric must contain six signals`);
+  assert.equal(checkpoint.items.filter((item) => /^Must\s+[—-]\s+/.test(item)).length, 2);
+  assert.equal(checkpoint.items.filter((item) => /^Strong signal\s+[—-]\s+/.test(item)).length, 2);
+  assert.equal(checkpoint.items.filter((item) => /^Expert stretch\s+[—-]\s+/.test(item)).length, 1);
+  assert.equal(checkpoint.items.filter((item) => /^Red flag\s+[—-]\s+/.test(item)).length, 1);
+  const signature = checkpoint.items.join('\n');
+  assert.ok(!rubricSignatures.has(signature), `${id}: rubric must be topic-specific`);
+  rubricSignatures.add(signature);
 }
 
 for (const item of index) {
@@ -136,6 +307,10 @@ assert.match(dashboard, /revision/);
 assert.doesNotMatch(dashboard, /type LayoutVersion = 1 \| 2/);
 
 const aiChat = bundleText('ai-chat-textarea-design');
+assert.equal(
+  read('ai-chat-textarea-design', 'meta').title,
+  'Design an AI Chat Composer and Streaming Turn',
+);
 const aiChatDataCode = read('ai-chat-textarea-design', 'data').blocks
   .filter((block) => block.type === 'code')
   .map((block) => block.code)
@@ -155,6 +330,13 @@ assert.match(aiChatInterfaceCode, /getTurnSnapshot\([^)]*\{[\s\S]*streamId: stri
 assert.match(aiChat, /event: message\.delta/);
 assert.match(aiChat, /data: \{\\"conversationId\\":\\"c_123\\",\\"streamId\\"/);
 assert.match(aiChat, /one stopCommandId per user intent and reuse it after a lost response/i);
+assert.match(aiChat, /user may edit a new draft while a reply streams, but Send becomes Stop/i);
+assert.match(aiChat, /retransmit the same commandId; transport retry is not new intent/i);
+assert.match(aiChat, /local abort is not authoritative server Stop/i);
+assert.match(aiChat, /Retry or Regenerate creates a fresh commandId and new streamId/i);
+for (const identity of ['commandId', 'clientMessageId', 'messageId', 'streamId']) {
+  assert.match(aiChat, new RegExp(identity), `AI chat must explain ${identity}`);
+}
 assert.match(aiChat, /account switch[\s\S]{0,500}logout/i);
 assert.match(aiChat, /Browser storage is not a confidentiality boundary/i);
 assert.match(aiChat, /Treat assistant content as untrusted/i);
@@ -171,10 +353,33 @@ assert.match(trainingDashboard, /type MonitorState = \{[\s\S]{0,200}contiguousSe
 assert.doesNotMatch(trainingDashboard, /EVENT:|DATA:/);
 
 const aiUx = bundleText('ai-ux-considerations');
+assert.equal(
+  read('ai-ux-considerations', 'meta').title,
+  'Design an AI-Assisted Bulk Edit Review Flow',
+);
+const aiUxDataCode = read('ai-ux-considerations', 'data').blocks
+  .filter((block) => block.type === 'code')
+  .map((block) => block.code)
+  .join('\n');
 assert.match(aiUx, /proposal/i);
 assert.match(aiUx, /review/i);
 assert.match(aiUx, /per-item|per item/i);
 assert.match(aiUx, /outcome/i);
+for (const contract of [
+  'GeneratedProposalContent',
+  'ActionEligibility',
+  'ProposalEnvelope',
+  'ReviewState',
+  'ApprovalCommand',
+  'ActionOutcome',
+]) {
+  assert.match(aiUxDataCode, new RegExp(`interface ${contract}\\s*\\{`));
+}
+const generatedProposalContract = aiUxDataCode.match(/interface GeneratedProposalContent\s*\{[^}]*\}/)?.[0];
+assert.ok(generatedProposalContract, 'AI proposal must define generated proposal content');
+assert.doesNotMatch(generatedProposalContract, /\bcapabilities\b/);
+assert.match(aiUx, /Cancel stays pending intent|Cancel is pending intent/i);
+assert.match(aiUx, /rollback (?:is|uses) a separate compensating/i);
 
 const autosave = bundleText('multi-step-form-autosave');
 assert.match(autosave, /schemaVersion/);
@@ -186,10 +391,16 @@ const preferences = bundleText('cross-device-preferences-sync');
 assert.match(preferences, /per-key revisions|key-specific base revision/i);
 assert.match(preferences, /syncCursor/);
 assert.match(preferences, /baseRevision/);
+assert.match(preferences, /changes theme again on another device/i);
+assert.match(preferences, /unrelated language or notifications update would not conflict/i);
 
 const newsFeed = bundleText('news-feed-timeline');
+const newsFeedRequirements = JSON.stringify(read('news-feed-timeline', 'requirements'));
 assert.match(newsFeed, /server-authoritative/i);
 assert.match(newsFeed, /rankRevision/);
+assert.match(newsFeedRequirements, /Bounded rendering work and DOM growth/i);
+assert.doesNotMatch(newsFeedRequirements, /Bounded DOM size via virtualization/i);
+assert.doesNotMatch(JSON.stringify(read('news-feed-timeline', 'architecture')), /VirtualizedList/);
 assert.doesNotMatch(newsFeed, /sort ranked (?:items|posts) by createdAt/i);
 
 const netflix = bundleText('netflix-scale-expansion');
@@ -217,6 +428,8 @@ assert.equal(index.find((item) => item.id === 'image-upload-preview')?.difficult
 assert.match(upload, /createSession/);
 assert.match(upload, /onProgress/);
 assert.match(upload, /idempotencyKey/);
+assert.match(upload, /attemptId, file, previewUrl, status, progress, session, asset, error/);
+assert.match(JSON.stringify(read('image-upload-preview', 'architecture')), /"value":"8"/);
 assert.doesNotMatch(upload, /fakeUploadMs|simulated upload|fake progress/i);
 
 const search = bundleText('realtime-search-debounce-cache');
@@ -231,15 +444,22 @@ assert.match(chart, /Renderer choice follows profiling/i);
 assert.doesNotMatch(chart, /function\s+renderLoop|requestAnimationFrame\(renderLoop\)/);
 
 const toast = bundleText('notification-toast-system');
-assert.match(toast, /actionable.*critical.*messages remain persistent/i);
-assert.match(toast, /role status and reserves alert for genuinely urgent information/i);
-assert.match(toast, /never move focus merely because a toast appeared/i);
+assert.match(toast, /actionable and critical messages (?:are|remain) persistent/i);
+assert.match(toast, /(?:status announcement|role status)[\s\S]{0,160}(?:alert|urgent)/i);
+assert.match(toast, /(?:never steals focus|never move focus)/i);
+assert.match(toast, /store owns normalized records[\s\S]{0,180}lifecycle coordinator owns every expiry handle/i);
+assert.match(toast, /manual dismiss and timeout both request remove/i);
+assert.doesNotMatch(toast, /ToastRecord[\s\S]{0,300}\bannounced\??:/i);
 
 const imageGeneration = bundleText('ai-image-generation-mvp');
 assert.match(imageGeneration, /202 Accepted/);
 assert.match(imageGeneration, /progress.*indeterminate/i);
 assert.match(imageGeneration, /idempotency key/i);
 assert.match(imageGeneration, /cancel-complete races/i);
+assert.match(imageGeneration, /POST \/api\/images\/generations/);
+assert.match(imageGeneration, /(?:GET|POST) \/api\/images\/jobs\//);
+assert.doesNotMatch(imageGeneration, /POST \/(?:generate|generations)\b/);
+assert.doesNotMatch(imageGeneration, /(?:GET|POST) \/jobs\//);
 
 const flashcard = bundleText('flashcard-language-trainer');
 assert.match(flashcard, /pointer, touch, Enter, and Space/);

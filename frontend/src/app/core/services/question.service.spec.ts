@@ -258,11 +258,15 @@ describe('QuestionService', () => {
       'system design index fetch',
     );
     req.flush(sysList);
-    expect(await first).toEqual(sysList as any);
+    expect(await first).toEqual([
+      jasmine.objectContaining({ id: 'sys-1', title: 'System', access: 'free' }),
+    ]);
 
     const second = await firstValueFrom(service.loadSystemDesign());
     httpMock.expectNone((r) => r.url.includes('questions/system-design/index.json'));
-    expect(second).toEqual(sysList as any);
+    expect(second).toEqual([
+      jasmine.objectContaining({ id: 'sys-1', title: 'System', access: 'free' }),
+    ]);
     expect(await persistence.get(systemKey)).toContain('"sys-1"');
   });
 

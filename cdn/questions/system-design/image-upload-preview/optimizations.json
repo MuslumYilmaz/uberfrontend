@@ -206,10 +206,16 @@
       "text": "Test large files, corrupt images, EXIF orientation, unsupported formats, memory pressure, aborted preprocessing, expired sessions, lost finalization responses, replacement races, reduced motion, and mobile capture. Track preview time, upload completion, cancellation, retry, memory, and error correction."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Image Upload & Preview Component assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "image upload preview answer rubric",
+      "items": [
+        "Must — Model the eight upload state fields and guard every callback with the active attempt identity.",
+        "Must — Revoke object URLs and abort transfer work on replace, remove, and unmount.",
+        "Strong signal — Separate local validation, upload-session creation, transfer, and authoritative finalization.",
+        "Strong signal — Report real byte progress when available and keep unknown progress indeterminate.",
+        "Expert stretch — Move measured image preprocessing off the main thread and bound memory across files.",
+        "Red flag — Storing base64 previews indefinitely or allowing a stale upload callback to replace a newer file."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

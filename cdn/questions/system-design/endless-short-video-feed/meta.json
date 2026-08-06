@@ -40,7 +40,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Endless Short-Video Feed Frontend System Design",
     "description": "Design a short-video feed with one active player, intent-aware preload, bounded media memory, adaptive delivery, and resilient scrolling."
@@ -61,7 +61,7 @@
     "searchIntent": "Prepare a frontend system design answer for Endless Short-Video Feed (TikTok-Style).",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Endless Short-Video Feed (TikTok-Style).",
     "uniqueAngle": "Design an endless short-video feed with fast first playback, one active player, intent-aware preloading, bounded media memory, and network-aware recovery.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

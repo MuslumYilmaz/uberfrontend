@@ -4,75 +4,12 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Model the composer and current turn explicitly. Persisted unsent text, transient IME interaction, attachment work, a pending send command, the optimistic message, and sequenced assistant output have different lifetimes and failure paths."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "ComposerDraft is scoped by account and conversation and stores recoverable text, never transient IME state. ComposerInteractionState remains in memory while the control is mounted. AttachmentDraft tracks local upload readiness. PendingSend correlates the optimistic user message. StreamMessage accepts deltas only from its stream identity and next sequence."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "State-model checks:\n- Draft revision and transient IME composition are explicit but separate.\n- Attachment readiness cannot be inferred from a URL.\n- Client message and command IDs make uncertain send retry idempotent.\n- Stream identity and sequence reject stale or duplicate deltas."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "table",
-      "title": "Core entities",
-      "columns": [
-        "Entity",
-        "What it represents",
-        "Why it matters"
-      ],
-      "rows": [
-        [
-          "ComposerDraft",
-          "Account- and conversation-scoped unsent text",
-          "Restores intent without persisting control-local IME state"
-        ],
-        [
-          "ComposerInteractionState",
-          "Transient IME and submit-gating state",
-          "Prevents Enter from submitting while composition is active"
-        ],
-        [
-          "AttachmentDraft",
-          "Local file-to-asset lifecycle",
-          "Only ready asset IDs may be sent"
-        ],
-        [
-          "PendingSend",
-          "Command and optimistic message identity",
-          "Makes uncertain retries and echoed messages converge"
-        ],
-        [
-          "StreamMessage",
-          "Assistant identity, stream ID, sequence, text, and terminal phase",
-          "Prevents stale or duplicate chunks from corrupting the turn"
-        ]
-      ]
+      "text": "Persisted unsent text, transient IME interaction, upload work, a stored send command, the optimistic message, and sequenced assistant output have different lifetimes. The store exposes at most one nonterminal StreamMessage, while a new draft may evolve independently."
     },
     {
       "type": "code",
       "language": "ts",
-      "code": "type AttachmentPhase = 'local' | 'uploading' | 'ready' | 'error';\ntype StreamPhase = 'pending' | 'streaming' | 'complete' | 'stopped' | 'error';\n\ninterface ComposerDraft {\n  accountId: string;\n  conversationId: string;\n  text: string;\n  revision: number;\n  savedAt: number;\n  attachmentLocalIds: string[];\n}\n\ninterface ComposerInteractionState {\n  isComposing: boolean;\n}\n\ninterface AttachmentDraft {\n  localId: string;\n  phase: AttachmentPhase;\n  assetId: string | null;\n  error: string | null;\n}\n\ninterface PendingSend {\n  conversationId: string;\n  commandId: string;\n  clientMessageId: string;\n  draftRevision: number;\n  phase: 'sending' | 'acknowledged' | 'error';\n}\n\ninterface StreamMessage {\n  conversationId: string;\n  commandId: string;\n  clientMessageId: string;\n  messageId: string;\n  streamId: string;\n  lastSequence: number;\n  text: string;\n  phase: StreamPhase;\n}\n\ninterface TurnSnapshot extends StreamMessage {\n  updatedAt: number;\n}\n",
+      "code": "type AttachmentPhase = 'local' | 'uploading' | 'ready' | 'error';\ntype StreamPhase = 'pending' | 'streaming' | 'complete' | 'stopped' | 'failed';\n\ninterface ComposerDraft {\n  accountId: string;\n  conversationId: string;\n  text: string;\n  revision: number;\n  savedAt: number;\n  attachmentLocalIds: string[];\n}\n\ninterface ComposerInteractionState {\n  isComposing: boolean;\n}\n\ninterface AttachmentDraft {\n  localId: string;\n  phase: AttachmentPhase;\n  assetId: string | null;\n  error: string | null;\n}\n\ninterface PendingSend {\n  conversationId: string;\n  commandId: string;\n  clientMessageId: string;\n  draftRevision: number;\n  phase: 'sending' | 'acknowledged' | 'uncertain';\n}\n\ninterface StreamMessage {\n  conversationId: string;\n  commandId: string;\n  clientMessageId: string;\n  messageId: string;\n  streamId: string;\n  lastSequence: number;\n  text: string;\n  phase: StreamPhase;\n}\n\ninterface TurnSnapshot extends StreamMessage {\n  updatedAt: number;\n}\n",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -80,105 +17,41 @@
       }
     },
     {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Explicit state",
-              "items": [
-                "Persisted draft revision and transient composition state.",
-                "Attachment phase and finalized asset identity.",
-                "Command and client message IDs for send reconciliation.",
-                "Stream ID, last accepted sequence, partial text, and terminal phase."
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Conversation-state pitfalls",
-              "items": [
-                "No status field for streaming states.",
-                "No way to fetch history incrementally.",
-                "No id to reconcile optimistic UI with server data.",
-                "Mixing UI-only flags into the stored schema."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Primary entity",
-          "value": "ComposerDraft",
-          "helperText": "Unsent user intent remains independently recoverable."
-        },
-        {
-          "label": "Paging",
-          "value": "Command identity",
-          "helperText": "Retry and acknowledgement converge without duplicate turns."
-        },
-        {
-          "label": "Status",
-          "value": "Stream sequence",
-          "helperText": "Rejects stale and duplicate deltas."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "State checkpoint",
-      "text": "The model is trustworthy when unsent intent, attachment readiness, send acknowledgement, and assistant streaming cannot overwrite one another."
-    },
-    {
       "type": "heading",
       "text": "Draft, send-command, and stream ownership"
     },
     {
       "type": "text",
-      "text": "Keep ComposerDraft, ComposerInteractionState, AttachmentDraft, and PendingSend separate from conversation messages. Persist the draft by account and conversation, but keep IME composition state transient because it belongs to the mounted control. A sent user message gets a client ID for idempotent reconciliation. Streaming assistant text is a sequenced message resource, while the local composer draft can persist independently across navigation."
+      "text": "ComposerDraft is keyed by account and conversation; ComposerInteractionState exists only while the textarea is mounted. AttachmentDraft owns upload readiness. PendingSend preserves the immutable send snapshot for acknowledgement loss. StreamMessage is accepted current-turn state, not a copy of the draft. Its terminal phase releases the one-active-response guard without deleting partial assistant text."
     },
     {
       "type": "table",
-      "title": "Client model",
+      "title": "Identity reuse rules",
       "columns": [
-        "Record",
-        "Key fields",
-        "Owner"
+        "Situation",
+        "Identity policy",
+        "Result"
       ],
       "rows": [
         [
-          "ComposerDraft",
-          "accountId, conversationId, text, revision, savedAt",
-          "Local draft"
+          "Send response is lost",
+          "Retransmit commandId plus clientMessageId",
+          "The same logical user message converges"
         ],
         [
-          "ComposerInteractionState",
-          "isComposing",
-          "Mounted control"
+          "Stop response is lost",
+          "Retransmit the existing stopCommandId",
+          "One Stop intent is applied idempotently"
         ],
         [
-          "AttachmentDraft",
-          "localId, phase, assetId, error",
-          "Upload state"
+          "User retries after terminal",
+          "Create a new commandId; accept a new streamId",
+          "Retry or Regenerate is a new user intent"
         ],
         [
-          "PendingSend",
-          "clientMessageId, commandId, phase",
-          "Action overlay"
-        ],
-        [
-          "StreamMessage",
-          "messageId, sequence, text, terminal",
-          "Conversation cache"
+          "Old event arrives",
+          "Compare command, message, stream, and sequence",
+          "A superseded turn cannot change active state"
         ]
       ]
     }

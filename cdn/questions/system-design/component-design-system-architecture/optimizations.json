@@ -210,10 +210,16 @@
       "text": "Use prereleases and a small consumer cohort for behavior changes, publish codemods where mechanical migration is safe, and measure version adoption, deprecated API use, bundle cost, defects, and accessibility failures. Keep previous supported major versions documented through their declared window."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Component-driven Design System Architecture assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "component design system architecture answer rubric",
+      "items": [
+        "Must — Separate stable design tokens and component contracts from product-specific composition.",
+        "Must — Define accessible states and keyboard behavior as part of every public component API.",
+        "Strong signal — Version breaking changes with migration guidance and visual regression coverage.",
+        "Strong signal — Keep themes semantic so consumers do not depend on raw color or spacing values.",
+        "Expert stretch — Explain package boundaries, adoption telemetry, and incremental rollout across applications.",
+        "Red flag — A prop for every styling exception or duplicated accessibility logic in each consuming product."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

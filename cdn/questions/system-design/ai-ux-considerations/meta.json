@@ -1,7 +1,7 @@
 {
   "id": "ai-ux-considerations",
-  "title": "AI UX Resilience and Control Patterns",
-  "description": "Design trustworthy AI-assisted UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes.",
+  "title": "Design an AI-Assisted Bulk Edit Review Flow",
+  "description": "Design a customer-operations review flow where AI suggests lifecycle-stage edits, people verify account evidence, and only an approved version can produce mixed per-record outcomes.",
   "tags": [
     "ux",
     "error-handling",
@@ -37,29 +37,70 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
-    "title": "AI UX Considerations Frontend System Design",
-    "description": "Design trustworthy AI UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes."
+    "title": "AI-Assisted Bulk Edit Review Flow System Design",
+    "description": "Design an AI-assisted bulk edit review with evidence checks, explicit approval, mixed record outcomes, cancellation, audit, and rollback."
   },
   "premiumPreview": {
-    "summary": "Design reviewable AI proposals that expose evidence and uncertainty before a user confirms a versioned product action.",
+    "summary": "Practice designing a tool that suggests lifecycle-stage changes for customer accounts, lets an operations specialist check the evidence, and applies only the records they approve.",
     "learningOutcomes": [
-      "Separate generated proposals, local review state, explicit user decisions, and authoritative outcomes.",
-      "Change available actions when evidence is stale, incomplete, or permission-restricted.",
-      "Reconcile mixed per-item results without turning optimistic state into false success.",
-      "Keep cancellation, provenance, safe rendering, feedback, and accessible status behavior explicit."
+      "Keep an AI suggestion separate from the edits a person has reviewed and approved.",
+      "Use current activity, invoice, and permission information to decide whether each edit is available.",
+      "Show successful, failed, and conflicted records separately after a bulk action.",
+      "Explain why Cancel does not mean the work was undone and when a separate rollback is safe."
     ],
-    "unlockDescription": "Premium unlocks the destructive-edit example, proposal freshness, capability checks, and mixed-outcome recovery."
+    "unlockDescription": "Premium unlocks the complete account-review example, data and API contracts, mixed-result recovery, audit history, and the difference between Cancel and rollback."
   },
   "editorial": {
     "draftSource": "content-drafts/system-design/ai-ux-considerations.md",
-    "primaryKeyword": "ai ux considerations frontend system design",
-    "searchIntent": "Prepare a frontend system design answer for AI UX Resilience and Control Patterns.",
-    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI UX Resilience and Control Patterns.",
-    "uniqueAngle": "Design trustworthy AI-assisted UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes.",
-    "factCheckedAt": "2026-07-28",
+    "primaryKeyword": "AI-assisted bulk edit review",
+    "searchIntent": "Prepare a frontend system design answer for an AI-assisted bulk edit review flow.",
+    "readerPromise": "The reader can explain how customer-record suggestions, evidence, review, approval, execution, audit, cancellation, and rollback remain separate.",
+    "uniqueAngle": "Ground AI safety in a concrete customer-operations task: lifecycle-stage edits backed by last-activity and open-invoice evidence with truthful per-record recovery.",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
+  },
+  "contentSchemaVersion": 2,
+  "practice": {
+    "targetLevel": "mid",
+    "timeboxMinutes": 15,
+    "candidatePrompt": "Design a review flow for a customer-operations specialist using AI to propose lifecycle-stage changes across customer records. The user inspects last-activity and open-invoice evidence, removes records, and approves one proposal version before anything changes. Some records may succeed while others conflict, and Cancel may race with a late result. Explain how proposal, approval, execution, audit, and rollback stay separate so the interface never presents a suggestion or requested cancellation as confirmed product truth.",
+    "constraints": [
+      "AI suggestions cannot authorize edits.",
+      "Approval binds one reviewed version.",
+      "Eligibility uses current evidence and permission.",
+      "Cancel is not rollback."
+    ],
+    "expectedDecisions": [
+      "Separate generated content, trusted eligibility, local review, approval, and outcomes.",
+      "Bind one approval command to proposal, evidence, and record versions.",
+      "Reconcile mixed results, cancellation races, audit history, and compensating rollback."
+    ],
+    "prerequisites": [
+      "Client and server state",
+      "Versioned commands",
+      "Accessible async feedback"
+    ],
+    "coreSkills": [
+      "Authority boundaries",
+      "State modeling",
+      "Mixed-outcome recovery",
+      "Auditability"
+    ],
+    "guidedMock": false,
+    "evaluationSpine": {
+      "mustCover": [
+        "Separate generated suggestions, local review, approved commands, and actual outcomes.",
+        "Bind approval to reviewed proposal/evidence versions and current permission."
+      ],
+      "strongSignals": [
+        "Separate successful and failed records, with recovery for each.",
+        "Cancel stays pending intent; rollback is a separate compensating command."
+      ],
+      "expertStretch": "Permission churn, audit export, and reversible bulk undo.",
+      "redFlag": "Proposal, optimistic result, or Cancel appears as confirmed product truth."
+    }
   }
 }

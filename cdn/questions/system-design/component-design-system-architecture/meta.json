@@ -37,7 +37,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Component Design System Frontend Architecture",
     "description": "Design a component library with semantic tokens, accessible contracts, composable APIs, release governance, migration paths, and measurable adoption."
@@ -59,7 +59,7 @@
     "searchIntent": "Prepare a frontend system design answer for Component-driven Design System Architecture.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Component-driven Design System Architecture.",
     "uniqueAngle": "Design a component library with semantic tokens, accessible interaction contracts, composable APIs, release governance, migration paths, and measurable adoption.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

@@ -6,6 +6,13 @@ import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { firstValueFrom, forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { AccessLevel, Question } from '../models/question.model';
+import {
+  normalizeSystemDesignQuestion,
+  SystemDesignListItem,
+  SystemDesignQuestion,
+  SystemDesignRadioSection,
+  SystemDesignSectionReference,
+} from '../models/system-design.model';
 import { Tech } from '../models/user.model';
 import { ASSET_READER, AssetReader } from './asset-reader';
 import { QuestionPersistenceService } from './question-persistence.service';
@@ -186,7 +193,7 @@ export class QuestionService {
   }
 
   /** System design list (now using index.json). */
-  loadSystemDesign(options: LoadSystemDesignOptions = {}): Observable<any[]> {
+  loadSystemDesign(options: LoadSystemDesignOptions = {}): Observable<SystemDesignListItem[]> {
     const useTransferState = options.transferState !== false;
     if (this.isServer) {
       return this.loadSystemDesignFromFs(useTransferState);
@@ -194,7 +201,7 @@ export class QuestionService {
 
     const tsKey = this.systemDesignStateKey();
     if (useTransferState && this.transferState.hasKey(tsKey)) {
-      const list = this.transferState.get(tsKey, [] as any[]);
+      const list = this.transferState.get(tsKey, [] as SystemDesignListItem[]);
       this.transferState.remove(tsKey);
       return of(list);
     }
@@ -208,7 +215,7 @@ export class QuestionService {
   loadSystemDesignQuestion(
     id: string,
     options: LoadSystemDesignOptions = {},
-  ): Observable<any | null> {
+  ): Observable<SystemDesignQuestion | null> {
     const useTransferState = options.transferState !== false;
     if (this.isServer) {
       return this.loadSystemDesignQuestionFromFs(id, useTransferState);
@@ -216,7 +223,7 @@ export class QuestionService {
 
     const tsKey = this.systemDesignQuestionStateKey(id);
     if (useTransferState && this.transferState.hasKey(tsKey)) {
-      const cached = this.transferState.get(tsKey, null as any);
+      const cached = this.transferState.get(tsKey, null as SystemDesignQuestion | null);
       this.transferState.remove(tsKey);
       return of(cached);
     }
@@ -225,11 +232,13 @@ export class QuestionService {
       `questions/system-design/${id}/meta.json`
     );
     const meta$ = metaPrimary !== metaFallback
-      ? this.http.get<any>(metaPrimary).pipe(catchError(() => this.http.get<any>(metaFallback)))
-      : this.http.get<any>(metaFallback);
+      ? this.http.get<unknown>(metaPrimary).pipe(catchError(() => this.http.get<unknown>(metaFallback)))
+      : this.http.get<unknown>(metaFallback);
 
     return meta$.pipe(
-      switchMap((meta) => {
+      switchMap((rawMeta) => {
+        const meta = normalizeSystemDesignQuestion(rawMeta);
+        if (!meta) return of(null);
         // Eski radio-based formatı da idare edelim (ileride backward compat için iyi)
         const sections = Array.isArray(meta.sections) ? meta.sections : [];
         if (!sections.length) {
@@ -240,20 +249,15 @@ export class QuestionService {
           return of({ ...meta, contentLoadState: 'ready' as const });
         }
 
-        const sectionRequests = sections.map((s: any) => {
+        const sectionRequests = sections.map((s) => {
           const file = s.file;
           const { primary, fallback } = this.getAssetUrls(`questions/system-design/${id}/${file}`);
           const src$ = primary !== fallback
-            ? this.http.get<any>(primary).pipe(catchError(() => this.http.get<any>(fallback)))
-            : this.http.get<any>(fallback);
+            ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
+            : this.http.get<unknown>(fallback);
 
           return src$.pipe(
-            map((sec) => ({
-              key: s.key,
-              title: s.title,
-              // section json -> { key, title, blocks: Block[] } bekliyoruz
-              blocks: (sec && (sec as any).blocks) || [],
-            }))
+            map((section) => this.normalizeSystemDesignSection(section, s)),
           );
         });
 
@@ -370,7 +374,7 @@ export class QuestionService {
     return list;
   }
 
-  private async loadSystemDesignClient(bankVersion: string): Promise<any[]> {
+  private async loadSystemDesignClient(bankVersion: string): Promise<SystemDesignListItem[]> {
     await this.assetResolver.ensureCacheVersionAsync(this.cachePrefix, bankVersion);
 
     const key = `${this.cachePrefix}system-design`;
@@ -378,19 +382,22 @@ export class QuestionService {
     if (cachedRaw) {
       const parsed = this.safeParse(cachedRaw);
       if (Array.isArray(parsed)) {
-        const hasAccess = parsed.every((q: any) => q && typeof q === 'object' && 'access' in q);
-        if (hasAccess) return parsed as any[];
+        const hasAccess = parsed.every((item) =>
+          item && typeof item === 'object' && !Array.isArray(item) && 'access' in item
+        );
+        if (hasAccess) return this.normalizeSystemDesignIndex(parsed);
       }
       await this.persistence.remove(key);
     }
 
     const { primary, fallback } = this.getAssetUrls('questions/system-design/index.json', bankVersion);
     const source$ = primary !== fallback
-      ? this.http.get<any[]>(primary).pipe(catchError(() => this.http.get<any[]>(fallback)))
-      : this.http.get<any[]>(fallback);
+      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
+      : this.http.get<unknown>(fallback);
 
     const list = await firstValueFrom(source$.pipe(
-      catchError(() => of([] as any[])),
+      map((raw) => this.normalizeSystemDesignIndex(raw)),
+      catchError(() => of([] as SystemDesignListItem[])),
     ));
 
     await this.persistence.set(key, JSON.stringify(list));
@@ -469,7 +476,7 @@ export class QuestionService {
   }
 
   private systemDesignStateKey() {
-    return makeStateKey<any[]>('system-design:index');
+    return makeStateKey<SystemDesignListItem[]>('system-design:index');
   }
 
   private showcaseStatsStateKey() {
@@ -477,7 +484,7 @@ export class QuestionService {
   }
 
   private systemDesignQuestionStateKey(id: string) {
-    return makeStateKey<any>(`system-design:${id}`);
+    return makeStateKey<SystemDesignQuestion | null>(`system-design:${id}`);
   }
 
   private loadQuestionsFromFs(
@@ -496,15 +503,15 @@ export class QuestionService {
     );
   }
 
-  private loadSystemDesignFromFs(transferState = true): Observable<any[]> {
+  private loadSystemDesignFromFs(transferState = true): Observable<SystemDesignListItem[]> {
     const rel = 'assets/questions/system-design/index.json';
     const key = this.systemDesignStateKey();
     return this.assetReader.readJson(rel).pipe(
-      map((raw) => Array.isArray(raw) ? raw : []),
+      map((raw) => this.normalizeSystemDesignIndex(raw)),
       tap((list) => {
         if (transferState) this.transferState.set(key, list);
       }),
-      catchError(() => of([] as any[])),
+      catchError(() => of([] as SystemDesignListItem[])),
     );
   }
 
@@ -520,23 +527,23 @@ export class QuestionService {
     );
   }
 
-  private loadSystemDesignQuestionFromFs(id: string, transferState = true): Observable<any | null> {
+  private loadSystemDesignQuestionFromFs(
+    id: string,
+    transferState = true,
+  ): Observable<SystemDesignQuestion | null> {
     const metaRel = `assets/questions/system-design/${id}/meta.json`;
     const key = this.systemDesignQuestionStateKey(id);
     return this.assetReader.readJson(metaRel).pipe(
-      switchMap((meta) => {
+      switchMap((rawMeta) => {
+        const meta = normalizeSystemDesignQuestion(rawMeta);
         if (!meta) return of(null);
         const sections = Array.isArray(meta.sections) ? meta.sections : [];
         if (!sections.length) {
           return of({ ...meta, contentLoadState: 'ready' as const });
         }
-        const sectionRequests = sections.map((s: any) =>
+        const sectionRequests = sections.map((s) =>
           this.assetReader.readJson(`assets/questions/system-design/${id}/${s.file}`).pipe(
-            map((sec) => ({
-              key: s.key,
-              title: s.title,
-              blocks: (sec && (sec as any).blocks) || [],
-            }))
+            map((section) => this.normalizeSystemDesignSection(section, s)),
           )
         );
         return forkJoin(sectionRequests).pipe(
@@ -557,6 +564,42 @@ export class QuestionService {
       }),
       catchError(() => of(null))
     );
+  }
+
+  private normalizeSystemDesignIndex(raw: unknown): SystemDesignListItem[] {
+    if (!Array.isArray(raw)) return [];
+    return raw.flatMap((item) => {
+      const normalized = normalizeSystemDesignQuestion(item);
+      if (!normalized) return [];
+      return [{
+        ...normalized,
+        title: normalized.title || normalized.id,
+        description: normalized.description || '',
+        tags: normalized.tags ?? [],
+        type: 'system-design' as const,
+        access: normalized.access === 'premium' ? 'premium' as const : 'free' as const,
+      }];
+    });
+  }
+
+  private normalizeSystemDesignSection(
+    raw: unknown,
+    reference: SystemDesignSectionReference,
+  ): SystemDesignRadioSection {
+    const record = raw && typeof raw === 'object' && !Array.isArray(raw)
+      ? raw as Record<string, unknown>
+      : {};
+    return {
+      key: typeof record['key'] === 'string' && record['key'].trim()
+        ? record['key'].trim()
+        : reference.key,
+      title: typeof record['title'] === 'string' && record['title'].trim()
+        ? record['title'].trim()
+        : reference.title,
+      blocks: Array.isArray(record['blocks'])
+        ? record['blocks'] as SystemDesignRadioSection['blocks']
+        : [],
+    };
   }
 
   private getVersion(): Observable<string> {
@@ -624,7 +667,7 @@ export class QuestionService {
     void task.catch(() => { /* ignore */ });
   }
 
-  private safeParse(raw: string): any | null {
+  private safeParse(raw: string): unknown | null {
     try { return JSON.parse(raw); } catch { return null; }
   }
 

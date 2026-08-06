@@ -4,186 +4,90 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Optimize the review and action path without weakening authority. Preserve local edits, avoid repainting generated text per token, revalidate capabilities at confirmation, and keep mixed-result recovery close to affected items."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Render structured proposal fields progressively only when the contract supports stable partial structure. Keep the rest of the product usable during pending work and prioritize review comprehension over decorative streaming."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Review comprehension and action-recovery evidence:\n- Users can identify evidence and affected items.\n- Stale proposals cannot retain apply capability.\n- Edited selections survive safe refresh and navigation.\n- Partial failures expose accurate next actions."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
+      "text": "Cache generated content by version and refresh evidence per customer without overwriting review choices. Bound rendered rows while keeping the approval summary and unresolved outcomes reachable."
     },
     {
       "type": "table",
-      "title": "Review-flow optimization controls",
+      "title": "Failures and truthful UI",
       "columns": [
-        "Lever",
-        "What it does",
-        "Why it helps"
+        "Failure",
+        "State response",
+        "What the specialist sees"
       ],
       "rows": [
         [
-          "Structured progressive rendering",
-          "Commit stable proposal sections rather than raw tokens",
-          "Improves perceived progress without exposing malformed partial controls"
+          "Generated response is slow or malformed",
+          "Keep the request retryable and reject invalid structure",
+          "The account list remains usable; no approval control appears for invalid content"
         ],
         [
-          "Capability revalidation",
-          "Check evidence freshness and permission at confirmation",
-          "Prevents stale advice from acting on current state"
+          "Last activity or invoice changes",
+          "Refresh only affected evidence and mark reviewed edits for another look",
+          "Old and current values are identified without clearing the whole review"
         ],
         [
-          "Selector isolation",
-          "Update changed evidence and outcomes without rerendering the entire panel",
-          "Preserves selection, focus, and scroll context"
+          "Permission changes before approval",
+          "ActionEligibility disables the affected row",
+          "The row explains the denial and can be removed from the pending command"
         ],
         [
-          "Idempotent recovery",
-          "Query or retry by command identity after an uncertain response",
-          "Avoids duplicate high-impact actions"
+          "Execution returns mixed results",
+          "OutcomeReducer retains one status and audit event per customer",
+          "Successes, conflicts, denials, and failures have separate next actions"
+        ],
+        [
+          "Network response is lost",
+          "Retry lookup with the same command identity",
+          "The interface recovers the existing outcome instead of submitting duplicate edits"
         ]
       ]
     },
     {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Measured optimizations",
-              "items": [
-                "Measure proposal comprehension and correction before adding progressive rendering.",
-                "Cancel local request work with AbortController while keeping authority honest.",
-                "Memoize evidence rows and outcome items by stable identity.",
-                "Refresh only stale evidence and rederive capabilities.",
-                "Preserve local review edits and focus through reconciliation."
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Proposal and action recovery",
-              "items": [
-                "Generated prose shown as if it were a completed action.",
-                "Stale evidence retaining an enabled confirmation button.",
-                "Optimistic success hiding failed records.",
-                "Local abort reported as proof that remote work stopped."
-              ]
-            }
-          ]
-        }
-      ]
+      "type": "heading",
+      "text": "Cancel, late completion, and rollback"
     },
     {
       "type": "steps",
-      "title": "Scenario: stale evidence and mixed outcomes",
+      "title": "A cancellation race",
       "steps": [
         {
-          "title": "1. Slow proposal",
-          "text": "Keep the page usable, show bounded progress, and offer Cancel without discarding request context."
+          "title": "Record the request",
+          "text": "Disable repeated Cancel clicks, create one cancelCommandId, and label the execution as cancellation requested rather than canceled."
         },
         {
-          "title": "2. Evidence changes",
-          "text": "Invalidate apply capability, retain review context, and refresh the affected evidence."
+          "title": "Continue reconciliation",
+          "text": "Keep listening for ActionOutcome or fetch it after reconnect because stopping the local request does not settle remote work."
         },
         {
-          "title": "3. Mixed command result",
-          "text": "Retain successful outcomes and place retry or conflict recovery beside each failed item."
+          "title": "Accept the late truth",
+          "text": "If two records succeeded and one failed after Cancel, show those results and note that the cancellation request arrived too late for the successes."
+        },
+        {
+          "title": "Offer compensating recovery",
+          "text": "Create a separate rollback command only for confirmed successes with valid rollback tokens, current permission, and unchanged customer versions."
         }
       ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Comprehension",
-          "value": "review correction",
-          "helperText": "Measure whether users detect and edit incorrect scope."
-        },
-        {
-          "label": "Reliability",
-          "value": "outcome recovery",
-          "helperText": "Track conflict and failed-item resolution."
-        },
-        {
-          "label": "Control",
-          "value": "reversal and abandonment",
-          "helperText": "Detect unsafe acceptance or confusing recovery."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Truthful-action invariant",
-      "text": "AI UX succeeds when generated advice stays inspectable, capabilities stay current, confirmation stays explicit, and every outcome remains truthful."
-    },
-    {
-      "type": "heading",
-      "text": "Stale-proposal and mixed-outcome recovery"
-    },
-    {
-      "type": "table",
-      "title": "Failure modes",
-      "columns": [
-        "Failure",
-        "Response",
-        "Invariant"
-      ],
-      "rows": [
-        [
-          "Response is slow",
-          "Keep the task usable and expose Cancel.",
-          "Pending AI does not block unrelated work."
-        ],
-        [
-          "Output is malformed",
-          "Reject unsafe structure and show a bounded fallback.",
-          "Untrusted content never becomes raw HTML."
-        ],
-        [
-          "Proposal becomes stale",
-          "Disable confirmation and request current evidence.",
-          "Old advice cannot act on new state."
-        ],
-        [
-          "Partial command fails",
-          "Show per-item outcome and retry eligibility.",
-          "Users see the true mixed result."
-        ]
-      ]
-    },
-    {
-      "type": "heading",
-      "text": "Accessibility behavior"
     },
     {
       "type": "text",
-      "text": "AI state changes use concise status messages instead of streaming token announcements. Review controls have labels that describe effect, uncertainty is communicated in text rather than color, focus moves only after user-triggered navigation, and Cancel remains keyboard reachable. Generated content supports zoom, selection, copy, and screen-reader reading order."
+      "text": "Rollback never edits the original ActionOutcome. Its own per-item result records which customer stages were restored, which now conflict, and which are no longer reversible. This preserves a readable audit chain from proposal through approval, execution, cancel intent, and compensation."
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/ai-ux-considerations/cancel-late-result-rollback.svg",
+      "alt": "Timeline of a cancellation request racing with late lifecycle-stage results before a separate rollback command is offered.",
+      "caption": "Cancel expresses intent; a late authoritative outcome decides whether compensating rollback is available.",
+      "width": 960,
+      "height": 420,
+      "fallbackText": "Text fallback: The specialist requests cancellation while execution is active. A late outcome confirms two successes and one failure. The UI preserves all three results, marks cancellation as too late for completed work, and offers rollback only for reversible successes."
+    },
+    {
+      "type": "heading",
+      "text": "Accessibility and narrow screens"
+    },
+    {
+      "type": "text",
+      "text": "Use a stable reading order, visible row labels, and text rather than color alone for freshness and outcomes. Announce proposal readiness, approval acceptance, and the final mixed result concisely; do not announce every generated token or row refresh. Keep focus near the triggering control. On narrow screens, evidence and recovery controls stack beneath the customer name without hiding the selected count or approval summary."
     },
     {
       "type": "heading",
@@ -191,34 +95,7 @@
     },
     {
       "type": "text",
-      "text": "Start read-only with no destructive actions, evaluate comprehension and correction, then add low-risk commands behind capability flags. Test malformed output, stale proposals, cancellation, partial success, mobile overflow, large text, screen readers, and reduced motion. Monitor reversals, edits before acceptance, abandonment, recovery, and accessibility defects."
-    },
-    {
-      "type": "heading",
-      "text": "Calibrated explanation and user control"
-    },
-    {
-      "type": "text",
-      "text": "An explanation should help the user decide, not imitate certainty. Prefer concrete evidence references, affected objects, constraints, and missing information over a generic confidence percentage whose calibration is unknown. When the service does provide a calibrated score, pair it with the decision threshold and a plain-language limitation. Keep model-generated rationale separate from verified product facts so a later refresh can update one without rewriting the user decision."
-    },
-    {
-      "type": "text",
-      "text": "Feedback is part of the interaction contract. Capture whether the suggestion was accepted as-is, edited, rejected, or abandoned, but do not dark-pattern users into training consent. Explain where feedback goes, avoid recording sensitive free text by default, and keep correction available after an optimistic action. For high-impact flows, provide preview, confirmation, and a durable recovery path outside the transient AI panel."
-    },
-    {
-      "type": "text",
-      "text": "Provenance also needs a freshness model. Evidence can be current, stale, unavailable, or permission-restricted, and those states should change whether confirmation is allowed. Link to the product record the user may inspect rather than displaying opaque source identifiers. If evidence disappears after a proposal is shown, invalidate the action capability while preserving the proposal as historical context. This prevents a visually unchanged recommendation from acting on a materially different world."
-    },
-    {
-      "type": "text",
-      "text": "Streaming output should be buffered into readable updates rather than committing one UI change per token. Preserve the user's selection and scroll intent while text grows, stop scheduling paints when the panel is hidden, and announce only meaningful lifecycle transitions. A cancelled request can still deliver a late chunk, so acceptance is guarded by request identity in addition to AbortSignal. Any action proposed by the model is revalidated against current capabilities immediately before confirmation; display text alone never grants authority. Record rejected late chunks and capability failures without logging sensitive prompt content. Treat model text as untrusted content: render it through safe text or an allowlisted formatter, keep external links visibly identifiable, and require a separate user gesture before navigation or execution. Copy actions preserve provenance labels and exclude hidden instruction or control metadata."
-    },
-    {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how AI UX Resilience and Control Patterns assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
-      "editorialRole": "answer-checkpoint"
+      "text": "Release proposal and evidence review before mutation. Add reversible approvals, then expand after audit and support review. Track removals, overrides, stale evidence, permission denials, mixed outcomes, cancel races, rollback conflicts, and recovery time by record count, transition risk, input, assistive technology, and viewport."
     },
     {
       "type": "links",
@@ -227,12 +104,12 @@
         {
           "label": "NIST AI Risk Management Framework",
           "href": "https://www.nist.gov/itl/ai-risk-management-framework",
-          "description": "Risk framing for trustworthy AI systems."
+          "description": "A framework for identifying and managing trustworthiness risks in AI-enabled systems."
         },
         {
-          "label": "W3C status role",
+          "label": "MDN status role",
           "href": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role",
-          "description": "Non-interruptive status announcement semantics."
+          "description": "Guidance for non-interruptive announcements of asynchronous status changes."
         }
       ],
       "editorialRole": "references"

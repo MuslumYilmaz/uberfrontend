@@ -392,6 +392,59 @@ describe('interview form selection', () => {
     }
   });
 
+  test('pins an exact enabled System Design case through private source evidence', () => {
+    const registry = loadSystemDesignArtifacts({ force: true });
+    const selected = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      privateByKey: registry.privateByKey,
+      sourceContentId: 'notification-toast-system',
+      level: 'junior',
+      seed: 'targeted-design-source',
+      seenCounts: new Map([
+        ['int-sd-toast-lifecycle-jr-v1', { count: 100, lastSeenAt: new Date() }],
+      ]),
+    });
+
+    expect(selected).toEqual(expect.objectContaining({
+      id: 'int-sd-toast-lifecycle-jr-v1',
+      enabled: true,
+      level: 'junior',
+    }));
+  });
+
+  test('rejects unknown, level-mismatched, and disabled targeted System Design cases', () => {
+    const registry = loadSystemDesignArtifacts({ force: true });
+    const selectTarget = (overrides = {}) => selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      privateByKey: registry.privateByKey,
+      sourceContentId: 'notification-toast-system',
+      level: 'junior',
+      seed: 'targeted-design-errors',
+      ...overrides,
+    });
+
+    expect(() => selectTarget({ sourceContentId: 'not-a-real-question' }))
+      .toThrow(expect.objectContaining({
+        code: 'INTERVIEW_SYSTEM_DESIGN_SOURCE_INVALID',
+        statusCode: 400,
+      }));
+    expect(() => selectTarget({ level: 'mid' }))
+      .toThrow(expect.objectContaining({
+        code: 'INTERVIEW_SYSTEM_DESIGN_SOURCE_LEVEL_MISMATCH',
+        statusCode: 400,
+      }));
+    expect(() => selectTarget({
+      scenarios: registry.scenarios.map((scenario) => (
+        scenario.id === 'int-sd-toast-lifecycle-jr-v1'
+          ? { ...scenario, enabled: false }
+          : scenario
+      )),
+    })).toThrow(expect.objectContaining({
+      code: 'INTERVIEW_SYSTEM_DESIGN_SOURCE_UNAVAILABLE',
+      statusCode: 400,
+    }));
+  });
+
   test('rotates the three Mid System Design scenarios by least-seen and deterministic ties', () => {
     const registry = loadSystemDesignArtifacts({ force: true });
     const midScenarios = registry.scenarios.filter((scenario) => scenario.level === 'mid');

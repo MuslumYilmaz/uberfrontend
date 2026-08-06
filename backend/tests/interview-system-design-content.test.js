@@ -284,7 +284,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('dashboard-widgets-draggable-resizable');
     expect(result.sourceBundleHash).toBe(
-      '7df74b1748773e5d5d38d3a375d87dd38cea4eeb059b2654b3352abdcaf95cf4'
+      '88be64af7409aa5b4f35d9de8109cbd30554d1396de31a0a59216e13cd2d57ee'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId)).size).toBe(2);
@@ -479,7 +479,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('live-chart-high-frequency-updates');
     expect(result.sourceBundleHash).toBe(
-      'e16f1020291f83596e2ff5959bad5596a0369fabb1df4c26cffc92e459ebc65f'
+      'fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => [
@@ -838,7 +838,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('image-upload-preview');
     expect(result.sourceBundleHash).toBe(
-      '599ee39973678520354d6d7fbeac020b54b5964b0a8c0cb98035b032a4dbb348'
+      '11d34dacf26a451d6cd1bef95a5855ad8c529e70f6237b4b6869962f50e462f1'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId))).toEqual(new Set([
@@ -1875,7 +1875,22 @@ describe('guided system-design interview content', () => {
 
   test('pins every source bundle and invalidates candidate approval by default', () => {
     expect(release.finalApproval).toBeNull();
+    expect(release.registryVersion).toBe('1.1.0');
+    expect(publicPackage.registryVersion).toBe('1.1.0');
+    expect(privatePackage.registryVersion).toBe('1.1.0');
     expect(release.scenarioRefs).toHaveLength(7);
+    expect(Object.fromEntries(release.scenarioRefs.map((scenario) => [
+      scenario.id,
+      scenario.revision,
+    ]))).toEqual({
+      'int-sd-ai-chat-composer-mid-v1': 3,
+      'int-sd-autocomplete-race-mid-v1': 4,
+      'int-sd-dashboard-layout-sr-v1': 2,
+      'int-sd-image-upload-lifecycle-jr-v1': 2,
+      'int-sd-live-chart-pipeline-mid-v1': 2,
+      'int-sd-ranked-feed-sr-v1': 4,
+      'int-sd-toast-lifecycle-jr-v1': 5,
+    });
     expect(
       privatePackage.scenarios.find(
         (scenario) => scenario.id === 'int-sd-ai-chat-composer-mid-v1'

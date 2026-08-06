@@ -532,8 +532,11 @@
           "group": "image-upload-preview-contract",
           "name": "ImageUploadState",
           "requiredMembers": [
-            "status",
             "attemptId",
+            "file",
+            "previewUrl",
+            "status",
+            "progress",
             "session",
             "asset",
             "error"
@@ -561,6 +564,18 @@
           "require": [
             "per-key.{0,30}revision|key-specific.{0,30}revision|field.{0,30}revision|fieldRevision",
             "sync cursor|syncCursor"
+          ]
+        },
+        {
+          "id": "same-key-stale-revision-conflict",
+          "target": "visible",
+          "sections": [
+            "optimizations"
+          ],
+          "require": [
+            "changes theme again on another device",
+            "unrelated language or notifications update would not conflict",
+            "key-specific base revision.{0,30}stale|stale.{0,30}key-specific base revision"
           ]
         }
       ]
@@ -714,6 +729,22 @@
             "idempotency",
             "status URL|statusUrl"
           ]
+        },
+        {
+          "id": "canonical-image-job-endpoints",
+          "target": "all",
+          "sections": [
+            "architecture",
+            "interfaces"
+          ],
+          "require": [
+            "POST /api/images/generations",
+            "(?:GET|POST) /api/images/jobs/"
+          ],
+          "forbid": [
+            "POST /(?:generate|generations)(?:\\s|$)",
+            "(?:GET|POST) /jobs/"
+          ]
         }
       ]
     },
@@ -770,6 +801,21 @@
           "require": [
             "server-authoritative|server authoritative",
             "rank.{0,30}revision"
+          ]
+        },
+        {
+          "id": "bounded-rendering-before-windowing",
+          "target": "visible",
+          "sections": [
+            "requirements",
+            "optimizations"
+          ],
+          "require": [
+            "Bounded rendering work and DOM growth",
+            "windowing only when representative measurements justify|measured windowing"
+          ],
+          "forbid": [
+            "Bounded DOM size via virtualization"
           ]
         }
       ]

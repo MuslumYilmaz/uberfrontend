@@ -102,6 +102,8 @@ function parseScalar(raw) {
   if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
     return value.slice(1, -1);
   }
+  if (value === 'true') return true;
+  if (value === 'false') return false;
   if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
   return value;
 }
@@ -286,6 +288,75 @@ function validateFrontmatter(frontmatter, filePath) {
   const competitorGaps = normalizeStringArray(frontmatter.competitor_gaps);
   const sources = normalizeStringArray(frontmatter.sources);
   const competitorReviewFile = String(frontmatter.competitor_review_file || '').trim();
+
+  if (family === 'system-design' && frontmatter.content_schema_version !== undefined) {
+    if (frontmatter.content_schema_version !== 2) {
+      addError(filePath, 'frontmatter "content_schema_version" must be 2 when V2 practice metadata is present');
+    }
+    if (!['junior', 'mid', 'senior'].includes(String(frontmatter.target_level || ''))) {
+      addError(filePath, 'frontmatter "target_level" must be junior, mid, or senior for V2 system-design drafts');
+    }
+    if (![10, 15, 20].includes(frontmatter.timebox_minutes)) {
+      addError(filePath, 'frontmatter "timebox_minutes" must be 10, 15, or 20 for V2 system-design drafts');
+    }
+    const promptWords = countWords(frontmatter.candidate_prompt);
+    if (promptWords < 60 || promptWords > 110) {
+      addError(filePath, `frontmatter "candidate_prompt" must contain 60-110 words for V2 system-design drafts (found ${promptWords})`);
+    }
+    String(frontmatter.candidate_prompt || '')
+      .replace(/\s+/g, ' ')
+      .split(/(?<=[.!?])\s+/)
+      .filter(Boolean)
+      .forEach((sentence, index) => {
+        const words = countWords(sentence);
+        if (words > 30) {
+          addError(filePath, `frontmatter "candidate_prompt" sentence ${index + 1} has ${words} words; maximum is 30`);
+        }
+      });
+    const practiceArrays = [
+      ['constraints', 2, 4],
+      ['expected_decisions', 3, 3],
+      ['prerequisites', 2, 4],
+      ['core_skills', 2, 4],
+    ];
+    practiceArrays.forEach(([field, min, max]) => {
+      const values = normalizeStringArray(frontmatter[field]);
+      if (values.length < min || values.length > max) {
+        const expected = min === max ? `exactly ${min}` : `${min}-${max}`;
+        addError(filePath, `frontmatter "${field}" must contain ${expected} values for V2 system-design drafts`);
+      }
+    });
+    const evaluationArrays = [
+      ['evaluation_must_cover', 2],
+      ['evaluation_strong_signals', 2],
+    ];
+    evaluationArrays.forEach(([field, expected]) => {
+      const values = normalizeStringArray(frontmatter[field]);
+      if (values.length !== expected) {
+        addError(filePath, `frontmatter "${field}" must contain exactly ${expected} values for V2 system-design drafts`);
+      }
+    });
+    for (const field of ['evaluation_expert_stretch', 'evaluation_red_flag']) {
+      if (!String(frontmatter[field] || '').trim()) {
+        addError(filePath, `frontmatter "${field}" must be a non-empty string for V2 system-design drafts`);
+      }
+    }
+    const firstScreenWords = countWords([
+      frontmatter.candidate_prompt,
+      ...normalizeStringArray(frontmatter.constraints),
+      ...normalizeStringArray(frontmatter.prerequisites),
+      ...normalizeStringArray(frontmatter.evaluation_must_cover),
+      ...normalizeStringArray(frontmatter.evaluation_strong_signals),
+      frontmatter.evaluation_expert_stretch,
+      frontmatter.evaluation_red_flag,
+    ].filter(Boolean).join(' '));
+    if (firstScreenWords > 160) {
+      addError(filePath, `V2 first-screen metadata contains ${firstScreenWords} words; maximum is 160`);
+    }
+    if (typeof frontmatter.guided_mock !== 'boolean') {
+      addError(filePath, 'frontmatter "guided_mock" must be true or false for V2 system-design drafts');
+    }
+  }
 
   if (isReview || isShipping) {
     const competitorTakeawayMessage = 'frontmatter competitor_takeaways must contain at least 2 non-empty items';

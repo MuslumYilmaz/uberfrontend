@@ -3,158 +3,65 @@
   "title": "Requirements",
   "blocks": [
     {
-      "type": "text",
-      "text": "Design a frontend flow where an AI-generated proposal remains reviewable advice until the user confirms a permitted product action. Expose evidence freshness and uncertainty, preserve user edits, reconcile versioned outcomes, and never turn generated text into authority."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "What you are solving:\nA proposal-to-action UI for reviewing affected records, inspecting evidence, editing selection, confirming a high-impact command, and recovering from mixed per-item results."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Decision surface:\n- Which proposal facts and evidence are inspectable?\n- How does stale or incomplete evidence change available actions?\n- Which state is generated, locally edited, optimistic, or authoritative?\n- How are version conflicts and partial outcomes reconciled?\n- How do safe rendering, cancellation, accessibility, and feedback work?"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
       "type": "steps",
-      "title": "Proposal-to-action review lifecycle",
+      "title": "A 15-minute answer",
+      "editorialRole": "timeboxed-answer",
       "steps": [
         {
-          "title": "1. Request proposal",
-          "text": "Capture user intent and show cancellable pending work without blocking unrelated product tasks."
+          "title": "Frame the task and authority boundary",
+          "text": "A customer-operations specialist selects accounts and asks for suggested lifecycle-stage changes. The proposal may recommend moving accounts from onboarding to active, at-risk, or collections, but it is advice only. The browser must never infer permission from generated text. Product services remain authoritative for account versions, action eligibility, execution, and the final outcome of every record."
         },
         {
-          "title": "2. Review evidence",
-          "text": "Render a structured proposal with affected items, evidence freshness, uncertainty, limitations, and allowed capabilities."
+          "title": "Make evidence review concrete",
+          "text": "Each proposed row shows its current and suggested stage, last-activity timestamp, open-invoice amount and age, evidence freshness, and a short explanation. The specialist can open the source record, remove a row, or change its proposed stage. Missing, stale, or restricted evidence is explained beside that account and prevents approval for that row without erasing the rest of the review."
         },
         {
-          "title": "3. Edit and confirm",
-          "text": "Keep selection and edits in local ReviewState; require explicit confirmation for high-impact actions against the current proposal version."
+          "title": "Separate generated content from eligibility",
+          "text": "Parse model output into GeneratedProposalContent, then pair it with a server-owned ActionEligibility result inside a ProposalEnvelope. ReviewState holds the specialist's selection and edits without mutating the cached proposal. Before enabling Approve, derive eligibility from current permission, proposal version, evidence versions, and record versions. A refresh rebases untouched rows while preserving and clearly marking local edits that need another look."
         },
         {
-          "title": "4. Reconcile outcomes",
-          "text": "Merge authoritative per-item success, failure, and conflict results, then keep recovery beside failed items."
-        }
-      ]
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Clarifying questions",
-              "items": [
-                "What product decision is the proposal helping with?",
-                "Which records, evidence, permissions, and versions must be visible?",
-                "Which actions are reversible, destructive, or unavailable?",
-                "Can the user edit scope before confirmation?",
-                "When does a proposal expire or require refreshed evidence?",
-                "How should partial command outcomes be recovered?"
-              ]
-            }
-          ]
+          "title": "Approve one exact command and reconcile each result",
+          "text": "Approval creates one idempotent ApprovalCommand containing the reviewed proposal version, evidence versions, selected account IDs, intended stage per account, and expected record revisions. The pending UI is not success. ActionOutcome returns a result for every account, so succeeded, conflicted, permission-denied, and failed rows stay visible separately with an audit reference and a precise next action."
         },
         {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Review safety and user-control expectations",
-              "items": [
-                "Pending AI work does not block unrelated tasks.",
-                "Generated content is rendered as untrusted data.",
-                "Stale evidence disables confirmation without erasing review context.",
-                "Command retry is idempotent and version-aware.",
-                "Uncertainty and mixed results are understandable without color alone."
-              ]
-            }
-          ]
+          "title": "Handle Cancel, rollback, and accessibility truthfully",
+          "text": "Cancel records intent to stop waiting or asks the service to cancel; it does not prove execution stopped. A late mixed result still replaces the pending state. Only confirmed, reversible successes can offer a separate rollback command, which rechecks the latest record revision. Announce lifecycle changes in concise status messages, retain keyboard focus near the affected row, and never stream generated tokens into a live region."
         }
       ]
     },
     {
       "type": "table",
-      "title": "AI-assisted workflow states",
+      "title": "Scope and user impact",
       "columns": [
-        "State",
-        "UI treatment",
-        "Why it matters"
+        "Situation",
+        "What the specialist sees",
+        "Why it helps"
       ],
       "rows": [
         [
-          "Pending proposal",
-          "Show cancellable progress and preserve request intent",
-          "Slow work does not look like a frozen page"
+          "Evidence changed during review",
+          "The affected row is paused with old and current evidence identified",
+          "The specialist keeps their work without unknowingly approving stale facts"
         ],
         [
-          "Reviewable",
-          "Show proposal, evidence, limitations, and editable affected items",
-          "Suggestion remains distinct from user authority"
+          "Three of ten records conflict",
+          "Seven confirmed changes and three recovery rows",
+          "The result is useful without overstating completion"
         ],
         [
-          "Stale or blocked",
-          "Explain missing freshness or permission and disable confirmation",
-          "Visible text cannot grant a capability"
-        ],
-        [
-          "Resolving or mixed outcome",
-          "Show pending command followed by per-item results",
-          "A success headline cannot hide failures"
+          "Cancel races with completion",
+          "Cancel remains pending until the authoritative outcome arrives",
+          "The interface does not promise that account data was untouched"
         ]
       ]
     },
     {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Primary UX goal",
-          "value": "Review before action",
-          "helperText": "Generated proposals never execute by presentation alone."
-        },
-        {
-          "label": "Latency UX",
-          "value": "Evidence freshness",
-          "helperText": "Capabilities change when evidence becomes stale or unavailable."
-        },
-        {
-          "label": "Resilience",
-          "value": "Per-item outcomes",
-          "helperText": "Mixed results remain accurate and recoverable."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Scope checkpoint",
-      "text": "The core design separates AIProposal, ReviewState, UserDecision, PendingCommand, and authoritative Outcome. Cancellation only stops local waiting unless the action contract confirms otherwise."
-    },
-    {
       "type": "heading",
-      "text": "Frontend boundary"
+      "text": "Browser-service ownership"
     },
     {
       "type": "text",
-      "text": "The frontend owns intent capture, uncertainty presentation, review controls, cancellable pending work, safe defaults, feedback, provenance display, and accessible state changes. Server-side model selection, inference, policy evaluation, and product mutations remain authoritative behind abstract proposal and action contracts."
+      "text": "The frontend owns selection, evidence display, local edits, confirmation, focus, and recovery. The server is an abstract contract for proposal generation, permission, mutation, audit, and rollback eligibility."
     }
   ]
 }

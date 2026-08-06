@@ -73,6 +73,11 @@ describe('normalizeSystemDesignDetail', () => {
       id: indexEntry.id,
       difficulty: 'hard',
       contentLoadState: 'error',
+      practice: jasmine.objectContaining({
+        targetLevel: 'senior',
+        timeboxMinutes: 20,
+        candidatePrompt: indexEntry.description,
+      }),
     }));
   });
 

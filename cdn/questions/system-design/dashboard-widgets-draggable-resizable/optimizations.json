@@ -231,10 +231,16 @@
       "text": "Ship read-only layout projection, then pointer preview, keyboard operations, and persistence as separate flags. Profile pointer latency with real widget contents and monitor failed saves, conflict recovery, undo success, clipped layouts, focus loss, and mobile reflow."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Drag-and-Drop Dashboard Frontend System Design assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "dashboard widgets draggable resizable answer rubric",
+      "items": [
+        "Must — Store normalized widget identity separately from responsive layout placement.",
+        "Must — Preserve a versioned layout and resolve drag or resize updates against the current revision.",
+        "Strong signal — Keep pointer preview local and commit one semantic placement when interaction ends.",
+        "Strong signal — Provide keyboard movement, collision feedback, and stable focus after reflow.",
+        "Expert stretch — Describe schema migration and measured rendering limits for large configurable boards.",
+        "Red flag — Writing every pointermove to shared persistence or using array position as widget identity."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

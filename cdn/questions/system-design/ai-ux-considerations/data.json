@@ -4,65 +4,12 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Model generated advice, user review, command intent, and authoritative results as separate records. Their versions and owners prevent a visually convincing proposal from becoming product truth."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "AIProposal contains structured affected items, evidence, uncertainty, capabilities, version, and expiry. ReviewState owns local selection and edits. PendingCommand records confirmed intent. CommandOutcome retains one result per affected item."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "State-model checks:\n- Proposal version and evidence freshness are explicit.\n- Local edits cannot mutate cached proposal data.\n- Command identity and version precondition make retry safe.\n- Per-item outcomes cannot collapse into false complete success."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "table",
-      "title": "Core entities",
-      "columns": [
-        "Entity",
-        "What it represents",
-        "Why it matters"
-      ],
-      "rows": [
-        [
-          "AIProposal",
-          "Generated structured advice plus evidence and capabilities",
-          "Keeps recommendation separate from authority"
-        ],
-        [
-          "ReviewState",
-          "User selection, edits, acknowledgement, and focus context",
-          "Makes user intent inspectable"
-        ],
-        [
-          "PendingCommand + CommandOutcome",
-          "Versioned action intent and per-item authoritative results",
-          "Supports idempotent recovery and accurate mixed outcomes"
-        ]
-      ]
+      "text": "Use different records for generated language, trusted product facts, local review, approved intent, and execution results. GeneratedProposalContent can cite evidence IDs and suggest stages, but it has no permission or action fields. ProposalEnvelope joins that content with server-owned evidence and ActionEligibility without changing who owns either source."
     },
     {
       "type": "code",
       "language": "ts",
-      "code": "type EvidenceFreshness = 'current' | 'stale' | 'unavailable' | 'restricted';\ntype ItemOutcomeStatus = 'succeeded' | 'failed' | 'conflict';\n\ninterface EvidenceRef {\n  id: string;\n  label: string;\n  freshness: EvidenceFreshness;\n  href?: string;\n}\n\ninterface AIProposal {\n  id: string;\n  version: number;\n  summary: string;\n  affectedItemIds: string[];\n  evidence: EvidenceRef[];\n  uncertainty: string;\n  capabilities: Array<'review' | 'apply'>;\n  expiresAt: string;\n}\n\ninterface ReviewState {\n  proposalId: string;\n  selectedItemIds: string[];\n  edits: Record<string, string>;\n  acknowledgedRisk: boolean;\n}\n\ninterface PendingCommand {\n  commandId: string;\n  proposalId: string;\n  basedOnVersion: number;\n  itemIds: string[];\n  phase: 'submitting' | 'resolving';\n}\n\ninterface ItemOutcome {\n  itemId: string;\n  status: ItemOutcomeStatus;\n  message: string;\n  retryable: boolean;\n}\n\ninterface CommandOutcome {\n  commandId: string;\n  proposalVersion: number;\n  items: ItemOutcome[];\n}\n",
+      "code": "type LifecycleStage = 'onboarding' | 'active' | 'at-risk' | 'collections';\ntype EvidenceFreshness = 'current' | 'stale' | 'unavailable' | 'restricted';\ntype ItemActionStatus = 'succeeded' | 'failed' | 'conflict' | 'permission-denied';\n\ninterface EvidenceRef {\n  evidenceId: string;\n  customerId: string;\n  kind: 'last-activity' | 'open-invoice';\n  label: string;\n  value: string;\n  observedAt: string;\n  version: number;\n  freshness: EvidenceFreshness;\n}\n\ninterface ProposedLifecycleEdit {\n  customerId: string;\n  currentStage: LifecycleStage;\n  suggestedStage: LifecycleStage;\n  explanation: string;\n  evidenceIds: string[];\n}\n\ninterface GeneratedProposalContent {\n  proposalId: string;\n  proposalVersion: number;\n  summary: string;\n  edits: ProposedLifecycleEdit[];\n  uncertainty: string[];\n}\n\ninterface ActionEligibility {\n  customerId: string;\n  canApprove: boolean;\n  reasons: string[];\n  permissionVersion: number;\n  customerVersion: number;\n  evidenceVersions: Record<string, number>;\n}\n\ninterface ProposalEnvelope {\n  content: GeneratedProposalContent;\n  evidenceById: Record<string, EvidenceRef>;\n  eligibilityByCustomerId: Record<string, ActionEligibility>;\n  checkedAt: string;\n}\n\ninterface ReviewState {\n  proposalId: string;\n  proposalVersion: number;\n  selectedCustomerIds: string[];\n  stageOverrides: Record<string, LifecycleStage>;\n  reviewedEvidenceVersions: Record<string, number>;\n  reviewRevision: number;\n}\n\ninterface ApprovedLifecycleEdit {\n  customerId: string;\n  fromStage: LifecycleStage;\n  toStage: LifecycleStage;\n  expectedCustomerVersion: number;\n  expectedPermissionVersion: number;\n  expectedEvidenceVersions: Record<string, number>;\n}\n\ninterface ApprovalCommand {\n  commandId: string;\n  proposalId: string;\n  proposalVersion: number;\n  reviewRevision: number;\n  edits: ApprovedLifecycleEdit[];\n}\n\ninterface ItemActionOutcome {\n  customerId: string;\n  status: ItemActionStatus;\n  resultingStage?: LifecycleStage;\n  message: string;\n  auditEventId: string;\n  rollbackToken?: string;\n}\n\ninterface ActionOutcome {\n  commandId: string;\n  status: 'completed' | 'mixed' | 'failed';\n  items: ItemActionOutcome[];\n  resolvedAt: string;\n}",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -70,101 +17,48 @@
       }
     },
     {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Explicit state",
-              "items": [
-                "Proposal identity, version, expiry, and evidence freshness.",
-                "Local selected IDs, edits, and explicit acknowledgement.",
-                "Idempotent command ID and proposal-version precondition.",
-                "Per-item status, message, and retry eligibility."
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Proposal lifecycle pitfalls",
-              "items": [
-                "A confidence number with no evidence or calibration semantics.",
-                "Capabilities inferred from generated text.",
-                "A single success boolean for a multi-item command."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Primary model",
-          "value": "AIProposal",
-          "helperText": "Structured advice with identity, version, evidence, and capability."
-        },
-        {
-          "label": "Safety",
-          "value": "ReviewState",
-          "helperText": "User edits remain local and inspectable."
-        },
-        {
-          "label": "Recovery",
-          "value": "CommandOutcome",
-          "helperText": "Per-item authority supports focused recovery."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "State checkpoint",
-      "text": "A trustworthy model never conflates proposal content, reviewed user intent, an optimistic pending command, and authoritative per-item outcomes."
-    },
-    {
-      "type": "heading",
-      "text": "Proposal, review, command, and outcome ownership"
-    },
-    {
-      "type": "text",
-      "text": "Represent AIProposal separately from UserDecision and CommandOutcome. Proposal data includes supported summary, confidence or uncertainty wording, evidence references, expiry, and permitted actions. UserDecision records reviewed items and edits. PendingCommand and per-item outcomes prevent an optimistic banner from fabricating a complete result."
-    },
-    {
       "type": "table",
-      "title": "Client model",
+      "title": "Records and their source of truth",
       "columns": [
         "Record",
-        "Key fields",
-        "Owner"
+        "Owner",
+        "Reason it stays separate"
       ],
       "rows": [
         [
-          "AIProposal",
-          "id, summary, evidence, uncertainty, expiresAt",
-          "Server cache"
+          "GeneratedProposalContent",
+          "Proposal service",
+          "A regenerated explanation cannot silently rewrite permissions or reviewed choices"
+        ],
+        [
+          "ActionEligibility and EvidenceRef",
+          "Product services",
+          "Current account facts and permission revisions gate approval"
         ],
         [
           "ReviewState",
-          "selected IDs, edits, acknowledgement",
-          "Local state"
+          "Browser session",
+          "Removing Cedar or overriding Acme remains visible even if evidence refreshes"
         ],
         [
-          "PendingCommand",
-          "commandId, proposalVersion, phase",
-          "Action overlay"
+          "ApprovalCommand",
+          "Approval coordinator",
+          "One immutable command captures the exact reviewed records and expected versions"
         ],
         [
-          "Outcome",
-          "itemId, status, recovery",
-          "Authoritative result"
+          "ActionOutcome",
+          "Execution service",
+          "Only per-item results can confirm changed, conflicted, denied, or failed records"
         ]
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Refresh without erasing review work"
+    },
+    {
+      "type": "text",
+      "text": "When evidence refreshes, compare each current version with ReviewState.reviewedEvidenceVersions. An untouched row can adopt the new evidence and eligibility. A row with a stage override remains selected but becomes review-required until the specialist inspects the change. If permission is lost, disable that row and explain the reason; do not delete it or reinterpret the generated proposal. This makes stale data visible while preserving the user's reasoning and the audit trail."
     }
   ]
 }

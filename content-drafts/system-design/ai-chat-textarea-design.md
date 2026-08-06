@@ -1,436 +1,159 @@
 ---
-title: "AI Chat Text Area (ChatGPT-Style)"
+title: "Design an AI Chat Composer and Streaming Turn"
 slug: "ai-chat-textarea-design"
 family: "system-design"
 tech: "frontend"
 audience: "Frontend engineers preparing for system design interviews"
 intent: "Teach a concrete frontend architecture answer with explicit state, failure, accessibility, and rollout decisions."
-target_words: 2400
-primary_keyword: "ai chat textarea frontend system design"
+target_words: 1800
+primary_keyword: "ai chat composer and streaming turn"
 status: "converted"
+content_schema_version: 2
+target_level: "mid"
+timebox_minutes: 15
+candidate_prompt: "Design the composer and current reply for an AI chat app. A user may type Japanese with an IME, attach a file that is still uploading, press Enter twice, or stop a streaming answer and retry. An event from the old Send, Stop, or stream must never change the new active turn. Assign the state owned by the textarea, draft store, upload flow, and current turn. Explain recovery when a Send or Stop response is lost."
+constraints:
+  - "IME Enter cannot send."
+  - "Only ready attachments may send."
+  - "An active reply turns Send into Stop."
+  - "Superseded events are ignored."
+expected_decisions:
+  - "Separate persisted draft, transient composition, and attachment readiness state."
+  - "Choose stable identities for send retransmission, stream events, and Stop retransmission."
+  - "Define terminal retry, sequence resume, and snapshot recovery without crossing turn identity."
+prerequisites:
+  - "Controlled text input"
+  - "AbortController"
+  - "Streaming event basics"
+core_skills:
+  - "IME-safe input"
+  - "Command idempotency"
+  - "Stream reconciliation"
+  - "Draft persistence"
+evaluation_must_cover:
+  - "IME composition and unready attachments cannot send."
+  - "Stable identities protect one logical send and active stream."
+evaluation_strong_signals:
+  - "Drafting continues, but Send becomes Stop during an active reply."
+  - "Reconnect by sequence or snapshot; reject superseded stream events."
+evaluation_expert_stretch: "Account drafts, cross-tab ownership, and safe Markdown."
+evaluation_red_flag: "Local abort masquerades as server Stop, or stale streams mutate the active turn."
+guided_mock: true
 notes_for_conversion:
   - "Keep the route, question ID, and access level stable."
   - "Keep backend execution out of scope; describe only UI-facing contracts."
   - "Maintain parity with the five shipped RADIO sections."
-search_intent: "Prepare a frontend system design answer for AI Chat Text Area (ChatGPT-Style)."
-reader_promise: "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI Chat Text Area (ChatGPT-Style)."
-unique_angle: "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior."
-what_this_adds_beyond_basics: "Adds an end-to-end worked example, state ownership, recovery, accessibility, and measurable rollout guidance for AI Chat Text Area (ChatGPT-Style)."
-competitor_query: "AI Chat Text Area (ChatGPT-Style) frontend system design"
+search_intent: "Prepare a frontend system design answer for an AI chat composer and streaming turn."
+reader_promise: "The reader can explain IME-safe input, attachment readiness, command idempotency, one-active-stream ownership, and stale-event recovery."
+unique_angle: "Connect native text entry, recoverable drafts, upload readiness, and streaming cancellation through explicit command and stream identities."
+what_this_adds_beyond_basics: "Adds a timeboxed response path, exact retransmission rules, authoritative Stop recovery, and a stale-stream walkthrough."
+competitor_query: "AI chat composer streaming turn frontend system design"
 competitor_takeaways:
-  - "Catalog pages commonly list components but stop before reconciliation and failure recovery."
-  - "Reference material is strongest when it anchors browser behavior in official platform guidance."
+  - "Composer examples are useful when native input semantics stay separate from network state."
+  - "Streaming examples need command, message, stream, and sequence identity to explain races."
 competitor_gaps:
-  - "A state transition is often described without showing the visible UI result or preserved invariant."
-  - "Accessibility, mobile reflow, cancellation, and rollback are frequently treated as afterthoughts."
+  - "Stop is often described as AbortController.abort without authoritative server reconciliation."
+  - "Retry often reuses an old command without distinguishing transport retransmission from new user intent."
 sources:
   - "https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event"
   - "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
-last_fact_checked_at: "2026-07-28"
-reviewed_by: "FrontendAtlas editorial migration"
+last_fact_checked_at: "2026-08-06"
+reviewed_by: "FrontendAtlas editorial"
 confidence: "high"
 ---
 # Prompt
 
-ai chat textarea frontend system design. Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.
+Use the candidate prompt in the frontmatter verbatim. The primary query is **ai chat composer and streaming turn**, but the case is narrower than a complete chat product: cover the composer, upload readiness, and one current assistant reply. Treat older history and model execution as abstract contracts.
+
+The product policy is deliberately explicit. A user can keep drafting while a response is active, yet the primary Send control becomes Stop. A second response cannot begin until the first reaches `complete`, `stopped`, or `failed`. This removes ambiguity about which answer Stop targets.
 
 ## Requirements
 
----
+The shipped Requirements section opens with a five-step, 15-minute response path:
 
-Scope the case to the composer and current turn. The user must be able to enter text with an IME, attach files, recover a local draft, submit exactly once, inspect a streaming assistant response, stop it, and retry without confusing cancellation with deletion. Older history is an abstract paged input rather than a database-design exercise.
+- **Frame the boundary.** Name the composer, uploads, and current turn. Keep history and model execution outside the frontend scope.
+- **Separate input and upload state.** `isComposing` belongs to the mounted textarea. Recoverable text belongs to a draft keyed by account and conversation. Each attachment owns a local upload phase and becomes sendable only with a finalized asset ID.
+- **Create one logical send.** Snapshot text, ready attachment IDs, `commandId`, `clientMessageId`, and draft revision. If only the response is lost, retransmit that same command. Text entered after the snapshot is a new draft.
+- **Stream and stop by identity.** One assistant placeholder accepts only matching, next-sequence events. A Stop intent gets one `stopCommandId`. Closing the browser reader with `AbortSignal` does not prove the server stopped.
+- **Reconcile before retry.** Resume after `lastSequence` or fetch `getTurnSnapshot`. After an authoritative terminal state, Retry or Regenerate creates a new `commandId` and receives a new `streamId`.
 
-Decision surface:
-- Does Enter submit only after composition has ended, while Shift+Enter keeps its newline behavior?
-- Are local draft, upload readiness, pending send, and streaming response modeled as separate state?
-- Do stable client message and command IDs make send retries idempotent?
-- Can Stop race with completion without erasing valid partial text?
-- Are errors, focus recovery, mobile reflow, and screen-reader updates explicit?
-
----
-
-### Composer and current-turn lifecycle
-1. **Compose:** Update one recoverable draft from `beforeinput`, input, and composition events; autosize within measured bounds.
-2. **Prepare attachments:** Track each local file through validation and upload readiness without storing `File` objects in serializable state.
-3. **Submit:** Snapshot text and finalized asset IDs under stable client message and command IDs before clearing the composer.
-4. **Stream:** Reduce sequenced deltas into one assistant message and coalesce only visual commits.
-5. **Stop or recover:** Abort the active request, preserve partial output, and reconcile a late terminal event or an idempotent retry.
-
-### Clarifying questions
-- Which browsers, mobile keyboards, IMEs, and assistive technologies matter?
-- Must attachments finish uploading before send, or may a command reference pending assets?
-- Does Stop only abort transport, or is there an idempotent server-side cancel command?
-- Is a stopped partial response retryable as a new turn or resumable under the same stream identity?
-- How is older history paged into the visible turn without changing the current composer contract?
-
-### Composer reliability and accessibility expectations
-- Composition and text selection remain correct while autosizing.
-- Draft persistence never overwrites a newer local revision.
-- A replayed send acknowledgement or stream delta is idempotent.
-- Long output does not force one framework render per token.
-- Live announcements communicate terminal changes rather than every chunk.
-
-### Scope checkpoint
-
-The design is coherent when composition-safe input, recoverable local intent, one send identity, sequenced stream updates, and honest Stop or retry behavior use the same turn model.
-
-### Frontend boundary
-
-The browser owns composition-safe input, autosizing, attachment state, draft persistence, send commands, stream presentation, cancellation, and focus recovery. Server-side model execution and durable conversation history stay behind abstract current-turn and paged-history contracts; this design stops at composer, message, and stream behavior.
+Reject overlapping responses for this version. If a second Send were allowed while the first streamed, a delayed event could attach an answer to the wrong prompt and the user could not predict which turn Stop would cancel. Keeping drafting available preserves useful work without creating that ambiguity.
 
 # Clarifying Questions
 
-- Which user journey and input modes must AI Chat Text Area (ChatGPT-Style) support first?
-- Which state is authoritative, which state may be optimistic, and how is freshness represented?
-- What ordering, identity, and version rules must survive retries or out-of-order responses?
-- Which interactions must remain usable with keyboard, assistive technology, and narrow viewports?
-- What should users see during loading, partial failure, cancellation, and recovery?
-- Which performance budgets are hypotheses to measure rather than universal thresholds?
+- Which browsers, mobile keyboards, IMEs, and assistive technologies are in the supported matrix?
+- Must every attachment finish uploading before Send, and can a failed file be removed without losing text?
+- Does Stop have an idempotent server command, an event that confirms terminal state, and a snapshot fallback?
+- Is Retry after `stopped` or `failed` defined as a new generation from the preserved prompt?
+- May multiple tabs show the same conversation, and if so which tab owns the current response command?
+
+These questions change concrete ownership and recovery behavior. They do not expand the exercise into model orchestration, database design, or conversation-search architecture.
 
 # Architecture
 
-## Architecture / High-level design
+`ComposerView` owns native text entry, selection, composition events, shortcuts, autosize, and focus. `DraftStore` persists account-and-conversation text revisions but never serializes mounted-control IME state. `AttachmentCoordinator` maps local file handles to `local`, `uploading`, `ready`, or `error` and exposes finalized asset IDs. `TurnCoordinator` stores the immutable Send command, optimistic row, active assistant turn, and stable Stop command. `StreamAdapter` parses transport records and passes typed events to a reducer.
 
----
+The reducer is the only writer for accepted turn state. It compares conversation, command, client message, assistant message, stream, and sequence identities before applying an acknowledgement or event. A replayed sequence is ignored. A gap triggers event resume or snapshot recovery. A result for a superseded stream cannot mutate the current response.
 
-Use a composer controller for input semantics, an attachment adapter for upload readiness, a normalized current-turn store, a stream adapter, and an action coordinator. The network layer emits typed snapshot, delta, terminal, and error events; the reducer owns idempotency and sequencing.
+The primary control follows current-turn state:
 
-Boundary checks:
-- Composition state is not inferred from key names alone.
-- Draft text is independent from the sent user message.
-- An active send command and assistant stream each have stable identities.
-- Transport cancellation and authoritative message status are reconciled.
-- Older history remains behind an abstract paging adapter.
+- With no nonterminal turn, a composition-complete draft and ready attachments enable Send.
+- While `pending` or `streaming`, the control is Stop. The textarea remains editable, but another Send is unavailable.
+- While Stop is uncertain, partial text remains visible and the UI says stopping rather than stopped.
+- After `complete`, `stopped`, or `failed`, Retry or Regenerate becomes available as a new user intent.
 
----
+## Worked example: IME, Send loss, and Stop loss
 
-### Core building blocks
-| Piece | Responsibility | Design rationale |
-| --- | --- | --- |
-| Composer controller | Applies composition, shortcut, paste, and autosize rules | Keeps input semantics out of network state. |
-| Attachment adapter | Validates files and maps local handles to finalized asset IDs | Separates ephemeral browser objects from serializable state. |
-| Current-turn store | Owns draft, pending command, user message, and assistant stream | Gives reconciliation one canonical state graph. |
-| Stream adapter | Parses lowercase SSE or fetch-stream records into typed events | Keeps protocol parsing away from components. |
-| Action coordinator | Sends, stops, retries, and resolves races | Gives every user intent one idempotent command boundary. |
+A Japanese IME is composing when the user presses Enter. `isComposing` prevents submit, so Enter commits or selects text normally. After `compositionend`, the attachment is ready and the user sends. The coordinator freezes a command and immediately renders one optimistic user row.
 
----
+The Send response times out. The coordinator retransmits the stored `commandId`; it does not create a second message. The server acknowledges the same command and returns `streamId s1`. Send renders as Stop while deltas for s1 arrive in sequence. The user types another draft without starting another response.
 
-```text
-Composer events
-  -> ComposerController
-      -> draft + composition state
-      -> AttachmentAdapter
-  -> ActionCoordinator.send(commandId, clientMessageId)
-      -> current-turn store
-      -> StreamAdapter
-          -> message.started
-          -> message.delta(sequence)
-          -> message.completed | message.stopped | message.failed
-      -> reducer
-          -> visible message
-          -> focused recovery control
-```
-
-### Composer and stream decisions
-- The reducer ignores duplicate sequence numbers and does not concatenate replayed text.
-- Draft clearing happens only after the submitted snapshot is recoverable.
-- Stop preserves received text while waiting for terminal reconciliation.
-- Older history may be virtualized or paged independently of the current turn.
-
-### Composer and current-turn failure patterns
-- Treating Enter as submit while `isComposing` is true.
-- Reusing one boolean for attachment upload, send, and stream state.
-- Appending every network chunk directly to component-local text.
-- Assuming `AbortController.abort()` proves the remote action stopped.
-
-### High-level flow
-1. **Prepare:** Validate composition state and attachment readiness.
-2. **Snapshot:** Create immutable send input under stable command and client message IDs.
-3. **Acknowledge:** Reconcile the server message ID without replacing local identity.
-4. **Reduce:** Merge sequenced stream events into one assistant message.
-5. **Recover:** On Stop, failure, or reconnect, preserve partial text and expose a meaningful next action.
-
-### Composer and stream ownership
-
-The architecture is sound when input semantics, local intent, transport parsing, and authoritative turn state meet only through typed events and commands.
-
-### Worked example: Enter during IME composition followed by cancel
-
-A Japanese input method is composing text when Enter is pressed, then the user submits the completed prompt with an attachment and cancels the streaming response. Keyboard shortcuts must respect composition and cancellation must not erase the sent turn.
-
-### Scenario walkthrough
-| Event | Store change | Visible UI | Invariant |
-| --- | --- | --- | --- |
-| Enter during composition | Observe composition state and do not submit. | The IME commits or selects text normally. | Shortcut does not corrupt input. |
-| Composition ends | Update the draft and validated attachment references. | Autosize follows measured content within bounds. | Draft is one coherent value. |
-| User sends | Create a client message ID and pending send command, then clear only after local snapshot. | Message appears pending and composer resets safely. | Sent content remains recoverable. |
-| User stops stream | Abort the active response command and retain received text as partial. | Stop becomes Retry or Continue by product policy. | Cancellation is not message deletion. |
+When Stop is activated, the coordinator stores `stopCommandId x1`, targets s1, and may abort local reading. The Stop response is also lost. Retrying uses x1 again, then event resume or `getTurnSnapshot` establishes authoritative `stopped`. Only then can Retry allocate a new command and accept `streamId s2`. A late delta for s1 fails the active-turn check and leaves s2 unchanged.
 
 # Tradeoffs
 
-The central tradeoff is Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior. The preferred design keeps browser-owned state explicit and treats server behavior as a UI-facing contract. A different rendering or state strategy is justified only when measured interaction cost, device constraints, or collaboration requirements change the evidence.
+Persisting drafts improves navigation recovery but introduces account isolation and retention obligations. Key storage by `accountId + conversationId`, detach the old namespace on account switch, and remove drafts on logout unless an approved bounded retention policy exists. IME composition remains transient because restoring a half-finished native composition is neither reliable nor meaningful.
+
+Visual delta batching can reduce rendering work, but accepted sequence state must advance independently from paint timing. Add batching only after profiling representative responses and low-end devices. Older history may be paged or virtualized separately; current-turn correctness cannot depend on whether historical messages are mounted.
+
+Local abort gives immediate browser feedback but cannot stand in for server authority. Waiting only for Stop acknowledgement can also stall if its response is lost. The combined contract uses a stable Stop identity, resumable events, and an authoritative snapshot. This costs more state than a single loading boolean, but it makes user-visible stopping and retry honest.
 
 ## Data model
 
-Model the composer and current turn explicitly. Unsent text, attachment work, a pending send command, the optimistic user message, and sequenced assistant output have different lifetimes and failure paths.
+`ComposerDraft` contains account, conversation, text, revision, saved time, and local attachment references. `ComposerInteractionState` contains `isComposing` and remains in memory. `AttachmentDraft` contains local identity, phase, finalized asset identity, and error. `PendingSend` stores conversation, `commandId`, `clientMessageId`, submitted revision, and acknowledgement phase. `StreamMessage` stores conversation, send identities, server message, `streamId`, `lastSequence`, partial text, and terminal phase.
 
----
+Identity reuse depends on the cause. A lost Send response reuses `commandId` and `clientMessageId`. A lost Stop response reuses `stopCommandId`. User Retry or Regenerate after terminal state creates a new Send identity and new stream. Mixing those cases either duplicates user messages or lets an old intent control a new turn.
 
-`ComposerDraft` is scoped by conversation and stores a local revision plus composition state. `AttachmentDraft` tracks readiness. `PendingSend` correlates the optimistic user message, while `StreamMessage` accepts events only from its own stream identity and next sequence.
+## Interface contract
 
-State-model checks:
-- Draft revision and IME composition are explicit.
-- Attachment readiness cannot be inferred from a URL.
-- Client message and command IDs make an uncertain send retry idempotent.
-- Stream identity and sequence reject stale or duplicate deltas.
+`ChatTurnClient.send` accepts the stable Send command, conversation, and `AbortSignal`, then echoes accepted identities with message and stream IDs. `openEvents` takes conversation, stream, `afterSequence`, and a local signal. `stop` accepts `stopCommandId`, conversation, stream, and a signal. `getTurnSnapshot` accepts the complete current-turn identity and returns authoritative text, sequence, and phase.
 
----
-
-### Core entities
-| Entity | What it represents | Why it matters |
-| --- | --- | --- |
-| ComposerDraft | Scoped unsent text and composition state | Prevents navigation or IME events from losing intent |
-| AttachmentDraft | Local file-to-asset lifecycle | Ensures only finalized asset IDs are sent |
-| PendingSend | Command and optimistic message identity | Makes uncertain retries and echoed messages converge |
-| StreamMessage | Assistant identity, stream sequence, text, and terminal phase | Prevents stale or duplicate chunks from corrupting the turn |
-
-```ts
-type AttachmentPhase = 'local' | 'uploading' | 'ready' | 'error';
-type StreamPhase = 'pending' | 'streaming' | 'complete' | 'stopped' | 'error';
-
-interface ComposerDraft {
-  conversationId: string;
-  text: string;
-  revision: number;
-  savedAt: number;
-  isComposing: boolean;
-  attachmentLocalIds: string[];
-}
-
-interface AttachmentDraft {
-  localId: string;
-  phase: AttachmentPhase;
-  assetId: string | null;
-  error: string | null;
-}
-
-interface PendingSend {
-  commandId: string;
-  clientMessageId: string;
-  draftRevision: number;
-  phase: 'sending' | 'acknowledged' | 'error';
-}
-
-interface StreamMessage {
-  messageId: string;
-  streamId: string;
-  lastSequence: number;
-  text: string;
-  phase: StreamPhase;
-}
-```
-
-### Explicit state
-- Draft revision and composition state.
-- Attachment phase and finalized asset identity.
-- Command and client message IDs for send reconciliation.
-- Stream ID, last accepted sequence, partial text, and terminal phase.
-
-### Conversation-state pitfalls
-- One `isLoading` flag shared by uploads, send acknowledgement, and response streaming.
-- No client identity to reconcile an echoed optimistic message.
-- No stream sequence, so replay duplicates text.
-- Persisting `File`, DOM nodes, or `AbortController` in serializable state.
-
-- **Primary local entity:** ComposerDraft
-- **Command identity:** commandId + clientMessageId
-- **Stream ordering:** streamId + sequence
-
-### State checkpoint
-
-The model is trustworthy when unsent intent, attachment readiness, send acknowledgement, and assistant streaming cannot overwrite one another.
-
-### Draft, send-command, and stream ownership
-
-Keep ComposerDraft, AttachmentDraft, composition state, and PendingSend separate from conversation messages. A sent user message gets a client ID for idempotent reconciliation. Streaming assistant text is a versioned or sequenced message resource, while the local composer draft can persist independently across navigation.
-
-### Client model
-| Record | Key fields | Owner |
-| --- | --- | --- |
-| ComposerDraft | text, revision, savedAt | Local draft |
-| AttachmentDraft | localId, phase, assetId, error | Upload state |
-| PendingSend | clientMessageId, commandId, phase | Action overlay |
-| StreamMessage | messageId, sequence, text, terminal | Conversation cache |
+The UI adapter exposes draft, composition state, attachments, active turn, and `primaryAction: 'send' | 'stop'`. It offers a transport retransmit for an uncertain Send and a separate terminal Retry operation that requires a newly allocated command. Components do not parse SSE, select stale-event winners, or infer remote cancellation from an exception.
 
 # Failure Modes
 
-## Optimizations and deep dive
+- Draft persistence failure keeps text in memory and presents nonblocking status.
+- Attachment failure preserves the prompt and gives that file Retry and Remove controls.
+- Duplicate Enter while Send is pending does not create another command.
+- Send response loss retransmits the immutable command and converges on one optimistic row.
+- Stop response loss retransmits the same Stop identity and reconciles through events or snapshot.
+- Reconnect resumes after the last accepted sequence; a snapshot handles an expired cursor.
+- A late old-stream event is ignored by identity even when it carries a higher sequence.
+- Partial assistant Markdown is sanitized with allowlisted link protocols and never passed directly to `innerHTML`.
 
-This step is about scale and UX safety: long conversations, large responses, and unreliable networks. Explain how you keep the chat fast and reliable over time.
-
----
-
-Ship composition-safe input, recoverable drafts, attachment readiness, idempotent send, and honest Stop behavior first. Add virtualization or visual delta batching only after measuring current-turn and long-list costs.
-
-Composer and current-turn resilience evidence:
-- Long histories do not block the composer.
-- The design avoids re-render storms during streaming.
-- Stop, uncertain send, and retry converge by identity.
-- Draft and attachment failures preserve recoverable user intent.
-
----
-
-### Composer performance controls
-| Lever | What it does | Why it helps |
-| --- | --- | --- |
-| Virtualized list | Render only visible messages | Keeps scrolling smooth on long histories |
-| Chunk batching | Batch token updates (every 50-100ms) | Avoids excessive re-renders |
-| Context summarization | Summarize older turns | Stays within model limits |
-| Retry + backoff | Retry failed streams | Improves resilience |
-
-### Measured optimizations
-- Virtualize long message lists.
-- Batch streaming chunks before state updates.
-- Summarize old context when it grows too large.
-- Abort in-flight streams on new requests.
-- Cache recent conversations for quick load.
-
-### Composer failure and recovery
-- Stale streams overwriting newer messages.
-- UI jank from per-token renders.
-- History payloads that are too large to load.
-- Error states that lose the user's prompt.
-- Stop button that does not actually cancel.
-
-### Scenario: long history and interrupted stream
-1. **1. Very long conversation:** Load only the latest N messages, show a Load more button, and virtualize the list.
-2. **2. User sends a new prompt:** Abort any existing stream and start a new one to avoid overlap.
-3. **3. Stream hiccup:** Show a retry CTA and keep the partial response so the user does not lose progress.
-
-- **Main metric:** Time-to-first-token
-- **Secondary metric:** Scroll smoothness
-- **Error metric:** Stream failure rate
-
-### Composer resilience invariant
-
-A great chat UX is resilient: it streams smoothly, cancels reliably, and scales to long histories without slowing down.
-
-### Composition, send, and stream recovery
-
-### Failure modes
-| Failure | Response | Invariant |
-| --- | --- | --- |
-| Draft storage fails | Keep in-memory text and show nonblocking recovery status. | Typing never stops. |
-| Attachment fails | Keep text and the failed attachment row with retry or remove. | One file does not erase the prompt. |
-| Send response is lost | Retry the same client message identity. | Duplicate user turns are avoided. |
-| Stream reconnects | Resume by cursor or fetch the message snapshot. | Partial content converges. |
-
-### Accessibility behavior
-
-The textarea has a persistent label and instructions for Enter versus modified Enter without overriding platform composition. Attachments expose name, phase, error, and remove control. Streaming deltas are not announced token by token; meaningful completion, failure, or stop state uses a concise polite message. Focus remains in the composer after ordinary send unless navigation requires otherwise.
-
-### Rollout and measurement
-
-Test IME composition, mobile keyboards, voice input, paste, long drafts, large text, RTL, attachment races, duplicate send, stream interruption, and route restoration. Track accidental empty sends, draft loss, duplicate messages, stop latency, attachment recovery, and input responsiveness.
-
-### Technical references
-- [MDN composition events](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event) — IME composition lifecycle for text controls.
-- [MDN AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) — Cancellation primitive for request and stream work.
+For accessibility, keep a persistent textarea label, explain Enter behavior without overriding composition, and expose attachment name, phase, error, Retry, and Remove controls. Do not announce every token. Announce the transition to stopping and the meaningful terminal outcome once. Keep focus in the composer after ordinary Send; move it only when a requested recovery action needs attention.
 
 # Metrics
 
-Measure task completion and recovery before optimizing isolated rendering numbers. Track time to first useful UI, interaction latency by input mode, request and mutation failure rates, stale-response suppressions, retry outcomes, focus-restoration failures, layout overflow, and accessibility regressions. Segment field results by device capability, network class, viewport, and reduced-motion preference. Numeric targets begin as testable budgets and should be revised from production distributions.
+Measure duplicate-message rate, stale-event suppression, Stop latency, successful recovery after lost responses, draft loss, attachment recovery, input responsiveness, and focus-restoration failures. Segment results by input mode, browser, device capability, viewport, and network cohort. Profile before enabling list virtualization or visual delta batching, and verify that paint scheduling never changes accepted stream order.
 
 # Rollout
 
-Ship the smallest client slice that preserves identity, cancellation, recovery, accessibility, and observability. Validate the UI-facing contracts with deterministic fixtures, release behind a feature flag where appropriate, compare user outcomes and error distributions, and expand only after the failure and rollback paths have been exercised.
+Start with deterministic fixtures for composition events, attachment transitions, duplicate Enter, repeated Send, repeated Stop, sequence replay, event gaps, snapshot recovery, terminal Retry, and stale old-stream events. Add keyboard and narrow-layout coverage, then test account switch, logout cleanup, cross-tab ownership, and hostile Markdown rendering.
 
-## Interface definition (API)
+Release the one-active-response policy with observability around command reuse and suppressed stale events. Compare user recovery outcomes before changing performance strategies. Preserve the current route, access, progress, and guided-mock behavior.
 
-Expose a composer-oriented client contract: draft state, attachment readiness, send, Stop, retry, and the current turn. Keep raw transport parsing and history implementation outside view components.
+## Technical references
 
----
-
-A `useChatComposer` adapter returns the draft, attachments, current turn, and intent methods. `send` accepts finalized attachment IDs plus stable command and client message identities. Every stream event carries `streamId`, `messageId`, and `sequence`.
-
-Contract checks:
-- Composition and attachment state are visible to the view.
-- Send and Stop are explicit commands with abortable transport.
-- Stream events correlate to exactly one assistant resource.
-- Raw protocol parsing stays private, and conversation-history loading remains outside this composer contract.
-
----
-
-```ts
-interface SendCommand {
-  commandId: string;
-  clientMessageId: string;
-  text: string;
-  attachmentIds: string[];
-}
-
-interface UseChatComposerResult {
-  draft: ComposerDraft;
-  attachments: AttachmentDraft[];
-  activeTurn: StreamMessage | null;
-  updateText(text: string): void;
-  send(command: SendCommand): Promise<void>;
-  stop(): Promise<void>;
-  retry(commandId: string): Promise<void>;
-}
-
-interface ChatTurnClient {
-  send(input: SendCommand & { conversationId: string; signal: AbortSignal }): Promise<{
-    messageId: string;
-    assistantMessageId: string;
-    streamId: string;
-  }>;
-  stop(input: { streamId: string; commandId: string; signal: AbortSignal }): Promise<void>;
-}
-```
-
-```text
-event: message.delta
-data: {"streamId":"s_123","messageId":"m_123","sequence":1,"delta":"hello"}
-
-event: message.completed
-data: {"streamId":"s_123","messageId":"m_123","sequence":2}
-```
-
-### Core interfaces
-| Contract surface | Shape (example) | How you explain it |
-| --- | --- | --- |
-| useChatComposer | draft, attachments, activeTurn, send, stop, retry | Keeps composition and turn intent separate from transport parsing. |
-| send | commandId, clientMessageId, text, attachmentIds | Snapshots one composition-complete turn for idempotent reconciliation. |
-| stream events | streamId, messageId, sequence, delta or terminal phase | Incrementally updates exactly one assistant resource. |
-| stop | streamId + commandId | Requests authoritative stop while AbortSignal closes local transport work. |
-
-### Public behavior
-- Draft text, composition state, and attachment phases.
-- Send, Stop, and retry intents.
-- Current turn identity, partial text, and terminal phase.
-
-### Transport and buffering behind the adapter
-- Raw SSE parsing in the view.
-- Visual commit timers or internal buffers.
-- Database details leaking into components.
-
-### Integration flow
-1. **Restore:** Adapter restores the scoped draft independently from recent messages.
-2. **Send:** After composition and attachment validation, UI calls `send` with stable identities.
-3. **Stream:** Adapter accepts matching next-sequence events and batches visual text commits when profiling justifies it.
-4. **Stop:** Local transport closes, a stop command is sent, and terminal status still reconciles.
-
-### Contract checkpoint
-
-The contract is complete when draft ownership, attachment readiness, command identity, stream identity, Stop, and retry are visible while raw protocol parsing stays hidden.
-
-### UI-facing contract
-
-`send` accepts text, finalized attachment IDs, command ID, client message ID, and AbortSignal at the client boundary. The stream adapter exposes sequenced deltas and terminal state. Stop sends an idempotent command while AbortSignal closes local transport work; the UI still reconciles authoritative message status after cancellation races.
-
-### From composition-safe draft to terminal turn
-1. **Compose:** Honor beforeinput and composition events, update draft, and autosize within a measured maximum.
-2. **Prepare:** Wait for required attachment finalization and preserve accessible error links.
-3. **Send:** Snapshot content under one client ID and reconcile the echoed server message.
-4. **Stream:** Batch visual deltas, expose Stop, and keep partial content on recoverable interruption.
+- [MDN composition events](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event) — Native IME composition lifecycle for text controls.
+- [MDN AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) — Local request and stream cancellation semantics.

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">AI chat stop, retry, and stale event timeline</title>
+  <desc id="desc">The user stops stream one with a stable command identity, reconciles its result, and retries into stream two. A delayed delta from stream one fails the active stream check and is ignored.</desc>
+  <rect width="960" height="420" rx="24" fill="#f8fafc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#172033">A retry replaces the active stream, not its history</text>
+  <line x1="74" y1="212" x2="886" y2="212" stroke="#9aa7bc" stroke-width="3"/>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g fill="#e8efff" stroke="#315ee8" stroke-width="2">
+      <circle cx="140" cy="212" r="23"/><circle cx="340" cy="212" r="23"/><circle cx="550" cy="212" r="23"/><circle cx="760" cy="212" r="23"/>
+    </g>
+    <text x="140" y="217" font-size="15" font-weight="700" fill="#172033">1</text>
+    <text x="340" y="217" font-size="15" font-weight="700" fill="#172033">2</text>
+    <text x="550" y="217" font-size="15" font-weight="700" fill="#172033">3</text>
+    <text x="760" y="217" font-size="15" font-weight="700" fill="#172033">4</text>
+    <text x="140" y="150" font-size="16" font-weight="700" fill="#172033">stream-1 active</text>
+    <text x="140" y="176" font-size="14" fill="#526078">ordered deltas accepted</text>
+    <text x="340" y="262" font-size="16" font-weight="700" fill="#172033">stop requested</text>
+    <text x="340" y="288" font-size="14" fill="#526078">reuse stopCommandId</text>
+    <text x="550" y="150" font-size="16" font-weight="700" fill="#172033">snapshot reconciled</text>
+    <text x="550" y="176" font-size="14" fill="#526078">stream-2 becomes active</text>
+    <text x="760" y="262" font-size="16" font-weight="700" fill="#172033">late stream-1 delta</text>
+    <text x="760" y="288" font-size="14" fill="#7950b8">identity mismatch → ignore</text>
+  </g>
+  <rect x="188" y="332" width="584" height="48" rx="14" fill="#effaf4" stroke="#268455" stroke-width="2"/>
+  <text x="480" y="362" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#172033">Snapshot recovery closes gaps; it never makes an old stream current again.</text>
+</svg>

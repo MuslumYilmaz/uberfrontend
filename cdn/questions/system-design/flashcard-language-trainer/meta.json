@@ -34,7 +34,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Flashcard Language Trainer Frontend System Design",
     "description": "Design flashcard study with session state, offline progress, conflict-safe sync, click and keyboard reveal, reduced motion, and accessible feedback."
@@ -56,7 +56,7 @@
     "searchIntent": "Prepare a frontend system design answer for Flashcard-based Language Learning App.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Flashcard-based Language Learning App.",
     "uniqueAngle": "Design a flashcard study experience with session state, offline progress, conflict-safe sync, input-independent reveal, reduced motion, and accessible feedback.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

@@ -76,6 +76,54 @@
           </span>
         </div>
 
+        <section
+          *ngIf="targetedQuestion() as targeted"
+          class="targeted-case"
+          aria-labelledby="targeted-case-title"
+          data-testid="interview-targeted-case">
+          <div>
+            <p class="eyebrow">Selected from System Design Bank</p>
+            <h3 id="targeted-case-title">{{ targeted.title }}</h3>
+            <p>
+              This mock will use this exact {{ targetedLevelLabel() }} case. Review your setup, then start when ready.
+            </p>
+          </div>
+          <button faButton variant="ghost" type="button" (click)="chooseAnotherCase()">
+            Choose another case
+          </button>
+        </section>
+
+        <section
+          *ngIf="targetResolution() === 'loading'"
+          class="target-resolution"
+          role="status"
+          aria-live="polite"
+          data-testid="interview-target-resolution-loading">
+          <div>
+            <p class="eyebrow">Selected from System Design Bank</p>
+            <h3>Validating the exact guided case…</h3>
+            <p>Start stays disabled until the source and its interview level are confirmed.</p>
+          </div>
+          <button faButton variant="ghost" type="button" (click)="chooseAnotherCase()">
+            Choose another case
+          </button>
+        </section>
+
+        <section
+          *ngIf="targetResolution() === 'error'"
+          class="target-resolution target-resolution--error"
+          role="alert"
+          data-testid="interview-target-resolution-error">
+          <div>
+            <p class="eyebrow">Guided case unavailable</p>
+            <h3>We could not pin this mock safely</h3>
+            <p>{{ targetResolutionError() }}</p>
+          </div>
+          <button faButton variant="ghost" type="button" (click)="chooseAnotherCase()">
+            Choose another case
+          </button>
+        </section>
+
         <fieldset class="format-picker" [disabled]="starting()">
           <legend>Interview format</legend>
           <label
@@ -100,11 +148,13 @@
         <div class="fields">
           <fa-field label="Level" hint="Controls scenario depth and coding expectations.">
             <fa-select
+              inputId="interview-level"
+              ariaLabel="Interview level"
               [options]="available.levels"
               [value]="selectedLevel()"
               optionLabel="label"
               optionValue="value"
-              [disabled]="starting()"
+              [disabled]="starting() || levelLocked()"
               (valueChange)="onLevelChange($event)">
             </fa-select>
           </fa-field>
@@ -115,6 +165,8 @@
               ? questionMix()
               : 'Used for the final implementation lens; the architecture case stays framework-independent.'">
             <fa-select
+              inputId="interview-track"
+              ariaLabel="Interview track"
               [options]="available.tracks"
               [value]="selectedTrack()"
               optionLabel="label"

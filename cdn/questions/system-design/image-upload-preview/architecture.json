@@ -48,8 +48,8 @@
       "rows": [
         [
           "State machine",
-          "Tracks status, file, previewUrl, error",
-          "Single source of truth for UI; every visual state maps to a combination of these fields."
+          "Tracks attemptId, file, previewUrl, status, progress, session, asset, error",
+          "The eight fields are the single source of truth; every visual state derives from them."
         ],
         [
           "Control area",
@@ -154,8 +154,8 @@
       "items": [
         {
           "label": "Core state fields",
-          "value": "5",
-          "helperText": "file, previewUrl, status, progress, error."
+          "value": "8",
+          "helperText": "attemptId, file, previewUrl, status, progress, session, asset, error."
         },
         {
           "label": "Main transitions",

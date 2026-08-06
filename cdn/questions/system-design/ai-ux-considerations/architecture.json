@@ -4,202 +4,111 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Use a structured pipeline: intent capture -> proposal adapter -> evidence and capability validation -> review store -> versioned action coordinator -> per-item outcome reducer. Generated content never bypasses review or product permissions."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "ProposalAdapter validates structured, escaped proposal data. ReviewStore owns selection and edits. CapabilityGate derives allowed actions from evidence freshness and permissions. ActionCoordinator submits one idempotent versioned command and reconciles per-item outcomes."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Boundary checks:\n- Proposal is separate from user decision.\n- Evidence and capabilities have explicit freshness.\n- Local review edits survive safe proposal refreshes.\n- Pending command overlays rather than rewrites authority.\n- Outcomes retain item-level success, failure, and recovery."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
+      "text": "Split the flow at authority boundaries. ProposalGateway returns generated wording only. EvidenceGateway loads last activity and open invoices, while EligibilityGateway checks current permission and record versions. ReviewStore owns removals and stage overrides. ApprovalCoordinator freezes reviewed inputs, and OutcomeReducer renders authoritative per-record results."
     },
     {
       "type": "table",
-      "title": "Core building blocks",
+      "title": "Ownership across the review flow",
       "columns": [
-        "Piece",
-        "Responsibility",
-        "Design rationale"
+        "Part",
+        "Owned state",
+        "Boundary"
       ],
       "rows": [
         [
-          "ProposalAdapter",
-          "Validates structured generated content",
-          "Treats model output as untrusted data."
+          "ProposalGateway",
+          "GeneratedProposalContent",
+          "Validates and escapes suggestions; it cannot grant eligibility"
+        ],
+        [
+          "Evidence and eligibility gateways",
+          "Evidence snapshots and ActionEligibility",
+          "Read product services and return trusted, versioned facts"
         ],
         [
           "ReviewStore",
-          "Owns selected items, edits, acknowledgement, and focus context",
-          "Keeps user intent inspectable and reversible."
+          "ReviewState",
+          "Keeps local removals and stage overrides separate from the proposal"
         ],
         [
-          "CapabilityGate",
-          "Combines proposal version, evidence freshness, and permission",
-          "Display text never grants authority."
+          "ApprovalCoordinator",
+          "ApprovalCommand",
+          "Rechecks permission, evidence, and record versions before submission"
         ],
         [
-          "ActionCoordinator",
-          "Submits idempotent command and merges per-item results",
-          "Optimism cannot fabricate complete success."
+          "OutcomeReducer",
+          "ActionOutcome and audit references",
+          "Shows each confirmed success, conflict, denial, or failure"
         ]
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "code",
-      "language": "text",
-      "code": "Intent capture\n  -> ProposalAdapter (validate and escape)\n  -> Proposal cache (identity + version + evidence freshness)\n  -> CapabilityGate\n  -> ReviewStore (selection + edits)\n  -> ActionCoordinator (command ID + version precondition)\n  -> Outcome reducer (per-item authoritative result)\n  -> Review panel, status summary, and focused recovery",
-      "validation": {
-        "kind": "pseudocode"
-      }
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Proposal authority and action decisions",
-              "items": [
-                "Proposal, review, command, and outcome have separate owners.",
-                "Cancel stops local waiting; it does not claim remote work stopped.",
-                "Confirmation revalidates proposal version and capability.",
-                "Retry keeps the same command identity only when the contract is idempotent."
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Unsafe proposal and action coupling",
-              "items": [
-                "Treating generated prose as an executable command.",
-                "Hiding stale or permission-restricted evidence.",
-                "Replacing per-item outcomes with one success banner.",
-                "Rendering generated markup without an allowlisted formatter."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "steps",
-      "title": "High-level flow",
-      "steps": [
-        {
-          "title": "1. Request",
-          "text": "Capture intent under a request identity and keep pending work cancellable."
-        },
-        {
-          "title": "2. Review",
-          "text": "Validate proposal structure, show evidence and limitations, and derive capabilities."
-        },
-        {
-          "title": "3. Confirm",
-          "text": "Snapshot reviewed item IDs and edits under one versioned idempotent command."
-        },
-        {
-          "title": "4. Reconcile",
-          "text": "Merge per-item outcomes, focus the first recoverable failure, and preserve successful evidence."
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "State model",
-          "value": "Proposal + review + outcome",
-          "helperText": "Different authorities remain explicit."
-        },
-        {
-          "label": "Control",
-          "value": "review/confirm/recover",
-          "helperText": "User authority remains inspectable."
-        },
-        {
-          "label": "Capability",
-          "value": "CapabilityGate",
-          "helperText": "Freshness and permission determine allowed actions."
-        }
       ]
     },
     {
       "type": "callout",
       "variant": "warning",
-      "title": "Proposal and action ownership",
-      "text": "AI UX reliability comes from separating generated advice, user review, product capability, command intent, and authoritative outcomes.",
+      "title": "Authority changes only at typed boundaries",
+      "text": "Generated content can explain a suggested lifecycle stage. Trusted product data determines eligibility, a person creates approval, and only an execution outcome confirms whether a customer record changed. Cancel and rollback remain separate commands with separate results.",
       "editorialRole": "canonical-model"
     },
     {
       "type": "heading",
-      "text": "Worked example: uncertain suggestion affects a destructive edit"
+      "text": "Worked example: lifecycle-stage proposal"
     },
     {
       "type": "text",
-      "text": "An assistant proposes removing three records but reports incomplete evidence. The UI must not convert a probabilistic suggestion into an automatic destructive command or hide which records were inferred."
+      "text": "The proposal recommends moving Acme from onboarding to active because its last activity was yesterday, moving Birch to collections because an invoice is forty-five days overdue, and moving Cedar to at-risk. The specialist removes Cedar and changes Acme's target before approving. During review, Birch is edited by another operator and Acme's permission is revoked."
     },
     {
       "type": "table",
-      "title": "Scenario walkthrough",
+      "title": "Acme and Birch through approval",
       "columns": [
         "Event",
         "Store change",
-        "Visible UI",
-        "Invariant"
+        "Visible result",
+        "User impact"
       ],
       "rows": [
         [
-          "Suggestion arrives",
-          "Store proposal, confidence label, evidence references, and capability.",
-          "Render a review state rather than completed success.",
-          "Suggestion is not an action."
+          "Proposal and evidence arrive",
+          "Store generated content beside trusted evidence and eligibility",
+          "Rows show suggested stages, last activity, open invoice, and freshness",
+          "The specialist can judge the reason without treating it as a completed edit"
         ],
         [
-          "Evidence is incomplete",
-          "Mark unsupported records and disable bulk confirmation.",
-          "Explain what needs review in plain language.",
-          "Uncertainty changes interaction."
+          "Cedar is removed and Acme is edited",
+          "ReviewState records a removal and one stage override",
+          "The summary names the exact two remaining records and final stages",
+          "Approval reflects the person's reviewed scope, not the original suggestion"
         ],
         [
-          "User edits selection",
-          "Create explicit local intent containing only reviewed records.",
-          "Preview shows the exact effect and undo policy.",
-          "User authority is inspectable."
+          "Approval is submitted",
+          "One command binds proposal, evidence, permission, and record versions",
+          "Rows remain pending rather than turning green optimistically",
+          "A slow response cannot masquerade as success"
         ],
         [
-          "Command resolves",
-          "Merge authoritative per-record outcomes and retain failures.",
-          "Show partial success with focused recovery.",
-          "One headline never hides mixed results."
+          "Mixed outcomes return",
+          "Acme is permission-denied and Birch conflicts with a newer revision",
+          "Each row gets its own explanation, audit reference, and recovery action",
+          "No global banner claims the bulk edit completed"
         ]
       ]
+    },
+    {
+      "type": "heading",
+      "text": "Rejected alternative: an executable proposal object"
+    },
+    {
+      "type": "text",
+      "text": "A single object containing generated copy, evidence, permission flags, selection, and an apply method gives untrusted or stale data the shape of authority. Refreshing it can also overwrite local choices. Separate records add coordination work, yet identify who produced each fact and explain why an action became unavailable."
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/ai-ux-considerations/proposal-execution-boundary.svg",
+      "alt": "Boundary diagram separating generated lifecycle-stage suggestions, evidence review, explicit approval, execution, and audited record outcomes.",
+      "caption": "A proposal crosses into product mutation only through a version-bound approval command.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: AI produces generated proposal content. Product services add current evidence and eligibility. The specialist reviews and approves an exact version. Execution returns authoritative results for each customer record, which feed audit and recovery controls."
     }
   ]
 }

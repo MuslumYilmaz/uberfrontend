@@ -42,7 +42,12 @@ function extractAnchorHrefs(html) {
   const re = /<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi;
   let match;
   while ((match = re.exec(html))) {
-    const value = String(match[1] || '').trim();
+    // Attribute values in prerendered HTML encode query separators as `&amp;`.
+    // Decode them before URL parsing so valid query links resolve by pathname.
+    const value = String(match[1] || '')
+      .replace(/&amp;/gi, '&')
+      .replace(/&#(?:0*38|x0*26);/gi, '&')
+      .trim();
     if (!value) continue;
     out.push(value);
   }
