@@ -5,7 +5,7 @@
   "status": "candidate",
   "variants": [
     {
-      "contentHash": "c1853faf7ae370b504bcd955d136599543e07a6a9b490f1de9023b6648fedca2",
+      "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
       "enabled": true,
       "id": "int-code-angular-junior-counter-v1",
       "level": "junior",
@@ -46,7 +46,7 @@
           "path": "package.json"
         },
         {
-          "content": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;}\n.value{font-size:48px;line-height:1;font-weight:800;text-align:center;margin-bottom:12px;}\n.actions{display:flex;gap:8px;justify-content:center}\nbutton{background:#a3e635;color:#111;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}\nbutton[disabled]{opacity:.5;cursor:not-allowed}\nbutton.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151}\n",
+          "content": ".panel {\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 16px;\n}\n\n.value {\n  font-size: 48px;\n  line-height: 1;\n  font-weight: 800;\n  text-align: center;\n  margin-bottom: 12px;\n}\n\n.actions {\n  display: flex;\n  gap: 8px;\n  justify-content: center;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 10px;\n  padding: 10px 14px;\n  font-weight: 700;\n  cursor: pointer;\n}\n\nbutton[disabled] {\n  opacity: .5;\n  cursor: not-allowed;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n",
           "path": "src/app/app.component.css"
         },
         {
@@ -66,7 +66,7 @@
           "path": "src/main.ts"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n",
           "path": "src/styles.css"
         },
         {
@@ -79,7 +79,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "52409a6b4cde828da82269d78ef450519b3d2221a6ebfb9f9bc44e07bc551422",
+      "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
       "level": "junior",
@@ -120,7 +120,7 @@
           "path": "package.json"
         },
         {
-          "content": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.input-row{display:flex;gap:8px;}\n.input-row input{flex:1;background:#020617;border-radius:8px;border:1px solid #1f2937;padding:8px 10px;color:#e5e7eb;font-size:14px;}\n.input-row input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f1;}\n.primary{background:#4ade80;color:#022c22;border:none;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;}\n.primary[disabled]{opacity:.6;cursor:not-allowed;}\n.list{list-style:none;margin:0;padding:0;display:grid;gap:6px;}\n.item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:8px;background:#020617;border:1px solid transparent;}\n.item-main{display:flex;align-items:center;gap:8px;font-size:14px;}\n.item-main input[type=checkbox]{accent-color:#22c55e;}\n.item-main span.done{text-decoration:line-through;color:#9ca3af;}\nbutton.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;}\nbutton.ghost.small{padding:4px 10px;font-size:12px;}\n.empty{margin:4px 0 0;font-size:13px;color:#9ca3af;text-align:center;}\n.footer{display:flex;justify-content:flex-end;margin-top:4px;}\n",
+          "content": ".panel {\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 16px;\n  display: grid;\n  gap: 12px;\n}\n\n.input-row {\n  display: flex;\n  gap: 8px;\n}\n\n.input-row input {\n  flex: 1;\n  background: #020617;\n  border-radius: 8px;\n  border: 1px solid #1f2937;\n  padding: 8px 10px;\n  color: #e5e7eb;\n  font-size: 14px;\n}\n\n.input-row input:focus {\n  outline: none;\n  border-color: #6366f1;\n  box-shadow: 0 0 0 1px #6366f1;\n}\n\n.primary {\n  background: #4ade80;\n  color: #022c22;\n  border: none;\n  border-radius: 999px;\n  padding: 8px 14px;\n  font-weight: 600;\n  font-size: 14px;\n  cursor: pointer;\n}\n\n.primary[disabled] {\n  opacity: .6;\n  cursor: not-allowed;\n}\n\n.list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 6px;\n}\n\n.item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 8px;\n  padding: 6px 8px;\n  border-radius: 8px;\n  background: #020617;\n  border: 1px solid transparent;\n}\n\n.item-main {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n}\n\n.item-main input[type=checkbox] {\n  accent-color: #22c55e;\n}\n\n.item-main span.done {\n  text-decoration: line-through;\n  color: #9ca3af;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n  border-radius: 999px;\n  padding: 6px 10px;\n  font-size: 12px;\n  cursor: pointer;\n}\n\nbutton.ghost.small {\n  padding: 4px 10px;\n  font-size: 12px;\n}\n\n.empty {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #9ca3af;\n  text-align: center;\n}\n\n.footer {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: 4px;\n}\n",
           "path": "src/app/app.component.css"
         },
         {
@@ -140,7 +140,7 @@
           "path": "src/main.ts"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n",
           "path": "src/styles.css"
         },
         {
@@ -153,7 +153,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "7c14bcc8703013d1ece42f1f82d053300f3f788c97b61152fdf591f7f6e9fa7f",
+      "contentHash": "b4baf4a74d743f215d81551801598d745f6580dc71d5b37eba92e6f9d44d4dab",
       "enabled": true,
       "id": "int-code-angular-mid-pagination-v1",
       "level": "mid",
@@ -205,7 +205,7 @@
           "path": "package.json"
         },
         {
-          "content": "table.table{width:100%;border-collapse:collapse;background:#0b1020;border:1px solid #1f2937;border-radius:8px;overflow:hidden}\nth,td{text-align:left;padding:8px;font-size:13px;border-bottom:1px solid #1f2937}\ntr:last-child td{border-bottom:none}\n.pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:8px}\nbutton{background:#4ade80;color:#111;padding:8px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}\nbutton[disabled]{opacity:.5;cursor:not-allowed}\n",
+          "content": "table.table {\n  width: 100%;\n  border-collapse: collapse;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 8px;\n  overflow: hidden;\n}\n\nth,td {\n  text-align: left;\n  padding: 8px;\n  font-size: 13px;\n  border-bottom: 1px solid #1f2937;\n}\n\ntr:last-child td {\n  border-bottom: none;\n}\n\n.pagination {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  gap: 12px;\n  margin-top: 8px;\n}\n\nbutton {\n  background: #4ade80;\n  color: #111;\n  padding: 8px 14px;\n  border-radius: 8px;\n  border: none;\n  font-weight: 700;\n  cursor: pointer;\n}\n\nbutton[disabled] {\n  opacity: .5;\n  cursor: not-allowed;\n}\n",
           "path": "src/app/app.component.css"
         },
         {
@@ -229,7 +229,7 @@
           "path": "src/main.ts"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n",
           "path": "src/styles.css"
         },
         {
@@ -242,7 +242,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "ec60daae836ab6b3ad83f6a98f69b21ec38453a47154e33de7132a3603abc25e",
+      "contentHash": "7c28ac1b8fc4ff421b5bff288f7b49dc4c66b1a5811aeaaa9c4f40869a7c9825",
       "enabled": true,
       "id": "int-code-angular-mid-shopping-cart-v1",
       "level": "mid",
@@ -295,7 +295,7 @@
           "path": "package.json"
         },
         {
-          "content": ".app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}\n.layout{width:100%;max-width:520px;display:grid;gap:16px;}\n.column{background:#020617;border-radius:16px;border:1px solid #1f2937;padding:16px 16px 12px;display:grid;gap:12px;}\n.title{margin:0;font-size:18px;font-weight:700;}\n.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}\n.product-list,.cart-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;}\n.product-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.product-main{display:grid;gap:2px;}\n.product-name{font-size:14px;font-weight:600;}\n.product-price{font-size:13px;color:#a3e635;}\n.cart-header{display:grid;gap:4px;}\n.cart-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.cart-info{display:grid;gap:4px;}\n.cart-name{font-size:14px;font-weight:600;}\n.cart-meta{display:flex;align-items:center;gap:4px;font-size:12px;color:#9ca3af;}\n.unit-price,.line-total{font-variant-numeric:tabular-nums;}\n.times,.equals{opacity:.7;}\n.cart-actions{display:flex;gap:6px;}\nbutton{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}\nbutton:hover{border-color:#a3e635;}\nbutton.ghost{background:transparent;}\nbutton.danger{border-color:#f97316;color:#f97316;}\n.empty{margin:4px 0 0;font-size:13px;color:#6b7280;}\n",
+          "content": ".app {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 24px;\n}\n\n.layout {\n  width: 100%;\n  max-width: 520px;\n  display: grid;\n  gap: 16px;\n}\n\n.column {\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 16px 16px 12px;\n  display: grid;\n  gap: 12px;\n}\n\n.title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.product-list,.cart-list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 8px;\n}\n\n.product-card {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 10px;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #020617;\n}\n\n.product-main {\n  display: grid;\n  gap: 2px;\n}\n\n.product-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.product-price {\n  font-size: 13px;\n  color: #a3e635;\n}\n\n.cart-header {\n  display: grid;\n  gap: 4px;\n}\n\n.cart-row {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 10px;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #020617;\n}\n\n.cart-info {\n  display: grid;\n  gap: 4px;\n}\n\n.cart-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.cart-meta {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.unit-price,.line-total {\n  font-variant-numeric: tabular-nums;\n}\n\n.times,.equals {\n  opacity: .7;\n}\n\n.cart-actions {\n  display: flex;\n  gap: 6px;\n}\n\nbutton {\n  border-radius: 999px;\n  border: 1px solid #374151;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 6px 12px;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n}\n\nbutton:hover {\n  border-color: #a3e635;\n}\n\nbutton.ghost {\n  background: transparent;\n}\n\nbutton.danger {\n  border-color: #f97316;\n  color: #f97316;\n}\n\n.empty {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #6b7280;\n}\n",
           "path": "src/app/app.component.css"
         },
         {
@@ -315,7 +315,7 @@
           "path": "src/main.ts"
         },
         {
-          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#020617;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n",
           "path": "src/styles.css"
         },
         {
@@ -328,7 +328,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "7443c2fc0d8cb341d48bb412bfc2041ad385d32783f7d4d9b608928f1d12685c",
+      "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
       "enabled": true,
       "id": "int-code-angular-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -391,7 +391,7 @@
           "path": "package.json"
         },
         {
-          "content": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.card{width:100%;max-width:640px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:12px;}\nh1{margin:0;font-size:20px;}\n.subtitle{margin:0;color:#9ca3af;font-size:14px;line-height:1.45;}\n.combobox{position:relative;}\n.chip-input{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;}\n.chip-input:focus-within{border-color:#a3e635;box-shadow:0 0 0 2px rgba(163,230,53,.15);}\n.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;background:#172036;border:1px solid #2c3c62;font-size:13px;}\n.chip-remove{border:none;background:transparent;color:#9ca3af;cursor:pointer;font-size:16px;line-height:1;padding:0;}\n.chip-remove:hover{color:#e5e7eb;}\n.chip-input input{flex:1;min-width:180px;border:none;outline:none;background:transparent;color:#e5e7eb;font-size:14px;padding:4px 0;}\n.chip-input input::placeholder{color:#6b7280;}\n.suggestions{position:absolute;left:0;right:0;z-index:10;margin-top:8px;max-height:260px;overflow:auto;border-radius:12px;border:1px solid #1f2937;background:#0a0f1e;padding:0;list-style:none;}\n.suggestion{display:grid;gap:2px;padding:10px 12px;border-bottom:1px solid rgba(31,41,55,.5);cursor:pointer;}\n.suggestion:last-child{border-bottom:none;}\n.suggestion span{font-size:12px;color:#9ca3af;}\n.suggestion.active{background:rgba(163,230,53,.12);}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\n",
+          "content": ".page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n  background: #0a0a0a;\n  color: #e5e7eb;\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n\n.card {\n  width: 100%;\n  max-width: 640px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 18px;\n  display: grid;\n  gap: 12px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 20px;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 14px;\n  line-height: 1.45;\n}\n\n.combobox {\n  position: relative;\n}\n\n.chip-input {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 8px;\n  padding: 10px;\n  border-radius: 12px;\n  border: 1px solid #374151;\n  background: #0a0f1e;\n}\n\n.chip-input:focus-within {\n  border-color: #a3e635;\n  box-shadow: 0 0 0 2px rgba(163,230,53,.15);\n}\n\n.chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 4px 10px;\n  border-radius: 999px;\n  background: #172036;\n  border: 1px solid #2c3c62;\n  font-size: 13px;\n}\n\n.chip-remove {\n  border: none;\n  background: transparent;\n  color: #9ca3af;\n  cursor: pointer;\n  font-size: 16px;\n  line-height: 1;\n  padding: 0;\n}\n\n.chip-remove:hover {\n  color: #e5e7eb;\n}\n\n.chip-input input {\n  flex: 1;\n  min-width: 180px;\n  border: none;\n  outline: none;\n  background: transparent;\n  color: #e5e7eb;\n  font-size: 14px;\n  padding: 4px 0;\n}\n\n.chip-input input::placeholder {\n  color: #6b7280;\n}\n\n.suggestions {\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 10;\n  margin-top: 8px;\n  max-height: 260px;\n  overflow: auto;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #0a0f1e;\n  padding: 0;\n  list-style: none;\n}\n\n.suggestion {\n  display: grid;\n  gap: 2px;\n  padding: 10px 12px;\n  border-bottom: 1px solid rgba(31,41,55,.5);\n  cursor: pointer;\n}\n\n.suggestion:last-child {\n  border-bottom: none;\n}\n\n.suggestion span {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.suggestion.active {\n  background: rgba(163,230,53,.12);\n}\n\n.hint {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n}\n",
           "path": "src/app/app.component.css"
         },
         {
@@ -411,7 +411,7 @@
           "path": "src/main.ts"
         },
         {
-          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#0a0a0a;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n",
           "path": "src/styles.css"
         },
         {
@@ -424,7 +424,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "9a6ff14cb3f761c3cc20491f864349d0952b5573c65939d9c129d6a2446170be",
+      "contentHash": "cb69a6983eff1132fe1e5743a241de9538fe399804c3a0b6171a004599959c3e",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "level": "senior",
@@ -488,7 +488,7 @@
           "path": "package.json"
         },
         {
-          "content": ".app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}\n.card{width:100%;max-width:640px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:18px 18px 16px;display:grid;gap:16px;}\n.header{display:grid;gap:4px;}\n.title{margin:0;font-size:20px;font-weight:700;}\n.subtitle{margin:0;font-size:13px;color:#9ca3af;}\n.field{display:grid;gap:6px;}\n.label{font-size:13px;color:#9ca3af;}\n.input{width:100%;border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 12px;font-size:14px;outline:none;}\n.input:focus{border-color:#a3e635;box-shadow:0 0 0 1px #a3e63533;}\n.status-row{min-height:18px;font-size:12px;display:flex;align-items:center;}\n.status{color:#9ca3af;}\n.status--loading{color:#e5e7eb;}\n.status--muted{color:#6b7280;}\n.status--error{color:#f97316;}\n.results{list-style:none;margin:0;padding:0;display:grid;gap:8px;}\n.result-row{padding:8px 10px;border-radius:10px;border:1px solid #1f2937;background:#020617;display:grid;gap:2px;}\n.result-name{font-size:14px;font-weight:600;}\n.result-email{font-size:12px;color:#9ca3af;font-variant-numeric:tabular-nums;}\n.empty{margin:0;font-size:13px;color:#6b7280;}\n",
+          "content": ".app {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 640px;\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 18px 18px 16px;\n  display: grid;\n  gap: 16px;\n}\n\n.header {\n  display: grid;\n  gap: 4px;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 0;\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.field {\n  display: grid;\n  gap: 6px;\n}\n\n.label {\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.input {\n  width: 100%;\n  border-radius: 999px;\n  border: 1px solid #374151;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 8px 12px;\n  font-size: 14px;\n  outline: none;\n}\n\n.input:focus {\n  border-color: #a3e635;\n  box-shadow: 0 0 0 1px #a3e63533;\n}\n\n.status-row {\n  min-height: 18px;\n  font-size: 12px;\n  display: flex;\n  align-items: center;\n}\n\n.status {\n  color: #9ca3af;\n}\n\n.status--loading {\n  color: #e5e7eb;\n}\n\n.status--muted {\n  color: #6b7280;\n}\n\n.status--error {\n  color: #f97316;\n}\n\n.results {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 8px;\n}\n\n.result-row {\n  padding: 8px 10px;\n  border-radius: 10px;\n  border: 1px solid #1f2937;\n  background: #020617;\n  display: grid;\n  gap: 2px;\n}\n\n.result-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.result-email {\n  font-size: 12px;\n  color: #9ca3af;\n  font-variant-numeric: tabular-nums;\n}\n\n.empty {\n  margin: 0;\n  font-size: 13px;\n  color: #6b7280;\n}\n",
           "path": "src/app/app.component.css"
         },
         {
@@ -508,7 +508,7 @@
           "path": "src/main.ts"
         },
         {
-          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#020617;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n",
           "path": "src/styles.css"
         },
         {
@@ -723,7 +723,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "3b06f080ac3e514fdf78779cc898934968aac4215db9e90b6d273eab8ff263d7",
+      "contentHash": "323af4503848652947a3d975818e7b9ce24e986dee25a35598145370a5724d8a",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "level": "junior",
@@ -768,7 +768,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:420px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; }\n.value { font-size:48px; font-weight:800; text-align:center; margin-bottom:12px; }\n.actions { display:flex; gap:8px; justify-content:center; }\n\nbutton { background:#a3e635; color:#111; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }\nbutton[disabled] { opacity:.5; cursor:not-allowed; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #0a0a0a;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.section {\n  width: 100%;\n  max-width: 420px;\n  display: grid;\n  gap: 16px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.panel {\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 16px;\n}\n\n.value {\n  font-size: 48px;\n  font-weight: 800;\n  text-align: center;\n  margin-bottom: 12px;\n}\n\n.actions {\n  display: flex;\n  gap: 8px;\n  justify-content: center;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 10px;\n  padding: 10px 14px;\n  font-weight: 700;\n  cursor: pointer;\n}\n\nbutton[disabled] {\n  opacity: .5;\n  cursor: not-allowed;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -789,7 +789,7 @@
       "track": "react"
     },
     {
-      "contentHash": "f06e131d0396ccd1ca5e9dd727828b9218e749a92206a191010ef7ddba140200",
+      "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "level": "junior",
@@ -834,7 +834,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:480px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; display:grid; gap:12px; }\n.input-row { display:flex; gap:8px; }\n.input-row input { flex:1; background:#020617; border-radius:8px; border:1px solid #1f2937; padding:8px 10px; color:#e5e7eb; font-size:14px; }\n.input-row input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 1px #6366f1; }\n\n.primary { background:#4ade80; color:#022c22; border:none; border-radius:999px; padding:8px 14px; font-weight:600; font-size:14px; cursor:pointer; }\n.primary[disabled] { opacity:.6; cursor:not-allowed; }\n\n.list { list-style:none; margin:0; padding:0; display:grid; gap:6px; }\n.item { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 8px; border-radius:8px; background:#020617; border:1px solid transparent; }\n.item-main { display:flex; align-items:center; gap:8px; font-size:14px; }\n.item-main input[type=checkbox] { accent-color:#22c55e; }\n.item-main span.done { text-decoration:line-through; color:#9ca3af; }\n\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }\nbutton.ghost.small { padding:4px 10px; font-size:12px; }\n\n.empty { margin:4px 0 0; font-size:13px; color:#9ca3af; text-align:center; }\n.footer { display:flex; justify-content:flex-end; margin-top:4px; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #0a0a0a;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.section {\n  width: 100%;\n  max-width: 480px;\n  display: grid;\n  gap: 16px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.panel {\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 16px;\n  display: grid;\n  gap: 12px;\n}\n\n.input-row {\n  display: flex;\n  gap: 8px;\n}\n\n.input-row input {\n  flex: 1;\n  background: #020617;\n  border-radius: 8px;\n  border: 1px solid #1f2937;\n  padding: 8px 10px;\n  color: #e5e7eb;\n  font-size: 14px;\n}\n\n.input-row input:focus {\n  outline: none;\n  border-color: #6366f1;\n  box-shadow: 0 0 0 1px #6366f1;\n}\n\n.primary {\n  background: #4ade80;\n  color: #022c22;\n  border: none;\n  border-radius: 999px;\n  padding: 8px 14px;\n  font-weight: 600;\n  font-size: 14px;\n  cursor: pointer;\n}\n\n.primary[disabled] {\n  opacity: .6;\n  cursor: not-allowed;\n}\n\n.list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 6px;\n}\n\n.item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 8px;\n  padding: 6px 8px;\n  border-radius: 8px;\n  background: #020617;\n  border: 1px solid transparent;\n}\n\n.item-main {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n}\n\n.item-main input[type=checkbox] {\n  accent-color: #22c55e;\n}\n\n.item-main span.done {\n  text-decoration: line-through;\n  color: #9ca3af;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n  border-radius: 999px;\n  padding: 6px 10px;\n  font-size: 12px;\n  cursor: pointer;\n}\n\nbutton.ghost.small {\n  padding: 4px 10px;\n  font-size: 12px;\n}\n\n.empty {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #9ca3af;\n  text-align: center;\n}\n\n.footer {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: 4px;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -855,7 +855,7 @@
       "track": "react"
     },
     {
-      "contentHash": "a3e2e5168f65206e11ccc07f082c2a7ecdec52dc4df2880d7b188de2f03c7f2e",
+      "contentHash": "720b1615c56664129a257e2cb267465990129502ed6ddec8e5781c171a521ea9",
       "enabled": true,
       "id": "int-code-react-mid-pagination-v1",
       "level": "mid",
@@ -911,7 +911,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:720px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:20px; box-sizing:border-box; display:grid; gap:12px; }\n\n.header { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }\n.header h1 { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:2px 0 0; font-size:12px; color:#9ca3af; }\n.meta { font-size:12px; color:#9ca3af; }\n\n.panel { background:#020617; border-radius:12px; border:1px solid #1f2937; overflow:hidden; }\n\n.table { width:100%; border-collapse:collapse; font-size:13px; }\n.table thead { background:#0b1020; }\n.table th, .table td { padding:8px 10px; border-bottom:1px solid #111827; text-align:left; }\n.table tbody tr:nth-child(even) { background:#020617; }\n\n.footer { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; gap:8px; }\n.page-info { font-size:12px; color:#9ca3af; }\n\nbutton { border:none; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; background:#22c55e; color:#021210; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\nbutton[disabled] { opacity:0.5; cursor:not-allowed; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #020617;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.section {\n  width: 100%;\n  max-width: 720px;\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 20px;\n  box-sizing: border-box;\n  display: grid;\n  gap: 12px;\n}\n\n.header {\n  display: flex;\n  align-items: flex-end;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n.header h1 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 2px 0 0;\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.meta {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.panel {\n  background: #020617;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  overflow: hidden;\n}\n\n.table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n\n.table thead {\n  background: #0b1020;\n}\n\n.table th, .table td {\n  padding: 8px 10px;\n  border-bottom: 1px solid #111827;\n  text-align: left;\n}\n\n.table tbody tr:nth-child(even) {\n  background: #020617;\n}\n\n.footer {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 10px 12px;\n  gap: 8px;\n}\n\n.page-info {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\nbutton {\n  border: none;\n  border-radius: 999px;\n  padding: 6px 14px;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  background: #22c55e;\n  color: #021210;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\nbutton[disabled] {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -932,7 +932,7 @@
       "track": "react"
     },
     {
-      "contentHash": "73625055df6d96aac602a108e58f4d35be8931dc35f3b8ef11d6c9a8fdcb9bd8",
+      "contentHash": "b874b97658c4f3a14555c3c4c0abd38e3c85c3279ebe7e69f0a7db488ea736f7",
       "enabled": true,
       "id": "int-code-react-mid-shopping-cart-v1",
       "level": "mid",
@@ -989,7 +989,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#020617;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n\n.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}\n.layout{width:100%;max-width:520px;display:grid;gap:16px;}\n.column{background:#020617;border-radius:16px;border:1px solid #1f2937;padding:16px 16px 12px;display:grid;gap:12px;}\n.title{margin:0;font-size:18px;font-weight:700;}\n.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}\n.product-list,.cart-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;}\n.product-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.product-main{display:grid;gap:2px;}\n.product-name{font-size:14px;font-weight:600;}\n.product-price{font-size:13px;color:#a3e635;}\n.cart-header{display:grid;gap:4px;}\n.cart-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;border:1px solid #1f2937;background:#020617;}\n.cart-info{display:grid;gap:4px;}\n.cart-name{font-size:14px;font-weight:600;}\n.cart-meta{display:flex;align-items:center;gap:4px;font-size:12px;color:#9ca3af;}\n.unit-price,.line-total{font-variant-numeric:tabular-nums;}\n.times,.equals{opacity:.7;}\n.cart-actions{display:flex;gap:6px;}\nbutton{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}\nbutton:hover{border-color:#a3e635;}\nbutton.ghost{background:transparent;}\nbutton.danger{border-color:#f97316;color:#f97316;}\n.empty{margin:4px 0 0;font-size:13px;color:#6b7280;}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n\n.app {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 24px;\n}\n\n.layout {\n  width: 100%;\n  max-width: 520px;\n  display: grid;\n  gap: 16px;\n}\n\n.column {\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 16px 16px 12px;\n  display: grid;\n  gap: 12px;\n}\n\n.title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.product-list,.cart-list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 8px;\n}\n\n.product-card {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 10px;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #020617;\n}\n\n.product-main {\n  display: grid;\n  gap: 2px;\n}\n\n.product-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.product-price {\n  font-size: 13px;\n  color: #a3e635;\n}\n\n.cart-header {\n  display: grid;\n  gap: 4px;\n}\n\n.cart-row {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 10px;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #020617;\n}\n\n.cart-info {\n  display: grid;\n  gap: 4px;\n}\n\n.cart-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.cart-meta {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.unit-price,.line-total {\n  font-variant-numeric: tabular-nums;\n}\n\n.times,.equals {\n  opacity: .7;\n}\n\n.cart-actions {\n  display: flex;\n  gap: 6px;\n}\n\nbutton {\n  border-radius: 999px;\n  border: 1px solid #374151;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 6px 12px;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n}\n\nbutton:hover {\n  border-color: #a3e635;\n}\n\nbutton.ghost {\n  background: transparent;\n}\n\nbutton.danger {\n  border-color: #f97316;\n  color: #f97316;\n}\n\n.empty {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #6b7280;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1010,7 +1010,7 @@
       "track": "react"
     },
     {
-      "contentHash": "a444c5da5869a5e0fcc16774746bdd4831a5059f6b1f4d4c3594cd76d93e2ac0",
+      "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
       "enabled": true,
       "id": "int-code-react-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -1077,7 +1077,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root{color-scheme:dark;}\nhtml,body{margin:0;height:100%;background:#0a0a0a;}\nbody{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;}\n.card{width:100%;max-width:640px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:12px;}\nh1{margin:0;font-size:20px;}\n.subtitle{margin:0;color:#9ca3af;font-size:14px;line-height:1.45;}\n.combobox{position:relative;}\n.chip-input{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;}\n.chip-input:focus-within{border-color:#a3e635;box-shadow:0 0 0 2px rgba(163,230,53,.15);}\n.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;background:#172036;border:1px solid #2c3c62;font-size:13px;}\n.chip-remove{border:none;background:transparent;color:#9ca3af;cursor:pointer;font-size:16px;line-height:1;padding:0;}\n.chip-remove:hover{color:#e5e7eb;}\n.chip-input input{flex:1;min-width:180px;border:none;outline:none;background:transparent;color:#e5e7eb;font-size:14px;padding:4px 0;}\n.chip-input input::placeholder{color:#6b7280;}\n.suggestions{position:absolute;left:0;right:0;z-index:10;margin-top:8px;max-height:260px;overflow:auto;border-radius:12px;border:1px solid #1f2937;background:#0a0f1e;padding:0;list-style:none;}\n.suggestion{display:grid;gap:2px;padding:10px 12px;border-bottom:1px solid rgba(31,41,55,.5);cursor:pointer;}\n.suggestion:last-child{border-bottom:none;}\n.suggestion span{font-size:12px;color:#9ca3af;}\n.suggestion.active{background:rgba(163,230,53,.12);}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n  background: #0a0a0a;\n  color: #e5e7eb;\n}\n\n.card {\n  width: 100%;\n  max-width: 640px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 18px;\n  display: grid;\n  gap: 12px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 20px;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 14px;\n  line-height: 1.45;\n}\n\n.combobox {\n  position: relative;\n}\n\n.chip-input {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 8px;\n  padding: 10px;\n  border-radius: 12px;\n  border: 1px solid #374151;\n  background: #0a0f1e;\n}\n\n.chip-input:focus-within {\n  border-color: #a3e635;\n  box-shadow: 0 0 0 2px rgba(163,230,53,.15);\n}\n\n.chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 4px 10px;\n  border-radius: 999px;\n  background: #172036;\n  border: 1px solid #2c3c62;\n  font-size: 13px;\n}\n\n.chip-remove {\n  border: none;\n  background: transparent;\n  color: #9ca3af;\n  cursor: pointer;\n  font-size: 16px;\n  line-height: 1;\n  padding: 0;\n}\n\n.chip-remove:hover {\n  color: #e5e7eb;\n}\n\n.chip-input input {\n  flex: 1;\n  min-width: 180px;\n  border: none;\n  outline: none;\n  background: transparent;\n  color: #e5e7eb;\n  font-size: 14px;\n  padding: 4px 0;\n}\n\n.chip-input input::placeholder {\n  color: #6b7280;\n}\n\n.suggestions {\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 10;\n  margin-top: 8px;\n  max-height: 260px;\n  overflow: auto;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #0a0f1e;\n  padding: 0;\n  list-style: none;\n}\n\n.suggestion {\n  display: grid;\n  gap: 2px;\n  padding: 10px 12px;\n  border-bottom: 1px solid rgba(31,41,55,.5);\n  cursor: pointer;\n}\n\n.suggestion:last-child {\n  border-bottom: none;\n}\n\n.suggestion span {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.suggestion.active {\n  background: rgba(163,230,53,.12);\n}\n\n.hint {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1098,7 +1098,7 @@
       "track": "react"
     },
     {
-      "contentHash": "f7f2fc8e8be19eb702e7d5db5d97c43ccf86e4348b7c94e5353f7d03b728186a",
+      "contentHash": "db2fe2b668f4ec350e26e24c142dc613008917b921ed03e2275cf294889bdeb8",
       "enabled": true,
       "id": "int-code-react-senior-debounced-search-v1",
       "level": "senior",
@@ -1166,7 +1166,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.card { width:100%; max-width:640px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:18px 18px 16px; display:grid; gap:16px; }\n.header { display:grid; gap:4px; }\n.title { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:0; font-size:13px; color:#9ca3af; }\n.field { display:grid; gap:6px; }\n.label { font-size:13px; color:#9ca3af; }\n.input { width:100%; border-radius:999px; border:1px solid #374151; background:#020617; color:#e5e7eb; padding:8px 12px; font-size:14px; outline:none; }\n.input:focus { border-color:#a3e635; box-shadow:0 0 0 1px #a3e63533; }\n.status-row { min-height:18px; font-size:12px; display:flex; align-items:center; }\n.status { color:#9ca3af; }\n.status--loading { color:#e5e7eb; }\n.status--muted { color:#6b7280; }\n.status--error { color:#f97316; }\n.results { list-style:none; margin:0; padding:0; display:grid; gap:8px; }\n.result-row { padding:8px 10px; border-radius:10px; border:1px solid #1f2937; background:#020617; display:grid; gap:2px; }\n.result-name { font-size:14px; font-weight:600; }\n.result-email { font-size:12px; color:#9ca3af; font-variant-numeric:tabular-nums; }\n.empty { margin:0; font-size:13px; color:#6b7280; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #020617;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 640px;\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 18px 18px 16px;\n  display: grid;\n  gap: 16px;\n}\n\n.header {\n  display: grid;\n  gap: 4px;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 0;\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.field {\n  display: grid;\n  gap: 6px;\n}\n\n.label {\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.input {\n  width: 100%;\n  border-radius: 999px;\n  border: 1px solid #374151;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 8px 12px;\n  font-size: 14px;\n  outline: none;\n}\n\n.input:focus {\n  border-color: #a3e635;\n  box-shadow: 0 0 0 1px #a3e63533;\n}\n\n.status-row {\n  min-height: 18px;\n  font-size: 12px;\n  display: flex;\n  align-items: center;\n}\n\n.status {\n  color: #9ca3af;\n}\n\n.status--loading {\n  color: #e5e7eb;\n}\n\n.status--muted {\n  color: #6b7280;\n}\n\n.status--error {\n  color: #f97316;\n}\n\n.results {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 8px;\n}\n\n.result-row {\n  padding: 8px 10px;\n  border-radius: 10px;\n  border: 1px solid #1f2937;\n  background: #020617;\n  display: grid;\n  gap: 2px;\n}\n\n.result-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.result-email {\n  font-size: 12px;\n  color: #9ca3af;\n  font-variant-numeric: tabular-nums;\n}\n\n.empty {\n  margin: 0;\n  font-size: 13px;\n  color: #6b7280;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1187,7 +1187,7 @@
       "track": "react"
     },
     {
-      "contentHash": "4d631931ffc761c967e17c80cce7e9848583723ba148e019160cabe23f12e847",
+      "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
       "enabled": true,
       "id": "int-code-vue-junior-counter-v1",
       "level": "junior",
@@ -1232,7 +1232,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:420px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; }\n.value { font-size:48px; font-weight:800; text-align:center; margin-bottom:12px; }\n.actions { display:flex; gap:8px; justify-content:center; }\n\nbutton { background:#a3e635; color:#111; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }\nbutton[disabled] { opacity:.5; cursor:not-allowed; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #0a0a0a;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.section {\n  width: 100%;\n  max-width: 420px;\n  display: grid;\n  gap: 16px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.panel {\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 16px;\n}\n\n.value {\n  font-size: 48px;\n  font-weight: 800;\n  text-align: center;\n  margin-bottom: 12px;\n}\n\n.actions {\n  display: flex;\n  gap: 8px;\n  justify-content: center;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 10px;\n  padding: 10px 14px;\n  font-weight: 700;\n  cursor: pointer;\n}\n\nbutton[disabled] {\n  opacity: .5;\n  cursor: not-allowed;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1253,7 +1253,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "012ad848a6bf43704560cbf100f9bb69addad3f5f7292b786cffc50532a2317e",
+      "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "level": "junior",
@@ -1298,7 +1298,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:480px; display:grid; gap:16px; }\nh1 { margin:0; font-size:20px; font-weight:700; }\n\n.panel { background:#0b1020; border:1px solid #1f2937; border-radius:12px; padding:16px; display:grid; gap:12px; }\n.input-row { display:flex; gap:8px; }\n.input-row input { flex:1; background:#020617; border-radius:8px; border:1px solid #1f2937; padding:8px 10px; color:#e5e7eb; font-size:14px; }\n.input-row input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 1px #6366f1; }\n\n.primary { background:#4ade80; color:#022c22; border:none; border-radius:999px; padding:8px 14px; font-weight:600; font-size:14px; cursor:pointer; }\n.primary[disabled] { opacity:.6; cursor:not-allowed; }\n\n.list { list-style:none; margin:0; padding:0; display:grid; gap:6px; }\n.item { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 8px; border-radius:8px; background:#020617; border:1px solid transparent; }\n.item-main { display:flex; align-items:center; gap:8px; font-size:14px; }\n.item-main input[type=checkbox] { accent-color:#22c55e; }\n.item-main span.done { text-decoration:line-through; color:#9ca3af; }\n\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }\nbutton.ghost.small { padding:4px 10px; font-size:12px; }\n\n.empty { margin:4px 0 0; font-size:13px; color:#9ca3af; text-align:center; }\n.footer { display:flex; justify-content:flex-end; margin-top:4px; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #0a0a0a;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.section {\n  width: 100%;\n  max-width: 480px;\n  display: grid;\n  gap: 16px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.panel {\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 16px;\n  display: grid;\n  gap: 12px;\n}\n\n.input-row {\n  display: flex;\n  gap: 8px;\n}\n\n.input-row input {\n  flex: 1;\n  background: #020617;\n  border-radius: 8px;\n  border: 1px solid #1f2937;\n  padding: 8px 10px;\n  color: #e5e7eb;\n  font-size: 14px;\n}\n\n.input-row input:focus {\n  outline: none;\n  border-color: #6366f1;\n  box-shadow: 0 0 0 1px #6366f1;\n}\n\n.primary {\n  background: #4ade80;\n  color: #022c22;\n  border: none;\n  border-radius: 999px;\n  padding: 8px 14px;\n  font-weight: 600;\n  font-size: 14px;\n  cursor: pointer;\n}\n\n.primary[disabled] {\n  opacity: .6;\n  cursor: not-allowed;\n}\n\n.list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 6px;\n}\n\n.item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 8px;\n  padding: 6px 8px;\n  border-radius: 8px;\n  background: #020617;\n  border: 1px solid transparent;\n}\n\n.item-main {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n}\n\n.item-main input[type=checkbox] {\n  accent-color: #22c55e;\n}\n\n.item-main span.done {\n  text-decoration: line-through;\n  color: #9ca3af;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n  border-radius: 999px;\n  padding: 6px 10px;\n  font-size: 12px;\n  cursor: pointer;\n}\n\nbutton.ghost.small {\n  padding: 4px 10px;\n  font-size: 12px;\n}\n\n.empty {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #9ca3af;\n  text-align: center;\n}\n\n.footer {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: 4px;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1319,7 +1319,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "aaa6f6f8c0d96bd2f5b0caf1417a0f19689c3dedd50af309c7d085ba478ff020",
+      "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
       "enabled": true,
       "id": "int-code-vue-mid-pagination-v1",
       "level": "mid",
@@ -1375,7 +1375,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.section { width:100%; max-width:720px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:20px; box-sizing:border-box; display:grid; gap:12px; }\n\n.header { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }\n.header h1 { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:2px 0 0; font-size:12px; color:#9ca3af; }\n.meta { font-size:12px; color:#9ca3af; }\n\n.panel { background:#020617; border-radius:12px; border:1px solid #1f2937; overflow:hidden; }\n\n.table { width:100%; border-collapse:collapse; font-size:13px; }\n.table thead { background:#0b1020; }\n.table th, .table td { padding:8px 10px; border-bottom:1px solid #111827; text-align:left; }\n.table tbody tr:nth-child(even) { background:#020617; }\n\n.footer { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; gap:8px; }\n.page-info { font-size:12px; color:#9ca3af; }\n\nbutton { border:none; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; background:#22c55e; color:#021210; }\nbutton.ghost { background:transparent; color:#e5e7eb; border:1px solid #374151; }\nbutton[disabled] { opacity:0.5; cursor:not-allowed; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #020617;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.section {\n  width: 100%;\n  max-width: 720px;\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 20px;\n  box-sizing: border-box;\n  display: grid;\n  gap: 12px;\n}\n\n.header {\n  display: flex;\n  align-items: flex-end;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n.header h1 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 2px 0 0;\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.meta {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.panel {\n  background: #020617;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  overflow: hidden;\n}\n\n.table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n\n.table thead {\n  background: #0b1020;\n}\n\n.table th, .table td {\n  padding: 8px 10px;\n  border-bottom: 1px solid #111827;\n  text-align: left;\n}\n\n.table tbody tr:nth-child(even) {\n  background: #020617;\n}\n\n.footer {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 10px 12px;\n  gap: 8px;\n}\n\n.page-info {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\nbutton {\n  border: none;\n  border-radius: 999px;\n  padding: 6px 14px;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  background: #22c55e;\n  color: #021210;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\nbutton[disabled] {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1396,7 +1396,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "b475e5c504f1ba64eda7113703ccbfa2aa50522d5a01da7973a99e08345a88d5",
+      "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
       "enabled": true,
       "id": "int-code-vue-mid-shopping-cart-v1",
       "level": "mid",
@@ -1453,7 +1453,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.app { min-height:100vh; display:grid; place-items:center; background:#020617; color:#e5e7eb; padding:24px; }\n.layout { width:100%; max-width:960px; display:grid; gap:16px; grid-template-columns: 1fr; }\n.column { background:#020617; border-radius:16px; border:1px solid #1f2937; padding:16px 16px 12px; display:grid; gap:12px; }\n.title { margin:0; font-size:18px; font-weight:700; }\n.subtitle { margin:4px 0 0; font-size:13px; color:#9ca3af; }\n.product-list, .cart-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }\n.product-card { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 10px; border-radius:12px; border:1px solid #1f2937; background:#020617; }\n.product-main { display:grid; gap:2px; }\n.product-name { font-size:14px; font-weight:600; }\n.product-price { font-size:13px; color:#a3e635; }\n.cart-header { display:grid; gap:4px; }\n.cart-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 10px; border-radius:12px; border:1px solid #1f2937; background:#020617; }\n.cart-info { display:grid; gap:4px; }\n.cart-name { font-size:14px; font-weight:600; }\n.cart-meta { display:flex; align-items:center; gap:4px; font-size:12px; color:#9ca3af; }\n.unit-price, .line-total { font-variant-numeric:tabular-nums; }\n.times, .equals { opacity:.7; }\n.cart-actions { display:flex; gap:6px; }\nbutton { border-radius:999px; border:1px solid #374151; background:#020617; color:#e5e7eb; padding:6px 12px; font-size:13px; font-weight:600; cursor:pointer; }\nbutton:hover { border-color:#a3e635; }\nbutton.ghost { background:transparent; }\nbutton.danger { border-color:#f97316; color:#f97316; }\n.empty { margin:4px 0 0; font-size:13px; color:#6b7280; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.app {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 24px;\n}\n\n.layout {\n  width: 100%;\n  max-width: 960px;\n  display: grid;\n  gap: 16px;\n  grid-template-columns: 1fr;\n}\n\n.column {\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 16px 16px 12px;\n  display: grid;\n  gap: 12px;\n}\n\n.title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.product-list, .cart-list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 8px;\n}\n\n.product-card {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 10px;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #020617;\n}\n\n.product-main {\n  display: grid;\n  gap: 2px;\n}\n\n.product-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.product-price {\n  font-size: 13px;\n  color: #a3e635;\n}\n\n.cart-header {\n  display: grid;\n  gap: 4px;\n}\n\n.cart-row {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 10px;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #020617;\n}\n\n.cart-info {\n  display: grid;\n  gap: 4px;\n}\n\n.cart-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.cart-meta {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.unit-price, .line-total {\n  font-variant-numeric: tabular-nums;\n}\n\n.times, .equals {\n  opacity: .7;\n}\n\n.cart-actions {\n  display: flex;\n  gap: 6px;\n}\n\nbutton {\n  border-radius: 999px;\n  border: 1px solid #374151;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 6px 12px;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n}\n\nbutton:hover {\n  border-color: #a3e635;\n}\n\nbutton.ghost {\n  background: transparent;\n}\n\nbutton.danger {\n  border-color: #f97316;\n  color: #f97316;\n}\n\n.empty {\n  margin: 4px 0 0;\n  font-size: 13px;\n  color: #6b7280;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1474,7 +1474,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "e5459365964710a03de1408efb923b379490769af235d5bc1b2ce4aebdbe9543",
+      "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
       "enabled": true,
       "id": "int-code-vue-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -1541,7 +1541,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root{color-scheme:dark;}\nhtml,body{margin:0;height:100%;background:#0a0a0a;}\nbody{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;}\n.card{width:100%;max-width:640px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:12px;}\nh1{margin:0;font-size:20px;}\n.subtitle{margin:0;color:#9ca3af;font-size:14px;line-height:1.45;}\n.combobox{position:relative;}\n.chip-input{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;}\n.chip-input:focus-within{border-color:#a3e635;box-shadow:0 0 0 2px rgba(163,230,53,.15);}\n.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;background:#172036;border:1px solid #2c3c62;font-size:13px;}\n.chip-remove{border:none;background:transparent;color:#9ca3af;cursor:pointer;font-size:16px;line-height:1;padding:0;}\n.chip-remove:hover{color:#e5e7eb;}\n.chip-input input{flex:1;min-width:180px;border:none;outline:none;background:transparent;color:#e5e7eb;font-size:14px;padding:4px 0;}\n.chip-input input::placeholder{color:#6b7280;}\n.suggestions{position:absolute;left:0;right:0;z-index:10;margin-top:8px;max-height:260px;overflow:auto;border-radius:12px;border:1px solid #1f2937;background:#0a0f1e;padding:0;list-style:none;}\n.suggestion{display:grid;gap:2px;padding:10px 12px;border-bottom:1px solid rgba(31,41,55,.5);cursor:pointer;}\n.suggestion:last-child{border-bottom:none;}\n.suggestion span{font-size:12px;color:#9ca3af;}\n.suggestion.active{background:rgba(163,230,53,.12);}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n  background: #0a0a0a;\n  color: #e5e7eb;\n}\n\n.card {\n  width: 100%;\n  max-width: 640px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 18px;\n  display: grid;\n  gap: 12px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 20px;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 14px;\n  line-height: 1.45;\n}\n\n.combobox {\n  position: relative;\n}\n\n.chip-input {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 8px;\n  padding: 10px;\n  border-radius: 12px;\n  border: 1px solid #374151;\n  background: #0a0f1e;\n}\n\n.chip-input:focus-within {\n  border-color: #a3e635;\n  box-shadow: 0 0 0 2px rgba(163,230,53,.15);\n}\n\n.chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 4px 10px;\n  border-radius: 999px;\n  background: #172036;\n  border: 1px solid #2c3c62;\n  font-size: 13px;\n}\n\n.chip-remove {\n  border: none;\n  background: transparent;\n  color: #9ca3af;\n  cursor: pointer;\n  font-size: 16px;\n  line-height: 1;\n  padding: 0;\n}\n\n.chip-remove:hover {\n  color: #e5e7eb;\n}\n\n.chip-input input {\n  flex: 1;\n  min-width: 180px;\n  border: none;\n  outline: none;\n  background: transparent;\n  color: #e5e7eb;\n  font-size: 14px;\n  padding: 4px 0;\n}\n\n.chip-input input::placeholder {\n  color: #6b7280;\n}\n\n.suggestions {\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 10;\n  margin-top: 8px;\n  max-height: 260px;\n  overflow: auto;\n  border-radius: 12px;\n  border: 1px solid #1f2937;\n  background: #0a0f1e;\n  padding: 0;\n  list-style: none;\n}\n\n.suggestion {\n  display: grid;\n  gap: 2px;\n  padding: 10px 12px;\n  border-bottom: 1px solid rgba(31,41,55,.5);\n  cursor: pointer;\n}\n\n.suggestion:last-child {\n  border-bottom: none;\n}\n\n.suggestion span {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.suggestion.active {\n  background: rgba(163,230,53,.12);\n}\n\n.hint {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n}\n",
           "path": "src/App.css"
         },
         {
@@ -1562,7 +1562,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "075cd06b7ed062957e5c38eb479a2311ed1de88ca6e595c3f057e18d1046bfa2",
+      "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
       "enabled": true,
       "id": "int-code-vue-senior-debounced-search-v1",
       "level": "senior",
@@ -1630,7 +1630,7 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.main { min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px; }\n.card { width:100%; max-width:640px; background:#020617; border-radius:16px; border:1px solid #1f2937; padding:18px 18px 16px; display:grid; gap:16px; }\n.header { display:grid; gap:4px; }\n.title { margin:0; font-size:20px; font-weight:700; }\n.subtitle { margin:0; font-size:13px; color:#9ca3af; }\n.field { display:grid; gap:6px; }\n.label { font-size:13px; color:#9ca3af; }\n.input { width:100%; border-radius:999px; border:1px solid #374151; background:#020617; color:#e5e7eb; padding:8px 12px; font-size:14px; outline:none; }\n.input:focus { border-color:#a3e635; box-shadow:0 0 0 1px #a3e63533; }\n.status-row { min-height:18px; font-size:12px; display:flex; align-items:center; }\n.status { color:#9ca3af; }\n.status--loading { color:#e5e7eb; }\n.status--muted { color:#6b7280; }\n.status--error { color:#f97316; }\n.results { list-style:none; margin:0; padding:0; display:grid; gap:8px; }\n.result-row { padding:8px 10px; border-radius:10px; border:1px solid #1f2937; background:#020617; display:grid; gap:2px; }\n.result-name { font-size:14px; font-weight:600; }\n.result-email { font-size:12px; color:#9ca3af; font-variant-numeric:tabular-nums; }\n.empty { margin:0; font-size:13px; color:#6b7280; }\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #020617;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.main {\n  min-height: 100vh;\n  background: #020617;\n  color: #e5e7eb;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 640px;\n  background: #020617;\n  border-radius: 16px;\n  border: 1px solid #1f2937;\n  padding: 18px 18px 16px;\n  display: grid;\n  gap: 16px;\n}\n\n.header {\n  display: grid;\n  gap: 4px;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 0;\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.field {\n  display: grid;\n  gap: 6px;\n}\n\n.label {\n  font-size: 13px;\n  color: #9ca3af;\n}\n\n.input {\n  width: 100%;\n  border-radius: 999px;\n  border: 1px solid #374151;\n  background: #020617;\n  color: #e5e7eb;\n  padding: 8px 12px;\n  font-size: 14px;\n  outline: none;\n}\n\n.input:focus {\n  border-color: #a3e635;\n  box-shadow: 0 0 0 1px #a3e63533;\n}\n\n.status-row {\n  min-height: 18px;\n  font-size: 12px;\n  display: flex;\n  align-items: center;\n}\n\n.status {\n  color: #9ca3af;\n}\n\n.status--loading {\n  color: #e5e7eb;\n}\n\n.status--muted {\n  color: #6b7280;\n}\n\n.status--error {\n  color: #f97316;\n}\n\n.results {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 8px;\n}\n\n.result-row {\n  padding: 8px 10px;\n  border-radius: 10px;\n  border: 1px solid #1f2937;\n  background: #020617;\n  display: grid;\n  gap: 2px;\n}\n\n.result-name {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.result-email {\n  font-size: 12px;\n  color: #9ca3af;\n  font-variant-numeric: tabular-nums;\n}\n\n.empty {\n  margin: 0;\n  font-size: 13px;\n  color: #6b7280;\n}\n",
           "path": "src/App.css"
         },
         {
