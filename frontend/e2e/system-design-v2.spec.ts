@@ -189,8 +189,8 @@ async function seedAuthenticatedInterviewSetup(page: Page, createBodies: unknown
 
 function normalizedRawText(html: string): string {
   return html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style\b[^>]*>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&(?:#39|apos);/gi, "'")
     .replace(/&quot;/gi, '"')
