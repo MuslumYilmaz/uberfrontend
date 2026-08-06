@@ -14,7 +14,7 @@
         "src/main.ts": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent);\n",
         "src/app/app.component.ts": "import { Component } from '@angular/core';\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  count = 0;\n  inc() { this.count++; }\n}\n",
         "src/app/app.component.html": "<button (click)=\"inc()\">Increment</button>\n<p>{{count}}</p>\n",
-        "src/app/app.component.css": "button{padding:.5rem 1rem;border-radius:.5rem}\n",
+        "src/app/app.component.css": "button {\n  padding: .5rem 1rem;\n  border-radius: .5rem;\n}\n",
         "index.html": "<!doctype html><html><head><meta charset=\"utf-8\"><title>UF</title><base href=\"/\"/></head><body><app-root></app-root></body></html>"
     }
 }

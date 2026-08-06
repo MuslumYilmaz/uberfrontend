@@ -28,10 +28,10 @@
             "code": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Nested Checkboxes (Solution)</h1>\n\n    <div class=\"panel\">\n      <label class=\"parent\">\n        <input #parentBox type=\"checkbox\" (change)=\"toggleParent($event)\" />\n        <span>Parent</span>\n      </label>\n\n      <div class=\"children\">\n        @for (child of children; track child.label) {\n          <label class=\"child\">\n          <input\n            type=\"checkbox\"\n            [(ngModel)]=\"child.checked\"\n            (change)=\"toggleChild()\"\n          />\n          <span>{{ child.label }}</span>\n          </label>\n        }\n      </div>\n    </div>\n  </section>\n</main>\n"
         },
         "/src/app/app.component.css": {
-            "code": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.parent{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;}\n.children{display:grid;gap:6px;margin-left:24px;}\n.child{display:flex;align-items:center;gap:8px;font-size:14px;}\ninput[type=checkbox]{width:16px;height:16px;}\n"
+            "code": ".panel {\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 16px;\n  display: grid;\n  gap: 12px;\n}\n\n.parent {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 16px;\n  font-weight: 600;\n}\n\n.children {\n  display: grid;\n  gap: 6px;\n  margin-left: 24px;\n}\n\n.child {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n}\n\ninput[type=checkbox] {\n  width: 16px;\n  height: 16px;\n}\n"
         },
         "/src/styles.css": {
-            "code": ":root { color-scheme: dark; }\nhtml, body { margin:0; height:100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+            "code": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n"
         },
         "/tsconfig.json": {
             "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"

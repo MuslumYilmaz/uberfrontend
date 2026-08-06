@@ -1,5 +1,5 @@
 {
-  "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+  "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
   "finalApproval": null,
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.0.0",
@@ -7,7 +7,7 @@
   "status": "candidate",
   "variants": [
     {
-      "contentHash": "c1853faf7ae370b504bcd955d136599543e07a6a9b490f1de9023b6648fedca2",
+      "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
       "id": "int-code-angular-junior-counter-v1",
       "remediationTopics": [
         "Angular component state transitions",
@@ -15,8 +15,8 @@
         "Template-bound step updates"
       ],
       "review": {
-        "contentHash": "c1853faf7ae370b504bcd955d136599543e07a6a9b490f1de9023b6648fedca2",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -35,7 +35,7 @@
           "status": "passed",
           "variantId": "int-code-angular-junior-counter-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -216,11 +216,11 @@
         "selectedCheckContractHash": "2739e4c8fac1b694f081c8a7aabd6caa618c7f7abe75340f19cfce9c3cc6e86f",
         "sourceQuestionHash": "54969ea35d13354c770555bd91a00fad30e6f28aa6fb8823586b7ca2b0c2ea19",
         "starterAsset": "assets/sb/angular/question/angular-counter.v2.json",
-        "starterAssetHash": "231776aa460a498fe76a6ada5a5e0518bb7762550b48c54a6e0ffda6dcdd6e07"
+        "starterAssetHash": "9dcf646a224777f79a6d261189f4bc44a56820f6bf779a8ba2ed4309728c5091"
       }
     },
     {
-      "contentHash": "52409a6b4cde828da82269d78ef450519b3d2221a6ebfb9f9bc44e07bc551422",
+      "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
       "id": "int-code-angular-junior-todo-v1",
       "remediationTopics": [
         "Stable Angular list identity",
@@ -228,8 +228,8 @@
         "Derived list filters"
       ],
       "review": {
-        "contentHash": "52409a6b4cde828da82269d78ef450519b3d2221a6ebfb9f9bc44e07bc551422",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -248,7 +248,7 @@
           "status": "passed",
           "variantId": "int-code-angular-junior-todo-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -529,11 +529,11 @@
         "selectedCheckContractHash": "cec240824a721630d1d4d06b530419b8a767d005d95eceacbbc1dfbf5f9a89ca",
         "sourceQuestionHash": "4361d88fb21aed3a5c0637d1b920533b6ce3f2dc998e93670d11b2e566f5a642",
         "starterAsset": "assets/sb/angular/question/angular-todo-list.v2.json",
-        "starterAssetHash": "da2f8424d64c15fb40e21c54e4457c2bd2ef9981bfad7ad10e39e87f6871b510"
+        "starterAssetHash": "9f8fac808a689a9a03ad2a21f3004803e651600529280d9aa3bab3e94e897e06"
       }
     },
     {
-      "contentHash": "7c14bcc8703013d1ece42f1f82d053300f3f788c97b61152fdf591f7f6e9fa7f",
+      "contentHash": "b4baf4a74d743f215d81551801598d745f6580dc71d5b37eba92e6f9d44d4dab",
       "id": "int-code-angular-mid-pagination-v1",
       "remediationTopics": [
         "Derived pagination state",
@@ -541,8 +541,8 @@
         "Stable numeric and text sorting"
       ],
       "review": {
-        "contentHash": "7c14bcc8703013d1ece42f1f82d053300f3f788c97b61152fdf591f7f6e9fa7f",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "b4baf4a74d743f215d81551801598d745f6580dc71d5b37eba92e6f9d44d4dab",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -561,7 +561,7 @@
           "status": "passed",
           "variantId": "int-code-angular-mid-pagination-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -1063,11 +1063,11 @@
         "selectedCheckContractHash": "2aaff7dcaffed3f4e558393640f6f23219f68e032cd11ec5d24d527fb67acf9e",
         "sourceQuestionHash": "b21a1f259e1b9b05fd9e9aacb03847ac2afb1e408380347d65f570b68cc6ecfd",
         "starterAsset": "assets/sb/angular/question/angular-pagination-table.v2.json",
-        "starterAssetHash": "6db11981a30fdd241abf5fc873cd1ab23b1133cd4fa133464668a64d8782fabc"
+        "starterAssetHash": "70929a36840e7b31f97ab7478b3fd23f140869b498499bd9dea28f5d3a8529bf"
       }
     },
     {
-      "contentHash": "ec60daae836ab6b3ad83f6a98f69b21ec38453a47154e33de7132a3603abc25e",
+      "contentHash": "7c28ac1b8fc4ff421b5bff288f7b49dc4c66b1a5811aeaaa9c4f40869a7c9825",
       "id": "int-code-angular-mid-shopping-cart-v1",
       "remediationTopics": [
         "Immutable cart transitions",
@@ -1075,8 +1075,8 @@
         "Inventory boundary guards"
       ],
       "review": {
-        "contentHash": "ec60daae836ab6b3ad83f6a98f69b21ec38453a47154e33de7132a3603abc25e",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "7c28ac1b8fc4ff421b5bff288f7b49dc4c66b1a5811aeaaa9c4f40869a7c9825",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1095,7 +1095,7 @@
           "status": "passed",
           "variantId": "int-code-angular-mid-shopping-cart-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -1622,11 +1622,11 @@
         "selectedCheckContractHash": "2d481aaa2440f42bdd493f65d5533725612f8603a90dfd364c8bbc89d64ae74b",
         "sourceQuestionHash": "6123fd8abad5badd0f1bcc9fdac91de2ffc7d75ce1ee1c5692cf6eabd2670334",
         "starterAsset": "assets/sb/angular/question/angular-shopping-cart.v2.json",
-        "starterAssetHash": "450287b2bc1ab07b2613e55b3ffa45536c76b0a2217c09a96c6dd41b22d72cb3"
+        "starterAssetHash": "55dc4bc42c34133d6c4b238acf7485f8daa226d2a5770dc458bcc6057b134002"
       }
     },
     {
-      "contentHash": "7443c2fc0d8cb341d48bb412bfc2041ad385d32783f7d4d9b608928f1d12685c",
+      "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
       "id": "int-code-angular-senior-chips-autocomplete-v1",
       "remediationTopics": [
         "Combobox keyboard state",
@@ -1634,8 +1634,8 @@
         "ARIA relationships and listener cleanup"
       ],
       "review": {
-        "contentHash": "7443c2fc0d8cb341d48bb412bfc2041ad385d32783f7d4d9b608928f1d12685c",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1654,7 +1654,7 @@
           "status": "passed",
           "variantId": "int-code-angular-senior-chips-autocomplete-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -2441,11 +2441,11 @@
         "selectedCheckContractHash": "654105b4026e77e15053837f7ef5114e89408ef276b14c6e1e27051669e42193",
         "sourceQuestionHash": "f7b56cfe53d3913d8057bc7db4a1a84d74a6f70c299919ca2a736b232c4c34a8",
         "starterAsset": "assets/sb/angular/question/angular-chips-input-autocomplete.v1.json",
-        "starterAssetHash": "da9140ce4d7d4cf76a5569c69970e6846446f3567684116c28df013314f17951"
+        "starterAssetHash": "5edc5aeb301184a8fa3575b6ca040d49da08085d0f0f33cf342594c37785023c"
       }
     },
     {
-      "contentHash": "9a6ff14cb3f761c3cc20491f864349d0952b5573c65939d9c129d6a2446170be",
+      "contentHash": "cb69a6983eff1132fe1e5743a241de9538fe399804c3a0b6171a004599959c3e",
       "id": "int-code-angular-senior-debounced-search-v1",
       "remediationTopics": [
         "RxJS cancellation ownership",
@@ -2453,8 +2453,8 @@
         "Accessible async states"
       ],
       "review": {
-        "contentHash": "9a6ff14cb3f761c3cc20491f864349d0952b5573c65939d9c129d6a2446170be",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "cb69a6983eff1132fe1e5743a241de9538fe399804c3a0b6171a004599959c3e",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2473,7 +2473,7 @@
           "status": "passed",
           "variantId": "int-code-angular-senior-debounced-search-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -2859,7 +2859,7 @@
         "selectedCheckContractHash": "a5add5b9521c81ea1648c09ad851d3694de71da9bb881e6d1c56f58f3910a31c",
         "sourceQuestionHash": "efcf186b9f682a3670dd554859968dab7d3a5d30529fc87f2f028edb6f6c733d",
         "starterAsset": "assets/sb/angular/question/angular-debounced-search.v2.json",
-        "starterAssetHash": "9a2d1aa78b378f1839abe8ade2b66f739c8c2e85de363822f40eacefb230d21d"
+        "starterAssetHash": "f763520c6e2734c6c3be11db4c65aaac0aac3269cb53289ea436a16df6f94c90"
       }
     },
     {
@@ -2872,7 +2872,7 @@
       ],
       "review": {
         "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2891,7 +2891,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-junior-escape-html-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -2970,7 +2970,7 @@
       ],
       "review": {
         "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2989,7 +2989,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-junior-validate-username-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3079,7 +3079,7 @@
       ],
       "review": {
         "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3098,7 +3098,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-mid-fetch-timeout-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3199,7 +3199,7 @@
       ],
       "review": {
         "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3218,7 +3218,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-mid-take-latest-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3319,7 +3319,7 @@
       ],
       "review": {
         "contentHash": "a46562a3755178280473a3aba3ca56d411c25b4f2733b4409a199ed6860aeece",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3338,7 +3338,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-senior-concurrency-map-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3439,7 +3439,7 @@
       ],
       "review": {
         "contentHash": "2a13a53222648c16758abd064e7a9bfc24a306a0a4d29a49ee091a070675e19c",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3458,7 +3458,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-senior-lru-cache-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3544,7 +3544,7 @@
       }
     },
     {
-      "contentHash": "3b06f080ac3e514fdf78779cc898934968aac4215db9e90b6d273eab8ff263d7",
+      "contentHash": "323af4503848652947a3d975818e7b9ce24e986dee25a35598145370a5724d8a",
       "id": "int-code-react-junior-counter-v1",
       "remediationTopics": [
         "React state transitions",
@@ -3552,8 +3552,8 @@
         "Configurable update steps"
       ],
       "review": {
-        "contentHash": "3b06f080ac3e514fdf78779cc898934968aac4215db9e90b6d273eab8ff263d7",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "323af4503848652947a3d975818e7b9ce24e986dee25a35598145370a5724d8a",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3572,7 +3572,7 @@
           "status": "passed",
           "variantId": "int-code-react-junior-counter-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3753,11 +3753,11 @@
         "selectedCheckContractHash": "2739e4c8fac1b694f081c8a7aabd6caa618c7f7abe75340f19cfce9c3cc6e86f",
         "sourceQuestionHash": "430f69a04d7f6f6a0d547263ce65a837228aa9a38c64bc4116d16880bf942b83",
         "starterAsset": "assets/sb/react/question/react-counter.v1.json",
-        "starterAssetHash": "7d5d08b08211964ab8ca82b4b2e51addd5d4a57e6d4b4a371e73c84f44cc72f5"
+        "starterAssetHash": "957987d105a3eb4186b964dafe98c3218328dea87c01e2e0e7167d06265d0db6"
       }
     },
     {
-      "contentHash": "f06e131d0396ccd1ca5e9dd727828b9218e749a92206a191010ef7ddba140200",
+      "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
       "id": "int-code-react-junior-todo-v1",
       "remediationTopics": [
         "Stable React list identity",
@@ -3765,8 +3765,8 @@
         "Derived list filters"
       ],
       "review": {
-        "contentHash": "f06e131d0396ccd1ca5e9dd727828b9218e749a92206a191010ef7ddba140200",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3785,7 +3785,7 @@
           "status": "passed",
           "variantId": "int-code-react-junior-todo-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -4066,11 +4066,11 @@
         "selectedCheckContractHash": "cec240824a721630d1d4d06b530419b8a767d005d95eceacbbc1dfbf5f9a89ca",
         "sourceQuestionHash": "e58f6281c6c5c12ce1a92603499d2c22bdb2658c9a0c5e6e81247287a8525bd8",
         "starterAsset": "assets/sb/react/question/react-todo-list.v1.json",
-        "starterAssetHash": "c286e2546c2dc4a7fe9afe954771d87f3e7d8b6aaf945e31039fd545f5b93649"
+        "starterAssetHash": "df37a9091fa6baa00a5849adafedca13195437d7549935ce0b41a23f33cc5497"
       }
     },
     {
-      "contentHash": "a3e2e5168f65206e11ccc07f082c2a7ecdec52dc4df2880d7b188de2f03c7f2e",
+      "contentHash": "720b1615c56664129a257e2cb267465990129502ed6ddec8e5781c171a521ea9",
       "id": "int-code-react-mid-pagination-v1",
       "remediationTopics": [
         "Derived pagination state",
@@ -4078,8 +4078,8 @@
         "Stable sorting"
       ],
       "review": {
-        "contentHash": "a3e2e5168f65206e11ccc07f082c2a7ecdec52dc4df2880d7b188de2f03c7f2e",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "720b1615c56664129a257e2cb267465990129502ed6ddec8e5781c171a521ea9",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4098,7 +4098,7 @@
           "status": "passed",
           "variantId": "int-code-react-mid-pagination-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -4600,11 +4600,11 @@
         "selectedCheckContractHash": "2aaff7dcaffed3f4e558393640f6f23219f68e032cd11ec5d24d527fb67acf9e",
         "sourceQuestionHash": "22216672241e96ee92ee284c66e828c464f0e50ddfdec8f096f963a2192e9ff9",
         "starterAsset": "assets/sb/react/question/react-pagination-table.v1.json",
-        "starterAssetHash": "7cecf0917c82b8585f7e71891b9e91d51b4ec168719d33042bceed7943b055e8"
+        "starterAssetHash": "813db01a62ffea62ef453cb3e102ed858b2fd1afc418103cc24f12afe493e222"
       }
     },
     {
-      "contentHash": "73625055df6d96aac602a108e58f4d35be8931dc35f3b8ef11d6c9a8fdcb9bd8",
+      "contentHash": "b874b97658c4f3a14555c3c4c0abd38e3c85c3279ebe7e69f0a7db488ea736f7",
       "id": "int-code-react-mid-shopping-cart-v1",
       "remediationTopics": [
         "Immutable cart transitions",
@@ -4612,8 +4612,8 @@
         "Inventory boundary guards"
       ],
       "review": {
-        "contentHash": "73625055df6d96aac602a108e58f4d35be8931dc35f3b8ef11d6c9a8fdcb9bd8",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "b874b97658c4f3a14555c3c4c0abd38e3c85c3279ebe7e69f0a7db488ea736f7",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4632,7 +4632,7 @@
           "status": "passed",
           "variantId": "int-code-react-mid-shopping-cart-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -5159,11 +5159,11 @@
         "selectedCheckContractHash": "2d481aaa2440f42bdd493f65d5533725612f8603a90dfd364c8bbc89d64ae74b",
         "sourceQuestionHash": "6e2e1a02e569d4bc7d33bddf88f18c38d9a7c78ee66f33bb191050f53223cdae",
         "starterAsset": "assets/sb/react/question/react-shopping-cart.v1.json",
-        "starterAssetHash": "201d03313a7ab3a0ad99aadcf5b1fdb374fdacd8d6c21d77247a187ed6ca4d4b"
+        "starterAssetHash": "445d3d215c8f2442ef3828df88ea675b5bd3fb68559492559d8af22040e5482f"
       }
     },
     {
-      "contentHash": "a444c5da5869a5e0fcc16774746bdd4831a5059f6b1f4d4c3594cd76d93e2ac0",
+      "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
       "id": "int-code-react-senior-chips-autocomplete-v1",
       "remediationTopics": [
         "Combobox keyboard state",
@@ -5171,8 +5171,8 @@
         "ARIA relationships and cleanup"
       ],
       "review": {
-        "contentHash": "a444c5da5869a5e0fcc16774746bdd4831a5059f6b1f4d4c3594cd76d93e2ac0",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5191,7 +5191,7 @@
           "status": "passed",
           "variantId": "int-code-react-senior-chips-autocomplete-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -5978,11 +5978,11 @@
         "selectedCheckContractHash": "654105b4026e77e15053837f7ef5114e89408ef276b14c6e1e27051669e42193",
         "sourceQuestionHash": "fda1a18b03670ce6956fa30e11f8e1fd730c00b95f5446fbc0b2356c580a1778",
         "starterAsset": "assets/sb/react/question/react-chips-input-autocomplete.v1.json",
-        "starterAssetHash": "8e4549bab1326096e01b28489310047caf37ac913f74647b23bea06e2d1a5c81"
+        "starterAssetHash": "b11383b3b8718b1ba83907b806dbde2541d8d103fcf7cb977fee8588f10e8b05"
       }
     },
     {
-      "contentHash": "f7f2fc8e8be19eb702e7d5db5d97c43ccf86e4348b7c94e5353f7d03b728186a",
+      "contentHash": "db2fe2b668f4ec350e26e24c142dc613008917b921ed03e2275cf294889bdeb8",
       "id": "int-code-react-senior-debounced-search-v1",
       "remediationTopics": [
         "Effect and timer ownership",
@@ -5990,8 +5990,8 @@
         "Accessible async states"
       ],
       "review": {
-        "contentHash": "f7f2fc8e8be19eb702e7d5db5d97c43ccf86e4348b7c94e5353f7d03b728186a",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "db2fe2b668f4ec350e26e24c142dc613008917b921ed03e2275cf294889bdeb8",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6010,7 +6010,7 @@
           "status": "passed",
           "variantId": "int-code-react-senior-debounced-search-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -6396,11 +6396,11 @@
         "selectedCheckContractHash": "a5add5b9521c81ea1648c09ad851d3694de71da9bb881e6d1c56f58f3910a31c",
         "sourceQuestionHash": "0c5e3c11677e5f212cb498bf18a730a8042fb12ec3dd2bb68235dc8bb6b260b6",
         "starterAsset": "assets/sb/react/question/react-debounced-search.v1.json",
-        "starterAssetHash": "76a4d2021563c09632b1ed36d4bc2b73cdfa8e1745657497b8de9ca5a74ee8fd"
+        "starterAssetHash": "9cc55b69ec9e100916051df2661a7c8b5786e8a12cf88ff0b1e9dc405af97bff"
       }
     },
     {
-      "contentHash": "4d631931ffc761c967e17c80cce7e9848583723ba148e019160cabe23f12e847",
+      "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
       "id": "int-code-vue-junior-counter-v1",
       "remediationTopics": [
         "Vue reactive state transitions",
@@ -6408,8 +6408,8 @@
         "Configurable update steps"
       ],
       "review": {
-        "contentHash": "4d631931ffc761c967e17c80cce7e9848583723ba148e019160cabe23f12e847",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6428,7 +6428,7 @@
           "status": "passed",
           "variantId": "int-code-vue-junior-counter-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -6609,11 +6609,11 @@
         "selectedCheckContractHash": "2739e4c8fac1b694f081c8a7aabd6caa618c7f7abe75340f19cfce9c3cc6e86f",
         "sourceQuestionHash": "15b53480ffd43eef02041d41afffe13ccb5d26012c1347eb652c0959cd41fad1",
         "starterAsset": "assets/sb/vue/question/vue-counter.v1.json",
-        "starterAssetHash": "7d1eb5d429959aa4a0e190f0f8eae4075d25a4e7e01cd034508629404669042b"
+        "starterAssetHash": "a831a35106511af976f71bdc90f73c8dfe4bbe7646097b291c707fccf90303c2"
       }
     },
     {
-      "contentHash": "012ad848a6bf43704560cbf100f9bb69addad3f5f7292b786cffc50532a2317e",
+      "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
       "id": "int-code-vue-junior-todo-v1",
       "remediationTopics": [
         "Stable Vue list identity",
@@ -6621,8 +6621,8 @@
         "Derived list filters"
       ],
       "review": {
-        "contentHash": "012ad848a6bf43704560cbf100f9bb69addad3f5f7292b786cffc50532a2317e",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6641,7 +6641,7 @@
           "status": "passed",
           "variantId": "int-code-vue-junior-todo-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -6922,11 +6922,11 @@
         "selectedCheckContractHash": "cec240824a721630d1d4d06b530419b8a767d005d95eceacbbc1dfbf5f9a89ca",
         "sourceQuestionHash": "0d2b5deb6696c5c0c3f2a2436f5578dd86f018ccb336862ae69ac7364634a9a8",
         "starterAsset": "assets/sb/vue/question/vue-todo-list.v2.json",
-        "starterAssetHash": "10e793a0d5c0696cab9da903ca1fc9abdc2200a9f9efb2f70f7113fe0f493ab2"
+        "starterAssetHash": "dd85d5916d99dd54c6e675e6fff76a95f2226b133b65f42882b5b8059d163a8b"
       }
     },
     {
-      "contentHash": "aaa6f6f8c0d96bd2f5b0caf1417a0f19689c3dedd50af309c7d085ba478ff020",
+      "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
       "id": "int-code-vue-mid-pagination-v1",
       "remediationTopics": [
         "Derived pagination state",
@@ -6934,8 +6934,8 @@
         "Stable sorting"
       ],
       "review": {
-        "contentHash": "aaa6f6f8c0d96bd2f5b0caf1417a0f19689c3dedd50af309c7d085ba478ff020",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6954,7 +6954,7 @@
           "status": "passed",
           "variantId": "int-code-vue-mid-pagination-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -7456,11 +7456,11 @@
         "selectedCheckContractHash": "2aaff7dcaffed3f4e558393640f6f23219f68e032cd11ec5d24d527fb67acf9e",
         "sourceQuestionHash": "05f489311ad50a7025c2fa3b6f23feb6f177975847e808c98024dc24e44a681c",
         "starterAsset": "assets/sb/vue/question/vue-pagination-table.v1.json",
-        "starterAssetHash": "b95933b4b2734412dc042d34ac08ff0faeac8846961f5bf3ea02f068930346f0"
+        "starterAssetHash": "51c2b900701ad5443f0b60bd4f985929a402f9631b361d24e8d73c70fed4c67b"
       }
     },
     {
-      "contentHash": "b475e5c504f1ba64eda7113703ccbfa2aa50522d5a01da7973a99e08345a88d5",
+      "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
       "id": "int-code-vue-mid-shopping-cart-v1",
       "remediationTopics": [
         "Reactive cart transitions",
@@ -7468,8 +7468,8 @@
         "Inventory boundary guards"
       ],
       "review": {
-        "contentHash": "b475e5c504f1ba64eda7113703ccbfa2aa50522d5a01da7973a99e08345a88d5",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7488,7 +7488,7 @@
           "status": "passed",
           "variantId": "int-code-vue-mid-shopping-cart-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -8015,11 +8015,11 @@
         "selectedCheckContractHash": "2d481aaa2440f42bdd493f65d5533725612f8603a90dfd364c8bbc89d64ae74b",
         "sourceQuestionHash": "ca14b84bdb520204e62a45281fb68082a1a5956b69a6ecf634ca95962691c454",
         "starterAsset": "assets/sb/vue/question/vue-shopping-cart.v1.json",
-        "starterAssetHash": "ac011eef54afd1cb253fcca44baf343a6539ee220100788f64c9c45b0f3fd01b"
+        "starterAssetHash": "b83276695ca6de9aa938eae876421fb261002acec8147330f1ea345f91f55c9b"
       }
     },
     {
-      "contentHash": "e5459365964710a03de1408efb923b379490769af235d5bc1b2ce4aebdbe9543",
+      "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
       "id": "int-code-vue-senior-chips-autocomplete-v1",
       "remediationTopics": [
         "Combobox keyboard state",
@@ -8027,8 +8027,8 @@
         "ARIA relationships and unmount cleanup"
       ],
       "review": {
-        "contentHash": "e5459365964710a03de1408efb923b379490769af235d5bc1b2ce4aebdbe9543",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8047,7 +8047,7 @@
           "status": "passed",
           "variantId": "int-code-vue-senior-chips-autocomplete-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -8834,11 +8834,11 @@
         "selectedCheckContractHash": "654105b4026e77e15053837f7ef5114e89408ef276b14c6e1e27051669e42193",
         "sourceQuestionHash": "4135131590814b145e8aedd53a8d575c2d4298c9883a9e3009bde9249a913eac",
         "starterAsset": "assets/sb/vue/question/vue-chips-input-autocomplete.v1.json",
-        "starterAssetHash": "e5ec952b3cd9814825924fe3b71a951d0b6c17d85746ab8d785bb9bbc4d34645"
+        "starterAssetHash": "0d449f199c47cf60e22d19e2ac2f99abb92d801338f58933f2b71d025164ef96"
       }
     },
     {
-      "contentHash": "075cd06b7ed062957e5c38eb479a2311ed1de88ca6e595c3f057e18d1046bfa2",
+      "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
       "id": "int-code-vue-senior-debounced-search-v1",
       "remediationTopics": [
         "Watcher and timer ownership",
@@ -8846,8 +8846,8 @@
         "Accessible async states"
       ],
       "review": {
-        "contentHash": "075cd06b7ed062957e5c38eb479a2311ed1de88ca6e595c3f057e18d1046bfa2",
-        "definitionHash": "0bd6ffc57dcf6bf2955b7b4d6ad9bde6016b070b0df74b8fd4dd90f2ce647639",
+        "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
+        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8866,7 +8866,7 @@
           "status": "passed",
           "variantId": "int-code-vue-senior-debounced-search-v1"
         },
-        "reviewedAt": "2026-07-27",
+        "reviewedAt": "2026-08-06",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -9252,7 +9252,7 @@
         "selectedCheckContractHash": "a5add5b9521c81ea1648c09ad851d3694de71da9bb881e6d1c56f58f3910a31c",
         "sourceQuestionHash": "d8bf7f1153930a577c436b5c01469aa457f044963264b1cd8b89e178217c9c43",
         "starterAsset": "assets/sb/vue/question/vue-debounced-search.v1.json",
-        "starterAssetHash": "86bdab9dd9da63df89d9be16d0f9cce8c9f88f6ce908f2784deb3576eff057d0"
+        "starterAssetHash": "1480d9eec749367733ecba7c79fa4abe728daa471296d73a52612a40224231f0"
       }
     }
   ]

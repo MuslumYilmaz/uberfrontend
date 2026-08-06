@@ -1,10 +1,16 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { parseTemplate } from '@angular/compiler';
 import ts from 'typescript';
+import {
+  cssSemanticAst,
+  formatCss,
+  runFrameworkCssFormatter,
+} from './format-framework-css.mjs';
 
 const frontendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repoRoot = path.resolve(frontendRoot, '..');
@@ -46,6 +52,130 @@ function normalizedAssetFiles(asset, label) {
     files[normalizedPath] = source;
   }
   return files;
+}
+
+function assertFrameworkCssFormatting() {
+  const compact = [
+    ':root{--focus:#facc15;/* keep contrast */color-scheme:dark}',
+    '.button{border:1px solid #374151}',
+    '@media(max-width:640px){.button{display:block;color:var(--focus)}}',
+    '.badge::before{content:"•"}',
+  ].join('');
+  const formatted = [
+    ':root {',
+    '  --focus: #facc15;',
+    '  /* keep contrast */',
+    '  color-scheme: dark;',
+    '}',
+    '',
+    '.button {',
+    '  border: 1px solid #374151;',
+    '}',
+    '',
+    '@media (max-width:640px) {',
+    '  .button {',
+    '    display: block;',
+    '    color: var(--focus);',
+    '  }',
+    '}',
+    '',
+    '.badge::before {',
+    '  content: "•";',
+    '}',
+    '',
+  ].join('\n');
+
+  assert.equal(formatCss(compact, 'compact.css'), formatted);
+  assert.equal(formatCss('', 'empty.css'), '\n', 'Even empty CSS must end with a newline');
+  assert.equal(formatCss(formatted, 'formatted.css'), formatted, 'CSS formatting must be idempotent');
+  assert.deepEqual(
+    cssSemanticAst(compact, 'compact.css'),
+    cssSemanticAst(formatted, 'formatted.css'),
+    'CSS formatting must preserve the semantic PostCSS AST'
+  );
+
+  const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'frontendatlas-framework-css-'));
+  const canonicalRoot = path.join(temporaryRoot, 'cdn', 'sb');
+  const mirrorRoot = path.join(temporaryRoot, 'frontend', 'src', 'assets', 'sb');
+  fs.mkdirSync(canonicalRoot, { recursive: true });
+  fs.mkdirSync(mirrorRoot, { recursive: true });
+
+  try {
+    const encodedCompact = JSON.stringify(compact).replace('•', '\\u2022');
+    const nestedCompact = '@media(max-width:1px){body{margin:0}}';
+    const fixtureRaw = [
+      '{',
+      '  "label": "preserve \\u2022 and outer formatting",',
+      '  "files": {',
+      `    "src/App.css": ${encodedCompact},`,
+      `    "/src/styles.css": { "code": ${JSON.stringify(nestedCompact)} },`,
+      '    "src/App.tsx": "const untouched = \\u0027yes\\u0027;"',
+      '  }',
+      '}',
+    ].join('\n');
+    const fixturePath = path.join(canonicalRoot, 'fixture.json');
+    const mirrorPath = path.join(mirrorRoot, 'fixture.json');
+    fs.writeFileSync(fixturePath, fixtureRaw);
+    fs.writeFileSync(mirrorPath, fixtureRaw);
+
+    const writeSummary = runFrameworkCssFormatter({
+      mode: 'write',
+      canonicalRoot,
+      mirrorRoot,
+    });
+    assert.deepEqual(writeSummary, {
+      assets: 1,
+      cssSources: 2,
+      changedAssets: 1,
+      changedCssSources: 2,
+    });
+    const written = fs.readFileSync(fixturePath, 'utf8');
+    assert.equal(fs.readFileSync(mirrorPath, 'utf8'), written, 'write mode must mirror exact bytes');
+    assert.equal(
+      written,
+      fixtureRaw
+        .replace(encodedCompact, JSON.stringify(formatted).replace('•', '\\u2022'))
+        .replace(JSON.stringify(nestedCompact), JSON.stringify(formatCss(nestedCompact))),
+      'Write mode must replace only the embedded CSS string tokens'
+    );
+    assert.ok(written.includes('"label": "preserve \\u2022 and outer formatting"'));
+    assert.ok(written.includes('"src/App.tsx": "const untouched = \\u0027yes\\u0027;"'));
+    assert.ok(written.includes('content: \\"\\u2022\\";'), 'CSS Unicode escape representation must be preserved');
+    assert.equal(runFrameworkCssFormatter({ mode: 'check', canonicalRoot, mirrorRoot }).changedCssSources, 0);
+
+    fs.writeFileSync(fixturePath, fixtureRaw);
+    fs.writeFileSync(mirrorPath, fixtureRaw);
+    const beforeMalformedRun = fixtureRaw;
+    const malformedRaw = JSON.stringify({ files: { 'src/App.css': '.broken { color: red;' } }, null, 2);
+    fs.writeFileSync(path.join(canonicalRoot, 'malformed.json'), malformedRaw);
+    fs.writeFileSync(path.join(mirrorRoot, 'malformed.json'), malformedRaw);
+    assert.throws(
+      () => runFrameworkCssFormatter({ mode: 'write', canonicalRoot, mirrorRoot }),
+      /malformed\.json.*Unclosed block/s
+    );
+    assert.equal(
+      fs.readFileSync(fixturePath, 'utf8'),
+      beforeMalformedRun,
+      'validation errors must prevent every planned corpus write'
+    );
+    assert.equal(
+      fs.readFileSync(mirrorPath, 'utf8'),
+      beforeMalformedRun,
+      'validation errors must prevent every planned mirror write'
+    );
+  } finally {
+    fs.rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+
+  assert.deepEqual(
+    runFrameworkCssFormatter({
+      mode: 'check',
+      canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
+      mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
+    }),
+    { assets: 181, cssSources: 242, changedAssets: 0, changedCssSources: 0 },
+    'The full framework CSS corpus must stay canonical and exactly mirrored'
+  );
 }
 
 const frameworkStarterTaskMarker =
@@ -2498,6 +2628,7 @@ assert.match(strictEffectSolutionCode, /return \(\) => connection\.disconnect\(\
 assert.match(strictEffectSolutionCode, /\[roomId, onActiveCount\]/);
 
 assertFrameworkStarterCorpus();
+assertFrameworkCssFormatting();
 assertModernAngularCodingCorpus();
 assertCounterPressureMode();
 assertDebouncedSearchPressureMode();

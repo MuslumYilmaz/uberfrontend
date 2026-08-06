@@ -43,7 +43,7 @@
     },
 
     "/src/styles.css": {
-      "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+      "code": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n"
     },
     "/tsconfig.json": {
       "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
