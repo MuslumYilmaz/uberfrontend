@@ -5,9 +5,40 @@ family: "system-design"
 tech: "frontend"
 audience: "Frontend engineers preparing for system design interviews"
 intent: "Teach a concrete frontend architecture answer with explicit state, failure, accessibility, and rollout decisions."
-target_words: 2400
+target_words: 2900
 primary_keyword: "toast notification system frontend system design"
 status: "converted"
+content_schema_version: 2
+target_level: "junior"
+timebox_minutes: 10
+candidate_prompt: "Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where manual dismiss and an expiry timer fire together: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe."
+constraints:
+  - "Show no more than three toasts."
+  - "Actions and critical messages persist."
+  - "Services can trigger global feedback."
+  - "Rerenders never repeat speech."
+expected_decisions:
+  - "Choose the owner of global commands, ordered records, and rendering."
+  - "Define one timer lifecycle that resolves dismiss-timeout races safely."
+  - "Separate visible stacking policy from accessible announcement policy."
+prerequisites:
+  - "Component state"
+  - "Timeout cleanup"
+  - "ARIA live regions"
+core_skills:
+  - "State ownership"
+  - "Lifecycle cleanup"
+  - "Race handling"
+  - "Accessibility"
+guided_mock: true
+evaluation_must_cover:
+  - "One global owner orders the visible stack and overflow queue."
+  - "Dismiss and timeout share cleanup; only the first changes state."
+evaluation_strong_signals:
+  - "Actionable messages persist; the viewport owns no timers."
+  - "Separate announcement identity prevents repeat speech after rerenders."
+evaluation_expert_stretch: "Route scope, pause/resume, and measured fair overflow."
+evaluation_red_flag: "Each component owns timers or announces again on every render."
 notes_for_conversion:
   - "Keep the route, question ID, and access level stable."
   - "Keep backend execution out of scope; describe only UI-facing contracts."
@@ -15,7 +46,7 @@ notes_for_conversion:
 search_intent: "Prepare a frontend system design answer for Design a Toast Notification System."
 reader_promise: "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Design a Toast Notification System."
 unique_angle: "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements."
-what_this_adds_beyond_basics: "Adds an end-to-end worked example, state ownership, recovery, accessibility, and measurable rollout guidance for Design a Toast Notification System."
+what_this_adds_beyond_basics: "Adds a scenario-led junior answer, explicit ownership, a dismiss-timeout race, accessible announcement identity, and measurable verification."
 competitor_query: "Design a Toast Notification System frontend system design"
 competitor_takeaways:
   - "Catalog pages commonly list components but stop before reconciliation and failure recovery."
@@ -26,192 +57,64 @@ competitor_gaps:
 sources:
   - "https://www.w3.org/WAI/ARIA/apg/patterns/alert/"
   - "https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html"
-last_fact_checked_at: "2026-07-28"
+last_fact_checked_at: "2026-08-06"
 reviewed_by: "FrontendAtlas editorial migration"
 confidence: "high"
 ---
 # Prompt
 
-toast notification system frontend system design. Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.
+This toast notification system frontend system design exercise is deliberately smaller than a notification center. The actor is a person editing a profile, the immediate goal is trustworthy feedback, and the main failure is a cleanup race. The answer should follow two messages: a low-risk Profile saved status and a conflict that exposes Review or Undo. Starting with those messages makes each architecture choice observable.
 
-## Requirements
+Candidate prompt: Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where manual dismiss and an expiry timer fire together: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe.
 
-Design a global toast system with a typed command API, top-level rendering layer, predictable stacking, bounded duplicate handling, manual dismissal, optional timing for low-risk status messages, persistent actionable or critical messages, responsive placement, and restrained screen-reader announcements.
+The reference answer stays on the browser feedback layer. The server still owns profile persistence, conflict detection, and the authoritative result of Review or Undo. A toast reports that result and can invoke a domain command, but it is not the system of record. A separate notification feed, unread counts, server retention, delivery across devices, and push notifications are outside the baseline.
 
-### Scope
+## A 10-minute answer
 
-- A global toast API.
-- A ToastProvider / ToastContainer layer.
-- Stacked toast rendering.
-- Persistent and timed lifetime behavior with safe manual close.
-- Accessible announcements.
-- Timer cleanup and lifecycle handling.
-- Responsive placement rules.
-
-### Design outline
-
-- Requirements and constraints.
-- High-level architecture.
-- Toast data model.
-- Public API contract.
-- Rendering and portal strategy.
-- Timer lifecycle.
-- Accessibility behavior.
-- Performance and edge cases.
-
-### Scenario
-
-Worked example: a profile save emits a non-actionable success status with a product-configured timed lifetime. The store creates one status toast and the renderer announces it politely. If the user focuses or hovers it, the remaining-time countdown pauses. An Undo message would instead be persistent until the action expires or the user dismisses it.
-
-### Toast system vs notification feed
-
-A toast system is for short-lived, non-blocking feedback. A notification feed is persistent, user-specific, often server-backed, and may need unread state, pagination, realtime updates, and retention. This page focuses on designing the Toast Notification System, not a persistent notifications feed.
-
----
-
-Any authorized part of the app can emit a small non-blocking status message. Variants affect presentation but do not determine urgency by themselves. Low-risk informational feedback may use an adjustable timed lifetime; actionable, critical, or user-decision messages remain persistent. The system supports manual close, predictable stacking, placement, deduplication, accessible announcements, and complete cleanup.
-
-Cover global ownership, stacking and overflow, persistent versus timed lifetime, complete timer cleanup, layering, restrained announcements, non-stealing focus behavior, and responsive placement.
-
----
-
-### User flow
-
-1. Trigger: Some part of the app calls toast.success('Profile saved', { lifetime: { kind: 'timed' } }) after an action completes. Provider policy resolves the measured default duration.
-2. Show toast: A new toast appears in the chosen corner (e.g. top-right), with the correct style and icon for its type.
-3. Lifetime: A timed status begins a remaining-time countdown; focus, hover, page hiding, or relevant user timing preferences pause it without resetting elapsed time. Persistent messages have no timer. A clearly labeled close button remains available when dismissal is safe.
-4. Stack behavior: If more toasts appear, they stack in a consistent order (e.g. newest on top). Old ones disappear as timers finish or the user closes them.
-5. Edge cases: On small screens, the layout adapts (e.g. full-width at the top/bottom). Screen readers get the message, and timers are cleaned up on unmount or route changes.
-
-### Explicit assumptions
-
-- The toast system is global and should not require prop-drilling.
-- Toasts are non-blocking: they should not stop the user from interacting with the page.
-- Each toast has a message, presentation variant, urgency, and explicit persistent or timed lifetime.
-- Multiple toasts can be visible and must stack predictably.
-- Timers must be cleaned up on unmount or when the toast is removed.
-- Use status and polite announcement by default, reserve alert for genuinely urgent information, never move focus merely because a toast appeared, and keep interactive actions keyboard reachable.
-
-| Signal | Value | Interpretation |
-| --- | --- | --- |
-| Main concept | Global toast layer | One place in the app renders all toasts. |
-| Key UX goal | Non-blocking feedback | Users keep working while seeing notifications. |
-| Key technical concern | Timers & cleanup | No dangling intervals/timeouts when toasts disappear or routes change. |
-
-### Scope checkpoint
-
-A toast system is more than just "show a div". In requirements, highlight that it must be global, stack correctly, clean up timers reliably, respect z-index layers, and stay accessible and readable on both desktop and mobile.
-
-### Frontend boundary
-
-The toast layer owns client command normalization, stacking, lifetime, deduplication, announcements, and cleanup. The server-side business operation is an abstract contract; persistence and domain recovery stay outside this transient feedback channel.
+- **Open with the user story.** A user saves a profile and sees Profile saved without losing focus. A later edit conflict shows Review or Undo and remains available until it is resolved or safely dismissed. Either event may come from a component or a service, so callers need one global command API rather than a container on every page.
+- **Set the boundary.** Accept typed commands, keep at most three records visible, and put additional distinct records into an ordered overflow queue. Low-risk status messages may expire. Actionable and critical messages are persistent because a timer must not remove the user’s only recovery path.
+- **Assign one owner per job.** The store owns normalized records and order. A lifecycle coordinator owns expiry handles and cleanup. The viewport renders the store through one root portal and returns interaction intent. A separate announcer tracks which announcement IDs have already been emitted.
+- **Resolve the required race.** Manual dismiss and timeout both request removal for the same ID. The first request changes state and disposes runtime. The second sees a terminal or missing ID and does nothing. There is one removal transition and no late callback that can delete a newer toast.
+- **Close with behavior.** A burst never renders more than three messages. The narrow layout reflows without changing identity. Ordinary feedback is announced politely once, urgent feedback is reserved for real interruption, appearance never steals focus, and action controls remain keyboard reachable.
 
 # Clarifying Questions
 
-- From where can toasts be triggered? Only from React components, or also from plain JS utilities / services?
-- Do we need different variants (success, error, warning, info) with different icons and colors?
-- Which low-risk messages may be timed, which messages must persist, and how can timing be adjusted?
-- What is the visible-stack budget, and how should overflow queue without losing distinct outcomes or recovery actions?
-- Which placements do we need to support (top-right, top-center, bottom-right, bottom-left, mobile full-width)?
-- Do we need actions inside toasts (e.g. an "Undo" button) that require focus and keyboard support?
+Ask only questions that can change the baseline model, then state assumptions so the design can proceed.
+
+- **Who can trigger a toast?** Assume React components, request handlers, and plain services can all emit commands. That rules out prop drilling and page-local containers.
+- **Which messages may expire?** Assume an informational success can use a product-configured timed lifetime. Any message containing Review, Undo, retry, or another recovery control is persistent unless the underlying domain action visibly expires.
+- **How much can appear at once?** Use three visible records as the given product constraint on desktop and mobile. Extra distinct outcomes wait in insertion order. This is an admission rule, not permission to erase data.
+- **When may duplicates collapse?** Only when the caller supplies a stable dedupe key that means the events represent the same outcome. Equal sentence text is insufficient because two failures can need different recovery actions.
+- **What does accessible feedback mean here?** Ordinary status should be polite, urgent interruption should be rare, toast appearance should not move focus, interactive controls should be operable by keyboard, and a visual rerender should not cause repeated speech.
+- **Where does rendering live?** Assume one application root can mount a provider and portal-backed viewport. The public API remains usable by code that is not under a particular feature component.
+
+These assumptions keep the junior answer focused: global state, explicit lifetime, bounded rendering, one cleanup gate, and independent announcement identity. Placement variants, animation themes, a history panel, and cross-device delivery do not need to appear in the first diagram.
 
 # Architecture
 
-Separate command normalization, durable toast records, lifecycle scheduling, rendering, and announcements so that one owner controls each transition.
+Draw four boxes after the public command API: store, lifecycle coordinator, viewport, and announcer. Arrows should show commands entering the store, the coordinator reacting to timed records, the viewport deriving rows from the store, and the announcer consuming eligible announcement events. No rendered item owns an independent copy of these responsibilities.
 
-### Store, viewport, and announcer boundary
+## Ownership map
 
-toast.success() -> toast store -> ToastProvider -> portal-based ToastContainer -> ToastItem with timer and dismiss behavior
+**Toast store.** The store owns normalized `ToastRecord` values, their visible order, their queued order, and whether an ID has reached its removal transition. It accepts add, update, and remove commands. With fewer than three visible records, an add enters the visible list; otherwise a distinct record enters the ordered queue. Removing a visible record promotes the next queued record. The store does not retain browser handles or DOM references.
 
----
+**Lifecycle coordinator.** The lifecycle coordinator owns one optional expiry handle for each timed record. It receives the resolved duration only after normalization, submits an expiry signal when needed, and disposes the handle when removal wins. Persistent records never receive a handle. Central ownership makes it possible to prove that manual dismissal and expiry converge through one operation.
 
-Use a global toast store, a root ToastProvider that renders through a portal, and one lifecycle coordinator for every deadline. The public API emits typed commands; the container renders state and sends interactions back without owning independent timers.
+**Toast viewport.** The viewport subscribes to visible store records and renders them through a root portal. It applies placement and the three-record visual bound, gives action and close controls accessible names, and sends interaction intent back to the command layer. It does not start timeouts, mutate the queue, or decide whether a message has already been announced.
 
-Boundary checks:
-- One global store owns visible and queued records.
-- One lifecycle coordinator owns deadlines, pause reasons, and cleanup.
-- A portal or equivalent root layer provides predictable stacking.
-- The layer contract defines how toasts relate to dialogs and popovers.
-- The public API stays small while preserving typed lifetime and action semantics.
+**Announcer.** The announcer owns a stable live region and a set of emitted announcement IDs. It receives a semantic event when a record first becomes eligible for speech. A component rerender, reorder, or responsive move does not create a new event. Polite messages use status behavior; urgent messages may use alert behavior when interruption is justified. Appearance itself never moves focus.
 
----
+## Rendering and action semantics
 
-### Core building blocks
+The portal is a rendering tool, not another state owner. Mount one container beside the application root, subscribe it to the store, and use the design system’s overlay layer instead of scattering high `z-index` values through features. The viewport can choose top-end placement on a wide screen and an inset full-width row on a narrow one, but both layouts render the same IDs in the same logical order. A dialog remains the blocking surface; toast feedback must not cover its primary controls or pretend to replace its validation.
 
-| Piece | Responsibility | Design rationale |
-| --- | --- | --- |
-| Toast API (toast helper) | Public functions like toast.success(message, options?) and toast.error(message, options?) that push toasts into global state. | Authorized callers emit a normalized add command and receive the stable toast ID. |
-| Global toast store / context | Keeps an array of active toasts and handles add/remove/clear actions. | The store is the single source of truth for visible and queued toast records. |
-| ToastProvider | Top-level component that subscribes to the store and renders the ToastContainer via a portal. | The root provider subscribes once and renders the configured placement through a portal. |
-| ToastContainer | Positions and stacks toasts for a given placement (top-right, bottom-left, etc.). | The container applies placement, bounded stacking, and the documented layer policy. |
-| ToastItem | Renders a single toast: icon, message, optional actions, close button, ARIA/focus behavior. | Each item renders semantics and emits pause, resume, action, and dismiss intent; it does not create a competing timer. |
+Interactive messages need a clear focus story. Toast appearance leaves current focus where the user is working. Review, Undo, retry, and close enter ordinary tab order when the user reaches the viewport. If an action removes the focused toast, focus returns to a meaningful workflow target chosen by the feature contract, not to the document body. Action state is rendered from the store, so pending disables duplicate activation and failure exposes retry without creating a second toast for the same task.
 
-### Toast policy decisions
+The command and lifecycle diagram should read as: global command to store; store to lifecycle coordinator, viewport, and announcer; dismiss or expiry back to one removal gate. The text fallback says that the viewport renders no more than three records, the coordinator schedules or cancels expiry, and the announcer speaks each eligible ID once.
 
-- There is one global toast layer mounted near the root of the app.
-- Toasts are stored in a global store/context, not per-page state.
-- The toast API is just a thin wrapper over that store (no UI logic inside helpers).
-- The ToastProvider uses a portal (or similar) to render a fixed-position container above the main app.
-- ToastContainer handles placement and stacking order (newest on top or bottom).
-- The lifecycle coordinator owns every deadline and cleanup; ToastItem reports focus, hover, action, and dismiss intent.
+## Data contracts
 
-### Architecture failure patterns
-
-- Spreading toast state across many unrelated components.
-- Requiring every page to include its own toast container.
-- Triggering DOM queries (document.querySelector) all over instead of a clean portal.
-- Letting every ToastItem create an independent timer, which makes pause and cleanup race.
-- Hard-coding placements and not leaving room for a simple config.
-- No clear z-index strategy (toasts randomly appear behind headers or modals).
-
-### High-level flow
-
-1. App initialization: The root renders <ToastProvider> once, which mounts a ToastContainer in a fixed overlay using a portal.
-2. Triggering a toast: Any component or service calls toast.success(message, options?). The helper dispatches an addToast action with a new toast object (id, variant, message, options).
-3. Rendering & stacking: The ToastProvider subscribes to the toast store, receives the updated list, and ToastContainer renders a stack of ToastItem components in the correct corner.
-4. Lifetime and manual close: A lifecycle coordinator manages timed status messages with remaining-time pause and cleanup. Persistent, actionable, and critical messages have no automatic timer. ToastItem renders state and emits interaction intent rather than owning competing timers.
-5. Unmount / navigation: If the ToastProvider unmounts (e.g. full app teardown), it clears remaining toasts and timers to avoid leaks.
-
-| Signal | Value | Interpretation |
-| --- | --- | --- |
-| State ownership | Global store | All toasts live in one place and are easy to observe. |
-| Rendering strategy | Portal overlay | Toasts render above the main layout without breaking it. |
-| Developer experience | toast.*() API | Callers don’t care about implementation details, only about a simple function. |
-
-### Toast lifecycle ownership
-
-A good toast architecture gives you one global place for state and rendering, plus a tiny, ergonomic API for the rest of the app. If you can explain that clearly with 3–4 boxes, you’re already giving a strong senior signal.
-
-### Worked example: save success followed by an actionable conflict
-
-A profile save emits a low-risk success status, then a later edit conflict needs a persistent Review action. The system must avoid announcement overlap and must not let a generic duration delete the only path to resolve the conflict.
-
-### Scenario walkthrough
-
-| Event | Store change | Visible UI | Invariant |
-| --- | --- | --- | --- |
-| Save succeeds | Insert a polite timed status with one dedupe key. | Profile saved appears without moving focus. | Noncritical feedback may be timed. |
-| Duplicate success arrives | Increment or replace the existing dedupe record. | The stack does not repeat the same sentence. | Deduplication preserves meaning. |
-| Conflict arrives | Insert a persistent action toast with command identity. | Review remains until resolved or safely dismissed. | Actions do not expire invisibly. |
-| Page is hidden | Pause remaining timed lifetime and suppress repeat announcement. | Returning users still have time to read. | Timing reflects actual opportunity. |
-
-# Tradeoffs
-
-## Data
-
-Model durable toast content separately from lifecycle runtime so the store can reconcile update, action, dismissal, and teardown without serializing browser handles.
-
----
-
-Use a ToastRecord for serializable content, ToastState for visible and queued records, and ToastRuntime for deadlines and pause reasons. Provider configuration supplies placement, timing, and overflow policy without becoming part of each caller's command.
-
-State-model checks:
-- Toast identity, variant, placement, lifetime, urgency, and action are explicit.
-- Persistent and timed lifetimes are mutually exclusive.
-- Runtime deadline and pause reasons stay outside the durable record.
-- Action state distinguishes idle, pending, and failed recovery.
-
----
+The store record contains semantic content. Runtime contains browser-only cleanup state. Announcement history is a third record owned by the announcer, not a boolean on each visual toast.
 
 ```typescript
 type ToastVariant = 'success' | 'error' | 'warning' | 'info';
@@ -230,7 +133,6 @@ interface ToastRecord {
   placement: ToastPlacement;
   lifetime: ToastLifetime;
   urgency: 'polite' | 'urgent';
-  announced: boolean;
   action?: {
     label: string;
     commandId: string;
@@ -239,10 +141,14 @@ interface ToastRecord {
 }
 
 interface ToastRuntime {
-  remainingMs?: number;
+  toastId: string;
   deadline?: number;
   timerHandle?: ReturnType<typeof setTimeout>;
-  pausedBy: Set<'focus' | 'hover' | 'page-hidden' | 'preference'>;
+  status: 'scheduled' | 'removing' | 'disposed';
+}
+
+interface AnnouncementState {
+  emittedIds: Set<string>;
 }
 
 interface ToastState {
@@ -254,75 +160,11 @@ interface ToastState {
 }
 ```
 
-### Core entities
+Each identity has one purpose. `id` names a single lifecycle. `dedupeKey` joins repeated reports of the same outcome. `commandId` names an action invocation. `emittedIds` prevents repeat speech. Combining these identities would make update, cleanup, and accessibility behavior depend on accidental message equality.
 
-| Entity | Fields (example) | Design rationale |
-| --- | --- | --- |
-| ToastRecord | id, variant, message, placement, lifetime, urgency, action? | Each toast explicitly models persistence or timing, one announcement state, and a command identity for an optional action. |
-| ToastState | toasts[], defaultPlacement, defaultDurationMs, maxVisible | The global slice keeps bounded visible records, queued records, and resolved provider defaults. |
-| ToastRuntime | remainingMs, deadline, timerHandle, pausedBy | The lifecycle coordinator owns runtime handles and pause accounting outside serializable store data. |
+## Public interface
 
-### Required model fields
-
-- A unique id per toast so you can remove it reliably.
-- A variant field for visual style and icon (success/error/etc.).
-- A clear message and optional description.
-- A resolved placement field to control where it appears.
-- A persistent or timed lifetime; actionable and critical items resolve to persistent.
-- A status role by default and an alert role only for genuine urgency.
-- An optional action object for interactive toasts.
-
-### Keep outside the data model
-
-- Raw DOM nodes or refs inside the toast object.
-- Actual timer/timeout handles in the model (keep them alongside the component logic or in a separate map).
-- Random UI-only flags that can be derived (e.g. computing "isOld" from createdAt instead of storing another boolean).
-- Mixing unrelated global UI state (like modals) into ToastState.
-- Overcomplicating the schema for a simple notification use case.
-
-### How toast data typically changes over time
-
-1. Add toast: A caller triggers toast.success("Saved"). The API creates a ToastRecord with a unique ID and resolved semantic options, then inserts it into the visible stack or queue according to provider policy.
-2. Start lifetime: A lifecycle coordinator starts a countdown only for a timed status. It tracks remaining time and pause reasons outside the durable toast record so focus, hover, page visibility, and user preference can pause without creating conflicting timers.
-3. Manual or auto dismiss: A safe manual dismissal or an exhausted timed lifetime emits one remove command. Cleanup clears runtime handles before the toast leaves state; persistent actionable and critical messages do not disappear because a timer fired.
-4. Optional action: Invoking an action moves it to pending. Success dismisses or updates it according to policy; failure keeps the toast persistent, exposes retry, and restores focus to meaningful recovery text.
-
-| Signal | Value | Interpretation |
-| --- | --- | --- |
-| Must-have entities | ToastRecord + runtime | If you clearly define these two, the rest of the design becomes much easier to explain. |
-| Key idea | Model behavior as data | Variant, placement, lifetime, urgency, and announcement state are explicit data. |
-| Good signal | Small, readable types | If another engineer can understand your model from a short interface snippet, you’re on the right track. |
-
-### State checkpoint
-
-A solid toast data model treats each toast as a small, self-contained piece of state with clear fields for variant, placement, lifetime, and accessibility. This keeps the rendering logic simple and makes the global store easy to reason about.
-
-### Toast state ownership
-
-Keep durable toast content separate from runtime timer handles. Toast state contains message, variant, urgency, lifetime, dedupe key, announcement state, and optional action command. Runtime state contains deadline and pause reasons. This separation prevents serialization of browser handles and makes pause, update, dismissal, and teardown deterministic.
-
-### Client model
-
-| Record | Key fields | Owner |
-| --- | --- | --- |
-| Toast | content, urgency, lifetime, action | Global UI store |
-| ToastRuntime | deadline, pause reasons, timer handle | Lifecycle coordinator |
-| OverflowPolicy | maxVisible, queue, collapse rules | Provider config |
-| AnnouncementState | announced, urgency, group key | Accessibility coordinator |
-
-## Interfaces
-
----
-
-Expose a compact API: create a semantic toast, update its content or behavior, dismiss one ID, or dismiss every toast in this provider. The provider owns normalization, lifecycle, and rendering; callers never receive timer or DOM handles.
-
-Contract checks:
-- Create calls return a stable toast ID.
-- Update can change message, description, lifetime, urgency, and action state.
-- Dismiss-all is scoped to the provider represented by this API instance.
-- DOM nodes, timer handles, and announcement internals remain private.
-
----
+Feature code supplies semantic options. It must not select raw ARIA roles, create a timeout, query the portal, or know whether its record is visible or queued.
 
 ```typescript
 type ToastLifetimeInput =
@@ -361,193 +203,83 @@ interface ToastProviderProps {
   timedDurationMs?: number;
   maxVisible?: number;
 }
-
 ```
 
-### Core interfaces
+Returning the ID lets a caller update progress or dismiss one known result without searching by sentence text. `persistent` is an explicit lifetime rather than a magic duration. Provider configuration sets one viewport policy. An action implies persistent lifetime during normalization; if the action fails, the same record moves to failed state and exposes retry.
 
-| Interface | Shape (example) | Design rationale |
-| --- | --- | --- |
-| ToastOptions | { description?, placement?, lifetime?, urgency?, dedupeKey?, action? } | ToastOptions makes persistence and urgency explicit. Supplying an action resolves to persistent lifetime unless the caller provides a separately governed action expiry. |
-| ToastApi | create helpers, update(id, patch), dismiss(id), dismissAll() | Each create call returns a stable ID. Update accepts message as well as option fields, and dismissAll applies to the current provider. |
-| ToastProviderProps | { placement?, timedDurationMs?, maxVisible?, children } | The provider resolves placement, a measured default timed lifetime, and the visible-stack limit. |
-| Internal store methods | add(toastPartial), remove(id), clear(), subscribe(listener) | "Internally the store exposes methods like add, remove, clear, and subscribe. The toast API calls add, and the provider subscribes to render changes." |
-| ToastContainer props (internal) | { toasts, placement } | "ToastContainer is given toasts plus a placement and is responsible for stacking them and positioning them correctly in the viewport." |
+## Scenario walkthrough
 
-### Required public behavior
+When profile save succeeds, the caller emits a polite timed command with a stable dedupe key. The store assigns an ID and admits it. The lifecycle coordinator creates one runtime entry, the viewport displays Profile saved, and the announcer emits that ID once. A repeated report with the same safe key updates or collapses the existing result rather than adding a second sentence.
 
-- Simple helper functions: toast.success, toast.error, toast.warning, toast.info.
-- An optional options object (ToastOptions) for per-toast overrides.
-- A way to dismiss a specific toast (toast.dismiss(id)) and all toasts (toast.dismissAll()).
-- Provider-level props for global defaults (placement, duration, maxVisible).
-- A clear contract that toast.*() can be called from anywhere that has access to the API (not tied to one component).
+An edit conflict then emits a persistent Review record. It receives no expiry handle. Selecting Review changes its action state to pending and prevents repeated activation. Failure keeps the record visible with retry and useful context. Success updates or removes the same ID, while the profile domain remains authoritative about whether the conflict was resolved.
 
-### Keep outside the public API
+If manual dismiss and expiry race for the success record, both submit `remove(id, cause)`. The first accepted request moves runtime to removing, clears its handle, removes the store record, and promotes queued work. The second request sees disposed state or a missing ID and returns unchanged. This is the central invariant, not an edge detail delegated to each row.
 
-- Exposing low-level details like setTimeout handles or DOM nodes.
-- Requiring callers to pass full Toast objects instead of a simple message + options.
-- Needing the caller to manually manage IDs or stacking order.
-- Having separate, unrelated APIs for each variant with different shapes.
-- Needing UI components to know about the internal store implementation.
+## Removal transaction
 
-### Call flow
+Treat removal as a small transaction keyed by toast ID. Read the runtime state, reject a terminal or unknown ID, mark the accepted ID as removing, dispose its browser handle, update visible and queued lists, then publish the next snapshot. Publishing after disposal prevents a rerender from observing a removed record with a live callback. Promotion also happens inside this transaction, so two racing signals cannot admit two queued records into one slot. `dismissAll` applies the same operation to a captured set of IDs rather than clearing arrays first and leaving runtime behind.
 
-1. Caller triggers a toast: A component or service calls toast.success('Profile saved', { lifetime: { kind: 'timed' } }).
-2. API builds a toast: The helper creates a ToastRecord with a new ID and resolves placement, urgency, and lifetime from explicit options plus provider policy.
-3. Store update: The helper calls into the toast store’s add() method. The store updates its toasts array and notifies subscribers.
-4. Provider re-renders: The ToastProvider, subscribed to the store, receives the new toasts list and re-renders the ToastContainer via a portal.
-5. Dismissal: When a timed status exhausts its remaining lifetime or the user safely closes a message, the lifecycle coordinator clears runtime resources and dispatches one removal. Actionable or critical messages remain until resolved or explicitly dismissed.
+The cause is useful evidence, not a second control path. Record whether removal came from dismiss, expiry, action success, replacement, or provider teardown, but keep cleanup identical. This makes telemetry explain behavior without allowing metrics code to influence lifecycle semantics.
 
-| Signal | Value | Interpretation |
-| --- | --- | --- |
-| API surface | Tiny & focused | Most apps only need toast.*() helpers and one provider. |
-| Data flow | Down via props, up via actions | Callers send events in; the provider reads state and renders UI. |
-| Strong signal | Clear contracts | You can explain what each function takes and returns in one sentence. |
+# Tradeoffs
 
-### Contract checkpoint
+## Global store versus component ownership
 
-A good toast API feels effortless to use: one import, one provider, and a few tiny helpers. If another engineer can start using your system just by seeing toast.success(message, options?), you’ve designed the interface well.
+A global store adds one shared dependency, but it matches the requirement that a service can trigger feedback and that one viewport controls visual capacity. Component-local state would be simpler for a single form, yet it would duplicate containers, lose feedback when that component disappears, and make cross-feature ordering undefined. Keep the public helper thin so the store remains replaceable.
 
-### UI-facing contract
+## Ordered queue versus rendering every command
 
-The API returns a toast ID and supports update and dismiss. Callers choose semantic urgency and lifetime rather than raw ARIA roles by default. An action implies persistent lifetime unless a separately visible business deadline exists. The provider converts polite status to role status and reserves alert for genuinely urgent information.
+Rendering every command is direct but can cover content and overwhelm assistive technology during a burst. A three-record viewport plus an ordered queue keeps layout bounded while preserving distinct outcomes. Dedupe is opt-in through a meaningful key. Matching only by message text is unsafe because equal wording can refer to different entities or actions.
 
-### Command-to-announcement path
+## Explicit lifetime versus one default duration
 
-1. Normalize: Resolve defaults, persistence, urgency, and a safe dedupe key.
-2. Insert: Apply overflow policy without hiding a distinct critical outcome.
-3. Announce: Group or serialize meaningful status changes so assistive technology is not flooded.
-4. Dispose: Clear timer and observer resources before removing the record.
+A universal duration is easy to configure but wrong for Review, Undo, critical errors, and retry. A lifetime union forces the caller or normalization policy to choose timed or persistent behavior. Low-risk statuses can still inherit one product default. The distinction remains inspectable in tests and avoids special values such as zero meaning forever.
+
+## Announcement events versus DOM observation
+
+Watching inserted DOM nodes requires little application state, but presentation churn can look like new information. Explicit announcement identity needs a small emitted-ID set, yet it makes one-time delivery testable and decouples screen-reader output from animation, position, and framework rendering. The announcer can also serialize meaningful updates without stealing focus.
+
+## Expert stretch
+
+Cover route scope, pause and resume, and measured policies for fair overflow. Define whether navigation clears route-scoped records while application-scoped outcomes survive. If research shows users need more reading time, store remaining lifetime and resume from it instead of resetting a duration. If queue telemetry shows starvation, compare admission policies using observed urgency, age, and recovery value rather than inventing an unmeasured priority rule. These are extensions after the baseline ownership and race are correct.
 
 # Failure Modes
 
-Cover performance (many toasts, frequent updates), timers and cleanup, accessibility details, z-index issues, and how you’d keep the UX sane on different devices.
+**Dismiss and expiry arrive together.** Both signals enter the same removal gate. The first transition changes state and disposes the timeout. The late signal is a no-op. Tests must fire the two callbacks in both orders and assert one store removal, one disposal, and one queue promotion. A timer inside every `ToastItem` would make this invariant depend on render timing and is therefore rejected.
 
----
+**A burst exceeds visual capacity.** The store keeps three records visible and appends additional distinct records to the ordered queue. Removing a visible record admits the next item once. The viewport never slices an independent array and never silently loses the remainder. A safe dedupe key may collapse repeated reports, but unrelated outcomes and recovery actions stay distinct.
 
-Start with a global store, portal, one lifecycle coordinator, and semantic announcements. Measure burst size, action completion, animation cost, and reading opportunity before tuning visible limits, motion, or timed lifetimes.
+**The action command fails.** Review or Undo remains persistent while pending. Repeat activation is disabled for that command ID. Failure updates the same record with retry and context; success updates or removes it. The toast does not claim success based only on a click, and a generic status duration cannot erase the recovery path.
 
-Toast quality checks:
-- Optimization begins from a correct lifecycle and recovery model.
-- Burst handling must not hide distinct actionable or critical outcomes.
-- Timer, announcement, and animation behavior are measured separately.
-- Desktop, mobile, reduced-motion, keyboard, and screen-reader paths remain equivalent.
+**The viewport unmounts.** Teardown unsubscribes the viewport and disposes lifecycle resources before a callback can publish to a destroyed subscriber. Store and coordinator ownership make that work independent of child row unmount order. Repeated disposal is safe. A later command requires a mounted application provider to become visible.
 
----
+**Visual updates repeat speech.** The announcer checks `emittedIds` before writing its live region. Changing placement, responsive width, action state, or list order does not re-emit the original sentence. A meaningfully new failure can use a new announcement event. Ordinary statuses remain polite, while alert is reserved for information that warrants interruption.
 
-### Baseline safeguards
+**Keyboard or narrow layout hides recovery.** Toast appearance never moves focus. Action and close controls have descriptive labels, visible focus treatment, and predictable order. Long localized text wraps, the viewport uses available inline width, and controls remain reachable without horizontal clipping. Reduced-motion settings remove decorative transitions without changing lifecycle semantics.
 
-- Limit the maximum number of visible toasts (e.g. 3–5) and remove or queue older ones.
-- Ensure timers are always cleared on unmount or when toasts are removed.
-- Use timing only for low-risk status messages and pause remaining time for focus, hover, page hiding, or applicable user timing preferences.
-- Debounce or collapse identical messages (e.g. repeated "Network error" toasts).
-- Make manual close cancel the active timer before removing the toast.
-- Use CSS transitions for enter/exit animations instead of heavy JS-based animation loops.
-
-### Accessibility and UX deep-dive points
-
-- Use status and polite announcement by default; reserve alert for genuinely urgent information.
-- Announce only the important text to screen readers, not decorative content.
-- For interactive toasts with buttons, ensure focus is visible and keyboard navigation works.
-- Respect reduced motion preferences by disabling or simplifying animations.
-- On mobile, consider full-width toasts at top/bottom with larger touch targets.
-
-### Explicit edge cases
-
-- Many toasts fired quickly: cap visible toasts, group only safely equivalent statuses, and queue distinct actionable or critical outcomes.
-- Duplicate messages: dedupe, collapse counts, or let callers provide stable ids.
-- Max visible toasts: keep layout bounded and avoid covering primary UI.
-- Overflow policy: low-risk duplicate statuses may collapse, while distinct actionable or critical outcomes stay persistent and recoverable.
-- Persistent actions and adjustable timing: users must have enough time to read, understand, and operate every message.
-- Manual close cancels timer: no timeout should fire after the toast is gone.
-- Route changes: choose whether to keep contextual toasts or clear them on navigation.
-- Provider unmount: clear subscriptions, timers, and pending queues.
-- Reduced motion: disable or simplify enter/exit animations.
-- Screen reader announcement overload: avoid spamming live regions during bursts.
-- Z-index conflicts with modals: define the toast layer relative to dialogs and popovers.
-- Mobile placement/full-width layout: avoid tiny corner toasts and use larger touch targets.
-
-### Deep-dive topics you can offer
-
-| Topic | Angle | Decision rationale |
-| --- | --- | --- |
-| Z-index and layering | Toasts vs modals vs dropdowns | Reserve an overlay layer for toasts, then define its relationship to dialogs and popovers so transient feedback cannot unexpectedly cover a blocking interaction. |
-| Handling toast storms | Too many notifications | Cap the visible stack. Collapse only messages with a safe dedupe key; queue distinct outcomes so overflow never deletes the sole recovery action. |
-| Route changes | Navigation & cleanup | Classify each toast as route-scoped or application-scoped. Navigation clears route-scoped entries and the lifetime coordinator cancels every associated timer. |
-| Performance on low-end devices | Avoid jank | Keep each item inexpensive to lay out and paint. If profiling shows jank, simplify shadows, filters, and motion before adding scheduling complexity. |
-| Action toasts (Undo) | State consistency | Keep recovery actions visible until completion or explicit dismissal. Pause optional timers during interaction and expose action progress and failure through the same lifecycle coordinator. |
-
-### Toast optimization rollout
-
-1. Ship a clean baseline: Global store, top-level rendering, bounded stacking, polite status announcements, persistent action messages, optional timed low-risk feedback, and complete cleanup.
-2. Observe usage: See how many toasts are typically active, which variants are used most, and whether users trigger bursts of notifications.
-3. Fix obvious pain points: Cap visible toasts, pause remaining time for every applicable reason, keep actionable or critical messages persistent, and collapse noisy duplicates without hiding distinct outcomes.
-4. Polish accessibility & responsiveness: Verify keyboard navigation, screen reader announcements, mobile layout, and behavior under reduced-motion settings.
-5. Hardening & edge cases: Test route changes, app teardown, error boundaries, and ensure there are no timer leaks or orphaned toasts in weird flows.
-
-| Signal | Value | Interpretation |
-| --- | --- | --- |
-| Biggest UX risk | Toast overload | Too many notifications quickly become background noise. |
-| Biggest tech risk | Timer leaks | Forgetting to clear timeouts on unmount can cause bugs and memory issues. |
-| Strong senior signal | Measure → then tune | You talk about real usage, profiling and trade-offs instead of random micro-optimizations. |
-
-### Transient-feedback invariant
-
-A great toast system isn’t just "it shows notifications". It behaves well when spammed, respects accessibility and motion preferences, cleans up timers reliably, and stays readable and unobtrusive on both desktop and mobile.
-
-### Toast lifecycle failures
-
-### Failure modes
-
-| Failure | Response | Invariant |
-| --- | --- | --- |
-| Burst of identical errors | Collapse by safe key and retain the latest useful context. | The screen is not covered by duplicates. |
-| Action command fails | Keep the toast persistent and show retryable state. | User intent remains recoverable. |
-| Route changes | Remove route-scoped messages and preserve global outcomes by policy. | Stale context does not linger. |
-| Provider unmounts | Cancel deadlines and subscriptions before teardown. | No orphan callback mutates destroyed state. |
-
-### Accessibility behavior
-
-Use role status and polite announcements for ordinary feedback, with role alert reserved for urgent information that truly warrants interruption. A toast appearing never steals focus. Interactive controls participate in normal tab order, display a strong focus indicator, and remain long enough to operate. Timing pauses for focus, hover, page hiding, and applicable user preferences.
-
-### Rollout and measurement
-
-Instrument overflow, duplicate collapse, manual dismissal, action completion, timer pause, and announcement rate. Canary persistent-action behavior before changing default lifetimes, and keep an inline-error fallback for workflows where a toast alone cannot explain recovery.
-
-### Technical references
-
-- [W3C alert pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alert/) — Appropriate use and focus behavior for alert messages.
-- [WCAG timing adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html) — User control requirements for time limits.
+The dismiss-timeout diagram should show both signals converging on one terminal transition. Its text fallback states that dismiss can mark the ID removing and clear the handle before a late timeout, or timeout can win before a late dismiss; either late signal observes terminal state and does nothing.
 
 # Metrics
 
-- Main concept: Global toast layer. One place in the app renders all toasts.
-- Key UX goal: Non-blocking feedback. Users keep working while seeing notifications.
-- Key technical concern: Timers & cleanup. No dangling intervals/timeouts when toasts disappear or routes change.
-- State ownership: Global store. All toasts live in one place and are easy to observe.
-- Rendering strategy: Portal overlay. Toasts render above the main layout without breaking it.
-- Developer experience: toast.*() API. Callers don’t care about implementation details, only about a simple function.
-- Must-have entities: ToastRecord + runtime. If you clearly define these two, the rest of the design becomes much easier to explain.
-- Key idea: Model behavior as data. Variant, placement, lifetime, urgency, and announcement state are explicit data.
-- Good signal: Small, readable types. If another engineer can understand your model from a short interface snippet, you’re on the right track.
-- API surface: Tiny & focused. Most apps only need toast.*() helpers and one provider.
-- Data flow: Down via props, up via actions. Callers send events in; the provider reads state and renders UI.
-- Strong signal: Clear contracts. You can explain what each function takes and returns in one sentence.
-- Biggest UX risk: Toast overload. Too many notifications quickly become background noise.
-- Biggest tech risk: Timer leaks. Forgetting to clear timeouts on unmount can cause bugs and memory issues.
-- Strong senior signal: Measure → then tune. You talk about real usage, profiling and trade-offs instead of random micro-optimizations.
+Begin with correctness signals tied to the model rather than arbitrary performance targets.
+
+- Record removal count and runtime disposal count by toast ID in automated tests; each lifecycle should finish once.
+- Observe visible count and queue depth during bursts; the rendered count respects provider capacity while queued distinct outcomes remain accounted for.
+- Track duplicate collapse by dedupe key and sample false joins during review; message text alone should never be the joining rule.
+- Track action start, success, failure, retry, and manual dismissal so product teams can see whether a transient surface is hiding unresolved work.
+- Count announcement events by ID in accessibility tests and compare them with eligible semantic events, not React render count.
+- Exercise localized long text and keyboard controls at narrow and wide viewports, recording clipping, overlap, and unreachable-action regressions.
+
+Runtime profiling should concentrate on burst rendering, layout, paint, and subscription churn on representative devices. If measurement shows jank, simplify shadows and motion before adding scheduling machinery. Page-level or inline error presentation remains the recovery fallback when a toast cannot carry enough context.
+
+For manual review, perform the profile scenario with keyboard only, then repeat it with a screen reader. Trigger one save result twice, open the conflict action, force its failure, resize to a narrow viewport, and complete the action. Reviewers should hear the save once, retain access to retry, see no clipped control, and find focus in a meaningful place after the action record leaves. This short script connects the metrics to behavior a candidate can explain.
 
 # Rollout
 
-### Toast optimization rollout
+Ship the baseline behind the existing provider boundary: typed commands, one store, a three-record viewport, an ordered overflow queue, explicit timed or persistent lifetime, one lifecycle coordinator, and a stable announcer. Keep Review and Undo persistent from the first release rather than migrating away from a risky duration later.
 
-1. Ship a clean baseline: Global store, top-level rendering, bounded stacking, polite status announcements, persistent action messages, optional timed low-risk feedback, and complete cleanup.
-2. Observe usage: See how many toasts are typically active, which variants are used most, and whether users trigger bursts of notifications.
-3. Fix obvious pain points: Cap visible toasts, pause remaining time for every applicable reason, keep actionable or critical messages persistent, and collapse noisy duplicates without hiding distinct outcomes.
-4. Polish accessibility & responsiveness: Verify keyboard navigation, screen reader announcements, mobile layout, and behavior under reduced-motion settings.
-5. Hardening & edge cases: Test route changes, app teardown, error boundaries, and ensure there are no timer leaks or orphaned toasts in weird flows.
+Before broad adoption, add deterministic tests for both dismiss-expiry orders, four-command admission, safe duplicate collapse, action failure and retry, teardown disposal, one-time announcements, keyboard operation, reduced motion, and narrow localized layouts. Integrate two low-risk producers first, such as profile save and settings save, so command and dedupe semantics can be reviewed before every feature adopts the helper.
 
-### Technical references
+Instrument queue depth, removal cause, action outcomes, duplicate collapse, and announcement emission. Review those signals by viewport class and with assistive-technology test runs. Canary changes to provider defaults rather than changing every caller at once. Document that toasts are feedback, not authoritative recovery storage, and require an inline or page-level error whenever the user needs durable context to complete a task.
 
-- [W3C alert pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alert/) — Appropriate use and focus behavior for alert messages.
-- [WCAG timing adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html) — User control requirements for time limits.
+After the baseline proves stable, teams can evaluate the Expert stretch from observed behavior. The acceptance bar remains simple: feature code describes feedback, each piece of runtime has one owner, late signals cannot change completed state, persistent actions remain usable, and screen-reader output reflects semantic events rather than render churn.

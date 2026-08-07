@@ -60,7 +60,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "Key modules:\n- PageLoader (pagination + prefetch)\n- StreamBuffer (batch realtime items)\n- Merge/Dedupe (avoid duplicates, keep order)\n- FeedStore (normalized state)\n- VirtualizedList (render window only)\n- MediaLoader (lazy + prefetch)"
+              "text": "Key modules:\n- PageLoader (pagination + prefetch)\n- StreamBuffer (batch realtime items)\n- Merge/Dedupe (avoid duplicates, keep order)\n- FeedStore (normalized state)\n- BoundedListProjection (window only when measurement justifies it)\n- MediaLoader (lazy + prefetch)"
             }
           ]
         },

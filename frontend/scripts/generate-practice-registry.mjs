@@ -189,7 +189,9 @@ function buildQuestionEntries() {
         tags: safeArray(item.tags).filter((tag) => typeof tag === 'string'),
         access: normalizeAccess(item.access),
         estimatedMinutes:
-          typeof item.estimatedMinutes === 'number'
+          typeof meta?.practice?.timeboxMinutes === 'number'
+            ? meta.practice.timeboxMinutes
+            : typeof item.estimatedMinutes === 'number'
             ? item.estimatedMinutes
             : QUESTION_DEFAULT_MINUTES['system-design'],
         updatedAt: resolveRegistryDate({

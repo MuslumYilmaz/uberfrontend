@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">Cancellation, late result, and rollback timeline</title>
+  <desc id="desc">A cancellation request races with a late authoritative mixed result. One item succeeds and another fails. The interface records both and offers rollback only for the confirmed reversible success.</desc>
+  <rect width="960" height="420" rx="24" fill="#f8fafc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#172033">Cancel intent is not rollback confirmation</text>
+  <line x1="80" y1="202" x2="880" y2="202" stroke="#9aa7bc" stroke-width="3"/>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <circle cx="136" cy="202" r="22" fill="#e8efff" stroke="#315ee8" stroke-width="2"/>
+    <circle cx="354" cy="202" r="22" fill="#fff7e8" stroke="#c47a18" stroke-width="2"/>
+    <circle cx="582" cy="202" r="22" fill="#f3edff" stroke="#7950b8" stroke-width="2"/>
+    <circle cx="816" cy="202" r="22" fill="#effaf4" stroke="#268455" stroke-width="2"/>
+    <text x="136" y="207" font-size="14" font-weight="700" fill="#172033">1</text>
+    <text x="354" y="207" font-size="14" font-weight="700" fill="#172033">2</text>
+    <text x="582" y="207" font-size="14" font-weight="700" fill="#172033">3</text>
+    <text x="816" y="207" font-size="14" font-weight="700" fill="#172033">4</text>
+    <text x="136" y="140" font-size="16" font-weight="700" fill="#172033">execution active</text>
+    <text x="136" y="166" font-size="14" fill="#526078">items A + B</text>
+    <text x="354" y="250" font-size="16" font-weight="700" fill="#172033">cancel requested</text>
+    <text x="354" y="276" font-size="14" fill="#526078">pending intent</text>
+    <text x="582" y="140" font-size="16" font-weight="700" fill="#172033">late mixed result</text>
+    <text x="582" y="166" font-size="14" fill="#526078">A succeeded · B failed</text>
+    <text x="816" y="250" font-size="16" font-weight="700" fill="#172033">recovery view</text>
+    <text x="816" y="276" font-size="14" fill="#526078">rollback only verified A</text>
+  </g>
+  <rect x="198" y="326" width="564" height="52" rx="14" fill="#ffffff" stroke="#315ee8" stroke-width="2"/>
+  <text x="480" y="358" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#172033">Audit preserves request, cancellation intent, authoritative item outcomes, and any compensating command.</text>
+</svg>

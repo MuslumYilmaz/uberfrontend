@@ -309,6 +309,7 @@ export interface CreateInterviewSessionRequest {
   track: InterviewTrack;
   viewportWidth: number;
   format?: InterviewFormat;
+  systemDesignSourceContentId?: string;
 }
 
 export interface SaveInterviewAnswerRequest {

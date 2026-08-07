@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
@@ -14,6 +15,7 @@ describe('SystemDesignDetailComponent', () => {
   let bugReport: jasmine.SpyObj<BugReportService>;
   let seo: jasmine.SpyObj<SeoService>;
   let questionService: jasmine.SpyObj<QuestionService>;
+  let analytics: jasmine.SpyObj<AnalyticsService>;
   let authUser: any;
 
   beforeEach(async () => {
@@ -25,6 +27,7 @@ describe('SystemDesignDetailComponent', () => {
     );
     questionService.loadSystemDesign.and.returnValue(of([]));
     questionService.loadSystemDesignQuestion.and.returnValue(of(null));
+    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     seo.buildCanonicalUrl.and.callFake((value: string) => value);
     authUser = null;
 
@@ -35,7 +38,7 @@ describe('SystemDesignDetailComponent', () => {
         { provide: SeoService, useValue: seo },
         { provide: AuthService, useValue: { user: () => authUser, isLoggedIn: () => !!authUser } },
         { provide: OnboardingService, useValue: { getProfile: () => null } },
-        { provide: AnalyticsService, useValue: { track: () => { } } },
+        { provide: AnalyticsService, useValue: analytics },
         { provide: BugReportService, useValue: bugReport },
       ],
     }).compileComponents();
@@ -150,7 +153,8 @@ describe('SystemDesignDetailComponent', () => {
     expect(article?.dateModified).toBe('2026-07-27T00:00:00.000Z');
     expect(article?.isAccessibleForFree).toBeTrue();
     expect(learningResource?.isAccessibleForFree).toBeTrue();
-    expect(learningResource?.educationalLevel).toBe('hard');
+    expect(learningResource?.educationalLevel).toBe('senior');
+    expect(learningResource?.timeRequired).toBe('PT20M');
     expect(typeNames).toContain('BreadcrumbList');
     expect(typeNames).toContain('Article');
     expect(typeNames).toContain('LearningResource');
@@ -301,6 +305,85 @@ describe('SystemDesignDetailComponent', () => {
     expect(tableScroller?.getAttribute('aria-label')).toBe('Mailbox states table');
   });
 
+  it('renders the evaluation spine and keeps the three decision hints closed for V2 prompts', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    component.q.set({
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      access: 'free',
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'junior',
+        timeboxMinutes: 10,
+        candidatePrompt: 'Design a global toast system with a single cleanup path.',
+        constraints: ['Only three are visible.', 'Speech does not repeat.'],
+        expectedDecisions: ['Choose the owner.', 'Resolve timer races.', 'Separate announcements.'],
+        prerequisites: ['Component state', 'ARIA live regions'],
+        coreSkills: ['State ownership', 'Accessibility'],
+        evaluationSpine: {
+          mustCover: ['One owner orders records.', 'Dismiss and timeout share cleanup.'],
+          strongSignals: ['Actions persist.', 'Announcement identity stays separate.'],
+          expertStretch: 'Route scope and pause behavior.',
+          redFlag: 'Every component owns a timer.',
+        },
+      },
+      radio: [{ key: 'R', title: 'Requirements', blocks: [] }],
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const hint = host.querySelector('.sd-decision-hint') as HTMLDetailsElement | null;
+    expect(host.textContent || '').toContain('Must cover');
+    expect(host.textContent || '').toContain('Stretch if time');
+    expect(host.textContent || '').toContain('Every component owns a timer.');
+    expect(hint).not.toBeNull();
+    expect(hint?.open).toBeFalse();
+    expect(host.querySelector('.sd-try-first__decisions')).toBeNull();
+  });
+
+  it('normalizes divider runs and only strips a matching source step number without mutating content', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const sourceBlocks: any[] = [
+      { type: 'divider' },
+      {
+        type: 'steps',
+        title: 'Answer path',
+        steps: [
+          { title: '1. Frame the race', text: 'Start with one event.' },
+          { title: '3) Keep the mismatch', text: 'This prefix carries source meaning.' },
+        ],
+      },
+      { type: 'divider' },
+      { type: 'divider' },
+      {
+        type: 'columns',
+        columns: [{ blocks: [{ type: 'divider' }, { type: 'text', text: 'Nested content.' }, { type: 'divider' }] }],
+      },
+      { type: 'divider' },
+    ];
+    component.q.set({
+      id: 'renderer-normalization',
+      title: 'Renderer normalization',
+      description: 'Test display normalization.',
+      tags: [],
+      access: 'free',
+      radio: [{ key: 'R', title: 'Requirements', blocks: sourceBlocks }],
+    });
+    fixture.detectChanges();
+
+    const normalized = component.sections()[0].blocks;
+    expect(normalized.map((block) => block.type)).toEqual(['steps', 'divider', 'columns']);
+    expect((normalized[0] as any).steps.map((step: any) => step.title))
+      .toEqual(['Frame the race', '3) Keep the mismatch']);
+    expect((normalized[2] as any).columns[0].blocks.map((block: any) => block.type)).toEqual(['text']);
+    expect((sourceBlocks[1] as any).steps[0].title).toBe('1. Frame the race');
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('.sd-steps ol > li')).toHaveSize(2);
+  });
+
   it('keeps one canonical H1 when the mobile overview is open', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;
@@ -342,15 +425,18 @@ describe('SystemDesignDetailComponent', () => {
       title: 'Gmail-Style Offline Email Client Frontend System Design',
       description: 'Catalog description.',
       tags: ['email'],
-      type: 'system-design',
+      type: 'system-design' as const,
       access: 'free' as const,
-      difficulty: 'hard',
+      difficulty: 'hard' as const,
       contentLoadState: 'error' as const,
     };
     component.all = [indexEntry];
     component.q.set(indexEntry);
     questionService.loadSystemDesignQuestion.and.returnValue(of({
       id: indexEntry.id,
+      title: indexEntry.title,
+      description: indexEntry.description,
+      tags: indexEntry.tags,
       seo: { title: 'Offline email SEO title' },
       radio: [
         {
@@ -366,6 +452,7 @@ describe('SystemDesignDetailComponent', () => {
     expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="sd-content-error"]'))
       .not.toBeNull();
 
+    component.openSectionKeys.set(new Set(['R']));
     component.retrySystemDesignContent();
     fixture.detectChanges();
 
@@ -373,6 +460,7 @@ describe('SystemDesignDetailComponent', () => {
       .toHaveBeenCalledWith(indexEntry.id, { transferState: false });
     expect(component.contentLoadState()).toBe('ready');
     expect(component.sections().map((section) => section.key)).toEqual(['R']);
+    expect(component.isSectionOpen('R')).toBeTrue();
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Complete answer loaded.');
     expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="sd-content-error"]'))
       .toBeNull();
@@ -468,5 +556,182 @@ describe('SystemDesignDetailComponent', () => {
     expect(prepBridge).not.toBeNull();
     expect(mainText!.hasAttribute('data-nosnippet')).toBeFalse();
     expect(prepBridge!.hasAttribute('data-nosnippet')).toBeTrue();
+  });
+
+  it('keeps reference content in the DOM while native RADIO disclosures start closed and open independently', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    component.q.set({
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      access: 'free',
+      radio: [
+        { key: 'R', title: 'Requirements', blocks: [{ type: 'text', text: 'Requirements answer.' }] },
+        { key: 'A', title: 'Architecture', blocks: [{ type: 'text', text: 'Architecture answer.' }] },
+      ],
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const details = Array.from(host.querySelectorAll('details.sd-section')) as HTMLDetailsElement[];
+    expect(details.map((item) => item.open)).toEqual([false, false]);
+    expect(host.textContent).toContain('Requirements answer.');
+    expect(host.textContent).toContain('Architecture answer.');
+
+    component.onSectionToggle('R', { currentTarget: { open: true } } as unknown as Event);
+    component.onSectionToggle('A', { currentTarget: { open: true } } as unknown as Event);
+    fixture.detectChanges();
+    expect(details.map((item) => item.open)).toEqual([true, true]);
+  });
+
+  it('opens only Requirements through #answer and closes it when that history state is left', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate').and.resolveTo(true);
+    component.q.set({
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      access: 'free',
+      radio: [
+        { key: 'R', title: 'Requirements', blocks: [] },
+        { key: 'A', title: 'Architecture', blocks: [] },
+      ],
+    });
+    component.openSectionKeys.set(new Set(['A']));
+
+    component.openReferenceAnswer();
+
+    expect([...component.openSectionKeys()]).toEqual(['R']);
+    expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+      fragment: 'answer',
+      queryParamsHandling: 'preserve',
+    }));
+    expect(analytics.track).toHaveBeenCalledWith(
+      'system_design_reference_opened',
+      jasmine.objectContaining({ question_id: 'notification-toast-system' }),
+    );
+
+    (component as any).applyFragment(null);
+    expect(component.isSectionOpen('R')).toBeFalse();
+  });
+
+  it('opens recognized section fragments and ignores unknown fragments', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    component.q.set({
+      id: 'ai-chat-textarea-design',
+      title: 'Design an AI Chat Composer',
+      description: 'Design a safe chat composer.',
+      tags: ['ai'],
+      access: 'free',
+      radio: [
+        { key: 'R', title: 'Requirements', blocks: [] },
+        { key: 'D', title: 'Data', blocks: [] },
+      ],
+    });
+
+    (component as any).applyFragment('sec-D');
+    expect(component.isSectionOpen('D')).toBeTrue();
+    const before = [...component.openSectionKeys()];
+    (component as any).applyFragment('sec-unknown');
+    expect([...component.openSectionKeys()]).toEqual(before);
+  });
+
+  it('does not put premium RADIO answers or diagrams in the locked DOM', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    component.q.set({
+      id: 'ai-ux-considerations',
+      title: 'AI Proposal Review and Action Controls',
+      description: 'Premium prompt preview.',
+      tags: ['ai'],
+      access: 'premium',
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'mid',
+        timeboxMinutes: 15,
+        candidatePrompt: 'Design a public proposal review prompt.',
+        constraints: ['Approval is explicit.', 'Cancel is not rollback.'],
+        expectedDecisions: ['Separate proposal.', 'Bind approval.', 'Recover outcomes.'],
+        prerequisites: ['Versioned state', 'Async feedback'],
+        coreSkills: ['Authority', 'Recovery'],
+        guidedMock: true,
+        evaluationSpine: {
+          mustCover: ['Paid must-cover answer one.', 'Paid must-cover answer two.'],
+          strongSignals: ['Paid strong signal one.', 'Paid strong signal two.'],
+          expertStretch: 'Paid stretch answer.',
+          redFlag: 'Paid red flag answer.',
+        },
+      },
+      radio: [{
+        key: 'R',
+        title: 'Requirements',
+        blocks: [
+          { type: 'text', text: 'Paid reference answer.' },
+          {
+            type: 'image',
+            src: 'questions/system-design/ai-ux-considerations/proposal.svg',
+            alt: 'Proposal flow',
+          },
+        ],
+      }],
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(component.locked()).toBeTrue();
+    expect(host.querySelector('.sd-section')).toBeNull();
+    expect(host.querySelector('.sd-figure')).toBeNull();
+    expect(host.querySelector('[data-testid="sd-locked-prompt-preview"]')).not.toBeNull();
+    expect(host.textContent || '').toContain('Design a public proposal review prompt.');
+    expect(host.textContent || '').toContain('Cancel is not rollback.');
+    expect(host.textContent || '').not.toContain('Paid must-cover answer one.');
+    expect(host.textContent || '').not.toContain('Practice this exact case');
+    expect(host.textContent || '').not.toContain('Start reference answer');
+    expect(host.textContent).not.toContain('Paid reference answer.');
+  });
+
+  it('shows the exact-case CTA only when practice metadata enables guided mock', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    component.q.set({
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      access: 'free',
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'junior',
+        timeboxMinutes: 10,
+        candidatePrompt: 'Design a global toast system with explicit lifecycle behavior.',
+        constraints: ['Limit visible toasts.', 'Keep announcements accessible.'],
+        expectedDecisions: ['Queue ownership', 'Timer lifecycle', 'Announcement policy'],
+        prerequisites: ['DOM events', 'Accessible status messages'],
+        coreSkills: ['State machines', 'Accessibility'],
+        guidedMock: true,
+      },
+      radio: [{ key: 'R', title: 'Requirements', blocks: [] }],
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const guided = Array.from(host.querySelectorAll('a')).find((link) =>
+      link.textContent?.includes('Practice this exact case')
+    ) as HTMLAnchorElement | undefined;
+    expect(guided).toBeDefined();
+    expect(guided?.getAttribute('href')).toContain('sourceQuestionId=notification-toast-system');
+
+    component.q.update((question) => question ? {
+      ...question,
+      practice: { ...question.practice!, guidedMock: false },
+    } : question);
+    fixture.detectChanges();
+    expect(host.textContent).not.toContain('Practice this exact case');
   });
 });

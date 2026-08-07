@@ -194,10 +194,16 @@
       "text": "Ship polling and a compact job history before optional streaming. Test lost responses, duplicate retries, cancel-complete races, long queues, unsafe output, image failures, auth expiry, mobile overflow, and reduced motion. Observe duplicate-job prevention, terminal convergence, cancellation outcome, and recovery."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how AI Image Generation MVP (Two-Week Design) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "ai image generation mvp answer rubric",
+      "items": [
+        "Must — Create a generation through the canonical endpoint with a stored idempotency key.",
+        "Must — Treat the accepted job and its versioned status as the source of lifecycle truth.",
+        "Strong signal — Keep progress indeterminate unless the service reports trustworthy completed work.",
+        "Strong signal — Reconcile retry, cancel, and completion races with job versions.",
+        "Expert stretch — Bound history and media memory while preserving recoverable prompt snapshots.",
+        "Red flag — Inventing a percentage timer or issuing create retries with a new idempotency identity."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

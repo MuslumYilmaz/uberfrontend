@@ -42,7 +42,7 @@
     }
   ],
   "guideSlug": "architecture",
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Toast Notification System Frontend System Design",
     "description": "Design a global toast system with typed commands, stacking, deduplication, persistent actions, lifecycle ownership, and accessible announcements."
@@ -53,8 +53,49 @@
     "searchIntent": "Prepare a frontend system design answer for Design a Toast Notification System.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Design a Toast Notification System.",
     "uniqueAngle": "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
+  },
+  "contentSchemaVersion": 2,
+  "practice": {
+    "targetLevel": "junior",
+    "timeboxMinutes": 10,
+    "candidatePrompt": "Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where manual dismiss and an expiry timer fire together: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe.",
+    "constraints": [
+      "Show no more than three toasts.",
+      "Actions and critical messages persist.",
+      "Services can trigger global feedback.",
+      "Rerenders never repeat speech."
+    ],
+    "expectedDecisions": [
+      "Choose the owner of global commands, ordered records, and rendering.",
+      "Define one timer lifecycle that resolves dismiss-timeout races safely.",
+      "Separate visible stacking policy from accessible announcement policy."
+    ],
+    "prerequisites": [
+      "Component state",
+      "Timeout cleanup",
+      "ARIA live regions"
+    ],
+    "coreSkills": [
+      "State ownership",
+      "Lifecycle cleanup",
+      "Race handling",
+      "Accessibility"
+    ],
+    "guidedMock": true,
+    "evaluationSpine": {
+      "mustCover": [
+        "One global owner orders the visible stack and overflow queue.",
+        "Dismiss and timeout share cleanup; only the first changes state."
+      ],
+      "strongSignals": [
+        "Actionable messages persist; the viewport owns no timers.",
+        "Separate announcement identity prevents repeat speech after rerenders."
+      ],
+      "expertStretch": "Route scope, pause/resume, and measured fair overflow.",
+      "redFlag": "Each component owns timers or announces again on every render."
+    }
   }
 }

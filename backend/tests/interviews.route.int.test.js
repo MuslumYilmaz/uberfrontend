@@ -806,6 +806,81 @@ describe('Interview Mode API', () => {
     expect(await gamificationSnapshot(user._id)).toEqual(gamificationBefore);
   });
 
+  test('starts the exact guided case requested by source and includes it in idempotency', async () => {
+    const user = await createUser('system_design_exact_source', { premium: true });
+    const create = (sourceContentId) => request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'system-design-exact-source-0001')
+      .send({
+        format: 'system-design',
+        level: 'mid',
+        track: 'react',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+        systemDesignSourceContentId: sourceContentId,
+      });
+
+    const created = await create('ai-chat-textarea-design');
+    expect(created.status).toBe(201);
+    expect(created.body.session.systemDesign.scenario).toEqual(expect.objectContaining({
+      id: 'int-sd-ai-chat-composer-mid-v1',
+      level: 'mid',
+    }));
+
+    const replayed = await create('ai-chat-textarea-design');
+    expect(replayed.status).toBe(200);
+    expect(replayed.body.replayed).toBe(true);
+    expect(replayed.body.session.id).toBe(created.body.session.id);
+
+    const conflictingSource = await create('realtime-search-debounce-cache');
+    expect(conflictingSource.status).toBe(409);
+    expect(conflictingSource.body.code).toBe('INTERVIEW_IDEMPOTENCY_CONFLICT');
+  });
+
+  test('rejects invalid and level-mismatched guided sources before quota reservation', async () => {
+    const invalidUser = await createUser('system_design_invalid_source');
+    const invalid = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(invalidUser._id))
+      .set('Idempotency-Key', 'system-design-invalid-source-0001')
+      .send({
+        format: 'system-design',
+        level: 'mid',
+        track: 'core-web',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+        systemDesignSourceContentId: 'not-a-real-question',
+      });
+    expect(invalid.status).toBe(400);
+    expect(invalid.body.code).toBe('INTERVIEW_SYSTEM_DESIGN_SOURCE_INVALID');
+
+    const mismatchUser = await createUser('system_design_source_level_mismatch');
+    const mismatch = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(mismatchUser._id))
+      .set('Idempotency-Key', 'system-design-source-mismatch-0001')
+      .send({
+        format: 'system-design',
+        level: 'mid',
+        track: 'core-web',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+        systemDesignSourceContentId: 'notification-toast-system',
+      });
+    expect(mismatch.status).toBe(400);
+    expect(mismatch.body.code).toBe(
+      'INTERVIEW_SYSTEM_DESIGN_SOURCE_LEVEL_MISMATCH'
+    );
+
+    expect(await InterviewSession.countDocuments({
+      userId: { $in: [invalidUser._id, mismatchUser._id] },
+    })).toBe(0);
+    expect(await InterviewMonthlyQuota.countDocuments({
+      userId: { $in: [invalidUser._id, mismatchUser._id] },
+    })).toBe(0);
+  });
+
   test('runs a private-safe Guided System Design round with a separate free quota', async () => {
     const user = await createUser('system_design_flow');
     const gamificationBefore = await gamificationSnapshot(user._id);

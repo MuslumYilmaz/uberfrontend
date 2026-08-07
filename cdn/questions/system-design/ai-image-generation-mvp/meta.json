@@ -38,7 +38,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "AI Image Generation Frontend System Design",
     "description": "Design an AI image generation UI with accepted async jobs, indeterminate progress, idempotent retry and cancel, safe media rendering, and recovery."
@@ -60,7 +60,7 @@
     "searchIntent": "Prepare a frontend system design answer for AI Image Generation MVP (Two-Week Design).",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI Image Generation MVP (Two-Week Design).",
     "uniqueAngle": "Design an AI image generation frontend with prompt state, accepted async jobs, indeterminate progress, idempotent retry and cancel, safe media, and recovery.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

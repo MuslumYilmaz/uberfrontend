@@ -3,36 +3,13 @@
   "title": "Interfaces",
   "blocks": [
     {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Expose a compact API: create a semantic toast, update its content or behavior, dismiss one ID, or dismiss every toast in this provider. The provider owns normalization, lifecycle, and rendering; callers never receive timer or DOM handles."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Contract checks:\n- Create calls return a stable toast ID.\n- Update can change message, description, lifetime, urgency, and action state.\n- Dismiss-all is scoped to the provider represented by this API instance.\n- DOM nodes, timer handles, and announcement internals remain private."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
+      "type": "text",
+      "text": "Expose semantic choices to feature code and keep ownership mechanics private. A caller describes the feedback; it does not select an ARIA role, create a timeout, or manipulate the portal."
     },
     {
       "type": "code",
       "language": "typescript",
-      "code": "type ToastLifetimeInput =\n  | { kind: 'persistent' }\n  | { kind: 'timed'; durationMs?: number };\n\ninterface ToastOptions {\n  description?: string;\n  placement?: ToastPlacement;\n  lifetime?: ToastLifetimeInput;\n  urgency?: 'polite' | 'urgent';\n  dedupeKey?: string;\n  action?: {\n    label: string;\n    command: () => Promise<void> | void;\n  };\n}\n\ninterface ToastPatch extends Partial<ToastOptions> {\n  message?: string;\n}\n\ninterface ToastApi {\n  success(message: string, options?: ToastOptions): string;\n  error(message: string, options?: ToastOptions): string;\n  warning(message: string, options?: ToastOptions): string;\n  info(message: string, options?: ToastOptions): string;\n  update(id: string, patch: ToastPatch): void;\n  dismiss(id: string): void;\n  dismissAll(): void;\n}\n\ninterface ToastProviderProps {\n  children: unknown;\n  placement?: ToastPlacement;\n  timedDurationMs?: number;\n  maxVisible?: number;\n}\n",
+      "code": "type ToastLifetimeInput =\n  | { kind: 'persistent' }\n  | { kind: 'timed'; durationMs?: number };\n\ninterface ToastOptions {\n  description?: string;\n  placement?: ToastPlacement;\n  lifetime?: ToastLifetimeInput;\n  urgency?: 'polite' | 'urgent';\n  dedupeKey?: string;\n  action?: {\n    label: string;\n    command: () => Promise<void> | void;\n  };\n}\n\ninterface ToastPatch extends Partial<ToastOptions> {\n  message?: string;\n}\n\ninterface ToastApi {\n  success(message: string, options?: ToastOptions): string;\n  error(message: string, options?: ToastOptions): string;\n  warning(message: string, options?: ToastOptions): string;\n  info(message: string, options?: ToastOptions): string;\n  update(id: string, patch: ToastPatch): void;\n  dismiss(id: string): void;\n  dismissAll(): void;\n}\n\ninterface ToastProviderProps {\n  children: unknown;\n  placement?: ToastPlacement;\n  timedDurationMs?: number;\n  maxVisible?: number;\n}",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -40,157 +17,58 @@
       }
     },
     {
+      "type": "steps",
+      "title": "Command path",
+      "steps": [
+        {
+          "title": "Describe the outcome",
+          "text": "Feature code calls toast.success('Profile saved', { dedupeKey: 'profile-save:42', lifetime: { kind: 'timed' } }). For a conflict it supplies a Review action and persistent lifetime."
+        },
+        {
+          "title": "Normalize once",
+          "text": "The API resolves provider defaults, validates that an action cannot inherit timed expiry, registers the action command, and sends one add command with a stable toast ID to the store."
+        },
+        {
+          "title": "Render derived state",
+          "text": "The viewport subscribes to visible records and renders buttons whose handlers send action or dismiss intent. It never copies records into local component state and never calls setTimeout."
+        },
+        {
+          "title": "Remove through one gate",
+          "text": "Both dismiss(id) and the lifecycle coordinator’s expiry signal reach the same remove operation. The accepted transition disposes runtime before publishing the new store snapshot; a second signal for that ID returns unchanged."
+        }
+      ]
+    },
+    {
       "type": "table",
-      "title": "Core interfaces",
+      "title": "Contract decisions",
       "columns": [
-        "Interface",
-        "Shape (example)",
-        "Design rationale"
+        "Decision",
+        "Why it is visible in the API"
       ],
       "rows": [
         [
-          "ToastOptions",
-          "{ description?, placement?, lifetime?, urgency?, dedupeKey?, action? }",
-          "ToastOptions makes persistence and urgency explicit. Supplying an action resolves to persistent lifetime unless the caller provides a separately governed action expiry."
+          "Return the toast ID",
+          "The caller can update progress or dismiss one known result without searching by message text."
         ],
         [
-          "ToastApi",
-          "create helpers, update(id, patch), dismiss(id), dismissAll()",
-          "Each create call returns a stable ID. Update accepts message as well as option fields, and dismissAll applies to the current provider."
+          "Use lifetime instead of raw milliseconds alone",
+          "Persistent is an explicit semantic state, not a special duration value."
         ],
         [
-          "ToastProviderProps",
-          "{ placement?, timedDurationMs?, maxVisible?, children }",
-          "The provider resolves placement, a measured default timed lifetime, and the visible-stack limit."
+          "Accept urgency, not ARIA role",
+          "The announcer maps ordinary status to polite speech and reserves interruption for urgent outcomes."
         ],
         [
-          "Internal store methods",
-          "add(toastPartial), remove(id), clear(), subscribe(listener)",
-          "\"Internally the store exposes methods like add, remove, clear, and subscribe. The toast API calls add, and the provider subscribes to render changes.\""
-        ],
-        [
-          "ToastContainer props (internal)",
-          "{ toasts, placement }",
-          "\"ToastContainer is given toasts plus a placement and is responsible for stacking them and positioning them correctly in the viewport.\""
+          "Keep maxVisible on the provider",
+          "The application configures one viewport policy instead of allowing each caller to compete for space."
         ]
       ]
     },
     {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Required public behavior",
-              "items": [
-                "Simple helper functions: toast.success, toast.error, toast.warning, toast.info.",
-                "An optional options object (ToastOptions) for per-toast overrides.",
-                "A way to dismiss a specific toast (toast.dismiss(id)) and all toasts (toast.dismissAll()).",
-                "Provider-level props for global defaults (placement, duration, maxVisible).",
-                "A clear contract that toast.*() can be called from anywhere that has access to the API (not tied to one component)."
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Keep outside the public API",
-              "items": [
-                "Exposing low-level details like setTimeout handles or DOM nodes.",
-                "Requiring callers to pass full Toast objects instead of a simple message + options.",
-                "Needing the caller to manually manage IDs or stacking order.",
-                "Having separate, unrelated APIs for each variant with different shapes.",
-                "Needing UI components to know about the internal store implementation."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "steps",
-      "title": "Call flow",
-      "steps": [
-        {
-          "title": "1. Caller triggers a toast",
-          "text": "A component or service calls toast.success('Profile saved', { lifetime: { kind: 'timed' } })."
-        },
-        {
-          "title": "2. API builds a toast",
-          "text": "The helper creates a ToastRecord with a new ID and resolves placement, urgency, and lifetime from explicit options plus provider policy."
-        },
-        {
-          "title": "3. Store update",
-          "text": "The helper calls into the toast store’s add() method. The store updates its toasts array and notifies subscribers."
-        },
-        {
-          "title": "4. Provider re-renders",
-          "text": "The ToastProvider, subscribed to the store, receives the new toasts list and re-renders the ToastContainer via a portal."
-        },
-        {
-          "title": "5. Dismissal",
-          "text": "When a timed status exhausts its remaining lifetime or the user safely closes a message, the lifecycle coordinator clears runtime resources and dispatches one removal. Actionable or critical messages remain until resolved or explicitly dismissed."
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "API surface",
-          "value": "Tiny & focused",
-          "helperText": "Most apps only need toast.*() helpers and one provider."
-        },
-        {
-          "label": "Data flow",
-          "value": "Down via props, up via actions",
-          "helperText": "Callers send events in; the provider reads state and renders UI."
-        },
-        {
-          "label": "Strong signal",
-          "value": "Clear contracts",
-          "helperText": "You can explain what each function takes and returns in one sentence."
-        }
-      ]
-    },
-    {
       "type": "callout",
-      "variant": "warning",
-      "title": "Contract checkpoint",
-      "text": "A good toast API feels effortless to use: one import, one provider, and a few tiny helpers. If another engineer can start using your system just by seeing toast.success(message, options?), you’ve designed the interface well."
-    },
-    {
-      "type": "heading",
-      "text": "UI-facing contract"
-    },
-    {
-      "type": "text",
-      "text": "The API returns a toast ID and supports update and dismiss. Callers choose semantic urgency and lifetime rather than raw ARIA roles by default. An action implies persistent lifetime unless a separately visible business deadline exists. The provider converts polite status to role status and reserves alert for genuinely urgent information."
-    },
-    {
-      "type": "steps",
-      "title": "Command-to-announcement path",
-      "steps": [
-        {
-          "title": "Normalize",
-          "text": "Resolve defaults, persistence, urgency, and a safe dedupe key."
-        },
-        {
-          "title": "Insert",
-          "text": "Apply overflow policy without hiding a distinct critical outcome."
-        },
-        {
-          "title": "Announce",
-          "text": "Group or serialize meaningful status changes so assistive technology is not flooded."
-        },
-        {
-          "title": "Dispose",
-          "text": "Clear timer and observer resources before removing the record."
-        }
-      ]
+      "variant": "info",
+      "title": "Action failure",
+      "text": "While Review or Undo runs, update the same toast to pending and disable repeat activation. On failure, keep the persistent record visible with retry text. On success, update or dismiss it through the same ID; the domain operation, not the toast, decides whether recovery succeeded."
     }
   ]
 }

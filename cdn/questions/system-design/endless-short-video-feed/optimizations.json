@@ -181,10 +181,16 @@
       "text": "Network adaptation should avoid reacting to one noisy sample. Use recent startup, rebuffer, throughput, and device evidence to adjust future candidates at item boundaries. Keep the user-selected captions, mute, and quality preference authoritative. If a lower-quality fallback is chosen, communicate only when that knowledge helps recovery; do not cover every card with transport detail. Test the policy with fast reverse swipes, orientation changes, Bluetooth interruptions, and data-saver transitions. After memory pressure, release inactive decoders and verify that current playback remains continuous."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Endless Short-Video Feed (TikTok-Style) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "endless short video feed answer rubric",
+      "items": [
+        "Must — Keep a bounded active media window while preserving server item identity and cursor order.",
+        "Must — Pause playback and release expensive media resources when an item leaves the active slot.",
+        "Strong signal — Separate pagination acceptance from the visible projection and prefetch by user intent.",
+        "Strong signal — Restore position by stable item identity after refresh, insertion, or navigation.",
+        "Expert stretch — Adapt preload and rendition policy to network, memory, and reduced-motion signals.",
+        "Red flag — Starting playback for every mounted video or dropping accepted feed items to reduce render work."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

@@ -33,8 +33,8 @@
                 <div class="left-foot">
                         <div class="guide">
                             <div class="guide__line">
-                            Need a structure?
-                            <a [routerLink]="radioGuideRoute">Read the 45-minute answer script</a> first.
+                            Stuck after the first pass?
+                            <a [routerLink]="radioGuideRoute">Use the RADIO guide for a full 45-minute mock.</a>
                         </div>
                         <div class="guide__line" *ngIf="recommendedBlueprintGuide() as guide">
                             Recommended blueprint guide:
@@ -109,8 +109,8 @@
                     </div>
                     <div class="guide">
                         <div class="guide__line">
-                            Need a structure?
-                            <a [routerLink]="radioGuideRoute">Read the 45-minute answer script</a> first.
+                            Stuck after the first pass?
+                            <a [routerLink]="radioGuideRoute">Use the RADIO guide for a full 45-minute mock.</a>
                         </div>
                         <div class="guide__line" *ngIf="recommendedBlueprintGuide() as guide">
                             Recommended blueprint guide:
@@ -155,13 +155,118 @@
                   data-testid="sd-mobile-toc-panel">
                 <ul class="toc-list sdl-mobile-toc-list">
                     <li *ngFor="let s of sections(); trackBy: trackBySectionKey">
-                        <button class="toc-item" [class.active]="activeKey()===s.key" (click)="scrollToKey(s.key)">
+                        <button class="toc-item" [class.active]="activeKey()===s.key" (click)="navigateToSection(s.key, true)">
                             {{ s.title }}
                         </button>
                     </li>
                 </ul>
               </section>
             </fa-dialog>
+
+            <section class="sd-try-first" aria-labelledby="sd-try-first-title" data-testid="sd-try-first">
+                <div class="sd-try-first__header">
+                    <div>
+                        <p class="sd-try-first__eyebrow">Try first</p>
+                        <h2 id="sd-try-first-title">Frame your answer before reading the reference</h2>
+                    </div>
+                    <div class="sd-try-first__chips" aria-label="Suggested practice target">
+                        <span>{{ targetLevelLabel() }}</span>
+                        <span>{{ practice().timeboxMinutes }} min first pass</span>
+                    </div>
+                </div>
+
+                <div class="sd-try-first__prompt">
+                    <h3>Candidate prompt</h3>
+                    <p>{{ practice().candidatePrompt }}</p>
+                </div>
+
+                <div class="sd-try-first__grid">
+                    <section>
+                        <h3>Constraints</h3>
+                        <ul>
+                            <li *ngFor="let constraint of practice().constraints; trackBy: trackByStringValue">
+                                {{ constraint }}
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Helpful before you start</h3>
+                        <ul>
+                            <li *ngFor="let prerequisite of practice().prerequisites; trackBy: trackByStringValue">
+                                {{ prerequisite }}
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <section
+                    *ngIf="practice().evaluationSpine as spine; else legacyDecisions"
+                    class="sd-evaluation-spine"
+                    aria-labelledby="sd-evaluation-spine-title">
+                    <h3 id="sd-evaluation-spine-title">
+                        What good looks like in a {{ practice().timeboxMinutes }}-minute first pass
+                    </h3>
+                    <div class="sd-evaluation-spine__grid">
+                        <div class="sd-evaluation-spine__group sd-evaluation-spine__group--must">
+                            <h4>Must cover</h4>
+                            <ul>
+                                <li *ngFor="let item of spine.mustCover; trackBy: trackByStringValue">{{ item }}</li>
+                            </ul>
+                        </div>
+                        <div class="sd-evaluation-spine__group">
+                            <h4>Strong signals</h4>
+                            <ul>
+                                <li *ngFor="let item of spine.strongSignals; trackBy: trackByStringValue">{{ item }}</li>
+                            </ul>
+                        </div>
+                        <div class="sd-evaluation-spine__group sd-evaluation-spine__group--stretch">
+                            <h4>Stretch if time</h4>
+                            <p>{{ spine.expertStretch }}</p>
+                        </div>
+                        <div class="sd-evaluation-spine__group sd-evaluation-spine__group--danger">
+                            <h4>Avoid</h4>
+                            <p>{{ spine.redFlag }}</p>
+                        </div>
+                    </div>
+                    <details class="sd-decision-hint">
+                        <summary>Need a hint? Three decisions to make</summary>
+                        <ol>
+                            <li *ngFor="let decision of practice().expectedDecisions; trackBy: trackByStringValue">
+                                {{ decision }}
+                            </li>
+                        </ol>
+                    </details>
+                </section>
+
+                <ng-template #legacyDecisions>
+                    <section class="sd-try-first__decisions">
+                        <h3>Make these three decisions explicit</h3>
+                        <ol>
+                            <li *ngFor="let decision of practice().expectedDecisions; trackBy: trackByStringValue">
+                                {{ decision }}
+                            </li>
+                        </ol>
+                    </section>
+                </ng-template>
+
+                <div class="sd-try-first__actions">
+                    <button faButton variant="primary" type="button" (click)="openReferenceAnswer()">
+                        Start reference answer
+                    </button>
+                    <a
+                        *ngIf="practice().guidedMock"
+                        faButton
+                        variant="neutral"
+                        [routerLink]="['/interview']"
+                        [queryParams]="guidedMockQueryParams()"
+                        (click)="trackGuidedMockClick()">
+                        Practice this exact case
+                    </a>
+                </div>
+                <p *ngIf="practice().guidedMock" class="sd-try-first__device-note">
+                    Guided mock requires a tablet or desktop viewport of at least 768px. It will not start automatically.
+                </p>
+            </section>
 
             <section
                 *ngIf="contentLoadState() === 'error'"
@@ -183,8 +288,15 @@
             </section>
 
             <ng-container *ngFor="let s of sections(); trackBy: trackBySectionKey">
-                <section class="sd-section" [attr.id]="anchorId(s.key)">
-                    <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>
+                <details
+                    class="sd-section"
+                    [attr.id]="anchorId(s.key)"
+                    [open]="isSectionOpen(s.key)"
+                    (toggle)="onSectionToggle(s.key, $event)">
+                    <summary class="sd-section__summary" #sectionHeading [attr.data-key]="s.key">
+                        <h2 class="sd-h2">{{ s.title }}</h2>
+                        <span class="sd-section__chevron" aria-hidden="true"></span>
+                    </summary>
 
                     <div class="sd-blocks">
                         <ng-container *ngIf="s.blocks?.length; else legacyText">
@@ -217,14 +329,24 @@
 
                         <!-- IMAGE -->
                         <figure *ngIf="b.type === 'image'" class="sd-figure">
-                            <picture>
-                                <source *ngIf="b.srcAvif" [attr.srcset]="asset(b.srcAvif)" type="image/avif" />
-                                <source *ngIf="b.srcWebp" [attr.srcset]="asset(b.srcWebp)" type="image/webp" />
-                                <img [src]="asset(b.src)" [alt]="b.alt || ''" [attr.width]="b.width || null"
-                                    [attr.height]="b.height || null" [attr.loading]="b.priority ? 'eager' : 'lazy'"
-                                    [attr.decoding]="b.priority ? 'sync' : 'async'" />
-                            </picture>
+                            <div
+                                class="sd-figure__viewport"
+                                role="region"
+                                tabindex="0"
+                                [attr.aria-label]="'Scrollable diagram: ' + (b.caption || b.alt || 'system design diagram')">
+                                <picture>
+                                    <source *ngIf="b.srcAvif" [attr.srcset]="asset(b.srcAvif)" type="image/avif" />
+                                    <source *ngIf="b.srcWebp" [attr.srcset]="asset(b.srcWebp)" type="image/webp" />
+                                    <img [src]="asset(b.src)" [alt]="b.alt || ''" [attr.width]="b.width || null"
+                                        [attr.height]="b.height || null" [attr.loading]="b.priority ? 'eager' : 'lazy'"
+                                        [attr.decoding]="b.priority ? 'sync' : 'async'" />
+                                </picture>
+                            </div>
                             <figcaption *ngIf="b.caption">{{ b.caption }}</figcaption>
+                            <details *ngIf="b.fallbackText" class="sd-figure__fallback">
+                                <summary>Read diagram as text</summary>
+                                <p>{{ b.fallbackText }}</p>
+                            </details>
                         </figure>
 
                         <!-- CHECKLIST -->
@@ -327,23 +449,23 @@
                         </div>
 
                         <!-- STEPS -->
-                        <div *ngIf="b.type === 'steps'" class="sd-steps">
+                        <div *ngIf="b.type === 'steps'" class="sd-steps" [class.sd-steps--timeboxed]="b.editorialRole === 'timeboxed-answer'">
                             <div class="sd-steps-title" *ngIf="b.title">{{ b.title }}</div>
-                            <div class="sd-steps-row" [class.vertical]="b.steps?.length > 3">
+                            <ol class="sd-steps-row" [class.vertical]="b.steps?.length > 3">
                                 <ng-container *ngFor="let step of b.steps; let si = index; trackBy: trackByStepTitle">
-                                    <div class="sd-step">
-                                        <div class="sd-step-circle">{{ si + 1 }}</div>
+                                    <li class="sd-step">
+                                        <div class="sd-step-circle" aria-hidden="true">{{ si + 1 }}</div>
                                         <div class="sd-step-body">
                                             <div class="sd-step-title">{{ step.title }}</div>
                                             <div class="sd-step-text" *ngIf="step.text">{{ step.text }}</div>
                                         </div>
-                                        <div class="sd-step-arrow" *ngIf="si < b.steps.length - 1">→</div>
-                                    </div>
+                                        <div class="sd-step-arrow" aria-hidden="true" *ngIf="si < b.steps.length - 1">→</div>
+                                    </li>
                                 </ng-container>
-                            </div>
+                            </ol>
                         </div>
                     </ng-template>
-                </section>
+                </details>
             </ng-container>
 
             <section class="sd-related" *ngIf="relatedItems().length">
@@ -393,7 +515,7 @@
                 <div class="toc-head">On this page</div>
                 <ul class="toc-list">
                     <li *ngFor="let s of sections(); trackBy: trackBySectionKey">
-                        <button class="toc-item" [class.active]="activeKey()===s.key" (click)="scrollToKey(s.key)">
+                        <button class="toc-item" [class.active]="activeKey()===s.key" (click)="navigateToSection(s.key, false)">
                             {{ s.title }}
                         </button>
                     </li>
@@ -421,6 +543,24 @@
                 By {{ authorLabel(q()) }}
                 <ng-container *ngIf="updatedLabel(q()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
+            <section class="sd-locked-prompt-preview" data-testid="sd-locked-prompt-preview" aria-labelledby="sd-locked-prompt-title">
+                <div class="sd-locked-prompt-preview__head">
+                    <h2 id="sd-locked-prompt-title">Try the prompt first</h2>
+                    <div class="sd-locked-prompt-preview__chips" aria-label="Suggested practice target">
+                        <span>{{ targetLevelLabel() }}</span>
+                        <span>{{ practice().timeboxMinutes }} min first pass</span>
+                    </div>
+                </div>
+                <p class="sd-locked-prompt-preview__prompt">{{ practice().candidatePrompt }}</p>
+                <div>
+                    <h3>Constraints</h3>
+                    <ul>
+                        <li *ngFor="let constraint of practice().constraints; trackBy: trackByStringValue">
+                            {{ constraint }}
+                        </li>
+                    </ul>
+                </div>
+            </section>
             <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
             <p class="locked-persona" *ngIf="lockedPersonalizationLine()">{{ lockedPersonalizationLine() }}</p>
             <div class="locked-related" *ngIf="relatedItems().length">

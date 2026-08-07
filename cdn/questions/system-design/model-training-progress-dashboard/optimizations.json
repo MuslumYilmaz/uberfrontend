@@ -210,10 +210,16 @@
       "text": "Freshness is part of every comparison. Show the last accepted sequence and update time for each run, distinguish paused ingestion from an actually paused training job, and avoid connecting a line across an unresolved sample gap. When the user returns to a backgrounded tab, ingest the resumed range before scheduling one paint. If a requested historical range is unavailable, retain the visible window, mark its incomplete boundary, and offer a narrower retry instead of replacing the chart with a generic error. Downsampling retains extrema and terminal transitions, not only arithmetic averages. Validate the compact series against raw samples at several zoom levels, record the chosen aggregation, and keep the selected raw point inspectable. Exported views include the alignment mode, units, freshness boundary, and aggregation method."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Real-time Model Training Dashboard assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "model training progress dashboard answer rubric",
+      "items": [
+        "Must — Build the run view from a versioned snapshot plus ordered resumable metric events.",
+        "Must — Mark data stale on gaps and reconcile with a fresh snapshot before resuming updates.",
+        "Strong signal — Downsample chart projections without changing the retained run history.",
+        "Strong signal — Separate run status, diagnostics, comparison selection, and viewport state.",
+        "Expert stretch — Adapt renderer and retention policy from observed frequency, range, and device cost.",
+        "Red flag — Treating every event as a trustworthy percentage or hiding a disconnected stream as current."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

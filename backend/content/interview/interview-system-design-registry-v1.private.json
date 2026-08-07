@@ -1,8 +1,8 @@
 {
-  "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+  "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
   "finalApproval": null,
   "registryId": "interview-system-design-registry-v1",
-  "registryVersion": "1.0.0",
+  "registryVersion": "1.1.0",
   "scenarios": [
     {
       "clarificationAnswers": [
@@ -31,7 +31,7 @@
           "clarificationId": "chat-stop-truth"
         }
       ],
-      "contentHash": "60be16613d6499dd7896ffb7d14924ec7633dc3b427b4bef668e7857b7faafcb",
+      "contentHash": "4255f79fd212920ece9b6710ed61c05f6c812ae3f636a161d47cde9bcd202693",
       "id": "int-sd-ai-chat-composer-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -64,43 +64,43 @@
       "review": {
         "blind": {
           "notes": [
-            "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
-            "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
-            "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
-            "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
+            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
+            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
+            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
+            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
           ],
-          "reviewer": "codex-system-design-blind-v5",
+          "reviewer": "codex-system-design-blind-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "60be16613d6499dd7896ffb7d14924ec7633dc3b427b4bef668e7857b7faafcb",
-        "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+        "contentHash": "4255f79fd212920ece9b6710ed61c05f6c812ae3f636a161d47cde9bcd202693",
+        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
         "editorial": {
           "notes": [
-            "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
-            "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
-            "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
-            "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
+            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
+            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
+            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
+            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
           ],
-          "reviewer": "codex-system-design-editorial-v5",
+          "reviewer": "codex-system-design-editorial-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-04",
-        "reviewedRevision": 1,
+        "reviewedAt": "2026-08-06",
+        "reviewedRevision": 3,
         "technical": {
           "notes": [
-            "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
-            "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
-            "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
-            "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
+            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
+            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
+            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
+            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
           ],
-          "reviewer": "codex-system-design-technical-v5",
+          "reviewer": "codex-system-design-technical-v7",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 1,
+      "revision": 3,
       "rubric": {
         "axes": [
           {
@@ -217,7 +217,7 @@
           {
             "criteria": [
               {
-                "evidence": "Selected stable command and client-message identity.",
+                "evidence": "Selected stable identities that separate retransmission from a new user Retry.",
                 "id": "chat-command-message-identity",
                 "rule": {
                   "decisionId": "chat-send-identity",
@@ -240,15 +240,15 @@
             ],
             "id": "data-interface-contracts",
             "remediationTopics": [
-              "Idempotent send identity",
-              "Chat transport contracts"
+              "Send retransmission versus user Retry",
+              "Idempotent Send and Stop contracts"
             ],
             "title": "Data and interface contracts"
           },
           {
             "criteria": [
               {
-                "evidence": "Selected correlated sequence and terminal reconciliation.",
+                "evidence": "Selected active identity and sequence gates with authoritative terminal reconciliation.",
                 "id": "chat-correlated-terminal",
                 "rule": {
                   "decisionId": "chat-stream-terminal",
@@ -271,8 +271,8 @@
             ],
             "id": "resilience-performance",
             "remediationTopics": [
-              "Sequenced stream acceptance",
-              "Stop terminal reconciliation"
+              "One-active-stream event acceptance",
+              "Authoritative Stop reconciliation"
             ],
             "title": "Resilience and performance"
           },
@@ -368,8 +368,8 @@
             ],
             "id": "adaptation-tradeoffs",
             "remediationTopics": [
-              "Cross-conversation event isolation",
-              "Authoritative Stop outcomes"
+              "Superseded-stream rejection",
+              "Same-command Stop retransmission"
             ],
             "title": "Adaptation and trade-offs"
           }
@@ -396,7 +396,7 @@
               ]
             },
             "severity": "critical",
-            "summary": "Fresh retry identities plus local-abort terminal state can duplicate a send and let old stream events cross turns."
+            "summary": "Fresh transport-attempt identities plus local-abort terminal state can duplicate a send and let stale stream events cross turns."
           },
           {
             "axisIds": [
@@ -415,35 +415,35 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "e693eb94397741cf4290fc304470b3ed6ee6211b7469d313d244a464eef423e1",
+        "bundleHash": "bbe587d9fc4d4454b198a638e838fd7734cba1b1ea482816fb441e3fe66a2a19",
         "files": [
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/meta.json",
-            "sha256": "8c748c1c2528ea02ece1470889f665fd2e1de062f90c3e36f2fb1da6655fbce2"
+            "sha256": "e6c9c63c64a8c034b26a806918536665a3bd0124cbf10e0195cfc31c9a4cfcdc"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/requirements.json",
-            "sha256": "0fd28bfbf311f9b0aa84da8165e77b2e5fa7f605ea23f5be46ea2193e16bf210"
+            "sha256": "ecddd6bcc2923c386005509810e737bb5ee7935b148f994830893882b6803dcd"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/architecture.json",
-            "sha256": "c918a2041c206ad68e6b0f5253807e004b9dc74ee06edb29e74d64594db9dd2a"
+            "sha256": "9c5d86f98c503b2b17f64204950240314c34e1aac74aae2c2eb6e69f7607b83a"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/data.json",
-            "sha256": "fa6d67526c6cee565827bbf89700d3bdedca13ad434eb7916bf940876aeeabf7"
+            "sha256": "ae3b7e5ae651ec60a77c225e999d2119207ddcac1e3955366c6da22cbf753e69"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/interfaces.json",
-            "sha256": "d00edda1262e7d196eda43eecfa97084b7b6d21eb0d0a0c08d6af4b8ef135ff0"
+            "sha256": "6dc5667480345fa912aaf72dc3d1164e19c51b6ab7899c42b560af9b9a496433"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/optimizations.json",
-            "sha256": "eb6b5374005d313d25f3dec63e96ba42b6d20a769747465f25e72a13938125fb"
+            "sha256": "a9860bcf238e2c9e95f84ffb5d3bee3168fe49c91c6af6ba1a2ddefb07666ef1"
           }
         ],
         "sourceContentId": "ai-chat-textarea-design",
-        "sourceUpdatedAt": "2026-07-29"
+        "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
         "id": "chat-navigation-stop-race",
@@ -455,7 +455,7 @@
             "label": "Scope late events to their turn"
           },
           {
-            "description": "Keep Stop pending until an authoritative terminal event confirms the outcome.",
+            "description": "Retry the same stopCommandId and keep Stop pending until an authoritative terminal event confirms the outcome.",
             "id": "chat-twist-reconcile-stop",
             "label": "Reconcile Stop with server state"
           },
@@ -1479,7 +1479,7 @@
           "clarificationId": "search-navigation"
         }
       ],
-      "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
+      "contentHash": "e75d5dee0a8ffcca803fe12cd0703a76ebc9638f00357095405f8fab8e36c0d3",
       "id": "int-sd-autocomplete-race-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -1505,43 +1505,43 @@
       "review": {
         "blind": {
           "notes": [
-            "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
-            "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
-            "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
-            "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
+            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
+            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
+            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
+            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
           ],
-          "reviewer": "codex-system-design-blind-v5",
+          "reviewer": "codex-system-design-blind-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
-        "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+        "contentHash": "e75d5dee0a8ffcca803fe12cd0703a76ebc9638f00357095405f8fab8e36c0d3",
+        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
         "editorial": {
           "notes": [
-            "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
-            "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
-            "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
-            "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
+            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
+            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
+            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
+            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
           ],
-          "reviewer": "codex-system-design-editorial-v5",
+          "reviewer": "codex-system-design-editorial-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-04",
-        "reviewedRevision": 3,
+        "reviewedAt": "2026-08-06",
+        "reviewedRevision": 4,
         "technical": {
           "notes": [
-            "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
-            "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
-            "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
-            "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
+            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
+            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
+            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
+            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
           ],
-          "reviewer": "codex-system-design-technical-v5",
+          "reviewer": "codex-system-design-technical-v7",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 3,
+      "revision": 4,
       "rubric": {
         "axes": [
           {
@@ -1819,11 +1819,11 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "46e9e5bb8daf0372d8638d2aef97f5a1299b1d071bcba0dc3c2b42599f0b967e",
+        "bundleHash": "e2c3f9f1ec1f783dfa6fb2efe113364292f2ec8ffb9a29f98b0c43094b234fe2",
         "files": [
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/meta.json",
-            "sha256": "e22a034865a5ca1e6c7191209fb818617eb27e4b52b5ca6229b92101de251e8f"
+            "sha256": "94108a06455b06388ee7b3b32f50f1c4c2b9f9634db04ff90b73e61b38d70641"
           },
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/requirements.json",
@@ -1843,11 +1843,11 @@
           },
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/optimizations.json",
-            "sha256": "2e8b3c9c758897ffdbaed6f8a5cd3ec68633a6d216e882bd6a03d1cec8e0e262"
+            "sha256": "b154ba18e6f124f1a0f79e889768f70e2b2fdce91ba22701dd2afa1e9ea44c60"
           }
         ],
         "sourceContentId": "realtime-search-debounce-cache",
-        "sourceUpdatedAt": "2026-07-28"
+        "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
         "id": "search-locale-race",
@@ -2557,7 +2557,7 @@
           "clarificationId": "dash-accessibility"
         }
       ],
-      "contentHash": "975649af4bad43d9c7a616a967d32464401351d414716c98cbab5ab221a6b01a",
+      "contentHash": "6235e3f8b607b86c652287bd538f6fc11bceb2ed1842fca3c19bf6209614bb35",
       "id": "int-sd-dashboard-layout-sr-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -2583,43 +2583,43 @@
       "review": {
         "blind": {
           "notes": [
-            "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
-            "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
-            "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
-            "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
+            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
+            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
+            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
+            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
           ],
-          "reviewer": "codex-system-design-blind-v5",
+          "reviewer": "codex-system-design-blind-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "975649af4bad43d9c7a616a967d32464401351d414716c98cbab5ab221a6b01a",
-        "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+        "contentHash": "6235e3f8b607b86c652287bd538f6fc11bceb2ed1842fca3c19bf6209614bb35",
+        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
         "editorial": {
           "notes": [
-            "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
-            "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
-            "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
-            "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
+            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
+            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
+            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
+            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
           ],
-          "reviewer": "codex-system-design-editorial-v5",
+          "reviewer": "codex-system-design-editorial-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-04",
-        "reviewedRevision": 1,
+        "reviewedAt": "2026-08-06",
+        "reviewedRevision": 2,
         "technical": {
           "notes": [
-            "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
-            "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
-            "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
-            "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
+            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
+            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
+            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
+            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
           ],
-          "reviewer": "codex-system-design-technical-v5",
+          "reviewer": "codex-system-design-technical-v7",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 1,
+      "revision": 2,
       "rubric": {
         "axes": [
           {
@@ -2987,11 +2987,11 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "7df74b1748773e5d5d38d3a375d87dd38cea4eeb059b2654b3352abdcaf95cf4",
+        "bundleHash": "88be64af7409aa5b4f35d9de8109cbd30554d1396de31a0a59216e13cd2d57ee",
         "files": [
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/meta.json",
-            "sha256": "8cb445b0a8772a3116027049afe6cf7facda4737c285a9af08ed611aa57b8fe5"
+            "sha256": "805d9256b67c52e28ba67ef82191e3d3eff7fec804a0b3b5c68f04f107e53ef7"
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/requirements.json",
@@ -3011,11 +3011,11 @@
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/optimizations.json",
-            "sha256": "d2e426d5c12a905a994c5798e37eb233d348d835d2ec4c4a0b3a300e6f4550fb"
+            "sha256": "5765f3652247298076debbc58f73d7e52d2c85130c1183431570ace0254c0bac"
           }
         ],
         "sourceContentId": "dashboard-widgets-draggable-resizable",
-        "sourceUpdatedAt": "2026-07-28"
+        "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
         "id": "dash-remote-update-mid-drag",
@@ -3960,7 +3960,7 @@
           "clarificationId": "upload-accessibility"
         }
       ],
-      "contentHash": "b490a8f10b6b9e278581750111a316ff137996408631c3c14c63f512d0c6e3f9",
+      "contentHash": "eeb26e0a93d42a9662990f5cc4aef2ce5fc0d8fcf4c1221511db5ff28126aca4",
       "id": "int-sd-image-upload-lifecycle-jr-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -3986,43 +3986,43 @@
       "review": {
         "blind": {
           "notes": [
-            "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
-            "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
-            "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
-            "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
+            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
+            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
+            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
+            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
           ],
-          "reviewer": "codex-system-design-blind-v5",
+          "reviewer": "codex-system-design-blind-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "b490a8f10b6b9e278581750111a316ff137996408631c3c14c63f512d0c6e3f9",
-        "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+        "contentHash": "eeb26e0a93d42a9662990f5cc4aef2ce5fc0d8fcf4c1221511db5ff28126aca4",
+        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
         "editorial": {
           "notes": [
-            "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
-            "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
-            "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
-            "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
+            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
+            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
+            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
+            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
           ],
-          "reviewer": "codex-system-design-editorial-v5",
+          "reviewer": "codex-system-design-editorial-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-04",
-        "reviewedRevision": 1,
+        "reviewedAt": "2026-08-06",
+        "reviewedRevision": 2,
         "technical": {
           "notes": [
-            "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
-            "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
-            "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
-            "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
+            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
+            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
+            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
+            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
           ],
-          "reviewer": "codex-system-design-technical-v5",
+          "reviewer": "codex-system-design-technical-v7",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 1,
+      "revision": 2,
       "rubric": {
         "axes": [
           {
@@ -4542,11 +4542,11 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "599ee39973678520354d6d7fbeac020b54b5964b0a8c0cb98035b032a4dbb348",
+        "bundleHash": "11d34dacf26a451d6cd1bef95a5855ad8c529e70f6237b4b6869962f50e462f1",
         "files": [
           {
             "file": "cdn/questions/system-design/image-upload-preview/meta.json",
-            "sha256": "f8c502ae53e3ba594f2c8442bae50eac363d562c6d5befd7bd5f0e1fee092448"
+            "sha256": "3892cba07d3609fcbb8167fb39d8b55d5fcb895a3c29e7b57e66e748327c789f"
           },
           {
             "file": "cdn/questions/system-design/image-upload-preview/requirements.json",
@@ -4554,7 +4554,7 @@
           },
           {
             "file": "cdn/questions/system-design/image-upload-preview/architecture.json",
-            "sha256": "a13ee45d42853b91450c8daccb7cca07ef126346ef278cf8bfa7bbdb58ad4124"
+            "sha256": "b64f57aa42ad83487544af75e964634a0f4cc30e9391343be5e451a89654c8c0"
           },
           {
             "file": "cdn/questions/system-design/image-upload-preview/data.json",
@@ -4566,11 +4566,11 @@
           },
           {
             "file": "cdn/questions/system-design/image-upload-preview/optimizations.json",
-            "sha256": "3d29305baccc3488b20f06b753bbb2690b6365d4092778fd10e47c1b122240f1"
+            "sha256": "d2f6b42935004fbdb7350ffcb478a60cfc1d2472b2d4ae36ff3198f8e0b66e7a"
           }
         ],
         "sourceContentId": "image-upload-preview",
-        "sourceUpdatedAt": "2026-07-28"
+        "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
         "id": "upload-late-finalize",
@@ -5732,7 +5732,7 @@
           "clarificationId": "chart-accessibility"
         }
       ],
-      "contentHash": "7a63f89b2589af3a2f1d681bf6a1366971072285774078038299bb50bcd13f79",
+      "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
       "id": "int-sd-live-chart-pipeline-mid-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -5758,43 +5758,43 @@
       "review": {
         "blind": {
           "notes": [
-            "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
-            "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
-            "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
-            "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
+            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
+            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
+            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
+            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
           ],
-          "reviewer": "codex-system-design-blind-v5",
+          "reviewer": "codex-system-design-blind-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "7a63f89b2589af3a2f1d681bf6a1366971072285774078038299bb50bcd13f79",
-        "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+        "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
+        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
         "editorial": {
           "notes": [
-            "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
-            "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
-            "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
-            "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
+            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
+            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
+            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
+            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
           ],
-          "reviewer": "codex-system-design-editorial-v5",
+          "reviewer": "codex-system-design-editorial-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-04",
-        "reviewedRevision": 1,
+        "reviewedAt": "2026-08-06",
+        "reviewedRevision": 2,
         "technical": {
           "notes": [
-            "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
-            "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
-            "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
-            "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
+            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
+            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
+            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
+            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
           ],
-          "reviewer": "codex-system-design-technical-v5",
+          "reviewer": "codex-system-design-technical-v7",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 1,
+      "revision": 2,
       "rubric": {
         "axes": [
           {
@@ -6314,11 +6314,11 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "e16f1020291f83596e2ff5959bad5596a0369fabb1df4c26cffc92e459ebc65f",
+        "bundleHash": "fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c",
         "files": [
           {
             "file": "cdn/questions/system-design/live-chart-high-frequency-updates/meta.json",
-            "sha256": "16adcc2bcd460fbc16b24e1270f3c31a6bfe0624addff81032d0e2fd8c92e1d4"
+            "sha256": "c69959c9bf058beebc36a3e93b624994b7b83fa3257e0917339454feeb17b31e"
           },
           {
             "file": "cdn/questions/system-design/live-chart-high-frequency-updates/requirements.json",
@@ -6338,11 +6338,11 @@
           },
           {
             "file": "cdn/questions/system-design/live-chart-high-frequency-updates/optimizations.json",
-            "sha256": "812077dfd55d10f466149169ae704bd05fd0616cdc857cd9e40090043bf0d173"
+            "sha256": "191d9127f0a9c5705cb01094c8242bb33b81d385e489bb538595750960bb5568"
           }
         ],
         "sourceContentId": "live-chart-high-frequency-updates",
-        "sourceUpdatedAt": "2026-07-28"
+        "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
         "id": "chart-hidden-burst-gap",
@@ -7414,7 +7414,7 @@
           "clarificationId": "feed-accessibility"
         }
       ],
-      "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",
+      "contentHash": "6483429a1be771ae59ca9df59c9ae05815f750810a107fb55384e7f233d9dedd",
       "id": "int-sd-ranked-feed-sr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -7440,43 +7440,43 @@
       "review": {
         "blind": {
           "notes": [
-            "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
-            "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
-            "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
-            "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
+            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
+            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
+            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
+            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
           ],
-          "reviewer": "codex-system-design-blind-v5",
+          "reviewer": "codex-system-design-blind-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",
-        "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+        "contentHash": "6483429a1be771ae59ca9df59c9ae05815f750810a107fb55384e7f233d9dedd",
+        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
         "editorial": {
           "notes": [
-            "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
-            "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
-            "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
-            "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
+            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
+            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
+            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
+            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
           ],
-          "reviewer": "codex-system-design-editorial-v5",
+          "reviewer": "codex-system-design-editorial-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-04",
-        "reviewedRevision": 3,
+        "reviewedAt": "2026-08-06",
+        "reviewedRevision": 4,
         "technical": {
           "notes": [
-            "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
-            "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
-            "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
-            "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
+            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
+            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
+            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
+            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
           ],
-          "reviewer": "codex-system-design-technical-v5",
+          "reviewer": "codex-system-design-technical-v7",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 3,
+      "revision": 4,
       "rubric": {
         "axes": [
           {
@@ -7737,19 +7737,19 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "91af05647649a4376a23918df83f14bf944be9c93d655940535a9a43691409e3",
+        "bundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948",
         "files": [
           {
             "file": "cdn/questions/system-design/news-feed-timeline/meta.json",
-            "sha256": "52d3f8294cc6119c89da764ca60f5969c954e7dbdb6ad19789f038d360f64e63"
+            "sha256": "3b7c60ba21d789c5f12041c01a13d199a81ae8885d059d9d3dcbea6c3f2c751d"
           },
           {
             "file": "cdn/questions/system-design/news-feed-timeline/requirements.json",
-            "sha256": "0ded86236cbbc03f0772f3d9845b794ed9f15f7da20355c843090c0b1031876a"
+            "sha256": "2c26114d79510c228e85584aab802112ff14eca9f3adfd49ff288199a8a64a0e"
           },
           {
             "file": "cdn/questions/system-design/news-feed-timeline/architecture.json",
-            "sha256": "04f605999732624e084fbd91983fad15fb9faf1fe63ceb9f3c30355971496e9a"
+            "sha256": "5113704484b54ce0e08198ed91e9da9f2040b4fbc355d0a92d6e711746477d49"
           },
           {
             "file": "cdn/questions/system-design/news-feed-timeline/data.json",
@@ -7761,11 +7761,11 @@
           },
           {
             "file": "cdn/questions/system-design/news-feed-timeline/optimizations.json",
-            "sha256": "b91fc7bd45866e38bd13e4d2bfc01ab91b3a849fec71e4a6a59f5ca63f0fdc57"
+            "sha256": "cf724a129804af10debf9cf7bbd482d46be72c1c54d85371bc5a884403d98120"
           }
         ],
         "sourceContentId": "news-feed-timeline",
-        "sourceUpdatedAt": "2026-07-28"
+        "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
         "id": "feed-live-rerank",
@@ -8480,7 +8480,7 @@
           "clarificationId": "toast-navigation"
         }
       ],
-      "contentHash": "b8dc020ac24d90e5f92e729cf10dc80874afe9771be0f973d59e941b0c5c1b7b",
+      "contentHash": "7334b8cb8a7403fa0754b18796f16f77c8d866c7e378cfd98a9ee9a4e0ce7a4d",
       "id": "int-sd-toast-lifecycle-jr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -8506,43 +8506,43 @@
       "review": {
         "blind": {
           "notes": [
-            "All seven public scenario objects were reviewed without private clarification answers, twists, source evidence, rubric rules, fixtures, provenance, tests, or review metadata.",
-            "Cards describe capabilities and outcomes without prescribing a framework, state library, component tree, or preferred ownership path.",
-            "Every decision offers at least two defensible approaches with balanced wording and non-signalling option and rationale ordering.",
-            "The two Junior, three Mid, and two Senior workloads are credible within their guided ten-, fifteen-, and twenty-minute session limits."
+            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
+            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
+            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
+            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
           ],
-          "reviewer": "codex-system-design-blind-v5",
+          "reviewer": "codex-system-design-blind-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "b8dc020ac24d90e5f92e729cf10dc80874afe9771be0f973d59e941b0c5c1b7b",
-        "definitionHash": "a91ead549105c8fc9580a75d3366747404e2f17b9804995e10ad039a19e4518b",
+        "contentHash": "7334b8cb8a7403fa0754b18796f16f77c8d866c7e378cfd98a9ee9a4e0ce7a4d",
+        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
         "editorial": {
           "notes": [
-            "Pinned-source comparison found no material copied prose across the complete seven-scenario registry; every scenario remains an originally worded topic adaptation.",
-            "No assistant, drafting, review, or editorial notes appear in candidate-facing content, private clarification answers, or production twists.",
-            "The registry provides bounded lifecycle, interaction, data-pipeline, concurrency, and responsive-layout exercises at the declared Junior, Mid, and Senior durations.",
-            "All provenance source roles, URLs, license labels, copiedText flags, and 2026-08-04 access dates were independently verified."
+            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
+            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
+            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
+            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
           ],
-          "reviewer": "codex-system-design-editorial-v5",
+          "reviewer": "codex-system-design-editorial-v7",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-04",
-        "reviewedRevision": 3,
+        "reviewedAt": "2026-08-06",
+        "reviewedRevision": 5,
         "technical": {
           "notes": [
-            "All seven pinned source bundles, the final registry definition hash, and the six allowlisted rubric axes were independently verified.",
-            "Every scenario exercises two distinct strong architecture fingerprints plus developing and critical-conflict paths, including changed and already-safe twist baselines where required.",
-            "All twenty-eight executable fixtures produce their expected practice signals, and every critical fixture exposes its declared contradictions through runtime-visible summaries.",
-            "Architecture boundaries, post-twist mutations, isolated critical paths, source pins, artifact parity, and missing-evidence caps have focused validation guards across the complete registry."
+            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
+            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
+            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
+            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
           ],
-          "reviewer": "codex-system-design-technical-v5",
+          "reviewer": "codex-system-design-technical-v7",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 3,
+      "revision": 5,
       "rubric": {
         "axes": [
           {
@@ -8626,7 +8626,7 @@
                 "weight": 1
               },
               {
-                "evidence": "Connected lifecycle coordination back to the store.",
+                "evidence": "Connected dismiss and timeout lifecycle events to one guarded store transition.",
                 "id": "toast-lifecycle-events",
                 "rule": {
                   "fromCardId": "toast-lifecycle",
@@ -8640,7 +8640,7 @@
             "id": "data-interface-contracts",
             "remediationTopics": [
               "Typed toast commands",
-              "Lifecycle event contracts"
+              "One dismiss-timeout cleanup contract"
             ],
             "title": "Data and interface contracts"
           },
@@ -8657,7 +8657,7 @@
                 "weight": 1
               },
               {
-                "evidence": "Selected remaining-time ownership for eligible timers.",
+                "evidence": "Selected a guarded cleanup lifecycle with explicit remaining-time ownership.",
                 "id": "toast-safe-timing",
                 "rule": {
                   "decisionId": "toast-timing",
@@ -8669,15 +8669,15 @@
             ],
             "id": "resilience-performance",
             "remediationTopics": [
-              "Bounded toast queues",
-              "Pause-aware timer cleanup"
+              "Bounded stack and overflow queue",
+              "First-signal-only timer cleanup"
             ],
             "title": "Resilience and performance"
           },
           {
             "criteria": [
               {
-                "evidence": "Included a dedicated announcement boundary.",
+                "evidence": "Included a dedicated announcer that owns one-time announcement history.",
                 "id": "toast-place-announcer",
                 "rule": {
                   "cardId": "toast-live-region",
@@ -8708,7 +8708,7 @@
             ],
             "id": "accessibility-product-ux",
             "remediationTopics": [
-              "Live-region restraint",
+              "Announcement identity and repeat suppression",
               "Keyboard-reachable toast actions"
             ],
             "title": "Accessibility and product UX"
@@ -8810,7 +8810,7 @@
               ]
             },
             "severity": "critical",
-            "summary": "Independent item timers that restart on interaction cannot preserve one observable lifetime or reliable cleanup policy."
+            "summary": "Independent item handlers can remove one toast twice and repeat cleanup when dismiss races with expiry."
           },
           {
             "axisIds": [
@@ -8838,35 +8838,35 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "8e169018732ac16d02e516d529deb1e96b1b99cdc30e1cc9f08f00c6c09d7d94",
+        "bundleHash": "47e97c5f1ffbb840f4bf81b21d9c0fcebfdff6b2ea05a5985a7a526eaccde986",
         "files": [
           {
             "file": "cdn/questions/system-design/notification-toast-system/meta.json",
-            "sha256": "ad412f4247dbcd7a4e58ce1929219c9c421651f80c9e5ebf649946489be541c8"
+            "sha256": "0cf10848db4634728620579ac98a5a29e5a39321ed8db573c4dd297aa71f3901"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/requirements.json",
-            "sha256": "baa0ab4282b6b23d2db817aec44c0c5f2d7f759b00c679dfd5630cfe5be14b35"
+            "sha256": "db7f176a1ade75b6c9af78c5bcdf8f112bddc6e4c7126304e191a73f7b0b7b29"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/architecture.json",
-            "sha256": "a7ecae100f9c60ffc1285ad668d00969347fdbb1f5833791a8e7cc1c0ed4dec4"
+            "sha256": "be33bb9c3e991ca7049b54e45f141f9937d66d556c732dcf3ec3c01db4fed0d5"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/data.json",
-            "sha256": "760325be0f526edeb5743926b0a98869b9c4659b4c056b42087cf6cd5e83b80c"
+            "sha256": "6e675276deef1eacdfc7f1dd6a4eb8e2f98270671ba9a756cef9d73ad6f04fc7"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/interfaces.json",
-            "sha256": "85897496eee2bbdd0e6e8030216e134b4688d1861e00677f691a4fcc5385fdbd"
+            "sha256": "41615519bfb08918b5b2aca6d0c6094549921a6d170d32d99e442d889c8cd382"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/optimizations.json",
-            "sha256": "10455925736954282c53dca41e4f5a899aea6274136c61b2cbde5d643045b4e7"
+            "sha256": "7772955019a0af067daec2cb7f7e2faf3bd509160968b0c2fed2a74b98ebd097"
           }
         ],
         "sourceContentId": "notification-toast-system",
-        "sourceUpdatedAt": "2026-07-28"
+        "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
         "id": "toast-hidden-tab-burst",

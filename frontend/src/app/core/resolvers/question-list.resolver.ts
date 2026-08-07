@@ -1,21 +1,16 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { map } from 'rxjs/operators';
+import {
+  normalizeSystemDesignQuestion,
+  resolveSystemDesignPractice,
+  SystemDesignListItem,
+} from '../models/system-design.model';
 import { QuestionService, MixedQuestionListItem } from '../services/question.service';
 
-export type QuestionListKind = 'coding' | 'trivia';
-export type SystemDesignListItem = {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  type: 'system-design';
-  access?: 'free' | 'premium';
-  difficulty?: string;
-  companies?: string[];
-  updatedAt?: string;
-};
+export type { SystemDesignListItem } from '../models/system-design.model';
 
+export type QuestionListKind = 'coding' | 'trivia';
 export type QuestionListResolved = {
   source: 'global-coding';
   kind: QuestionListKind;
@@ -45,18 +40,16 @@ export const systemDesignListResolver: ResolveFn<SystemDesignListResolved> = () 
     map((rawItems) => ({
       source: 'system-design' as const,
       items: (Array.isArray(rawItems) ? rawItems : [])
+        .map((item) => normalizeSystemDesignQuestion(item))
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
         .map((item): SystemDesignListItem => ({
-          id: String(item?.id || ''),
-          title: String(item?.title || item?.id || ''),
-          description: String(item?.description || ''),
-          tags: Array.isArray(item?.tags) ? item.tags.map((tag: unknown) => String(tag)) : [],
+          ...item,
+          title: item.title || item.id,
+          description: item.description || '',
+          tags: item.tags ?? [],
           type: 'system-design',
-          access: item?.access === 'premium' ? 'premium' : 'free',
-          difficulty: item?.difficulty ? String(item.difficulty) : undefined,
-          companies: Array.isArray(item?.companies)
-            ? item.companies.map((company: unknown) => String(company))
-            : [],
-          updatedAt: item?.updatedAt ? String(item.updatedAt) : undefined,
+          access: item.access === 'premium' ? 'premium' : 'free',
+          practice: resolveSystemDesignPractice(item),
         }))
         .filter((item) => item.id && item.title),
     })),

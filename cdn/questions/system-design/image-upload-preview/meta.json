@@ -34,7 +34,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Image Upload and Preview Frontend System Design",
     "description": "Design image upload with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors."
@@ -55,7 +55,7 @@
     "searchIntent": "Prepare a frontend system design answer for Image Upload & Preview Component.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Image Upload & Preview Component.",
     "uniqueAngle": "Design an image upload flow with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

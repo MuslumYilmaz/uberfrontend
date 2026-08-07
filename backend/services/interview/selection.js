@@ -18,12 +18,19 @@ const TRACK_TECH_COUNTS = {
 };
 
 class InterviewSelectionError extends Error {
-  constructor(message) {
+  constructor(message, {
+    code = 'INTERVIEW_SELECTION_UNAVAILABLE',
+    statusCode = 503,
+  } = {}) {
     super(message);
     this.name = 'InterviewSelectionError';
-    this.code = 'INTERVIEW_SELECTION_UNAVAILABLE';
-    this.statusCode = 503;
+    this.code = code;
+    this.statusCode = statusCode;
   }
+}
+
+function targetedSystemDesignError(code, message) {
+  throw new InterviewSelectionError(message, { code, statusCode: 400 });
 }
 
 function seededRank(seed, value) {
@@ -206,7 +213,44 @@ function selectSystemDesignScenario({
   level,
   seenCounts = new Map(),
   seed,
+  sourceContentId = null,
+  privateByKey = null,
 }) {
+  if (sourceContentId) {
+    const privateMatches = privateByKey instanceof Map
+      ? [...privateByKey.entries()].filter(([, privateScenario]) => (
+        privateScenario?.sourceEvidence?.sourceContentId === sourceContentId
+      ))
+      : [];
+    if (!privateMatches.length) {
+      targetedSystemDesignError(
+        'INTERVIEW_SYSTEM_DESIGN_SOURCE_INVALID',
+        'The requested System Design source question is invalid'
+      );
+    }
+
+    const matchingKeys = new Set(privateMatches.map(([key]) => key));
+    const linkedScenarios = scenarios.filter((scenario) => (
+      matchingKeys.has(`${scenario.id}@${scenario.revision}`)
+    ));
+    const enabledScenarios = linkedScenarios.filter((scenario) => scenario.enabled);
+    if (enabledScenarios.length !== 1) {
+      targetedSystemDesignError(
+        'INTERVIEW_SYSTEM_DESIGN_SOURCE_UNAVAILABLE',
+        'The requested System Design case is unavailable'
+      );
+    }
+
+    const selected = enabledScenarios[0];
+    if (selected.level !== level) {
+      targetedSystemDesignError(
+        'INTERVIEW_SYSTEM_DESIGN_SOURCE_LEVEL_MISMATCH',
+        'The requested System Design case does not match the selected level'
+      );
+    }
+    return selected;
+  }
+
   const eligible = scenarios
     .filter((scenario) => scenario.enabled && scenario.level === level)
     .map((scenario) => {

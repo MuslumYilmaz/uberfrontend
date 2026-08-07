@@ -205,10 +205,16 @@
       "text": "Follow mode is a user-visible state, not a scroll-position guess recalculated on every frame. Enter it only when the viewer reaches the live edge or activates Jump to live, and leave it when intentional upward movement crosses a measured boundary. Preserve the anchor through font loading, deleted comments, and composer resizing. On mobile, keep video controls and comment composer reachable without turning the whole document into a horizontally overflowing split view. Verify this behavior with keyboard, touch, zoom, and large text. Reconnect tests also cover duplicate acknowledgements and permission changes while an unsent draft exists."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Live Comments for Global Streams (Real-time) assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "live comments global stream answer rubric",
+      "items": [
+        "Must — Normalize comments by stable identity and merge resumable events in contiguous sequence order.",
+        "Must — Keep moderation state versioned so removed or hidden content cannot reappear from stale events.",
+        "Strong signal — Batch visible projection updates while retaining every accepted authoritative event.",
+        "Strong signal — Preserve reading position and announce new activity without stealing focus.",
+        "Expert stretch — Explain regional reconnect, bounded cache, and privacy-safe moderation telemetry.",
+        "Red flag — Replacing authoritative comment identity and sequence with a client-arrival-only projection during bursts."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

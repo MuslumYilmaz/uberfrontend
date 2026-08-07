@@ -100,6 +100,29 @@
   font-size: var(--uf-meta-size);
 }
 
+.targeted-case,
+.target-resolution {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uf-space-4);
+  min-width: 0;
+  padding: var(--uf-space-4);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 48%, var(--uf-border-subtle));
+  border-radius: var(--uf-radius-12);
+  background: var(--uf-accent-soft);
+
+  div { min-width: 0; }
+  h3 { margin: var(--uf-space-1) 0; font-size: var(--uf-subsection-title-size); }
+  p:last-child { margin: 0; color: var(--uf-text-secondary); line-height: 1.5; }
+  button { flex: 0 0 auto; }
+}
+
+.target-resolution--error {
+  border-color: var(--uf-status-danger-border);
+  background: var(--uf-status-danger-bg);
+}
+
 .fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -232,6 +255,8 @@ fa-select { width: 100%; }
 
   .resume-card,
   .setup-card__header,
+  .targeted-case,
+  .target-resolution,
   .duration-summary {
     align-items: stretch;
     flex-direction: column;

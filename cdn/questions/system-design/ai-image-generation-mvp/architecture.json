@@ -115,7 +115,7 @@
       "steps": [
         {
           "title": "1. Submit prompt",
-          "text": "Before transport begins, store the create idempotency key and prompt snapshot. POST /generations returns 202 Accepted, a Location status URL, job ID, and initial version; only then can the pending command link to the job."
+          "text": "Before transport begins, store the create idempotency key and prompt snapshot. POST /api/images/generations returns 202 Accepted, a Location status URL, job ID, and initial version; only then can the pending command link to the job."
         },
         {
           "title": "2. Track status",

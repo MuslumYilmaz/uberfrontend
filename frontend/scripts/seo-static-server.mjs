@@ -31,6 +31,7 @@ const TARGETED_INDEX_REWRITES = [
   /^\/admin(?:\/.*)?$/i,
   /^\/billing(?:\/.*)?$/i,
   /^\/onboarding(?:\/.*)?$/i,
+  /^\/interview(?:\/.*)?$/i,
   /^\/track\/[^/]+$/i,
   /^\/tracks\/[^/]+$/i,
   /^\/companies\/[^/]+(?:\/(?:all|coding|trivia|system))?$/i,

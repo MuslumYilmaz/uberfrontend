@@ -4,184 +4,11 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Cover performance (many toasts, frequent updates), timers and cleanup, accessibility details, z-index issues, and how you’d keep the UX sane on different devices."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Start with a global store, portal, one lifecycle coordinator, and semantic announcements. Measure burst size, action completion, animation cost, and reading opportunity before tuning visible limits, motion, or timed lifetimes."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Toast quality checks:\n- Optimization begins from a correct lifecycle and recovery model.\n- Burst handling must not hide distinct actionable or critical outcomes.\n- Timer, announcement, and animation behavior are measured separately.\n- Desktop, mobile, reduced-motion, keyboard, and screen-reader paths remain equivalent."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Baseline safeguards",
-              "items": [
-                "Limit the maximum number of visible toasts (e.g. 3–5) and remove or queue older ones.",
-                "Ensure timers are always cleared on unmount or when toasts are removed.",
-                "Use timing only for low-risk status messages and pause remaining time for focus, hover, page hiding, or applicable user timing preferences.",
-                "Debounce or collapse identical messages (e.g. repeated \"Network error\" toasts).",
-                "Make manual close cancel the active timer before removing the toast.",
-                "Use CSS transitions for enter/exit animations instead of heavy JS-based animation loops."
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Accessibility and UX deep-dive points",
-              "items": [
-                "Use status and polite announcement by default; reserve alert for genuinely urgent information.",
-                "Announce only the important text to screen readers, not decorative content.",
-                "For interactive toasts with buttons, ensure focus is visible and keyboard navigation works.",
-                "Respect reduced motion preferences by disabling or simplifying animations.",
-                "On mobile, consider full-width toasts at top/bottom with larger touch targets."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "checklist",
-      "title": "Explicit edge cases",
-      "items": [
-        "Many toasts fired quickly: cap visible toasts, group only safely equivalent statuses, and queue distinct actionable or critical outcomes.",
-        "Duplicate messages: dedupe, collapse counts, or let callers provide stable ids.",
-        "Max visible toasts: keep layout bounded and avoid covering primary UI.",
-        "Overflow policy: low-risk duplicate statuses may collapse, while distinct actionable or critical outcomes stay persistent and recoverable.",
-        "Persistent actions and adjustable timing: users must have enough time to read, understand, and operate every message.",
-        "Manual close cancels timer: no timeout should fire after the toast is gone.",
-        "Route changes: choose whether to keep contextual toasts or clear them on navigation.",
-        "Provider unmount: clear subscriptions, timers, and pending queues.",
-        "Reduced motion: disable or simplify enter/exit animations.",
-        "Screen reader announcement overload: avoid spamming live regions during bursts.",
-        "Z-index conflicts with modals: define the toast layer relative to dialogs and popovers.",
-        "Mobile placement/full-width layout: avoid tiny corner toasts and use larger touch targets."
-      ]
+      "text": "Harden the lifecycle before adding policy. Verify bounded bursts, recoverable actions, one cleanup, and one announcement per eligible ID."
     },
     {
       "type": "table",
-      "title": "Deep-dive topics you can offer",
-      "columns": [
-        "Topic",
-        "Angle",
-        "Decision rationale"
-      ],
-      "rows": [
-        [
-          "Z-index and layering",
-          "Toasts vs modals vs dropdowns",
-          "Reserve an overlay layer for toasts, then define its relationship to dialogs and popovers so transient feedback cannot unexpectedly cover a blocking interaction."
-        ],
-        [
-          "Handling toast storms",
-          "Too many notifications",
-          "Cap the visible stack. Collapse only messages with a safe dedupe key; queue distinct outcomes so overflow never deletes the sole recovery action."
-        ],
-        [
-          "Route changes",
-          "Navigation & cleanup",
-          "Classify each toast as route-scoped or application-scoped. Navigation clears route-scoped entries and the lifetime coordinator cancels every associated timer."
-        ],
-        [
-          "Performance on low-end devices",
-          "Avoid jank",
-          "Keep each item inexpensive to lay out and paint. If profiling shows jank, simplify shadows, filters, and motion before adding scheduling complexity."
-        ],
-        [
-          "Action toasts (Undo)",
-          "State consistency",
-          "Keep recovery actions visible until completion or explicit dismissal. Pause optional timers during interaction and expose action progress and failure through the same lifecycle coordinator."
-        ]
-      ]
-    },
-    {
-      "type": "steps",
-      "title": "Toast optimization rollout",
-      "steps": [
-        {
-          "title": "1. Ship a clean baseline",
-          "text": "Global store, top-level rendering, bounded stacking, polite status announcements, persistent action messages, optional timed low-risk feedback, and complete cleanup."
-        },
-        {
-          "title": "2. Observe usage",
-          "text": "See how many toasts are typically active, which variants are used most, and whether users trigger bursts of notifications."
-        },
-        {
-          "title": "3. Fix obvious pain points",
-          "text": "Cap visible toasts, pause remaining time for every applicable reason, keep actionable or critical messages persistent, and collapse noisy duplicates without hiding distinct outcomes."
-        },
-        {
-          "title": "4. Polish accessibility & responsiveness",
-          "text": "Verify keyboard navigation, screen reader announcements, mobile layout, and behavior under reduced-motion settings."
-        },
-        {
-          "title": "5. Hardening & edge cases",
-          "text": "Test route changes, app teardown, error boundaries, and ensure there are no timer leaks or orphaned toasts in weird flows."
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Biggest UX risk",
-          "value": "Toast overload",
-          "helperText": "Too many notifications quickly become background noise."
-        },
-        {
-          "label": "Biggest tech risk",
-          "value": "Timer leaks",
-          "helperText": "Forgetting to clear timeouts on unmount can cause bugs and memory issues."
-        },
-        {
-          "label": "Strong senior signal",
-          "value": "Measure → then tune",
-          "helperText": "You talk about real usage, profiling and trade-offs instead of random micro-optimizations."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Transient-feedback invariant",
-      "text": "A great toast system isn’t just \"it shows notifications\". It behaves well when spammed, respects accessibility and motion preferences, cleans up timers reliably, and stays readable and unobtrusive on both desktop and mobile."
-    },
-    {
-      "type": "heading",
-      "text": "Toast lifecycle failures"
-    },
-    {
-      "type": "table",
-      "title": "Failure modes",
+      "title": "Failure handling",
       "columns": [
         "Failure",
         "Response",
@@ -189,49 +16,68 @@
       ],
       "rows": [
         [
-          "Burst of identical errors",
-          "Collapse by safe key and retain the latest useful context.",
-          "The screen is not covered by duplicates."
+          "Manual dismiss and expiry fire together",
+          "Send both signals through remove(id); accept the first transition and ignore the late one.",
+          "Store removal and timeout disposal each happen once."
         ],
         [
-          "Action command fails",
-          "Keep the toast persistent and show retryable state.",
-          "User intent remains recoverable."
+          "A burst exceeds the visible limit",
+          "Render three records and append additional distinct records to the ordered queue.",
+          "The viewport stays bounded without losing an outcome."
         ],
         [
-          "Route changes",
-          "Remove route-scoped messages and preserve global outcomes by policy.",
-          "Stale context does not linger."
+          "The same save event repeats",
+          "Collapse only records that share a safe dedupe key.",
+          "Unrelated messages and recovery actions remain distinct."
         ],
         [
-          "Provider unmounts",
-          "Cancel deadlines and subscriptions before teardown.",
-          "No orphan callback mutates destroyed state."
+          "Review action fails",
+          "Keep the persistent toast, expose retry, and retain failure context.",
+          "The user’s recovery path remains available."
         ]
       ]
     },
     {
       "type": "heading",
-      "text": "Accessibility behavior"
+      "text": "Accessibility and responsive behavior"
     },
     {
       "type": "text",
-      "text": "Use role status and polite announcements for ordinary feedback, with role alert reserved for urgent information that truly warrants interruption. A toast appearing never steals focus. Interactive controls participate in normal tab order, display a strong focus indicator, and remain long enough to operate. Timing pauses for focus, hover, page hiding, and applicable user preferences."
+      "text": "Use a stable status live region with polite delivery for ordinary feedback and reserve alert for real interruption. Appearance never moves focus. Review, Undo, retry, and close controls have descriptive labels, visible focus treatment, and normal keyboard order. A narrow viewport uses available width without changing record identity. Decorative motion respects reduced-motion preferences."
     },
     {
       "type": "heading",
-      "text": "Rollout and measurement"
+      "text": "Verification and measurement"
+    },
+    {
+      "type": "checklist",
+      "title": "Tests that protect the design",
+      "items": [
+        "Fire dismiss and expiry in both orders; assert one removal and one disposal.",
+        "Send four distinct commands; assert three visible and one queued record.",
+        "Rerender and reorder a record; assert its announcement ID is emitted once.",
+        "Fail an action; assert the persistent toast keeps keyboard-operable retry.",
+        "Use long localized text; assert wrapping does not cover controls."
+      ]
     },
     {
       "type": "text",
-      "text": "Instrument overflow, duplicate collapse, manual dismissal, action completion, timer pause, and announcement rate. Canary persistent-action behavior before changing default lifetimes, and keep an inline-error fallback for workflows where a toast alone cannot explain recovery."
+      "text": "Instrument queue depth, duplicate collapse, removal cause, action outcomes, and announcement emission. Review by viewport class and assistive-technology test runs before changing capacity. Use an inline or page error when recovery needs more context."
     },
     {
       "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Design a Toast Notification System assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
       "variant": "info",
-      "editorialRole": "answer-checkpoint"
+      "title": "Expert stretch",
+      "text": "Cover route scope, pause and resume, and measured policies for fair overflow. Define which records survive navigation. If research shows users need more reading time, resume from stored remaining lifetime. If telemetry shows starvation, compare admission using observed urgency, age, and recovery value instead of an invented priority rule."
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/notification-toast-system/toast-dismiss-timeout-race.svg",
+      "alt": "Timeline showing manual dismiss and timeout racing into one idempotent remove transition with timer cleanup.",
+      "caption": "Dismiss-timeout race: either signal may arrive first, but removal and cleanup happen once.",
+      "width": 960,
+      "height": 420,
+      "fallbackText": "Text fallback: Manual dismiss marks the toast removing and clears its timeout. A late timeout observes the terminal state and does nothing; if timeout wins, a later dismiss is also a no-op."
     },
     {
       "type": "links",

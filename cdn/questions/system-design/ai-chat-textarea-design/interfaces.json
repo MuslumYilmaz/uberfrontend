@@ -4,39 +4,12 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Expose a composer-oriented client contract: persisted draft state, transient composition state, attachment readiness, send, sequenced stream open or resume, idempotent Stop, retry, and authoritative turn snapshots. Keep raw transport parsing and history implementation outside view components."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "A useChatComposer adapter returns the persisted draft, transient interaction state, current turn, and intent methods. send accepts finalized attachment IDs plus stable command and client message identities. The event contract resumes after the last accepted sequence and correlates every event with conversationId, streamId, messageId, and sequence."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Contract checks:\n- Persisted draft, transient interaction, attachment readiness, current turn, Send, Stop, and retry form the composer surface.\n- Stream events use one lowercase SSE protocol with conversationId, streamId, messageId, and sequence.\n- Stable send and Stop command identities make lost-response retries idempotent.\n- Resume continues after the last accepted sequence or falls back to an authoritative turn snapshot.\n- Conversation-history loading remains outside this composer contract."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
+      "text": "Expose draft editing independently from the current response. The view receives attachment readiness, a primary action that is Send or Stop, the only active turn, and terminal Retry or Regenerate. Raw transport parsing and history loading remain outside view components."
     },
     {
       "type": "code",
       "language": "ts",
-      "code": "interface SendCommand {\n  commandId: string;\n  clientMessageId: string;\n  text: string;\n  attachmentIds: string[];\n}\n\ninterface StopCommand {\n  stopCommandId: string;\n  conversationId: string;\n  streamId: string;\n}\n\ntype TurnEvent =\n  | { type: 'message.delta'; conversationId: string; streamId: string; messageId: string; sequence: number; delta: string }\n  | { type: 'message.completed'; conversationId: string; streamId: string; messageId: string; sequence: number }\n  | { type: 'message.stopped'; conversationId: string; streamId: string; messageId: string; sequence: number }\n  | { type: 'message.failed'; conversationId: string; streamId: string; messageId: string; sequence: number; errorCode: string };\n\ninterface OpenTurnEventsInput {\n  conversationId: string;\n  streamId: string;\n  afterSequence: number;\n  signal: AbortSignal;\n}\n\ninterface UseChatComposerResult {\n  draft: ComposerDraft;\n  interaction: ComposerInteractionState;\n  attachments: AttachmentDraft[];\n  activeTurn: StreamMessage | null;\n  updateText(text: string): void;\n  send(command: SendCommand): Promise<void>;\n  stop(): Promise<void>;\n  retry(commandId: string): Promise<void>;\n}\n\ninterface ChatTurnClient {\n  send(input: SendCommand & { conversationId: string; signal: AbortSignal }): Promise<{\n    messageId: string;\n    assistantMessageId: string;\n    streamId: string;\n  }>;\n  openEvents(input: OpenTurnEventsInput): AsyncIterable<TurnEvent>;\n  stop(input: StopCommand & { signal: AbortSignal }): Promise<{\n    acceptedStopCommandId: string;\n  }>;\n  getTurnSnapshot(input: {\n    conversationId: string;\n    commandId: string;\n    clientMessageId: string;\n    streamId: string;\n    signal: AbortSignal;\n  }): Promise<TurnSnapshot>;\n}",
+      "code": "interface SendCommand {\n  commandId: string;\n  clientMessageId: string;\n  text: string;\n  attachmentIds: string[];\n}\n\ninterface StopCommand {\n  stopCommandId: string;\n  conversationId: string;\n  streamId: string;\n}\n\ntype TurnEvent =\n  | { type: 'message.delta'; conversationId: string; streamId: string; messageId: string; sequence: number; delta: string }\n  | { type: 'message.completed'; conversationId: string; streamId: string; messageId: string; sequence: number }\n  | { type: 'message.stopped'; conversationId: string; streamId: string; messageId: string; sequence: number }\n  | { type: 'message.failed'; conversationId: string; streamId: string; messageId: string; sequence: number; errorCode: string };\n\ninterface OpenTurnEventsInput {\n  conversationId: string;\n  streamId: string;\n  afterSequence: number;\n  signal: AbortSignal;\n}\n\ninterface UseChatComposerResult {\n  draft: ComposerDraft;\n  interaction: ComposerInteractionState;\n  attachments: AttachmentDraft[];\n  activeTurn: StreamMessage | null;\n  primaryAction: 'send' | 'stop';\n  updateText(text: string): void;\n  send(command: SendCommand): Promise<void>;\n  retransmitSend(): Promise<void>;\n  stop(command: StopCommand): Promise<void>;\n  retryAfterTerminal(command: SendCommand): Promise<void>;\n}\n\ninterface ChatTurnClient {\n  send(input: SendCommand & { conversationId: string; signal: AbortSignal }): Promise<{\n    acceptedCommandId: string;\n    acceptedClientMessageId: string;\n    messageId: string;\n    assistantMessageId: string;\n    streamId: string;\n  }>;\n  openEvents(input: OpenTurnEventsInput): AsyncIterable<TurnEvent>;\n  stop(input: StopCommand & { signal: AbortSignal }): Promise<{\n    acceptedStopCommandId: string;\n  }>;\n  getTurnSnapshot(input: {\n    conversationId: string;\n    commandId: string;\n    clientMessageId: string;\n    streamId: string;\n    signal: AbortSignal;\n  }): Promise<TurnSnapshot>;\n}",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -54,119 +27,30 @@
       }
     },
     {
-      "type": "table",
-      "title": "Core interfaces",
-      "columns": [
-        "Contract surface",
-        "Shape (example)",
-        "How you explain it"
-      ],
-      "rows": [
-        [
-          "useChatComposer",
-          "{ draft, interaction, attachments, activeTurn, send, stop, retry }",
-          "Keeps persisted draft, transient composition, and turn intent separate from transport parsing."
-        ],
-        [
-          "send",
-          "commandId, clientMessageId, text, attachmentIds",
-          "Snapshots one composition-complete turn for idempotent reconciliation."
-        ],
-        [
-          "stream events",
-          "conversationId, streamId, messageId, sequence, delta or terminal phase",
-          "Opens or resumes after the last accepted sequence and updates exactly one assistant resource."
-        ],
-        [
-          "stop",
-          "conversationId + streamId + stopCommandId",
-          "Retries one stable Stop intent while local AbortSignal closes transport work."
-        ],
-        [
-          "getTurnSnapshot",
-          "conversationId + commandId + clientMessageId + streamId",
-          "Reconciles authoritative terminal status when event resume or a command response is lost."
-        ]
-      ]
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Public behavior",
-              "items": [
-                "persisted draft text, transient composition state, and attachment phases",
-                "send, stop, and retry intents",
-                "current turn identity, partial text, and terminal phase"
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Transport and buffering behind the adapter",
-              "items": [
-                "raw SSE parsing in the UI",
-                "streaming timers or internal buffers",
-                "database details leaking into components"
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
       "type": "steps",
       "title": "Integration flow",
       "steps": [
         {
-          "title": "1. Restore",
-          "text": "Adapter restores the scoped draft independently from recent messages."
+          "title": "Restore",
+          "text": "Restore the account-and-conversation draft independently from recent messages."
         },
         {
-          "title": "2. Send",
-          "text": "After composition and attachment validation, UI calls send with stable command and client message IDs."
+          "title": "Send or retransmit",
+          "text": "After composition ends and attachments are ready, call send with stable command and client message IDs. If only its response is lost, retransmit that same commandId."
         },
         {
-          "title": "3. Stream",
-          "text": "Adapter opens or resumes after lastSequence, accepts only matching next-sequence events, and batches visual text commits when measured."
+          "title": "Open or resume events",
+          "text": "Open with afterSequence equal to lastSequence. Accept a next-sequence event only for the active conversationId, streamId, and messageId."
         },
         {
-          "title": "4. Stop",
-          "text": "User activates Stop; the coordinator creates one stopCommandId, local transport closes, retries reuse that identity, and terminal status still reconciles through resumed events or getTurnSnapshot."
+          "title": "Stop and reconcile",
+          "text": "Create one stopCommandId per user intent and reuse it after a lost response. Local reading may abort, but resumed events or getTurnSnapshot must still confirm authoritative terminal status."
+        },
+        {
+          "title": "Retry after terminal",
+          "text": "Only complete, stopped, or failed exposes Retry or Regenerate. That user action creates a new Send command and accepts a new streamId; the old command is never repurposed."
         }
       ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Primary endpoint",
-          "value": "send + stream",
-          "helperText": "Correlated command and event identities drive the current turn."
-        },
-        {
-          "label": "Paging",
-          "value": "sequence",
-          "helperText": "Rejects duplicate and stale stream deltas."
-        },
-        {
-          "label": "Client API",
-          "value": "useChatComposer",
-          "helperText": "Keeps the view focused on draft and turn intent."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Contract checkpoint",
-      "text": "A good API makes persisted draft ownership, transient IME state, attachment readiness, send and Stop command identity, stream resume, snapshot reconciliation, and retry visible while hiding raw SSE parsing."
     },
     {
       "type": "heading",
@@ -174,29 +58,7 @@
     },
     {
       "type": "text",
-      "text": "send accepts text, finalized attachment IDs, command ID, client message ID, and AbortSignal at the client boundary. openEvents starts after the last accepted sequence so reconnects do not replay accepted deltas. Stop is an idempotent command: create one stopCommandId per user intent and reuse it after a lost response, while AbortSignal closes only local transport work. The UI uses resumed terminal events or getTurnSnapshot to reconcile authoritative message status after cancellation races."
-    },
-    {
-      "type": "steps",
-      "title": "From composition-safe draft to terminal turn",
-      "steps": [
-        {
-          "title": "Compose",
-          "text": "Honor beforeinput and composition events, update draft, and autosize within a measured maximum."
-        },
-        {
-          "title": "Prepare",
-          "text": "Wait for required attachment finalization and preserve accessible error links."
-        },
-        {
-          "title": "Send",
-          "text": "Snapshot content under one client ID and reconcile the echoed server message."
-        },
-        {
-          "title": "Stream",
-          "text": "Batch visual deltas, expose Stop, and keep partial content on recoverable interruption."
-        }
-      ]
+      "text": "Send accepts text, finalized attachment IDs, commandId, clientMessageId, and AbortSignal at the client boundary. AbortSignal ending a browser request says nothing about whether the server accepted Send or Stop. The coordinator therefore retains the original command, resumes ordered events, or requests an authoritative snapshot. Components see a single primary action and terminal recovery; they never parse SSE or choose which late event wins."
     }
   ]
 }

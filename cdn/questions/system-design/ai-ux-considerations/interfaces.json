@@ -4,39 +4,12 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Expose structured proposal and action contracts. The client requests a proposal with AbortSignal, submits reviewed inputs with a version precondition and command ID, and receives authoritative per-item outcomes."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "ProposalClient returns escaped structured fields, inspectable evidence references, expiry, and explicit capabilities. ActionClient accepts only reviewed item IDs and edits against the proposal version."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Contract checks:\n- AbortSignal cancels local waiting, not authoritative work by assumption.\n- Proposal version and evidence freshness are visible.\n- Command identity makes uncertain retries idempotent.\n- Mixed results retain one outcome per item."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
+      "text": "The client API mirrors the ownership model. Proposal generation returns content, a separate read composes current evidence and eligibility, and approve accepts only an ApprovalCommand. Acceptance means the command was recorded, not that every record changed. Cancel and rollback have their own identities because they express different intent and can produce different authoritative outcomes."
     },
     {
       "type": "code",
       "language": "ts",
-      "code": "interface ProposalRequest {\n  intent: string;\n  visibleItemIds: string[];\n  contextVersion: number;\n}\n\ninterface ApplyProposalCommand {\n  commandId: string;\n  proposalId: string;\n  basedOnVersion: number;\n  selectedItemIds: string[];\n  edits: Record<string, string>;\n}\n\ninterface AIReviewClient {\n  requestProposal(input: ProposalRequest, signal: AbortSignal): Promise<AIProposal>;\n  refreshProposal(input: { proposalId: string }, signal: AbortSignal): Promise<AIProposal>;\n  applyProposal(input: ApplyProposalCommand, signal: AbortSignal): Promise<CommandOutcome>;\n  getCommandOutcome(commandId: string, signal: AbortSignal): Promise<CommandOutcome>;\n}",
+      "code": "interface ProposalRequest {\n  requestId: string;\n  customerIds: string[];\n  requestedAt: string;\n}\n\ninterface AcceptedApproval {\n  commandId: string;\n  state: 'accepted';\n}\n\ninterface CancelExecutionRequest {\n  cancelCommandId: string;\n  executionCommandId: string;\n}\n\ninterface CancelReceipt {\n  cancelCommandId: string;\n  state: 'requested' | 'rejected' | 'too-late';\n}\n\ninterface RollbackCommand {\n  rollbackCommandId: string;\n  executionCommandId: string;\n  items: Array<{\n    customerId: string;\n    rollbackToken: string;\n    expectedCustomerVersion: number;\n  }>;\n}\n\ninterface BulkEditReviewClient {\n  requestProposal(input: ProposalRequest, signal: AbortSignal): Promise<GeneratedProposalContent>;\n  getProposalEnvelope(proposalId: string, signal: AbortSignal): Promise<ProposalEnvelope>;\n  approve(input: ApprovalCommand, signal: AbortSignal): Promise<AcceptedApproval>;\n  requestCancel(input: CancelExecutionRequest, signal: AbortSignal): Promise<CancelReceipt>;\n  getActionOutcome(commandId: string, signal: AbortSignal): Promise<ActionOutcome>;\n  rollback(input: RollbackCommand, signal: AbortSignal): Promise<ActionOutcome>;\n}",
       "validation": {
         "kind": "contract",
         "level": "typecheck",
@@ -45,134 +18,47 @@
     },
     {
       "type": "table",
-      "title": "Core interfaces",
+      "title": "UI-facing contract behavior",
       "columns": [
-        "Contract surface",
-        "Shape (example)",
-        "How you explain it"
+        "Operation",
+        "Success means",
+        "Visible recovery"
       ],
       "rows": [
         [
           "requestProposal",
-          "intent, visible item IDs, context version",
-          "Returns structured reviewable advice, not executable markup."
+          "Structured generated suggestions passed validation",
+          "Malformed content becomes a bounded error with Retry; no product action is available"
         ],
         [
-          "refreshProposal",
-          "proposal ID",
-          "Revalidates evidence and capabilities when a proposal becomes stale."
+          "getProposalEnvelope",
+          "Evidence and eligibility were checked at checkedAt",
+          "Stale or restricted rows remain readable and name what must be refreshed"
         ],
         [
-          "applyProposal",
-          "command ID, proposal version, reviewed IDs, edits",
-          "Submits explicit user intent and returns per-item outcomes."
+          "approve",
+          "The idempotent command was accepted for processing",
+          "Keep rows pending and poll or subscribe until ActionOutcome resolves"
+        ],
+        [
+          "requestCancel",
+          "The service recorded or rejected cancellation intent",
+          "Continue reconciliation because a late result can supersede the request"
+        ],
+        [
+          "rollback",
+          "A compensating command was accepted for eligible successes",
+          "Render its per-item outcome separately from the original bulk edit"
         ]
       ]
     },
     {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Public behavior",
-              "items": [
-                "proposal identity, version, evidence, expiry, and capabilities",
-                "reviewed item IDs and edits",
-                "command identity and per-item outcomes"
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Model and policy mechanics outside the view",
-              "items": [
-                "hidden model reasoning",
-                "raw generated markup or executable actions",
-                "internal policy errors without user-facing recovery"
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "steps",
-      "title": "Integration flow",
-      "steps": [
-        {
-          "title": "1. Request",
-          "text": "Request structured advice under a context version and preserve cancellable pending intent."
-        },
-        {
-          "title": "2. Review",
-          "text": "Validate the proposal, show evidence and limitations, and derive current capabilities."
-        },
-        {
-          "title": "3. Apply and reconcile",
-          "text": "Send one versioned command, then render authoritative per-item outcomes and focused recovery."
-        }
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Authority",
-          "value": "explicit confirmation",
-          "helperText": "Generated text alone cannot execute."
-        },
-        {
-          "label": "Freshness",
-          "value": "proposal version",
-          "helperText": "Stale advice must be refreshed before action."
-        },
-        {
-          "label": "Recovery",
-          "value": "commandId + item outcomes",
-          "helperText": "Uncertain responses and mixed results converge safely."
-        }
-      ]
-    },
-    {
-      "type": "callout",
-      "variant": "warning",
-      "title": "Contract checkpoint",
-      "text": "The contract is complete only when proposal freshness, user-reviewed input, idempotent command identity, and per-item authoritative outcomes are explicit."
-    },
-    {
       "type": "heading",
-      "text": "UI-facing contract"
+      "text": "Identity and retry behavior"
     },
     {
       "type": "text",
-      "text": "The assistant contract returns structured, escaped proposal content and capabilities rather than executable markup. Cancellable requests accept AbortSignal. Destructive commands require explicit reviewed inputs, version or proposal preconditions, and idempotency. The client never treats hidden reasoning as a required display field."
-    },
-    {
-      "type": "steps",
-      "title": "From uncertain proposal to reconciled outcomes",
-      "steps": [
-        {
-          "title": "Frame",
-          "text": "State what the system can and cannot know before showing a recommendation."
-        },
-        {
-          "title": "Review",
-          "text": "Expose evidence, affected items, editable parameters, and a safe default."
-        },
-        {
-          "title": "Confirm",
-          "text": "Require explicit intent for high-impact actions and preserve an audit-friendly summary."
-        },
-        {
-          "title": "Reconcile",
-          "text": "Render authoritative per-item outcomes and keep recovery next to failures."
-        }
-      ]
+      "text": "Create one commandId for one approval click and reuse it after a lost response. The service returns the earlier receipt or outcome for the same payload and rejects a different payload under that identity. A new approval after changing selected records gets a new ID. Cancel uses cancelCommandId, and rollback uses rollbackCommandId plus tokens issued only for confirmed reversible successes. AbortSignal stops the browser from waiting; it never changes the product status by itself."
     }
   ]
 }

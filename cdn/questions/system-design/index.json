@@ -3,6 +3,10 @@
     "id": "offline-email-client",
     "title": "Gmail-Style Offline Email Client Frontend System Design",
     "description": "Design an offline-first web email client with normalized mailbox state, incremental sync, durable drafts, idempotent sending, safe message rendering, and accessible navigation.",
+    "discovery": {
+      "teaser": "Connectivity recovery must preserve newer local drafts, avoid duplicate sends, and explain whether each action is queued or confirmed.",
+      "guideLabel": "Trace offline reconciliation"
+    },
     "tags": [
       "email",
       "offline-first",
@@ -27,6 +31,10 @@
     "id": "ai-agent-run-inspector",
     "title": "AI Agent Run Inspector Frontend System Design",
     "description": "Design an AI agent run inspector for nested spans, live tool calls, approval races, resilient stream state, virtualized navigation, redaction, and accessibility.",
+    "discovery": {
+      "teaser": "Late spans, tool calls, and approvals must reconstruct one trustworthy run without exposing redacted data or losing keyboard navigation.",
+      "guideLabel": "Inspect run-event ordering"
+    },
     "tags": [
       "real-time",
       "streams",
@@ -51,6 +59,10 @@
     "id": "infinite-scroll-list",
     "title": "Infinite Scroll List System Design",
     "description": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
+    "discovery": {
+      "teaser": "Page retries and changing results must extend a long list without duplicates, scroll jumps, unbounded DOM growth, or an inaccessible loading trap.",
+      "guideLabel": "Compare pagination and windowing"
+    },
     "tags": [
       "infinite-scroll",
       "intersection-observer",
@@ -73,6 +85,10 @@
     "id": "endless-short-video-feed",
     "title": "Endless Short-Video Feed (TikTok-Style)",
     "description": "Design an endless short-video feed with fast first playback, one active player, intent-aware preloading, bounded media memory, and network-aware recovery.",
+    "discovery": {
+      "teaser": "Rapid swipes and weak networks must keep one video responsive without runaway preloading, media-memory growth, or a broken recovery path.",
+      "guideLabel": "Tune playback and memory budgets"
+    },
     "tags": [
       "infinite-scroll",
       "virtualization",
@@ -86,13 +102,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "notification-toast-system",
     "title": "Design a Toast Notification System",
     "description": "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.",
+    "discovery": {
+      "teaser": "A dismiss timer racing a user action must remove one toast once while overflow waits and announcements do not repeat.",
+      "guideLabel": "Trace toast lifecycle cleanup"
+    },
     "tags": [
       "toast",
       "notifications",
@@ -107,13 +127,58 @@
     ],
     "type": "system-design",
     "access": "free",
-    "updatedAt": "2026-07-28",
-    "difficulty": "intermediate"
+    "updatedAt": "2026-08-06",
+    "difficulty": "intermediate",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "junior",
+      "timeboxMinutes": 10,
+      "candidatePrompt": "Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where manual dismiss and an expiry timer fire together: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe.",
+      "constraints": [
+        "Show no more than three toasts.",
+        "Actions and critical messages persist.",
+        "Services can trigger global feedback.",
+        "Rerenders never repeat speech."
+      ],
+      "expectedDecisions": [
+        "Choose the owner of global commands, ordered records, and rendering.",
+        "Define one timer lifecycle that resolves dismiss-timeout races safely.",
+        "Separate visible stacking policy from accessible announcement policy."
+      ],
+      "prerequisites": [
+        "Component state",
+        "Timeout cleanup",
+        "ARIA live regions"
+      ],
+      "coreSkills": [
+        "State ownership",
+        "Lifecycle cleanup",
+        "Race handling",
+        "Accessibility"
+      ],
+      "guidedMock": true,
+      "evaluationSpine": {
+        "mustCover": [
+          "One global owner orders the visible stack and overflow queue.",
+          "Dismiss and timeout share cleanup; only the first changes state."
+        ],
+        "strongSignals": [
+          "Actionable messages persist; the viewport owns no timers.",
+          "Separate announcement identity prevents repeat speech after rerenders."
+        ],
+        "expertStretch": "Route scope, pause/resume, and measured fair overflow.",
+        "redFlag": "Each component owns timers or announces again on every render."
+      }
+    }
   },
   {
     "id": "scalable-notifications-feed",
     "title": "Scalable Notifications Feed (Real-time)",
     "description": "Design a real-time notifications feed with resumable delivery, deduplication, unread semantics, burst batching, bounded storage, virtualization, and recovery.",
+    "discovery": {
+      "teaser": "Reconnects and traffic bursts must preserve notification order and unread meaning without duplicate items, unbounded storage, or a frozen feed.",
+      "guideLabel": "Review resumable delivery"
+    },
     "tags": [
       "notifications",
       "real-time",
@@ -123,13 +188,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "live-comments-global-stream",
     "title": "Live Comments for Global Streams (Real-time)",
     "description": "Design a live-comment stream with ordered resumable events, moderation-aware rendering, burst control, readable auto-follow behavior, and accessible interaction.",
+    "discovery": {
+      "teaser": "Bursty comments and late moderation events must converge without unreadable auto-scroll, reordered messages, or inaccessible controls.",
+      "guideLabel": "Trace moderation and recovery"
+    },
     "tags": [
       "real-time",
       "streams",
@@ -143,13 +212,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "netflix-scale-expansion",
     "title": "Netflix Continue Watching Frontend System Design",
     "description": "Design a resilient Continue Watching row across web, mobile, and TV with progress reconciliation, focus-safe actions, media loading, and measurable performance.",
+    "discovery": {
+      "teaser": "Progress from multiple devices must reconcile into a stable Continue Watching row without focus loss, stale percentages, or wasteful media loading.",
+      "guideLabel": "Reconcile cross-device progress"
+    },
     "tags": [
       "frontend-architecture",
       "architecture",
@@ -168,6 +241,10 @@
     "id": "multi-step-form-autosave",
     "title": "Multi-step Form with Autosave",
     "description": "Design a multi-step form with versioned drafts, validation boundaries, autosave scheduling, conflict-safe restoration, submission recovery, and accessible navigation.",
+    "discovery": {
+      "teaser": "A late autosave must never overwrite newer edits while users change steps, restore drafts, resolve conflicts, and recover submission.",
+      "guideLabel": "Review autosave conflict handling"
+    },
     "tags": [
       "forms",
       "autosave",
@@ -176,13 +253,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "intermediate"
   },
   {
     "id": "realtime-search-debounce-cache",
     "title": "Real-time Search with Debounce & Caching",
     "description": "Design real-time search with debounced intent, true request cancellation, stale-result suppression, complete cache keys, predictable UI states, and keyboard access.",
+    "discovery": {
+      "teaser": "A slower old query must never replace newer results while cancellation, caching, empty states, and keyboard navigation remain predictable.",
+      "guideLabel": "Trace stale-query suppression"
+    },
     "tags": [
       "search",
       "debounce",
@@ -192,13 +273,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "intermediate"
   },
   {
     "id": "dashboard-widgets-draggable-resizable",
     "title": "Drag-and-Drop Dashboard Frontend System Design",
     "description": "Design a customizable dashboard with pointer and keyboard movement, grid constraints, optimistic layout persistence, versioned migrations, and responsive reflow.",
+    "discovery": {
+      "teaser": "Drag and resize must stay responsive while layouts persist safely across conflicts, migrations, keyboard input, and responsive breakpoints.",
+      "guideLabel": "Review layout versioning"
+    },
     "tags": [
       "dashboard",
       "drag-drop",
@@ -207,13 +292,17 @@
     ],
     "type": "system-design",
     "access": "free",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "live-chart-high-frequency-updates",
     "title": "Live Chart Rendering (High Frequency Updates)",
     "description": "Design a live chart that ingests bursty samples, renders on demand, bounds memory, downsamples by viewport, recovers from gaps, and remains accessible.",
+    "discovery": {
+      "teaser": "Bursty samples can arrive faster than paint; the chart must bound memory, recover gaps, and remain readable without inventing data.",
+      "guideLabel": "Compare chart buffering strategies"
+    },
     "tags": [
       "charts",
       "real-time",
@@ -221,13 +310,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "component-design-system-architecture",
     "title": "Component-driven Design System Architecture",
     "description": "Design a component library with semantic tokens, accessible interaction contracts, composable APIs, release governance, migration paths, and measurable adoption.",
+    "discovery": {
+      "teaser": "A component release must evolve tokens and APIs without silently breaking accessibility, themes, consumers, or the migration path.",
+      "guideLabel": "Plan component migrations"
+    },
     "tags": [
       "design-system",
       "theming",
@@ -237,13 +330,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "image-upload-preview",
     "title": "Image Upload & Preview Component",
     "description": "Design an image upload flow with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors.",
+    "discovery": {
+      "teaser": "Cancel, retry, and finalize may arrive out of order; previews, progress, object URLs, and errors must still converge safely.",
+      "guideLabel": "Trace upload lifecycle states"
+    },
     "tags": [
       "images",
       "upload",
@@ -251,13 +348,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "intermediate"
   },
   {
     "id": "flashcard-language-trainer",
     "title": "Flashcard-based Language Learning App",
     "description": "Design a flashcard study experience with session state, offline progress, conflict-safe sync, input-independent reveal, reduced motion, and accessible feedback.",
+    "discovery": {
+      "teaser": "Offline study sessions must merge progress without losing answers while reveal controls, feedback, motion preferences, and synchronization stay accessible.",
+      "guideLabel": "Reconcile offline study progress"
+    },
     "tags": [
       "flashcards",
       "language-learning",
@@ -265,13 +366,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "intermediate"
   },
   {
     "id": "cross-device-preferences-sync",
     "title": "Cross-device Preferences Sync",
     "description": "Design preference synchronization across devices and tabs with versioned values, optimistic edits, offline queues, conflict policy, and stable UI reconciliation.",
+    "discovery": {
+      "teaser": "Two devices may edit the same preference from stale revisions without creating conflicts for unrelated settings.",
+      "guideLabel": "Resolve per-key conflicts"
+    },
     "tags": [
       "state-management",
       "local-storage",
@@ -281,13 +386,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "ai-chat-textarea-design",
-    "title": "AI Chat Text Area (ChatGPT-Style)",
-    "description": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
+    "title": "Design an AI Chat Composer and Streaming Turn",
+    "description": "Design an IME-safe AI chat composer with attachment readiness, one active response stream, idempotent Send and Stop commands, and stale-event recovery.",
+    "discovery": {
+      "teaser": "An old Send, Stop, or stream event must never change the active reply while IME input, attachments, and drafts remain intact.",
+      "guideLabel": "Trace send and stream identity"
+    },
     "tags": [
       "real-time",
       "streams",
@@ -298,13 +407,58 @@
     ],
     "type": "system-design",
     "access": "free",
-    "updatedAt": "2026-07-29",
-    "difficulty": "intermediate"
+    "updatedAt": "2026-08-06",
+    "difficulty": "intermediate",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "mid",
+      "timeboxMinutes": 15,
+      "candidatePrompt": "Design the composer and current reply for an AI chat app. A user may type Japanese with an IME, attach a file that is still uploading, press Enter twice, or stop a streaming answer and retry. An event from the old Send, Stop, or stream must never change the new active turn. Assign the state owned by the textarea, draft store, upload flow, and current turn. Explain recovery when a Send or Stop response is lost.",
+      "constraints": [
+        "IME Enter cannot send.",
+        "Only ready attachments may send.",
+        "An active reply turns Send into Stop.",
+        "Superseded events are ignored."
+      ],
+      "expectedDecisions": [
+        "Separate persisted draft, transient composition, and attachment readiness state.",
+        "Choose stable identities for send retransmission, stream events, and Stop retransmission.",
+        "Define terminal retry, sequence resume, and snapshot recovery without crossing turn identity."
+      ],
+      "prerequisites": [
+        "Controlled text input",
+        "AbortController",
+        "Streaming event basics"
+      ],
+      "coreSkills": [
+        "IME-safe input",
+        "Command idempotency",
+        "Stream reconciliation",
+        "Draft persistence"
+      ],
+      "guidedMock": true,
+      "evaluationSpine": {
+        "mustCover": [
+          "IME composition and unready attachments cannot send.",
+          "Stable identities protect one logical send and active stream."
+        ],
+        "strongSignals": [
+          "Drafting continues, but Send becomes Stop during an active reply.",
+          "Reconnect by sequence or snapshot; reject superseded stream events."
+        ],
+        "expertStretch": "Account drafts, cross-tab ownership, and safe Markdown.",
+        "redFlag": "Local abort masquerades as server Stop, or stale streams mutate the active turn."
+      }
+    }
   },
   {
     "id": "ai-image-generation-mvp",
     "title": "AI Image Generation MVP (Two-Week Design)",
     "description": "Design an AI image generation frontend with prompt state, accepted async jobs, indeterminate progress, idempotent retry and cancel, safe media, and recovery.",
+    "discovery": {
+      "teaser": "An accepted image job may stall, retry, or finish after Cancel; the UI must show honest progress and recover safe media.",
+      "guideLabel": "Recover async image jobs"
+    },
     "tags": [
       "ux",
       "api-calls",
@@ -315,13 +469,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "intermediate"
   },
   {
     "id": "model-training-progress-dashboard",
     "title": "Real-time Model Training Dashboard",
     "description": "Design a model-training progress dashboard with resumable metrics, run comparison, chart downsampling, stale-state signaling, failure diagnosis, and accessibility.",
+    "discovery": {
+      "teaser": "Metric streams can reconnect with gaps or stale runs; comparisons must resume without implying missing samples are current.",
+      "guideLabel": "Diagnose metric gaps"
+    },
     "tags": [
       "real-time",
       "streams",
@@ -332,13 +490,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "ai-ux-considerations",
-    "title": "AI UX Resilience and Control Patterns",
-    "description": "Design trustworthy AI-assisted UX with explicit uncertainty, cancellable work, safe defaults, feedback loops, failure recovery, and accessible state changes.",
+    "title": "Design an AI-Assisted Bulk Edit Review Flow",
+    "description": "Design a customer-operations review flow where AI suggests lifecycle-stage edits, people verify account evidence, and only an approved version can produce mixed per-record outcomes.",
+    "discovery": {
+      "teaser": "AI-proposed record changes require versioned approval, then must expose partial success, Cancel races, and verified rollback honestly.",
+      "guideLabel": "Review approval and outcomes"
+    },
     "tags": [
       "ux",
       "error-handling",
@@ -348,13 +510,58 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
-    "difficulty": "intermediate"
+    "updatedAt": "2026-08-06",
+    "difficulty": "intermediate",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "mid",
+      "timeboxMinutes": 15,
+      "candidatePrompt": "Design a review flow for a customer-operations specialist using AI to propose lifecycle-stage changes across customer records. The user inspects last-activity and open-invoice evidence, removes records, and approves one proposal version before anything changes. Some records may succeed while others conflict, and Cancel may race with a late result. Explain how proposal, approval, execution, audit, and rollback stay separate so the interface never presents a suggestion or requested cancellation as confirmed product truth.",
+      "constraints": [
+        "AI suggestions cannot authorize edits.",
+        "Approval binds one reviewed version.",
+        "Eligibility uses current evidence and permission.",
+        "Cancel is not rollback."
+      ],
+      "expectedDecisions": [
+        "Separate generated content, trusted eligibility, local review, approval, and outcomes.",
+        "Bind one approval command to proposal, evidence, and record versions.",
+        "Reconcile mixed results, cancellation races, audit history, and compensating rollback."
+      ],
+      "prerequisites": [
+        "Client and server state",
+        "Versioned commands",
+        "Accessible async feedback"
+      ],
+      "coreSkills": [
+        "Authority boundaries",
+        "State modeling",
+        "Mixed-outcome recovery",
+        "Auditability"
+      ],
+      "guidedMock": false,
+      "evaluationSpine": {
+        "mustCover": [
+          "Separate generated suggestions, local review, approved commands, and actual outcomes.",
+          "Bind approval to reviewed proposal/evidence versions and current permission."
+        ],
+        "strongSignals": [
+          "Separate successful and failed records, with recovery for each.",
+          "Cancel stays pending intent; rollback is a separate compensating command."
+        ],
+        "expertStretch": "Permission churn, audit export, and reversible bulk undo.",
+        "redFlag": "Proposal, optimistic result, or Cancel appears as confirmed product truth."
+      }
+    }
   },
   {
     "id": "news-feed-timeline",
     "title": "News Feed / Timeline Front-End System Design",
     "description": "Design a news-feed timeline with cursor pagination, ranked and live updates, deterministic merge rules, stable scroll anchors, media loading, and recovery.",
+    "discovery": {
+      "teaser": "Ranked pages and live updates must merge without duplicate stories, scroll jumps, unbounded rendering work, or client-invented order.",
+      "guideLabel": "Review feed merge policy"
+    },
     "tags": [
       "infinite-scroll",
       "virtualization",
@@ -370,13 +577,17 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "difficulty": "hard"
   },
   {
     "id": "ui-component-state-from-mock",
     "title": "UI Component and State Design From a Mock",
     "description": "Turn a support-inbox mock into clear component boundaries, URL and server state, local drafts, optimistic mutations, responsive behavior, and accessible focus.",
+    "discovery": {
+      "teaser": "A support-inbox mock must become clear component, URL, server, and draft boundaries without focus loss or contradictory optimistic state.",
+      "guideLabel": "Map support-inbox state"
+    },
     "tags": [
       "components",
       "state-management",

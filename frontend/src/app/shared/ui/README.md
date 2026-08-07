@@ -33,7 +33,7 @@ This folder defines app-level UI primitives. Feature pages should use these APIs
 
 `FaSelectComponent` (`fa-select`)
 - Wrapper for `p-dropdown` / `p-multiSelect`.
-- Inputs: `options`, `value`, `multiple`, `disabled`, `filter`, `showToggleAll`, `optionLabel`, `optionValue`, `placeholder`, `appendTo`, `styleClass`, `panelStyleClass`
+- Inputs: `options`, `value`, `multiple`, `disabled`, `filter`, `showToggleAll`, `optionLabel`, `optionValue`, `placeholder`, `inputId`, `ariaLabel`, `ariaLabelledBy`, `ariaFilterLabel`, `appendTo`, `styleClass`, `panelStyleClass`
 - Output: `valueChange`.
 
 `FaSpinnerComponent` (`fa-spinner`)

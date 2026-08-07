@@ -40,7 +40,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Live Comments Stream Frontend System Design",
     "description": "Design live comments with ordered resumable events, moderation-aware rendering, burst control, readable auto-follow behavior, and accessibility."
@@ -61,7 +61,7 @@
     "searchIntent": "Prepare a frontend system design answer for Live Comments for Global Streams (Real-time).",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Live Comments for Global Streams (Real-time).",
     "uniqueAngle": "Design a live-comment stream with ordered resumable events, moderation-aware rendering, burst control, readable auto-follow behavior, and accessible interaction.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

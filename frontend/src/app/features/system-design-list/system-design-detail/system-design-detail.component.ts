@@ -15,7 +15,7 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
-import { isQuestionLockedForTier, PremiumPreviewContent } from '../../../core/models/question.model';
+import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import {
   isContentAccessibleForFree,
@@ -41,136 +41,12 @@ import {
   preferredFramework,
   timelineLabel,
 } from '../../../core/utils/onboarding-personalization.util';
-
-type SystemDesignEditorialRole = 'canonical-model' | 'answer-checkpoint' | 'references';
-
-type SystemDesignCodeValidation =
-  | {
-    kind: 'contract' | 'example';
-    level: 'syntax' | 'typecheck';
-    group?: string;
-  }
-  | {
-    kind: 'protocol';
-    protocol: 'sse' | 'http';
-    dataFormat?: 'json';
-  }
-  | {
-    kind: 'data' | 'diagram' | 'pseudocode';
-  };
-
-type Block = (
-  | { type: 'text'; text: string }
-  | { type: 'heading'; text: string }
-  | {
-    type: 'code';
-    language?: string;
-    code: string;
-    height?: number;
-    validation?: SystemDesignCodeValidation;
-  }
-  | {
-    type: 'image';
-    src: string;
-    alt?: string;
-    caption?: string;
-    width?: number;
-    height?: number;
-    srcWebp?: string;
-    srcAvif?: string;
-    priority?: boolean;
-  }
-  | {
-    type: 'checklist';
-    title?: string;
-    items: string[];
-  }
-  | {
-    type: 'callout';
-    title?: string;
-    text: string;
-    variant?: 'info' | 'success' | 'warning' | 'danger';
-  }
-  | {
-    type: 'links';
-    title?: string;
-    items: {
-      label: string;
-      href: string;
-      description?: string;
-    }[];
-  }
-  | {
-    type: 'table';
-    title?: string;
-    columns: string[];
-    rows: string[][];
-  }
-  // NEW: simple visual separator
-  | {
-    type: 'divider';
-  }
-  // NEW: multi-column layout (each column contains its own blocks)
-  | {
-    type: 'columns';
-    columns: {
-      width?: '1/2' | '1/3' | '2/3';
-      blocks: Block[];
-    }[];
-  }
-  // NEW: small metric cards (latency, availability, etc.)
-  | {
-    type: 'stats';
-    items: {
-      label: string;
-      value: string;
-      helperText?: string;
-    }[];
-  }
-  // NEW: step flow (Create → Share → Redirect)
-  | {
-    type: 'steps';
-    title?: string;
-    steps: {
-      title: string;
-      text?: string;
-    }[];
-  }
-) & {
-  editorialRole?: SystemDesignEditorialRole;
-};
-
-type RadioSection = {
-  key: string;
-  title: string;
-  content?: string;
-  blocks?: Block[];
-};
-
-type SDQuestion = {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  access?: 'free' | 'premium';
-  type?: string;
-  author?: string;
-  publishedAt?: string;
-  updatedAt?: string;
-  difficulty?: string;
-  contentLoadState?: 'ready' | 'error';
-  premiumPreview?: PremiumPreviewContent;
-  guideSlug?: string;
-  guide?: string;
-  guidePath?: string;
-  seo?: {
-    title?: string;
-    description?: string;
-  };
-
-  radio?: RadioSection[];
-
-};
+import {
+  resolveSystemDesignPractice,
+  SystemDesignContentBlock as Block,
+  SystemDesignQuestion as SDQuestion,
+  SystemDesignRadioSection as RadioSection,
+} from '../../../core/models/system-design.model';
 
 type RelatedItem = {
   id: string;
@@ -236,14 +112,27 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   title = computed(() => this.q()?.title ?? '');
   description = computed(() => this.q()?.description ?? '');
   tags = computed(() => this.q()?.tags ?? []);
+  practice = computed(() => resolveSystemDesignPractice(
+    this.q() ?? { description: '', difficulty: 'intermediate', tags: [] },
+  ));
+  targetLevelLabel = computed(() => {
+    const level = this.practice().targetLevel;
+    return level === 'mid' ? 'Mid-level' : `${level.charAt(0).toUpperCase()}${level.slice(1)}`;
+  });
+  guidedMockQueryParams = computed<Record<string, string>>(() => ({
+    format: 'system-design',
+    level: this.practice().targetLevel,
+    sourceQuestionId: this.q()?.id ?? '',
+    src: 'system_design_detail',
+  }));
   contentLoadState = computed<'ready' | 'error'>(() =>
     this.q()?.contentLoadState === 'error' ? 'error' : 'ready'
   );
   contentRetrying = signal(false);
   locked = computed(() => {
-    const access = (this.q() as any)?.access ?? 'free';
+    const access = this.q()?.access ?? 'free';
     const user = this.auth.user();
-    return isQuestionLockedForTier({ access } as any, user);
+    return isQuestionLockedForTier({ access }, user);
   });
   lockedTitle = computed(() => this.q()?.title ?? 'Premium question');
   lockedPersonalizationLine = computed(() => {
@@ -337,11 +226,50 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const item = this.q(); if (!item) return [];
     const normalize = (s: RadioSection): Required<RadioSection> => ({
       key: s.key, title: s.title, content: s.content ?? '',
-      blocks: s.blocks?.length ? s.blocks : s.content ? [{ type: 'text', text: s.content }] : []
+      blocks: this.normalizeDisplayBlocks(
+        s.blocks?.length ? s.blocks : s.content ? [{ type: 'text', text: s.content }] : [],
+      ),
     });
 
     return item.radio?.map(normalize) ?? [];
   });
+
+  private normalizeDisplayBlocks(blocks: Block[]): Block[] {
+    const normalized = blocks.map((block): Block => {
+      if (block.type === 'columns') {
+        return {
+          ...block,
+          columns: block.columns.map((column) => ({
+            ...column,
+            blocks: this.normalizeDisplayBlocks(column.blocks),
+          })),
+        };
+      }
+      if (block.type === 'steps') {
+        return {
+          ...block,
+          steps: block.steps.map((step, index) => ({
+            ...step,
+            title: this.displayStepTitle(step.title, index),
+          })),
+        };
+      }
+      return { ...block };
+    });
+
+    return normalized.filter((block, index, all) => {
+      if (block.type !== 'divider') return true;
+      if (index === 0 || index === all.length - 1) return false;
+      return all[index - 1]?.type !== 'divider';
+    });
+  }
+
+  private displayStepTitle(title: string, index: number): string {
+    const normalized = String(title || '').trim();
+    const match = normalized.match(/^(\d+)[.)]\s+(.+)$/);
+    if (!match || Number(match[1]) !== index + 1) return normalized;
+    return match[2].trim();
+  }
 
   /** Related system design questions based on shared tags (top 4). */
   relatedItems = computed<RelatedItem[]>(() => {
@@ -376,6 +304,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   /** Active TOC key (scroll spy) */
   activeKey = signal<string | null>(null);
+  openSectionKeys = signal<ReadonlySet<string>>(new Set<string>());
   mobileOverviewOpen = signal(false);
   mobileTocOpen = signal(false);
   @ViewChildren('sectionHeading', { read: ElementRef }) heads!: QueryList<ElementRef<HTMLElement>>;
@@ -408,9 +337,17 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   // rAF throttle for resize work
   private resizeRaf = 0;
+  private pendingFragment: string | null = null;
+  private answerHistoryActive = false;
 
   // ---- lifecycle ----
   ngOnInit(): void {
+    this.pendingFragment = this.route.snapshot.fragment;
+    this.route.fragment.subscribe((fragment) => {
+      this.pendingFragment = fragment;
+      this.applyFragment(fragment);
+    });
+
     const initial = this.route.snapshot.data['systemDesignDetail'] as SystemDesignDetailResolved | undefined;
     if (initial) this.applyResolvedSystemDesign(initial);
 
@@ -509,6 +446,104 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     });
   }
 
+  trackGuidedMockClick(): void {
+    const question = this.q();
+    if (!question || !this.practice().guidedMock) return;
+    this.analytics.track('system_design_guided_mock_clicked', {
+      question_id: question.id,
+      target_level: this.practice().targetLevel,
+      timebox_minutes: this.practice().timeboxMinutes,
+    });
+  }
+
+  openReferenceAnswer(): void {
+    if (this.locked()) return;
+    const first = this.sections()[0];
+    if (!first) return;
+
+    this.openSectionKeys.set(new Set([first.key]));
+    this.activeKey.set(first.key);
+    this.answerHistoryActive = true;
+    this.analytics.track('system_design_reference_opened', {
+      question_id: this.q()?.id ?? null,
+      target_level: this.practice().targetLevel,
+      timebox_minutes: this.practice().timeboxMinutes,
+    });
+
+    if (this.pendingFragment === 'answer') {
+      this.scrollToKey(first.key, true);
+      return;
+    }
+
+    this.pendingFragment = 'answer';
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      fragment: 'answer',
+      queryParamsHandling: 'preserve',
+    }).then(() => this.scrollToKey(first.key, true));
+  }
+
+  navigateToSection(key: string, focusSummary: boolean): void {
+    if (this.locked() || !this.sections().some((section) => section.key === key)) return;
+    this.setSectionOpen(key, true);
+    this.activeKey.set(key);
+    this.closeMobilePanels();
+    this.pendingFragment = this.anchorId(key);
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      fragment: this.anchorId(key),
+      queryParamsHandling: 'preserve',
+      replaceUrl: true,
+    }).then(() => this.scrollToKey(key, focusSummary));
+  }
+
+  isSectionOpen(key: string): boolean {
+    return this.openSectionKeys().has(key);
+  }
+
+  onSectionToggle(key: string, event: Event): void {
+    const details = event.currentTarget as HTMLDetailsElement | null;
+    if (!details) return;
+    this.setSectionOpen(key, details.open);
+    if (details.open) this.activeKey.set(key);
+  }
+
+  private setSectionOpen(key: string, open: boolean): void {
+    const next = new Set(this.openSectionKeys());
+    if (open) next.add(key);
+    else next.delete(key);
+    this.openSectionKeys.set(next);
+  }
+
+  private applyFragment(fragment: string | null): void {
+    if (!this.q() || this.locked()) return;
+
+    const first = this.sections()[0];
+    if (!fragment) {
+      if (this.answerHistoryActive && first) {
+        this.setSectionOpen(first.key, false);
+        this.answerHistoryActive = false;
+      }
+      return;
+    }
+
+    if (fragment === 'answer') {
+      if (!first) return;
+      this.openSectionKeys.set(new Set([first.key]));
+      this.activeKey.set(first.key);
+      this.answerHistoryActive = true;
+      setTimeout(() => this.scrollToKey(first.key), 0);
+      return;
+    }
+
+    const section = this.sections().find((candidate) => this.anchorId(candidate.key) === fragment);
+    if (!section) return;
+    this.setSectionOpen(section.key, true);
+    this.activeKey.set(section.key);
+    setTimeout(() => this.scrollToKey(section.key), 0);
+  }
+
   // ---- helpers ----
   asset(path: string) {
     if (!path) return '';
@@ -597,8 +632,12 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  private applyResolvedQuestion(question: SDQuestion): void {
+  private applyResolvedQuestion(question: SDQuestion, preserveDisclosure = false): void {
     this.contentRetrying.set(false);
+    if (!preserveDisclosure) {
+      this.openSectionKeys.set(new Set<string>());
+      this.answerHistoryActive = false;
+    }
     this.activeKey.set(null);
     this.q.set(question);
     this.updateSeo(question);
@@ -618,8 +657,17 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     }
 
     const secs = this.sections();
+    if (preserveDisclosure) {
+      const availableKeys = new Set(secs.map((section) => section.key));
+      this.openSectionKeys.set(new Set(
+        [...this.openSectionKeys()].filter((key) => availableKeys.has(key)),
+      ));
+    }
     this.activeKey.set(secs[0]?.key ?? null);
-    setTimeout(() => this.updateActiveFromPositions(), 0);
+    setTimeout(() => {
+      this.applyFragment(this.pendingFragment);
+      this.updateActiveFromPositions();
+    }, 0);
   }
 
   retrySystemDesignContent(): void {
@@ -631,7 +679,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       next: (detail) => {
         const merged = normalizeSystemDesignDetail(current.id, this.all, detail);
         if (merged) {
-          this.applyResolvedQuestion(merged as SDQuestion);
+          this.applyResolvedQuestion(merged as SDQuestion, true);
           return;
         }
         this.contentRetrying.set(false);
@@ -730,6 +778,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private buildLearningResourceSchema(question: SDQuestion, canonical: string): Record<string, any> {
+    const practice = resolveSystemDesignPractice(question);
     const teaches = this.uniq([
       ...(question.tags || []),
       ...this.sections().map((s) => s.title),
@@ -743,7 +792,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       url: canonical,
       inLanguage: 'en',
       learningResourceType: 'System design practice question',
-      educationalLevel: question.difficulty || 'intermediate',
+      educationalLevel: practice.targetLevel,
+      timeRequired: `PT${practice.timeboxMinutes}M`,
       teaches,
       isAccessibleForFree: isContentAccessibleForFree(question.access),
       author: publicEditorialAuthorSchema(),
@@ -913,7 +963,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   };
 
   /** smooth scroll to section with offset and a “settle” guard */
-  scrollToKey(key: string) {
+  scrollToKey(key: string, focusSummary = false) {
     if (!this.isBrowser) return;
     const el = document.getElementById(this.anchorId(key));
     if (!el) return;
@@ -931,6 +981,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       top: this.programScrollTarget,
       behavior: this.preferredScrollBehavior(),
     });
+    if (focusSummary) this.focusSectionSummary(el);
 
     clearInterval(this.settleWatcher);
     let lastY = window.pageYOffset;
@@ -952,6 +1003,13 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
         this.updateActiveFromPositions();
       }
     }, 80);
+  }
+
+  private focusSectionSummary(section: HTMLElement): void {
+    requestAnimationFrame(() => {
+      const summary = section.querySelector('summary');
+      if (summary instanceof HTMLElement) summary.focus({ preventScroll: true });
+    });
   }
 
   scrollTop() {

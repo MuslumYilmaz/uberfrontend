@@ -6,6 +6,11 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 import { Question } from '../models/question.model';
+import {
+  normalizeSystemDesignQuestion,
+  resolveSystemDesignPractice,
+  SystemDesignQuestion,
+} from '../models/system-design.model';
 import { Tech } from '../models/user.model';
 import { QuestionListItem, QuestionService } from '../services/question.service';
 
@@ -20,23 +25,18 @@ export type QuestionDetailResolved = {
   question: Question | null;
 };
 
-export type SystemDesignQuestionResolved = {
-  id: string;
+export interface SystemDesignQuestionResolved extends SystemDesignQuestion {
   title: string;
   description: string;
   tags: string[];
   access: 'free' | 'premium';
-  type: string;
-  difficulty?: string;
-  publishedAt?: string;
-  updatedAt?: string;
-  contentLoadState?: 'ready' | 'error';
-  [key: string]: unknown;
-};
+  type: 'system-design';
+  contentLoadState: 'ready' | 'error';
+}
 
 export type SystemDesignDetailResolved = {
   id: string;
-  list: SystemDesignQuestionResolved[];
+  list: SystemDesignQuestion[];
   question: SystemDesignQuestionResolved | null;
 };
 
@@ -126,59 +126,40 @@ export const codingDetailResolver: ResolveFn<QuestionDetailResolved> = (route) =
 
 export function normalizeSystemDesignDetail(
   id: string,
-  list: any[],
-  detail: any | null,
+  list: readonly unknown[],
+  detail: unknown | null,
 ): SystemDesignQuestionResolved | null {
-  const normalizedList = Array.isArray(list) ? list : [];
+  const normalizedList = (Array.isArray(list) ? list : []).flatMap((item) => {
+    const normalized = normalizeSystemDesignQuestion(item);
+    return normalized ? [normalized] : [];
+  });
+  const detailRecord = detail && typeof detail === 'object' && !Array.isArray(detail)
+    ? detail as Record<string, unknown>
+    : null;
+  const normalizedDetail = normalizeSystemDesignQuestion(
+    detailRecord ? { ...detailRecord, id } : null,
+  );
   const fromIndex = normalizedList.find((item) => item?.id === id) ?? null;
 
-  if (!fromIndex && !detail) return null;
-
-  if (!fromIndex && detail) {
-    return {
-      ...(detail || {}),
-      id,
-      title: String(detail?.title || id),
-      description: String(detail?.description || ''),
-      tags: Array.isArray(detail?.tags) ? detail.tags : [],
-      type: String(detail?.type || 'system-design'),
-      access: String(detail?.access || 'free') === 'premium' ? 'premium' : 'free',
-      difficulty: detail?.difficulty == null ? undefined : String(detail.difficulty),
-      publishedAt: detail?.publishedAt == null ? undefined : String(detail.publishedAt),
-      updatedAt: detail?.updatedAt == null ? undefined : String(detail.updatedAt),
-      contentLoadState: detail?.contentLoadState === 'error' ? 'error' : 'ready',
-    };
-  }
-
-  if (fromIndex && !detail) {
-    return {
-      ...fromIndex,
-      id: String(fromIndex.id || id),
-      title: String(fromIndex.title || id),
-      description: String(fromIndex.description || ''),
-      tags: Array.isArray(fromIndex.tags) ? fromIndex.tags : [],
-      type: String(fromIndex.type || 'system-design'),
-      access: String(fromIndex.access || 'free') === 'premium' ? 'premium' : 'free',
-      difficulty: fromIndex?.difficulty == null ? undefined : String(fromIndex.difficulty),
-      publishedAt: fromIndex?.publishedAt == null ? undefined : String(fromIndex.publishedAt),
-      updatedAt: fromIndex?.updatedAt == null ? undefined : String(fromIndex.updatedAt),
-      contentLoadState: 'error',
-    };
-  }
+  if (!fromIndex && !normalizedDetail) return null;
+  const merged = normalizeSystemDesignQuestion({
+    ...(normalizedDetail || {}),
+    ...(fromIndex || {}),
+    id,
+  });
+  if (!merged) return null;
 
   return {
-    ...(detail || {}),
-    ...(fromIndex || {}),
-    id: String(fromIndex.id ?? id),
-    title: String(fromIndex.title ?? id),
-    description: String(fromIndex.description ?? ''),
-    tags: Array.isArray(fromIndex.tags) ? fromIndex.tags : [],
-    type: String(fromIndex.type ?? 'system-design'),
-    access: String(fromIndex.access ?? 'free') === 'premium' ? 'premium' : 'free',
-    difficulty: fromIndex.difficulty == null ? undefined : String(fromIndex.difficulty),
-    publishedAt: fromIndex.publishedAt == null ? undefined : String(fromIndex.publishedAt),
-    updatedAt: fromIndex.updatedAt == null ? undefined : String(fromIndex.updatedAt),
-    contentLoadState: detail?.contentLoadState === 'error' ? 'error' : 'ready',
+    ...merged,
+    title: merged.title || id,
+    description: merged.description || '',
+    tags: merged.tags ?? [],
+    type: 'system-design',
+    access: merged.access === 'premium' ? 'premium' : 'free',
+    practice: resolveSystemDesignPractice(merged),
+    contentLoadState: !normalizedDetail || normalizedDetail.contentLoadState === 'error'
+      ? 'error'
+      : 'ready',
   };
 }
 
@@ -191,7 +172,10 @@ export const systemDesignDetailResolver: ResolveFn<SystemDesignDetailResolved> =
     detail: qs.loadSystemDesignQuestion(id, { transferState: false }),
   }).pipe(
     map(({ list, detail }) => {
-      const normalizedList = Array.isArray(list) ? list : [];
+      const normalizedList = (Array.isArray(list) ? list : []).map((item) => ({
+        ...item,
+        practice: resolveSystemDesignPractice(item),
+      }));
       return {
         id,
         list: normalizedList,

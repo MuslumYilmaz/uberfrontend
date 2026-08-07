@@ -1,19 +1,29 @@
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subject, throwError } from 'rxjs';
 import {
   InterviewAvailability,
   InterviewSession,
 } from '../../core/models/interview.model';
+import { SystemDesignListItem } from '../../core/models/system-design.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { QuestionService } from '../../core/services/question.service';
 import { InterviewSetupComponent } from './interview-setup.component';
 
 describe('InterviewSetupComponent', () => {
   let fixture: ComponentFixture<InterviewSetupComponent>;
   let component: InterviewSetupComponent;
   let service: jasmine.SpyObj<InterviewService>;
+  let questionService: jasmine.SpyObj<QuestionService>;
   let router: Router;
+
+  const setRouteQuery = (params: Record<string, string>): void => {
+    Object.defineProperty(TestBed.inject(ActivatedRoute).snapshot, 'queryParamMap', {
+      configurable: true,
+      value: convertToParamMap(params),
+    });
+  };
 
   const availability = (
     overrides: Partial<InterviewAvailability> = {},
@@ -88,11 +98,14 @@ describe('InterviewSetupComponent', () => {
     ]);
     service.getAvailability.and.returnValue(of(availability()));
     service.createSession.and.returnValue(of(session));
+    questionService = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadSystemDesign']);
+    questionService.loadSystemDesign.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [InterviewSetupComponent],
       providers: [
         { provide: InterviewService, useValue: service },
+        { provide: QuestionService, useValue: questionService },
         provideRouter([]),
         provideNoopAnimations(),
       ],
@@ -124,6 +137,7 @@ describe('InterviewSetupComponent', () => {
   });
 
   it('submits through Angular without allowing a native form navigation', () => {
+    spyOn(router, 'navigate').and.resolveTo(true);
     fixture.detectChanges();
     const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
     const event = new Event('submit', { bubbles: true, cancelable: true });
@@ -267,6 +281,7 @@ describe('InterviewSetupComponent', () => {
   });
 
   it('starts the separate system-design format with its own quota and level timer', () => {
+    spyOn(router, 'navigate').and.resolveTo(true);
     const designSession = {
       ...session,
       format: 'system-design' as const,
@@ -288,6 +303,161 @@ describe('InterviewSetupComponent', () => {
     });
     expect(fixture.nativeElement.textContent).toContain('20 minutes guided system design');
     expect(fixture.nativeElement.textContent).toContain('1 / 1');
+  });
+
+  it('keeps Start disabled while an exact source is still being validated', () => {
+    setRouteQuery({
+      format: 'system-design',
+      level: 'junior',
+      sourceQuestionId: 'notification-toast-system',
+    });
+    const questions = new Subject<SystemDesignListItem[]>();
+    questionService.loadSystemDesign.and.returnValue(questions.asObservable());
+
+    fixture.detectChanges();
+
+    expect(component.targetResolution()).toBe('loading');
+    expect(component.canStart()).toBeFalse();
+    expect(fixture.nativeElement.querySelector('[data-testid="interview-target-resolution-loading"]'))
+      .not.toBeNull();
+    component.start();
+    expect(service.createSession).not.toHaveBeenCalled();
+
+    questions.next([{
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      type: 'system-design',
+      access: 'free',
+      practice: {
+        targetLevel: 'junior',
+        timeboxMinutes: 10,
+        candidatePrompt: 'Design a global toast system with explicit lifecycle behavior.',
+        constraints: ['Limit visible toasts.', 'Keep announcements accessible.'],
+        expectedDecisions: ['Queue ownership', 'Timer lifecycle', 'Announcement policy'],
+        prerequisites: ['DOM events', 'Accessible status messages'],
+        coreSkills: ['State machines', 'Accessibility'],
+        guidedMock: true,
+      },
+    }]);
+    fixture.detectChanges();
+
+    expect(component.targetResolution()).toBe('ready');
+    expect(component.targetedQuestion()?.id).toBe('notification-toast-system');
+    expect(component.canStart()).toBeTrue();
+  });
+
+  it('validates a targeted source from the public index, locks its level, and sends the exact source without auto-starting', () => {
+    spyOn(router, 'navigate').and.resolveTo(true);
+    setRouteQuery({
+      format: 'system-design',
+      level: 'senior',
+      sourceQuestionId: 'notification-toast-system',
+      src: 'system_design_detail',
+    });
+    questionService.loadSystemDesign.and.returnValue(of([{
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      type: 'system-design',
+      access: 'free',
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'junior',
+        timeboxMinutes: 10,
+        candidatePrompt: 'Design a global toast system with explicit lifecycle behavior.',
+        constraints: ['Limit visible toasts.', 'Keep announcements accessible.'],
+        expectedDecisions: ['Queue ownership', 'Timer lifecycle', 'Announcement policy'],
+        prerequisites: ['DOM events', 'Accessible status messages'],
+        coreSkills: ['State machines', 'Accessibility'],
+        guidedMock: true,
+      },
+    }]));
+
+    fixture.detectChanges();
+
+    expect(service.createSession).not.toHaveBeenCalled();
+    expect(component.targetedQuestion()?.id).toBe('notification-toast-system');
+    expect(component.selectedFormat()).toBe('system-design');
+    expect(component.selectedLevel()).toBe('junior');
+    expect(component.levelLocked()).toBeTrue();
+    expect(fixture.nativeElement.querySelector('[data-testid="interview-targeted-case"]'))
+      .not.toBeNull();
+
+    component.onLevelChange('senior');
+    expect(component.selectedLevel()).toBe('junior');
+    component.start();
+
+    expect(service.createSession.calls.mostRecent().args[0]).toEqual({
+      format: 'system-design',
+      level: 'junior',
+      track: 'core-web',
+      viewportWidth: window.innerWidth,
+      systemDesignSourceContentId: 'notification-toast-system',
+    });
+  });
+
+  it('clears a targeted case explicitly and unlocks level selection', () => {
+    setRouteQuery({
+      format: 'system-design',
+      level: 'mid',
+      sourceQuestionId: 'ai-chat-textarea-design',
+    });
+    questionService.loadSystemDesign.and.returnValue(of([{
+      id: 'ai-chat-textarea-design',
+      title: 'Design an AI Chat Composer',
+      description: 'Design a safe chat composer.',
+      tags: ['ai'],
+      type: 'system-design',
+      access: 'free',
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'mid',
+        timeboxMinutes: 15,
+        candidatePrompt: 'Design a composer with safe input and streaming lifecycle behavior.',
+        constraints: ['Respect IME composition.', 'Reject stale stream events.'],
+        expectedDecisions: ['Send boundary', 'Attachment readiness', 'Retry ownership'],
+        prerequisites: ['DOM input events', 'Async cancellation'],
+        coreSkills: ['State machines', 'Concurrency'],
+        guidedMock: true,
+      },
+    }]));
+    fixture.detectChanges();
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+
+    component.chooseAnotherCase();
+
+    expect(component.targetedQuestion()).toBeNull();
+    expect(component.levelLocked()).toBeFalse();
+    expect(navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+      queryParams: { sourceQuestionId: null, src: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    }));
+  });
+
+  it('blocks an unknown targeted source instead of silently falling back to a random case', () => {
+    setRouteQuery({
+      format: 'system-design',
+      level: 'senior',
+      sourceQuestionId: 'missing-case',
+    });
+    questionService.loadSystemDesign.and.returnValue(of([]));
+
+    fixture.detectChanges();
+
+    expect(component.targetedQuestion()).toBeNull();
+    expect(component.selectedFormat()).toBe('system-design');
+    expect(component.selectedLevel()).toBe('senior');
+    expect(component.levelLocked()).toBeTrue();
+    expect(component.targetResolution()).toBe('error');
+    expect(component.canStart()).toBeFalse();
+    expect(fixture.nativeElement.querySelector('[data-testid="interview-target-resolution-error"]'))
+      .not.toBeNull();
+    component.start();
+    expect(service.createSession).not.toHaveBeenCalled();
   });
 
   it('renders system-design practice signals as human-readable feedback', () => {

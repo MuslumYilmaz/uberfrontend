@@ -60,6 +60,7 @@ autosizing
 backpressure
 backgrounded
 beforeinput
+compositionend
 bursty
 canplay
 checkpointing
@@ -85,6 +86,7 @@ microfrontend
 microfrontends
 mousemove
 nonblocking
+nonterminal
 Noor
 overcomplicating
 overscan

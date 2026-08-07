@@ -8,9 +8,38 @@ intent: "Help the reader explain a front-end system design answer with clear tra
 target_words: 1600
 primary_keyword: "replace-with-primary-keyword"
 status: "brief"
+content_schema_version: 2
+target_level: "mid"
+timebox_minutes: 15
+candidate_prompt: "[Write a 60-110 word candidate-facing problem statement. Aim for 75-90 words; keep every sentence at 30 words or fewer.]"
+constraints:
+  - "[Constraint 1]"
+  - "[Constraint 2]"
+expected_decisions:
+  - "[Decision 1]"
+  - "[Decision 2]"
+  - "[Decision 3]"
+prerequisites:
+  - "[Prerequisite 1]"
+  - "[Prerequisite 2]"
+core_skills:
+  - "[Core skill 1]"
+  - "[Core skill 2]"
+evaluation_must_cover:
+  - "[Required decision 1]"
+  - "[Required decision 2]"
+evaluation_strong_signals:
+  - "[Strong signal 1]"
+  - "[Strong signal 2]"
+evaluation_expert_stretch: "[One optional expert extension]"
+evaluation_red_flag: "[One topic-specific failure mode]"
+guided_mock: false
 notes_for_conversion:
   - "Convert into the system-design JSON bundle and update index.json."
   - "Split the final material into requirements, architecture, interfaces, data, and optimizations."
+  - "Make the first Requirements block a five-step, 250-400 word timeboxed-answer."
+  - "Keep prompt, constraints, prerequisites, and evaluation fields at 160 words or fewer."
+  - "Do not add a terminal answer-checkpoint to V2 content."
   - "Replace any VERIFY claims before ship."
 search_intent: ""
 reader_promise: ""

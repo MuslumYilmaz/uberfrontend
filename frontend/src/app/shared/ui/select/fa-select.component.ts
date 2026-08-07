@@ -21,6 +21,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [showToggleAll]="showToggleAll"
         [appendTo]="appendTo"
         [placeholder]="placeholder"
+        [inputId]="inputId"
+        [ariaLabel]="ariaLabel"
+        [ariaLabelledBy]="ariaLabelledBy"
+        [ariaFilterLabel]="ariaFilterLabel"
         [styleClass]="resolvedStyleClass"
         [panelStyleClass]="resolvedPanelClass">
       </p-multiSelect>
@@ -37,6 +41,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [filter]="filter"
         [appendTo]="appendTo"
         [placeholder]="placeholder"
+        [inputId]="inputId"
+        [ariaLabel]="ariaLabel"
+        [ariaLabelledBy]="ariaLabelledBy"
+        [ariaFilterLabel]="ariaFilterLabel"
         [styleClass]="resolvedStyleClass"
         [panelStyleClass]="resolvedPanelClass">
       </p-dropdown>
@@ -57,6 +65,10 @@ export class FaSelectComponent {
   @Input() optionLabel = 'label';
   @Input() optionValue = 'value';
   @Input() placeholder = 'Select';
+  @Input() inputId: string | undefined;
+  @Input() ariaLabel: string | undefined;
+  @Input() ariaLabelledBy: string | undefined;
+  @Input() ariaFilterLabel: string | undefined;
   @Input() appendTo: any = 'body';
   @Input() styleClass = '';
   @Input() panelStyleClass = '';

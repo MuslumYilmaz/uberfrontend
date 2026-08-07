@@ -1,6 +1,6 @@
 {
   "registryId": "interview-system-design-registry-v1",
-  "registryVersion": "1.0.0",
+  "registryVersion": "1.1.0",
   "scenarios": [
     {
       "cards": [
@@ -30,17 +30,17 @@
           "title": "Attachment coordinator"
         },
         {
-          "description": "Owns send identity, optimistic message, stream acceptance, and terminal reconciliation.",
+          "description": "Owns send and Stop identity, the active stream gate, and terminal reconciliation.",
           "id": "chat-turn-coordinator",
           "title": "Turn coordinator"
         },
         {
-          "description": "Parses typed sequenced events without owning visible conversation state.",
+          "description": "Resumes by sequence or snapshot and rejects events outside the active stream identity.",
           "id": "chat-stream-adapter",
           "title": "Stream adapter"
         },
         {
-          "description": "Maps send, stop, retry, and reconciliation commands to transport contracts.",
+          "description": "Maps idempotent Send and Stop commands to transport; local abort only closes the connection.",
           "id": "chat-client",
           "title": "Chat client"
         },
@@ -98,7 +98,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "60be16613d6499dd7896ffb7d14924ec7633dc3b427b4bef668e7857b7faafcb",
+      "contentHash": "4255f79fd212920ece9b6710ed61c05f6c812ae3f636a161d47cde9bcd202693",
       "decisions": [
         {
           "id": "chat-state-ownership",
@@ -140,26 +140,26 @@
           "id": "chat-send-identity",
           "options": [
             {
-              "description": "Persist command, client-message, and draft-revision IDs for reconciliation.",
+              "description": "Reuse command identity for retransmission; after terminal reconciliation, Retry creates fresh turn identities.",
               "id": "chat-send-command-message",
               "label": "Command and client-message identity"
             },
             {
-              "description": "Use conversation identity and submission time as the retry lookup key.",
+              "description": "Use conversation identity and submission time to look up an uncertain send before Retry.",
               "id": "chat-send-conversation-time",
               "label": "Conversation and submission time"
             },
             {
-              "description": "Create new command and message IDs when a send request is retried.",
+              "description": "Create new command and message identities for a retransmitted send request.",
               "id": "chat-send-fresh-retry",
-              "label": "Fresh identity for each retry"
+              "label": "Fresh identity per request attempt"
             }
           ],
-          "prompt": "How does an uncertain retry converge on one logical user turn?",
+          "prompt": "How do transport retransmission and a later user Retry get distinct identity semantics?",
           "rationales": [
             {
               "id": "chat-rationale-one-turn",
-              "label": "Make retries converge on one logical user turn"
+              "label": "Separate transport retry from a new user-requested turn"
             },
             {
               "id": "chat-rationale-compact-key",
@@ -170,13 +170,13 @@
               "label": "Isolate each transport attempt under fresh identities"
             }
           ],
-          "title": "Send and retry identity"
+          "title": "Send retransmission and Retry identity"
         },
         {
           "id": "chat-stream-terminal",
           "options": [
             {
-              "description": "Accept deltas by conversation, stream, message, and sequence before terminal reconciliation.",
+              "description": "Gate deltas by active identity; retry uncertain Stop with the same command ID.",
               "id": "chat-stream-correlated-terminal",
               "label": "Correlated sequence and terminal state"
             },
@@ -191,7 +191,7 @@
               "label": "Current visible placeholder"
             }
           ],
-          "prompt": "Which boundary decides whether a stream event or Stop outcome may update the turn?",
+          "prompt": "How do active-stream gating and a lost Stop response protect the current turn?",
           "rationales": [
             {
               "id": "chat-rationale-reject-stale",
@@ -206,7 +206,7 @@
               "label": "Keep streaming updates close to the rendered message"
             }
           ],
-          "title": "Stream and Stop policy"
+          "title": "Active reply and Stop policy"
         }
       ],
       "enabled": true,
@@ -252,10 +252,10 @@
         }
       ],
       "level": "mid",
-      "prompt": "Design the frontend boundaries for an AI chat composer with composition-safe input, recoverable drafts, attachment readiness, one logical send, and a streamed assistant response. Stop, retry, and navigation must not let stale events corrupt a newer turn.",
+      "prompt": "Design the composer and current reply for an AI chat app. A user may type Japanese with an IME, attach a file that is still uploading, press Enter twice, or stop a streaming answer and retry. An event from the old Send, Stop, or stream must never change the new active turn. Assign the state owned by the textarea, draft store, upload flow, and current turn. Explain recovery when a Send or Stop response is lost.",
       "requirements": [
         {
-          "description": "IME composition, keyboard shortcuts, autosizing, and focus recovery preserve user intent.",
+          "description": "IME composition cannot submit; keyboard shortcuts, autosizing, and focus recovery preserve user intent.",
           "id": "chat-composition-safe",
           "title": "Composition-safe input"
         },
@@ -265,19 +265,19 @@
           "title": "Recoverable scoped draft"
         },
         {
-          "description": "Only finalized attachment identities enter a send command, while failed items remain recoverable.",
+          "description": "Only ready attachment identities enter a send command, while uploading or failed items remain recoverable.",
           "id": "chat-ready-attachments",
           "title": "Explicit attachment readiness"
         },
         {
-          "description": "Retry and acknowledgement converge on one user message instead of duplicating the turn.",
+          "description": "Transport retransmission reuses one command identity; user Retry after terminal reconciliation creates a new turn identity.",
           "id": "chat-one-logical-send",
           "title": "One logical send"
         },
         {
-          "description": "Conversation, message, stream, and sequence identity reject stale or duplicate assistant events.",
+          "description": "Send becomes Stop during the active reply, while turn, stream, and sequence identity reject stale events.",
           "id": "chat-correlated-stream",
-          "title": "Correlated ordered stream"
+          "title": "One correlated active stream"
         },
         {
           "description": "Stop, retry, errors, streaming status, and focus changes remain understandable and operable.",
@@ -285,7 +285,7 @@
           "title": "Accessible recovery controls"
         }
       ],
-      "revision": 1,
+      "revision": 3,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -317,7 +317,7 @@
         }
       ],
       "timeLimitSeconds": 900,
-      "title": "Design a Resilient AI Chat Composer"
+      "title": "Design an AI Chat Composer and Streaming Turn"
     },
     {
       "cards": [
@@ -410,7 +410,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "49c6bff05db29b31c55e66b11b22d5f2f9295273700e69f31121570bb3804a6c",
+      "contentHash": "e75d5dee0a8ffcca803fe12cd0703a76ebc9638f00357095405f8fab8e36c0d3",
       "decisions": [
         {
           "id": "search-async-control",
@@ -633,7 +633,7 @@
           "title": "Owned cancellation and cleanup"
         }
       ],
-      "revision": 3,
+      "revision": 4,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -763,7 +763,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "975649af4bad43d9c7a616a967d32464401351d414716c98cbab5ab221a6b01a",
+      "contentHash": "6235e3f8b607b86c652287bd538f6fc11bceb2ed1842fca3c19bf6209614bb35",
       "decisions": [
         {
           "id": "dash-coordinate-model",
@@ -986,7 +986,7 @@
           "title": "Equivalent editing and recovery"
         }
       ],
-      "revision": 1,
+      "revision": 2,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -1111,7 +1111,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "b490a8f10b6b9e278581750111a316ff137996408631c3c14c63f512d0c6e3f9",
+      "contentHash": "eeb26e0a93d42a9662990f5cc4aef2ce5fc0d8fcf4c1221511db5ff28126aca4",
       "decisions": [
         {
           "id": "upload-workflow-ownership",
@@ -1334,7 +1334,7 @@
           "title": "Accessible responsive flow"
         }
       ],
-      "revision": 1,
+      "revision": 2,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -1459,7 +1459,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "7a63f89b2589af3a2f1d681bf6a1366971072285774078038299bb50bcd13f79",
+      "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
       "decisions": [
         {
           "id": "chart-flow-ownership",
@@ -1682,7 +1682,7 @@
           "title": "Accessible chart inspection"
         }
       ],
-      "revision": 1,
+      "revision": 2,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -1812,7 +1812,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "3e30d03dc77d8adebac05650f3ec2d8baf1e09f6a604175abfeca518d07d5dde",
+      "contentHash": "6483429a1be771ae59ca9df59c9ae05815f750810a107fb55384e7f233d9dedd",
       "decisions": [
         {
           "id": "feed-pagination-model",
@@ -2035,7 +2035,7 @@
           "title": "Accessible loading path"
         }
       ],
-      "revision": 3,
+      "revision": 4,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -2077,19 +2077,19 @@
           "title": "Toast command API"
         },
         {
-          "description": "Owns visible and queued toast records.",
+          "description": "Owns the ordered visible stack and overflow queue.",
           "id": "toast-store",
           "title": "Toast store"
         },
         {
-          "description": "Owns deadlines, pause reasons, and cleanup.",
+          "description": "Owns timer handles, deadlines, pause reasons, and the guarded cleanup transition.",
           "id": "toast-lifecycle",
           "title": "Lifecycle coordinator"
         },
         {
-          "description": "Subscribes once and binds state to rendering.",
+          "description": "Subscribes once and renders the current visible records without owning their timers.",
           "id": "toast-provider",
-          "title": "Toast provider"
+          "title": "Toast viewport"
         },
         {
           "description": "Applies placement, stacking, and overflow presentation.",
@@ -2102,9 +2102,9 @@
           "title": "Toast item"
         },
         {
-          "description": "Publishes concise status changes to assistive technology.",
+          "description": "Owns announcement history and publishes each eligible message once.",
           "id": "toast-live-region",
-          "title": "Announcement region"
+          "title": "Toast announcer"
         },
         {
           "description": "Supplies time and page visibility signals.",
@@ -2160,7 +2160,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "b8dc020ac24d90e5f92e729cf10dc80874afe9771be0f973d59e941b0c5c1b7b",
+      "contentHash": "7334b8cb8a7403fa0754b18796f16f77c8d866c7e378cfd98a9ee9a4e0ce7a4d",
       "decisions": [
         {
           "id": "toast-ownership",
@@ -2202,37 +2202,37 @@
           "id": "toast-timing",
           "options": [
             {
-              "description": "Pause for declared reasons and resume from the stored remainder.",
+              "description": "Route both signals through one transition and retain remaining time for declared pauses.",
               "id": "toast-time-remaining",
-              "label": "Track remaining visible time"
+              "label": "Guarded remaining-time lifecycle"
             },
             {
-              "description": "Calculate expiry from one timestamp across visibility changes.",
+              "description": "Carry record identity with expiry so an event after dismiss is rejected as stale.",
               "id": "toast-time-wall-clock",
-              "label": "Maintain a wall-clock deadline"
+              "label": "Versioned deadline event"
             },
             {
-              "description": "Begin a fresh duration when hover, focus, or visibility resumes.",
+              "description": "Let the item click path and timer callback each remove state and release resources.",
               "id": "toast-time-reset",
-              "label": "Restart after each pause"
+              "label": "Independent local handlers"
             }
           ],
-          "prompt": "How should an eligible timed status preserve its lifetime?",
+          "prompt": "How should manual dismiss and timer expiry converge on one terminal cleanup?",
           "rationales": [
             {
               "id": "toast-rationale-user-time",
-              "label": "Preserve sufficient user time to perceive status"
+              "label": "Let the first terminal signal own cleanup once"
             },
             {
               "id": "toast-rationale-fixed-deadline",
-              "label": "Preserve a simple timestamp-based expiry contract"
+              "label": "Reject expiry events for a removed record version"
             },
             {
               "id": "toast-rationale-easy-reset",
-              "label": "Preserve a fresh viewing period after interruption"
+              "label": "Keep each handler close to the event that triggered it"
             }
           ],
-          "title": "Lifetime model"
+          "title": "Dismiss and timeout race"
         },
         {
           "id": "toast-overflow",
@@ -2350,7 +2350,7 @@
         }
       ],
       "level": "junior",
-      "prompt": "A product team needs non-blocking status messages that any screen can trigger. Design the frontend boundaries for displaying, dismissing, and announcing several messages without leaving timers behind.",
+      "prompt": "Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where manual dismiss and an expiry timer fire together: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe.",
       "requirements": [
         {
           "description": "Authorized screens and services can emit messages without mounting their own container.",
@@ -2358,7 +2358,7 @@
           "title": "Global trigger boundary"
         },
         {
-          "description": "A recovery action remains available until it expires by product policy or the user resolves it.",
+          "description": "Review or Undo remains available until the user resolves it or product policy invalidates it.",
           "id": "toast-persistent-actions",
           "title": "Persistent actionable messages"
         },
@@ -2373,17 +2373,17 @@
           "title": "Pause-aware lifetime"
         },
         {
-          "description": "Announcements are restrained and controls remain keyboard reachable without stealing focus.",
+          "description": "A separate announcement identity prevents rerenders from repeating speech, while controls remain keyboard reachable.",
           "id": "toast-accessible-status",
           "title": "Accessible status delivery"
         },
         {
-          "description": "Dismissal, teardown, and replacement release every owned timer and listener.",
+          "description": "Manual dismiss and expiry enter one guarded transition; only the first signal removes the record and releases its timer.",
           "id": "toast-cleanup",
-          "title": "Complete lifecycle cleanup"
+          "title": "Single terminal cleanup"
         }
       ],
-      "revision": 3,
+      "revision": 5,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -2415,7 +2415,7 @@
         }
       ],
       "timeLimitSeconds": 600,
-      "title": "Design a Reliable Toast Notification Layer"
+      "title": "Design a Toast Notification System"
     }
   ],
   "schemaVersion": "1.0.0",

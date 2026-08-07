@@ -210,10 +210,16 @@
       "text": "Measure accepted queries, cancelled work, stale-result rejection, cache hit usefulness, time to first useful result, and keyboard selection stability. Tune debounce by query and device evidence, not a universal delay, and canary cache changes independently from result presentation."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Real-time Search with Debounce & Caching assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "realtime search debounce cache answer rubric",
+      "items": [
+        "Must — Key results by normalized query and accept them only for the active request generation.",
+        "Must — Abort superseded transport work while still guarding against resolution after cancellation.",
+        "Strong signal — Distinguish debounce timing, cache freshness, in-flight dedupe, and stale display policy.",
+        "Strong signal — Preserve keyboard focus and active option identity as results change.",
+        "Expert stretch — Tune cache and prefetch behavior from query distribution and measured network cost.",
+        "Red flag — Assuming AbortController alone prevents stale results or caching every raw keystroke forever."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

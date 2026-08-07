@@ -38,7 +38,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Model Training Dashboard Frontend System Design",
     "description": "Design a model-training dashboard with resumable metrics, run comparison, chart downsampling, stale-state signals, failure diagnosis, and accessibility."
@@ -59,7 +59,7 @@
     "searchIntent": "Prepare a frontend system design answer for Real-time Model Training Dashboard.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Real-time Model Training Dashboard.",
     "uniqueAngle": "Design a model-training progress dashboard with resumable metrics, run comparison, chart downsampling, stale-state signaling, failure diagnosis, and accessibility.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

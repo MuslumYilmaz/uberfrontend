@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Toast command and lifecycle ownership</title>
+  <desc id="desc">A global command flows into a store and lifecycle coordinator. The coordinator controls a three-toast viewport, an overflow queue, timer cleanup, and a live-region announcer that announces each toast once.</desc>
+  <rect width="960" height="540" rx="24" fill="#f8fafc"/>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="48" y="58" font-size="28" font-weight="700">One command path, one lifecycle owner</text>
+    <text x="48" y="88" font-size="16" fill="#526078">Rendering reads state; it does not own timers or announcements.</text>
+  </g>
+  <g stroke="#315ee8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M226 184H318"/>
+    <path d="m306 174 12 10-12 10"/>
+    <path d="M562 184H650"/>
+    <path d="m638 174 12 10-12 10"/>
+    <path d="M440 250V320"/>
+    <path d="m430 308 10 12 10-12"/>
+    <path d="M562 376H650"/>
+    <path d="m638 366 12 10-12 10"/>
+  </g>
+  <g font-family="Arial, sans-serif">
+    <rect x="48" y="130" width="178" height="108" rx="16" fill="#e8efff" stroke="#315ee8" stroke-width="2"/>
+    <text x="70" y="166" font-size="18" font-weight="700" fill="#172033">Global command</text>
+    <text x="70" y="194" font-size="14" fill="#526078">show · update · dismiss</text>
+    <text x="70" y="217" font-size="14" fill="#526078">from UI or service</text>
+
+    <rect x="318" y="116" width="244" height="136" rx="16" fill="#ffffff" stroke="#315ee8" stroke-width="3"/>
+    <text x="342" y="154" font-size="18" font-weight="700" fill="#172033">Toast store</text>
+    <text x="342" y="183" font-size="14" fill="#526078">ordered records + state</text>
+    <text x="342" y="208" font-size="14" fill="#526078">dedupe key + urgency</text>
+    <text x="342" y="233" font-size="14" fill="#526078">persistent or timed</text>
+
+    <rect x="650" y="116" width="262" height="136" rx="16" fill="#effaf4" stroke="#268455" stroke-width="2"/>
+    <text x="674" y="154" font-size="18" font-weight="700" fill="#172033">Viewport</text>
+    <text x="674" y="183" font-size="14" fill="#526078">render at most 3</text>
+    <text x="674" y="208" font-size="14" fill="#526078">overflow waits in order</text>
+    <text x="674" y="233" font-size="14" fill="#526078">focus never moves on show</text>
+
+    <rect x="318" y="320" width="244" height="112" rx="16" fill="#fff7e8" stroke="#c47a18" stroke-width="2"/>
+    <text x="342" y="358" font-size="18" font-weight="700" fill="#172033">Lifecycle coordinator</text>
+    <text x="342" y="387" font-size="14" fill="#526078">remaining time + cleanup</text>
+    <text x="342" y="412" font-size="14" fill="#526078">one remove transition</text>
+
+    <rect x="650" y="320" width="262" height="112" rx="16" fill="#f3edff" stroke="#7950b8" stroke-width="2"/>
+    <text x="674" y="358" font-size="18" font-weight="700" fill="#172033">Live-region announcer</text>
+    <text x="674" y="387" font-size="14" fill="#526078">eligible toast ID once</text>
+    <text x="674" y="412" font-size="14" fill="#526078">polite unless truly urgent</text>
+  </g>
+  <text x="48" y="496" font-family="Arial, sans-serif" font-size="15" fill="#526078">Invariant: a rerender, reorder, or viewport move does not restart a timer or repeat an announcement.</text>
+</svg>

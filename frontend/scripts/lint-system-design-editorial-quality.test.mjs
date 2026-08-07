@@ -51,6 +51,10 @@ function baseBundle(id = 'example-system') {
     type: 'system-design',
     access: 'free',
     difficulty: 'hard',
+    discovery: {
+      teaser: 'One late result must not replace accepted state while keyboard focus and recovery remain predictable.',
+      guideLabel: 'Trace accepted state',
+    },
   };
   const section = (key, name) => ({
     key,
@@ -110,6 +114,80 @@ function baseBundle(id = 'example-system') {
   return { entry, meta, sections };
 }
 
+function v2Practice() {
+  return {
+    targetLevel: 'mid',
+    timeboxMinutes: 15,
+    candidatePrompt: 'Design a resilient frontend workflow where a user submits one versioned command and receives ordered updates. The interface must preserve keyboard focus, expose retry after failure, and reject stale results from an older request. Explain which client module owns accepted state, how rendering remains bounded, and how an accessible recovery path works when transport cancellation races with a late response. Keep the backend behind an abstract contract and identify three decisions you would defend.',
+    constraints: [
+      'One active command may update the visible workflow.',
+      'Late results must not replace accepted state.',
+    ],
+    expectedDecisions: [
+      'Choose the owner of accepted state.',
+      'Define stale-result rejection.',
+      'Define accessible recovery behavior.',
+    ],
+    prerequisites: ['Async requests', 'Accessible focus'],
+    coreSkills: ['State ownership', 'Race recovery'],
+    evaluationSpine: {
+      mustCover: [
+        'One owner accepts versioned state.',
+        'Superseded results cannot replace accepted state.',
+      ],
+      strongSignals: [
+        'Recovery keeps keyboard focus actionable.',
+        'Rendering stays bounded without losing records.',
+      ],
+      expertStretch: 'Adapt projections using representative field measurements.',
+      redFlag: 'Treat transport arrival order as application truth.',
+    },
+    guidedMock: false,
+  };
+}
+
+function makeV2(bundle) {
+  bundle.entry.contentSchemaVersion = 2;
+  bundle.meta.contentSchemaVersion = 2;
+  bundle.entry.practice = v2Practice();
+  bundle.meta.practice = structuredClone(bundle.entry.practice);
+  Object.entries(bundle.sections).forEach(([name, section]) => {
+    const text = section.blocks.find((block) => block.type === 'text');
+    text.text = `${repeated(name, 21)} The server is an abstract ${name} contract; implementation remains outside this frontend design.`;
+  });
+  const checkpointIndex = bundle.sections.optimizations.blocks.findIndex(
+    (block) => block.editorialRole === 'answer-checkpoint',
+  );
+  bundle.sections.optimizations.blocks.splice(checkpointIndex, 1);
+  bundle.sections.requirements.blocks.unshift({
+    type: 'steps',
+    title: 'Build the first-pass answer',
+    editorialRole: 'timeboxed-answer',
+    steps: [
+      {
+        title: 'Name the user risk',
+        text: `${repeated('Opening scope', 5)} Rejected alternative: trusting arrival order would confuse the user after a retry.`,
+      },
+      { title: 'Assign state ownership', text: repeated('Ownership boundary', 5) },
+      { title: 'Trace one command', text: repeated('Command path', 5) },
+      { title: 'Reconcile a late result', text: repeated('Recovery path', 5) },
+      { title: 'Close with evidence', text: repeated('Measurement choice', 5) },
+    ],
+  });
+  const image = (name) => ({
+    type: 'image',
+    src: `questions/system-design/${bundle.entry.id}/${name}.svg`,
+    alt: `Diagram showing the ${name} state and recovery boundary for the example workflow.`,
+    caption: `The ${name} boundary keeps state ownership explicit.`,
+    width: 960,
+    height: 540,
+    fallbackText: `Text fallback: the ${name} path accepts one versioned command and rejects stale outcomes.`,
+  });
+  bundle.sections.architecture.blocks.push(image('architecture-flow'));
+  bundle.sections.optimizations.blocks.splice(-1, 0, image('recovery-timeline'));
+  return bundle;
+}
+
 function writeManifest(root, ids) {
   writeJson(root, 'semantic-contracts.json', {
     version: 1,
@@ -139,6 +217,23 @@ function setup(mutator) {
   return root;
 }
 
+function setupV2(mutator) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'system-design-quality-v2-'));
+  const bundle = makeV2(baseBundle());
+  mutator?.(bundle);
+  writeJson(root, 'index.json', [bundle.entry]);
+  writeJson(root, `${bundle.entry.id}/meta.json`, bundle.meta);
+  Object.entries(bundle.sections).forEach(([name, data]) => writeJson(root, `${bundle.entry.id}/${name}.json`, data));
+  writeManifest(root, [bundle.entry.id]);
+  for (const name of ['architecture-flow', 'recovery-timeline']) {
+    fs.writeFileSync(
+      path.join(root, bundle.entry.id, `${name}.svg`),
+      `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540"><title>${name}</title><desc>Accessible test diagram</desc><rect width="20" height="20"/></svg>\n`,
+    );
+  }
+  return root;
+}
+
 function run(root, mode = 'full') {
   return spawnSync('node', [LINTER, `--mode=${mode}`], {
     cwd: path.join(repoRoot, 'frontend'),
@@ -161,6 +256,130 @@ assert.equal(run(setup(), 'structure').status, 0);
 {
   const result = run(setup(), 'full');
   assert.equal(result.status, 0, `${result.stdout}${result.stderr}`);
+}
+
+{
+  const result = run(setupV2(), 'full');
+  assert.equal(result.status, 0, `${result.stdout}${result.stderr}`);
+}
+
+{
+  const root = setupV2(({ entry }) => {
+    entry.practice.targetLevel = 'senior';
+  });
+  const result = run(root, 'structure');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /practice metadata must match exactly|index\/meta practice mismatch/);
+}
+
+{
+  const root = setupV2(({ entry, meta }) => {
+    entry.practice.candidatePrompt = 'Too short.';
+    meta.practice.candidatePrompt = entry.practice.candidatePrompt;
+  });
+  const result = run(root, 'structure');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /candidatePrompt must contain 60-110 words/);
+}
+
+{
+  const root = setupV2(({ meta }) => {
+    meta.discovery = { teaser: 'Private teaser', guideLabel: 'Private guide' };
+  });
+  const result = run(root, 'structure');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /discovery metadata must remain index-only/);
+}
+
+{
+  const root = setupV2(({ entry, meta }) => {
+    const extra = repeated('first screen budget', 6);
+    entry.practice.constraints[0] += ` ${extra}`;
+    meta.practice.constraints[0] += ` ${extra}`;
+  });
+  const result = run(root, 'structure');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /first-screen metadata|maximum is 160/);
+}
+
+{
+  const root = setupV2(({ sections }) => {
+    const answer = sections.requirements.blocks.find(
+      (block) => block.editorialRole === 'timeboxed-answer',
+    );
+    answer.steps.pop();
+  });
+  const result = run(root, 'full');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /must contain exactly five steps/);
+}
+
+{
+  const root = setupV2(({ sections }) => {
+    sections.requirements.blocks[0].steps[0].title = '1. Name the user risk';
+  });
+  const result = run(root, 'full');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /must not include a numeric prefix/);
+}
+
+{
+  const root = setupV2(({ sections }) => {
+    sections.optimizations.blocks.splice(-1, 0, { type: 'divider' }, { type: 'divider' });
+  });
+  const result = run(root, 'full');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /contains adjacent dividers/);
+}
+
+{
+  const root = setupV2(({ sections }) => {
+    sections.optimizations.blocks.splice(-1, 0, {
+      type: 'stats',
+      items: [{ label: 'Recovery quality', value: 'High' }],
+    });
+  });
+  const result = run(root, 'full');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /is qualitative/);
+}
+
+{
+  const root = setupV2();
+  fs.appendFileSync(
+    path.join(root, 'example-system', 'architecture-flow.svg'),
+    '<!DOCTYPE svg [<!ENTITY external SYSTEM "https://example.com/entity">]><script>alert(1)</script>',
+  );
+  const result = run(root, 'full');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /unsafe or external SVG content/);
+}
+
+{
+  const root = setupV2(({ sections }) => {
+    sections.requirements.blocks[1].text += ` ${repeated('additional V2 filler', 120)}`;
+  });
+  const result = run(root, 'full');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /V2 content has .* expected 1500-2100/);
+}
+
+{
+  const root = setupV2(({ sections }) => {
+    sections.requirements.blocks[1].text += ' The product latency target is TBD.';
+  });
+  const result = run(root, 'full');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /unresolved placeholder pattern/);
+}
+
+{
+  const root = setup(({ sections }) => {
+    sections.requirements.blocks[1].text += ' The legacy product latency target is TBD.';
+  });
+  const result = run(root, 'full');
+  assert.equal(result.status, 0, `${result.stdout}${result.stderr}`);
+  assert.match(`${result.stdout}${result.stderr}`, /unresolved placeholder pattern/);
 }
 
 {

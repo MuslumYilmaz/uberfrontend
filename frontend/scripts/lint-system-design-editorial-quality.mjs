@@ -45,7 +45,12 @@ const SUPPORTED_BLOCKS = new Set([
   'stats',
   'steps',
 ]);
-const EDITORIAL_ROLES = new Set(['canonical-model', 'answer-checkpoint', 'references']);
+const EDITORIAL_ROLES = new Set([
+  'canonical-model',
+  'answer-checkpoint',
+  'references',
+  'timeboxed-answer',
+]);
 const CODE_VALIDATION_KINDS = new Set([
   'contract',
   'example',
@@ -55,8 +60,50 @@ const CODE_VALIDATION_KINDS = new Set([
   'pseudocode',
 ]);
 const TS_LANGUAGES = new Set(['ts', 'typescript', 'tsx']);
-const SHARED_FIELDS = ['id', 'title', 'description', 'tags', 'companies', 'updatedAt'];
+const SHARED_FIELDS = [
+  'id',
+  'title',
+  'description',
+  'tags',
+  'companies',
+  'updatedAt',
+  'contentSchemaVersion',
+  'practice',
+];
 const MIN_TOTAL_WORDS = 2000;
+const V2_MIN_TOTAL_WORDS = 1500;
+const V2_MAX_TOTAL_WORDS = 2100;
+const LEGACY_LONGFORM_WARNING_WORDS = 3200;
+const V2_TARGET_LEVELS = new Set(['junior', 'mid', 'senior']);
+const V2_TIMEBOX_MINUTES = new Set([10, 15, 20]);
+const LAYERED_RUBRIC_IDS = new Set([
+  'ai-chat-textarea-design',
+  'ai-image-generation-mvp',
+  'ai-ux-considerations',
+  'component-design-system-architecture',
+  'cross-device-preferences-sync',
+  'dashboard-widgets-draggable-resizable',
+  'endless-short-video-feed',
+  'flashcard-language-trainer',
+  'image-upload-preview',
+  'live-chart-high-frequency-updates',
+  'live-comments-global-stream',
+  'model-training-progress-dashboard',
+  'multi-step-form-autosave',
+  'news-feed-timeline',
+  'notification-toast-system',
+  'realtime-search-debounce-cache',
+  'scalable-notifications-feed',
+]);
+const V2_PLACEHOLDER_METRIC_PATTERNS = [
+  /\b(?:target|goal|slo|budget|threshold|rate)\s*(?:is|of|:)?\s*(?:tbd|todo|verify|x+|n\/a|\?\?)/i,
+  /\b(?:under|below|above|within)\s+(?:x+|n|tbd|todo|verify|\?\?)\s*(?:ms|s|%|fps|items?|mb|hz)\b/i,
+  /<(?:target|metric|number|percent|duration)>/i,
+];
+const PLACEHOLDER_PROSE_PATTERNS = [
+  /\b(?:TODO|TBD|VERIFY)\b/,
+  /\[(?:placeholder|add [^\]]+)\]/i,
+];
 const MIN_SECTION_WORDS = {
   requirements: 250,
   architecture: 300,
@@ -120,6 +167,13 @@ const FORMULAIC_PROSE_PATTERNS = [
   /\bThe backend remains an abstract service contract and is out of scope\b/i,
   /\bI(?:'d| would| recommend| prefer| treat| start| keep| use)\b/i,
 ];
+const V2_FORMULAIC_PROSE_PATTERNS = [
+  /\bA\s+(?:good|solid|great)\b/i,
+  /\bstrong senior signal\b/i,
+  /\bThis step is about\b/i,
+  /\b(?:scope|state|contract)\s+(?:checkpoint|invariant)\b/i,
+];
+const REPEATED_V2_TITLE_EXCEPTIONS = new Set(['technical references']);
 const errors = [];
 const warnings = [];
 
@@ -222,9 +276,6 @@ function inspectPlainString(value, label) {
   for (const [pattern, name] of markdownSignals) {
     if (pattern.test(text)) addError(`${label} contains raw ${name} syntax that the renderer does not parse`);
   }
-  if (/\b(?:TODO|TBD|VERIFY)\b/.test(text) || /\[(?:placeholder|add [^\]]+)\]/i.test(text)) {
-    addError(`${label} contains an unresolved placeholder`);
-  }
 }
 
 function requireString(block, field, label) {
@@ -235,7 +286,7 @@ function validatePlainFields(block, label) {
   const fieldsByType = {
     text: ['text'],
     heading: ['text'],
-    image: ['alt', 'caption'],
+    image: ['alt', 'caption', 'fallbackText'],
     checklist: ['title', 'items'],
     callout: ['title', 'text'],
     links: ['title', 'items'],
@@ -396,6 +447,7 @@ function visibleStringsForBlock(block) {
   if (block.type === 'image') {
     add(block.alt, 'alt');
     add(block.caption, 'caption');
+    add(block.fallbackText, 'fallbackText');
   }
   if (block.type === 'checklist') {
     add(block.title, 'title');
@@ -594,6 +646,292 @@ function validatePremiumPreview(id, entry, meta) {
   const overlap = [...previewTokens].filter((token) => sourceTokens.has(token));
   if (overlap.length < 3) {
     addError(`${id} premiumPreview does not semantically overlap its title, description, and unique angle`);
+  }
+}
+
+function validateDiscovery(id, entry, seenTeasers, seenGuideLabels) {
+  const discovery = entry?.discovery;
+  if (!discovery || typeof discovery !== 'object' || Array.isArray(discovery)) {
+    addError(`${id} index discovery must be an object`);
+    return;
+  }
+  const fields = Object.keys(discovery).sort();
+  if (!equal(fields, ['guideLabel', 'teaser'])) {
+    addError(`${id} index discovery must contain only teaser and guideLabel`);
+  }
+  for (const field of ['teaser', 'guideLabel']) {
+    if (!isNonEmptyString(discovery[field])) {
+      addError(`${id} discovery.${field} must be a non-empty string`);
+    } else {
+      inspectPlainString(discovery[field], `${id} discovery.${field}`);
+    }
+  }
+  const teaserWords = wordCount(discovery.teaser);
+  if (teaserWords < 10 || teaserWords > 40) {
+    addError(`${id} discovery.teaser must contain 10-40 words (found ${teaserWords})`);
+  }
+  if (splitSentences(discovery.teaser).length !== 1) {
+    addError(`${id} discovery.teaser must be exactly one sentence`);
+  }
+  const guideWords = wordCount(discovery.guideLabel);
+  if (guideWords < 2 || guideWords > 6) {
+    addError(`${id} discovery.guideLabel must contain 2-6 words (found ${guideWords})`);
+  }
+  const teaserKey = normalizeText(discovery.teaser).toLowerCase();
+  const guideKey = normalizeText(discovery.guideLabel).toLowerCase();
+  if (teaserKey) {
+    const owner = seenTeasers.get(teaserKey);
+    if (owner) addError(`${id} duplicates discovery.teaser from ${owner}`);
+    else seenTeasers.set(teaserKey, id);
+  }
+  if (guideKey) {
+    const owner = seenGuideLabels.get(guideKey);
+    if (owner) addError(`${id} duplicates discovery.guideLabel from ${owner}`);
+    else seenGuideLabels.set(guideKey, id);
+  }
+}
+
+function validateStringArray(value, { id, field, min, max }) {
+  if (
+    !Array.isArray(value)
+    || value.length < min
+    || value.length > max
+    || value.some((item) => !isNonEmptyString(item))
+  ) {
+    const expected = min === max ? `exactly ${min}` : `${min}-${max}`;
+    addError(`${id} practice.${field} must contain ${expected} non-empty strings`);
+  }
+}
+
+function validateV2Practice(id, entry, meta) {
+  const indexVersion = entry?.contentSchemaVersion;
+  const metaVersion = meta?.contentSchemaVersion;
+  const hasV2Signal = indexVersion === 2 || metaVersion === 2;
+
+  if (!hasV2Signal) {
+    if (indexVersion !== undefined && indexVersion !== 1) {
+      addError(`${id} contentSchemaVersion must be 1 or 2`);
+    }
+    if (metaVersion !== undefined && metaVersion !== 1) {
+      addError(`${id} meta.contentSchemaVersion must be 1 or 2`);
+    }
+    if (entry?.practice !== undefined || meta?.practice !== undefined) {
+      addError(`${id} practice metadata requires contentSchemaVersion 2`);
+    }
+    return false;
+  }
+
+  if (indexVersion !== 2 || metaVersion !== 2) {
+    addError(`${id} V2 contentSchemaVersion must be 2 in both index.json and meta.json`);
+  }
+  if (!equal(entry?.practice, meta?.practice)) {
+    addError(`${id} V2 practice metadata must match exactly between index.json and meta.json`);
+  }
+
+  const practice = meta?.practice;
+  if (!practice || typeof practice !== 'object' || Array.isArray(practice)) {
+    addError(`${id} V2 practice must be an object`);
+    return true;
+  }
+  const allowedFields = [
+    'candidatePrompt',
+    'constraints',
+    'coreSkills',
+    'evaluationSpine',
+    'expectedDecisions',
+    'guidedMock',
+    'prerequisites',
+    'targetLevel',
+    'timeboxMinutes',
+  ];
+  const actualFields = Object.keys(practice).sort();
+  const requiredFields = allowedFields.filter((field) => field !== 'guidedMock');
+  if (requiredFields.some((field) => !actualFields.includes(field))) {
+    addError(`${id} V2 practice is missing one or more required fields`);
+  }
+  const unexpected = actualFields.filter((field) => !allowedFields.includes(field));
+  if (unexpected.length) addError(`${id} V2 practice contains unsupported fields: ${unexpected.join(', ')}`);
+  if (!V2_TARGET_LEVELS.has(practice.targetLevel)) {
+    addError(`${id} practice.targetLevel must be junior, mid, or senior`);
+  }
+  if (!V2_TIMEBOX_MINUTES.has(practice.timeboxMinutes)) {
+    addError(`${id} practice.timeboxMinutes must be 10, 15, or 20`);
+  }
+  const promptWords = wordCount(practice.candidatePrompt);
+  if (promptWords < 60 || promptWords > 110) {
+    addError(`${id} practice.candidatePrompt must contain 60-110 words (found ${promptWords})`);
+  }
+  splitSentences(practice.candidatePrompt).forEach((sentence, index) => {
+    const words = wordCount(sentence);
+    if (words > 30) {
+      addError(`${id} practice.candidatePrompt sentence ${index + 1} has ${words} words; maximum is 30`);
+    }
+  });
+  inspectPlainString(practice.candidatePrompt, `${id} practice.candidatePrompt`);
+  validateStringArray(practice.constraints, { id, field: 'constraints', min: 2, max: 4 });
+  validateStringArray(practice.expectedDecisions, { id, field: 'expectedDecisions', min: 3, max: 3 });
+  validateStringArray(practice.prerequisites, { id, field: 'prerequisites', min: 2, max: 4 });
+  validateStringArray(practice.coreSkills, { id, field: 'coreSkills', min: 2, max: 4 });
+  if (practice.guidedMock !== undefined && typeof practice.guidedMock !== 'boolean') {
+    addError(`${id} practice.guidedMock must be a boolean when present`);
+  }
+  const spine = practice.evaluationSpine;
+  if (!spine || typeof spine !== 'object' || Array.isArray(spine)) {
+    addError(`${id} practice.evaluationSpine must be an object`);
+  } else {
+    const spineFields = Object.keys(spine).sort();
+    const expectedSpineFields = ['expertStretch', 'mustCover', 'redFlag', 'strongSignals'];
+    if (!equal(spineFields, expectedSpineFields)) {
+      addError(`${id} practice.evaluationSpine must contain only mustCover, strongSignals, expertStretch, and redFlag`);
+    }
+    validateStringArray(spine.mustCover, {
+      id,
+      field: 'evaluationSpine.mustCover',
+      min: 2,
+      max: 2,
+    });
+    validateStringArray(spine.strongSignals, {
+      id,
+      field: 'evaluationSpine.strongSignals',
+      min: 2,
+      max: 2,
+    });
+    for (const field of ['expertStretch', 'redFlag']) {
+      if (!isNonEmptyString(spine[field])) {
+        addError(`${id} practice.evaluationSpine.${field} must be a non-empty string`);
+      }
+    }
+    [
+      ...(spine.mustCover || []),
+      ...(spine.strongSignals || []),
+      spine.expertStretch,
+      spine.redFlag,
+    ].forEach((item, index) => inspectPlainString(item, `${id} practice.evaluationSpine item ${index + 1}`));
+  }
+  for (const field of ['constraints', 'expectedDecisions', 'prerequisites', 'coreSkills']) {
+    (Array.isArray(practice[field]) ? practice[field] : []).forEach((item, index) => {
+      inspectPlainString(item, `${id} practice.${field}[${index}]`);
+    });
+  }
+  const practiceStrings = [
+    practice.candidatePrompt,
+    ...(practice.constraints || []),
+    ...(practice.expectedDecisions || []),
+    ...(practice.prerequisites || []),
+    ...(practice.coreSkills || []),
+    ...(practice.evaluationSpine?.mustCover || []),
+    ...(practice.evaluationSpine?.strongSignals || []),
+    practice.evaluationSpine?.expertStretch,
+    practice.evaluationSpine?.redFlag,
+  ];
+  practiceStrings.forEach((value) => {
+    [...PLACEHOLDER_PROSE_PATTERNS, ...V2_PLACEHOLDER_METRIC_PATTERNS].forEach((pattern) => {
+      if (pattern.test(String(value || ''))) {
+        addError(`${id} V2 practice metadata contains an unresolved placeholder matching ${pattern}`);
+      }
+    });
+  });
+  const firstScreenWords = wordCount([
+    practice.candidatePrompt,
+    ...(practice.constraints || []),
+    ...(practice.prerequisites || []),
+    ...(practice.evaluationSpine?.mustCover || []),
+    ...(practice.evaluationSpine?.strongSignals || []),
+    practice.evaluationSpine?.expertStretch,
+    practice.evaluationSpine?.redFlag,
+  ].filter(Boolean).join(' '));
+  if (firstScreenWords > 160) {
+    addError(`${id} prompt, constraints, prerequisites, and evaluation spine contain ${firstScreenWords} words; maximum is 160`);
+  }
+  return true;
+}
+
+function recordEvaluationSpine(id, practice, seenItems) {
+  const spine = practice?.evaluationSpine;
+  if (!spine || typeof spine !== 'object') return;
+  [
+    ...(spine.mustCover || []),
+    ...(spine.strongSignals || []),
+    spine.expertStretch,
+    spine.redFlag,
+  ].filter(isNonEmptyString).forEach((item) => {
+    const key = normalizeText(item).toLowerCase();
+    const owner = seenItems.get(key);
+    if (owner && owner !== id) addError(`${id} duplicates an evaluation-spine item from ${owner}: ${JSON.stringify(item)}`);
+    else seenItems.set(key, id);
+  });
+}
+
+function resolveV2AssetPath(src) {
+  const publicPrefix = 'questions/system-design/';
+  return path.resolve(SYSTEM_DESIGN_DIR, String(src).slice(publicPrefix.length));
+}
+
+function validateV2Assets(id, blockEntries) {
+  const images = blockEntries.filter(({ block }) => block.type === 'image');
+  if (images.length !== 2) addError(`${id} V2 content requires exactly two image blocks (found ${images.length})`);
+  const expectedPrefix = `questions/system-design/${id}/`;
+  images.forEach(({ block, label }) => {
+    const src = String(block.src || '');
+    if (!src.startsWith(expectedPrefix) || !/^[a-z0-9/_-]+\.svg$/.test(src)) {
+      addError(`${id} ${label}.src must reference an SVG inside ${expectedPrefix}`);
+      return;
+    }
+    if (wordCount(block.alt) < 6) addError(`${id} ${label}.alt must meaningfully describe the diagram`);
+    requireString(block, 'caption', `${id} ${label}`);
+    requireString(block, 'fallbackText', `${id} ${label}`);
+    if (!Number.isInteger(block.width) || block.width <= 0) addError(`${id} ${label}.width must be a positive integer`);
+    if (!Number.isInteger(block.height) || block.height <= 0) addError(`${id} ${label}.height must be a positive integer`);
+
+    const assetPath = resolveV2AssetPath(src);
+    const expectedFolder = path.resolve(SYSTEM_DESIGN_DIR, id);
+    if (!assetPath.startsWith(`${expectedFolder}${path.sep}`)) {
+      addError(`${id} ${label}.src escapes its question folder`);
+      return;
+    }
+    if (!fs.existsSync(assetPath)) {
+      addError(`${id} ${label}.src does not exist: ${src}`);
+      return;
+    }
+    const svg = fs.readFileSync(assetPath, 'utf8');
+    const forbidden = [
+      /<!DOCTYPE\b/i,
+      /<!ENTITY\b/i,
+      /<\?xml-stylesheet\b/i,
+      /<\s*script\b/i,
+      /<\s*foreignObject\b/i,
+      /<\s*image\b/i,
+      /<\s*(?:animate|animateMotion|animateTransform|set)\b/i,
+      /\son[a-z]+\s*=/i,
+      /\b(?:href|xlink:href)\s*=\s*["'](?!#)/i,
+      /@import\b/i,
+      /\bjavascript:/i,
+      /url\s*\(\s*["']?(?!#)/i,
+    ];
+    if (!/^\s*<svg\b/i.test(svg) || forbidden.some((pattern) => pattern.test(svg))) {
+      addError(`${id} ${label}.src contains unsafe or external SVG content`);
+    }
+    if (!/<title\b/i.test(svg) || !/<desc\b/i.test(svg)) {
+      addError(`${id} ${label}.src must contain title and desc elements`);
+    }
+  });
+}
+
+function validateLayeredRubric(id, blockEntries) {
+  const answer = blockEntries.find(({ block }) => block.editorialRole === 'answer-checkpoint')?.block;
+  if (answer?.type !== 'checklist' || !Array.isArray(answer.items) || answer.items.length !== 6) {
+    addError(`${id} answer-checkpoint must be a six-item layered checklist`);
+    return;
+  }
+  const counts = { must: 0, strong: 0, stretch: 0, red: 0 };
+  answer.items.forEach((item) => {
+    if (/^Must\s+[—-]\s+/i.test(item)) counts.must += 1;
+    else if (/^Strong signal\s+[—-]\s+/i.test(item)) counts.strong += 1;
+    else if (/^Expert stretch\s+[—-]\s+/i.test(item)) counts.stretch += 1;
+    else if (/^Red flag\s+[—-]\s+/i.test(item)) counts.red += 1;
+  });
+  if (counts.must !== 2 || counts.strong !== 2 || counts.stretch !== 1 || counts.red !== 1) {
+    addError(`${id} answer rubric requires two Must, two Strong signal, one Expert stretch, and one Red flag item`);
   }
 }
 
@@ -909,10 +1247,13 @@ function isNegatedLossClaim(sentence) {
     || /\b(?:drop|discard)(?:s|ed|ing)?\b[^.!?]{0,40}\b(?:is not|are not|is never|are never)\b/i.test(sentence);
 }
 
-function validateEditorialProse(id, visibleRecords) {
+function validateEditorialProse(id, visibleRecords, isV2) {
   visibleRecords.forEach((record) => {
     if (record.role === 'references') return;
-    for (const pattern of FORMULAIC_PROSE_PATTERNS) {
+    const patterns = isV2
+      ? [...FORMULAIC_PROSE_PATTERNS, ...V2_FORMULAIC_PROSE_PATTERNS]
+      : FORMULAIC_PROSE_PATTERNS;
+    for (const pattern of patterns) {
       if (pattern.test(record.text)) {
         addError(`${id} ${record.label} contains formulaic or mechanically incorrect prose matching ${pattern}`);
       }
@@ -934,7 +1275,7 @@ function validateEditorialProse(id, visibleRecords) {
   });
 }
 
-function validateRoles(id, sections, blockEntries) {
+function validateRoles(id, sections, blockEntries, isV2) {
   const canonical = blockEntries.filter(({ block }) => block.editorialRole === 'canonical-model');
   if (canonical.length !== 1) {
     addError(`${id} requires exactly one canonical-model editorialRole (found ${canonical.length})`);
@@ -943,11 +1284,7 @@ function validateRoles(id, sections, blockEntries) {
   }
 
   const optimizationBlocks = sections.optimizations.blocks || [];
-  const answer = optimizationBlocks.at(-2);
   const references = optimizationBlocks.at(-1);
-  if (answer?.editorialRole !== 'answer-checkpoint' || !['callout', 'checklist'].includes(answer?.type)) {
-    addError(`${id} optimizations must end with a callout/checklist carrying answer-checkpoint before references`);
-  }
   if (references?.editorialRole !== 'references' || references?.type !== 'links') {
     addError(`${id} final optimizations block must be links carrying the references editorialRole`);
   } else {
@@ -969,9 +1306,89 @@ function validateRoles(id, sections, blockEntries) {
       }
     });
   const answerRoles = blockEntries.filter(({ block }) => block.editorialRole === 'answer-checkpoint');
+  const timeboxedRoles = blockEntries.filter(({ block }) => block.editorialRole === 'timeboxed-answer');
   const referenceRoles = blockEntries.filter(({ block }) => block.editorialRole === 'references');
-  if (answerRoles.length !== 1) addError(`${id} requires exactly one answer-checkpoint editorialRole`);
+  if (isV2) {
+    if (answerRoles.length !== 0) addError(`${id} V2 content must not include answer-checkpoint editorialRole`);
+    if (timeboxedRoles.length !== 1) {
+      addError(`${id} V2 content requires exactly one timeboxed-answer editorialRole`);
+    } else {
+      const timeboxed = timeboxedRoles[0];
+      const firstRequirementsBlock = sections.requirements?.blocks?.[0];
+      if (timeboxed.section !== 'requirements'
+        || timeboxed.block !== firstRequirementsBlock
+        || timeboxed.block.type !== 'steps') {
+        addError(`${id} timeboxed-answer must be the first Requirements block and use steps`);
+      }
+      if (timeboxed.block.steps?.length !== 5) {
+        addError(`${id} timeboxed-answer must contain exactly five steps`);
+      }
+      const words = wordCount(visibleStringsForBlock(timeboxed.block).map(({ text }) => text).join(' '));
+      if (words < 250 || words > 400) {
+        addError(`${id} timeboxed-answer must contain 250-400 visible words (found ${words})`);
+      }
+    }
+  } else {
+    const answer = optimizationBlocks.at(-2);
+    if (answer?.editorialRole !== 'answer-checkpoint' || !['callout', 'checklist'].includes(answer?.type)) {
+      addError(`${id} optimizations must end with a callout/checklist carrying answer-checkpoint before references`);
+    }
+    if (answerRoles.length !== 1) addError(`${id} requires exactly one answer-checkpoint editorialRole`);
+    if (timeboxedRoles.length !== 0) addError(`${id} legacy content must not use timeboxed-answer editorialRole`);
+  }
   if (referenceRoles.length !== 1) addError(`${id} requires exactly one references editorialRole`);
+}
+
+function validateBlockSequences(id, sections, isV2) {
+  function report(message) {
+    if (isV2) addError(message);
+    else addWarning(message);
+  }
+
+  function visit(blocks, label) {
+    if (!Array.isArray(blocks) || !blocks.length) return;
+    if (blocks[0]?.type === 'divider') report(`${id} ${label} starts with a divider`);
+    if (blocks.at(-1)?.type === 'divider') report(`${id} ${label} ends with a divider`);
+    blocks.forEach((block, index) => {
+      if (block?.type === 'divider' && blocks[index - 1]?.type === 'divider') {
+        report(`${id} ${label} contains adjacent dividers at positions ${index} and ${index + 1}`);
+      }
+      if (block?.type === 'steps') {
+        (block.steps || []).forEach((step, stepIndex) => {
+          if (/^\s*\d+[.)]\s+/.test(String(step?.title || ''))) {
+            report(`${id} ${label}[${index}].steps[${stepIndex}].title must not include a numeric prefix`);
+          }
+        });
+      }
+      if (block?.type === 'columns') {
+        (block.columns || []).forEach((column, columnIndex) => {
+          visit(column?.blocks, `${label}[${index}].columns[${columnIndex}].blocks`);
+        });
+      }
+    });
+  }
+
+  REQUIRED_SECTIONS.forEach((section) => visit(sections[section]?.blocks, `${section}.json blocks`));
+}
+
+function validateV2Blocks(id, blockEntries, duplicateState) {
+  blockEntries.forEach(({ block, label }) => {
+    if (block.type === 'stats') {
+      (block.items || []).forEach((item, index) => {
+        if (!/\d/.test(String(item?.value || ''))) {
+          addError(`${id} ${label}.items[${index}].value is qualitative; V2 stats values require a measured number`);
+        }
+      });
+    }
+    const title = normalizeText(block.type === 'heading' ? block.text : block.title).toLowerCase();
+    if (!title || REPEATED_V2_TITLE_EXCEPTIONS.has(title)) return;
+    const owner = duplicateState.titles.get(title);
+    if (owner && owner !== id) {
+      addError(`${id} repeats V2 block title from ${owner}: ${JSON.stringify(title)}`);
+    } else {
+      duplicateState.titles.set(title, id);
+    }
+  });
 }
 
 function validateCodeContracts(id, blockEntries) {
@@ -1028,7 +1445,7 @@ function validateCodeContracts(id, blockEntries) {
   return { entries: groups, sources };
 }
 
-function validateFullQuality(id, meta, sections, duplicateState) {
+function validateFullQuality(id, meta, sections, duplicateState, isV2) {
   const blockEntries = collectBlockEntries(sections);
   const visibleRecords = collectVisibleRecords(blockEntries);
   const sectionTexts = {};
@@ -1039,14 +1456,27 @@ function validateFullQuality(id, meta, sections, duplicateState) {
       .map((record) => record.text)
       .join('. ');
     sectionTexts[section] = text;
-    const words = wordCount(text);
+    const renderedCode = blockEntries
+      .filter((entry) => entry.section === section && entry.block.type === 'code')
+      .map((entry) => entry.block.code)
+      .join('\n');
+    const words = wordCount(`${text}\n${renderedCode}`);
     totalWords += words;
     if (words < MIN_SECTION_WORDS[section]) {
       addError(`${id} ${section} is thin (${words} words; expected at least ${MIN_SECTION_WORDS[section]})`);
     }
   });
-  if (totalWords < MIN_TOTAL_WORDS) {
-    addError(`${id} has ${totalWords} visible words; expected at least ${MIN_TOTAL_WORDS}`);
+  if (isV2) {
+    if (totalWords < V2_MIN_TOTAL_WORDS || totalWords > V2_MAX_TOTAL_WORDS) {
+      addError(`${id} V2 content has ${totalWords} visible words; expected ${V2_MIN_TOTAL_WORDS}-${V2_MAX_TOTAL_WORDS}`);
+    }
+  } else {
+    if (totalWords < MIN_TOTAL_WORDS) {
+      addError(`${id} has ${totalWords} visible words; expected at least ${MIN_TOTAL_WORDS}`);
+    }
+    if (totalWords > LEGACY_LONGFORM_WARNING_WORDS) {
+      addWarning(`${id} legacy content is long (${totalWords} visible words); consider a prompt-first V2 edit`);
+    }
   }
 
   const combined = Object.values(sectionTexts).join(' ');
@@ -1069,12 +1499,30 @@ function validateFullQuality(id, meta, sections, duplicateState) {
   }
 
   validateRadioLanguage(id, visibleRecords);
-  validateEditorialProse(id, visibleRecords);
-  validateRoles(id, sections, blockEntries);
+  validateEditorialProse(id, visibleRecords, isV2);
+  validateRoles(id, sections, blockEntries, isV2);
+  validateBlockSequences(id, sections, isV2);
+  if (!isV2 && LAYERED_RUBRIC_IDS.has(id)) validateLayeredRubric(id, blockEntries);
+  if (isV2) {
+    validateV2Assets(id, blockEntries);
+    validateV2Blocks(id, blockEntries, duplicateState);
+    if (!/\b(?:rejected alternative|we reject|reject this|not chosen)\b/i.test(combined)
+      || !/\b(?:user|operator|specialist|reader|customer|screen-reader)\b/i.test(combined)) {
+      addError(`${id} V2 content must explain a rejected alternative and its user impact`);
+    }
+  }
+  visibleRecords.forEach((record) => {
+    [...PLACEHOLDER_PROSE_PATTERNS, ...V2_PLACEHOLDER_METRIC_PATTERNS].forEach((pattern) => {
+      if (!pattern.test(record.text)) return;
+      const message = `${id} ${record.label} contains an unresolved placeholder pattern matching ${pattern}`;
+      if (isV2) addError(message);
+      else addWarning(message);
+    });
+  });
   const codeGroups = validateCodeContracts(id, blockEntries);
 
   visibleRecords
-    .filter((record) => !['answer-checkpoint', 'references'].includes(record.role))
+    .filter((record) => record.role !== 'references')
     .forEach((record) => {
       for (const sentence of sentenceCandidates(record.text)) {
         const owner = duplicateState.sentences.get(sentence);
@@ -1331,10 +1779,14 @@ if (!Array.isArray(index)) addError(`${rel(indexPath)} must contain an array`);
 
 const seenSeoTitles = new Map();
 const seenSeoDescriptions = new Map();
+const seenDiscoveryTeasers = new Map();
+const seenDiscoveryGuideLabels = new Map();
+const seenEvaluationSpineItems = new Map();
 const seenIds = new Set();
 const duplicateState = {
   sentences: new Map(),
   shingles: new Map(),
+  titles: new Map(),
   reports: new Set(),
 };
 const contexts = new Map();
@@ -1350,6 +1802,7 @@ for (const entry of Array.isArray(index) ? index : []) {
     continue;
   }
   seenIds.add(id);
+  validateDiscovery(id, entry, seenDiscoveryTeasers, seenDiscoveryGuideLabels);
   const updatedAt = parseDate(entry.updatedAt);
   if (!updatedAt) {
     addError(`${id} updatedAt must be a valid YYYY-MM-DD date`);
@@ -1365,12 +1818,17 @@ for (const entry of Array.isArray(index) ? index : []) {
   const metaPath = path.join(folder, 'meta.json');
   const meta = readJson(metaPath);
   if (!meta) continue;
+  if (meta.discovery !== undefined) {
+    addError(`${id} discovery metadata must remain index-only and must not appear in meta.json`);
+  }
 
   SHARED_FIELDS.forEach((field) => {
     const indexValue = field === 'companies' ? (entry[field] || []) : entry[field];
     const metaValue = field === 'companies' ? (meta[field] || []) : meta[field];
     if (!equal(indexValue, metaValue)) addError(`${id} index/meta ${field} mismatch`);
   });
+  const isV2 = validateV2Practice(id, entry, meta);
+  if (isV2) recordEvaluationSpine(id, meta.practice, seenEvaluationSpineItems);
 
   const description = String(entry.description || '');
   if (!description || description.length > 240 || /[\r\n]/.test(description)) {
@@ -1423,7 +1881,7 @@ for (const entry of Array.isArray(index) ? index : []) {
   }
 
   if (MODE === 'full' && REQUIRED_SECTIONS.every((section) => sections[section])) {
-    contexts.set(id, validateFullQuality(id, meta, sections, duplicateState));
+    contexts.set(id, validateFullQuality(id, meta, sections, duplicateState, isV2));
   }
 }
 

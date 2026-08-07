@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">AI proposal, approval, and execution boundary</title>
+  <desc id="desc">AI creates a versioned proposal with evidence. A user reviews it. An approval gate checks version, evidence freshness, and capability before execution. Per-item outcomes are recorded in the audit and recovery view.</desc>
+  <rect width="960" height="540" rx="24" fill="#f8fafc"/>
+  <text x="48" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#172033">Generated content is not execution authority</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="48" y="138" width="188" height="138" rx="16" fill="#e8efff" stroke="#315ee8" stroke-width="2"/>
+    <text x="72" y="177" font-size="18" font-weight="700" fill="#172033">AI proposal</text>
+    <text x="72" y="209" font-size="14" fill="#526078">version + evidence</text>
+    <text x="72" y="236" font-size="14" fill="#526078">uncertainty + scope</text>
+
+    <rect x="278" y="138" width="188" height="138" rx="16" fill="#ffffff" stroke="#315ee8" stroke-width="2"/>
+    <text x="302" y="177" font-size="18" font-weight="700" fill="#172033">User review</text>
+    <text x="302" y="209" font-size="14" fill="#526078">inspect changes</text>
+    <text x="302" y="236" font-size="14" fill="#526078">select + edit + reject</text>
+
+    <rect x="508" y="118" width="196" height="178" rx="16" fill="#fff7e8" stroke="#c47a18" stroke-width="3"/>
+    <text x="532" y="157" font-size="18" font-weight="700" fill="#172033">Approval gate</text>
+    <text x="532" y="190" font-size="14" fill="#526078">proposal version</text>
+    <text x="532" y="217" font-size="14" fill="#526078">evidence freshness</text>
+    <text x="532" y="244" font-size="14" fill="#526078">current capability</text>
+    <text x="532" y="271" font-size="14" fill="#526078">explicit user intent</text>
+
+    <rect x="746" y="138" width="166" height="138" rx="16" fill="#effaf4" stroke="#268455" stroke-width="2"/>
+    <text x="770" y="177" font-size="18" font-weight="700" fill="#172033">Execution</text>
+    <text x="770" y="209" font-size="14" fill="#526078">versioned command</text>
+    <text x="770" y="236" font-size="14" fill="#526078">per-item outcome</text>
+  </g>
+  <g stroke="#315ee8" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M236 207H278"/><path d="m266 197 12 10-12 10"/>
+    <path d="M466 207H508"/><path d="m496 197 12 10-12 10"/>
+    <path d="M704 207H746"/><path d="m734 197 12 10-12 10"/>
+  </g>
+  <rect x="236" y="360" width="488" height="94" rx="16" fill="#f3edff" stroke="#7950b8" stroke-width="2"/>
+  <text x="480" y="397" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#172033">Audit and recovery</text>
+  <text x="480" y="428" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#526078">reviewed version · approval · outcome · verified rollback choice</text>
+  <path d="M829 276V330Q829 407 724 407" fill="none" stroke="#7950b8" stroke-width="3"/>
+</svg>

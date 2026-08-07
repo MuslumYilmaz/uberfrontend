@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   InterviewAvailability,
   InterviewFormat,
@@ -18,7 +18,12 @@ import {
   InterviewSystemDesignPracticeSignal,
   InterviewTrack,
 } from '../../core/models/interview.model';
+import {
+  resolveSystemDesignPractice,
+  SystemDesignListItem,
+} from '../../core/models/system-design.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { QuestionService } from '../../core/services/question.service';
 import {
   FaButtonComponent,
   FaCardComponent,
@@ -44,6 +49,8 @@ import {
 })
 export class InterviewSetupComponent implements OnInit, OnDestroy {
   private readonly interviews = inject(InterviewService);
+  private readonly questions = inject(QuestionService);
+  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -55,7 +62,16 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   readonly selectedLevel = signal<InterviewLevel>('mid');
   readonly selectedTrack = signal<InterviewTrack>('core-web');
   readonly selectedFormat = signal<InterviewFormat>('coding');
+  readonly targetedQuestion = signal<SystemDesignListItem | null>(null);
+  readonly targetResolution = signal<'none' | 'loading' | 'ready' | 'error'>('none');
+  readonly targetResolutionError = signal<string | null>(null);
+  readonly levelLocked = computed(() => this.targetResolution() !== 'none');
+  readonly targetedSetupBlocked = computed(() =>
+    this.targetResolution() === 'loading' || this.targetResolution() === 'error'
+  );
   private createIdempotencyKey: string | null = null;
+  private requestedSourceContentId: string | null = null;
+  private targetRequestEpoch = 0;
 
   readonly viewportBlocked = computed(() => {
     const minimum = this.availability()?.minViewportWidth ?? 768;
@@ -102,6 +118,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
       && !this.quotaExhausted()
       && !this.targetUnavailable()
       && !this.viewportBlocked()
+      && !this.targetedSetupBlocked()
       && !this.starting();
   });
 
@@ -110,11 +127,14 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.isBrowser) window.addEventListener('resize', this.onResize, { passive: true });
+    this.applyQueryDefaults();
+    this.loadTargetedQuestion();
     this.load();
   }
 
   ngOnDestroy(): void {
     this.availabilityRequestEpoch += 1;
+    this.targetRequestEpoch += 1;
     if (this.isBrowser) window.removeEventListener('resize', this.onResize);
   }
 
@@ -148,7 +168,12 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
         track: this.selectedTrack(),
         viewportWidth: Math.floor(this.viewportWidth()),
         ...(this.selectedFormat() === 'system-design'
-          ? { format: 'system-design' as const }
+          ? {
+            format: 'system-design' as const,
+            ...(this.targetedQuestion()
+              ? { systemDesignSourceContentId: this.targetedQuestion()!.id }
+              : {}),
+          }
           : {}),
       },
       this.createIdempotencyKey,
@@ -164,7 +189,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
           this.load();
           return;
         }
-        this.error.set('The interview could not be started. Please try again.');
+        this.error.set(this.createErrorMessage(error));
       },
     });
   }
@@ -174,6 +199,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   }
 
   onLevelChange(value: unknown): void {
+    if (this.levelLocked()) return;
     if (value === 'junior' || value === 'mid' || value === 'senior') {
       this.selectedLevel.set(value);
       this.createIdempotencyKey = null;
@@ -189,6 +215,9 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
 
   onFormatChange(value: unknown): void {
     if (value !== 'coding' && value !== 'system-design') return;
+    if (this.requestedSourceContentId && value !== 'system-design') {
+      this.clearTargetedCase();
+    }
     this.selectedFormat.set(value);
     this.createIdempotencyKey = null;
     this.applyAvailableTargetDefault();
@@ -237,6 +266,119 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
     }
   }
 
+  chooseAnotherCase(): void {
+    this.clearTargetedCase();
+  }
+
+  targetedLevelLabel(): string {
+    const level = this.targetedQuestion()
+      ? resolveSystemDesignPractice(this.targetedQuestion()!).targetLevel
+      : this.selectedLevel();
+    return level === 'mid' ? 'Mid-level' : `${level.charAt(0).toUpperCase()}${level.slice(1)}`;
+  }
+
+  private applyQueryDefaults(): void {
+    const format = this.route.snapshot.queryParamMap.get('format');
+    const level = this.route.snapshot.queryParamMap.get('level');
+    if (format === 'coding' || format === 'system-design') this.selectedFormat.set(format);
+    if (level === 'junior' || level === 'mid' || level === 'senior') this.selectedLevel.set(level);
+  }
+
+  private loadTargetedQuestion(): void {
+    const sourceQuestionId = String(
+      this.route.snapshot.queryParamMap.get('sourceQuestionId') || '',
+    ).trim();
+    if (!sourceQuestionId) return;
+
+    const requestEpoch = ++this.targetRequestEpoch;
+    this.requestedSourceContentId = sourceQuestionId;
+    this.targetedQuestion.set(null);
+    this.targetResolution.set('loading');
+    this.targetResolutionError.set(null);
+    this.selectedFormat.set('system-design');
+    this.createIdempotencyKey = null;
+
+    this.questions.loadSystemDesign({ transferState: false }).subscribe({
+      next: (questions) => {
+        if (
+          requestEpoch !== this.targetRequestEpoch
+          || this.requestedSourceContentId !== sourceQuestionId
+        ) return;
+        const targeted = questions.find((question) => question.id === sourceQuestionId) ?? null;
+        if (!targeted) {
+          this.failTargetResolution('This guided case could not be found. Choose another case.');
+          return;
+        }
+        const practice = resolveSystemDesignPractice(targeted);
+        if (!practice.guidedMock) {
+          this.failTargetResolution('This question is not available as a guided mock. Choose another case.');
+          return;
+        }
+
+        this.targetedQuestion.set(targeted);
+        this.targetResolution.set('ready');
+        this.selectedFormat.set('system-design');
+        this.selectedLevel.set(practice.targetLevel);
+        this.createIdempotencyKey = null;
+        const availability = this.availability();
+        if (availability) this.applyAvailableTargetDefault();
+      },
+      error: () => {
+        if (
+          requestEpoch !== this.targetRequestEpoch
+          || this.requestedSourceContentId !== sourceQuestionId
+        ) return;
+        this.failTargetResolution(
+          'The selected guided case could not be validated. Try again or choose another case.',
+        );
+      },
+    });
+  }
+
+  private clearTargetedCase(updateUrl = true): void {
+    if (!this.requestedSourceContentId && !this.targetedQuestion()) return;
+    this.targetRequestEpoch += 1;
+    this.requestedSourceContentId = null;
+    this.targetedQuestion.set(null);
+    this.targetResolution.set('none');
+    this.targetResolutionError.set(null);
+    this.createIdempotencyKey = null;
+    if (!updateUrl) return;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        sourceQuestionId: null,
+        src: null,
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private failTargetResolution(message: string): void {
+    this.targetedQuestion.set(null);
+    this.targetResolution.set('error');
+    this.targetResolutionError.set(message);
+    this.createIdempotencyKey = null;
+  }
+
+  private createErrorMessage(error: unknown): string {
+    const response = error && typeof error === 'object'
+      ? error as { error?: { code?: unknown } }
+      : null;
+    const code = String(response?.error?.code || '');
+    if (code === 'INTERVIEW_SYSTEM_DESIGN_SOURCE_INVALID') {
+      return 'This guided case could not be found. Choose another system design case.';
+    }
+    if (code === 'INTERVIEW_SYSTEM_DESIGN_SOURCE_LEVEL_MISMATCH') {
+      return 'This case is not available at the selected level. Choose another case.';
+    }
+    if (code === 'INTERVIEW_SYSTEM_DESIGN_SOURCE_UNAVAILABLE') {
+      return 'This guided case is temporarily unavailable. Choose another case.';
+    }
+    return 'The interview could not be started. Please try again.';
+  }
+
   private applyAvailableDefaults(availability: InterviewAvailability): void {
     const firstLevel = availability.levels.find((choice) => !choice.disabled);
     const firstTrack = availability.tracks.find((choice) => !choice.disabled);
@@ -258,11 +400,17 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
       );
       if (firstFormat) this.selectedFormat.set(firstFormat.value);
     }
+    const targeted = this.targetedQuestion();
+    if (targeted) {
+      this.selectedFormat.set('system-design');
+      this.selectedLevel.set(resolveSystemDesignPractice(targeted).targetLevel);
+    }
     this.applyAvailableTargetDefault();
   }
 
   private applyAvailableTargetDefault(): void {
     const availability = this.availability();
+    if (this.targetedQuestion()) return;
     if (!availability?.targets.length || !this.targetUnavailable()) return;
     const firstTarget = availability.targets.find((target) =>
       target.format === this.selectedFormat()

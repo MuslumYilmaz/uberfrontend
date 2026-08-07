@@ -947,11 +947,13 @@ async function selectSetupChoice(
   fieldLabel: 'Level' | 'Track',
   optionLabel: string,
 ): Promise<void> {
-  const comboboxIndex = fieldLabel === 'Level' ? 0 : 1;
-  const combobox = page.getByTestId('interview-setup').getByRole('combobox').nth(comboboxIndex);
+  const accessibleName = `Interview ${fieldLabel.toLowerCase()}`;
+  const combobox = page
+    .getByTestId('interview-setup')
+    .getByRole('combobox', { name: accessibleName, exact: true });
   await combobox.click();
   await page.getByRole('option', { name: optionLabel, exact: true }).click();
-  await expect(combobox).toHaveAccessibleName(optionLabel);
+  await expect(combobox).toHaveText(optionLabel);
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {

@@ -36,7 +36,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Drag-and-Drop Dashboard Frontend System Design",
     "description": "Design dashboard widgets with pointer and keyboard movement, grid constraints, optimistic persistence, versioned layouts, and responsive reflow."
@@ -47,7 +47,7 @@
     "searchIntent": "Prepare a frontend system design answer for Drag-and-Drop Dashboard Frontend System Design.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Drag-and-Drop Dashboard Frontend System Design.",
     "uniqueAngle": "Design a customizable dashboard with pointer and keyboard movement, grid constraints, optimistic layout persistence, versioned migrations, and responsive reflow.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

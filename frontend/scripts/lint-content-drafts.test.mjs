@@ -193,6 +193,48 @@ ${longText('Ship the critical path first, add measurement early, and widen the a
 `;
 }
 
+function withV2SystemDesignFrontmatter(draft, overrides = {}) {
+  const values = {
+    content_schema_version: 2,
+    target_level: 'mid',
+    timebox_minutes: 15,
+    candidate_prompt: 'Design a resilient frontend workflow where one versioned user command receives ordered updates. The interface must preserve keyboard focus, expose recovery after failure, and reject stale results from older requests. Explain who owns accepted state, how rendering remains bounded, and how cancellation races with a late response. Keep the server behind an abstract contract, make accessibility behavior explicit, and identify the three technical decisions you would defend.',
+    constraints: ['One command is active at a time.', 'Late results cannot replace accepted state.'],
+    expected_decisions: ['Choose state ownership.', 'Define stale-result rejection.', 'Define accessible recovery.'],
+    prerequisites: ['Async requests', 'Accessible focus'],
+    core_skills: ['State ownership', 'Race recovery'],
+    evaluation_must_cover: ['Own accepted state.', 'Reject superseded results.'],
+    evaluation_strong_signals: ['Keep recovery accessible.', 'Bound rendering work.'],
+    evaluation_expert_stretch: 'Adapt from field measurements.',
+    evaluation_red_flag: 'Treat arrival order as truth.',
+    guided_mock: false,
+    ...overrides,
+  };
+  const yaml = [
+    `content_schema_version: ${values.content_schema_version}`,
+    `target_level: "${values.target_level}"`,
+    `timebox_minutes: ${values.timebox_minutes}`,
+    `candidate_prompt: "${values.candidate_prompt}"`,
+    'constraints:',
+    ...values.constraints.map((item) => `  - "${item}"`),
+    'expected_decisions:',
+    ...values.expected_decisions.map((item) => `  - "${item}"`),
+    'prerequisites:',
+    ...values.prerequisites.map((item) => `  - "${item}"`),
+    'core_skills:',
+    ...values.core_skills.map((item) => `  - "${item}"`),
+    'evaluation_must_cover:',
+    ...values.evaluation_must_cover.map((item) => `  - "${item}"`),
+    'evaluation_strong_signals:',
+    ...values.evaluation_strong_signals.map((item) => `  - "${item}"`),
+    `evaluation_expert_stretch: "${values.evaluation_expert_stretch}"`,
+    `evaluation_red_flag: "${values.evaluation_red_flag}"`,
+    `guided_mock: ${values.guided_mock}`,
+  ].join('\n');
+  const enrichedDraft = `${draft}\n${longText('The frontend radio framework keeps ownership, recovery, accessibility, and measurable tradeoffs connected to one concrete system-design decision.', 30)}\n`;
+  return enrichedDraft.replace('notes_for_conversion:', `${yaml}\nnotes_for_conversion:`);
+}
+
 function runLinter(tempRoot) {
   return execFileSync('node', [LINTER_PATH], {
     cwd: path.join(repoRoot, 'frontend'),
@@ -362,6 +404,56 @@ function testSystemDesignDraftRequiresTwoSources() {
   assert.match(String(failure.stderr || ''), /frontmatter sources must contain at least 2 public source\(s\) for system-design drafts/);
 }
 
+function testV2SystemDesignFrontmatterPasses() {
+  const tempRoot = makeTempRoot();
+  writeFile(
+    tempRoot,
+    'system-design/frontend-radio-framework.md',
+    withV2SystemDesignFrontmatter(buildSystemDesignDraft('approved')),
+  );
+  const result = runLinterDetailed(tempRoot);
+  assert.equal(result.status, 0, `${result.stdout}${result.stderr}`);
+}
+
+function testV2SystemDesignFrontmatterRejectsIncompleteDecisionSet() {
+  const tempRoot = makeTempRoot();
+  writeFile(
+    tempRoot,
+    'system-design/frontend-radio-framework.md',
+    withV2SystemDesignFrontmatter(buildSystemDesignDraft('approved'), {
+      expected_decisions: ['Choose state ownership.', 'Define stale-result rejection.'],
+    }),
+  );
+  const failure = runFailureCase(tempRoot);
+  assert.match(String(failure.stderr || ''), /expected_decisions.*exactly 3/);
+}
+
+function testV2SystemDesignFrontmatterRequiresEvaluationSpine() {
+  const tempRoot = makeTempRoot();
+  writeFile(
+    tempRoot,
+    'system-design/frontend-radio-framework.md',
+    withV2SystemDesignFrontmatter(buildSystemDesignDraft('approved'), {
+      evaluation_must_cover: [],
+    }),
+  );
+  const failure = runFailureCase(tempRoot);
+  assert.match(String(failure.stderr || ''), /evaluation_must_cover.*exactly 2/);
+}
+
+function testV2SystemDesignFrontmatterRejectsAnOverBudgetFirstScreen() {
+  const tempRoot = makeTempRoot();
+  writeFile(
+    tempRoot,
+    'system-design/frontend-radio-framework.md',
+    withV2SystemDesignFrontmatter(buildSystemDesignDraft('approved'), {
+      constraints: [`${'word '.repeat(80).trim()}`, 'Late results cannot replace accepted state.'],
+    }),
+  );
+  const failure = runFailureCase(tempRoot);
+  assert.match(String(failure.stderr || ''), /first-screen metadata.*maximum is 160/);
+}
+
 testApprovedDraftPasses();
 testNestedReadmeIsDocumentationNotDraftContent();
 testEditingDraftWarnsButPasses();
@@ -374,5 +466,9 @@ testApprovedDraftFailsWithWeakCompetitorBrief();
 testEditingTriviaDraftWarnsWithoutCompetitorReviewFile();
 testApprovedTriviaDraftFailsWithoutCompetitorReviewFile();
 testSystemDesignDraftRequiresTwoSources();
+testV2SystemDesignFrontmatterPasses();
+testV2SystemDesignFrontmatterRejectsIncompleteDecisionSet();
+testV2SystemDesignFrontmatterRequiresEvaluationSpine();
+testV2SystemDesignFrontmatterRejectsAnOverBudgetFirstScreen();
 
 console.log('[lint-content-drafts.test] ok');

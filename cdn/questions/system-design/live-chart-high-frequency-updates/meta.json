@@ -35,7 +35,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Live Chart Rendering Frontend System Design",
     "description": "Design a live chart with burst buffering, on-demand rendering, bounded memory, viewport downsampling, gap recovery, and accessible summaries."
@@ -57,7 +57,7 @@
     "searchIntent": "Prepare a frontend system design answer for Live Chart Rendering (High Frequency Updates).",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Live Chart Rendering (High Frequency Updates).",
     "uniqueAngle": "Design a live chart that ingests bursty samples, renders on demand, bounds memory, downsamples by viewport, recovers from gaps, and remains accessible.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

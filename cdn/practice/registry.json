@@ -8626,28 +8626,6 @@
     "assetRef": "questions/system-design/ai-agent-run-inspector/meta.json"
   },
   {
-    "id": "ai-chat-textarea-design",
-    "family": "question",
-    "title": "AI Chat Text Area (ChatGPT-Style)",
-    "route": "/system-design/ai-chat-textarea-design",
-    "tech": "system-design",
-    "difficulty": "intermediate",
-    "summary": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
-    "tags": [
-      "real-time",
-      "streams",
-      "state-management",
-      "ux",
-      "api-calls",
-      "storage"
-    ],
-    "access": "free",
-    "estimatedMinutes": 20,
-    "updatedAt": "2026-07-29",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/system-design/ai-chat-textarea-design/meta.json"
-  },
-  {
     "id": "ai-image-generation-mvp",
     "family": "question",
     "title": "AI Image Generation MVP (Two-Week Design)",
@@ -8665,30 +8643,9 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/ai-image-generation-mvp/meta.json"
-  },
-  {
-    "id": "ai-ux-considerations",
-    "family": "question",
-    "title": "AI UX Resilience and Control Patterns",
-    "route": "/system-design/ai-ux-considerations",
-    "tech": "system-design",
-    "difficulty": "intermediate",
-    "summary": "Design reviewable AI proposals that expose evidence and uncertainty before a user confirms a versioned product action.",
-    "tags": [
-      "ux",
-      "error-handling",
-      "state-management",
-      "real-time",
-      "performance"
-    ],
-    "access": "premium",
-    "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/system-design/ai-ux-considerations/meta.json"
   },
   {
     "id": "component-design-system-architecture",
@@ -8707,7 +8664,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/component-design-system-architecture/meta.json"
   },
@@ -8728,7 +8685,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/cross-device-preferences-sync/meta.json"
   },
@@ -8753,10 +8710,53 @@
       "responsive-ui"
     ],
     "access": "free",
-    "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "estimatedMinutes": 10,
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/notification-toast-system/meta.json"
+  },
+  {
+    "id": "ai-chat-textarea-design",
+    "family": "question",
+    "title": "Design an AI Chat Composer and Streaming Turn",
+    "route": "/system-design/ai-chat-textarea-design",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Design an IME-safe AI chat composer with attachment readiness, one active response stream, idempotent Send and Stop commands, and stale-event recovery.",
+    "tags": [
+      "real-time",
+      "streams",
+      "state-management",
+      "ux",
+      "api-calls",
+      "storage"
+    ],
+    "access": "free",
+    "estimatedMinutes": 15,
+    "updatedAt": "2026-08-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/ai-chat-textarea-design/meta.json"
+  },
+  {
+    "id": "ai-ux-considerations",
+    "family": "question",
+    "title": "Design an AI-Assisted Bulk Edit Review Flow",
+    "route": "/system-design/ai-ux-considerations",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Practice designing a tool that suggests lifecycle-stage changes for customer accounts, lets an operations specialist check the evidence, and applies only the records they approve.",
+    "tags": [
+      "ux",
+      "error-handling",
+      "state-management",
+      "real-time",
+      "performance"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 15,
+    "updatedAt": "2026-08-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/ai-ux-considerations/meta.json"
   },
   {
     "id": "dashboard-widgets-draggable-resizable",
@@ -8774,7 +8774,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/dashboard-widgets-draggable-resizable/meta.json"
   },
@@ -8799,7 +8799,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/endless-short-video-feed/meta.json"
   },
@@ -8818,7 +8818,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/flashcard-language-trainer/meta.json"
   },
@@ -8865,7 +8865,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/image-upload-preview/meta.json"
   },
@@ -8910,7 +8910,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/live-chart-high-frequency-updates/meta.json"
   },
@@ -8935,7 +8935,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/live-comments-global-stream/meta.json"
   },
@@ -8955,7 +8955,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/multi-step-form-autosave/meta.json"
   },
@@ -9005,7 +9005,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/news-feed-timeline/meta.json"
   },
@@ -9027,7 +9027,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/model-training-progress-dashboard/meta.json"
   },
@@ -9048,7 +9048,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/realtime-search-debounce-cache/meta.json"
   },
@@ -9069,7 +9069,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/scalable-notifications-feed/meta.json"
   },

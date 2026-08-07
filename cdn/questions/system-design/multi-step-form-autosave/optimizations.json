@@ -208,10 +208,16 @@
       "text": "Ship local versioned drafts before remote synchronization. Exercise corrupt storage, quota pressure, schema upgrades, multi-tab edits, offline recovery, and final submission. Track restoration success, draft loss, save conflict, blocked navigation, and validation correction rather than save-call volume alone."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Multi-step Form with Autosave assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "multi step form autosave answer rubric",
+      "items": [
+        "Must — Separate local draft revision, remote acknowledged revision, and current validation state.",
+        "Must — Persist debounced saves with idempotency and reject stale responses from older draft generations.",
+        "Strong signal — Recover offline edits and surface same-field conflicts without blocking unrelated steps.",
+        "Strong signal — Keep navigation, focus, and error summary stable across save and schema transitions.",
+        "Expert stretch — Explain draft schema migration, retention, and cross-tab coordination.",
+        "Red flag — Clearing local input when any save response arrives or treating debounce as conflict control."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

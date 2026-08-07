@@ -110,15 +110,15 @@
       "steps": [
         {
           "title": "1. Device A offline changes",
-          "text": "User changes theme and language while offline; separate commands accumulate in the durable queue."
+          "text": "User changes theme while offline; the command records the current theme base revision in the durable queue."
         },
         {
           "title": "2. Device B online changes",
-          "text": "User updates notifications on another device; server revision advances."
+          "text": "User changes theme again on another device; only the server revision for the theme key advances. An unrelated language or notifications update would not conflict with this command."
         },
         {
           "title": "3. Device A reconnects",
-          "text": "SyncEngine sends queued commands; the theme command carries a stale theme revision and receives a conflict."
+          "text": "SyncEngine sends the older theme command; its key-specific base revision is stale, so the server returns a conflict for theme only."
         },
         {
           "title": "4. Merge and retry",
@@ -204,10 +204,16 @@
       "text": "Begin with one low-risk preference and same-tab persistence, then add tab and device sync. Observe queue age, conflicts, rollback, cross-tab loops, unauthorized writes, initial-theme flashes, and convergence time. Privacy-sensitive keys receive stricter review than cosmetic values."
     },
     {
-      "type": "callout",
-      "title": "Interview answer checkpoint",
-      "text": "Before finishing, explain how Cross-device Preferences Sync assigns client state ownership, preserves ordering, recovers from failure, measures performance, and manages keyboard focus.",
-      "variant": "info",
+      "type": "checklist",
+      "title": "cross device preferences sync answer rubric",
+      "items": [
+        "Must — Track confirmed values and optimistic commands with a key-specific base revision.",
+        "Must — Persist offline commands and resolve conflicts only for the same key with a stale revision.",
+        "Strong signal — Apply independent per-key successes while retaining only conflicting or retryable commands.",
+        "Strong signal — Use a sync cursor and server revisions to converge tabs and devices deterministically.",
+        "Expert stretch — Explain preference-specific authority for privacy-sensitive settings and account changes.",
+        "Red flag — Treating an unrelated key update as a conflict or resolving all fields with one global timestamp."
+      ],
       "editorialRole": "answer-checkpoint"
     },
     {

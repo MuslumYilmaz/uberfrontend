@@ -544,6 +544,85 @@ function testMissingPrimaryKeywordInShippedContentFails() {
   assert.match(String(failure.stderr || ''), /shipped content does not contain the draft primary keyword/);
 }
 
+function testV2SystemDesignPracticeMismatchFails() {
+  const tempRoot = makeTempRoot();
+  const slug = 'proposal-review';
+  const primaryKeyword = 'proposal review keyword';
+  const draftPath = `content-drafts/system-design/${slug}.md`;
+  const candidatePrompt = 'Design a reviewable proposal workflow where a user checks evidence before approving one versioned action. The interface must expose stale data, current permission, mixed per-item outcomes, cancellation, and rollback recovery. Explain who owns proposal state, how approval binds the reviewed version, how late completion is reconciled, and how an accessible audit view tells the truth without granting generated content direct mutation authority.';
+  const v2Frontmatter = [
+    'content_schema_version: 2',
+    'target_level: "mid"',
+    'timebox_minutes: 15',
+    `candidate_prompt: "${candidatePrompt}"`,
+    'constraints:',
+    '  - "Approval is explicit."',
+    '  - "Outcomes may be mixed."',
+    'expected_decisions:',
+    '  - "Separate proposal and command."',
+    '  - "Gate stale approval."',
+    '  - "Recover mixed outcomes."',
+    'prerequisites:',
+    '  - "Versioned state"',
+    '  - "Async recovery"',
+    'core_skills:',
+    '  - "Authority boundaries"',
+    '  - "Auditability"',
+    'evaluation_must_cover:',
+    '  - "Separate proposal and command."',
+    '  - "Bind the approved version."',
+    'evaluation_strong_signals:',
+    '  - "Recover mixed outcomes."',
+    '  - "Keep cancellation honest."',
+    'evaluation_expert_stretch: "Handle permission churn."',
+    'evaluation_red_flag: "Treat a proposal as product truth."',
+    'guided_mock: false',
+  ].join('\n');
+  const draft = convertedDraft({
+    family: 'system-design',
+    slug,
+    primaryKeyword,
+  }).replace('notes_for_conversion:', `${v2Frontmatter}\nnotes_for_conversion:`);
+  writeFile(tempRoot, draftPath, draft);
+  const practice = {
+    targetLevel: 'senior',
+    timeboxMinutes: 15,
+    candidatePrompt,
+    constraints: ['Approval is explicit.', 'Outcomes may be mixed.'],
+    expectedDecisions: ['Separate proposal and command.', 'Gate stale approval.', 'Recover mixed outcomes.'],
+    prerequisites: ['Versioned state', 'Async recovery'],
+    coreSkills: ['Authority boundaries', 'Auditability'],
+    evaluationSpine: {
+      mustCover: ['Separate proposal and command.', 'Bind the approved version.'],
+      strongSignals: ['Recover mixed outcomes.', 'Keep cancellation honest.'],
+      expertStretch: 'Handle permission churn.',
+      redFlag: 'Treat a proposal as product truth.',
+    },
+    guidedMock: false,
+  };
+  writeJson(tempRoot, `cdn/questions/system-design/${slug}/meta.json`, {
+    id: slug,
+    title: 'Proposal review',
+    description: 'System design description',
+    contentSchemaVersion: 2,
+    practice,
+    editorial: editorialBlock({
+      family: 'system-design',
+      slug,
+      primaryKeyword,
+      draftPath,
+    }),
+    updatedAt: '2026-04-02',
+  });
+  writeJson(tempRoot, `cdn/questions/system-design/${slug}/requirements.json`, {
+    title: 'Requirements',
+    body: longText(`The ${primaryKeyword} shipped answer stays detailed and concrete.`, 70),
+  });
+
+  const failure = expectFailure(tempRoot);
+  assert.match(String(failure.stderr || ''), /practice\.targetLevel does not match V2 draft frontmatter/);
+}
+
 testMissingShippedFileFails();
 testMissingEditorialBlockFails();
 testMetadataMismatchFails();
@@ -552,5 +631,6 @@ testWeakTriviaCompetitiveThresholdFails();
 testRelevantGreatFrontendOmissionFailsForConvertedTrivia();
 testThinShippedSystemDesignFails();
 testMissingPrimaryKeywordInShippedContentFails();
+testV2SystemDesignPracticeMismatchFails();
 
 console.log('[lint-shipped-draft-parity.test] ok');

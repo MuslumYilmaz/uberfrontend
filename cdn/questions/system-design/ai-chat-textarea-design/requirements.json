@@ -3,149 +3,37 @@
   "title": "Requirements",
   "blocks": [
     {
-      "type": "text",
-      "text": "Scope the case to the composer and current turn: composition-safe text input with transient IME state, autosizing, attachment readiness, account-scoped draft persistence, one idempotent send command, streamed assistant state, idempotent Stop, retry, and focus recovery. Older history is an abstract paged input, not a database-design exercise."
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "What you are solving:\nA composer where text input survives IME composition, attachments expose readiness, the sent turn appears immediately, and one correlated assistant response streams without stale chunks changing a newer turn."
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Decision surface:\n- Composition and keyboard semantics across desktop and mobile.\n- Draft, attachment, pending-send, and stream state ownership.\n- Idempotent send and correlated sequence handling.\n- Stop versus transport abort and authoritative terminal status.\n- Draft loss, attachment failure, uncertain send, and focus recovery."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "divider"
-    },
-    {
       "type": "steps",
-      "title": "Composer and current-turn lifecycle",
+      "title": "A 15-minute response path",
       "steps": [
         {
-          "title": "1. Restore composer",
-          "text": "Load the current conversation shell, recent messages, and a scoped local draft without blocking the input."
+          "title": "Frame the interaction boundary",
+          "text": "Limit the case to the composer, upload readiness, and one current assistant turn. History and model execution stay behind abstract contracts. The user may edit a new draft while a reply streams, but Send becomes Stop and cannot start a second response."
         },
         {
-          "title": "2. User submits prompt",
-          "text": "After composition ends and required attachments are ready, snapshot text under a client message ID, create a pending command, and clear only the active draft revision."
+          "title": "Separate input and upload state",
+          "text": "Keep composition status in the mounted textarea, recoverable text in an account-and-conversation draft, and each file in the upload flow. Enter submits only after compositionend; Shift+Enter preserves a newline. A snapshot contains only ready asset IDs. IME Enter, an uploading file, or a second Enter while Send is pending cannot submit."
         },
         {
-          "title": "3. Stream assistant reply",
-          "text": "Create an assistant placeholder and append chunks as they arrive. Show a streaming indicator and a Stop button."
+          "title": "Create one logical send",
+          "text": "Freeze text, ready attachment IDs, commandId, clientMessageId, and draft revision before clearing that revision. Show the user row immediately. If the Send response is lost, retransmit the same commandId; transport retry is not new intent. Later text belongs to a new editable draft."
         },
         {
-          "title": "4. End or cancel",
-          "text": "On completion, mark the assistant message phase as complete. If the user stops, keep partial text and reconcile the stopped terminal phase."
+          "title": "Stream and stop by identity",
+          "text": "Bind one assistant placeholder to streamId and accept only its next sequence. Stop creates one stopCommandId and reuses it after response loss. AbortSignal may close the browser reader, but local abort is not authoritative server Stop. Preserve partial text; keep Send unavailable until an event or snapshot confirms complete, stopped, or failed."
         },
         {
-          "title": "5. Reconcile current turn",
-          "text": "Merge the echoed user message and authoritative assistant terminal state by command, message, and stream identity."
+          "title": "Reconcile before the next turn",
+          "text": "Reconnect after lastSequence or fetch getTurnSnapshot. Merge results only when command, message, stream, and sequence identities match. After terminal state, Retry or Regenerate creates a fresh commandId and new streamId. Delayed Send, Stop, or stream results fail the active-turn check. Announce meaningful pending, stopped, failed, and completed changes, not token deltas."
         }
-      ]
-    },
-    {
-      "type": "columns",
-      "columns": [
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Clarifying questions",
-              "items": [
-                "Is this a single conversation or many conversations per user?",
-                "Is the draft scoped to conversation, account, tab, or device?",
-                "Do we need real-time streaming or is a full response acceptable?",
-                "What is the max prompt/response size the UI should handle?",
-                "Which attachment phases block send, and which can be removed independently?",
-                "Should the user be able to stop/cancel generation?"
-              ]
-            }
-          ]
-        },
-        {
-          "blocks": [
-            {
-              "type": "checklist",
-              "title": "Composer reliability and accessibility expectations",
-              "items": [
-                "Latency should feel low with streaming chunks.",
-                "UI remains responsive even with long conversations.",
-                "Stale responses should not overwrite newer ones.",
-                "Data is stored safely and can be retrieved reliably.",
-                "Errors show a clear retry state without losing the prompt."
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "table",
-      "title": "Composer and turn state boundaries",
-      "columns": [
-        "State",
-        "Owner",
-        "Important invariant"
       ],
-      "rows": [
-        [
-          "Composer draft",
-          "Local draft store",
-          "Unsent text never becomes a conversation message, and mounted-control IME state is never persisted"
-        ],
-        [
-          "Attachment draft",
-          "Upload coordinator",
-          "Send references only finalized attachment IDs"
-        ],
-        [
-          "Pending send and stream",
-          "Current-turn coordinator",
-          "Late acknowledgements and deltas cannot cross command identity"
-        ]
-      ]
-    },
-    {
-      "type": "stats",
-      "items": [
-        {
-          "label": "Primary transport",
-          "value": "Streaming (SSE or fetch stream)",
-          "helperText": "Keeps the UI responsive during long replies."
-        },
-        {
-          "label": "Persistence",
-          "value": "Conversation + message store",
-          "helperText": "Allows resume and pagination."
-        },
-        {
-          "label": "Key UX controls",
-          "value": "Stop + retry",
-          "helperText": "Users can cancel or recover on failure."
-        }
-      ]
+      "editorialRole": "timeboxed-answer"
     },
     {
       "type": "callout",
       "variant": "warning",
-      "title": "Scope checkpoint",
-      "text": "The design is coherent when composition-safe input, recoverable local intent, one send identity, sequenced stream updates, and honest Stop or retry behavior use the same turn model."
+      "title": "Rejected alternative: overlapping responses",
+      "text": "Allowing a second Send while the first response streams makes the Stop target ambiguous and lets answers appear beside the wrong prompt after a race. That user cost is not justified for this scope. Drafting stays available, but Send becomes Stop until the active turn reaches an authoritative terminal state."
     },
     {
       "type": "heading",
@@ -153,7 +41,7 @@
     },
     {
       "type": "text",
-      "text": "The browser owns composition-safe input, autosizing, attachment state, draft persistence, send commands, stream presentation, cancellation, and focus recovery. Server-side model execution and durable conversation history stay behind abstract current-turn and paged-history contracts; this design stops at composer, message, and stream behavior."
+      "text": "The browser owns composition-safe input, autosizing, draft recovery, attachment presentation, command coordination, streamed rendering, and focus recovery. The backend is an abstract service contract for send, Stop, event resume, and authoritative snapshots; durable history and model execution are out of scope."
     }
   ]
 }

@@ -85,6 +85,23 @@ function normalizeId(value, field, { min = 8, max = 120 } = {}) {
   return text;
 }
 
+function normalizeSystemDesignSourceContentId(value) {
+  if (value === undefined || value === null) return null;
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (
+    text.length < 1
+    || text.length > 120
+    || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(text)
+  ) {
+    serviceError(
+      400,
+      'INTERVIEW_SYSTEM_DESIGN_SOURCE_INVALID',
+      'The requested System Design source question is invalid'
+    );
+  }
+  return text;
+}
+
 function stableValue(value) {
   if (Array.isArray(value)) return value.map(stableValue);
   if (!value || typeof value !== 'object') return value;
@@ -742,12 +759,28 @@ async function createSession(userId, input, {
     input?.timingMode,
     input?.format
   );
+  const systemDesignSourceContentId = normalizeSystemDesignSourceContentId(
+    input?.systemDesignSourceContentId
+  );
+  if (systemDesignSourceContentId && format !== 'system-design') {
+    serviceError(
+      400,
+      'INTERVIEW_SYSTEM_DESIGN_SOURCE_INVALID',
+      'A System Design source question requires the System Design format'
+    );
+  }
   // Preserve the exact legacy coding idempotency hash. Explicitly passing the
   // new default format must replay a session created by an older client.
   const requestHash = canonicalPayloadHash(
     format === 'coding'
       ? { level, timingMode, track }
-      : { format, level, timingMode, track }
+      : {
+        format,
+        level,
+        timingMode,
+        track,
+        ...(systemDesignSourceContentId ? { systemDesignSourceContentId } : {}),
+      }
   );
 
   let existing = await InterviewSession.findOne({ userId, createRequestId: requestId })
@@ -858,6 +891,8 @@ async function createSession(userId, input, {
       level,
       seenCounts: seen.systemDesign,
       seed,
+      sourceContentId: systemDesignSourceContentId,
+      privateByKey: artifacts.privateByKey,
     });
     const systemDesignPrivate = artifacts.privateByKey.get(
       `${selectedScenario.id}@${selectedScenario.revision}`

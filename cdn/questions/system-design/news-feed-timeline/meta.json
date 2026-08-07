@@ -43,7 +43,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "News Feed Timeline Frontend System Design",
     "description": "Design a news feed with cursor pagination, ranked and live updates, deterministic merge rules, stable scroll anchors, media loading, and recovery."
@@ -65,7 +65,7 @@
     "searchIntent": "Prepare a frontend system design answer for News Feed / Timeline Front-End System Design.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for News Feed / Timeline Front-End System Design.",
     "uniqueAngle": "Design a news-feed timeline with cursor pagination, ranked and live updates, deterministic merge rules, stable scroll anchors, media loading, and recovery.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

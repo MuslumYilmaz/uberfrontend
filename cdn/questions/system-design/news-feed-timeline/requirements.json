@@ -97,7 +97,7 @@
               "title": "Non-functional expectations",
               "items": [
                 "Smooth scroll (avoid layout thrash).",
-                "Bounded DOM size via virtualization.",
+                "Bounded rendering work and DOM growth on representative devices.",
                 "Fast first item render and low CLS.",
                 "Stable UI under bursty updates.",
                 "Efficient network usage and caching.",

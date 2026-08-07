@@ -36,7 +36,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Real-Time Notifications Feed Frontend System Design",
     "description": "Design a notifications feed with resumable updates, deduplication, unread semantics, burst batching, bounded storage, virtualization, and recovery."
@@ -57,7 +57,7 @@
     "searchIntent": "Prepare a frontend system design answer for Scalable Notifications Feed (Real-time).",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Scalable Notifications Feed (Real-time).",
     "uniqueAngle": "Design a real-time notifications feed with resumable delivery, deduplication, unread semantics, burst batching, bounded storage, virtualization, and recovery.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

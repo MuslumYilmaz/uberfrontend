@@ -37,7 +37,7 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-06",
   "seo": {
     "title": "Cross-Device Preferences Sync Frontend System Design",
     "description": "Design preference sync across devices and tabs with versioned values, optimistic edits, offline queues, conflict policy, and stable UI reconciliation."
@@ -59,7 +59,7 @@
     "searchIntent": "Prepare a frontend system design answer for Cross-device Preferences Sync.",
     "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Cross-device Preferences Sync.",
     "uniqueAngle": "Design preference synchronization across devices and tabs with versioned values, optimistic edits, offline queues, conflict policy, and stable UI reconciliation.",
-    "factCheckedAt": "2026-07-28",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
   }

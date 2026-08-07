@@ -1,7 +1,7 @@
 {
   "id": "ai-chat-textarea-design",
-  "title": "AI Chat Text Area (ChatGPT-Style)",
-  "description": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
+  "title": "Design an AI Chat Composer and Streaming Turn",
+  "description": "Design an IME-safe AI chat composer with attachment readiness, one active response stream, idempotent Send and Stop commands, and stale-event recovery.",
   "tags": [
     "real-time",
     "streams",
@@ -38,19 +38,60 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-07-29",
+  "updatedAt": "2026-08-06",
   "seo": {
-    "title": "AI Chat Textarea Frontend System Design",
-    "description": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming, and accessible keyboard behavior."
+    "title": "AI Chat Composer and Streaming Turn System Design",
+    "description": "Design an IME-safe chat composer with attachment readiness, one active response stream, idempotent commands, and stale-event recovery."
   },
   "editorial": {
     "draftSource": "content-drafts/system-design/ai-chat-textarea-design.md",
-    "primaryKeyword": "ai chat textarea frontend system design",
-    "searchIntent": "Prepare a frontend system design answer for AI Chat Text Area (ChatGPT-Style).",
-    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for AI Chat Text Area (ChatGPT-Style).",
-    "uniqueAngle": "Design an AI chat composer with IME-safe input, autosizing, attachments, draft persistence, send cancellation, streaming state, and accessible keyboard behavior.",
-    "factCheckedAt": "2026-07-29",
+    "primaryKeyword": "ai chat composer and streaming turn",
+    "searchIntent": "Prepare a frontend system design answer for an AI chat composer and streaming turn.",
+    "readerPromise": "The reader can explain IME-safe input, attachment readiness, command idempotency, one-active-stream ownership, and stale-event recovery.",
+    "uniqueAngle": "Connect native text entry, recoverable drafts, upload readiness, and streaming cancellation through explicit command and stream identities.",
+    "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
     "companyEvidence": []
+  },
+  "contentSchemaVersion": 2,
+  "practice": {
+    "targetLevel": "mid",
+    "timeboxMinutes": 15,
+    "candidatePrompt": "Design the composer and current reply for an AI chat app. A user may type Japanese with an IME, attach a file that is still uploading, press Enter twice, or stop a streaming answer and retry. An event from the old Send, Stop, or stream must never change the new active turn. Assign the state owned by the textarea, draft store, upload flow, and current turn. Explain recovery when a Send or Stop response is lost.",
+    "constraints": [
+      "IME Enter cannot send.",
+      "Only ready attachments may send.",
+      "An active reply turns Send into Stop.",
+      "Superseded events are ignored."
+    ],
+    "expectedDecisions": [
+      "Separate persisted draft, transient composition, and attachment readiness state.",
+      "Choose stable identities for send retransmission, stream events, and Stop retransmission.",
+      "Define terminal retry, sequence resume, and snapshot recovery without crossing turn identity."
+    ],
+    "prerequisites": [
+      "Controlled text input",
+      "AbortController",
+      "Streaming event basics"
+    ],
+    "coreSkills": [
+      "IME-safe input",
+      "Command idempotency",
+      "Stream reconciliation",
+      "Draft persistence"
+    ],
+    "guidedMock": true,
+    "evaluationSpine": {
+      "mustCover": [
+        "IME composition and unready attachments cannot send.",
+        "Stable identities protect one logical send and active stream."
+      ],
+      "strongSignals": [
+        "Drafting continues, but Send becomes Stop during an active reply.",
+        "Reconnect by sequence or snapshot; reject superseded stream events."
+      ],
+      "expertStretch": "Account drafts, cross-tab ownership, and safe Markdown.",
+      "redFlag": "Local abort masquerades as server Stop, or stale streams mutate the active turn."
+    }
   }
 }
