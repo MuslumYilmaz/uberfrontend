@@ -8,6 +8,7 @@ const { createBillingEventStore } = require('../services/billing/billing-events'
 const { applyNormalizedLemonSqueezyEventToUser } = require('../services/billing/user-billing-state');
 const { normalizeLemonSqueezyEvent } = require('../services/billing/providers/lemonsqueezy');
 const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
+const { isConfiguredSeoOwnerUserId } = require('../middleware/RequireSeoOwner');
 const {
     SUPPORTED_SCENARIOS,
     buildLemonSqueezySimulationPayload,
@@ -173,6 +174,17 @@ router.get('/users', async (_req, res) => {
 // PUT /api/admin/users/:id
 router.put('/users/:id', async (req, res) => {
     try {
+        const requestBody = req.body && typeof req.body === 'object' ? req.body : {};
+        const mutatesOwnerIdentity =
+            Object.prototype.hasOwnProperty.call(requestBody, 'email') ||
+            Object.prototype.hasOwnProperty.call(requestBody, 'role');
+
+        if (mutatesOwnerIdentity && isConfiguredSeoOwnerUserId(req.params.id)) {
+            return res.status(403).json({
+                error: 'SEO owner identity cannot be changed through this endpoint',
+            });
+        }
+
         const allowed = [
             'username',
             'email',
@@ -189,7 +201,7 @@ router.put('/users/:id', async (req, res) => {
 
         const update = {};
         for (const key of allowed) {
-            if (key in req.body) update[key] = req.body[key];
+            if (key in requestBody) update[key] = requestBody[key];
         }
 
         const user = await User.findByIdAndUpdate(req.params.id, update, {
