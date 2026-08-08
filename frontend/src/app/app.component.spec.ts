@@ -8,6 +8,7 @@ import { DOCUMENT } from '@angular/common';
 import { AppComponent } from './app.component';
 import { BugReportService } from './core/services/bug-report.service';
 import { AuthService, User } from './core/services/auth.service';
+import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
 
 @Component({
   standalone: true,
@@ -63,6 +64,8 @@ describe('AppComponent', () => {
           { path: 'tracks', component: DummyDashboardComponent },
           { path: 'interview-questions', component: DummyDashboardComponent },
           { path: 'interview-questions/essential', component: DummyDashboardComponent },
+          { path: 'admin/seo', component: DummyDashboardComponent },
+          { path: 'admin/users', component: DummyDashboardComponent },
         ]),
         NoopAnimationsModule,
         HttpClientTestingModule,
@@ -197,6 +200,35 @@ describe('AppComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.app-layout')).toBeNull();
     expect(compiled.querySelector('.main--full')).not.toBeNull();
+    expect(compiled.querySelector('.sidebar')).toBeNull();
+  });
+
+  it('uses a full-width shell without a persistent sidebar on admin routes', async () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const router = TestBed.inject(Router);
+
+    await fixture.ngZone!.run(() => router.navigateByUrl('/admin/seo?window=28#health'));
+    fixture.detectChanges();
+    await renderDeferredBlocks(fixture);
+
+    let compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-header')).not.toBeNull();
+    expect(compiled.querySelector('.app-layout')).toBeNull();
+    expect(compiled.querySelector('.main--full')).not.toBeNull();
+    expect(compiled.querySelector('.sidebar')).toBeNull();
+
+    // The global mobile drawer remains available on the focused shell.
+    const drawer = TestBed.inject(AppSidebarDrawerService);
+    drawer.open();
+    fixture.detectChanges();
+    expect(compiled.querySelector('.sidebar--drawer-only.is-open')).not.toBeNull();
+    drawer.close();
+
+    await fixture.ngZone!.run(() => router.navigateByUrl('/admin/users'));
+    fixture.detectChanges();
+    compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.app-layout')).toBeNull();
     expect(compiled.querySelector('.sidebar')).toBeNull();
   });
 });

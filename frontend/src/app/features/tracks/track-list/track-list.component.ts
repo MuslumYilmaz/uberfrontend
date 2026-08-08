@@ -7,7 +7,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
 import { JAVASCRIPT_MASTERY_PATH } from '../../../shared/mastery/paths/javascript-mastery.path';
 
-const TRACKS_PLATFORM_TITLE = 'Frontend Interview Study Plan and 30-Day Roadmap';
+const TRACKS_PLATFORM_TITLE = 'Frontend Interview Study Plans: 7-Day & 30-Day Tracks';
 const TRACKS_PLATFORM_DESCRIPTION =
   'Use frontend interview study plans to prepare in 7 or 30 days with coding, JavaScript, UI, system design, framework Q&A, company prep, and weekly checkpoints.';
 

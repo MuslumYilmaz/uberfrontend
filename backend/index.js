@@ -13,6 +13,8 @@ const { requireAuth } = require('./middleware/Auth');
 const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
 const { requireAdmin } = require('./middleware/RequireAdmin');
+const { requireSeoOwner } = require('./middleware/RequireSeoOwner');
+const { requireSeoPrivateResponsePolicy } = require('./middleware/SeoResponsePolicy');
 const { createExpressRateLimitStore, rateLimit, getClientIp } = require('./middleware/rateLimit');
 const { cookieCsrfProtection } = require('./middleware/Csrf');
 const { createRequestMetricsMiddleware } = require('./middleware/observability');
@@ -460,6 +462,9 @@ app.use('/api/activity', require('./routes/activity'));
 app.use('/api/practice-progress', require('./routes/practice-progress'));
 // ---- Interview Mode (availability stays readable while mutations remain feature-gated) ----
 app.use('/api/interviews', require('./routes/interviews'));
+// ---- Owner-only SEO intelligence + protected cron entrypoints ----
+app.use('/api/admin/seo', requireSeoPrivateResponsePolicy, requireAuth, requireSeoOwner, require('./routes/seo-admin'));
+app.use('/api/internal/seo', require('./routes/seo-internal').router);
 // ---- Admin routes (protected) ----
 app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 

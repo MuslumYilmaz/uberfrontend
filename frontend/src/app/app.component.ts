@@ -73,6 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
     /^\/coding\/[^/]+$/,
     /^\/(javascript|angular|react|vue|html|css)\/coding\/[^/]+$/,
     /^\/interview\/[^/]+\/?$/,
+    /^\/admin(?:\/|$)/,
     /^\/$/,
     /^\/showcase\/?$/,
   ];
@@ -167,6 +168,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     return this.showSidebar()
       || /^\/pricing\/?$/.test(path)
+      || /^\/admin(?:\/|$)/.test(path)
       || /^\/system-design\/[^/]+\/?$/.test(path)
       || /^\/guides\//.test(path);
   }

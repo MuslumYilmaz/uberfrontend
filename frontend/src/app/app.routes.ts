@@ -9,6 +9,7 @@ import {
 
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
+import { seoOwnerGuard } from './core/guards/seo-owner.guard';
 import {
   companyPreviewAccessGuard,
   premiumGuard,
@@ -115,6 +116,19 @@ export const routes: Routes = [
     path: 'admin',
     canMatch: [adminMatchGuard],
     children: [
+      {
+        path: 'seo',
+        loadComponent: () =>
+          import('./features/admin/seo/seo-dashboard.component').then((m) => m.SeoDashboardComponent),
+        canActivate: [adminGuard, seoOwnerGuard],
+        data: {
+          seo: {
+            title: 'Admin • SEO Intelligence',
+            description: 'Owner-only Search Console intelligence and SEO action queue.',
+            robots: 'noindex,nofollow',
+          },
+        },
+      },
       {
         path: 'users',
         loadComponent: () =>
@@ -487,7 +501,7 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Frontend Interview Study Plan and 30-Day Roadmap',
+            title: 'Frontend Interview Study Plans: 7-Day & 30-Day Tracks',
             description:
               'Use frontend interview study plans to prepare in 7 or 30 days with coding, JavaScript, UI, system design, framework Q&A, company prep, and weekly checkpoints.',
             robots: 'index,follow',

@@ -294,6 +294,21 @@ describe('AppSidebarComponent', () => {
     ).toBeNull();
   });
 
+  it('does not expose admin routes in the normal-user sidebar or mobile drawer', async () => {
+    await configureTestingModule({
+      isLoggedIn: true,
+      role: 'user',
+    });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    const adminLinks = Array
+      .from(fixture.nativeElement.querySelectorAll('a') as NodeListOf<HTMLAnchorElement>)
+      .filter((link) => (link.getAttribute('href') || '').startsWith('/admin'));
+    expect(adminLinks).toEqual([]);
+    expect(fixture.nativeElement.textContent || '').not.toContain('SEO Intelligence');
+  });
+
   it('exposes internal preview navigation to admins', async () => {
     await configureTestingModule({
       isLoggedIn: true,
