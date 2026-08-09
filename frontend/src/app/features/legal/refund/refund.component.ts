@@ -115,7 +115,7 @@ import { RouterModule } from '@angular/router';
       </section>
 
       <footer class="doc-footer">
-        <p class="tiny">© {{ year }} FrontendAtlas. All rights reserved.</p>
+        <p class="tiny">© FrontendAtlas. All rights reserved.</p>
       </footer>
     </article>
   `,
@@ -184,5 +184,4 @@ import { RouterModule } from '@angular/router';
 export class RefundComponent {
   // Don’t use a “moving” legal date.
   readonly effectiveDate = '2025-12-31';
-  readonly year = new Date().getFullYear();
 }
