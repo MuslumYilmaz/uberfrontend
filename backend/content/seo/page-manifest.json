@@ -71534,7 +71534,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "5e9e88a9411eb535a4ab736201923e764c245f743463c61652aa5539f7b58427",
+        "aggregate": "7ded9f04436594b851e77cb797c0bc2601820db68a327127757c4afea1a74f05",
         "seoMetadata": {
           "hash": "dd1f838cf1d65a6fa1b13e50071f7986483a2b16c5259932d6406756976ac75b",
           "status": "complete",
@@ -71568,17 +71568,17 @@
           }
         },
         "mainContent": {
-          "hash": "eca7744fed525f36c7d018c4db9c4a1673761e0d89a774dcad4b2bdfe45eff07",
+          "hash": "21e1c7c262ec3bcc4348ab6913e9bebf264d8ba8ce210c4f9eeb9c1d20fcdcd0",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 3778,
+          "normalizedCharCount": 3773,
           "semanticTokenCount": 205,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "f665c0c74249c38f39642ae9589d2b1061084f11f4d3629f55431f306cd150b8"
+            "hash": "7c2a5243f51ebbeb7ce667460cb25196947766befd4dfe74dcd8f6d81b2b4d98"
           }
         },
         "headingOutline": {
@@ -71972,7 +71972,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "6ac7b967609aad88317282d78b829e63ba3b834f3a2d57a55ffdf8e49ce0d53f",
+        "aggregate": "6167e184162b33f8927f85506987ae4bc92a850fb0f3e4ab6ddab12f36a4a631",
         "seoMetadata": {
           "hash": "a1576b6d5584df94a3bef46de3d9c1a403115cc3cc8d81684f3c0dcd26698344",
           "status": "complete",
@@ -72006,17 +72006,17 @@
           }
         },
         "mainContent": {
-          "hash": "3a6589f77d75bf6f2b45293f4fd2e65298175230eb893c6b00fd2efa99ea3bc3",
+          "hash": "5f2e78ce993b6540050ef8df9b7d1ff7807e7132ab6a8f428a723d3efb17f39a",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 2816,
+          "normalizedCharCount": 2811,
           "semanticTokenCount": 164,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "db6197a8a131250d0778b105ec8438db7b626d366d1b0407d778d521f152b6b6"
+            "hash": "fb20e87bec9f5db34804c044710c217e259d81d63aa0e71bf5d78e61248dc55c"
           }
         },
         "headingOutline": {
@@ -72106,7 +72106,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "47fa9fe0c56febe33fe8185f68e81672cd70276761af3ac6c2573eff1e6f8318",
+        "aggregate": "fde8b30877adaa23bdf2ca7e33a23a91a08faad7d30efb04ba95715924db7507",
         "seoMetadata": {
           "hash": "4d657d2b239fd275918f9b48f5e793fc50c15487530b485d27ff8a457b6ef0c3",
           "status": "complete",
@@ -72140,17 +72140,17 @@
           }
         },
         "mainContent": {
-          "hash": "ad6c7fe764aff7a6e3c466d2e08487c4aeaff02964b11a205bebedde32abd1bc",
+          "hash": "975c60a6424fa60d9671d40dba1537afd34af1a3f426e188352104752ce7c7d7",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 3450,
+          "normalizedCharCount": 3445,
           "semanticTokenCount": 171,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "80feecb3d1f89b40fbdd150d94fc3e62252685823ce271f0c10628b5ff1053cc"
+            "hash": "75f8b0bbeef2775850b3c95e80a884b1c5f518423ddb570b7e414f9bfed5c2f0"
           }
         },
         "headingOutline": {
@@ -96378,13 +96378,13 @@
       }
     }
   ],
-  "sourceHash": "2159b80f764a66318de0d05705cb332dc243b8764361a7258548ecdea01c573c",
-  "generatedAt": "2026-08-08T05:29:34.748Z",
+  "sourceHash": "f3db01221f4a77deb85a28a7d4d39015b952ec82e28bef4484f8e1dba57da1e7",
+  "generatedAt": "2026-08-09T20:26:24.694Z",
   "provenance": {
     "version": "seo-build-provenance.v1",
     "schemaVersion": "seo-build-provenance.v1",
     "build": {
-      "observedAt": "2026-08-08T05:29:34.748Z",
+      "observedAt": "2026-08-09T20:26:24.694Z",
       "precision": "exact",
       "source": "manifest_generation"
     },
@@ -96392,7 +96392,7 @@
       "provider": "unknown",
       "environment": "unknown",
       "id": null,
-      "gitSha": "9f4ab6682cbc4648d36560694ec606265ab2b958",
+      "gitSha": "dd8ae69efc275212f710fdc9267239bc09cf955b",
       "previousGitSha": null,
       "readyAt": null,
       "readyAtSource": "unavailable",
@@ -96406,40 +96406,90 @@
     },
     "git": {
       "authority": "corroborating_only",
-      "headSha": "9f4ab6682cbc4648d36560694ec606265ab2b958",
+      "headSha": "dd8ae69efc275212f710fdc9267239bc09cf955b",
       "headSource": "git_cli",
-      "committedAt": "2026-08-06T21:16:20.000Z",
-      "previousSha": "17c349f143666a633d7fc00d09b1df7d279eaa3f",
+      "committedAt": "2026-08-09T20:21:41.000Z",
+      "previousSha": "ce7b727b850857b1c1f5dd0693c091aece38f45a",
       "previousShaSource": "git_first_parent",
       "diff": {
         "status": "available",
         "explanationRole": "candidate_corroboration_only",
         "establishesCausality": false,
-        "baseSha": "17c349f143666a633d7fc00d09b1df7d279eaa3f",
-        "headSha": "9f4ab6682cbc4648d36560694ec606265ab2b958",
+        "baseSha": "ce7b727b850857b1c1f5dd0693c091aece38f45a",
+        "headSha": "dd8ae69efc275212f710fdc9267239bc09cf955b",
         "scope": "first_parent",
         "confidence": "low",
-        "changedFileCount": 2,
-        "returnedEntryCount": 2,
+        "changedFileCount": 11,
+        "returnedEntryCount": 11,
         "entryLimit": 24,
         "truncated": false,
         "changeTypes": {
-          "modified": 2
+          "added": 4,
+          "modified": 7
         },
         "areas": {
-          "frontend": 2
+          "cdn": 1,
+          "frontend": 10
         },
-        "candidateSignals": [],
+        "candidateSignals": [
+          "fingerprint_pipeline_changed",
+          "rendered_application_source_changed"
+        ],
         "entries": [
           {
             "changeType": "modified",
             "area": "frontend",
-            "pathHash": "a3b9e0b753d8eb533a4cd82f6ff54ae13fa58a08891e21899c9f04edde7c53ad"
+            "pathHash": "1d9b70261b7ce92bbed409d0df864e78034b093779dddbc2b8d38def0cf6492d"
+          },
+          {
+            "changeType": "added",
+            "area": "frontend",
+            "pathHash": "35748ffe5856e596804fd496804375b50ba626190078a30870297d1da93e49dc"
+          },
+          {
+            "changeType": "added",
+            "area": "frontend",
+            "pathHash": "4e2e7f0b8e2e477752079c2a42915a439eaa5aaf1af4fbf7e4e75c923dd1120a"
           },
           {
             "changeType": "modified",
             "area": "frontend",
-            "pathHash": "e276cc1423f53922fac8d10d3b6c124db01e5296feea6ebd7a3da528869b58e9"
+            "pathHash": "675f377da1b0540aa4c3b705f1f0cd0a03ba3e9eea88979cac41323a0974d28b"
+          },
+          {
+            "changeType": "added",
+            "area": "frontend",
+            "pathHash": "894b2297de66d71428623d6d19f21d7a2a84bab6ae52a651fc3eea3cffc2ebe8"
+          },
+          {
+            "changeType": "modified",
+            "area": "frontend",
+            "pathHash": "8c2c643105625fc327efb80f9be03750172726ac3c8da6244b4a3363aaf4a82f"
+          },
+          {
+            "changeType": "modified",
+            "area": "frontend",
+            "pathHash": "91e28b6cc128318e3139e3f850fe873d4c6f88a4c8a20b7ebd93b7d9101a4d99"
+          },
+          {
+            "changeType": "modified",
+            "area": "frontend",
+            "pathHash": "9c00847bf9b599c3e0fe4433b3a06e30b7fa674c101f8b69bc5bc7257162a932"
+          },
+          {
+            "changeType": "modified",
+            "area": "cdn",
+            "pathHash": "c07805048d0ad856ab0c041aa5d2175a0a7f00f8269023e09dba16e4c539c0e1"
+          },
+          {
+            "changeType": "modified",
+            "area": "frontend",
+            "pathHash": "da6498268e99511d9ba0df3c13e439d10556a812881c9d03955b2ef7c6c1c655"
+          },
+          {
+            "changeType": "added",
+            "area": "frontend",
+            "pathHash": "f4e85678e203436e8278ba77e09d55cc1547ffbc339ba34fa8bfcc83ee3cdbc1"
           }
         ]
       }

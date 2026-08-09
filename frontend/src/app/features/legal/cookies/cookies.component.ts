@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
 
 @Component({
   standalone: true,
@@ -15,7 +16,7 @@ import { RouterModule } from '@angular/router';
           <span class="pill pill-blue">Cookies</span>
         </div>
         <h1 id="doc-title">Cookie Policy</h1>
-        <p class="muted">Last updated: {{ today }}</p>
+        <p class="muted">Last updated: {{ lastUpdated }}</p>
       </header>
 
       <!-- Intro -->
@@ -159,7 +160,7 @@ import { RouterModule } from '@angular/router';
           <a [routerLink]="['/legal/privacy']">Privacy Notice</a> and
           <a [routerLink]="['/legal/terms']">Terms of Service</a>.
         </p>
-        <p class="tiny">© {{ year }} FrontendAtlas. All rights reserved.</p>
+        <p class="tiny">© FrontendAtlas. All rights reserved.</p>
       </footer>
     </article>
   `,
@@ -270,6 +271,5 @@ import { RouterModule } from '@angular/router';
   `]
 })
 export class CookiesComponent {
-  readonly today = new Date().toISOString().slice(0, 10);
-  readonly year = new Date().getFullYear();
+  readonly lastUpdated = LEGAL_POLICY_LAST_UPDATED.cookies;
 }

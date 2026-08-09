@@ -10,6 +10,7 @@ import {
   FINGERPRINT_VERSION,
   PROVENANCE_VERSION,
   buildBuildMarker,
+  buildManifest,
   buildPageFingerprints,
   buildProvenance,
 } from './generate-seo-intelligence-manifest.mjs';
@@ -641,5 +642,44 @@ assert.equal(localProvenance.git.diff.confidence, 'low');
 assert.equal(localProvenance.git.previousSha, localParentSha);
 assert.equal(localProvenance.git.previousShaSource, 'git_first_parent');
 assert.ok(localProvenance.limitations.includes('first_parent_is_not_previous_deployment'));
+
+const clockGitSha = 'e'.repeat(40);
+const clockPreviousSha = 'f'.repeat(40);
+const clockEnv = {
+  VERCEL: '1',
+  VERCEL_ENV: 'production',
+  VERCEL_DEPLOYMENT_ID: 'dpl_clock_test',
+  VERCEL_GIT_COMMIT_SHA: clockGitSha,
+  VERCEL_GIT_PREVIOUS_SHA: clockPreviousSha,
+};
+const clockGitReader = (args) => {
+  if (args[0] === 'show') return '2026-08-08T08:00:00.000Z';
+  if (args[0] === 'diff') return '';
+  return '';
+};
+const firstClockManifest = buildManifest({
+  env: clockEnv,
+  now: new Date('2026-08-08T12:00:00.000Z'),
+  gitReader: clockGitReader,
+});
+const laterClockManifest = buildManifest({
+  env: clockEnv,
+  now: new Date('2026-08-09T12:00:00.000Z'),
+  gitReader: clockGitReader,
+});
+const firstClockMarker = buildBuildMarker(firstClockManifest);
+const laterClockMarker = buildBuildMarker(laterClockManifest);
+assert.notEqual(
+  firstClockManifest.provenance.build.observedAt,
+  laterClockManifest.provenance.build.observedAt,
+  'the determinism fixture must exercise two distinct build clocks',
+);
+assert.equal(
+  firstClockManifest.sourceHash,
+  laterClockManifest.sourceHash,
+  'manifest sourceHash must not depend on the build clock',
+);
+assert.equal(firstClockMarker.sourceHash, firstClockManifest.sourceHash);
+assert.equal(laterClockMarker.sourceHash, firstClockManifest.sourceHash);
 
 console.log(`[seo-manifest:test] passed pages=${manifest.pages.length} hash=${manifest.sourceHash.slice(0, 12)}`);

@@ -1270,6 +1270,7 @@ export {
   FINGERPRINT_VERSION,
   PROVENANCE_VERSION,
   buildBuildMarker,
+  buildManifest,
   buildPageFingerprints,
   buildProvenance,
   extractElementRegions,
