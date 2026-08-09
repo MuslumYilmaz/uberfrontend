@@ -1,17 +1,38 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AppSidebarDrawerService } from '../../../core/services/app-sidebar-drawer.service';
+import { SeoAdminService } from '../../../core/services/seo-admin.service';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   let analytics: jasmine.SpyObj<AnalyticsService>;
 
-  async function createComponent(options?: { isLoggedIn?: boolean; isPro?: boolean }): Promise<ComponentFixture<HeaderComponent>> {
+  async function createComponent(options?: {
+    isLoggedIn?: boolean;
+    isPro?: boolean;
+    role?: 'user' | 'admin';
+    seoOwner?: boolean;
+  }): Promise<ComponentFixture<HeaderComponent>> {
     const isLoggedIn = options?.isLoggedIn ?? true;
     const isPro = options?.isPro ?? false;
+    const role = options?.role ?? 'user';
+    const seoOwner = options?.seoOwner ?? false;
+    const user = signal(
+      isLoggedIn
+        ? {
+          _id: 'user_1',
+          username: 'header_user',
+          email: 'header@example.com',
+          role,
+          accessTier: isPro ? 'premium' : 'free',
+        }
+        : null,
+    );
+    const ownerAllowed = signal(false);
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
     await TestBed.configureTestingModule({
@@ -20,20 +41,22 @@ describe('HeaderComponent', () => {
         provideRouter([]),
         { provide: AnalyticsService, useValue: analytics },
         {
+          provide: SeoAdminService,
+          useValue: {
+            ownerAllowed,
+            bindOwnerPrincipal: jasmine.createSpy('bindOwnerPrincipal'),
+            clearAccess: jasmine.createSpy('clearAccess').and.callFake(() => ownerAllowed.set(false)),
+            ensureAccess: jasmine.createSpy('ensureAccess').and.callFake(() => {
+              ownerAllowed.set(seoOwner);
+              return of({ allowed: seoOwner, enabled: seoOwner });
+            }),
+          },
+        },
+        {
           provide: AuthService,
           useValue: {
-            user: jasmine.createSpy('user').and.returnValue(
-              isLoggedIn
-                ? {
-                  _id: 'user_1',
-                  username: 'header_user',
-                  email: 'header@example.com',
-                  role: 'user',
-                  accessTier: isPro ? 'premium' : 'free',
-                }
-                : null,
-            ),
-            isLoggedIn: jasmine.createSpy('isLoggedIn').and.returnValue(isLoggedIn),
+            user,
+            isLoggedIn: signal(isLoggedIn),
             logout: jasmine.createSpy('logout').and.returnValue(of(void 0)),
           },
         },
@@ -120,6 +143,39 @@ describe('HeaderComponent', () => {
 
     expect(premiumCta.textContent || '').toContain('Manage subscription');
     expect(premiumCta.getAttribute('href') || '').toContain('/profile');
+  });
+
+  it('shows SEO Intelligence only after the owner capability succeeds', async () => {
+    const fixture = await createComponent({ role: 'admin', seoOwner: true });
+    (fixture.nativeElement.querySelector('[data-testid="header-profile-button"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('[data-testid="header-menu-admin-seo"]') as HTMLAnchorElement;
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href') || '').toContain('/admin/seo');
+  });
+
+  it('does not expose SEO Intelligence to another admin', async () => {
+    const fixture = await createComponent({ role: 'admin', seoOwner: false });
+    (fixture.nativeElement.querySelector('[data-testid="header-profile-button"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="header-menu-admin-seo"]')).toBeFalsy();
+  });
+
+  it('does not expose or probe any admin navigation for a normal user', async () => {
+    const fixture = await createComponent({ role: 'user', seoOwner: true });
+    const seoAdmin = TestBed.inject(SeoAdminService) as unknown as jasmine.SpyObj<SeoAdminService>;
+    (fixture.nativeElement.querySelector('[data-testid="header-profile-button"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="header-menu-admin-users"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-menu-admin-seo"]')).toBeFalsy();
+    const adminLinks = Array
+      .from(fixture.nativeElement.querySelectorAll('a') as NodeListOf<HTMLAnchorElement>)
+      .filter((link) => (link.getAttribute('href') || '').startsWith('/admin'));
+    expect(adminLinks).toEqual([]);
+    expect(seoAdmin.ensureAccess).not.toHaveBeenCalled();
   });
 
   it('opens a compact study launcher with guide-first primary actions', async () => {

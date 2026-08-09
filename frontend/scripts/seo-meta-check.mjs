@@ -331,8 +331,8 @@ const criticalRouteContracts = [
   },
   {
     route: '/tracks',
-    title: 'Frontend Interview Study Plan',
-    h1: 'Frontend Interview Study Plan',
+    title: 'Frontend Interview Study Plans: 7-Day & 30-Day Tracks',
+    h1: 'Frontend Interview Study Plans: 7-Day & 30-Day Tracks',
     descriptionTerms: ['frontend interview study plans', '7 or 30 days', 'coding', 'JavaScript', 'system design', 'company prep'],
     bodyTerms: [
       'frontend interview study plan',

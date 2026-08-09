@@ -4,6 +4,8 @@ import { TrackListComponent } from './track-list.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
 
+const TRACKS_TITLE = 'Frontend Interview Study Plans: 7-Day & 30-Day Tracks';
+
 describe('TrackListComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
 
@@ -132,8 +134,10 @@ describe('TrackListComponent', () => {
 
     const native = fixture.nativeElement as HTMLElement;
     const text = native.textContent || '';
+    const headings = Array.from(native.querySelectorAll('h1'));
 
-    expect(text).toContain('Frontend Interview Study Plan and 30-Day Roadmap');
+    expect(headings).toHaveSize(1);
+    expect(headings[0].textContent?.trim()).toBe(TRACKS_TITLE);
     expect(text).toContain('7-day frontend interview prep');
     expect(text).toContain('30-day frontend interview preparation');
     expect(text).toContain('What to practice each week');
@@ -160,9 +164,10 @@ describe('TrackListComponent', () => {
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const faq = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
-    expect(payload.title).toBe('Frontend Interview Study Plan and 30-Day Roadmap');
+    expect(payload.title).toBe(TRACKS_TITLE);
     expect(payload.description).toContain('7 or 30 days');
     expect(collection).toBeTruthy();
+    expect(collection?.name).toBe(TRACKS_TITLE);
     expect(collection?.url).toContain('/tracks');
     expect(collection?.mainEntity?.['@type']).toBe('ItemList');
     expect(collection?.mainEntity?.itemListElement?.[0]?.name).toBe('Crash Track (7 days)');
