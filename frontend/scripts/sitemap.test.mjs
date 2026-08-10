@@ -26,6 +26,14 @@ const MASTERY_ALIAS_PATHS = [
   '/tracks/javascript-prep-path/mastery',
   '/track/javascript-prep-path/mastery',
 ];
+const PRIVATE_PRERENDER_SHELL_ROUTES = [
+  '/admin/seo',
+  '/admin/users',
+];
+const PRIVATE_SEO_NOINDEX_HEADER_SOURCES = [
+  '/admin/seo',
+  '/admin/seo/:path*',
+];
 const LOCKED_NOINDEX_HEADER_SOURCES = [
   '/tracks/:slug',
   '/companies/:slug',
@@ -456,6 +464,46 @@ function assertNoPrivateOrRedirectRoutes(paths) {
       `Sitemap must not include private or redirect routes. Examples: ${offenders.slice(0, 10).join(', ')}`,
     );
   }
+}
+
+function assertPrivatePrerenderShellCoverage(sitemapPaths) {
+  if (!fs.existsSync(PRERENDER_PATH)) {
+    throw new Error(`Missing ${PRERENDER_PATH}. Run: npm run gen:data`);
+  }
+
+  const prerenderRoutes = fs.readFileSync(PRERENDER_PATH, 'utf8')
+    .split(/\r?\n/)
+    .map((route) => route.trim())
+    .filter(Boolean)
+    .map((route) => normalizePath(route));
+
+  PRIVATE_PRERENDER_SHELL_ROUTES.forEach((route) => {
+    const matches = prerenderRoutes.filter((candidate) => candidate === route);
+    if (matches.length !== 1) {
+      throw new Error(`prerender.routes.txt must contain ${route} exactly once.`);
+    }
+    if (sitemapPaths.has(route)) {
+      throw new Error(`${route} is a private prerender shell and must not appear in the sitemap.`);
+    }
+  });
+}
+
+function assertPrivateSeoNoindexHeaders() {
+  const config = readVercelConfig();
+  const headers = Array.isArray(config.headers) ? config.headers : [];
+
+  PRIVATE_SEO_NOINDEX_HEADER_SOURCES.forEach((source) => {
+    const matches = headers.filter((rule) => rule?.source === source);
+    const robotsHeaders = (Array.isArray(matches[0]?.headers) ? matches[0].headers : [])
+      .filter((header) => String(header?.key || '').toLowerCase() === 'x-robots-tag');
+    if (
+      matches.length !== 1
+      || robotsHeaders.length !== 1
+      || normalizedRobotsHeaderValue(robotsHeaders[0]?.value) !== 'noindex,nofollow'
+    ) {
+      throw new Error(`${source} must use exactly X-Robots-Tag: noindex, nofollow.`);
+    }
+  });
 }
 
 function assertCssThemeVariablesSitemapEntry(entries) {
@@ -1058,6 +1106,8 @@ assertRegistryDetailAccessPolicy(paths);
 assertPreviewAndHubCoverage(paths);
 assertMasteryCanonicalCoverage(paths, locs);
 assertNoPrivateOrRedirectRoutes(paths);
+assertPrivatePrerenderShellCoverage(paths);
+assertPrivateSeoNoindexHeaders();
 assertCssThemeVariablesSitemapEntry(entries);
 assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertGoogleCompanyPreviewSitemapEntry(entries);

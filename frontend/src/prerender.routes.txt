@@ -1,5 +1,6 @@
 /
 /404
+/admin/seo
 /admin/users
 /angular/coding/angular-autocomplete-search-starter
 /angular/coding/angular-chessboard-click-highlight

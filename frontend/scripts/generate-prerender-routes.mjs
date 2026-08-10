@@ -151,6 +151,7 @@ function buildRoutes() {
     '/onboarding/quick-start',
     '/billing/success',
     '/billing/cancel',
+    '/admin/seo',
     '/admin/users',
     '/changelog',
     '/coding',
