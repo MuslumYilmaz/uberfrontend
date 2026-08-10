@@ -1,3 +1,4 @@
+import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -7,10 +8,16 @@ import { MarketingHeaderComponent } from './marketing-header.component';
 
 describe('MarketingHeaderComponent', () => {
   let analytics: jasmine.SpyObj<AnalyticsService>;
+  let authUiState: WritableSignal<'pending' | 'authenticated' | 'signed_out'>;
 
-  async function createComponent(options?: { isLoggedIn?: boolean; isPro?: boolean }): Promise<ComponentFixture<MarketingHeaderComponent>> {
+  async function createComponent(options?: {
+    isLoggedIn?: boolean;
+    isPro?: boolean;
+    authUiState?: 'pending' | 'authenticated' | 'signed_out';
+  }): Promise<ComponentFixture<MarketingHeaderComponent>> {
     const isLoggedIn = options?.isLoggedIn ?? false;
     const isPro = options?.isPro ?? false;
+    authUiState = signal(options?.authUiState ?? (isLoggedIn ? 'authenticated' : 'signed_out'));
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
     await TestBed.configureTestingModule({
@@ -21,6 +28,7 @@ describe('MarketingHeaderComponent', () => {
         {
           provide: AuthService,
           useValue: {
+            authUiState,
             user: jasmine.createSpy('user').and.returnValue(
               isLoggedIn
                 ? {
@@ -94,6 +102,28 @@ describe('MarketingHeaderComponent', () => {
     expect(cta.textContent || '').toContain('Open dashboard');
   });
 
+  it('keeps desktop auth actions neutral while pending and reacts to authentication', async () => {
+    const fixture = await createComponent({ authUiState: 'pending' });
+    const host = fixture.nativeElement as HTMLElement;
+    const actions = host.querySelector('.famh-actions') as HTMLElement;
+
+    expect(host.querySelector('[data-testid="marketing-header-auth-pending"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="marketing-header-utility-link"]')).toBeNull();
+    expect(host.querySelector('[data-testid="marketing-header-cta"]')).toBeNull();
+    expect(actions.getAttribute('aria-busy')).toBe('true');
+
+    authUiState.set('authenticated');
+    fixture.detectChanges();
+
+    const utilityLabels = Array.from(
+      host.querySelectorAll('[data-testid="marketing-header-utility-link"]'),
+    ).map((link) => (link.textContent || '').trim());
+    expect(host.querySelector('[data-testid="marketing-header-auth-pending"]')).toBeNull();
+    expect(utilityLabels).toEqual(['Dashboard', 'Profile']);
+    expect((host.querySelector('[data-testid="marketing-header-cta"]')?.textContent || '').trim()).toBe('Open dashboard');
+    expect(actions.hasAttribute('aria-busy')).toBeFalse();
+  });
+
   it('opens a mobile menu that preserves the same discovery IA', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const button = fixture.nativeElement.querySelector('[data-testid="marketing-header-mobile-menu-button"]') as HTMLButtonElement;
@@ -124,6 +154,29 @@ describe('MarketingHeaderComponent', () => {
       'header_top_nav_clicked',
       jasmine.objectContaining({ surface: 'marketing', area: 'mobile_menu', destination: 'menu' }),
     );
+  });
+
+  it('keeps mobile account actions neutral while pending and reacts to signed-out state', async () => {
+    const fixture = await createComponent({ authUiState: 'pending' });
+    const host = fixture.nativeElement as HTMLElement;
+    const button = host.querySelector('[data-testid="marketing-header-mobile-menu-button"]') as HTMLButtonElement;
+
+    button.click();
+    fixture.detectChanges();
+
+    const mobileAuth = host.querySelector('.famh-mobile-auth') as HTMLElement;
+    expect(host.querySelector('[data-testid="marketing-header-mobile-auth-pending"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="marketing-header-mobile-utility-link"]')).toBeNull();
+    expect(host.querySelector('[data-testid="marketing-header-mobile-cta"]')).toBeNull();
+    expect(mobileAuth.getAttribute('aria-busy')).toBe('true');
+
+    authUiState.set('signed_out');
+    fixture.detectChanges();
+
+    expect(host.querySelector('[data-testid="marketing-header-mobile-auth-pending"]')).toBeNull();
+    expect((host.querySelector('[data-testid="marketing-header-mobile-utility-link"]')?.textContent || '').trim()).toBe('Log in');
+    expect((host.querySelector('[data-testid="marketing-header-mobile-cta"]')?.textContent || '').trim()).toBe('Start practicing');
+    expect(mobileAuth.hasAttribute('aria-busy')).toBeFalse();
   });
 
   it('treats all coding views as Question Library while keeping Essential 60 isolated', async () => {

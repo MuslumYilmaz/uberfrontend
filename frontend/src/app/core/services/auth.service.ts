@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { afterNextRender, AfterRenderPhase, computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Entitlements, Tech } from '../models/user.model';
@@ -13,6 +13,7 @@ import { AuthSessionAuthorityService, AuthSyncEvent } from './auth-session-autho
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
+export type AuthUiState = 'pending' | 'authenticated' | 'signed_out';
 
 export interface UserPrefs {
   tz: string;
@@ -135,6 +136,16 @@ export class AuthService {
   /** Reactive auth state */
   isLoggedIn = computed(() => !!this.user());
 
+  /** Keeps SSR and the first client render aligned until auth can be resolved safely. */
+  private readonly hasCompletedInitialRender = signal(false);
+
+  /** Header-safe auth state that never treats an unknown or refreshing session as signed out. */
+  readonly authUiState = computed<AuthUiState>(() => {
+    if (!this.hasCompletedInitialRender()) return 'pending';
+    if (this.user()) return 'authenticated';
+    return this.authAuthority.state() === 'signed_out' ? 'signed_out' : 'pending';
+  });
+
   /** Used to ignore stale in-flight /me responses when newer /me calls complete first. */
   private meSeq = 0;
   private pendingMeRequest$: Observable<User | null> | null = null;
@@ -144,6 +155,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     this.authAuthority.events$.subscribe((event) => this.handleAuthorityEvent(event));
+
+    afterNextRender(
+      () => this.hasCompletedInitialRender.set(true),
+      { phase: AfterRenderPhase.Read },
+    );
 
     // Avoid an eager /me call for logged-out visitors (prevents noisy 401s in the console).
     if (this.authAuthority.hasSessionHint()) {

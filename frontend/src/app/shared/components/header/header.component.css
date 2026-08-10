@@ -71,6 +71,30 @@
 .fah-profile--mobile,
 .fah-mobile-quicklink{ display:none; }
 
+.fah-auth-pending{
+  height:36px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.fah-auth-placeholder{
+  display:block;
+  height:36px;
+  border:1px solid var(--fah-chip-border);
+  background: color-mix(in srgb, var(--uf-text-primary) 5%, var(--uf-surface));
+}
+.fah-auth-placeholder--avatar,
+.fah-auth-placeholder--mobile-avatar{
+  width:36px;
+  border-radius:999px;
+  flex:0 0 36px;
+}
+.fah-auth-placeholder--cta{
+  width:104px;
+  border-radius:999px;
+  flex:0 0 104px;
+}
+
 /* Avatar + profile menu */
 .fah-profile{ position:relative; }
 .fah-avatar{

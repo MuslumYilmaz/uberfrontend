@@ -51,6 +51,31 @@
 
 .famh-actions {
   justify-content: flex-end;
+  min-width: 320px;
+}
+
+.famh-auth-placeholder {
+  pointer-events: none;
+}
+
+.famh-auth-placeholder--desktop {
+  display: grid;
+  grid-template-columns: 92px 66px 142px;
+  gap: 10px;
+  width: 320px;
+  min-height: 36px;
+}
+
+.famh-auth-placeholder__item {
+  display: block;
+  min-height: 36px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+}
+
+.famh-auth-placeholder__item--cta {
+  border-radius: 999px;
 }
 
 .famh-link {
@@ -156,6 +181,20 @@
 .famh-mobile-section {
   display: grid;
   gap: 8px;
+}
+
+.famh-mobile-auth,
+.famh-auth-placeholder--mobile {
+  display: grid;
+  gap: 8px;
+}
+
+.famh-auth-placeholder--mobile {
+  width: 100%;
+}
+
+.famh-auth-placeholder--mobile .famh-auth-placeholder__item:not(:last-child) {
+  min-height: 40px;
 }
 
 .famh-mobile-section__title {

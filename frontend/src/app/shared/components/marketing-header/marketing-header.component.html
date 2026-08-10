@@ -24,36 +24,53 @@
       </a>
     </nav>
 
-    <div class="famh-actions">
-      <ng-container *ngIf="!auth.isLoggedIn(); else loggedInActions">
-        <a
-          *ngFor="let link of guestUtilityLinks"
-          class="famh-link"
-          data-testid="marketing-header-utility-link"
-          routerLinkActive="famh-link--active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          [routerLink]="link.route"
-          (click)="trackUtilityClick(link)"
+    <div
+      class="famh-actions"
+      [attr.aria-busy]="auth.authUiState() === 'pending' ? 'true' : null"
+    >
+      <ng-container [ngSwitch]="auth.authUiState()">
+        <div
+          *ngSwitchCase="'pending'"
+          class="famh-auth-placeholder famh-auth-placeholder--desktop"
+          data-testid="marketing-header-auth-pending"
+          aria-hidden="true"
         >
-          {{ link.label }}
-        </a>
+          <span class="famh-auth-placeholder__item"></span>
+          <span class="famh-auth-placeholder__item"></span>
+          <span class="famh-auth-placeholder__item famh-auth-placeholder__item--cta"></span>
+        </div>
+
+        <ng-container *ngSwitchCase="'signed_out'">
+          <a
+            *ngFor="let link of guestUtilityLinks"
+            class="famh-link"
+            data-testid="marketing-header-utility-link"
+            routerLinkActive="famh-link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLink]="link.route"
+            (click)="trackUtilityClick(link)"
+          >
+            {{ link.label }}
+          </a>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'authenticated'">
+          <a
+            *ngFor="let link of loggedInUtilityLinks"
+            class="famh-link"
+            data-testid="marketing-header-utility-link"
+            routerLinkActive="famh-link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLink]="link.route"
+            (click)="trackUtilityClick(link)"
+          >
+            {{ link.label }}
+          </a>
+        </ng-container>
       </ng-container>
 
-      <ng-template #loggedInActions>
-        <a
-          *ngFor="let link of loggedInUtilityLinks"
-          class="famh-link"
-          data-testid="marketing-header-utility-link"
-          routerLinkActive="famh-link--active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          [routerLink]="link.route"
-          (click)="trackUtilityClick(link)"
-        >
-          {{ link.label }}
-        </a>
-      </ng-template>
-
       <a
+        *ngIf="isAuthUiResolved()"
         class="famh-cta"
         [class.famh-cta--muted]="isShowcaseLanding()"
         data-testid="marketing-header-cta"
@@ -104,43 +121,62 @@
 
       <div class="famh-mobile-section">
         <div class="famh-mobile-section__title">Account</div>
-        <ng-container *ngIf="!auth.isLoggedIn(); else mobileLoggedInActions">
-          <a
-            *ngFor="let link of guestUtilityLinks"
-            class="famh-mobile-link"
-            data-testid="marketing-header-mobile-utility-link"
-            routerLinkActive="famh-mobile-link--active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            [routerLink]="link.route"
-            (click)="trackUtilityClick(link, 'mobile_menu')"
-          >
-            {{ link.label }}
-          </a>
-        </ng-container>
-
-        <ng-template #mobileLoggedInActions>
-          <a
-            *ngFor="let link of loggedInUtilityLinks"
-            class="famh-mobile-link"
-            data-testid="marketing-header-mobile-utility-link"
-            routerLinkActive="famh-mobile-link--active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            [routerLink]="link.route"
-            (click)="trackUtilityClick(link, 'mobile_menu')"
-          >
-            {{ link.label }}
-          </a>
-        </ng-template>
-
-        <a
-          class="famh-mobile-cta"
-          [class.famh-mobile-cta--muted]="isShowcaseLanding()"
-          data-testid="marketing-header-mobile-cta"
-          [routerLink]="ctaLink()"
-          (click)="trackCtaClick('mobile_menu')"
+        <div
+          class="famh-mobile-auth"
+          [attr.aria-busy]="auth.authUiState() === 'pending' ? 'true' : null"
         >
-          {{ ctaLabel() }}
-        </a>
+          <ng-container [ngSwitch]="auth.authUiState()">
+            <div
+              *ngSwitchCase="'pending'"
+              class="famh-auth-placeholder famh-auth-placeholder--mobile"
+              data-testid="marketing-header-mobile-auth-pending"
+              aria-hidden="true"
+            >
+              <span class="famh-auth-placeholder__item"></span>
+              <span class="famh-auth-placeholder__item"></span>
+              <span class="famh-auth-placeholder__item famh-auth-placeholder__item--cta"></span>
+            </div>
+
+            <ng-container *ngSwitchCase="'signed_out'">
+              <a
+                *ngFor="let link of guestUtilityLinks"
+                class="famh-mobile-link"
+                data-testid="marketing-header-mobile-utility-link"
+                routerLinkActive="famh-mobile-link--active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                [routerLink]="link.route"
+                (click)="trackUtilityClick(link, 'mobile_menu')"
+              >
+                {{ link.label }}
+              </a>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'authenticated'">
+              <a
+                *ngFor="let link of loggedInUtilityLinks"
+                class="famh-mobile-link"
+                data-testid="marketing-header-mobile-utility-link"
+                routerLinkActive="famh-mobile-link--active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                [routerLink]="link.route"
+                (click)="trackUtilityClick(link, 'mobile_menu')"
+              >
+                {{ link.label }}
+              </a>
+            </ng-container>
+          </ng-container>
+
+          <a
+            *ngIf="isAuthUiResolved()"
+            class="famh-mobile-cta"
+            [class.famh-mobile-cta--muted]="isShowcaseLanding()"
+            data-testid="marketing-header-mobile-cta"
+            [routerLink]="ctaLink()"
+            (click)="trackCtaClick('mobile_menu')"
+          >
+            {{ ctaLabel() }}
+          </a>
+        </div>
       </div>
     </div>
   </ng-container>

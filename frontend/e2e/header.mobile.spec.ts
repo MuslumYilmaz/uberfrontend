@@ -1,7 +1,14 @@
 import { test, expect } from './fixtures';
 
-const MOBILE_VIEWPORT = { width: 390, height: 844 };
-const DESKTOP_VIEWPORT = { width: 1366, height: 900 };
+const MOBILE_VIEWPORTS = [
+  { width: 360, height: 800 },
+  { width: 390, height: 844 },
+  { width: 834, height: 1112 },
+] as const;
+const DESKTOP_VIEWPORTS = [
+  { width: 1366, height: 900 },
+  { width: 1440, height: 900 },
+] as const;
 
 const MARKETING_ROUTES = [
   '/',
@@ -95,41 +102,45 @@ test.describe('header mobile layout', () => {
   });
 
   test('mobile menu works across route variants without overflow', async ({ page }) => {
-    await page.setViewportSize(MOBILE_VIEWPORT);
+    for (const viewport of MOBILE_VIEWPORTS) {
+      await page.setViewportSize(viewport);
 
-    for (const route of MARKETING_ROUTES) {
-      await page.goto(route);
-      await expect(page.getByTestId('marketing-header-brand')).toBeVisible();
-      await expect(page.getByTestId('marketing-header-mobile-menu-button')).toBeVisible();
-      await closeMarketingMobileMenuIfOpen(page);
+      for (const route of MARKETING_ROUTES) {
+        await page.goto(route);
+        await expect(page.getByTestId('marketing-header-brand')).toBeVisible();
+        await expect(page.getByTestId('marketing-header-mobile-menu-button')).toBeVisible();
+        await closeMarketingMobileMenuIfOpen(page);
 
-      await openMarketingMobileMenuStable(page);
-      await closeMarketingMobileMenuIfOpen(page);
+        await openMarketingMobileMenuStable(page);
+        await closeMarketingMobileMenuIfOpen(page);
 
-      await assertNoHorizontalOverflow(page, `mobile route ${route}`);
-    }
+        await assertNoHorizontalOverflow(page, `${viewport.width}px marketing route ${route}`);
+      }
 
-    for (const route of APP_ROUTES) {
-      await page.goto(route);
-      await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
-      await expect(page.getByTestId('header-mobile-menu-button')).toBeVisible();
-      await closeMobileMenuIfOpen(page);
+      for (const route of APP_ROUTES) {
+        await page.goto(route);
+        await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
+        await expect(page.getByTestId('header-mobile-menu-button')).toBeVisible();
+        await closeMobileMenuIfOpen(page);
 
-      await openMobileMenuStable(page);
-      await closeMobileMenuIfOpen(page);
+        await openMobileMenuStable(page);
+        await closeMobileMenuIfOpen(page);
 
-      await assertNoHorizontalOverflow(page, `mobile route ${route}`);
+        await assertNoHorizontalOverflow(page, `${viewport.width}px app route ${route}`);
+      }
     }
   });
 
   test('desktop keeps desktop actions and hides compact menu button', async ({ page }) => {
-    await page.setViewportSize(DESKTOP_VIEWPORT);
-    await page.goto('/dashboard');
+    for (const viewport of DESKTOP_VIEWPORTS) {
+      await page.setViewportSize(viewport);
+      await page.goto('/dashboard');
 
-    await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Interview Prep/i })).toBeVisible();
-    await expect(page.getByTestId('header-profile-button')).toBeVisible();
-    await expect(page.getByTestId('header-mobile-menu-button')).toBeHidden();
-    await assertNoHorizontalOverflow(page, 'desktop');
+      await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Interview Prep/i })).toBeVisible();
+      await expect(page.getByTestId('header-profile-button')).toBeVisible();
+      await expect(page.getByTestId('header-mobile-menu-button')).toBeHidden();
+      await assertNoHorizontalOverflow(page, `${viewport.width}px desktop`);
+    }
   });
 });

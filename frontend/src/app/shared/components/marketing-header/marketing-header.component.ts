@@ -29,6 +29,8 @@ export class MarketingHeaderComponent {
 
   readonly auth = inject(AuthService);
   readonly isPro = computed(() => isProActive(this.auth.user()));
+  readonly isAuthenticatedUi = computed(() => this.auth.authUiState() === 'authenticated');
+  readonly isAuthUiResolved = computed(() => this.auth.authUiState() !== 'pending');
   readonly mobileMenuOpen = signal(false);
   readonly currentUrl = signal(this.router.url);
 
@@ -80,9 +82,9 @@ export class MarketingHeaderComponent {
     },
   ];
 
-  readonly ctaLabel = computed(() => (this.auth.isLoggedIn() ? 'Open dashboard' : 'Start practicing'));
-  readonly ctaLink = computed(() => (this.auth.isLoggedIn() ? ['/dashboard'] : ['/interview-questions', 'essential']));
-  readonly ctaDestination = computed(() => (this.auth.isLoggedIn() ? '/dashboard' : '/interview-questions/essential'));
+  readonly ctaLabel = computed(() => (this.isAuthenticatedUi() ? 'Open dashboard' : 'Start practicing'));
+  readonly ctaLink = computed(() => (this.isAuthenticatedUi() ? ['/dashboard'] : ['/interview-questions', 'essential']));
+  readonly ctaDestination = computed(() => (this.isAuthenticatedUi() ? '/dashboard' : '/interview-questions/essential'));
 
   constructor() {
     this.router.events

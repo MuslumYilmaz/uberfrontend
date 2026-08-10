@@ -190,6 +190,11 @@ function rawBodyMarkup(html: string): string {
     .replace(/<style\b[\s\S]*?<\/style>/gi, ' ');
 }
 
+function componentMarkup(html: string, selector: string): string {
+  const escapedSelector = escapeRegExp(selector);
+  return html.match(new RegExp(`<${escapedSelector}\\b[\\s\\S]*?<\\/${escapedSelector}>`, 'i'))?.[0] || '';
+}
+
 async function readRawHtml(request: APIRequestContext, path: string): Promise<string> {
   const response = await request.get(path);
   expect(response.status(), `HTTP status for ${path}`).toBe(200);
@@ -290,6 +295,29 @@ test.describe('production/SSR public remediation smoke', () => {
 
   test.beforeEach(async ({ page }) => {
     await installAnonymousAuthStub(page);
+  });
+
+  test('prerendered header auth slots are neutral before hydration', async ({ request }) => {
+    const marketingHtml = await readRawHtml(request, '/');
+    const marketingHeader = componentMarkup(marketingHtml, 'app-marketing-header');
+
+    expect(marketingHeader).toContain('data-testid="marketing-header-auth-pending"');
+    expect(marketingHeader).not.toContain('data-testid="marketing-header-utility-link"');
+    expect(marketingHeader).not.toContain('data-testid="marketing-header-cta"');
+
+    const appHtml = await readRawHtml(request, '/coding');
+    const appHeader = componentMarkup(appHtml, 'app-header');
+
+    expect(appHeader).toContain('data-testid="header-auth-pending"');
+    expect(appHeader).not.toContain('data-testid="header-profile-button"');
+    expect(appHeader).not.toContain('class="fah-cta');
+  });
+
+  test('app header hydrates from its neutral auth slot without a mismatch', async ({ page }) => {
+    await openHydratedRoute(page, '/coding', 'Frontend Coding Challenges');
+
+    await expect(page.getByTestId('header-auth-pending')).toHaveCount(0);
+    await expect(page.getByTestId('header-profile-button')).toBeVisible();
   });
 
   test('homepage renders honest traction, counts, and canonical editorial attribution', async ({ page }) => {

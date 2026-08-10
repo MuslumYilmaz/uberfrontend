@@ -1,4 +1,4 @@
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -10,17 +10,20 @@ import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   let analytics: jasmine.SpyObj<AnalyticsService>;
+  let authUiState: WritableSignal<'pending' | 'authenticated' | 'signed_out'>;
 
   async function createComponent(options?: {
     isLoggedIn?: boolean;
     isPro?: boolean;
     role?: 'user' | 'admin';
     seoOwner?: boolean;
+    authUiState?: 'pending' | 'authenticated' | 'signed_out';
   }): Promise<ComponentFixture<HeaderComponent>> {
     const isLoggedIn = options?.isLoggedIn ?? true;
     const isPro = options?.isPro ?? false;
     const role = options?.role ?? 'user';
     const seoOwner = options?.seoOwner ?? false;
+    authUiState = signal(options?.authUiState ?? (isLoggedIn ? 'authenticated' : 'signed_out'));
     const user = signal(
       isLoggedIn
         ? {
@@ -57,6 +60,7 @@ describe('HeaderComponent', () => {
           useValue: {
             user,
             isLoggedIn: signal(isLoggedIn),
+            authUiState,
             logout: jasmine.createSpy('logout').and.returnValue(of(void 0)),
           },
         },
@@ -119,6 +123,40 @@ describe('HeaderComponent', () => {
 
     expect(profileLink).toBeTruthy();
     expect(profileLink.getAttribute('href') || '').toContain('/profile');
+  });
+
+  it('renders only neutral auth placeholders while the session is pending', async () => {
+    const fixture = await createComponent({ isLoggedIn: true, authUiState: 'pending' });
+
+    const desktopPending = fixture.nativeElement.querySelector('[data-testid="header-auth-pending"]') as HTMLElement;
+    const mobilePending = fixture.nativeElement.querySelector('[data-testid="header-mobile-auth-pending"]') as HTMLElement;
+    const desktopActions = fixture.nativeElement.querySelector('.fah-desktop-actions') as HTMLElement;
+    const mobileActions = fixture.nativeElement.querySelector('.fah-mobile-actions') as HTMLElement;
+
+    expect(desktopPending).toBeTruthy();
+    expect(desktopPending.getAttribute('aria-hidden')).toBe('true');
+    expect(mobilePending).toBeTruthy();
+    expect(mobilePending.getAttribute('aria-hidden')).toBe('true');
+    expect(desktopActions.getAttribute('aria-busy')).toBe('true');
+    expect(mobileActions.getAttribute('aria-busy')).toBe('true');
+    expect(fixture.nativeElement.querySelector('[data-testid="header-profile-button"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-profile-button"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('.fah-cta')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-menu-login"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-menu-signup"]')).toBeFalsy();
+  });
+
+  it('reactively replaces pending placeholders with authenticated actions', async () => {
+    const fixture = await createComponent({ isLoggedIn: true, authUiState: 'pending' });
+
+    authUiState.set('authenticated');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="header-auth-pending"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-auth-pending"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-profile-button"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-profile-button"]')).toBeTruthy();
+    expect((fixture.nativeElement.querySelector('.fah-cta')?.textContent || '')).toContain('Upgrade');
   });
 
   it('routes guest header CTA to the prep guide instead of pricing', async () => {
