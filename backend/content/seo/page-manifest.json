@@ -4192,7 +4192,6 @@
         "/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app",
         "/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
         "/coding",
-        "/guides/interview-blueprint/intro",
         "/interview-questions/essential",
         "/javascript/coding/js-take-latest",
         "/tracks/foundations-30d/preview"
@@ -11645,7 +11644,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/pricing",
         "/react/coding/react-counter"
       ],
@@ -11801,7 +11799,6 @@
         "/css/coding/css-selectors-text-basics",
         "/css/coding/css-theme-variables-dark-mode",
         "/css/coding/css-transitions-transforms-lift",
-        "/guides/interview-blueprint/intro",
         "/html/coding/html-basic-structure",
         "/html/coding/html-contact-form-labeled",
         "/html/coding/html-forms-validation-required",
@@ -12523,8 +12520,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -12660,8 +12656,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -12797,8 +12792,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -12934,8 +12928,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -13072,7 +13065,6 @@
       "tags": [],
       "outboundLinks": [
         "/companies",
-        "/guides/interview-blueprint/intro",
         "/javascript/coding/js-debounce",
         "/javascript/coding/js-get-by-path-1",
         "/javascript/coding/js-take-latest",
@@ -13263,8 +13255,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -13400,8 +13391,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -13539,7 +13529,6 @@
       "outboundLinks": [
         "/companies",
         "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/performance",
         "/javascript/coding/js-debounce",
         "/javascript/coding/js-take-latest",
@@ -13730,7 +13719,6 @@
       "tags": [],
       "outboundLinks": [
         "/companies",
-        "/guides/interview-blueprint/intro",
         "/javascript/coding/js-stream-to-text",
         "/javascript/coding/js-take-latest",
         "/javascript/trivia/ai-streaming-data-handling",
@@ -13911,8 +13899,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -14048,8 +14035,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/companies",
-        "/guides/interview-blueprint/intro"
+        "/companies"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -23487,7 +23473,6 @@
       "outboundLinks": [
         "/coding",
         "/companies",
-        "/guides/interview-blueprint/intro",
         "/tracks/foundations-30d/preview"
       ],
       "prerendered": true,
@@ -23644,7 +23629,6 @@
         "/guides/behavioral/stories",
         "/guides/framework-prep",
         "/guides/interview-blueprint",
-        "/guides/interview-blueprint/intro",
         "/tracks"
       ],
       "prerendered": true,
@@ -23837,8 +23821,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -24025,8 +24008,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -24209,8 +24191,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -24393,8 +24374,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -24581,8 +24561,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -24765,8 +24744,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -24953,8 +24931,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -25137,8 +25114,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -25325,8 +25301,7 @@
         "/guides/behavioral/intro",
         "/guides/behavioral/practical-tips",
         "/guides/behavioral/prep",
-        "/guides/behavioral/stories",
-        "/guides/interview-blueprint/intro"
+        "/guides/behavioral/stories"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -25767,7 +25742,6 @@
         "/guides/framework-prep/vue-prep-path",
         "/guides/interview-blueprint",
         "/guides/interview-blueprint/coding-interviews",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint",
         "/tracks"
       ],
@@ -26039,7 +26013,6 @@
         "/guides/framework-prep/react-prep-path",
         "/guides/framework-prep/vue-prep-path",
         "/guides/interview-blueprint",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint",
         "/javascript/coding/js-debounce",
         "/javascript/coding/js-implement-bind",
@@ -26295,8 +26268,7 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/coding",
-        "/guides/interview-blueprint/intro"
+        "/coding"
       ],
       "prerendered": true,
       "fingerprints": {
@@ -26698,7 +26670,6 @@
         "/guides/framework-prep/vue-prep-path",
         "/guides/interview-blueprint",
         "/guides/interview-blueprint/coding-interviews",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint",
         "/vue/coding/vue-todo-list",
         "/vue/interview-questions",
@@ -29625,7 +29596,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -29842,7 +29812,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -30054,7 +30023,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -30266,7 +30234,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -30473,7 +30440,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -30675,7 +30641,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -30897,7 +30862,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -31114,7 +31078,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -31326,7 +31289,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -31549,7 +31511,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -31766,7 +31727,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -31983,7 +31943,6 @@
       "intentConfirmed": true,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/checklist",
         "/guides/system-design-blueprint/evaluation",
@@ -40920,7 +40879,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/incidents/angular-duplicate-cart-service",
         "/incidents/modal-screen-reader-failure",
         "/incidents/search-typing-lag",
@@ -41091,7 +41049,6 @@
         "state"
       ],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/incidents"
       ],
       "prerendered": true,
@@ -41241,7 +41198,6 @@
         "modal"
       ],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/incidents"
       ],
       "prerendered": true,
@@ -41391,7 +41347,6 @@
         "search"
       ],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/incidents"
       ],
       "prerendered": true,
@@ -41541,7 +41496,6 @@
         "search"
       ],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/incidents"
       ],
       "prerendered": true,
@@ -41692,7 +41646,6 @@
         "vue"
       ],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/incidents"
       ],
       "prerendered": true,
@@ -42165,7 +42118,6 @@
         "/angular/trivia/angular-change-detection-strategies",
         "/coding",
         "/css/trivia/css-grid-vs-flexbox",
-        "/guides/interview-blueprint/intro",
         "/html/trivia/web-accessibility-make-page-accessible",
         "/interview-questions",
         "/javascript/coding/js-debounce",
@@ -71368,7 +71320,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/legal/cookies",
         "/legal/editorial-policy",
         "/legal/privacy",
@@ -71525,7 +71476,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/legal/cookies",
         "/legal/privacy",
         "/legal/terms"
@@ -71672,7 +71622,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/legal/editorial-policy",
         "/legal/privacy",
         "/legal/terms"
@@ -71819,7 +71768,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/legal/cookies",
         "/legal/privacy",
         "/legal/terms"
@@ -71965,9 +71913,7 @@
       "intentSource": "derived",
       "intentConfirmed": false,
       "tags": [],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -72097,7 +72043,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/legal/cookies",
         "/legal/privacy",
         "/legal/terms"
@@ -72454,7 +72399,6 @@
       "outboundLinks": [
         "/changelog",
         "/coding",
-        "/guides/interview-blueprint/intro",
         "/legal/editorial-policy",
         "/legal/refund",
         "/react/coding/react-counter"
@@ -72621,7 +72565,6 @@
         "/",
         "/coding",
         "/guides/framework-prep/react-prep-path",
-        "/guides/interview-blueprint/intro",
         "/incidents",
         "/interview-questions/essential",
         "/machine-coding",
@@ -83395,7 +83338,6 @@
       "tags": [],
       "outboundLinks": [
         "/companies",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/performance",
@@ -83632,7 +83574,6 @@
         "/coding",
         "/companies",
         "/guides/framework-prep",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/evaluation",
         "/guides/system-design-blueprint/framework",
@@ -83855,7 +83796,6 @@
         "/coding",
         "/companies",
         "/guides/framework-prep",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/evaluation",
         "/guides/system-design-blueprint/framework",
         "/guides/system-design-blueprint/intro",
@@ -84061,7 +84001,6 @@
         "/coding",
         "/companies",
         "/guides/framework-prep",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/evaluation",
         "/guides/system-design-blueprint/framework",
         "/guides/system-design-blueprint/intro",
@@ -84288,7 +84227,6 @@
         "/coding",
         "/companies",
         "/guides/framework-prep",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/evaluation",
         "/guides/system-design-blueprint/framework",
         "/guides/system-design-blueprint/intro",
@@ -84510,7 +84448,6 @@
         "/coding",
         "/companies",
         "/guides/framework-prep",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/architecture",
         "/guides/system-design-blueprint/evaluation",
         "/guides/system-design-blueprint/framework",
@@ -84739,7 +84676,6 @@
         "/coding",
         "/companies",
         "/guides/framework-prep",
-        "/guides/interview-blueprint/intro",
         "/guides/system-design-blueprint/evaluation",
         "/guides/system-design-blueprint/framework",
         "/guides/system-design-blueprint/intro",
@@ -84941,9 +84877,7 @@
       "intentSource": "derived",
       "intentConfirmed": false,
       "tags": [],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -85327,7 +85261,6 @@
         "/coding",
         "/companies",
         "/css/coding/css-flexbox-navbar",
-        "/guides/interview-blueprint/intro",
         "/javascript/coding/js-debounce",
         "/javascript/coding/js-implement-bind",
         "/javascript/interview-questions",
@@ -85600,7 +85533,6 @@
         "/companies",
         "/guides/framework-prep",
         "/guides/framework-prep/javascript-prep-path/mastery",
-        "/guides/interview-blueprint/intro",
         "/javascript/coding/js-array-foreach",
         "/javascript/coding/js-arrays-equal",
         "/javascript/coding/js-capitalize-words",
@@ -85849,7 +85781,6 @@
       "intentConfirmed": false,
       "tags": [],
       "outboundLinks": [
-        "/guides/interview-blueprint/intro",
         "/tradeoffs/async-pipe-vs-manual-subscribe-angular",
         "/tradeoffs/context-vs-zustand-vs-redux",
         "/tradeoffs/object-vs-map-keyed-collections",
@@ -86044,9 +85975,7 @@
         "templates",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -86189,9 +86118,7 @@
         "state-management",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -86334,9 +86261,7 @@
         "javascript",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -86479,9 +86404,7 @@
         "promises",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -86624,9 +86547,7 @@
         "state-sharing",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -86769,9 +86690,7 @@
         "tradeoffs",
         "vue"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -86914,9 +86833,7 @@
         "forms",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -87059,9 +86976,7 @@
         "realtime",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -87204,9 +87119,7 @@
         "state-management",
         "tradeoffs"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -87349,9 +87262,7 @@
         "tradeoffs",
         "vue"
       ],
-      "outboundLinks": [
-        "/guides/interview-blueprint/intro"
-      ],
+      "outboundLinks": [],
       "prerendered": true,
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
@@ -96378,13 +96289,13 @@
       }
     }
   ],
-  "sourceHash": "f3db01221f4a77deb85a28a7d4d39015b952ec82e28bef4484f8e1dba57da1e7",
-  "generatedAt": "2026-08-09T20:26:24.694Z",
+  "sourceHash": "aa2fb041561b9b612769fb0d58bbdde606b19f57a2bbc6af1494a60a78689ec5",
+  "generatedAt": "2026-08-10T08:31:49.686Z",
   "provenance": {
     "version": "seo-build-provenance.v1",
     "schemaVersion": "seo-build-provenance.v1",
     "build": {
-      "observedAt": "2026-08-09T20:26:24.694Z",
+      "observedAt": "2026-08-10T08:31:49.686Z",
       "precision": "exact",
       "source": "manifest_generation"
     },
@@ -96392,7 +96303,7 @@
       "provider": "unknown",
       "environment": "unknown",
       "id": null,
-      "gitSha": "dd8ae69efc275212f710fdc9267239bc09cf955b",
+      "gitSha": "6663352aa71e2e47dab312301d05cb25e618e888",
       "previousGitSha": null,
       "readyAt": null,
       "readyAtSource": "unavailable",
@@ -96406,90 +96317,35 @@
     },
     "git": {
       "authority": "corroborating_only",
-      "headSha": "dd8ae69efc275212f710fdc9267239bc09cf955b",
+      "headSha": "6663352aa71e2e47dab312301d05cb25e618e888",
       "headSource": "git_cli",
-      "committedAt": "2026-08-09T20:21:41.000Z",
-      "previousSha": "ce7b727b850857b1c1f5dd0693c091aece38f45a",
+      "committedAt": "2026-08-10T06:34:45.000Z",
+      "previousSha": "39a834b7a59c66a6925cc11337cceedcd9bb2357",
       "previousShaSource": "git_first_parent",
       "diff": {
         "status": "available",
         "explanationRole": "candidate_corroboration_only",
         "establishesCausality": false,
-        "baseSha": "ce7b727b850857b1c1f5dd0693c091aece38f45a",
-        "headSha": "dd8ae69efc275212f710fdc9267239bc09cf955b",
+        "baseSha": "39a834b7a59c66a6925cc11337cceedcd9bb2357",
+        "headSha": "6663352aa71e2e47dab312301d05cb25e618e888",
         "scope": "first_parent",
         "confidence": "low",
-        "changedFileCount": 11,
-        "returnedEntryCount": 11,
+        "changedFileCount": 1,
+        "returnedEntryCount": 1,
         "entryLimit": 24,
         "truncated": false,
         "changeTypes": {
-          "added": 4,
-          "modified": 7
+          "modified": 1
         },
         "areas": {
-          "cdn": 1,
-          "frontend": 10
+          "cdn": 1
         },
-        "candidateSignals": [
-          "fingerprint_pipeline_changed",
-          "rendered_application_source_changed"
-        ],
+        "candidateSignals": [],
         "entries": [
-          {
-            "changeType": "modified",
-            "area": "frontend",
-            "pathHash": "1d9b70261b7ce92bbed409d0df864e78034b093779dddbc2b8d38def0cf6492d"
-          },
-          {
-            "changeType": "added",
-            "area": "frontend",
-            "pathHash": "35748ffe5856e596804fd496804375b50ba626190078a30870297d1da93e49dc"
-          },
-          {
-            "changeType": "added",
-            "area": "frontend",
-            "pathHash": "4e2e7f0b8e2e477752079c2a42915a439eaa5aaf1af4fbf7e4e75c923dd1120a"
-          },
-          {
-            "changeType": "modified",
-            "area": "frontend",
-            "pathHash": "675f377da1b0540aa4c3b705f1f0cd0a03ba3e9eea88979cac41323a0974d28b"
-          },
-          {
-            "changeType": "added",
-            "area": "frontend",
-            "pathHash": "894b2297de66d71428623d6d19f21d7a2a84bab6ae52a651fc3eea3cffc2ebe8"
-          },
-          {
-            "changeType": "modified",
-            "area": "frontend",
-            "pathHash": "8c2c643105625fc327efb80f9be03750172726ac3c8da6244b4a3363aaf4a82f"
-          },
-          {
-            "changeType": "modified",
-            "area": "frontend",
-            "pathHash": "91e28b6cc128318e3139e3f850fe873d4c6f88a4c8a20b7ebd93b7d9101a4d99"
-          },
-          {
-            "changeType": "modified",
-            "area": "frontend",
-            "pathHash": "9c00847bf9b599c3e0fe4433b3a06e30b7fa674c101f8b69bc5bc7257162a932"
-          },
           {
             "changeType": "modified",
             "area": "cdn",
             "pathHash": "c07805048d0ad856ab0c041aa5d2175a0a7f00f8269023e09dba16e4c539c0e1"
-          },
-          {
-            "changeType": "modified",
-            "area": "frontend",
-            "pathHash": "da6498268e99511d9ba0df3c13e439d10556a812881c9d03955b2ef7c6c1c655"
-          },
-          {
-            "changeType": "added",
-            "area": "frontend",
-            "pathHash": "f4e85678e203436e8278ba77e09d55cc1547ffbc339ba34fa8bfcc83ee3cdbc1"
           }
         ]
       }

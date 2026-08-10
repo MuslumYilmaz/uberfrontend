@@ -13,6 +13,33 @@ async function expectAccessTokenCookie(page: any, token: string | null) {
     .toBe(token ? encodeURIComponent(token) : null);
 }
 
+async function gateNextMeRequest(page: any) {
+  let releaseRequest!: () => void;
+  let markRequestSeen!: () => void;
+  const released = new Promise<void>((resolve) => {
+    releaseRequest = resolve;
+  });
+  const requestSeen = new Promise<void>((resolve) => {
+    markRequestSeen = resolve;
+  });
+
+  await page.route('**/api/auth/me', async (route: any) => {
+    if (route.request().method() !== 'GET') {
+      await route.fallback();
+      return;
+    }
+
+    markRequestSeen();
+    await released;
+    await route.fallback();
+  }, { times: 1 });
+
+  return {
+    release: releaseRequest,
+    waitUntilSeen: () => requestSeen,
+  };
+}
+
 async function expectLoggedIn(page: any) {
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
   await page.getByTestId('header-profile-button').click();
@@ -104,6 +131,88 @@ test('auth: login (email/password) logs in and survives reload', async ({ page }
   await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
   await expectAccessTokenCookie(page, token);
+});
+
+test('auth: header stays neutral while a valid session is restored after refresh', async ({ page }) => {
+  const token = `e2e-token-header-restore-${Date.now()}`;
+  const user = buildMockUser({
+    _id: 'e2e-user-header-restore',
+    username: 'header_restore_user',
+    email: 'header-restore@example.com',
+  });
+  await installAuthMock(page, {
+    token,
+    user,
+    validLogin: { emailOrUsername: user.email, password: 'secret123' },
+  });
+
+  await page.goto('/auth/login');
+  await page.getByTestId('login-email').fill(user.email);
+  await page.getByTestId('login-password').fill('secret123');
+  await page.getByTestId('login-submit').click();
+  await expect(page).toHaveURL('/dashboard');
+  await expectLoggedIn(page);
+
+  await page.goto('/');
+  await expect(page.getByTestId('marketing-header-utility-link')).toHaveCount(2);
+
+  const marketingMe = await gateNextMeRequest(page);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await marketingMe.waitUntilSeen();
+
+  await expect(page.getByTestId('marketing-header-auth-pending')).toBeVisible();
+  await expect(page.locator('[data-testid="marketing-header-utility-link"][href="/auth/login"]')).toHaveCount(0);
+  await expect(page.getByTestId('marketing-header-cta')).toHaveCount(0);
+
+  marketingMe.release();
+  await expect(page.locator('[data-testid="marketing-header-utility-link"][href="/dashboard"]')).toBeVisible();
+  await expect(page.locator('[data-testid="marketing-header-utility-link"][href="/profile"]')).toBeVisible();
+  await expect(page.getByTestId('marketing-header-auth-pending')).toHaveCount(0);
+
+  await page.goto('/dashboard');
+  await expect(page.getByTestId('header-profile-button')).toBeVisible();
+
+  const appHeaderMe = await gateNextMeRequest(page);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await appHeaderMe.waitUntilSeen();
+
+  await expect(page.getByTestId('header-auth-pending')).toBeVisible();
+  await expect(page.getByTestId('header-profile-button')).toHaveCount(0);
+  await expect(page.locator('.fah-cta')).toHaveCount(0);
+
+  appHeaderMe.release();
+  await expect(page.getByTestId('header-profile-button')).toBeVisible();
+  await expect(page.locator('.fah-cta')).toContainText('Upgrade');
+  await expect(page.getByTestId('header-auth-pending')).toHaveCount(0);
+});
+
+test.describe('auth edge: stale header session hint', () => {
+  test.use({
+    consoleErrorAllowlist: ['\\/api\\/auth\\/me'],
+  });
+
+  test('shows guest actions only after session restoration is rejected', async ({ page }) => {
+    await installAuthMock(page, {
+      token: 'e2e-stale-header-token',
+      user: buildMockUser({ _id: 'e2e-stale-header-user' }),
+      meSequence: [{ status: 401, error: 'Invalid or expired token' }],
+    });
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+    });
+
+    const me = await gateNextMeRequest(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await me.waitUntilSeen();
+
+    await expect(page.getByTestId('marketing-header-auth-pending')).toBeVisible();
+    await expect(page.locator('[data-testid="marketing-header-utility-link"][href="/auth/login"]')).toHaveCount(0);
+
+    me.release();
+    await expect(page.locator('[data-testid="marketing-header-utility-link"][href="/auth/login"]')).toBeVisible();
+    await expect(page.getByTestId('marketing-header-auth-pending')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('fa:auth:session'))).toBeNull();
+  });
 });
 
 test.describe('auth edge: expired access token', () => {

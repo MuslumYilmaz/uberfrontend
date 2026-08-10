@@ -210,6 +210,29 @@
   display: none;
 }
 
+.mobile-auth-pending {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.mobile-auth-placeholder-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.mobile-auth-placeholder {
+  display: block;
+  min-height: 40px;
+  border-radius: 0.9rem;
+  border: 1px solid var(--sb-border);
+  background: color-mix(in srgb, var(--sb-text) 5%, var(--sb-surface-alt));
+}
+
+.mobile-auth-placeholder--wide {
+  width: 100%;
+}
+
 .mobile-auth-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

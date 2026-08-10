@@ -1,4 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ApplicationRef } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { AuthService, User } from './auth.service';
@@ -44,6 +45,75 @@ describe('AuthService', () => {
     httpMock.verify();
     localStorage.clear();
     sessionStorage.clear();
+  });
+
+  function completeInitialRender(): void {
+    TestBed.inject(ApplicationRef).tick();
+  }
+
+  it('keeps auth UI pending through SSR-compatible initialization and the first client render', () => {
+    expect(authority.state()).toBe('signed_out');
+    expect(service.authUiState()).toBe('pending');
+  });
+
+  it('reveals signed-out UI after the first client render when there is no session hint', () => {
+    expect(authority.hasSessionHint()).toBeFalse();
+
+    completeInitialRender();
+
+    expect(service.authUiState()).toBe('signed_out');
+  });
+
+  it('stays pending while /me is delayed and becomes authenticated when the user arrives', async () => {
+    authority.noteSessionHintPresent();
+    authority.state.set('unknown');
+
+    const resultPromise = firstValueFrom(service.fetchMe());
+    const req = httpMock.expectOne((request) =>
+      request.method === 'GET' &&
+      request.url.endsWith('/api/auth/me')
+    );
+
+    completeInitialRender();
+    expect(service.authUiState()).toBe('pending');
+
+    req.flush(sampleUser);
+    await resultPromise;
+
+    expect(service.authUiState()).toBe('authenticated');
+  });
+
+  it('moves from pending to signed out when a stale session hint receives 401', async () => {
+    authority.noteSessionHintPresent();
+    authority.state.set('unknown');
+
+    const resultPromise = firstValueFrom(service.fetchMe());
+    const req = httpMock.expectOne((request) =>
+      request.method === 'GET' &&
+      request.url.endsWith('/api/auth/me')
+    );
+
+    completeInitialRender();
+    expect(service.authUiState()).toBe('pending');
+
+    req.flush(
+      { code: 'AUTH_INVALID', error: 'Invalid or expired token' },
+      { status: 401, statusText: 'Unauthorized' },
+    );
+    await resultPromise;
+
+    expect(service.authUiState()).toBe('signed_out');
+  });
+
+  it('keeps authenticated UI visible while an existing user session refreshes', () => {
+    service.user.set(sampleUser);
+    authority.state.set('refreshing');
+
+    expect(service.authUiState()).toBe('pending');
+
+    completeInitialRender();
+
+    expect(service.authUiState()).toBe('authenticated');
   });
 
   it('clears local auth state when /me returns an unrecoverable auth error', async () => {

@@ -24,6 +24,7 @@ describe('AppSidebarComponent', () => {
     role?: 'user' | 'admin';
     interviewAccessMode?: InterviewAccessMode;
     interviewEnabled?: boolean;
+    authUiState?: 'pending' | 'authenticated' | 'signed_out';
   }) {
     const isLoggedIn = options?.isLoggedIn ?? false;
     const isPro = options?.isPro ?? false;
@@ -31,6 +32,7 @@ describe('AppSidebarComponent', () => {
     const interviewAccessMode = options?.interviewAccessMode ?? 'off';
     const interviewEnabled = options?.interviewEnabled
       ?? interviewAccessMode !== 'off';
+    const authUiState = signal(options?.authUiState ?? (isLoggedIn ? 'authenticated' : 'signed_out'));
     const bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     const interviews = jasmine.createSpyObj<InterviewService>('InterviewService', [
       'getAvailability',
@@ -136,6 +138,7 @@ describe('AppSidebarComponent', () => {
                 : null,
             ),
             isLoggedIn: signal(isLoggedIn),
+            authUiState,
           },
         },
       ],
@@ -145,6 +148,7 @@ describe('AppSidebarComponent', () => {
       bugReport,
       interviews,
       router: TestBed.inject(Router),
+      authUiState,
     };
   }
 
@@ -351,6 +355,38 @@ describe('AppSidebarComponent', () => {
     expect(prepLink).toBeTruthy();
     expect(prepLink.textContent || '').toContain('Start prep');
     expect(prepLink.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+  });
+
+  it('keeps all drawer account actions hidden while auth is pending', async () => {
+    await configureTestingModule({ isLoggedIn: true, authUiState: 'pending' });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    const pending = fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-auth-pending"]') as HTMLElement;
+    const actions = fixture.nativeElement.querySelector('.mobile-auth-actions') as HTMLElement;
+
+    expect(pending).toBeTruthy();
+    expect(pending.getAttribute('aria-hidden')).toBe('true');
+    expect(actions.getAttribute('aria-busy')).toBe('true');
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-profile"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-pricing"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-signup"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-login"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-start-prep"]')).toBeFalsy();
+  });
+
+  it('reactively replaces the drawer placeholder with authenticated account actions', async () => {
+    const { authUiState } = await configureTestingModule({ isLoggedIn: true, authUiState: 'pending' });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    authUiState.set('authenticated');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-auth-pending"]')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-profile"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-pricing"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="sidebar-mobile-login"]')).toBeFalsy();
   });
 
   it('renders framework prep links in the Guides group', async () => {

@@ -143,25 +143,46 @@
         </div>
     </div>
 
-    <div class="mobile-auth-actions" *ngIf="auth.isLoggedIn() || !isPro()">
-        <a *ngIf="auth.isLoggedIn()" class="mobile-auth-btn mobile-auth-btn--profile" [routerLink]="['/profile']" (click)="closeDrawer()" data-testid="sidebar-mobile-profile">
-            <i class="pi pi-user" aria-hidden="true"></i>
-            <span>Profile</span>
-        </a>
-        <div class="mobile-auth-row" *ngIf="!auth.isLoggedIn()">
-            <a class="mobile-auth-btn mobile-auth-btn--primary" [routerLink]="['/auth/signup']" (click)="closeDrawer()" data-testid="sidebar-mobile-signup">
-                Sign up
-            </a>
-            <a class="mobile-auth-btn" [routerLink]="['/auth/login']" (click)="closeDrawer()" data-testid="sidebar-mobile-login">
-                Log in
-            </a>
+    <div
+        class="mobile-auth-actions"
+        [attr.aria-busy]="auth.authUiState() === 'pending' ? 'true' : null"
+    >
+        <div
+            *ngIf="auth.authUiState() === 'pending'"
+            class="mobile-auth-pending"
+            data-testid="sidebar-mobile-auth-pending"
+            aria-hidden="true"
+        >
+            <div class="mobile-auth-placeholder-row">
+                <span class="mobile-auth-placeholder"></span>
+                <span class="mobile-auth-placeholder"></span>
+            </div>
+            <span class="mobile-auth-placeholder mobile-auth-placeholder--wide"></span>
         </div>
-        <a *ngIf="!auth.isLoggedIn()" class="mobile-auth-btn mobile-auth-btn--prep" [routerLink]="['/guides','interview-blueprint','intro']" (click)="closeDrawer()" data-testid="sidebar-mobile-start-prep">
-            Start prep
-        </a>
-        <a *ngIf="auth.isLoggedIn() && !isPro()" class="mobile-auth-btn mobile-auth-btn--pricing" [routerLink]="['/pricing']" (click)="closeDrawer()" data-testid="sidebar-mobile-pricing">
-            Upgrade
-        </a>
+
+        <ng-container *ngIf="auth.authUiState() === 'authenticated'">
+            <a class="mobile-auth-btn mobile-auth-btn--profile" [routerLink]="['/profile']" (click)="closeDrawer()" data-testid="sidebar-mobile-profile">
+                <i class="pi pi-user" aria-hidden="true"></i>
+                <span>Profile</span>
+            </a>
+            <a *ngIf="!isPro()" class="mobile-auth-btn mobile-auth-btn--pricing" [routerLink]="['/pricing']" (click)="closeDrawer()" data-testid="sidebar-mobile-pricing">
+                Upgrade
+            </a>
+        </ng-container>
+
+        <ng-container *ngIf="auth.authUiState() === 'signed_out'">
+            <div class="mobile-auth-row">
+                <a class="mobile-auth-btn mobile-auth-btn--primary" [routerLink]="['/auth/signup']" (click)="closeDrawer()" data-testid="sidebar-mobile-signup">
+                    Sign up
+                </a>
+                <a class="mobile-auth-btn" [routerLink]="['/auth/login']" (click)="closeDrawer()" data-testid="sidebar-mobile-login">
+                    Log in
+                </a>
+            </div>
+            <a class="mobile-auth-btn mobile-auth-btn--prep" [routerLink]="['/guides','interview-blueprint','intro']" (click)="closeDrawer()" data-testid="sidebar-mobile-start-prep">
+                Start prep
+            </a>
+        </ng-container>
     </div>
 </aside>
 
