@@ -7,8 +7,10 @@ import { NEVER, Observable, Subject, of, throwError } from 'rxjs';
 import {
   SeoAction,
   SeoAnalyzeResponse,
+  SeoDecisionOpportunityItem,
   SeoOverview,
   SeoPageDetail,
+  SeoQueryOpportunity,
 } from '../../../core/models/seo-admin.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { SeoAdminService } from '../../../core/services/seo-admin.service';
@@ -95,7 +97,7 @@ describe('SeoDashboardComponent', () => {
       evidenceLevel: 'directional',
       confidence: 0.68,
       currentForLatestData: true,
-      ruleVersion: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
       semanticVersion: 'semantic-clusters.v2',
       input: {
         version: 'page-assessment-input.v2',
@@ -352,7 +354,7 @@ describe('SeoDashboardComponent', () => {
         hash: 'assessment-input-hash',
         version: 'page-assessment-input.v2',
         semanticVersion: 'semantic-clusters.v2',
-        ruleVersion: 'balanced-v2.1',
+        ruleVersion: 'balanced-v2.2',
         pageVersionKey: 'a1b2c3d4e5f678901234567890abcdef',
         currentHash: 'input-hash-current',
         currentPageVersionKey: 'a1b2c3d4e5f678901234567890abcdef',
@@ -374,6 +376,84 @@ describe('SeoDashboardComponent', () => {
         areas: { frontend: 2 },
         candidateSignals: ['rendered_application_source_changed'],
         signals: ['rendered_application_source_changed'],
+      },
+    },
+  };
+
+  const opportunityKey = 'a'.repeat(64);
+  const clusterKey = 'b'.repeat(64);
+  const queryOpportunity: SeoQueryOpportunity = {
+    key: opportunityKey,
+    clusterKey,
+    safeLabel: 'React render-nothing cluster',
+    classification: 'snippet_gap',
+    state: 'watch',
+    disposition: 'investigate',
+    patternConfidence: 0.91,
+    causeConfidence: 0.44,
+    current: { clicks: 0, impressions: 420, ctr: 0, position: 6.2 },
+    previous: { clicks: 2, impressions: 360, ctr: 2 / 360, position: 6 },
+    coverage: { query: 0.72, semantic: 0.94, device: 0.66 },
+    persistence: { stableWeeks: 3, requiredWeeks: 4 },
+    recommendedSurface: 'title',
+    blockers: ['serp_review_required'],
+    reviewReady: true,
+    canRequestExamples: true,
+    expectedImpact: {
+      metric: 'clicks',
+      low: null,
+      point: null,
+      high: null,
+      windowDays: 28,
+      quality: 'not_estimated',
+    },
+    nextReview: {
+      mode: 'event',
+      event: 'serp_review',
+      rationale: 'Review the live results before creating a snippet experiment.',
+    },
+  };
+
+  const pageWithOpportunity = (opportunity: SeoQueryOpportunity = queryOpportunity): SeoPageDetail => ({
+    ...page,
+    assessment: {
+      ...page.assessment!,
+      disposition: 'investigate',
+      primaryFinding: 'snippet_gap',
+      patternConfidence: 0.91,
+      causeConfidence: 0.44,
+      technicalStatus: 'unverified',
+      queryOpportunities: [opportunity],
+      decisionGates: ['serp_review_required'],
+      nextReview: opportunity.nextReview!,
+    },
+  });
+
+  const investigateLaneItem: SeoDecisionOpportunityItem = {
+    kind: 'query_opportunity',
+    pageKey: page.pageKey,
+    canonicalUrl: page.canonicalUrl,
+    pageTitle: page.title,
+    assessmentInputHash: 'assessment-input-hash',
+    opportunity: queryOpportunity,
+  };
+
+  const structuralLaneItem: SeoDecisionOpportunityItem = {
+    kind: 'structural_finding',
+    pageKey: 'structural-page',
+    canonicalUrl: 'https://frontendatlas.com/angular/trivia/ngrx-selectors',
+    pageTitle: 'NgRx selectors and memoization',
+    assessmentInputHash: 'structural-input-hash',
+    finding: {
+      state: 'watch',
+      disposition: 'structural_review',
+      patternConfidence: 0.72,
+      causeConfidence: 0.22,
+      reasonCodes: ['internal_link_gap'],
+      nextReview: {
+        mode: 'event',
+        event: '28_finalized_days',
+        rationale: 'Measure after the next verified crawl window.',
       },
     },
   };
@@ -414,7 +494,7 @@ describe('SeoDashboardComponent', () => {
     },
     analysis: {
       status: 'complete',
-      ruleVersion: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
       endDate: '2026-08-04',
       currentForLatestData: true,
       completedDays: 56,
@@ -453,11 +533,15 @@ describe('SeoDashboardComponent', () => {
       'getOverview',
       'getActions',
       'getAction',
+      'getOpportunities',
       'createAction',
       'transitionAction',
       'getPages',
       'getPage',
       'updateIntent',
+      'getQueryOpportunityExamples',
+      'saveOpportunityReview',
+      'promoteOpportunity',
       'checkAccess',
       'requestSync',
       'requestAnalysis',
@@ -497,6 +581,7 @@ describe('SeoDashboardComponent', () => {
       nextCursor: null,
     }));
     seoAdmin.getAction.and.returnValue(of(action));
+    seoAdmin.getOpportunities.and.returnValue(of({ items: [], total: 0, nextCursor: null }));
     seoAdmin.createAction.and.returnValue(of(action));
     seoAdmin.transitionAction.and.returnValue(of({ ...action, status: 'approved', version: 2 }));
     const pageMetricWindow = options?.partialPageWindow
@@ -513,6 +598,27 @@ describe('SeoDashboardComponent', () => {
     }));
     seoAdmin.getPage.and.returnValue(of(pageResponse));
     seoAdmin.updateIntent.and.returnValue(of({ ...page, intentConfirmed: true }));
+    seoAdmin.getQueryOpportunityExamples.and.returnValue(of({
+      pageKey: page.pageKey,
+      opportunityKey: 'opportunity-1',
+      assessmentInputHash: 'assessment-input-hash',
+      items: [],
+      totalVisibleMembers: 0,
+      truncated: false,
+    }));
+    seoAdmin.saveOpportunityReview.and.returnValue(of({
+      review: {
+        observedAt: '2026-08-10T08:00:00.000Z',
+        locale: 'en-US',
+        device: 'desktop',
+        dominantResultType: 'mixed',
+        serpFeatures: [],
+        ownResultStatus: 'present_weak',
+        outcome: 'needs_more_evidence',
+        reasonCode: 'none',
+      },
+    }));
+    seoAdmin.promoteOpportunity.and.returnValue(of(action));
     seoAdmin.checkAccess.and.callFake(() => of({
       allowed: ownerAllowed(),
       enabled: true,
@@ -583,7 +689,7 @@ describe('SeoDashboardComponent', () => {
     expect(root.querySelector('[data-testid="seo-data-health"]')?.textContent).toContain('Limited device subset');
     const analysisHealth = root.querySelector('[data-testid="seo-analysis-health"]') as HTMLElement;
     expect(analysisHealth.dataset['kind']).toBe('complete');
-    expect(analysisHealth.textContent).toContain('balanced-v2.1');
+    expect(analysisHealth.textContent).toContain('balanced-v2.2');
     expect(analysisHealth.textContent).toContain('1/1 committed');
     expect(analysisHealth.textContent).toContain('56/56 finalized days');
     expect(analysisHealth.textContent).toContain('Current with latest finalized data');
@@ -638,7 +744,7 @@ describe('SeoDashboardComponent', () => {
       totalPages: 435,
       completedDays: 56,
       requiredDays: 56,
-      ruleVersion: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
     });
     expect(card.dataset['kind']).toBe('complete');
     expect(card.textContent).toContain('All 435 current manifest pages');
@@ -668,6 +774,96 @@ describe('SeoDashboardComponent', () => {
     expect(card.querySelector('.analysis-health__grid')).toBeTruthy();
     expect(actions.querySelectorAll('button.fa-btn')).toHaveSize(3);
     expect(root.querySelector('[data-testid="seo-analyze-button"]')?.classList.contains('fa-btn')).toBeTrue();
+  });
+
+  it('keeps action, investigation, and structural evidence in separate accessible lanes', async () => {
+    await create();
+    seoAdmin.getOpportunities.and.callFake((lane) => of({
+      lane,
+      items: lane === 'investigate' ? [investigateLaneItem] : [structuralLaneItem],
+      total: 1,
+      nextCursor: null,
+    }));
+
+    component.refreshDashboard();
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    expect(tabs.map((tab) => tab.getAttribute('aria-label'))).toEqual([
+      'Act now, 1',
+      'Investigate, 1',
+      'Structural opportunities, 1',
+    ]);
+    expect(tabs[0].getAttribute('aria-selected')).toBe('true');
+    expect(root.querySelector('[data-testid="seo-lane-panel-act-now"]')).toBeTruthy();
+
+    tabs[1].click();
+    fixture.detectChanges();
+    const investigatePanel = root.querySelector('[data-testid="seo-lane-panel-opportunities"]') as HTMLElement;
+    expect(investigatePanel.id).toBe('seo-panel-investigate');
+    expect(investigatePanel.textContent).toContain('React render-nothing cluster');
+    expect(investigatePanel.textContent).toContain('91% confidence');
+    expect(investigatePanel.textContent).toContain('44% confidence');
+    expect(investigatePanel.textContent).toContain('Serp review');
+    expect(investigatePanel.textContent).toContain('Impact not estimated');
+
+    tabs[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+    const structuralPanel = root.querySelector('[data-testid="seo-lane-panel-opportunities"]') as HTMLElement;
+    expect(component.decisionLane()).toBe('structural');
+    expect(structuralPanel.id).toBe('seo-panel-structural');
+    expect(structuralPanel.getAttribute('aria-labelledby')).toBe('seo-tab-structural');
+    expect(structuralPanel.textContent).toContain('NgRx selectors and memoization');
+    expect(structuralPanel.textContent).toContain('Internal link gap');
+    expect(structuralPanel.textContent).toContain('Measure after the next verified crawl window');
+
+    tabs[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    expect(component.decisionLane()).toBe('act_now');
+  });
+
+  it('never renders a zero-click impact estimate and points an empty Act now lane to evidence lanes', async () => {
+    await create({ empty: true });
+    component.nowActions.set([{
+      ...action,
+      expectedAdditionalClicks: 0,
+      expectedImpact: {
+        metric: 'clicks',
+        low: 0,
+        point: 0,
+        high: 0,
+        windowDays: 28,
+        quality: 'not_estimated',
+      },
+    }]);
+    component.nowLoading.set(false);
+    fixture.detectChanges();
+
+    const card = (fixture.nativeElement as HTMLElement)
+      .querySelector('[data-testid="seo-now-action-action-1"]') as HTMLElement;
+    expect(card.textContent).not.toContain('+0');
+    expect(card.textContent).toContain('Impact not estimated');
+
+    component.nowActions.set([]);
+    component.investigateTotal.set(1);
+    component.structuralTotal.set(2);
+    component.overview.update((value) => value ? ({
+      ...value,
+      dataHealth: { ...value.dataHealth, stale: false },
+      analysis: {
+        ...value.analysis!,
+        proposedActions: 0,
+        eligiblePages: 1,
+        decisionBlockedPages: 0,
+      },
+    }) : value);
+    fixture.detectChanges();
+
+    const empty = (fixture.nativeElement as HTMLElement)
+      .querySelector('[data-testid="seo-now-empty"]') as HTMLElement;
+    expect(empty.dataset['kind']).toBe('limited');
+    expect(empty.textContent).toContain('1 investigation and 2 structural opportunities');
   });
 
   it('labels brand and non-brand metrics as a visible query subset with coverage', async () => {
@@ -1097,7 +1293,7 @@ describe('SeoDashboardComponent', () => {
     expect(lineage.textContent).toContain('Main content');
     expect(lineage.textContent).toContain('Heading outline');
     expect(lineage.textContent).toContain('may have gone live earlier');
-    expect(lineage.textContent).toContain('Assessment rule · balanced-v2.1');
+    expect(lineage.textContent).toContain('Assessment rule · balanced-v2.2');
     expect(lineage.textContent).toContain('Input schema · page-assessment-input.v2');
     expect(lineage.textContent).toContain('Semantic schema · semantic-clusters.v2');
     expect(lineage.textContent).toContain('Assessment matches this page version');
@@ -1129,6 +1325,241 @@ describe('SeoDashboardComponent', () => {
     expect(reconciliation.querySelectorAll('.source-pill--subset')).toHaveSize(2);
     expect(reconciliation.textContent).toContain('Non-authoritative');
     expect(root.textContent).toContain('Inspect page');
+  });
+
+  it('renders the safe Query Opportunity Map and only reveals raw examples after owner demand', async () => {
+    await create();
+    const opportunityPage = pageWithOpportunity();
+    const rawQuery = 'can react render nothing from a component';
+    seoAdmin.getPage.and.returnValue(of(opportunityPage));
+    seoAdmin.getQueryOpportunityExamples.and.returnValue(of({
+      opportunityKey,
+      assessmentInputHash: 'assessment-input-hash',
+      cluster: { key: clusterKey, label: 'React render-nothing cluster', facet: 'direct_answer' },
+      items: [{
+        query: rawQuery,
+        current: { clicks: 0, impressions: 210, ctr: 0, position: 6.1 },
+        previous: { clicks: 1, impressions: 170, ctr: 1 / 170, position: 6 },
+      }],
+      totalVisibleMembers: 1,
+      truncated: false,
+    }));
+
+    component.openPage(page.pageKey);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const map = root.querySelector('[data-testid="seo-query-opportunity-map"]') as HTMLElement;
+    expect(map).toBeTruthy();
+    expect(map.textContent).toContain('React render-nothing cluster');
+    expect(map.textContent).toContain('91% confidence');
+    expect(map.textContent).toContain('44% confidence');
+    expect(map.textContent).toContain('72.0%');
+    expect(map.textContent).toContain('94.0%');
+    expect(map.textContent).toContain('Impact not estimated');
+    expect(map.textContent).toContain('Review the live results before creating a snippet experiment');
+    expect(root.textContent).not.toContain(rawQuery);
+    expect(root.querySelector('[data-testid="seo-page-assessment"]')?.textContent).toContain('Unverified');
+
+    const examplesButton = root.querySelector(
+      `[data-testid="seo-show-query-examples-${opportunityKey}"]`,
+    ) as HTMLButtonElement;
+    expect(examplesButton.getAttribute('aria-expanded')).toBe('false');
+    examplesButton.click();
+    fixture.detectChanges();
+
+    expect(seoAdmin.getQueryOpportunityExamples).toHaveBeenCalledWith(
+      page.pageKey,
+      opportunityKey,
+      'assessment-input-hash',
+      10,
+    );
+    expect(root.querySelector('[data-testid="seo-query-examples"]')?.textContent).toContain(rawQuery);
+    expect(examplesButton.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('saves a structured SERP review without creating an action, then promotes only explicitly', async () => {
+    await create();
+    const opportunityPage = pageWithOpportunity();
+    const savedReview = {
+      observedAt: '2026-08-10T08:00:00.000Z',
+      locale: 'en-US',
+      device: 'mobile' as const,
+      dominantResultType: 'mixed' as const,
+      serpFeatures: ['people_also_ask'],
+      ownResultStatus: 'present_weak' as const,
+      outcome: 'snippet_test' as const,
+      reasonCode: 'snippet_not_specific' as const,
+      expiresAt: '2028-02-10T08:00:00.000Z',
+    };
+    seoAdmin.getPage.and.returnValue(of(opportunityPage));
+    seoAdmin.saveOpportunityReview.and.returnValue(of({ review: savedReview }));
+
+    component.openPage(page.pageKey);
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    const reviewButton = root.querySelector(
+      `[data-testid="seo-review-serp-${opportunityKey}"]`,
+    ) as HTMLButtonElement;
+    expect(reviewButton.getAttribute('aria-expanded')).toBe('false');
+    reviewButton.click();
+    fixture.detectChanges();
+    expect(reviewButton.getAttribute('aria-expanded')).toBe('true');
+    expect(reviewButton.getAttribute('aria-controls')).toBe(`seo-serp-review-${opportunityKey}`);
+    expect(root.querySelector(`#seo-serp-review-${opportunityKey}`)).toBeTruthy();
+    expect(root.querySelector('[name="serpNotes"]')).toBeNull();
+    expect(root.querySelector('#seo-serp-review-reason')).toBeTruthy();
+
+    component.serpReviewForm = { ...savedReview };
+    const selectedPage = component.selectedPage() as SeoPageDetail;
+    component.saveSerpReview(selectedPage, queryOpportunity);
+    fixture.detectChanges();
+
+    expect(seoAdmin.saveOpportunityReview).toHaveBeenCalledWith(
+      page.pageKey,
+      opportunityKey,
+      jasmine.objectContaining({
+        assessmentInputHash: 'assessment-input-hash',
+        device: 'mobile',
+        dominantResultType: 'mixed',
+        serpFeatures: ['people_also_ask'],
+        ownResultStatus: 'present_weak',
+        outcome: 'snippet_test',
+        reasonCode: 'snippet_not_specific',
+      }),
+    );
+    expect(seoAdmin.saveOpportunityReview.calls.mostRecent().args[2]).not.toEqual(
+      jasmine.objectContaining({ notes: jasmine.anything() }),
+    );
+    expect(component.announcement()).toContain('No action was created automatically');
+    expect(seoAdmin.promoteOpportunity).not.toHaveBeenCalled();
+
+    const promote = root.querySelector(
+      `[data-testid="seo-promote-opportunity-${opportunityKey}"]`,
+    ) as HTMLButtonElement;
+    expect(promote).toBeTruthy();
+    promote.click();
+    fixture.detectChanges();
+
+    expect(seoAdmin.promoteOpportunity).toHaveBeenCalledWith(page.pageKey, opportunityKey, {
+      assessmentInputHash: 'assessment-input-hash',
+    });
+    expect(component.announcement()).toContain('Experiment created');
+  });
+
+  it('does not promote an expired SERP review even when the old outcome requested a test', async () => {
+    await create();
+    const expired = {
+      ...queryOpportunity,
+      reviewReady: true,
+      canPromote: true,
+      review: {
+        observedAt: '2024-01-01T00:00:00.000Z',
+        locale: 'en-US',
+        device: 'desktop' as const,
+        dominantResultType: 'mixed' as const,
+        serpFeatures: [],
+        ownResultStatus: 'present_weak' as const,
+        outcome: 'snippet_test' as const,
+        expiresAt: '2025-07-01T00:00:00.000Z',
+      },
+    };
+
+    expect(component.canPromoteOpportunity(expired)).toBeFalse();
+  });
+
+  it('requires the SERP review outcome that matches the opportunity classification', async () => {
+    await create();
+    const currentReview = {
+      observedAt: '2026-08-10T08:00:00.000Z',
+      locale: 'en-US',
+      device: 'desktop' as const,
+      dominantResultType: 'mixed' as const,
+      serpFeatures: [],
+      ownResultStatus: 'present_weak' as const,
+      expiresAt: '2028-02-10T08:00:00.000Z',
+    };
+    const snippetWithContentReview: SeoQueryOpportunity = {
+      ...queryOpportunity,
+      classification: 'snippet_gap',
+      reviewReady: true,
+      canPromote: true,
+      review: { ...currentReview, outcome: 'content_test' },
+    };
+    const rankingWithSnippetReview: SeoQueryOpportunity = {
+      ...queryOpportunity,
+      classification: 'ranking_gap',
+      reviewReady: true,
+      canPromote: true,
+      review: { ...currentReview, outcome: 'snippet_test' },
+    };
+    const rankingWithContentReview: SeoQueryOpportunity = {
+      ...rankingWithSnippetReview,
+      review: { ...currentReview, outcome: 'content_test' },
+    };
+
+    expect(component.canPromoteOpportunity(snippetWithContentReview)).toBeFalse();
+    expect(component.canPromoteOpportunity(rankingWithSnippetReview)).toBeFalse();
+    expect(component.canPromoteOpportunity(rankingWithContentReview)).toBeTrue();
+  });
+
+  it('does not offer examples without a safe cluster or promotion for unsupported classifications', async () => {
+    await create();
+    const visibilityOpportunity: SeoQueryOpportunity = {
+      ...queryOpportunity,
+      clusterKey: null,
+      classification: 'visibility_interruption',
+      review: {
+        observedAt: '2026-08-10T08:00:00.000Z',
+        locale: 'en-US',
+        device: 'desktop',
+        dominantResultType: 'unknown',
+        serpFeatures: [],
+        ownResultStatus: 'not_visible',
+        outcome: 'content_test',
+      },
+    };
+    seoAdmin.getPage.and.returnValue(of(pageWithOpportunity(visibilityOpportunity)));
+
+    component.openPage(page.pageKey);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector(`[data-testid="seo-show-query-examples-${opportunityKey}"]`)).toBeNull();
+    expect(root.querySelector(`[data-testid="seo-promote-opportunity-${opportunityKey}"]`)).toBeNull();
+  });
+
+  it('renders qualified donor titles, URLs, reasons, and anchor direction instead of hashes', async () => {
+    await create();
+    const donorHash = '87aaad08773b335da0b76ddb4d0cb9c3911c61c333563fd5336cbca9a2246f9b';
+    const donorAction: SeoAction = {
+      ...action,
+      type: 'internal_link',
+      recommendation: {
+        ...action.recommendation,
+        checklist: [`Review donor page ${donorHash}`, 'Verify the link reads naturally in context.'],
+        donors: [{
+          title: 'Angular selector performance guide',
+          canonicalUrl: 'https://frontendatlas.com/angular/guides/selector-performance',
+          relevanceScore: 0.72,
+          reasonCodes: ['semantic_overlap', 'visible_mature_page'],
+          anchorDirection: 'NgRx selector memoization and derived state',
+        }],
+      },
+    };
+    seoAdmin.getAction.and.returnValue(of(donorAction));
+
+    component.openAction(donorAction);
+    fixture.detectChanges();
+
+    const donorGrid = (fixture.nativeElement as HTMLElement).querySelector('.donor-grid') as HTMLElement;
+    expect(donorGrid.textContent).toContain('Angular selector performance guide');
+    expect(donorGrid.textContent).toContain('https://frontendatlas.com/angular/guides/selector-performance');
+    expect(donorGrid.textContent).toContain('72.0% relevance');
+    expect(donorGrid.textContent).toContain('Semantic overlap');
+    expect(donorGrid.textContent).toContain('NgRx selector memoization and derived state');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Verify the link reads naturally');
+    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain(donorHash);
   });
 
   it('keeps legacy Page Evidence usable without inventing missing lineage', async () => {
@@ -1182,7 +1613,7 @@ describe('SeoDashboardComponent', () => {
     expect(unavailable.textContent).toContain('will not guess');
     expect(root.querySelector('[data-testid="seo-page-lineage"]')).toBeNull();
     expect(root.querySelector('.cooldown-readout')?.textContent).toContain('Eligible for a performance decision');
-    expect(root.querySelector('[data-testid="seo-page-assessment"]')?.textContent).toContain('No scheduled review');
+    expect(root.querySelector('[data-testid="seo-page-assessment"]')?.textContent).toContain('After the next verified evidence event');
   });
 
   it('normalizes nested Git candidate aliases and renders only aggregate evidence', async () => {
@@ -1274,7 +1705,7 @@ describe('SeoDashboardComponent', () => {
     expect(component.lineageCooldown(eligiblePage)?.state).toBe('eligible');
     expect(component.assessmentNextReviewDate(eligiblePage)).toBeNull();
     expect(root.querySelector('[data-testid="seo-page-assessment"] h3')?.textContent).toContain('Keep watching');
-    expect(root.querySelector('[data-testid="seo-page-assessment"]')?.textContent).toContain('No scheduled review');
+    expect(root.querySelector('[data-testid="seo-page-assessment"]')?.textContent).toContain('After the next verified evidence event');
     expect(root.querySelector('[data-testid="seo-page-lineage"]')?.textContent).toContain('28/28 clean finalized days');
   });
 
@@ -1754,6 +2185,33 @@ describe('SeoDashboardComponent', () => {
     }
   });
 
+  it('restores focus to the originating control after either evidence dialog closes', async () => {
+    await create();
+    const trigger = document.createElement('button');
+    const simulatedDialogControl = document.createElement('button');
+    document.body.append(trigger, simulatedDialogControl);
+    trigger.focus();
+    const focusSpy = spyOn(trigger, 'focus').and.callThrough();
+
+    component.openPage(page.pageKey);
+    simulatedDialogControl.focus();
+    component.closePage();
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(trigger);
+    expect(focusSpy).toHaveBeenCalledTimes(1);
+
+    component.openAction(action);
+    simulatedDialogControl.focus();
+    component.closeAction();
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(trigger);
+    expect(focusSpy).toHaveBeenCalledTimes(2);
+    trigger.remove();
+    simulatedDialogControl.remove();
+  });
+
   it('requires a date before saving a historical manual action', async () => {
     await create();
     component.manualForm = {
@@ -1775,6 +2233,18 @@ describe('SeoDashboardComponent', () => {
     await create();
     expect(component.overview()).toBeTruthy();
     expect(component.nowActions()).toHaveSize(1);
+    component.investigateOpportunities.set([investigateLaneItem]);
+    component.investigateTotal.set(1);
+    component.structuralOpportunities.set([structuralLaneItem]);
+    component.structuralTotal.set(1);
+    component.queryExamples.set({
+      [opportunityKey]: {
+        opportunityKey,
+        assessmentInputHash: 'assessment-input-hash',
+        items: [{ query: 'private owner query' }],
+      },
+    });
+    component.activeSerpReviewKey.set(opportunityKey);
 
     authUser.set(null);
     fixture.detectChanges();
@@ -1783,6 +2253,10 @@ describe('SeoDashboardComponent', () => {
     expect(component.nowActions()).toEqual([]);
     expect(component.backlogActions()).toEqual([]);
     expect(component.pages()).toEqual([]);
+    expect(component.investigateOpportunities()).toEqual([]);
+    expect(component.structuralOpportunities()).toEqual([]);
+    expect(component.queryExamples()).toEqual({});
+    expect(component.activeSerpReviewKey()).toBeNull();
     expect(component.pageMetricWindow()).toBeNull();
     expect(component.selectedAction()).toBeNull();
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login'], {

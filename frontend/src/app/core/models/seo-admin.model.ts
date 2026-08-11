@@ -185,6 +185,158 @@ export type SeoPageAssessmentState = 'not_evaluable' | 'clear' | 'watch' | 'acti
 export type SeoEvidenceLevel = 'insufficient' | 'directional' | 'moderate' | 'strong' | 'decision_grade';
 export type SeoBaselineQuality = 'insufficient' | 'low' | 'medium' | 'high';
 export type SeoCooldownStatus = 'awaiting_recrawl' | 'observing' | 'directional' | 'eligible';
+export type SeoDecisionDisposition =
+  | 'insufficient_evidence'
+  | 'monitor'
+  | 'investigate'
+  | 'structural_review'
+  | 'change_ready'
+  | 'no_change';
+export type SeoTechnicalStatus = 'clear' | 'issue' | 'unverified';
+export type SeoNextReviewEvent =
+  | 'url_inspection'
+  | 'post_deploy_crawl'
+  | '14_finalized_days'
+  | '28_finalized_days'
+  | 'coverage_threshold'
+  | 'serp_review';
+
+export type SeoNextReview =
+  | {
+      mode: 'date';
+      at: string;
+      event?: never;
+      rationale: string;
+    }
+  | {
+      mode: 'event';
+      at?: never;
+      event: SeoNextReviewEvent | string;
+      rationale: string;
+    };
+
+export interface SeoExpectedImpact {
+  metric: 'clicks' | string;
+  low?: number | null;
+  point?: number | null;
+  high?: number | null;
+  windowDays?: number | null;
+  quality: 'not_estimated' | 'directional' | 'modeled' | string;
+}
+
+export interface SeoDecisionGate {
+  code: string;
+  passed: boolean;
+  label?: string | null;
+  detail?: string | null;
+}
+
+export interface SeoVisibilityAssessment {
+  state?: SeoPageAssessmentState | null;
+  disposition?: SeoDecisionDisposition | null;
+  status?: string | null;
+  interrupted?: boolean | null;
+  requiresInspection?: boolean | null;
+  zeroImpressionStreakDays?: number | null;
+  zeroImpressionStreak?: number | null;
+  baselineImpressions?: number | null;
+  baselineVisibleDays?: number | null;
+  pageShareDropPercent?: number | null;
+  shareDrop?: number | null;
+  patternConfidence?: number | null;
+  causeConfidence?: number | null;
+  firstVisibleDate?: string | null;
+  priorVisibleDays?: number | null;
+  pageShareDrop?: number | null;
+  propertyActive?: boolean | null;
+  interruptionDetected?: boolean | null;
+  recoveryStatus?: 'none' | 'partial' | 'recovered' | string | null;
+  evidence?: Record<string, unknown> | null;
+  reasonCodes?: string[];
+  nextReview?: SeoNextReview | null;
+}
+
+export type SeoQueryOpportunityClassification =
+  | 'snippet_gap'
+  | 'ranking_gap'
+  | 'intent_gap'
+  | 'source_preference'
+  | 'visibility_interruption'
+  | 'not_evaluable';
+
+export interface SeoQueryOpportunityMetrics {
+  clicks?: number | null;
+  impressions?: number | null;
+  ctr?: number | null;
+  position?: number | null;
+  averagePosition?: number | null;
+}
+
+export type SeoOpportunityReviewReasonCode =
+  | 'none'
+  | 'snippet_not_specific'
+  | 'snippet_not_competitive'
+  | 'content_depth_gap'
+  | 'intent_misalignment'
+  | 'source_preference'
+  | 'serp_feature_competition'
+  | 'insufficient_evidence';
+
+export interface SeoOpportunityReview {
+  observedAt: string;
+  locale: string;
+  device: 'desktop' | 'mobile' | 'tablet' | 'unknown';
+  dominantResultType: 'official' | 'community' | 'publisher' | 'mixed' | 'unknown';
+  serpFeatures: string[];
+  ownResultStatus: 'not_visible' | 'present_weak' | 'present_competitive' | 'unknown';
+  outcome: 'no_change' | 'snippet_test' | 'content_test' | 'needs_more_evidence';
+  reasonCode?: SeoOpportunityReviewReasonCode;
+  updatedAt?: string | null;
+  expiresAt?: string | null;
+}
+
+export interface SeoQueryOpportunity {
+  key: string;
+  clusterKey?: string | null;
+  safeLabel?: string | null;
+  label?: string | null;
+  facet?: string | null;
+  classification: SeoQueryOpportunityClassification;
+  state?: SeoPageAssessmentState | null;
+  disposition?: SeoDecisionDisposition | null;
+  summary?: string | null;
+  recommendedSurface?: 'title' | 'description' | 'h1' | 'body' | 'internal_link' | 'inspection' | string | null;
+  current?: SeoQueryOpportunityMetrics | null;
+  previous?: SeoQueryOpportunityMetrics | null;
+  coverage?: {
+    query?: number | null;
+    semantic?: number | null;
+    device?: number | null;
+  } | null;
+  persistence?: {
+    stableWeeks?: number | null;
+    requiredWeeks?: number | null;
+    totalWeeks?: number | null;
+    zeroImpressionStreak?: number | null;
+  } | null;
+  coveragePercent?: number | null;
+  semanticCoveragePercent?: number | null;
+  persistenceWeeks?: number | null;
+  requiredPersistenceWeeks?: number | null;
+  positionStable?: boolean | null;
+  patternConfidence?: number | null;
+  causeConfidence?: number | null;
+  blockerCodes?: string[];
+  blockers?: string[];
+  reasonCodes?: string[];
+  expectedImpact?: SeoExpectedImpact | null;
+  nextReview?: SeoNextReview | null;
+  review?: SeoOpportunityReview | null;
+  reviewReady?: boolean;
+  canRequestExamples?: boolean;
+  canReviewSerp?: boolean;
+  canPromote?: boolean;
+}
 
 export interface SeoAssessmentFinding {
   code?: string | null;
@@ -194,6 +346,11 @@ export interface SeoAssessmentFinding {
   summary?: string | null;
   evidence?: { summary?: string | null } | null;
   confidence?: number | null;
+  patternConfidence?: number | null;
+  causeConfidence?: number | null;
+  disposition?: SeoDecisionDisposition | null;
+  decisionGates?: SeoDecisionGate[];
+  nextReview?: SeoNextReview | null;
   counterEvidence?: string[];
 }
 
@@ -398,10 +555,19 @@ export interface SeoSemanticCluster extends SeoQueryCluster {
 
 export interface SeoPageAssessment {
   primaryState: SeoPageAssessmentState;
+  disposition?: SeoDecisionDisposition | null;
+  primaryFinding?: SeoAssessmentFinding | string | null;
   verdict?: string | null;
   summary?: string | null;
   evidenceLevel?: SeoEvidenceLevel | null;
   confidence?: number | null;
+  patternConfidence?: number | null;
+  causeConfidence?: number | null;
+  technicalStatus?: SeoTechnicalStatus | null;
+  visibility?: SeoVisibilityAssessment | null;
+  queryOpportunities?: SeoQueryOpportunity[];
+  decisionGates?: Array<SeoDecisionGate | string>;
+  nextReview?: SeoNextReview | null;
   currentForLatestData?: boolean;
   metrics?: Record<string, unknown> | null;
   coverage?: Record<string, number | null> | null;
@@ -415,6 +581,10 @@ export interface SeoPageAssessment {
     state?: SeoPageAssessmentState | null;
     reasonCodes?: string[];
     confidence?: number | null;
+    patternConfidence?: number | null;
+    causeConfidence?: number | null;
+    technicalStatus?: SeoTechnicalStatus | null;
+    nextReview?: SeoNextReview | null;
     evidence?: { summary?: string | null } | null;
   }>;
   nextReviewDate?: string | null;
@@ -508,6 +678,15 @@ export interface SeoActionRecommendation {
   checklist: string[];
   copyDirection?: string | null;
   successCriteria: string;
+  donors?: SeoInternalLinkDonor[];
+}
+
+export interface SeoInternalLinkDonor {
+  title: string;
+  canonicalUrl: string;
+  relevanceScore?: number | null;
+  reasonCodes?: string[];
+  anchorDirection?: string | null;
 }
 
 export interface SeoActionEvent {
@@ -530,6 +709,11 @@ export interface SeoAction {
   priorityScore: number;
   confidence: number;
   expectedAdditionalClicks?: number | null;
+  queueKind?: 'performance' | 'technical' | 'structural' | null;
+  expectedImpact?: SeoExpectedImpact | null;
+  patternConfidence?: number | null;
+  causeConfidence?: number | null;
+  nextReview?: SeoNextReview | null;
   effort?: 'low' | 'medium' | 'high' | null;
   risk?: 'low' | 'medium' | 'high' | null;
   detectedAt: string;
@@ -557,6 +741,87 @@ export interface SeoActionListQuery {
   search?: string;
   cursor?: string | null;
   limit?: number;
+}
+
+export type SeoOpportunityLane = 'investigate' | 'structural';
+
+export interface SeoDecisionOpportunityItem {
+  kind?: 'query_opportunity' | 'structural_finding' | 'structural_opportunity' | string;
+  pageKey: string;
+  canonicalUrl?: string | null;
+  url?: string | null;
+  pageTitle?: string | null;
+  assessmentInputHash?: string | null;
+  opportunity?: SeoQueryOpportunity | null;
+  review?: SeoOpportunityReview | null;
+  finding?: {
+    state?: SeoPageAssessmentState | null;
+    disposition?: SeoDecisionDisposition | null;
+    patternConfidence?: number | null;
+    causeConfidence?: number | null;
+    reasonCodes?: string[];
+    nextReview?: SeoNextReview | null;
+  } | null;
+  primaryState?: SeoPageAssessmentState | null;
+  disposition?: SeoDecisionDisposition | null;
+  primaryFinding?: SeoAssessmentFinding | string | null;
+  summary?: string | null;
+  patternConfidence?: number | null;
+  causeConfidence?: number | null;
+  technicalStatus?: SeoTechnicalStatus | null;
+  nextReview?: SeoNextReview | null;
+  expectedImpact?: SeoExpectedImpact | null;
+}
+
+export interface SeoDecisionOpportunityListResponse {
+  lane?: SeoOpportunityLane;
+  items: SeoDecisionOpportunityItem[];
+  total: number;
+  nextCursor: string | null;
+}
+
+export interface SeoQueryExampleMetricSet extends SeoQueryOpportunityMetrics {
+  weekly?: SeoQueryOpportunityMetrics[];
+}
+
+export interface SeoQueryExample {
+  query: string;
+  current?: SeoQueryExampleMetricSet | null;
+  previous?: SeoQueryExampleMetricSet | null;
+  persistence?: {
+    observedWeeks?: number | null;
+    requiredWeeks?: number | null;
+    persistent?: boolean | null;
+  } | null;
+}
+
+export interface SeoQueryExamplesResponse {
+  pageKey?: string;
+  opportunityKey: string;
+  assessmentInputHash: string;
+  cluster?: { key?: string | null; label?: string | null; facet?: string | null } | null;
+  coverage?: { percent?: number | null; semanticPercent?: number | null; status?: string | null } | null;
+  items: SeoQueryExample[];
+  totalVisibleMembers?: number;
+  truncated?: boolean;
+}
+
+export interface SeoOpportunityReviewRequest extends SeoOpportunityReview {
+  assessmentInputHash: string;
+}
+
+export interface SeoOpportunityReviewResponse {
+  review: SeoOpportunityReview;
+}
+
+export interface SeoOpportunityPromoteRequest {
+  assessmentInputHash: string;
+}
+
+export interface SeoOpportunityPromoteResponse {
+  assessmentInputHash: string;
+  opportunityKey: string;
+  action: SeoAction;
 }
 
 export interface SeoActionTransitionRequest {

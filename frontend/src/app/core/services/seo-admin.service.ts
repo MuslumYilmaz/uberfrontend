@@ -7,12 +7,19 @@ import {
   SeoActionListResponse,
   SeoActionTransitionRequest,
   SeoAnalyzeResponse,
+  SeoDecisionOpportunityListResponse,
   SeoIntentOverrideRequest,
   SeoManualActionRequest,
+  SeoOpportunityLane,
+  SeoOpportunityPromoteRequest,
+  SeoOpportunityPromoteResponse,
+  SeoOpportunityReviewRequest,
+  SeoOpportunityReviewResponse,
   SeoOverview,
   SeoOwnerAccess,
   SeoPageDetail,
   SeoPageListResponse,
+  SeoQueryExamplesResponse,
   SeoSearchSegment,
   SeoSyncResponse,
   SeoSyncRunListResponse,
@@ -135,6 +142,21 @@ export class SeoAdminService {
     }));
   }
 
+  getOpportunities(
+    lane: SeoOpportunityLane,
+    cursor: string | null = null,
+    limit = 10,
+  ): Observable<SeoDecisionOpportunityListResponse> {
+    let params = new HttpParams()
+      .set('lane', lane)
+      .set('limit', Math.max(1, Math.min(30, limit)));
+    if (cursor) params = params.set('cursor', cursor);
+    return this.withOwnerAuthorizationGuard(this.http.get<SeoDecisionOpportunityListResponse>(
+      `${this.base}/opportunities`,
+      { params, withCredentials: true },
+    ));
+  }
+
   createAction(payload: SeoManualActionRequest): Observable<SeoAction> {
     return this.withOwnerAuthorizationGuard(this.http.post<SeoAction>(`${this.base}/actions`, payload, {
       withCredentials: true,
@@ -177,6 +199,45 @@ export class SeoAdminService {
       payload,
       { withCredentials: true },
     ));
+  }
+
+  getQueryOpportunityExamples(
+    pageKey: string,
+    opportunityKey: string,
+    assessmentInputHash: string,
+    limit = 10,
+  ): Observable<SeoQueryExamplesResponse> {
+    const params = new HttpParams()
+      .set('assessmentInputHash', assessmentInputHash)
+      .set('limit', Math.max(1, Math.min(10, limit)));
+    return this.withOwnerAuthorizationGuard(this.http.get<SeoQueryExamplesResponse>(
+      `${this.base}/pages/${encodeURIComponent(pageKey)}/query-opportunities/${encodeURIComponent(opportunityKey)}/examples`,
+      { params, withCredentials: true },
+    ));
+  }
+
+  saveOpportunityReview(
+    pageKey: string,
+    opportunityKey: string,
+    payload: SeoOpportunityReviewRequest,
+  ): Observable<SeoOpportunityReviewResponse> {
+    return this.withOwnerAuthorizationGuard(this.http.put<SeoOpportunityReviewResponse>(
+      `${this.base}/pages/${encodeURIComponent(pageKey)}/query-opportunities/${encodeURIComponent(opportunityKey)}/serp-review`,
+      payload,
+      { withCredentials: true },
+    ));
+  }
+
+  promoteOpportunity(
+    pageKey: string,
+    opportunityKey: string,
+    payload: SeoOpportunityPromoteRequest,
+  ): Observable<SeoAction> {
+    return this.withOwnerAuthorizationGuard(this.http.post<SeoOpportunityPromoteResponse>(
+      `${this.base}/pages/${encodeURIComponent(pageKey)}/query-opportunities/${encodeURIComponent(opportunityKey)}/promote`,
+      payload,
+      { withCredentials: true },
+    )).pipe(map((response) => response.action));
   }
 
   requestSync(): Observable<SeoSyncResponse> {

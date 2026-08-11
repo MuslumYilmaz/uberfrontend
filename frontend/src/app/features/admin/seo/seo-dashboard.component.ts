@@ -26,6 +26,9 @@ import {
   SeoCtrBaseline,
   SeoDetectorLineageState,
   SeoDetectorType,
+  SeoDecisionGate,
+  SeoDecisionOpportunityItem,
+  SeoExpectedImpact,
   SeoFingerprintEvidence,
   SeoGitCorroboration,
   SeoLineageCrawl,
@@ -34,6 +37,12 @@ import {
   SeoLineageTimelineEntry,
   SeoLineageVersion,
   SeoManualActionRequest,
+  SeoNextReview,
+  SeoOpportunityLane,
+  SeoOpportunityReview,
+  SeoOpportunityReviewReasonCode,
+  SeoQueryExamplesResponse,
+  SeoQueryOpportunity,
   SeoOverview,
   SeoPageCooldown,
   SeoPageDetail,
@@ -117,6 +126,19 @@ type NowEmptyState = {
   detail: string;
 };
 
+type DecisionLane = 'act_now' | SeoOpportunityLane;
+
+type SerpReviewForm = {
+  observedAt: string;
+  locale: string;
+  device: 'desktop' | 'mobile' | 'tablet' | 'unknown';
+  dominantResultType: 'official' | 'community' | 'publisher' | 'mixed' | 'unknown';
+  serpFeatures: string[];
+  ownResultStatus: 'not_visible' | 'present_weak' | 'present_competitive' | 'unknown';
+  outcome: 'no_change' | 'snippet_test' | 'content_test' | 'needs_more_evidence';
+  reasonCode: SeoOpportunityReviewReasonCode;
+};
+
 const PRODUCTION_MARKER_READINESS_REASONS = new Set([
   'production_marker_unavailable',
   'production_marker_invalid',
@@ -160,6 +182,13 @@ export class SeoDashboardComponent implements OnInit {
   private pageInventoryRequest = 0;
   private syncRunsRequest = 0;
   private analysisRequest = 0;
+  private investigateRequest = 0;
+  private structuralRequest = 0;
+  private queryExampleRequest = 0;
+  private reviewRequest = 0;
+  private promoteRequest = 0;
+  private actionReturnFocus: HTMLElement | null = null;
+  private pageReturnFocus: HTMLElement | null = null;
 
   readonly windowDays = signal<SeoWindowDays>(28);
   readonly segment = signal<SeoSearchSegment>('all');
@@ -170,6 +199,16 @@ export class SeoDashboardComponent implements OnInit {
   readonly nowActions = signal<SeoAction[]>([]);
   readonly nowLoading = signal(true);
   readonly nowError = signal<string | null>(null);
+
+  readonly decisionLane = signal<DecisionLane>('act_now');
+  readonly investigateOpportunities = signal<SeoDecisionOpportunityItem[]>([]);
+  readonly investigateTotal = signal(0);
+  readonly investigateLoading = signal(true);
+  readonly investigateError = signal<string | null>(null);
+  readonly structuralOpportunities = signal<SeoDecisionOpportunityItem[]>([]);
+  readonly structuralTotal = signal(0);
+  readonly structuralLoading = signal(true);
+  readonly structuralError = signal<string | null>(null);
 
   readonly backlogActions = signal<SeoAction[]>([]);
   readonly backlogTotal = signal(0);
@@ -217,6 +256,15 @@ export class SeoDashboardComponent implements OnInit {
   readonly readerPromiseDraft = signal('');
   readonly targetKeywordDraft = signal('');
   readonly intentConfirmedDraft = signal(false);
+  readonly queryExamples = signal<Record<string, SeoQueryExamplesResponse>>({});
+  readonly queryExamplesLoading = signal<Record<string, boolean>>({});
+  readonly queryExamplesError = signal<Record<string, string | null>>({});
+  readonly activeSerpReviewKey = signal<string | null>(null);
+  readonly serpReviewBusy = signal(false);
+  readonly serpReviewError = signal<string | null>(null);
+  readonly promoteBusyKey = signal<string | null>(null);
+  readonly promoteError = signal<string | null>(null);
+  serpReviewForm: SerpReviewForm = this.emptySerpReviewForm();
 
   readonly manualDialogOpen = signal(false);
   readonly manualSaving = signal(false);
@@ -358,6 +406,28 @@ export class SeoDashboardComponent implements OnInit {
     { label: 'Success', value: 'success' },
     { label: 'Failed', value: 'failed' },
   ];
+  readonly serpFeatureOptions = [
+    { value: 'featured_snippet', label: 'Featured snippet' },
+    { value: 'ai_overview', label: 'AI overview' },
+    { value: 'people_also_ask', label: 'People also ask' },
+    { value: 'video', label: 'Video' },
+    { value: 'forum', label: 'Forum' },
+    { value: 'shopping', label: 'Shopping' },
+    { value: 'local', label: 'Local' },
+    { value: 'sitelinks', label: 'Sitelinks' },
+    { value: 'none', label: 'None' },
+    { value: 'other', label: 'Other' },
+  ] as const;
+  readonly serpReasonOptions: SelectOption<SeoOpportunityReviewReasonCode>[] = [
+    { value: 'none', label: 'No specific reason' },
+    { value: 'snippet_not_specific', label: 'Snippet is not specific enough' },
+    { value: 'snippet_not_competitive', label: 'Snippet is not competitive' },
+    { value: 'content_depth_gap', label: 'Content depth gap' },
+    { value: 'intent_misalignment', label: 'Intent misalignment' },
+    { value: 'source_preference', label: 'Searchers prefer another source type' },
+    { value: 'serp_feature_competition', label: 'SERP feature competition' },
+    { value: 'insufficient_evidence', label: 'Insufficient evidence' },
+  ];
 
   readonly trendBars = computed(() => {
     const overview = this.overview();
@@ -454,7 +524,7 @@ export class SeoDashboardComponent implements OnInit {
         detail = this.analysisReasonText(analysis.reason ?? null)
           || 'The production frontend fingerprint and deployment are not verified. No SEO decisions were inferred.';
       } else if (analysis.reason === 'analysis_rule_outdated') {
-        detail = 'The data window is ready, but the saved analysis uses an older rule set. Run Analyze now or wait for the scheduled sync to evaluate it with balanced-v2.1.';
+        detail = 'The data window is ready, but the saved analysis uses an older rule set. Run Analyze now or wait for the scheduled sync to evaluate it with balanced-v2.2.';
       } else if (analysis.reason === 'analysis_deadline') {
         detail = collectionIncomplete
           ? `The evaluation reached its time limit with ${completedDays}/${requiredDays} finalized days collected. A later sync will continue without implying an all-clear.`
@@ -505,6 +575,12 @@ export class SeoDashboardComponent implements OnInit {
     const dataQualityBlocked = analysis.dataQualityBlockedPages ?? 0;
     const decisionBlockedPages = analysis.decisionBlockedPages;
     const proposedActions = analysis.proposedActions;
+    const investigateCount = this.investigateTotal();
+    const structuralCount = this.structuralTotal();
+    const otherLaneCount = investigateCount + structuralCount;
+    const otherLaneHint = otherLaneCount > 0
+      ? ` Review ${investigateCount ? `${investigateCount} investigation${investigateCount === 1 ? '' : 's'}` : ''}${investigateCount && structuralCount ? ' and ' : ''}${structuralCount ? `${structuralCount} structural opportunit${structuralCount === 1 ? 'y' : 'ies'}` : ''} in the adjacent evidence lanes.`
+      : '';
     const ingestionLimitations = [
       overview?.dataHealth.stale ? 'Search data is stale' : null,
       overview?.dataHealth.syncStatus === 'failed' ? 'The latest Search Console sync failed' : null,
@@ -517,7 +593,7 @@ export class SeoDashboardComponent implements OnInit {
       && decisionBlockedPages === 0
       && proposedActions === 0
       && ingestionLimitations.length === 0;
-    if (analysis.status === 'complete' && allPagesEligible) {
+    if (analysis.status === 'complete' && allPagesEligible && otherLaneCount === 0) {
       return {
         kind: 'clear',
         tone: 'clear',
@@ -553,8 +629,10 @@ export class SeoDashboardComponent implements OnInit {
         : queueReconciliationPending
           ? `${limitations.join(' · ')}. Refresh the dashboard or run Sync before treating the empty queue as an all-clear.`
           : limitations.length
-          ? `${limitations.join(' · ')}. These pages are still being watched, not cleared.`
-          : 'The run completed with limitations, so the absence of an action is not an all-clear.',
+          ? `${limitations.join(' · ')}. These pages are still being watched, not cleared.${otherLaneHint}`
+          : otherLaneCount > 0
+            ? `Nothing is change-ready, but evidence still needs review.${otherLaneHint}`
+            : 'The run completed with limitations, so the absence of an action is not an all-clear.',
     };
   });
 
@@ -611,9 +689,56 @@ export class SeoDashboardComponent implements OnInit {
   refreshDashboard(): void {
     this.loadOverview();
     this.loadNowActions();
+    this.loadOpportunityLane('investigate');
+    this.loadOpportunityLane('structural');
     this.loadBacklog(true);
     this.loadPages(true);
     this.loadSyncRuns();
+  }
+
+  setDecisionLane(lane: DecisionLane): void {
+    this.decisionLane.set(lane);
+  }
+
+  onDecisionTabKeydown(event: KeyboardEvent, lane: DecisionLane): void {
+    const order: DecisionLane[] = ['act_now', 'investigate', 'structural'];
+    const current = order.indexOf(lane);
+    let next = current;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % order.length;
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + order.length) % order.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = order.length - 1;
+    else return;
+    event.preventDefault();
+    this.setDecisionLane(order[next]);
+    const tabs = Array.from(
+      (event.currentTarget as HTMLElement | null)?.parentElement?.querySelectorAll<HTMLElement>('[role="tab"]') || [],
+    );
+    tabs[next]?.focus();
+  }
+
+  decisionLaneItems(): SeoDecisionOpportunityItem[] {
+    return this.decisionLane() === 'investigate'
+      ? this.investigateOpportunities()
+      : this.decisionLane() === 'structural'
+        ? this.structuralOpportunities()
+        : [];
+  }
+
+  decisionLaneLoading(): boolean {
+    return this.decisionLane() === 'investigate'
+      ? this.investigateLoading()
+      : this.decisionLane() === 'structural'
+        ? this.structuralLoading()
+        : this.nowLoading();
+  }
+
+  decisionLaneError(): string | null {
+    return this.decisionLane() === 'investigate'
+      ? this.investigateError()
+      : this.decisionLane() === 'structural'
+        ? this.structuralError()
+        : this.nowError();
   }
 
   setWindow(days: SeoWindowDays): void {
@@ -665,7 +790,11 @@ export class SeoDashboardComponent implements OnInit {
   }
 
   openAction(action: SeoAction): void {
-    if (this.pageDialogOpen()) this.closePage();
+    const returnFocus = this.pageDialogOpen()
+      ? this.pageReturnFocus ?? this.currentFocusTarget()
+      : this.currentFocusTarget();
+    if (this.pageDialogOpen()) this.closePage(false);
+    this.actionReturnFocus = returnFocus;
     const request = ++this.actionRequest;
     this.selectedAction.set(action);
     this.actionDialogOpen.set(true);
@@ -690,20 +819,28 @@ export class SeoDashboardComponent implements OnInit {
     });
   }
 
-  closeAction(): void {
+  closeAction(restoreFocus = true): void {
+    const returnFocus = this.actionReturnFocus;
+    this.actionReturnFocus = null;
     this.actionRequest += 1;
     this.actionDialogOpen.set(false);
     this.actionLoading.set(false);
+    if (restoreFocus) this.restoreDialogFocus(returnFocus);
   }
 
   openPage(pageKey: string): void {
-    if (this.actionDialogOpen()) this.closeAction();
+    const returnFocus = this.actionDialogOpen()
+      ? this.actionReturnFocus ?? this.currentFocusTarget()
+      : this.currentFocusTarget();
+    if (this.actionDialogOpen()) this.closeAction(false);
+    this.pageReturnFocus = returnFocus;
     const request = ++this.pageRequest;
     this.pageDialogOpen.set(true);
     this.pageLoading.set(true);
     this.pageError.set(null);
     this.intentError.set(null);
     this.selectedPage.set(null);
+    this.resetOpportunityInteractionState();
 
     this.seoAdmin.getPage(pageKey).subscribe({
       next: (page) => {
@@ -723,10 +860,131 @@ export class SeoDashboardComponent implements OnInit {
     });
   }
 
-  closePage(): void {
+  closePage(restoreFocus = true): void {
+    const returnFocus = this.pageReturnFocus;
+    this.pageReturnFocus = null;
     this.pageRequest += 1;
+    this.queryExampleRequest += 1;
+    this.reviewRequest += 1;
+    this.promoteRequest += 1;
     this.pageDialogOpen.set(false);
     this.pageLoading.set(false);
+    this.resetOpportunityInteractionState();
+    if (restoreFocus) this.restoreDialogFocus(returnFocus);
+  }
+
+  loadQueryExamples(page: SeoPageDetail, opportunity: SeoQueryOpportunity): void {
+    const inputHash = this.assessmentInputHash(page);
+    if (!inputHash || this.queryExamplesLoading()[opportunity.key]) {
+      if (!inputHash) {
+        this.queryExamplesError.update((value) => ({
+          ...value,
+          [opportunity.key]: 'Examples are unavailable because the current assessment input is not verified.',
+        }));
+      }
+      return;
+    }
+    const request = ++this.queryExampleRequest;
+    this.queryExamplesLoading.update((value) => ({ ...value, [opportunity.key]: true }));
+    this.queryExamplesError.update((value) => ({ ...value, [opportunity.key]: null }));
+    this.seoAdmin.getQueryOpportunityExamples(page.pageKey, opportunity.key, inputHash, 10).subscribe({
+      next: (response) => {
+        if (request !== this.queryExampleRequest || this.selectedPage()?.pageKey !== page.pageKey) return;
+        this.queryExamples.update((value) => ({ ...value, [opportunity.key]: response }));
+        this.queryExamplesLoading.update((value) => ({ ...value, [opportunity.key]: false }));
+      },
+      error: (error: unknown) => {
+        if (request !== this.queryExampleRequest || this.selectedPage()?.pageKey !== page.pageKey) return;
+        const status = Number((error as { status?: unknown } | null)?.status);
+        this.queryExamplesLoading.update((value) => ({ ...value, [opportunity.key]: false }));
+        this.queryExamplesError.update((value) => ({
+          ...value,
+          [opportunity.key]: status === 409
+            ? 'This opportunity changed. Refresh page evidence before requesting examples.'
+            : 'Query examples could not be loaded. No raw query text was retained.',
+        }));
+      },
+    });
+  }
+
+  beginSerpReview(opportunity: SeoQueryOpportunity): void {
+    this.activeSerpReviewKey.set(opportunity.key);
+    this.serpReviewError.set(null);
+    this.promoteError.set(null);
+    this.serpReviewForm = this.reviewFormFrom(opportunity.review);
+  }
+
+  cancelSerpReview(): void {
+    this.reviewRequest += 1;
+    this.activeSerpReviewKey.set(null);
+    this.serpReviewBusy.set(false);
+    this.serpReviewError.set(null);
+    this.serpReviewForm = this.emptySerpReviewForm();
+  }
+
+  saveSerpReview(page: SeoPageDetail, opportunity: SeoQueryOpportunity): void {
+    const inputHash = this.assessmentInputHash(page);
+    if (!inputHash || this.serpReviewBusy()) {
+      if (!inputHash) this.serpReviewError.set('Refresh page evidence before saving this review.');
+      return;
+    }
+    const request = ++this.reviewRequest;
+    this.serpReviewBusy.set(true);
+    this.serpReviewError.set(null);
+    this.seoAdmin.saveOpportunityReview(page.pageKey, opportunity.key, {
+      assessmentInputHash: inputHash,
+      observedAt: this.serpReviewForm.observedAt || new Date().toISOString(),
+      locale: this.serpReviewForm.locale.trim() || 'en-US',
+      device: this.serpReviewForm.device,
+      dominantResultType: this.serpReviewForm.dominantResultType,
+      serpFeatures: [...new Set(this.serpReviewForm.serpFeatures)].slice(0, 12),
+      ownResultStatus: this.serpReviewForm.ownResultStatus,
+      outcome: this.serpReviewForm.outcome,
+      reasonCode: this.serpReviewForm.reasonCode,
+    }).subscribe({
+      next: ({ review }) => {
+        if (request !== this.reviewRequest || this.selectedPage()?.pageKey !== page.pageKey) return;
+        this.updateOpportunityReview(opportunity.key, review);
+        this.serpReviewBusy.set(false);
+        this.activeSerpReviewKey.set(null);
+        this.announcement.set('SERP review saved. No action was created automatically.');
+      },
+      error: (error: unknown) => {
+        if (request !== this.reviewRequest || this.selectedPage()?.pageKey !== page.pageKey) return;
+        const status = Number((error as { status?: unknown } | null)?.status);
+        this.serpReviewBusy.set(false);
+        this.serpReviewError.set(status === 409
+          ? 'This opportunity changed. Refresh page evidence before saving the review.'
+          : 'The SERP review could not be saved.');
+      },
+    });
+  }
+
+  promoteOpportunity(page: SeoPageDetail, opportunity: SeoQueryOpportunity): void {
+    const inputHash = this.assessmentInputHash(page);
+    if (!inputHash || !this.canPromoteOpportunity(opportunity) || this.promoteBusyKey()) return;
+    const request = ++this.promoteRequest;
+    this.promoteBusyKey.set(opportunity.key);
+    this.promoteError.set(null);
+    this.seoAdmin.promoteOpportunity(page.pageKey, opportunity.key, { assessmentInputHash: inputHash }).subscribe({
+      next: (action) => {
+        if (request !== this.promoteRequest || this.selectedPage()?.pageKey !== page.pageKey) return;
+        this.promoteBusyKey.set(null);
+        this.announcement.set(`Experiment created: ${action.title}`);
+        this.loadNowActions();
+        this.loadBacklog(true);
+        this.loadOpportunityLane('investigate');
+        this.openPage(page.pageKey);
+      },
+      error: (error: unknown) => {
+        if (request !== this.promoteRequest || this.selectedPage()?.pageKey !== page.pageKey) return;
+        const status = Number((error as { status?: unknown } | null)?.status);
+        this.promoteBusyKey.set(null);
+        this.promoteError.set(status === 409
+          ? 'The review or assessment is no longer current. Refresh before promoting it.'
+          : 'The experiment could not be created. All evidence gates remain enforced.');
+      },
+    });
   }
 
   saveIntent(): void {
@@ -1006,6 +1264,13 @@ export class SeoDashboardComponent implements OnInit {
     const assessment = page.assessment;
     if (!assessment) return 'This page has not been evaluated yet';
     if (assessment.currentForLatestData === false) return 'Latest search data has not been assessed yet';
+    if (typeof assessment.primaryFinding === 'string' && assessment.primaryFinding.trim()) {
+      return this.humanizeCode(assessment.primaryFinding);
+    }
+    if (assessment.primaryFinding && typeof assessment.primaryFinding === 'object') {
+      const finding = this.findingText(assessment.primaryFinding);
+      if (finding) return finding;
+    }
     const cooldown = this.lineageCooldown(page);
     if (cooldown?.state === 'awaiting_recrawl') return 'Waiting for Google to recrawl the change';
     if (cooldown?.state === 'observing') return 'Observing a recent title or content change';
@@ -1051,6 +1316,182 @@ export class SeoDashboardComponent implements OnInit {
     const numeric = Number(value);
     const percent = numeric <= 1 ? numeric * 100 : numeric;
     return `${Math.max(0, Math.min(100, Math.round(percent)))}% confidence`;
+  }
+
+  confidenceValueLabel(value: number | null | undefined): string {
+    return this.confidenceLabel(value) ?? 'Unavailable';
+  }
+
+  technicalStatus(page: SeoPageDetail): 'clear' | 'issue' | 'unverified' {
+    const assessment = page.assessment;
+    if (assessment?.technicalStatus) return assessment.technicalStatus;
+    const detector = assessment?.detectorAssessments?.['technical_indexing'];
+    if (detector?.technicalStatus) return detector.technicalStatus;
+    return 'unverified';
+  }
+
+  technicalStatusLabel(page: SeoPageDetail): string {
+    const status = this.technicalStatus(page);
+    if (status === 'clear') return 'Verified clear';
+    if (status === 'issue') return 'Issue detected';
+    return 'Unverified';
+  }
+
+  dispositionLabel(value: string | null | undefined): string {
+    return value ? this.humanizeCode(value) : 'Evidence status unavailable';
+  }
+
+  decisionGateLabel(gate: SeoDecisionGate | string): string {
+    return typeof gate === 'string'
+      ? this.humanizeCode(gate)
+      : gate.label || this.humanizeCode(gate.code);
+  }
+
+  decisionGatePassed(gate: SeoDecisionGate | string): boolean | null {
+    return typeof gate === 'string' ? null : gate.passed;
+  }
+
+  opportunityFinding(opportunity: SeoDecisionOpportunityItem): string {
+    if (opportunity.opportunity) return this.queryOpportunityTitle(opportunity.opportunity);
+    if (opportunity.finding?.reasonCodes?.length) {
+      return opportunity.finding.reasonCodes.map((code) => this.humanizeCode(code)).join(' · ');
+    }
+    if (typeof opportunity.primaryFinding === 'string') return this.humanizeCode(opportunity.primaryFinding);
+    if (opportunity.primaryFinding) return this.findingText(opportunity.primaryFinding);
+    return opportunity.summary || this.dispositionLabel(this.laneItemDisposition(opportunity));
+  }
+
+  laneItemUrl(item: SeoDecisionOpportunityItem): string {
+    return item.canonicalUrl || item.url || '';
+  }
+
+  laneItemState(item: SeoDecisionOpportunityItem): SeoPageAssessmentState {
+    return item.opportunity?.state || item.finding?.state || item.primaryState || 'watch';
+  }
+
+  laneItemDisposition(item: SeoDecisionOpportunityItem): string | null | undefined {
+    return item.opportunity?.disposition || item.finding?.disposition || item.disposition;
+  }
+
+  laneItemPatternConfidence(item: SeoDecisionOpportunityItem): number | null | undefined {
+    return item.opportunity?.patternConfidence ?? item.finding?.patternConfidence ?? item.patternConfidence;
+  }
+
+  laneItemCauseConfidence(item: SeoDecisionOpportunityItem): number | null | undefined {
+    return item.opportunity?.causeConfidence ?? item.finding?.causeConfidence ?? item.causeConfidence;
+  }
+
+  laneItemNextReview(item: SeoDecisionOpportunityItem): SeoNextReview | null | undefined {
+    return item.opportunity?.nextReview || item.finding?.nextReview || item.nextReview;
+  }
+
+  laneItemExpectedImpact(item: SeoDecisionOpportunityItem): SeoExpectedImpact | null | undefined {
+    return item.opportunity?.expectedImpact || item.expectedImpact;
+  }
+
+  queryOpportunityTitle(opportunity: SeoQueryOpportunity): string {
+    return opportunity.summary
+      || opportunity.safeLabel
+      || opportunity.label
+      || `${this.humanizeCode(opportunity.classification)} cluster`;
+  }
+
+  queryOpportunityPosition(opportunity: SeoQueryOpportunity): number | null | undefined {
+    return opportunity.current?.position ?? opportunity.current?.averagePosition;
+  }
+
+  opportunityCoverage(opportunity: SeoQueryOpportunity, kind: 'query' | 'semantic' | 'device'): string {
+    const nested = opportunity.coverage?.[kind];
+    const legacy = kind === 'query'
+      ? opportunity.coveragePercent
+      : kind === 'semantic'
+        ? opportunity.semanticCoveragePercent
+        : null;
+    return this.formatShare(nested ?? legacy);
+  }
+
+  opportunityPersistence(opportunity: SeoQueryOpportunity): string {
+    const stable = opportunity.persistence?.stableWeeks ?? opportunity.persistenceWeeks;
+    const required = opportunity.persistence?.requiredWeeks ?? opportunity.requiredPersistenceWeeks;
+    if (!Number.isFinite(stable) || !Number.isFinite(required)) return 'Unavailable';
+    return `${stable}/${required} stable weeks`;
+  }
+
+  opportunityBlockers(opportunity: SeoQueryOpportunity): string[] {
+    return [...new Set([
+      ...(opportunity.blockers || []),
+      ...(opportunity.blockerCodes || []),
+    ].map((value) => this.humanizeCode(value)).filter(Boolean))];
+  }
+
+  expectedImpactLabel(impact: SeoExpectedImpact | null | undefined): string | null {
+    if (!impact || impact.quality === 'not_estimated') return null;
+    const low = this.finiteNumber(impact.low);
+    const point = this.finiteNumber(impact.point);
+    const high = this.finiteNumber(impact.high);
+    if ((point ?? high ?? low ?? 0) <= 0) return null;
+    const unit = impact.metric === 'clicks' ? 'clicks' : this.humanizeCode(impact.metric).toLowerCase();
+    const window = impact.windowDays ? ` / ${impact.windowDays}d` : '';
+    if (low !== null && high !== null && high > low) {
+      return `+${Math.round(low)}–${Math.round(high)} ${unit}${window} · ${this.humanizeCode(impact.quality)}`;
+    }
+    const estimate = point ?? high ?? low;
+    return estimate === null ? null : `+${Math.round(estimate)} ${unit}${window} · ${this.humanizeCode(impact.quality)}`;
+  }
+
+  actionImpactLabel(action: SeoAction): string | null {
+    const modeled = this.expectedImpactLabel(action.expectedImpact);
+    if (modeled) return modeled;
+    const legacy = this.finiteNumber(action.expectedAdditionalClicks);
+    return legacy !== null && legacy > 0 ? `+${Math.round(legacy)} clicks · legacy estimate` : null;
+  }
+
+  nextReviewLabel(review: SeoNextReview | null | undefined): string {
+    if (!review) return 'After the next verified evidence event';
+    if (review.mode === 'date' && review.at) return `${this.displayDate(review.at)} · ${review.rationale}`;
+    if (review.event) return `${this.humanizeCode(review.event)} · ${review.rationale}`;
+    return review.rationale || 'After the next verified evidence event';
+  }
+
+  detectorNextReviewLabel(page: SeoPageDetail, entry: DetectorLineageEntry): string {
+    const assessmentReview = page.assessment?.detectorAssessments?.[entry.detector]?.nextReview;
+    if (assessmentReview) return this.nextReviewLabel(assessmentReview);
+    const cooldownDate = entry.state.cooldown?.nextReviewDate;
+    if (cooldownDate) return this.displayDate(cooldownDate);
+    if (entry.state.crawlRequired && !entry.state.crawlConfirmed) {
+      return 'After a verified post-production Google crawl';
+    }
+    if (entry.detector === 'technical_indexing') return 'After the next URL Inspection or finalized sync';
+    return 'After the next verified evidence event';
+  }
+
+  pageNextReviewLabel(page: SeoPageDetail): string {
+    if (page.assessment?.nextReview) return this.nextReviewLabel(page.assessment.nextReview);
+    const legacy = this.assessmentNextReviewDate(page);
+    return legacy ? this.displayDate(legacy) : 'After the next verified evidence event';
+  }
+
+  canPromoteOpportunity(opportunity: SeoQueryOpportunity): boolean {
+    const outcome = opportunity.review?.outcome;
+    const reviewExpiresAt = opportunity.review?.expiresAt
+      ? new Date(opportunity.review.expiresAt).getTime()
+      : Number.NaN;
+    const reviewIsCurrent = Number.isFinite(reviewExpiresAt) && reviewExpiresAt > Date.now();
+    const requiredOutcome = opportunity.classification === 'snippet_gap'
+      ? 'snippet_test'
+      : ['ranking_gap', 'intent_gap'].includes(opportunity.classification)
+        ? 'content_test'
+        : null;
+    return opportunity.reviewReady === true
+      && requiredOutcome !== null
+      && reviewIsCurrent
+      && outcome === requiredOutcome
+      && opportunity.canPromote !== false;
+  }
+
+  filteredChecklist(action: SeoAction): string[] {
+    const donorHash = /^Review donor page\s+[a-f0-9]{32,}$/i;
+    return (action.recommendation.checklist || []).filter((item) => !donorHash.test(item.trim()));
   }
 
   cooldownLabel(cooldown: SeoPageCooldown | null | undefined): string {
@@ -1762,6 +2203,16 @@ export class SeoDashboardComponent implements OnInit {
     return action.id;
   }
 
+  trackOpportunity(_: number, opportunity: SeoDecisionOpportunityItem | SeoQueryOpportunity): string {
+    return 'key' in opportunity && opportunity.key
+      ? opportunity.key
+      : `${(opportunity as SeoDecisionOpportunityItem).pageKey}:${(opportunity as SeoDecisionOpportunityItem).opportunity?.key || (opportunity as SeoDecisionOpportunityItem).kind || 'finding'}`;
+  }
+
+  trackQueryExample(_: number, item: { query: string }): string {
+    return item.query;
+  }
+
   private analysisResponseMessage(status: SeoAnalysisStatus): string {
     if (status === 'complete') return 'Analysis completed. The latest page decisions and action queues are being refreshed.';
     if (status === 'running') return 'Analysis started. Analysis health will show progress as pages are evaluated.';
@@ -1831,7 +2282,7 @@ export class SeoDashboardComponent implements OnInit {
         label: 'Complete',
         title: 'Latest analysis is complete',
         detail: counts.totalPages > 0
-          ? `All ${counts.totalPages} current manifest pages have a balanced-v2.1 decision packet.`
+          ? `All ${counts.totalPages} current manifest pages have a balanced-v2.2 decision packet.`
           : 'The current finalized evidence window was analyzed successfully.',
       };
     }
@@ -1851,7 +2302,7 @@ export class SeoDashboardComponent implements OnInit {
       no_persisted_finalized_data: 'No finalized Search Console page data has been persisted yet. Run Sync now before analysis.',
       no_finalized_data: 'No finalized Search Console data is available yet. Run Sync now before analysis.',
       no_analysis_end_date: 'A stable finalized data-through date is not available for this analysis.',
-      analysis_rule_outdated: 'The saved decisions use an older rule set and must be re-evaluated with balanced-v2.1.',
+      analysis_rule_outdated: 'The saved decisions use an older rule set and must be re-evaluated with balanced-v2.2.',
       analysis_deadline: 'The previous request reached its execution deadline before analysis could finish. The saved results are not an all-clear.',
       analysis_running: 'Another sync or analysis still owns the active processing lease.',
       analysis_failed: 'The analysis failed before a complete set of decision packets was committed.',
@@ -1863,7 +2314,7 @@ export class SeoDashboardComponent implements OnInit {
       manifest_changed_since_analysis: 'The page inventory changed after the saved run, so current pages must be evaluated again.',
       page_assessments_incomplete: 'One or more current pages do not have a complete decision packet.',
       latest_data_not_analyzed: 'Newer finalized Search Console data is available than the last completed analysis.',
-      not_run: 'The evidence window is available, but no balanced-v2.1 page evaluation has completed yet.',
+      not_run: 'The evidence window is available, but no balanced-v2.2 page evaluation has completed yet.',
       production_marker_unavailable: 'The production frontend fingerprint and deployment could not be verified because its build marker is unavailable. No SEO decisions were inferred. Confirm the production frontend is reachable, then retry.',
       production_marker_invalid: 'The production frontend fingerprint and deployment could not be verified because its build marker is invalid. No SEO decisions were inferred. Rebuild and redeploy the frontend, then retry.',
       production_marker_source_mismatch: 'The production frontend fingerprint does not match the backend manifest, so the deployment is not verified. No SEO decisions were inferred. Deploy the frontend and backend from the same manifest commit, then retry.',
@@ -1949,6 +2400,46 @@ export class SeoDashboardComponent implements OnInit {
         if (request !== this.nowRequest) return;
         this.nowLoading.set(false);
         this.nowError.set('Priority actions could not be loaded.');
+      },
+    });
+  }
+
+  private loadOpportunityLane(lane: SeoOpportunityLane): void {
+    const request = lane === 'investigate' ? ++this.investigateRequest : ++this.structuralRequest;
+    if (lane === 'investigate') {
+      this.investigateLoading.set(true);
+      this.investigateError.set(null);
+    } else {
+      this.structuralLoading.set(true);
+      this.structuralError.set(null);
+    }
+    this.seoAdmin.getOpportunities(lane, null, 10).subscribe({
+      next: (response) => {
+        const currentRequest = lane === 'investigate' ? this.investigateRequest : this.structuralRequest;
+        if (request !== currentRequest) return;
+        if (lane === 'investigate') {
+          this.investigateOpportunities.set(response.items);
+          this.investigateTotal.set(response.total);
+          this.investigateLoading.set(false);
+        } else {
+          this.structuralOpportunities.set(response.items);
+          this.structuralTotal.set(response.total);
+          this.structuralLoading.set(false);
+        }
+      },
+      error: () => {
+        const currentRequest = lane === 'investigate' ? this.investigateRequest : this.structuralRequest;
+        if (request !== currentRequest) return;
+        const message = lane === 'investigate'
+          ? 'Investigation opportunities could not be loaded.'
+          : 'Structural opportunities could not be loaded.';
+        if (lane === 'investigate') {
+          this.investigateLoading.set(false);
+          this.investigateError.set(message);
+        } else {
+          this.structuralLoading.set(false);
+          this.structuralError.set(message);
+        }
       },
     });
   }
@@ -2046,6 +2537,92 @@ export class SeoDashboardComponent implements OnInit {
     this.successCriteriaDraft.set(action.recommendation.successCriteria ?? '');
   }
 
+  private assessmentInputHash(page: SeoPageDetail): string | null {
+    return page.assessment?.input?.hash
+      || page.lineage?.assessmentInput?.hash
+      || null;
+  }
+
+  private finiteNumber(value: number | null | undefined): number | null {
+    return Number.isFinite(value) ? Number(value) : null;
+  }
+
+  private displayDate(value: string): string {
+    const dateOnly = this.dateKeyForDisplay(value);
+    const parsed = dateOnly || new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC',
+    }).format(parsed);
+  }
+
+  private emptySerpReviewForm(): SerpReviewForm {
+    return {
+      observedAt: new Date().toISOString(),
+      locale: 'en-US',
+      device: 'desktop',
+      dominantResultType: 'unknown',
+      serpFeatures: [],
+      ownResultStatus: 'unknown',
+      outcome: 'needs_more_evidence',
+      reasonCode: 'none',
+    };
+  }
+
+  private reviewFormFrom(review: SeoOpportunityReview | null | undefined): SerpReviewForm {
+    const empty = this.emptySerpReviewForm();
+    if (!review) return empty;
+    return {
+      observedAt: review.observedAt || empty.observedAt,
+      locale: review.locale || empty.locale,
+      device: ['desktop', 'mobile', 'tablet', 'unknown'].includes(review.device)
+        ? review.device as SerpReviewForm['device']
+        : 'unknown',
+      dominantResultType: ['official', 'community', 'publisher', 'mixed', 'unknown'].includes(review.dominantResultType)
+        ? review.dominantResultType as SerpReviewForm['dominantResultType']
+        : 'unknown',
+      serpFeatures: [...(review.serpFeatures || [])],
+      ownResultStatus: ['not_visible', 'present_weak', 'present_competitive', 'unknown'].includes(review.ownResultStatus)
+        ? review.ownResultStatus as SerpReviewForm['ownResultStatus']
+        : 'unknown',
+      outcome: ['no_change', 'snippet_test', 'content_test', 'needs_more_evidence'].includes(review.outcome)
+        ? review.outcome as SerpReviewForm['outcome']
+        : 'needs_more_evidence',
+      reasonCode: this.serpReasonOptions.some((option) => option.value === review.reasonCode)
+        ? review.reasonCode as SeoOpportunityReviewReasonCode
+        : 'none',
+    };
+  }
+
+  private updateOpportunityReview(opportunityKey: string, review: SeoOpportunityReview): void {
+    const page = this.selectedPage();
+    if (!page?.assessment?.queryOpportunities) return;
+    this.selectedPage.set({
+      ...page,
+      assessment: {
+        ...page.assessment,
+        queryOpportunities: page.assessment.queryOpportunities.map((opportunity) => (
+          opportunity.key === opportunityKey ? { ...opportunity, review } : opportunity
+        )),
+      },
+    });
+  }
+
+  private resetOpportunityInteractionState(): void {
+    this.queryExamples.set({});
+    this.queryExamplesLoading.set({});
+    this.queryExamplesError.set({});
+    this.activeSerpReviewKey.set(null);
+    this.serpReviewBusy.set(false);
+    this.serpReviewError.set(null);
+    this.promoteBusyKey.set(null);
+    this.promoteError.set(null);
+    this.serpReviewForm = this.emptySerpReviewForm();
+  }
+
   private clearSensitiveState(): void {
     this.overviewRequest += 1;
     this.nowRequest += 1;
@@ -2055,6 +2632,11 @@ export class SeoDashboardComponent implements OnInit {
     this.pageInventoryRequest += 1;
     this.syncRunsRequest += 1;
     this.analysisRequest += 1;
+    this.investigateRequest += 1;
+    this.structuralRequest += 1;
+    this.queryExampleRequest += 1;
+    this.reviewRequest += 1;
+    this.promoteRequest += 1;
 
     this.overview.set(null);
     this.overviewLoading.set(false);
@@ -2062,6 +2644,15 @@ export class SeoDashboardComponent implements OnInit {
     this.nowActions.set([]);
     this.nowLoading.set(false);
     this.nowError.set(null);
+    this.decisionLane.set('act_now');
+    this.investigateOpportunities.set([]);
+    this.investigateTotal.set(0);
+    this.investigateLoading.set(false);
+    this.investigateError.set(null);
+    this.structuralOpportunities.set([]);
+    this.structuralTotal.set(0);
+    this.structuralLoading.set(false);
+    this.structuralError.set(null);
     this.backlogActions.set([]);
     this.backlogTotal.set(0);
     this.backlogCursor.set(null);
@@ -2080,6 +2671,7 @@ export class SeoDashboardComponent implements OnInit {
     this.syncRunsError.set(null);
 
     this.actionDialogOpen.set(false);
+    this.actionReturnFocus = null;
     this.selectedAction.set(null);
     this.actionLoading.set(false);
     this.actionError.set(null);
@@ -2089,6 +2681,7 @@ export class SeoDashboardComponent implements OnInit {
     this.copyDirectionDraft.set('');
     this.successCriteriaDraft.set('');
     this.pageDialogOpen.set(false);
+    this.pageReturnFocus = null;
     this.selectedPage.set(null);
     this.pageLoading.set(false);
     this.pageError.set(null);
@@ -2098,6 +2691,7 @@ export class SeoDashboardComponent implements OnInit {
     this.readerPromiseDraft.set('');
     this.targetKeywordDraft.set('');
     this.intentConfirmedDraft.set(false);
+    this.resetOpportunityInteractionState();
     this.manualDialogOpen.set(false);
     this.manualSaving.set(false);
     this.manualError.set(null);
@@ -2107,6 +2701,19 @@ export class SeoDashboardComponent implements OnInit {
     this.analysisBusy.set(false);
     this.analysisNotice.set(null);
     this.announcement.set('');
+  }
+
+  private currentFocusTarget(): HTMLElement | null {
+    if (typeof document === 'undefined') return null;
+    return document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  }
+
+  private restoreDialogFocus(target: HTMLElement | null): void {
+    if (!target) return;
+    Promise.resolve().then(() => {
+      if (!target.isConnected || this.actionDialogOpen() || this.pageDialogOpen()) return;
+      target.focus();
+    });
   }
 
   private emptyManualForm(): ManualActionForm {
