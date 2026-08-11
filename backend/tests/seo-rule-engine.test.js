@@ -7,10 +7,13 @@ const {
   assessCtrBaselineQuality,
   assessCtrSnippet,
   assessIntentMismatch,
+  assessInternalLinkGap,
   assessTechnicalIndexing,
   detectContentDecay,
   evaluatePage,
   evaluatePageAssessment,
+  isKnownReasonCode,
+  reasonSummaryForCode,
   weeklyPersistence,
   wilsonInterval,
 } = require('../services/seo/rule-engine');
@@ -34,14 +37,38 @@ function persistentCtrWeeks() {
   };
 }
 
-describe('balanced-v2 SEO rule engine', () => {
-  test('uses balanced-v2 fingerprints and preserves strict canonical identity', () => {
-    expect(RULE_VERSION).toBe('balanced-v2.1');
+describe('balanced-v2.2 SEO rule engine', () => {
+  test('uses balanced-v2.2 fingerprints and preserves strict canonical identity', () => {
+    expect(RULE_VERSION).toBe('balanced-v2.2');
     expect(validateFrontendAtlasUrl('https://frontendatlas.com:8443/page')).toBeNull();
     expect(validateFrontendAtlasUrl('https://frontendatlas.com/page?query=secret')).toBeNull();
     expect(validateFrontendAtlasUrl('https://frontendatlas.com/page/')).toBe('https://frontendatlas.com/page');
     expect(pageKeyForUrl(validateFrontendAtlasUrl('https://frontendatlas.com/page/')))
       .toBe(pageKeyForUrl('https://frontendatlas.com/page'));
+  });
+
+  test('keeps the structural ranking-effect gate in the known reason contract', () => {
+    expect(isKnownReasonCode('ranking_effect_not_estimated')).toBe(true);
+    expect(reasonSummaryForCode('ranking_effect_not_estimated')).toContain('ranking effect');
+
+    const result = assessInternalLinkGap({
+      page,
+      current: { clicks: 2, impressions: 1000, position: 10 },
+      internalLinks: {
+        inboundCount: 0,
+        cohortP25: 3,
+        peerCount: 12,
+        qualifiedDonors: [
+          { title: 'Donor one', canonicalUrl: 'https://frontendatlas.com/donor-one', relevanceScore: 0.7 },
+          { title: 'Donor two', canonicalUrl: 'https://frontendatlas.com/donor-two', relevanceScore: 0.6 },
+        ],
+      },
+    });
+    expect(result).toEqual(expect.objectContaining({
+      state: 'watch',
+      disposition: 'structural_review',
+      decisionGates: ['ranking_effect_not_estimated'],
+    }));
   });
 
   test('labels small or click-poor CTR peer cohorts as insufficient', () => {
@@ -128,7 +155,7 @@ describe('balanced-v2 SEO rule engine', () => {
     }));
   });
 
-  test('requires a medium/high baseline and separated Wilson intervals for a CTR action', () => {
+  test('requires a medium/high baseline and separated Wilson intervals before SERP review', () => {
     const supported = assessCtrSnippet({
       page,
       current: { clicks: 10, impressions: 2000, position: 5 },
@@ -143,8 +170,11 @@ describe('balanced-v2 SEO rule engine', () => {
       windowDays: 28,
     });
     expect(supported).toEqual(expect.objectContaining({
-      state: 'actionable',
-      action: expect.objectContaining({ type: 'ctr_snippet', expectedAdditionalClicks: 30 }),
+      state: 'watch',
+      disposition: 'investigate',
+      action: null,
+      reasonCodes: expect.arrayContaining(['supported_ctr_gap', 'serp_review_required']),
+      nextReview: expect.objectContaining({ mode: 'event', event: 'serp_review' }),
     }));
     expect(supported.evidence.currentWilson90.high).toBeLessThan(supported.evidence.baselineWilson90.low);
 
@@ -282,7 +312,7 @@ describe('balanced-v2 SEO rule engine', () => {
     }));
   });
 
-  test('requires confirmed intent plus strict query, semantic, and lower-bound gates', () => {
+  test('requires confirmed intent plus strict gates before a SERP intent review', () => {
     const semanticClusters = buildSemanticClusters({
       currentRows: [{ query: 'css grid layout tutorial', clicks: 4, impressions: 400, position: 7 }],
       pageIntent: page.intendedIntent,
@@ -290,8 +320,10 @@ describe('balanced-v2 SEO rule engine', () => {
       pageCurrentImpressions: 500,
     });
     expect(assessIntentMismatch({ page, semanticClusters })).toEqual(expect.objectContaining({
-      state: 'actionable',
-      action: expect.objectContaining({ type: 'intent_mismatch' }),
+      state: 'watch',
+      disposition: 'investigate',
+      action: null,
+      reasonCodes: expect.arrayContaining(['dominant_semantic_mismatch', 'serp_review_required']),
     }));
     expect(assessIntentMismatch({ page: { ...page, intentConfirmed: false }, semanticClusters }).state)
       .toBe('not_evaluable');

@@ -120,6 +120,7 @@ describe('SEO owner router wiring', () => {
       capabilities: {
         contractVersion: 'seo-admin.v2',
         manualAnalysis: true,
+        queryOpportunities: true,
       },
     });
 
@@ -839,7 +840,7 @@ describe('partition generations and sync lease', () => {
       pageKey: 'split-page',
       canonicalUrl: 'https://frontendatlas.com/split-page',
       endDate,
-      ruleVersion: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
       inputHash: 'input-one',
       pageVersionKey: 'version-one',
       primaryState: 'clear',
@@ -863,7 +864,7 @@ describe('partition generations and sync lease', () => {
         runId: 'analysis-before-split', siteUrl, trigger: 'test', status: 'complete',
         startedAt: new Date('2026-08-02T01:00:00.000Z'), expiresAt,
         analysis: {
-          status: 'complete', reason: 'analysis_complete', ruleVersion: 'balanced-v2.1',
+          status: 'complete', reason: 'analysis_complete', ruleVersion: 'balanced-v2.2',
           endDate, evaluatedPages: 1, committedAssessmentPages: 1, totalPages: 1,
         },
       },
@@ -872,7 +873,7 @@ describe('partition generations and sync lease', () => {
         startedAt: new Date('2026-08-03T01:00:00.000Z'), expiresAt,
         analysis: {
           status: 'not_ready', reason: 'production_marker_source_mismatch',
-          ruleVersion: 'balanced-v2.1', endDate: null,
+          ruleVersion: 'balanced-v2.2', endDate: null,
         },
       },
     ]);
@@ -910,7 +911,7 @@ describe('partition generations and sync lease', () => {
 describe('SEO action invariants', () => {
   const recommendation = (fingerprint = 'fp-one') => ({
     pageKey: 'page-one', canonicalUrl: 'https://frontendatlas.com/page-one', type: 'ctr_snippet',
-    source: 'balanced-v1', ruleVersion: 'balanced-v1', fingerprint, summary: 'Improve snippet',
+    source: 'balanced-v2.2', ruleVersion: 'balanced-v2.2', fingerprint, summary: 'Improve snippet',
     hypothesis: 'A clearer promise may improve CTR.', evidence: { summary: 'Low CTR', queryClusters: [{ label: 'raw secret query', impressions: 100 }] },
     recommendation: { checklist: ['Check intent'] }, successCriteria: { metric: 'ctr', minimumRelativeLift: 0.15 },
     priorityScore: 10, confidence: 0.8, expectedAdditionalClicks: 5,
@@ -920,6 +921,57 @@ describe('SEO action invariants', () => {
     await SeoPage.create({
       pageKey: 'page-one', canonicalUrl: 'https://frontendatlas.com/page-one', title: 'Page one', manifest: { present: true },
     });
+  });
+
+  test('keeps the overview Act now count aligned with the actionable queue filter', async () => {
+    await SeoAction.create([
+      {
+        ...recommendation('modeled-performance'),
+        queueKind: 'performance',
+        expectedImpact: {
+          metric: 'clicks', low: 2, point: 5, high: 8, windowDays: 28, quality: 'modeled',
+        },
+      },
+      {
+        ...recommendation('technical-action'),
+        type: 'technical_indexing',
+        queueKind: 'technical',
+        expectedImpact: { quality: 'not_estimated' },
+      },
+      {
+        ...recommendation('structural-review'),
+        type: 'internal_link',
+        queueKind: 'structural',
+        expectedImpact: { quality: 'not_estimated' },
+      },
+      {
+        ...recommendation('unmodeled-performance'),
+        state: 'approved',
+        queueKind: 'performance',
+        expectedImpact: { quality: 'not_estimated' },
+      },
+    ]);
+
+    const config = {
+      enabled: true,
+      configured: true,
+      siteUrl: 'sc-domain:frontendatlas.com',
+      storageBudgetBytes: 128 * 1024 * 1024,
+      finalizedLagDays: 3,
+      initialBackfillDays: 90,
+      sourceTimezone: 'America/Los_Angeles',
+    };
+    const [overview, nowLane] = await Promise.all([
+      dashboardService.getOverview({ config, windowDays: 7, now: new Date('2026-08-05T12:00:00.000Z') }),
+      dashboardService.listActions({ queue: 'now' }),
+    ]);
+
+    expect(overview.actionSummary.nowCount).toBe(2);
+    expect(nowLane.total).toBe(2);
+    expect(nowLane.items.map((item) => `${item.queueKind}:${item.type}`).sort()).toEqual([
+      'performance:ctr_snippet',
+      'technical:technical_indexing',
+    ]);
   });
 
   test('deduplicates fingerprints, increments version, sanitizes query labels, and never reopens a dismissed fingerprint', async () => {
@@ -1137,7 +1189,7 @@ describe('SEO action invariants', () => {
     expect((await SeoAction.findById(created._id)).state).toBe('proposed');
   });
 
-  test('preserves v1 proposals without definitive-clear evidence and closes them once clear', async () => {
+  test('only migrates definitively blocked legacy internal-link and CTR proposals', async () => {
     const [created] = await actions.upsertRecommendations([{
       ...recommendation('legacy-low-sample-decay'),
       type: 'content_decay',
@@ -1159,8 +1211,53 @@ describe('SEO action invariants', () => {
       eligibleTypesByPage: new Map([['page-one', new Set()]]),
       migrationEligibleTypesByPage: new Map([['page-one', new Set(['content_decay'])]]),
     });
-    expect(clearedAfterDefinitiveEvidence).toBe(1);
-    expect((await SeoAction.findById(created._id)).state).toBe('closed');
+    expect(clearedAfterDefinitiveEvidence).toBe(0);
+    expect((await SeoAction.findById(created._id)).state).toBe('proposed');
+
+    const [legacyInternalLink] = await actions.upsertRecommendations([{
+      ...recommendation('legacy-internal-link-false-positive'),
+      type: 'internal_link',
+      source: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
+    }]);
+    const migrated = await actions.reconcileDetectorRecommendations({
+      evaluatedPageKeys: ['page-one'],
+      recommendations: [],
+      eligibleTypesByPage: new Map([['page-one', new Set()]]),
+      migrationEligibleTypesByPage: new Map([['page-one', new Set(['internal_link'])]]),
+    });
+    expect(migrated).toBe(1);
+    const closedInternalLink = await SeoAction.findById(legacyInternalLink._id);
+    expect(closedInternalLink.state).toBe('closed');
+    expect(closedInternalLink.events.filter((event) => event.event === 'detector_cleared')).toHaveLength(1);
+
+    const repeatedMigration = await actions.reconcileDetectorRecommendations({
+      evaluatedPageKeys: ['page-one'],
+      recommendations: [],
+      eligibleTypesByPage: new Map([['page-one', new Set()]]),
+      migrationEligibleTypesByPage: new Map([['page-one', new Set(['internal_link'])]]),
+    });
+    expect(repeatedMigration).toBe(0);
+    expect((await SeoAction.findById(legacyInternalLink._id)).events
+      .filter((event) => event.event === 'detector_cleared')).toHaveLength(1);
+
+    const [legacyCtr] = await actions.upsertRecommendations([{
+      ...recommendation('legacy-approved-ctr'),
+      type: 'ctr_snippet',
+      source: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.1',
+    }]);
+    const approvedCtr = await actions.transitionAction(legacyCtr._id, {
+      event: 'approve', expectedVersion: 0,
+    });
+    const approvedMigration = await actions.reconcileDetectorRecommendations({
+      evaluatedPageKeys: ['page-one'],
+      recommendations: [],
+      eligibleTypesByPage: new Map([['page-one', new Set()]]),
+      migrationEligibleTypesByPage: new Map([['page-one', new Set(['ctr_snippet'])]]),
+    });
+    expect(approvedMigration).toBe(0);
+    expect((await SeoAction.findById(approvedCtr._id)).state).toBe('approved');
   });
 
   test('reports incomplete action progress when a deadline prevents synthesis or reconciliation', async () => {
@@ -1432,6 +1529,184 @@ describe('SEO action invariants', () => {
       awaitingManifestChange: true,
       implementationReportedAt: implementedAt,
     }));
+  });
+
+  test('reinspects an interruption candidate when a recent snapshot predates its request boundary', async () => {
+    const snapshotObservedAt = new Date('2026-08-07T11:59:00.000Z');
+    const requestBoundaryAt = new Date('2026-08-07T12:00:00.000Z');
+    const postAnalysisAt = new Date('2026-08-07T12:01:00.000Z');
+    await SeoDiagnosticSnapshot.create({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      pageKey: 'page-one',
+      kind: 'urlInspection',
+      observedAt: snapshotObservedAt,
+      data: {
+        indexStatus: 'PASS',
+        robots: 'ALLOWED',
+        canonicalVerdict: 'match',
+      },
+      expiresAt: new Date('2026-11-05T11:59:00.000Z'),
+    });
+    const client = {
+      inspectUrl: jest.fn(async () => ({
+        indexStatusResult: {
+          verdict: 'PASS',
+          coverageState: 'Submitted and indexed',
+          robotsTxtState: 'ALLOWED',
+          googleCanonical: 'https://frontendatlas.com/page-one',
+          lastCrawlTime: '2026-08-07T12:00:30.000Z',
+        },
+      })),
+    };
+
+    const result = await syncService.runUrlInspectionDiagnostics({
+      client,
+      config: { siteUrl: 'sc-domain:frontendatlas.com' },
+      endDate: '2026-08-04',
+      now: postAnalysisAt,
+      visibilityInterruptions: new Map([['page-one', requestBoundaryAt]]),
+    });
+
+    expect(client.inspectUrl).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(expect.objectContaining({
+      inspected: 1,
+      persisted: 1,
+      skippedFresh: 0,
+      visibilityInterruptionCandidates: 1,
+    }));
+    const snapshots = await SeoDiagnosticSnapshot.find({
+      pageKey: 'page-one',
+      kind: 'urlInspection',
+    }).sort({ observedAt: 1 }).lean();
+    expect(snapshots.map((snapshot) => snapshot.observedAt)).toEqual([
+      snapshotObservedAt,
+      postAnalysisAt,
+    ]);
+  });
+
+  test('does not periodically reinspect a zero-impression page eight days after an accepted current-version PASS', async () => {
+    const acceptedAt = new Date('2026-08-07T12:00:00.000Z');
+    const now = new Date('2026-08-15T12:00:00.000Z');
+    await SeoPage.updateOne({ pageKey: 'page-one' }, { $set: {
+      firstSeenAt: new Date('2026-05-01T00:00:00.000Z'),
+      'changeTracking.currentVersionKey': 'version-one',
+    } });
+    await SeoPageAssessment.create({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      pageKey: 'page-one',
+      canonicalUrl: 'https://frontendatlas.com/page-one',
+      endDate: '2026-08-12',
+      ruleVersion: 'balanced-v2.2',
+      pageVersionKey: 'version-one',
+      primaryState: 'watch',
+      disposition: 'monitor',
+      evaluatedAt: new Date('2026-08-08T12:00:00.000Z'),
+      visibility: {
+        interrupted: true,
+        requiresInspection: false,
+        inspectionLifecycle: {
+          accepted: {
+            verdict: 'pass',
+            observedAt: acceptedAt,
+            pageVersionKey: 'version-one',
+          },
+        },
+      },
+    });
+    await SeoDiagnosticSnapshot.create({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      pageKey: 'page-one',
+      kind: 'urlInspection',
+      observedAt: acceptedAt,
+      data: {
+        indexStatus: 'PASS',
+        robots: 'ALLOWED',
+        canonicalVerdict: 'match',
+        pageVersionKey: 'version-one',
+      },
+      expiresAt: new Date('2026-11-05T12:00:00.000Z'),
+    });
+    const client = { inspectUrl: jest.fn() };
+
+    const result = await syncService.runUrlInspectionDiagnostics({
+      client,
+      config: { siteUrl: 'sc-domain:frontendatlas.com' },
+      endDate: '2026-08-12',
+      now,
+      visibilityInterruptions: new Map(),
+    });
+
+    expect(client.inspectUrl).not.toHaveBeenCalled();
+    expect(result).toEqual(expect.objectContaining({
+      considered: 0,
+      inspected: 0,
+      persisted: 0,
+    }));
+    expect(await SeoDiagnosticSnapshot.countDocuments({ pageKey: 'page-one' })).toBe(1);
+  });
+
+  test.each([
+    ['a newer FAIL snapshot', 'version-one', true, false],
+    ['a new page version', 'version-two', false, false],
+    ['an explicit crawl-confirmation trigger', 'version-one', false, true],
+  ])('accepted PASS suppression does not mask %s', async (
+    _label, currentVersionKey, addFailure, crawlConfirmationRequired
+  ) => {
+    const acceptedAt = new Date('2026-08-07T12:00:00.000Z');
+    const now = new Date('2026-08-15T12:00:00.000Z');
+    await SeoPage.updateOne({ pageKey: 'page-one' }, { $set: {
+      firstSeenAt: new Date('2026-05-01T00:00:00.000Z'),
+      'changeTracking.currentVersionKey': currentVersionKey,
+      'changeTracking.crawlConfirmationRequired': crawlConfirmationRequired,
+    } });
+    await SeoPageAssessment.create({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      pageKey: 'page-one',
+      canonicalUrl: 'https://frontendatlas.com/page-one',
+      endDate: '2026-08-12',
+      ruleVersion: 'balanced-v2.2',
+      pageVersionKey: 'version-one',
+      primaryState: 'watch',
+      disposition: 'monitor',
+      evaluatedAt: new Date('2026-08-08T12:00:00.000Z'),
+      visibility: {
+        interrupted: true,
+        requiresInspection: false,
+        inspectionLifecycle: {
+          accepted: { verdict: 'pass', observedAt: acceptedAt, pageVersionKey: 'version-one' },
+        },
+      },
+    });
+    await SeoDiagnosticSnapshot.create({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      pageKey: 'page-one',
+      kind: 'urlInspection',
+      observedAt: addFailure ? new Date('2026-08-07T12:01:00.000Z') : acceptedAt,
+      data: addFailure
+        ? { indexStatus: 'FAIL', robots: 'ALLOWED', canonicalVerdict: 'match', pageVersionKey: 'version-one' }
+        : { indexStatus: 'PASS', robots: 'ALLOWED', canonicalVerdict: 'match', pageVersionKey: 'version-one' },
+      expiresAt: new Date('2026-11-05T12:01:00.000Z'),
+    });
+    const client = { inspectUrl: jest.fn(async () => ({
+      indexStatusResult: {
+        verdict: 'PASS',
+        coverageState: 'Submitted and indexed',
+        robotsTxtState: 'ALLOWED',
+        googleCanonical: 'https://frontendatlas.com/page-one',
+        lastCrawlTime: '2026-08-15T11:00:00.000Z',
+      },
+    })) };
+
+    const result = await syncService.runUrlInspectionDiagnostics({
+      client,
+      config: { siteUrl: 'sc-domain:frontendatlas.com' },
+      endDate: '2026-08-12',
+      now,
+      visibilityInterruptions: new Map(),
+    });
+
+    expect(client.inspectUrl).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(expect.objectContaining({ inspected: 1, persisted: 1 }));
   });
 
   test('starts a zero-impression technical measurement after a persisted URL Inspection snapshot', async () => {

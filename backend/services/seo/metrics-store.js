@@ -28,6 +28,7 @@ const SEO_STORAGE_COLLECTIONS = Object.freeze([
   'seo_pages',
   'seo_page_versions',
   'seo_page_assessments',
+  'seo_opportunity_reviews',
   'seo_page_daily_metrics',
   'seo_property_daily_metrics',
   'seo_query_page_daily_metrics',

@@ -7,9 +7,17 @@ const PERFORMANCE_ACTION_TYPES = Object.freeze([
   'intent_mismatch',
   'content_decay',
   'cannibalization',
-  'internal_link',
 ]);
-const ALL_DETECTOR_TYPES = Object.freeze([...PERFORMANCE_ACTION_TYPES, 'technical_indexing']);
+const STRUCTURAL_DETECTOR_TYPES = Object.freeze(['internal_link']);
+const COOLDOWN_DETECTOR_TYPES = Object.freeze([
+  ...PERFORMANCE_ACTION_TYPES,
+  ...STRUCTURAL_DETECTOR_TYPES,
+]);
+const ALL_DETECTOR_TYPES = Object.freeze([
+  ...COOLDOWN_DETECTOR_TYPES,
+  'technical_indexing',
+  'visibility_interruption',
+]);
 
 const PRIMARY_ACTION_ORDER = Object.freeze([
   'technical_indexing',
@@ -235,7 +243,7 @@ function cooldownsForPage(options = {}) {
 
 function aggregateCooldown(detectorCooldowns = {}) {
   const priority = { eligible: 0, directional: 1, observing: 2, awaiting_recrawl: 3 };
-  const values = PERFORMANCE_ACTION_TYPES
+  const values = COOLDOWN_DETECTOR_TYPES
     .map((detector) => detectorCooldowns?.[detector])
     .filter(Boolean);
   return [...values].sort((left, right) => (
@@ -252,7 +260,14 @@ function cooldownForPage(options = {}) {
 
 function assessmentAction(assessment) {
   if (assessment?.state !== 'actionable') return null;
-  return assessment.action || null;
+  const action = assessment.action || null;
+  if (!action) return null;
+  if (action.type === 'technical_indexing' || action.queueKind === 'technical') return action;
+  const point = Number(action.expectedImpact?.point);
+  const modeled = action.expectedImpact?.quality === 'modeled'
+    && Number.isFinite(point)
+    && point > 0;
+  return modeled ? action : null;
 }
 
 function primaryAction(actions = []) {
@@ -273,6 +288,13 @@ function findingFromAssessment(type, assessment) {
     detector: type,
     state: assessment?.state || 'not_evaluable',
     confidence: Number(assessment?.confidence || 0),
+    patternConfidence: Number(assessment?.patternConfidence ?? assessment?.confidence ?? 0),
+    causeConfidence: Number(assessment?.causeConfidence || 0),
+    disposition: String(assessment?.disposition || 'insufficient_evidence'),
+    decisionGates: Array.isArray(assessment?.decisionGates)
+      ? assessment.decisionGates.map(String).slice(0, 20)
+      : [],
+    nextReview: assessment?.nextReview || null,
     summary: String(evidence.summary || ''),
     evidence,
     counterEvidence: Array.isArray(assessment?.counterEvidence)
@@ -290,10 +312,13 @@ function synthesizePageAssessment({
   cooldown,
   queryCoverage = 0,
   semanticCoverage = 0,
+  deviceCoverage = null,
   semanticClusters = [],
+  queryOpportunities = [],
+  visibility = null,
   ctrBaseline = null,
   windowDays = 28,
-  ruleVersion = 'balanced-v2.1',
+  ruleVersion = 'balanced-v2.2',
   semanticVersion = 'semantic-v1',
   detectorCooldowns = null,
   inputHash = '',
@@ -325,6 +350,36 @@ function synthesizePageAssessment({
   else if (findings.some((finding) => finding.state === 'watch')) primaryState = 'watch';
   else if (!findings.length || findings.some((finding) => finding.state === 'not_evaluable')) primaryState = 'not_evaluable';
 
+  const primaryFinding = (
+    findings.find((finding) => finding.detector === technicalAction?.type && finding.state === 'actionable')
+    || findings.find((finding) => finding.detector === selectedAction?.type && finding.state === 'actionable')
+    || findings.find((finding) => (
+      finding.detector === 'visibility_interruption'
+      && finding.state === 'watch'
+      && finding.disposition === 'investigate'
+    ))
+    || findings.find((finding) => finding.disposition === 'structural_review')
+    || findings.find((finding) => finding.state === 'watch')
+    || findings.find((finding) => finding.state === 'not_evaluable')
+    || findings[0]
+    || null
+  );
+  const disposition = primaryState === 'actionable'
+    ? 'change_ready'
+    : primaryFinding?.disposition || (primaryState === 'clear' ? 'no_change' : 'insufficient_evidence');
+  const patternConfidence = Number(primaryFinding?.patternConfidence || 0);
+  const causeConfidence = Number(primaryFinding?.causeConfidence || 0);
+  const decisionGates = Array.from(new Set(findings.flatMap((finding) => finding.decisionGates || []))).slice(0, 30);
+  const nextReview = primaryFinding?.nextReview || (summaryCooldown?.nextReviewDate ? {
+    mode: 'date',
+    at: summaryCooldown.nextReviewDate,
+    rationale: 'post_change_cooldown',
+  } : (primaryState === 'watch' || primaryState === 'not_evaluable' ? {
+    mode: 'event',
+    event: 'next_finalized_sync',
+    rationale: primaryFinding?.code || 'refresh_evidence',
+  } : null));
+
   const evidenceLevel = performanceEligible
     && allPerformanceEligible
     && Number(queryCoverage) >= 0.6
@@ -345,16 +400,27 @@ function synthesizePageAssessment({
     inputVersion,
     pageVersionKey,
     primaryState,
+    disposition,
+    patternConfidence: Math.max(0, Math.min(1, patternConfidence)),
+    causeConfidence: Math.max(0, Math.min(1, causeConfidence)),
+    primaryFinding,
     evidenceLevel,
     selectedActionType: technicalAction?.type || (performanceEligible ? selectedAction?.type : null) || null,
     metrics: { current, previous },
     coverage: {
       query: Number.isFinite(Number(queryCoverage)) ? Number(queryCoverage) : null,
       semantic: Number.isFinite(Number(semanticCoverage)) ? Number(semanticCoverage) : null,
+      device: deviceCoverage === null || deviceCoverage === undefined
+        ? null
+        : (Number.isFinite(Number(deviceCoverage)) ? Number(deviceCoverage) : null),
     },
     cooldown: summaryCooldown || { state: 'eligible' },
     detectorCooldowns: scopedCooldowns,
     ctrBaseline: ctrBaseline || null,
+    visibility: visibility || {},
+    queryOpportunities: Array.isArray(queryOpportunities) ? queryOpportunities.slice(0, 10) : [],
+    decisionGates,
+    nextReview,
     semanticClusters: Array.isArray(semanticClusters) ? semanticClusters.slice(0, 10) : [],
     detectorAssessments,
     findings,
@@ -369,12 +435,16 @@ function eligibleTypesForCooldown(cooldown) {
       cooldown[type]?.state === 'eligible'
     )));
   }
-  if (cooldown?.state === 'eligible') return new Set([...PERFORMANCE_ACTION_TYPES, 'technical_indexing']);
+  if (cooldown?.state === 'eligible') return new Set([
+    ...COOLDOWN_DETECTOR_TYPES,
+    'technical_indexing',
+  ]);
   return new Set();
 }
 
 module.exports = {
   PERFORMANCE_ACTION_TYPES,
+  STRUCTURAL_DETECTOR_TYPES,
   aggregateCooldown,
   cooldownForDetector,
   cooldownForPage,

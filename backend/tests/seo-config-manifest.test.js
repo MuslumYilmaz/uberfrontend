@@ -60,6 +60,7 @@ describe('SEO runtime and retention configuration', () => {
     expect(SeoPageDeviceDailyMetric.schema.indexes().some(([, options]) => options.expireAfterSeconds === 0)).toBe(true);
     expect(SEO_STORAGE_COLLECTIONS).toContain('seo_page_assessments');
     expect(SEO_STORAGE_COLLECTIONS).toContain('seo_page_versions');
+    expect(SEO_STORAGE_COLLECTIONS).toContain('seo_opportunity_reviews');
   });
 
   test('uses one manifest-aligned identity for FrontendAtlas trailing-slash metric rows', () => {

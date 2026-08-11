@@ -3,6 +3,8 @@
 const {
   analysisRefreshState,
   analysisSummary,
+  currentAcceptedVisibilityPasses,
+  currentVisibilityInterruptionCandidates,
   persistAnalysisLifecycle,
 } = require('../services/seo/sync');
 const {
@@ -11,6 +13,104 @@ const {
 } = require('../services/seo/analysis');
 
 describe('balanced-v2 sync analysis lifecycle', () => {
+  test('uses only the current fully committed v2.2 analysis for interruption inspection candidates', async () => {
+    const query = (value) => ({
+      sort: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(value),
+    });
+    const partitionModel = { findOne: jest.fn(() => query({ date: '2026-08-06' })) };
+    const runModel = { findOne: jest.fn(() => query({ analysis: {
+      totalPages: 2, evaluatedPages: 2, committedAssessmentPages: 2,
+    } })) };
+    const assessmentModel = { find: jest.fn(() => query([
+      { pageKey: 'page-a', evaluatedAt: new Date('2026-08-10T10:00:00.000Z') },
+      { pageKey: 'page-b', evaluatedAt: new Date('2026-08-10T10:01:00.000Z') },
+    ])) };
+
+    const candidates = await currentVisibilityInterruptionCandidates({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      endDate: '2026-08-06',
+      partitionModel,
+      runModel,
+      assessmentModel,
+    });
+
+    expect([...candidates.keys()]).toEqual(['page-a', 'page-b']);
+    expect(assessmentModel.find).toHaveBeenCalledWith(expect.objectContaining({
+      ruleVersion: 'balanced-v2.2',
+      endDate: '2026-08-06',
+      disposition: 'investigate',
+      'visibility.interrupted': true,
+      'visibility.requiresInspection': true,
+    }));
+
+    const partialAssessmentModel = { find: jest.fn() };
+    const stale = await currentVisibilityInterruptionCandidates({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      endDate: '2026-08-06',
+      partitionModel,
+      runModel: { findOne: jest.fn(() => query({ analysis: {
+        totalPages: 2, evaluatedPages: 2, committedAssessmentPages: 1,
+      } })) },
+      assessmentModel: partialAssessmentModel,
+    });
+    expect(stale.size).toBe(0);
+    expect(partialAssessmentModel.find).not.toHaveBeenCalled();
+  });
+
+  test('does not requeue a monitored PASS or a diagnosed FAIL for visibility inspection', async () => {
+    const query = (value) => ({
+      sort: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(value),
+    });
+    const assessmentModel = { find: jest.fn(() => query([])) };
+    const candidates = await currentVisibilityInterruptionCandidates({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      endDate: '2026-08-06',
+      partitionModel: { findOne: jest.fn(() => query({ date: '2026-08-06' })) },
+      runModel: { findOne: jest.fn(() => query({ analysis: {
+        totalPages: 2,
+        evaluatedPages: 2,
+        committedAssessmentPages: 2,
+      } })) },
+      assessmentModel,
+    });
+
+    expect(candidates.size).toBe(0);
+    expect(assessmentModel.find).toHaveBeenCalledWith(expect.objectContaining({
+      disposition: 'investigate',
+      'visibility.interrupted': true,
+      'visibility.requiresInspection': true,
+    }));
+  });
+
+  test('carries only accepted PASS page-version state into periodic inspection suppression', async () => {
+    const query = (value) => ({
+      select: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(value),
+    });
+    const assessmentModel = { find: jest.fn(() => query([
+      { pageKey: 'page-pass', pageVersionKey: 'version-pass' },
+      { pageKey: '', pageVersionKey: 'version-invalid' },
+      { pageKey: 'page-unversioned', pageVersionKey: '' },
+    ])) };
+
+    const accepted = await currentAcceptedVisibilityPasses({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      assessmentModel,
+    });
+
+    expect(accepted).toEqual(new Map([['page-pass', 'version-pass']]));
+    expect(assessmentModel.find).toHaveBeenCalledWith({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      ruleVersion: 'balanced-v2.2',
+      'visibility.requiresInspection': false,
+      'visibility.inspectionLifecycle.accepted.verdict': 'pass',
+    });
+  });
+
   test('prioritizes analysis only for a ready window with missing or stale current assessments', async () => {
     const common = {
       siteUrl: 'sc-domain:frontendatlas.com',
@@ -52,7 +152,7 @@ describe('balanced-v2 sync analysis lifecycle', () => {
       loadLatestRun: async () => ({
         analysis: {
           status: 'complete',
-          ruleVersion: 'balanced-v2.1',
+          ruleVersion: 'balanced-v2.2',
           endDate: '2026-08-04',
           evaluatedPages: 435,
           totalPages: 435,
@@ -71,7 +171,7 @@ describe('balanced-v2 sync analysis lifecycle', () => {
       loadLatestRun: async () => ({
         analysis: {
           status: 'complete',
-          ruleVersion: 'balanced-v2.1',
+          ruleVersion: 'balanced-v2.2',
           endDate: '2026-08-04',
           evaluatedPages: 435,
           totalPages: 435,
@@ -121,12 +221,13 @@ describe('balanced-v2 sync analysis lifecycle', () => {
       { type: 'ctr_snippet', state: 'clear' },
       { type: 'intent_mismatch', state: 'clear' },
       { type: 'technical_indexing', state: 'clear' },
+      { type: 'internal_link', state: 'watch', disposition: 'structural_review' },
     ];
 
     expect([...migrationClearTypes(detectors, { state: 'eligible' }, false)].sort())
-      .toEqual(['ctr_snippet', 'technical_indexing']);
+      .toEqual(['ctr_snippet', 'internal_link']);
     expect([...migrationClearTypes(detectors, { state: 'eligible' }, true)].sort())
-      .toEqual(['ctr_snippet', 'intent_mismatch', 'technical_indexing']);
+      .toEqual(['ctr_snippet', 'internal_link']);
     expect([...migrationClearTypes(detectors, { state: 'observing' }, true)])
       .toEqual([]);
   });
@@ -153,7 +254,7 @@ describe('balanced-v2 sync analysis lifecycle', () => {
     })).toEqual({
       status: 'complete',
       reason: '',
-      ruleVersion: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
       endDate: '2026-08-04',
       windowDays: 28,
       completedDays: 56,

@@ -47,7 +47,7 @@ class SeoSyncError extends Error {
 }
 
 const ANALYSIS_STATUSES = new Set(['running', 'not_ready', 'partial', 'complete', 'failed']);
-const ANALYSIS_RULE_VERSION = 'balanced-v2.1';
+const ANALYSIS_RULE_VERSION = 'balanced-v2.2';
 const DEFAULT_ANALYSIS_DEADLINE_MS = 55_000;
 
 function nonNegativeCount(value) {
@@ -73,6 +73,68 @@ function emptyCooldownCounts(input = {}) {
   };
 }
 
+async function currentVisibilityInterruptionCandidates({
+  siteUrl,
+  endDate,
+  partitionModel = SeoMetricPartition,
+  runModel = SeoSyncRun,
+  assessmentModel = SeoPageAssessment,
+} = {}) {
+  if (!siteUrl || !endDate) return new Map();
+  const latestPartition = await partitionModel.findOne({
+    siteUrl,
+    slice: 'page',
+    status: 'complete',
+    truncated: { $ne: true },
+  }).sort({ date: -1 }).select('date').lean();
+  if (latestPartition?.date !== endDate) return new Map();
+  const run = await runModel.findOne({
+    siteUrl,
+    'analysis.status': 'complete',
+    'analysis.ruleVersion': ANALYSIS_RULE_VERSION,
+    'analysis.endDate': endDate,
+  }).sort({ 'analysis.completedAt': -1, startedAt: -1 }).select('analysis').lean();
+  const analysis = run?.analysis || {};
+  const totalPages = Number(analysis.totalPages || 0);
+  if (
+    totalPages <= 0
+    || Number(analysis.evaluatedPages || 0) !== totalPages
+    || Number(analysis.committedAssessmentPages || 0) !== totalPages
+  ) return new Map();
+  const assessments = await assessmentModel.find({
+    siteUrl,
+    endDate,
+    ruleVersion: ANALYSIS_RULE_VERSION,
+    disposition: 'investigate',
+    'visibility.interrupted': true,
+    'visibility.requiresInspection': true,
+  }).select('pageKey evaluatedAt').lean();
+  return new Map((assessments || []).flatMap((assessment) => {
+    const pageKey = String(assessment.pageKey || '');
+    const evaluatedAt = assessment.evaluatedAt ? new Date(assessment.evaluatedAt) : null;
+    if (!pageKey || !evaluatedAt || Number.isNaN(evaluatedAt.getTime())) return [];
+    return [[pageKey, evaluatedAt]];
+  }));
+}
+
+async function currentAcceptedVisibilityPasses({
+  siteUrl,
+  assessmentModel = SeoPageAssessment,
+} = {}) {
+  if (!siteUrl) return new Map();
+  const assessments = await assessmentModel.find({
+    siteUrl,
+    ruleVersion: ANALYSIS_RULE_VERSION,
+    'visibility.requiresInspection': false,
+    'visibility.inspectionLifecycle.accepted.verdict': 'pass',
+  }).select('pageKey pageVersionKey').lean();
+  return new Map((assessments || []).flatMap((assessment) => {
+    const pageKey = String(assessment.pageKey || '');
+    const pageVersionKey = String(assessment.pageVersionKey || '');
+    return pageKey && pageVersionKey ? [[pageKey, pageVersionKey]] : [];
+  }));
+}
+
 async function analysisReadiness({ siteUrl, endDate, requiredDays = BALANCED_ANALYSIS_REQUIRED_DAYS }) {
   if (!siteUrl || !endDate) return { completedDays: 0, requiredDays };
   const startDate = shiftDateKey(endDate, -(requiredDays - 1));
@@ -80,6 +142,7 @@ async function analysisReadiness({ siteUrl, endDate, requiredDays = BALANCED_ANA
     siteUrl,
     slice: 'page',
     status: 'complete',
+    truncated: { $ne: true },
     date: { $gte: startDate, $lte: endDate },
   });
   const completeDates = new Set(dates);
@@ -181,6 +244,34 @@ function notReadyAnalysisSummary({ reason, endDate = null, totalPages = 0, compl
   };
 }
 
+async function persistTerminalAnalysisUnlessPublished({ run, analysis }) {
+  if (!run?._id) {
+    run.analysis = analysis;
+    await run.save();
+    return run.analysis;
+  }
+
+  const transition = await SeoSyncRun.updateOne(
+    { _id: run._id, 'analysis.status': 'running' },
+    { $set: { analysis } },
+    { runValidators: true }
+  );
+  if (transition.modifiedCount === 1) {
+    run.analysis = analysis;
+    return run.analysis;
+  }
+
+  // A zero-row transition can be the expected result of the analysis
+  // transaction publishing `complete` first. Reload instead of saving the
+  // stale in-memory `running` subdocument over that durable marker.
+  const persisted = await SeoSyncRun.findById(run._id).select('analysis').lean();
+  if (!persisted?.analysis) {
+    throw new Error('The SEO analysis run disappeared before its lifecycle could be finalized.');
+  }
+  run.analysis = persisted.analysis;
+  return run.analysis;
+}
+
 async function persistAnalysisLifecycle({
   run,
   siteUrl,
@@ -218,8 +309,21 @@ async function persistAnalysisLifecycle({
       endDate,
       now: new Date(now()),
       deadlineMs,
+      // The durable Mongo document id (not the public UUID) is the CAS key
+      // used by the transaction's complete publication marker.
+      syncRunId: run?._id || null,
+      analysisStartedAt,
     });
-    run.analysis = analysisSummary({
+    if (result?.publicationCommitted === true) {
+      if (result.publicationAnalysis?.status !== 'complete') {
+        throw new Error('The SEO analysis publication returned an invalid completion marker.');
+      }
+      // The exact packet below was committed in the same transaction as the
+      // action and assessment writes. Do not issue a second lifecycle save.
+      run.analysis = result.publicationAnalysis;
+      return run.analysis;
+    }
+    const terminalAnalysis = analysisSummary({
       result,
       endDate,
       readiness,
@@ -227,20 +331,17 @@ async function persistAnalysisLifecycle({
       startedAt: analysisStartedAt,
       completedAt: new Date(now()),
     });
+    return persistTerminalAnalysisUnlessPublished({ run, analysis: terminalAnalysis });
   } catch {
-    run.analysis = failedAnalysisSummary({
+    const terminalAnalysis = failedAnalysisSummary({
       endDate,
       readiness,
       totalPages,
       startedAt: analysisStartedAt,
       completedAt: new Date(now()),
     });
+    return persistTerminalAnalysisUnlessPublished({ run, analysis: terminalAnalysis });
   }
-  // Persist the terminal packet immediately. Sync can continue doing metric
-  // maintenance afterwards, while overview readers still see the completed
-  // analysis instead of an obsolete `running` lifecycle.
-  await run.save();
-  return run.analysis;
 }
 
 function syncStateKey(siteUrl) {
@@ -512,6 +613,7 @@ function orderInspectionCandidates(candidates, {
       ? new Date(candidate.latestInspection.observedAt)
       : null;
     return candidate.changePending
+      || candidate.visibilityInterruptionPending
       || candidate.technicalPending
       || candidate.sourceDependencyPending
       || candidate.forceInspection === true
@@ -524,7 +626,12 @@ function orderInspectionCandidates(candidates, {
     const rightTime = right.latestInspection?.observedAt ? new Date(right.latestInspection.observedAt).getTime() : -Infinity;
     return leftTime - rightTime || String(left.pageKey).localeCompare(String(right.pageKey));
   };
-  const changed = eligible.filter((candidate) => candidate.changePending).sort((left, right) => {
+  const visibilityInterrupted = eligible
+    .filter((candidate) => candidate.visibilityInterruptionPending)
+    .sort(fairSort);
+  const changed = eligible.filter((candidate) => (
+    !candidate.visibilityInterruptionPending && candidate.changePending
+  )).sort((left, right) => {
     const leftEffectiveAt = detectorEffectiveAt(left.changeTracking) || left.changeTracking?.materialChangedAt;
     const rightEffectiveAt = detectorEffectiveAt(right.changeTracking) || right.changeTracking?.materialChangedAt;
     const leftTime = leftEffectiveAt
@@ -536,17 +643,21 @@ function orderInspectionCandidates(candidates, {
     return leftTime - rightTime || fairSort(left, right);
   });
   const pending = eligible
-    .filter((candidate) => !candidate.changePending && (
+    .filter((candidate) => !candidate.visibilityInterruptionPending && !candidate.changePending && (
       candidate.technicalPending || candidate.sourceDependencyPending
     ))
     .sort(fairSort);
   const remaining = eligible.filter((candidate) => (
-    !candidate.changePending && !candidate.technicalPending && !candidate.sourceDependencyPending
+    !candidate.visibilityInterruptionPending
+    && !candidate.changePending
+    && !candidate.technicalPending
+    && !candidate.sourceDependencyPending
   ));
   const anomalies = remaining.filter((candidate) => candidate.canonicalAnomaly).sort(fairSort);
   const regular = remaining.filter((candidate) => !candidate.canonicalAnomaly).sort(fairSort);
   const priorityCount = Math.max(0, Math.min(Number(anomalyPrioritySlots) || 0, Number(limit) || 100));
   return [
+    ...visibilityInterrupted,
     ...changed,
     ...pending,
     ...anomalies.slice(0, priorityCount),
@@ -555,8 +666,25 @@ function orderInspectionCandidates(candidates, {
   ].slice(0, Math.max(1, Number(limit) || 100));
 }
 
-async function runUrlInspectionDiagnostics({ client, config, endDate, now = new Date() }) {
+async function runUrlInspectionDiagnostics({
+  client,
+  config,
+  endDate,
+  now = new Date(),
+  limit = 5,
+  visibilityInterruptions: suppliedVisibilityInterruptions = null,
+  acceptedVisibilityPasses: suppliedAcceptedVisibilityPasses = null,
+}) {
   if (!endDate || typeof client?.inspectUrl !== 'function') return { inspected: 0 };
+  const visibilityInterruptions = suppliedVisibilityInterruptions instanceof Map
+    ? suppliedVisibilityInterruptions
+    : await currentVisibilityInterruptionCandidates({
+      siteUrl: config.siteUrl,
+      endDate,
+    });
+  const acceptedVisibilityPasses = suppliedAcceptedVisibilityPasses instanceof Map
+    ? suppliedAcceptedVisibilityPasses
+    : await currentAcceptedVisibilityPasses({ siteUrl: config.siteUrl });
   const internalLinkTargets = await SeoPage.find({
     indexable: true,
     'manifest.present': true,
@@ -578,6 +706,7 @@ async function runUrlInspectionDiagnostics({ client, config, endDate, now = new 
       { 'changeTracking.detectors.internal_link.crawlConfirmationRequired': true },
       { 'changeTracking.detectors.technical_indexing.crawlConfirmationRequired': true },
       { pageKey: { $in: Array.from(sourceDependencyKeys) } },
+      { pageKey: { $in: Array.from(visibilityInterruptions.keys()) } },
     ],
   }).select('pageKey canonicalUrl indexable manifest firstSeenAt changeTracking').sort({ firstSeenAt: 1, pageKey: 1 }).lean();
   if (!pages.length) return { inspected: 0 };
@@ -623,24 +752,41 @@ async function runUrlInspectionDiagnostics({ client, config, endDate, now = new 
     })
     .map((action) => action.pageKey));
   const candidates = orderInspectionCandidates(pages
-    .map((page) => ({
-      ...page,
-      impressions: impressions.get(page.pageKey) || 0,
-      latestInspection: latestInspection.get(page.pageKey) || null,
-      canonicalAnomaly: latestInspection.get(page.pageKey)?.data?.canonicalVerdict === 'mismatch',
-      inspectionAnomaly: latestInspection.get(page.pageKey)?.data?.indexStatus === 'FAIL'
-        || latestInspection.get(page.pageKey)?.data?.robots === 'BLOCKED',
-      changePending: hasPendingCrawl(page.changeTracking),
-      sourceDependencyPending: sourceDependencyKeys.has(page.pageKey),
-      technicalPending: pendingTechnicalKeys.has(page.pageKey),
-      forceInspection: pendingTechnicalKeys.has(page.pageKey)
-        || sourceDependencyKeys.has(page.pageKey)
-        || hasPendingCrawl(page.changeTracking),
-    }))
+    .map((page) => {
+      const latest = latestInspection.get(page.pageKey) || null;
+      const interruptionEvaluatedAt = visibilityInterruptions.get(page.pageKey) || null;
+      const currentVersionKey = String(page.changeTracking?.currentVersionKey || '');
+      const acceptedVisibilityPassCurrent = Boolean(
+        currentVersionKey
+        && acceptedVisibilityPasses.get(page.pageKey) === currentVersionKey
+      );
+      // The committed assessment is the source of truth for this request.
+      // A recent snapshot captured before its request boundary cannot satisfy
+      // the newly-created interruption inspection lifecycle.
+      const visibilityInterruptionPending = Boolean(interruptionEvaluatedAt);
+      return {
+        ...page,
+        impressions: impressions.get(page.pageKey) || 0,
+        latestInspection: latest,
+        canonicalAnomaly: latest?.data?.canonicalVerdict === 'mismatch',
+        inspectionAnomaly: latest?.data?.indexStatus === 'FAIL'
+          || latest?.data?.robots === 'BLOCKED',
+        acceptedVisibilityPassCurrent,
+        visibilityInterruptionPending,
+        changePending: hasPendingCrawl(page.changeTracking),
+        sourceDependencyPending: sourceDependencyKeys.has(page.pageKey),
+        technicalPending: pendingTechnicalKeys.has(page.pageKey),
+        forceInspection: visibilityInterruptionPending
+          || pendingTechnicalKeys.has(page.pageKey)
+          || sourceDependencyKeys.has(page.pageKey)
+          || hasPendingCrawl(page.changeTracking),
+      };
+    })
     .filter((page) => (
-      page.impressions === 0
+      (page.impressions === 0 && !page.acceptedVisibilityPassCurrent)
       || page.canonicalAnomaly
       || page.inspectionAnomaly
+      || page.visibilityInterruptionPending
       || page.technicalPending
       || page.sourceDependencyPending
       || page.changePending
@@ -650,7 +796,7 @@ async function runUrlInspectionDiagnostics({ client, config, endDate, now = new 
     client,
     siteUrl: config.siteUrl,
     now: () => now,
-    limit: 5,
+    limit: Math.max(1, Math.min(5, Number(limit) || 5)),
     pageModel: SeoPage,
     versionModel: SeoPageVersion,
   });
@@ -665,7 +811,12 @@ async function runUrlInspectionDiagnostics({ client, config, endDate, now = new 
     pageModel: SeoPage,
     now,
   });
-  return { ...result, technicalMeasurementsActivated, internalLinkSourceRecrawlsResolved };
+  return {
+    ...result,
+    visibilityInterruptionCandidates: visibilityInterruptions.size,
+    technicalMeasurementsActivated,
+    internalLinkSourceRecrawlsResolved,
+  };
 }
 
 function sanitizedSyncError(error) {
@@ -712,8 +863,18 @@ function shouldIncludeDetailsForDate({
 async function latestPersistedAnalysisEndDate(siteUrl) {
   if (!siteUrl) return null;
   const [propertyDates, pageDates] = await Promise.all([
-    SeoMetricPartition.distinct('date', { siteUrl, slice: 'property', status: 'complete' }),
-    SeoMetricPartition.distinct('date', { siteUrl, slice: 'page', status: 'complete' }),
+    SeoMetricPartition.distinct('date', {
+      siteUrl,
+      slice: 'property',
+      status: 'complete',
+      truncated: { $ne: true },
+    }),
+    SeoMetricPartition.distinct('date', {
+      siteUrl,
+      slice: 'page',
+      status: 'complete',
+      truncated: { $ne: true },
+    }),
   ]);
   const completePageDates = new Set(pageDates);
   return propertyDates
@@ -872,6 +1033,7 @@ function syncRunStatusForAnalysis(status) {
 
 async function runSeoAnalysis({
   config,
+  client = null,
   now = new Date(),
   deadlineBudgetMs = DEFAULT_ANALYSIS_DEADLINE_MS,
   acquireLease = acquireSyncLease,
@@ -881,6 +1043,9 @@ async function runSeoAnalysis({
   loadEndDate = latestPersistedAnalysisEndDate,
   loadTotalPages = () => SeoPage.countDocuments({ 'manifest.present': true }),
   analyzeLifecycle = persistAnalysisLifecycle,
+  loadVisibilityInterruptions = currentVisibilityInterruptionCandidates,
+  inspectDiagnostics = runUrlInspectionDiagnostics,
+  createInspectionClient = createGscClient,
 } = {}) {
   if (!config?.enabled || !config?.configured || !config?.siteUrl || !config?.storageBudgetBytes) {
     throw new SeoSyncError('SEO analysis is disabled or incomplete', 503, 'SEO_ANALYSIS_DISABLED');
@@ -948,6 +1113,46 @@ async function runSeoAnalysis({
         endDate,
         deadlineMs,
       });
+      // Visibility interruption is only known after the decision packets are
+      // committed. A manual analysis should use the same bounded Inspection
+      // follow-up as cron so the owner does not need a second sync request.
+      // Inspection remains optional enrichment and cannot invalidate an
+      // otherwise complete, current analysis.
+      if (run.analysis?.status === 'complete' && (client || config.credentials)) {
+        try {
+          const visibilityInterruptions = await loadVisibilityInterruptions({
+            siteUrl: config.siteUrl,
+            endDate,
+          });
+          if (visibilityInterruptions instanceof Map && visibilityInterruptions.size > 0) {
+            const latestRequestBoundaryMs = Math.max(...Array.from(
+              visibilityInterruptions.values(),
+              (value) => new Date(value).getTime(),
+            ).filter(Number.isFinite));
+            const inspectionNow = new Date(Math.max(
+              Date.now(),
+              Number.isFinite(latestRequestBoundaryMs) ? latestRequestBoundaryMs + 1 : -Infinity,
+            ));
+            const inspectionClient = client || createInspectionClient({
+              credentials: config.credentials,
+              deadlineMs,
+              requestTimeoutMs: 15_000,
+              maxAttempts: 2,
+            });
+            await inspectDiagnostics({
+              client: inspectionClient,
+              config,
+              endDate,
+              now: inspectionNow,
+              limit: 5,
+              visibilityInterruptions,
+            });
+          }
+        } catch {
+          // A committed decision packet remains usable when optional URL
+          // Inspection is unavailable or exhausts its independent quota.
+        }
+      }
     }
     run.status = syncRunStatusForAnalysis(run.analysis?.status);
     run.completedAt = new Date();
@@ -961,17 +1166,27 @@ async function runSeoAnalysis({
     run.errorCode = 'SEO_ANALYSIS_FAILED';
     run.errorMessage = 'SEO analysis failed.';
     run.completedAt = new Date();
+    let terminalAnalysisSafeToSave = true;
     if (!run.analysis || run.analysis.status === 'running') {
-      run.analysis = failedAnalysisSummary({
+      const terminalAnalysis = failedAnalysisSummary({
         endDate: run.analysis?.endDate || null,
         startedAt: run.analysis?.startedAt || now,
         completedAt: run.completedAt,
       });
+      try {
+        await persistTerminalAnalysisUnlessPublished({ run, analysis: terminalAnalysis });
+      } catch {
+        // If the committed marker cannot be reloaded, a stale document save
+        // is more dangerous than leaving the runner metadata incomplete.
+        terminalAnalysisSafeToSave = false;
+      }
     }
-    try {
-      await run.save();
-    } catch {
-      // Preserve the original runner error; the lease release still runs.
+    if (terminalAnalysisSafeToSave) {
+      try {
+        await run.save();
+      } catch {
+        // Preserve the original runner error; the lease release still runs.
+      }
     }
     await releaseLease({ siteUrl: config.siteUrl, token: lease.token });
     released = true;
@@ -1084,6 +1299,20 @@ async function runSeoSync({
             endDate: persistedEndDate,
             deadlineMs: hardDeadlineMs - 5_000,
           });
+          if (run.analysis?.status === 'complete' && hardDeadlineMs - Date.now() >= 30_000) {
+            try {
+              await runUrlInspectionDiagnostics({
+                client: gsc,
+                config,
+                endDate: persistedEndDate,
+                now: new Date(),
+                limit: 5,
+              });
+            } catch {
+              // A current decision packet is still usable if optional URL
+              // Inspection enrichment cannot be completed in this run.
+            }
+          }
           // Do not mutate a metric generation after producing decision packets
           // for it. This run intentionally spends its budget on analysis and a
           // later sync resumes metric maintenance from the unchanged cursor.
@@ -1177,11 +1406,22 @@ async function runSeoSync({
       });
     } else if (madeProgress && analysisEndDate) {
       const enrichmentDeadlineMs = hardDeadlineMs - 10_000;
+      let inspectionBudgetRemaining = 5;
       // Changed pages receive the scarce URL Inspection quota before analysis,
       // so a confirmed post-change crawl can immediately inform cooldown.
       if (enrichmentDeadlineMs - Date.now() >= 60_000) {
         try {
-          await runUrlInspectionDiagnostics({ client: gsc, config, endDate: analysisEndDate, now: new Date() });
+          const inspection = await runUrlInspectionDiagnostics({
+            client: gsc,
+            config,
+            endDate: analysisEndDate,
+            now: new Date(),
+            limit: inspectionBudgetRemaining,
+          });
+          inspectionBudgetRemaining = Math.max(
+            0,
+            inspectionBudgetRemaining - nonNegativeCount(inspection?.inspected)
+          );
         } catch {
           // URL Inspection is optional enrichment. Metric generations are
           // already committed and must remain valid if diagnostics fail.
@@ -1197,6 +1437,27 @@ async function runSeoSync({
           endDate: analysisEndDate,
           deadlineMs: enrichmentDeadlineMs,
         });
+        // Visibility interruption is only known after v2.2 assessment
+        // persistence. Use any quota left by the pre-analysis crawl checks so
+        // an interrupted URL enters Inspection immediately, while preserving
+        // the five-URL daily/run cap.
+        if (
+          run.analysis?.status === 'complete'
+          && inspectionBudgetRemaining > 0
+          && enrichmentDeadlineMs - Date.now() >= 30_000
+        ) {
+          try {
+            await runUrlInspectionDiagnostics({
+              client: gsc,
+              config,
+              endDate: analysisEndDate,
+              now: new Date(),
+              limit: inspectionBudgetRemaining,
+            });
+          } catch {
+            // Decision packets stay valid if optional URL Inspection fails.
+          }
+        }
       } else {
         run.analysis = notReadyAnalysisSummary({ reason: 'analysis_deadline', endDate: analysisEndDate });
       }
@@ -1240,7 +1501,27 @@ async function runSeoSync({
     run.errorCode = safe.code;
     run.errorMessage = safe.message;
     run.completedAt = new Date();
-    await run.save();
+    let terminalAnalysisSafeToSave = true;
+    if (run.analysis?.status === 'running') {
+      try {
+        await persistTerminalAnalysisUnlessPublished({
+          run,
+          analysis: failedAnalysisSummary({
+            endDate: run.analysis?.endDate || null,
+            readiness: {
+              completedDays: run.analysis?.completedDays,
+              requiredDays: run.analysis?.requiredDays,
+            },
+            totalPages: run.analysis?.totalPages,
+            startedAt: run.analysis?.startedAt || now,
+            completedAt: run.completedAt,
+          }),
+        });
+      } catch {
+        terminalAnalysisSafeToSave = false;
+      }
+    }
+    if (terminalAnalysisSafeToSave) await run.save();
     await releaseSyncLease({ siteUrl: config.siteUrl, token: lease.token, errorMessage: safe.message, now: new Date() });
     completed = true;
     throw Object.assign(new SeoSyncError(safe.message, error.status || 500, safe.code), { runId });
@@ -1263,6 +1544,8 @@ module.exports = {
   ensureSyncState,
   latestPersistedAnalysisEndDate,
   measureDetailStorageGuard,
+  currentVisibilityInterruptionCandidates,
+  currentAcceptedVisibilityPasses,
   orderInspectionCandidates,
   persistAnalysisLifecycle,
   persistSyncLeaseState,

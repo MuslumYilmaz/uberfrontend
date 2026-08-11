@@ -20,7 +20,7 @@ const SeoAnalysisRunSchema = new mongoose.Schema(
       default: 'not_ready',
     },
     reason: { type: String, trim: true, maxlength: 160, default: 'not_run' },
-    ruleVersion: { type: String, trim: true, maxlength: 80, default: 'balanced-v2.1' },
+    ruleVersion: { type: String, trim: true, maxlength: 80, default: 'balanced-v2.2' },
     endDate: { type: String, match: /^\d{4}-\d{2}-\d{2}$/, default: null },
     windowDays: { type: Number, min: 1, max: 365, default: 28 },
     completedDays: { type: Number, min: 0, default: 0 },
@@ -34,6 +34,10 @@ const SeoAnalysisRunSchema = new mongoose.Schema(
     cooldown: { type: SeoAnalysisCooldownSchema, default: () => ({}) },
     dataQualityBlockedPages: { type: Number, min: 0, default: 0 },
     decisionBlockedPages: { type: Number, min: 0, default: 0 },
+    // A promotion transaction touches the exact complete analysis marker it
+    // validated. This is not a business counter; it is a compare-and-set
+    // boundary that keeps promotion tied to a concrete publication.
+    promotionGuardRevision: { type: Number, min: 0, default: 0 },
     startedAt: { type: Date, default: null },
     completedAt: { type: Date, default: null },
   },

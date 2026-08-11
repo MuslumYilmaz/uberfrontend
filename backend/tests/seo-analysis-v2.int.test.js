@@ -11,10 +11,12 @@ const END_DATE = '2026-08-03';
 
 let mongoServer;
 let SeoAction;
+let SeoDiagnosticSnapshot;
 let SeoMetricPartition;
 let SeoPage;
 let SeoPageAssessment;
 let SeoPageDailyMetric;
+let SeoPropertyDailyMetric;
 let SeoQueryPageDailyMetric;
 let runBalancedAnalysis;
 
@@ -42,10 +44,12 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(`${mongoServer.getUri()}balanced_v2_analysis`);
   SeoAction = require('../models/SeoAction');
+  SeoDiagnosticSnapshot = require('../models/SeoDiagnosticSnapshot');
   SeoMetricPartition = require('../models/SeoMetricPartition');
   SeoPage = require('../models/SeoPage');
   SeoPageAssessment = require('../models/SeoPageAssessment');
   SeoPageDailyMetric = require('../models/SeoPageDailyMetric');
+  SeoPropertyDailyMetric = require('../models/SeoPropertyDailyMetric');
   SeoQueryPageDailyMetric = require('../models/SeoQueryPageDailyMetric');
   ({ runBalancedAnalysis } = require('../services/seo/analysis'));
 });
@@ -58,10 +62,12 @@ afterAll(async () => {
 beforeEach(async () => {
   await Promise.all([
     SeoAction.deleteMany({}),
+    SeoDiagnosticSnapshot.deleteMany({}),
     SeoMetricPartition.deleteMany({}),
     SeoPage.deleteMany({}),
     SeoPageAssessment.deleteMany({}),
     SeoPageDailyMetric.deleteMany({}),
+    SeoPropertyDailyMetric.deleteMany({}),
     SeoQueryPageDailyMetric.deleteMany({}),
   ]);
 });
@@ -182,7 +188,7 @@ test('persists the target page as observing/low-sample/directional without an ac
 
   expect(result).toEqual(expect.objectContaining({
     status: 'complete',
-    ruleVersion: 'balanced-v2.1',
+    ruleVersion: 'balanced-v2.2',
     evaluatedPages: 10,
     totalPages: 10,
     eligiblePages: 9,
@@ -229,4 +235,207 @@ test('persists the target page as observing/low-sample/directional without an ac
   expect(assessment.semanticClusters[0].sourcePreferenceShare).toBeCloseTo(469 / 749);
   expect(await SeoAction.countDocuments({ pageKey: targetKey })).toBe(0);
   expect(JSON.stringify(assessment)).not.toContain('does angular httpclient unsubscribe cancel request');
+});
+
+test('transitions an interruption through current PASS monitoring and current FAIL technical diagnosis', async () => {
+  const { pageKeyForUrl } = require('../services/seo/keys');
+  const canonicalUrl = 'https://frontendatlas.com/angular/trivia/visibility-lifecycle';
+  const pageKey = pageKeyForUrl(canonicalUrl);
+  const endDate = '2026-02-25';
+  const previousStart = '2026-01-01';
+  const dates = Array.from({ length: 56 }, (_, index) => shift(previousStart, index));
+  const completedAt = new Date('2026-02-26T08:00:00.000Z');
+
+  await SeoMetricPartition.insertMany(dates.flatMap((date, index) => [
+    {
+      siteUrl: SITE_URL,
+      date,
+      slice: 'page',
+      activeGeneration: `page-${date}`,
+      status: 'complete',
+      rowCount: index < 39 ? 1 : 0,
+      impressions: index < 28 ? (index === 27 ? 12 : 15) : index < 39 ? (index === 38 ? 19 : 16) : 0,
+      completedAt,
+    },
+    {
+      siteUrl: SITE_URL,
+      date,
+      slice: 'property',
+      activeGeneration: `property-${date}`,
+      status: 'complete',
+      rowCount: 1,
+      impressions: index < 28 ? 1000 : 2000,
+      completedAt,
+    },
+  ]));
+  await SeoPropertyDailyMetric.insertMany(dates.map((date, index) => ({
+    siteUrl: SITE_URL,
+    date,
+    generation: `property-${date}`,
+    clicks: 10,
+    impressions: index < 28 ? 1000 : 2000,
+    position: 10,
+    positionNumerator: (index < 28 ? 1000 : 2000) * 10,
+  })));
+  await SeoPageDailyMetric.insertMany(dates.slice(0, 39).map((date, index) => ({
+    siteUrl: SITE_URL,
+    date,
+    pageKey,
+    canonicalUrl,
+    generation: `page-${date}`,
+    clicks: 0,
+    impressions: index < 28 ? (index === 27 ? 12 : 15) : (index === 38 ? 19 : 16),
+    position: 10,
+    positionNumerator: (index < 28 ? (index === 27 ? 12 : 15) : (index === 38 ? 19 : 16)) * 10,
+  })));
+  await SeoPage.create({
+    pageKey,
+    canonicalUrl,
+    renderedCanonicalUrl: canonicalUrl,
+    family: 'trivia',
+    tech: 'angular',
+    indexable: true,
+    title: 'Visibility lifecycle',
+    h1: 'Visibility lifecycle',
+    firstSeenAt: new Date('2025-01-01T00:00:00.000Z'),
+    manifest: { present: true },
+    intent: { confirmed: false, source: 'derived' },
+    changeTracking: {
+      currentVersionKey: 'version-current',
+      production: {
+        effectiveAt: new Date('2026-01-15T12:00:00.000Z'),
+        precision: 'exact',
+        source: 'manifest_ready_at',
+      },
+      lastGoogleCrawlAt: new Date('2026-01-16T12:00:00.000Z'),
+    },
+  });
+
+  await runBalancedAnalysis({
+    siteUrl: SITE_URL,
+    endDate,
+    now: new Date('2026-02-26T10:00:00.000Z'),
+  });
+  const initial = await SeoPageAssessment.findOne({ siteUrl: SITE_URL, pageKey }).lean();
+  expect(initial.visibility).toEqual(expect.objectContaining({
+    interrupted: true,
+    disposition: 'investigate',
+    requiresInspection: true,
+    nextReview: expect.objectContaining({ event: 'url_inspection' }),
+  }));
+  expect(initial.detectorAssessments.technical_indexing).toEqual(expect.objectContaining({
+    state: 'watch',
+    reasonCodes: expect.arrayContaining(['technical_state_unverified']),
+  }));
+
+  const passObservedAt = new Date(new Date(initial.evaluatedAt).getTime() + 60_000);
+  await SeoDiagnosticSnapshot.create({
+    siteUrl: SITE_URL,
+    pageKey,
+    kind: 'urlInspection',
+    observedAt: passObservedAt,
+    expiresAt: new Date(passObservedAt.getTime() + 90 * 24 * 60 * 60 * 1000),
+    data: {
+      pageVersionKey: 'version-current',
+      indexStatus: 'PASS',
+      robots: 'ALLOWED',
+      canonicalVerdict: 'match',
+      lastCrawlTime: '2026-02-20T12:00:00.000Z',
+    },
+  });
+  await runBalancedAnalysis({
+    siteUrl: SITE_URL,
+    endDate,
+    now: new Date(passObservedAt.getTime() + 60_000),
+  });
+  const monitored = await SeoPageAssessment.findOne({ siteUrl: SITE_URL, pageKey }).lean();
+  expect(monitored.visibility).toEqual(expect.objectContaining({
+    disposition: 'monitor',
+    requiresInspection: false,
+    decisionGate: 'post_inspection_14_finalized_days',
+    evidence: expect.objectContaining({ inspectionCurrent: true, inspectionPass: true }),
+    nextReview: expect.objectContaining({ event: '14_finalized_days' }),
+  }));
+  expect(monitored.queryOpportunities[0]).toEqual(expect.objectContaining({
+    classification: 'visibility_interruption',
+    disposition: 'monitor',
+    blockers: ['post_inspection_14_finalized_days'],
+  }));
+  expect(monitored.detectorAssessments.technical_indexing).toEqual(expect.objectContaining({
+    state: 'clear',
+    reasonCodes: ['no_technical_indexing_anomaly'],
+  }));
+  expect(monitored.visibility.inspectionLifecycle).toEqual(expect.objectContaining({
+    requestBoundaryAt: new Date('2026-02-26T10:00:00.000Z'),
+    accepted: expect.objectContaining({
+      observedAt: passObservedAt,
+      verdict: 'pass',
+    }),
+  }));
+
+  await runBalancedAnalysis({
+    siteUrl: SITE_URL,
+    endDate,
+    now: new Date(new Date(monitored.evaluatedAt).getTime() + 60_000),
+  });
+  const stableMonitor = await SeoPageAssessment.findOne({ siteUrl: SITE_URL, pageKey }).lean();
+  expect(stableMonitor.visibility).toEqual(expect.objectContaining({
+    disposition: 'monitor',
+    requiresInspection: false,
+    decisionGate: 'post_inspection_14_finalized_days',
+    inspectionLifecycle: monitored.visibility.inspectionLifecycle,
+  }));
+  expect(stableMonitor.detectorAssessments.technical_indexing).toEqual(expect.objectContaining({
+    state: 'clear',
+    reasonCodes: ['no_technical_indexing_anomaly'],
+  }));
+
+  const failObservedAt = new Date(new Date(stableMonitor.evaluatedAt).getTime() + 60_000);
+  await SeoDiagnosticSnapshot.create({
+    siteUrl: SITE_URL,
+    pageKey,
+    kind: 'urlInspection',
+    observedAt: failObservedAt,
+    expiresAt: new Date(failObservedAt.getTime() + 90 * 24 * 60 * 60 * 1000),
+    data: {
+      pageVersionKey: 'version-current',
+      indexStatus: 'FAIL',
+      robots: 'ALLOWED',
+      canonicalVerdict: 'match',
+      lastCrawlTime: '2026-02-24T12:00:00.000Z',
+    },
+  });
+  await runBalancedAnalysis({
+    siteUrl: SITE_URL,
+    endDate,
+    now: new Date(failObservedAt.getTime() + 60_000),
+  });
+  const diagnosed = await SeoPageAssessment.findOne({ siteUrl: SITE_URL, pageKey }).lean();
+  expect(diagnosed.visibility).toEqual(expect.objectContaining({
+    disposition: 'investigate',
+    requiresInspection: false,
+    decisionGate: 'technical_indexing_anomaly',
+    evidence: expect.objectContaining({ inspectionCurrent: true, inspectionPass: false }),
+  }));
+  expect(diagnosed.detectorAssessments.technical_indexing).toEqual(expect.objectContaining({
+    state: 'actionable',
+    reasonCodes: ['technical_indexing_anomaly'],
+  }));
+
+  await runBalancedAnalysis({
+    siteUrl: SITE_URL,
+    endDate,
+    now: new Date(new Date(diagnosed.evaluatedAt).getTime() + 60_000),
+  });
+  const stableDiagnosis = await SeoPageAssessment.findOne({ siteUrl: SITE_URL, pageKey }).lean();
+  expect(stableDiagnosis.visibility).toEqual(expect.objectContaining({
+    disposition: 'investigate',
+    requiresInspection: false,
+    decisionGate: 'technical_indexing_anomaly',
+    inspectionLifecycle: diagnosed.visibility.inspectionLifecycle,
+  }));
+  expect(stableDiagnosis.detectorAssessments.technical_indexing).toEqual(expect.objectContaining({
+    state: 'actionable',
+    reasonCodes: ['technical_indexing_anomaly'],
+  }));
 });
