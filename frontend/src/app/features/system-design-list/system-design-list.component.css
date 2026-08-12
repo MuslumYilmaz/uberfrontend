@@ -12,6 +12,50 @@
   gap: 14px;
 }
 
+.sd-hero__links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 840px;
+}
+
+.sd-hero__link {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 76%, var(--uf-accent) 24%);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--uf-surface-alt) 82%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  text-decoration: none;
+  transition: border-color var(--uf-motion-fast) ease, background-color var(--uf-motion-fast) ease;
+}
+
+.sd-hero__link:hover {
+  border-color: color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-accent) 8%);
+}
+
+.sd-hero__link:focus-visible {
+  outline: none;
+  border-color: var(--uf-accent);
+  box-shadow: var(--uf-focus-ring);
+}
+
+.sd-hero__link span {
+  color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.sd-hero__link strong {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
 .sd-hero__stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -659,6 +703,7 @@
   .sd-start-grid,
   .sd-question-cluster,
   .sd-rubric-grid,
+  .sd-hero__links,
   .sd-hero__stats,
   .sd-info-grid,
   .sd-info-grid--five,

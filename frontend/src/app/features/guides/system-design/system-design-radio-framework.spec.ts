@@ -24,7 +24,7 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     const text = host.textContent || '';
 
     expect(text).toContain('RADIO Framework: Frontend System Design Interview Template');
-    expect(text).toContain('A practical RADIO template for frontend system design interviews');
+    expect(text).toContain('A 45-minute RADIO template for frontend system design interviews');
     expect(text).not.toContain('RADIO Framework for Frontend System Design: R/A/D/I/O');
     expect(text).toContain('RADIO = Requirements, Architecture, Data, Interface, Optimizations');
     expect(text).toContain('RADIO is a frontend system design interview framework');
@@ -45,6 +45,11 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     expect(text).toContain('sketch the client-side structure and data flow');
     expect(text).toContain('define core entities, API contracts, cache shape, and state ownership');
     expect(text).toContain('describe UI boundaries, component responsibilities, loading, error, and accessibility states');
+    expect(text).toContain('Source and FrontendAtlas adaptation');
+    expect(text).toContain('The RADIO mnemonic was created by Yangshun Tay and published by GreatFrontEnd');
+    expect(text).toContain('FrontendAtlas does not redefine the mnemonic.');
+    expect(text).toContain('45- and 60-minute timeboxes, copyable transition scripts, diagram outputs');
+    expect(text).toContain('frontend system design interview preparation guide');
     expect(text).toContain('When not to overuse RADIO');
     expect(text).toContain('Do not treat RADIO as a script you recite word-for-word.');
     expect(text).toContain('RADIO definition table: what to say and draw');
@@ -105,6 +110,16 @@ describe('SystemDesignRadioFrameworkArticle', () => {
     expect(host.querySelectorAll('.radio-flow-step').length).toBe(5);
     expect(host.querySelectorAll('.worked-example-step').length).toBe(8);
     expect(host.querySelectorAll('h1').length).toBe(1);
+    const sourceLink = host.querySelector<HTMLAnchorElement>(
+      'a[href="https://www.greatfrontend.com/front-end-system-design-playbook/framework"]'
+    );
+    expect(sourceLink).toBeTruthy();
+    expect(sourceLink?.textContent?.trim()).toBe('GreatFrontEnd’s authoritative RADIO Framework guide');
+    expect(sourceLink?.target).toBe('_blank');
+    expect(sourceLink?.rel.split(/\s+/)).toContain('noopener');
+    expect(sourceLink?.rel.split(/\s+/)).toContain('noreferrer');
+    expect(host.querySelector('a[href="/guides/interview-blueprint/system-design"]')).toBeTruthy();
+    expect(host.querySelector('a[href="/system-design"]')).toBeTruthy();
     expect(host.querySelector('.answer-template code')?.textContent || '').toContain('0:27-0:42 Optimizations');
     const answerScript = host.querySelector('.answer-asset .answer-template');
     const definitionTable = host.querySelector('[aria-label="RADIO definition table"]');

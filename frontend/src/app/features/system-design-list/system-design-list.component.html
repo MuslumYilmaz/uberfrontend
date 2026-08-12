@@ -1,10 +1,21 @@
 <div class="fa-page-shell sd-list-page" data-testid="system-design-list-page">
   <header class="fa-page-header sd-hero">
     <p class="fa-page-kicker">Architecture interview prep</p>
-    <h1 class="fa-page-title">Frontend System Design Interview Questions</h1>
+    <h1 class="fa-page-title">Frontend System Design Interview: Questions &amp; Practice</h1>
     <p class="fa-page-subtitle">
       Use each card's timebox for a focused first pass, then expand the same decisions with the separate 45-minute RADIO interview template.
     </p>
+
+    <nav class="sd-hero__links" aria-label="System design interview resources">
+      <a class="sd-hero__link" [routerLink]="['/guides/interview-blueprint/system-design']">
+        <span>Prepare for the round</span>
+        <strong>Frontend system design interview preparation guide</strong>
+      </a>
+      <a class="sd-hero__link" [routerLink]="['/guides/system-design-blueprint/radio-framework']">
+        <span>Structure your answer</span>
+        <strong>RADIO framework</strong>
+      </a>
+    </nav>
 
     <div class="sd-hero__stats" *ngIf="stats$ | async as stats" aria-label="System design bank coverage">
       <div class="sd-stat">
@@ -25,6 +36,27 @@
       </div>
     </div>
   </header>
+
+  <section class="sd-section fa-section-shell" aria-labelledby="sd-common-questions-title" data-testid="system-design-common-questions-section">
+    <div class="sd-section__head">
+      <p class="sd-section__eyebrow">Common questions</p>
+      <h2 id="sd-common-questions-title">Common frontend system design interview questions</h2>
+      <p>
+        These core frontend system design patterns cover application architecture, UI component systems, realtime interfaces, AI product workflows, and senior/staff tradeoff rounds.
+      </p>
+    </div>
+    <div class="sd-question-cluster">
+      <a
+        *ngFor="let item of (priorityQuestions$ | async) ?? []"
+        class="sd-question-link"
+        [attr.data-access]="item.access"
+        [routerLink]="item.route">
+        <span>{{ item.keyword }}</span>
+        <strong>{{ item.title }}</strong>
+        <small>{{ item.detail }}</small>
+      </a>
+    </div>
+  </section>
 
   <section class="sd-section sd-start-here fa-section-shell" aria-labelledby="sd-start-title" data-testid="system-design-start-section">
     <div class="sd-section__head">
@@ -235,27 +267,6 @@
         <span class="sd-format-card__badge">{{ format.title }}</span>
         <p>{{ format.detail }}</p>
       </article>
-    </div>
-  </section>
-
-  <section class="sd-section fa-section-shell" aria-labelledby="sd-most-asked-title" data-testid="system-design-most-asked-section">
-    <div class="sd-section__head">
-      <p class="sd-section__eyebrow">Core frontend system design patterns</p>
-      <h2 id="sd-most-asked-title">Practice prompts across the main frontend architecture families</h2>
-      <p>
-        These prompt groups cover application architecture, UI component system design, realtime UI, AI product workflows, and senior/staff tradeoff rounds.
-      </p>
-    </div>
-    <div class="sd-question-cluster">
-      <a
-        *ngFor="let item of (priorityQuestions$ | async) ?? []"
-        class="sd-question-link"
-        [attr.data-access]="item.access"
-        [routerLink]="item.route">
-        <span>{{ item.keyword }}</span>
-        <strong>{{ item.title }}</strong>
-        <small>{{ item.detail }}</small>
-      </a>
     </div>
   </section>
 

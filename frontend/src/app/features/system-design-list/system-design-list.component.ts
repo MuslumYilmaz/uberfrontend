@@ -329,8 +329,8 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
       answer: 'A frontend system design interview is an architecture round focused on client-side decisions: rendering strategy, state ownership, API contracts, caching, accessibility, performance, resilience, and product tradeoffs.',
     },
     {
-      question: 'How do I prepare for frontend system design interviews?',
-      answer: 'Start with a repeatable framework such as RADIO, practice common prompts like infinite scroll and notifications, then add realtime, data-heavy, and senior/staff scenarios where tradeoffs become harder.',
+      question: 'Which frontend system design interview question should I practice first?',
+      answer: 'Start with a familiar UI boundary such as a toast notification system, then move to autocomplete, infinite scroll, realtime interfaces, and senior-level dashboards as the tradeoffs become harder.',
     },
     {
       question: 'What frontend system design questions are commonly asked?',
