@@ -106,6 +106,29 @@ describe('MonacoEditorComponent loader failure handling', () => {
     );
   });
 
+  it('configures Monaco to create a named worker from the absolute workerMain URL', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    const worker = {} as Worker;
+    const workerConstructor = spyOn(window, 'Worker').and.returnValue(worker);
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+
+    const fixture = createComponent();
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    const createdWorker = (window as any).MonacoEnvironment.getWorker('workerMain.js', 'css');
+
+    expect(createdWorker).toBe(worker);
+    expect(workerConstructor).toHaveBeenCalledOnceWith(
+      new URL('assets/monaco/min/vs/base/worker/workerMain.js', document.baseURI).toString(),
+      { name: 'css' },
+    );
+  });
+
   it('disposes the editor and model once when the fixture is destroyed', async () => {
     const fakeMonaco = makeFakeMonaco();
     (window as any).monaco = fakeMonaco.api;

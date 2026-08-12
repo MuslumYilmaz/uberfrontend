@@ -4,6 +4,7 @@ import {
   AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges,
   OnDestroy, Output, PLATFORM_ID, SimpleChanges, ViewChild, inject
 } from '@angular/core';
+import { createTrackedMonacoWorker } from './core/utils/monaco-worker-tracker';
 
 declare global {
   interface Window { require: any; monaco: any; }
@@ -510,8 +511,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         try {
           if (!(window as any).MonacoEnvironment) {
             (window as any).MonacoEnvironment = {
-              getWorkerUrl: () =>
+              getWorker: (_moduleId: string, label: string) => createTrackedMonacoWorker(
                 new URL(`${this.vsBasePath}/base/worker/workerMain.js`, document.baseURI).toString(),
+                label,
+              ),
             };
           }
 
