@@ -1,0 +1,101 @@
+{
+  "id": "resilient-checkout-payment-flow",
+  "title": "Design a Resilient Checkout and Payment Flow",
+  "description": "Design a browser checkout that preserves quote authority, retries one payment intent safely, recovers status, protects card data, and handles multiple tabs.",
+  "tags": [
+    "ecommerce",
+    "forms",
+    "validation",
+    "state-management",
+    "frontend-architecture",
+    "api-calls",
+    "error-handling",
+    "security",
+    "accessibility",
+    "concurrency"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interfaces",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations",
+      "file": "optimizations.json"
+    }
+  ],
+  "updatedAt": "2026-08-12",
+  "seo": {
+    "title": "Resilient Checkout and Payment Flow System Design",
+    "description": "Design checkout quote authority, idempotent payment attempts, redirect recovery, secure card fields, accessible errors, and multi-tab safety."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/resilient-checkout-payment-flow.md",
+    "primaryKeyword": "resilient checkout and payment flow",
+    "searchIntent": "Prepare a frontend system design answer for a resilient checkout and payment flow.",
+    "readerPromise": "The reader can explain quote authority, stable payment identity, uncertain-result recovery, hosted card fields, accessible errors, and cross-tab reconciliation.",
+    "uniqueAngle": "Trace one customer payment intent through a versioned quote, a lost response, bank authentication, webhook confirmation, and a competing browser tab.",
+    "factCheckedAt": "2026-08-12",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": []
+  },
+  "contentSchemaVersion": 2,
+  "practice": {
+    "targetLevel": "mid",
+    "timeboxMinutes": 15,
+    "candidatePrompt": "Design the browser checkout and payment flow for a cart whose prices, discounts, tax, shipping, and stock can change. A customer may double-click Pay, lose the creation response, return from bank authentication, or continue the same checkout in another tab. Assign authority among client state, merchant backend, and payment provider. Explain how stable attempt identity, quote conflicts, status recovery, hosted card fields, accessible errors, and cross-tab signals prevent duplicate charges or false success.",
+    "constraints": [
+      "Server quote sets totals and stock.",
+      "One payment keeps one attempt identity.",
+      "Redirects never prove payment success.",
+      "Card secrets stay inside provider fields."
+    ],
+    "expectedDecisions": [
+      "Separate editable checkout input, authoritative quote, payment attempt, and order state.",
+      "Reuse attempt and idempotency identities when a creation response is uncertain.",
+      "Reconcile redirects, webhooks, and cross-tab observations through merchant server reads."
+    ],
+    "prerequisites": [
+      "Async form state",
+      "HTTP retry basics",
+      "Hosted payment fields"
+    ],
+    "coreSkills": [
+      "Authority modeling",
+      "Idempotent recovery",
+      "Secure payment UX",
+      "Concurrent state reconciliation"
+    ],
+    "guidedMock": true,
+    "evaluationSpine": {
+      "mustCover": [
+        "Authoritative quote version gates every payment attempt.",
+        "Stable attempt and idempotency identities survive transport uncertainty."
+      ],
+      "strongSignals": [
+        "Lost responses trigger status reads or same-key retries, never a fresh charge.",
+        "Accessible errors preserve input; cross-tab messages only accelerate server reconciliation."
+      ],
+      "expertStretch": "Webhook-led fulfillment and multi-tab supersession without browser authority.",
+      "redFlag": "Redirect success or tab locks are treated as payment truth."
+    }
+  }
+}

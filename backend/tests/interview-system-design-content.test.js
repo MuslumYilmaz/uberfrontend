@@ -91,6 +91,7 @@ describe('guided system-design interview content', () => {
     ])).toEqual([
       ['int-sd-ai-chat-composer-mid-v1', 'mid', 900],
       ['int-sd-autocomplete-race-mid-v1', 'mid', 900],
+      ['int-sd-checkout-recovery-mid-v1', 'mid', 900],
       ['int-sd-dashboard-layout-sr-v1', 'senior', 1200],
       ['int-sd-image-upload-lifecycle-jr-v1', 'junior', 600],
       ['int-sd-live-chart-pipeline-mid-v1', 'mid', 900],
@@ -243,6 +244,106 @@ describe('guided system-design interview content', () => {
         ]),
       }));
     }
+  });
+
+  test('calibrates resilient checkout across hosted, embedded, and unsafe recovery paths', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.publicPackage.scenarios.find(
+        (entry) => entry.id === "int-sd-checkout-recovery-mid-v1"
+      );
+      const privateScenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === scenario.id
+      );
+      const decision = (fixture, decisionId) => fixture.draft.decisions.find(
+        (entry) => entry.decisionId === decisionId
+      )?.optionId;
+      console.log(JSON.stringify({
+        publicShape: {
+          level: scenario.level,
+          timeLimitSeconds: scenario.timeLimitSeconds,
+          clarifications: scenario.clarifications.length,
+          requirements: scenario.requirements.length,
+          cards: scenario.cards.length,
+          decisions: scenario.decisions.length,
+          lenses: Object.keys(scenario.frameworkLenses).sort(),
+        },
+        source: privateScenario.sourceEvidence,
+        twist: privateScenario.twist,
+        adaptationRules: privateScenario.rubric.axes.find(
+          (axis) => axis.id === "adaptation-tradeoffs"
+        ).criteria.map((criterion) => criterion.rule),
+        strong: privateScenario.validationFixtures
+          .filter((entry) => entry.kind === "strong")
+          .map((fixture) => ({
+            id: fixture.id,
+            signal: content.scoreSystemDesignFixture(
+              privateScenario,
+              fixture
+            ).practiceSignal,
+            surface: decision(fixture, "checkout-payment-surface"),
+            placedCards: fixture.draft.placements.map((entry) => entry.cardId),
+            changedDecisionIds: fixture.draft.decisions
+              .filter((entry) => fixture.baseline.decisions.some(
+                (baseline) => baseline.decisionId === entry.decisionId
+                  && baseline.optionId !== entry.optionId
+              ))
+              .map((entry) => entry.decisionId),
+          })),
+        critical: (() => {
+          const fixture = privateScenario.validationFixtures.find(
+            (entry) => entry.kind === "critical-conflict"
+          );
+          const score = content.scoreSystemDesignFixture(privateScenario, fixture);
+          return {
+            signal: score.practiceSignal,
+            contradictions: score.contradictions,
+          };
+        })(),
+      }));
+    `);
+
+    expect(result.publicShape).toEqual({
+      level: 'mid',
+      timeLimitSeconds: 900,
+      clarifications: 7,
+      requirements: 6,
+      cards: 14,
+      decisions: 4,
+      lenses: ['angular', 'core-web', 'react', 'vue'],
+    });
+    expect(result.source).toEqual(expect.objectContaining({
+      sourceContentId: 'resilient-checkout-payment-flow',
+      bundleHash: '7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea',
+      files: expect.any(Array),
+    }));
+    expect(result.source.files).toHaveLength(6);
+    expect(result.twist.id).toBe('checkout-cross-tab-return');
+    expect(result.twist.prompt).toMatch(/BroadcastChannel/);
+    expect(JSON.stringify(result.adaptationRules)).not.toContain('changedFromBaseline');
+    expect(result.strong).toEqual([
+      expect.objectContaining({
+        id: 'checkout-strong-hosted',
+        signal: 'Strong System Design Session',
+        surface: 'checkout-surface-hosted',
+        placedCards: expect.arrayContaining(['checkout-hosted-payment']),
+        changedDecisionIds: [],
+      }),
+      expect.objectContaining({
+        id: 'checkout-strong-embedded',
+        signal: 'Strong System Design Session',
+        surface: 'checkout-surface-embedded',
+        placedCards: expect.arrayContaining(['checkout-embedded-fields']),
+        changedDecisionIds: [],
+      }),
+    ]);
+    expect(result.critical.signal).toBe('Needs Focus');
+    expect(result.critical.contradictions).toEqual(expect.arrayContaining([
+      { id: 'checkout-critical-redirect-success', severity: 'critical' },
+      { id: 'checkout-critical-direct-card-data', severity: 'critical' },
+      { id: 'checkout-critical-return-retry', severity: 'critical' },
+      { id: 'checkout-critical-tab-lock', severity: 'critical' },
+    ]));
   });
 
   test('scores both dashboard ownership paths as distinct revision-safe architectures', () => {
@@ -1259,6 +1360,164 @@ describe('guided system-design interview content', () => {
     ]);
   });
 
+  test('accepts already-correct toast, autocomplete, and feed designs after the twist', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const cases = [
+        ["int-sd-toast-lifecycle-jr-v1", "toast-strong-persistent"],
+        ["int-sd-autocomplete-race-mid-v1", "search-strong-generation"],
+        ["int-sd-ranked-feed-sr-v1", "feed-strong-page-window"],
+      ];
+      console.log(JSON.stringify(cases.map(([scenarioId, fixtureId]) => {
+        const scenario = built.privatePackage.scenarios.find(
+          (entry) => entry.id === scenarioId
+        );
+        const fixture = scenario.validationFixtures.find(
+          (entry) => entry.id === fixtureId
+        );
+        const score = content.scoreSystemDesignFixture(scenario, fixture);
+        return {
+          scenarioId,
+          signal: score.practiceSignal,
+          adaptation: score.axes.find(
+            (axis) => axis.id === "adaptation-tradeoffs"
+          ).status,
+          changedDecisionIds: fixture.draft.decisions
+            .filter((decision) => fixture.baseline.decisions.some(
+              (baseline) => baseline.decisionId === decision.decisionId
+                && baseline.optionId !== decision.optionId
+            ))
+            .map((entry) => entry.decisionId),
+          rules: scenario.rubric.axes.find(
+            (axis) => axis.id === "adaptation-tradeoffs"
+          ).criteria.map((criterion) => criterion.rule),
+        };
+      })));
+    `);
+
+    expect(outcomes.map((entry) => entry.scenarioId)).toEqual([
+      'int-sd-toast-lifecycle-jr-v1',
+      'int-sd-autocomplete-race-mid-v1',
+      'int-sd-ranked-feed-sr-v1',
+    ]);
+    for (const outcome of outcomes) {
+      expect(outcome.signal).toBe('Strong System Design Session');
+      expect(outcome.adaptation).toBe('strong-evidence');
+      expect(outcome.changedDecisionIds).toEqual([]);
+      expect(JSON.stringify(outcome.rules)).not.toContain('changedFromBaseline');
+    }
+  });
+
+  test('requires autocomplete UI and feed model boundaries for a strong architecture', () => {
+    const outcomes = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const cases = [
+        {
+          scenarioId: "int-sd-autocomplete-race-mid-v1",
+          cardIds: ["search-input", "search-results"],
+        },
+        {
+          scenarioId: "int-sd-ranked-feed-sr-v1",
+          cardIds: ["feed-view", "feed-entities", "feed-pages"],
+        },
+      ];
+      const removeCard = (draft, cardId) => {
+        draft.placements = draft.placements.filter(
+          (entry) => entry.cardId !== cardId
+        );
+        draft.connections = draft.connections.filter(
+          (entry) => entry.fromCardId !== cardId && entry.toCardId !== cardId
+        );
+        const nextOrder = new Map();
+        for (const placement of draft.placements) {
+          const order = nextOrder.get(placement.laneId) || 0;
+          placement.order = order;
+          nextOrder.set(placement.laneId, order + 1);
+        }
+      };
+      const outcomes = [];
+      for (const { scenarioId, cardIds } of cases) {
+        const scenario = built.publicPackage.scenarios.find(
+          (entry) => entry.id === scenarioId
+        );
+        const privateScenario = built.privatePackage.scenarios.find(
+          (entry) => entry.id === scenarioId
+        );
+        for (const strong of privateScenario.validationFixtures.filter(
+          (entry) => entry.kind === "strong"
+        )) {
+          for (const cardId of cardIds) {
+            const fixture = structuredClone(strong);
+            removeCard(fixture.draft, cardId);
+            const score = content.scoreSystemDesignFixture(privateScenario, fixture);
+            outcomes.push({
+              scenarioId,
+              fixtureId: fixture.id,
+              cardId,
+              validation: content.validateSystemDesignDraft({
+                scenario,
+                privateScenario,
+                draft: fixture.draft,
+                baseline: fixture.baseline,
+              }),
+              signal: score.practiceSignal,
+              architecture: score.axes.find(
+                (axis) => axis.id === "architecture-ownership"
+              ).status,
+            });
+          }
+        }
+      }
+      console.log(JSON.stringify(outcomes));
+    `);
+
+    expect(outcomes).toHaveLength(10);
+    for (const outcome of outcomes) {
+      expect(outcome.validation).toEqual([]);
+      expect(outcome.signal).not.toBe('Strong System Design Session');
+      expect(outcome.architecture).toBe('needs-focus');
+    }
+  });
+
+  test('recovers a removed feed anchor through a surviving neighbor', () => {
+    const result = runContentProbe(`
+      const built = content.buildSystemDesignContent();
+      const scenario = built.privatePackage.scenarios.find(
+        (entry) => entry.id === "int-sd-ranked-feed-sr-v1"
+      );
+      const critical = scenario.validationFixtures.find(
+        (entry) => entry.kind === "critical-conflict"
+      );
+      console.log(JSON.stringify({
+        twistId: scenario.twist.id,
+        prompt: scenario.twist.prompt,
+        actionIds: scenario.twist.responseActions.map((entry) => entry.id),
+        strongActions: scenario.validationFixtures
+          .filter((entry) => entry.kind === "strong")
+          .map((entry) => entry.draft.twistResponseActionIds),
+        critical: content.scoreSystemDesignFixture(scenario, critical),
+      }));
+    `);
+
+    expect(result.twistId).toBe('feed-anchor-removal');
+    expect(result.prompt).toMatch(/removes the item currently anchoring/i);
+    expect(result.actionIds).toEqual([
+      'feed-twist-neighbor-anchor',
+      'feed-twist-reconcile-removal',
+      'feed-twist-retain-removed',
+      'feed-twist-reset',
+    ]);
+    expect(result.strongActions).toEqual([
+      ['feed-twist-neighbor-anchor', 'feed-twist-reconcile-removal'],
+      ['feed-twist-neighbor-anchor', 'feed-twist-reconcile-removal'],
+    ]);
+    expect(result.critical.practiceSignal).toBe('Needs Focus');
+    expect(result.critical.contradictions).toContainEqual({
+      id: 'feed-critical-retained-anchor',
+      severity: 'critical',
+    });
+  });
+
   test('keeps generated validation fixtures in parity with runtime scoring', () => {
     const expectedSignals = {
       strong: 'strong-system-design-session',
@@ -1601,49 +1860,58 @@ describe('guided system-design interview content', () => {
       for (const fixture of privateScenario.validationFixtures.filter(
         (entry) => entry.kind === 'strong'
       )) {
-        const fallbackDecisionIds = {
-          'int-sd-ai-chat-composer-mid-v1': 'chat-send-identity',
-          'int-sd-image-upload-lifecycle-jr-v1': 'upload-replacement-policy',
-          'int-sd-live-chart-pipeline-mid-v1': 'chart-gap-recovery',
+        const adaptationDecisionIds = {
+          'int-sd-ai-chat-composer-mid-v1': ['chat-send-identity'],
+          'int-sd-autocomplete-race-mid-v1': [
+            'search-async-control',
+            'search-cache-identity',
+          ],
+          'int-sd-checkout-recovery-mid-v1': ['checkout-result-authority'],
+          'int-sd-dashboard-layout-sr-v1': ['dash-conflict-policy'],
+          'int-sd-image-upload-lifecycle-jr-v1': ['upload-replacement-policy'],
+          'int-sd-live-chart-pipeline-mid-v1': ['chart-gap-recovery'],
+          'int-sd-ranked-feed-sr-v1': ['feed-order-change'],
+          'int-sd-toast-lifecycle-jr-v1': ['toast-timing', 'toast-overflow'],
         };
-        const fixedDecisionIds = {
-          'int-sd-live-chart-pipeline-mid-v1': 'chart-gap-recovery',
-        };
-        const targetId = fixedDecisionIds[privateScenario.id]
-          || changedDecisionId(fixture)
-          || fallbackDecisionIds[privateScenario.id];
-        expect(targetId).toBeDefined();
-        const currentDecision = fixture.draft.decisions.find(
-          (entry) => entry.decisionId === targetId
-        );
-        const decisionDefinition = publicScenario.decisions.find(
-          (entry) => entry.id === targetId
-        );
         const explicitWrongOptionIds = {
-          'int-sd-live-chart-pipeline-mid-v1': 'chart-recovery-next-live',
+          'chat-send-identity': 'chat-send-fresh-retry',
+          'search-async-control': 'search-async-debounce',
+          'search-cache-identity': 'search-key-term',
+          'checkout-result-authority': 'checkout-result-redirect',
+          'dash-conflict-policy': 'dash-conflict-force-overwrite',
+          'upload-replacement-policy': 'upload-replace-callback-order',
+          'chart-gap-recovery': 'chart-recovery-next-live',
+          'feed-order-change': 'feed-order-immediate',
+          'toast-timing': 'toast-time-reset',
+          'toast-overflow': 'toast-overflow-drop',
         };
-        const wrongOption = explicitWrongOptionIds[privateScenario.id]
-          ? decisionDefinition.options.find(
-            (entry) => entry.id === explicitWrongOptionIds[privateScenario.id]
-          )
-          : decisionDefinition.options.find(
-            (entry) => entry.id !== currentDecision.optionId
-          );
-        expect(wrongOption).toBeDefined();
+        const targetIds = adaptationDecisionIds[privateScenario.id];
+        expect(targetIds).toBeDefined();
+        expect(targetIds.length).toBeGreaterThan(0);
+        for (const targetId of targetIds) {
+          expect(fixture.draft.decisions.some(
+            (entry) => entry.decisionId === targetId
+          )).toBe(true);
+          expect(publicScenario.decisions.find(
+            (entry) => entry.id === targetId
+          )?.options.some(
+            (entry) => entry.id === explicitWrongOptionIds[targetId]
+          )).toBe(true);
+        }
 
         const deletedDraft = {
           ...fixture.draft,
           decisions: fixture.draft.decisions.filter(
-            (entry) => entry.decisionId !== targetId
+            (entry) => !targetIds.includes(entry.decisionId)
           ),
         };
         const wrongDraft = {
           ...fixture.draft,
           decisions: fixture.draft.decisions.map((entry) => (
-            entry.decisionId === targetId
+            targetIds.includes(entry.decisionId)
               ? {
-                decisionId: targetId,
-                optionId: wrongOption.id,
+                decisionId: entry.decisionId,
+                optionId: explicitWrongOptionIds[entry.decisionId],
                 rationaleIds: [],
               }
               : entry
@@ -1668,7 +1936,7 @@ describe('guided system-design interview content', () => {
     }
   });
 
-  test('does not infer post-twist change evidence without a captured baseline', () => {
+  test('marks twist evidence partial without a captured baseline', () => {
     for (const privateScenario of privatePackage.scenarios) {
       const publicScenario = publicPackage.scenarios.find(
         (scenario) => scenario.id === privateScenario.id
@@ -1693,7 +1961,7 @@ describe('guided system-design interview content', () => {
       const adaptation = result.systemDesign.axes.find(
         (axis) => axis.id === 'adaptation-tradeoffs'
       );
-      expect(adaptation.status).toBe('needs-focus');
+      expect(adaptation.status).not.toBe('strong-evidence');
       expect(adaptation.evidence.join(' ')).not.toMatch(/changed/i);
       expect(result.systemDesign.practiceSignal)
         .not.toBe('strong-system-design-session');
@@ -1701,56 +1969,17 @@ describe('guided system-design interview content', () => {
     }
   });
 
-  test('does not treat adding a rationale to the same decision as a design change', () => {
-    let changeSensitiveFixtureCount = 0;
-    for (const privateScenario of privatePackage.scenarios) {
-      const adaptationDefinition = privateScenario.rubric.axes.find(
+  test('keeps adaptation scoring independent of performative baseline changes', () => {
+    const adaptationDefinitions = privatePackage.scenarios.map((scenario) => ({
+      scenarioId: scenario.id,
+      definition: scenario.rubric.axes.find(
         (entry) => entry.id === 'adaptation-tradeoffs'
-      );
-      if (!JSON.stringify(adaptationDefinition).includes('changedFromBaseline')) {
-        continue;
-      }
-      const publicScenario = publicPackage.scenarios.find(
-        (scenario) => scenario.id === privateScenario.id
-      );
-      for (const fixture of privateScenario.validationFixtures.filter(
-        (entry) => entry.kind === 'strong'
-      )) {
-        const targetId = changedDecisionId(fixture);
-        if (!targetId) continue;
-        changeSensitiveFixtureCount += 1;
-        const currentDecision = fixture.draft.decisions.find(
-          (entry) => entry.decisionId === targetId
-        );
-        const rationaleOnlyBaseline = {
-          ...fixture.baseline,
-          decisions: fixture.baseline.decisions.map((entry) => (
-            entry.decisionId === targetId
-              ? {
-                decisionId: targetId,
-                optionId: currentDecision.optionId,
-                rationaleIds: [],
-              }
-              : entry
-          )),
-        };
-        const result = runtimeFixtureResult(
-          publicScenario,
-          privateScenario,
-          fixture,
-          fixture.draft,
-          { baseline: rationaleOnlyBaseline }
-        );
-        const adaptation = result.systemDesign.axes.find(
-          (axis) => axis.id === 'adaptation-tradeoffs'
-        );
-        expect(adaptation.status).toBe('needs-focus');
-        expect(adaptation.evidence.join(' ')).not.toMatch(/changed/i);
-        expect(result.systemDesign.practiceSignal)
-          .not.toBe('strong-system-design-session');
-      }
+      ),
+    }));
+    expect(adaptationDefinitions).toHaveLength(8);
+    for (const { definition } of adaptationDefinitions) {
+      expect(JSON.stringify(definition)).not.toContain('changedFromBaseline');
     }
-    expect(changeSensitiveFixtureCount).toBeGreaterThan(0);
   });
 
   test('rejects unknown rule operators instead of interpreting executable content', () => {
@@ -1875,21 +2104,22 @@ describe('guided system-design interview content', () => {
 
   test('pins every source bundle and invalidates candidate approval by default', () => {
     expect(release.finalApproval).toBeNull();
-    expect(release.registryVersion).toBe('1.1.0');
-    expect(publicPackage.registryVersion).toBe('1.1.0');
-    expect(privatePackage.registryVersion).toBe('1.1.0');
-    expect(release.scenarioRefs).toHaveLength(7);
+    expect(release.registryVersion).toBe('1.2.0');
+    expect(publicPackage.registryVersion).toBe('1.2.0');
+    expect(privatePackage.registryVersion).toBe('1.2.0');
+    expect(release.scenarioRefs).toHaveLength(8);
     expect(Object.fromEntries(release.scenarioRefs.map((scenario) => [
       scenario.id,
       scenario.revision,
     ]))).toEqual({
       'int-sd-ai-chat-composer-mid-v1': 3,
-      'int-sd-autocomplete-race-mid-v1': 4,
+      'int-sd-autocomplete-race-mid-v1': 5,
+      'int-sd-checkout-recovery-mid-v1': 1,
       'int-sd-dashboard-layout-sr-v1': 2,
       'int-sd-image-upload-lifecycle-jr-v1': 2,
       'int-sd-live-chart-pipeline-mid-v1': 2,
-      'int-sd-ranked-feed-sr-v1': 4,
-      'int-sd-toast-lifecycle-jr-v1': 5,
+      'int-sd-ranked-feed-sr-v1': 5,
+      'int-sd-toast-lifecycle-jr-v1': 6,
     });
     expect(
       privatePackage.scenarios.find(

@@ -1,0 +1,79 @@
+{
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Ownership from cart to fulfillment",
+      "columns": [
+        "Owner",
+        "Keeps",
+        "Does not claim"
+      ],
+      "rows": [
+        [
+          "Checkout form",
+          "Contact, shipping, consent, error UI, and hosted-field mounts",
+          "Payable totals, card secrets, or final payment state"
+        ],
+        [
+          "Checkout coordinator",
+          "Current quote and attempt, cancellation request, recovery, and navigation",
+          "Permission to replace an uncertain attempt"
+        ],
+        [
+          "Merchant backend",
+          "Quotes, attempt lookup, idempotency, provider mapping, orders, and webhooks",
+          "PAN or CVC handled by hosted provider fields"
+        ],
+        [
+          "Payment provider",
+          "Hosted inputs, authentication, and payment execution",
+          "Merchant order completion"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "Authoritative checkout model",
+      "text": "Editable fields request a quote. The server returns CheckoutQuote with quoteId and quoteVersion; that pair is frozen into CheckoutAttempt. One clientAttemptId and idempotencyKey identify the intent across retransmission. Browser, redirect, SDK, and BroadcastChannel events only trigger getAttempt or getOrder. A confirmed merchant order alone renders completion and begins fulfillment.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "steps",
+      "title": "Worked example: authentication return after a lost response",
+      "steps": [
+        {
+          "title": "Quote",
+          "text": "Shipping S1 produces quote q_18 version 4. The coordinator displays its server total and stores its identifiers, expiry, and lines. A local preview never changes the payable amount."
+        },
+        {
+          "title": "Create",
+          "text": "The first Pay intent creates ca_7 and idem_ca_7. The coordinator freezes quote version 4 and the payment-method reference, then submits once. A double-click cannot create another command."
+        },
+        {
+          "title": "Recover",
+          "text": "The response disappears after server acceptance. The UI shows checking and calls getAttempt with ca_7. A permitted retransmission repeats the unchanged command with idem_ca_7; uncertainty never creates ca_8."
+        },
+        {
+          "title": "Authenticate",
+          "text": "Attempt ca_7 requires bank action. The adapter opens authentication. On return, the route restores checkoutId and ca_7 and reads server status; provider values cannot confirm the order."
+        },
+        {
+          "title": "Confirm",
+          "text": "A provider webhook lets the merchant advance order o_31. The next status read reports succeeded. The coordinator renders the receipt and broadcasts an advisory observation."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/resilient-checkout-payment-flow/checkout-authority-flow.svg",
+      "alt": "Checkout authority flow from browser form through merchant backend and hosted payment provider to webhook-confirmed order state.",
+      "caption": "Authority flow: the browser carries intent, while quote and order truth return through the merchant backend.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: The form requests a versioned quote. Hosted fields return a payment-method reference. The backend creates one idempotent attempt; authentication and a webhook may follow. The browser reads merchant order status."
+    }
+  ]
+}

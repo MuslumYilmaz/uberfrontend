@@ -8690,6 +8690,32 @@
     "assetRef": "questions/system-design/cross-device-preferences-sync/meta.json"
   },
   {
+    "id": "resilient-checkout-payment-flow",
+    "family": "question",
+    "title": "Design a Resilient Checkout and Payment Flow",
+    "route": "/system-design/resilient-checkout-payment-flow",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Design a browser checkout that preserves quote authority, retries one payment intent safely, recovers status, protects card data, and handles multiple tabs.",
+    "tags": [
+      "ecommerce",
+      "forms",
+      "validation",
+      "state-management",
+      "frontend-architecture",
+      "api-calls",
+      "error-handling",
+      "security",
+      "accessibility",
+      "concurrency"
+    ],
+    "access": "free",
+    "estimatedMinutes": 15,
+    "updatedAt": "2026-08-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/resilient-checkout-payment-flow/meta.json"
+  },
+  {
     "id": "notification-toast-system",
     "family": "question",
     "title": "Design a Toast Notification System",

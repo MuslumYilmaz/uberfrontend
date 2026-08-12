@@ -1,0 +1,84 @@
+{
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The gateway exposes quote, creation, status, cancellation, and order operations without leaking provider objects into views. clientAttemptId enables lookup; idempotencyKey deduplicates commands. Required-action tokens exist only in transient responses and go directly to HostedPaymentFieldAdapter."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "interface CreateAttemptInput {\n  checkoutId: string;\n  quoteId: string;\n  quoteVersion: number;\n  clientAttemptId: string;\n  idempotencyKey: string;\n  paymentMethodReference: string;\n  returnUrl: string;\n  signal: AbortSignal;\n}\n\ninterface AttemptStatusResponse {\n  attempt: CheckoutAttempt;\n  requiredAction: { providerActionToken: string; expiresAt: string } | null;\n}\n\ninterface OrderStatus {\n  orderId: string;\n  checkoutId: string;\n  status: 'pending-payment' | 'confirmed' | 'payment-failed';\n  updatedAt: string;\n}\n\ninterface CheckoutGateway {\n  getQuote(input: { checkoutId: string; signal: AbortSignal }): Promise<CheckoutQuote>;\n  createAttempt(input: CreateAttemptInput): Promise<AttemptStatusResponse>;\n  getAttempt(input: { checkoutId: string; clientAttemptId: string; signal: AbortSignal }): Promise<AttemptStatusResponse>;\n  cancelAttempt(input: { checkoutId: string; clientAttemptId: string; signal: AbortSignal }): Promise<CheckoutAttempt>;\n  getOrder(input: { checkoutId: string; orderId: string; signal: AbortSignal }): Promise<OrderStatus>;\n}\n\ninterface HostedPaymentFieldAdapter {\n  mount(input: { container: HTMLElement; onError(message: string): void }): void;\n  createPaymentMethodReference(input: { signal: AbortSignal }): Promise<string>;\n  handleRequiredAction(input: { providerActionToken: string; signal: AbortSignal }): Promise<void>;\n  unmount(): void;\n}\n\ntype CrossTabCheckoutEvent =\n  | {\n      type: 'checkout.quote-observed';\n      checkoutId: string;\n      sourceTabId: string;\n      quoteVersion: number;\n      observedAt: string;\n    }\n  | {\n      type: 'checkout.attempt-observed';\n      checkoutId: string;\n      sourceTabId: string;\n      clientAttemptId: string;\n      phase: CheckoutPhase;\n      observedAt: string;\n    };",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "resilient-checkout-payment-flow-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Recovery-oriented request semantics",
+      "columns": [
+        "Operation",
+        "Required identity",
+        "Client behavior"
+      ],
+      "rows": [
+        [
+          "GET current quote",
+          "checkoutId",
+          "Replace the snapshot; require review after a version change"
+        ],
+        [
+          "POST payment attempt",
+          "quoteId, quoteVersion, clientAttemptId, and Idempotency-Key",
+          "Retain the command until server state is known"
+        ],
+        [
+          "GET payment attempt",
+          "checkoutId and clientAttemptId",
+          "Recover timeout, redirect, reconnect, or tab observations; consume action tokens transiently"
+        ],
+        [
+          "POST cancel attempt",
+          "checkoutId and clientAttemptId",
+          "Replace only after canceled; otherwise keep recovering the old attempt"
+        ],
+        [
+          "GET order",
+          "Merchant-issued checkoutId and orderId",
+          "Complete only when confirmed"
+        ]
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "Request and reconciliation path",
+      "steps": [
+        {
+          "title": "Quote before authorization",
+          "text": "Fetch after material cart or shipping changes. Cancel superseded reads, accept only the current input generation, and display returned totals exactly."
+        },
+        {
+          "title": "Create through one command",
+          "text": "Get an opaque hosted-field reference, freeze the quote pair, generate identities once, and send Idempotency-Key. Retain the command while its outcome is uncertain."
+        },
+        {
+          "title": "Read before retry",
+          "text": "After timeout, call getAttempt. A permitted retransmission repeats the same payload and key. Replace it only after merchant status reports failed, canceled, or quote-conflict, including successful cancelAttempt."
+        },
+        {
+          "title": "Restore after navigation",
+          "text": "The return route carries identities, not success. It reads attempt state, sends action tokens directly to the adapter, and reads order state after a merchant-issued orderId appears."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Accessible field-error contract",
+      "text": "Return stable field keys and readable messages. Put a text summary before the fields. The form links each summary item to its control, sets programmatic associations, and focuses the summary after submit failure. Preserve valid values. Adapter errors name the hosted control without exposing its value."
+    }
+  ]
+}

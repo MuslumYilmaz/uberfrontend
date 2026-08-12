@@ -27,6 +27,12 @@ const expectedScenarios = Object.freeze({
   "int-sd-autocomplete-race-mid-v1": { level: "mid", timeLimitSeconds: 900 },
   "int-sd-ai-chat-composer-mid-v1": { level: "mid", timeLimitSeconds: 900 },
   "int-sd-live-chart-pipeline-mid-v1": { level: "mid", timeLimitSeconds: 900 },
+  "int-sd-checkout-recovery-mid-v1": {
+    level: "mid",
+    timeLimitSeconds: 900,
+    minCards: 10,
+    decisionCount: 4,
+  },
   "int-sd-dashboard-layout-sr-v1": { level: "senior", timeLimitSeconds: 1200 },
   "int-sd-ranked-feed-sr-v1": { level: "senior", timeLimitSeconds: 1200 },
 });
@@ -1036,8 +1042,12 @@ export function validateBuiltSystemDesignContent(built) {
     if (
       scenario.clarifications.length < 6
       || scenario.requirements.length !== 6
-      || scenario.cards.length < 8
-      || scenario.decisions.length < 3
+      || scenario.cards.length < (expected.minCards || 8)
+      || (
+        expected.decisionCount == null
+          ? scenario.decisions.length < 3
+          : scenario.decisions.length !== expected.decisionCount
+      )
       || !uniqueIds(scenario.steps)
       || !uniqueIds(scenario.lanes)
       || !uniqueIds(scenario.clarifications)

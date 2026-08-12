@@ -509,6 +509,7 @@
 /system-design/notification-toast-system
 /system-design/offline-email-client
 /system-design/realtime-search-debounce-cache
+/system-design/resilient-checkout-payment-flow
 /system-design/scalable-notifications-feed
 /system-design/ui-component-state-from-mock
 /tools/cv

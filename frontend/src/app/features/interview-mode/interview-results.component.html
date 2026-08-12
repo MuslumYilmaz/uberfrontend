@@ -217,7 +217,8 @@
         role="note">
         This report uses partial evidence because the round
         {{ design.outcome === 'timed_out' ? 'reached its time limit' : 'ended before every checkpoint was completed' }}.
-        Missing evidence is shown as “Not evaluated” or “Needs focus”; it is not a hiring prediction.
+        Only captured evidence is scored, and partial rounds cannot receive the top practice signal.
+        This is not a hiring prediction.
       </p>
 
       <section class="report-section" aria-labelledby="your-design-title">

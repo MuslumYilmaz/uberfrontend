@@ -1,5 +1,72 @@
 [
   {
+    "id": "resilient-checkout-payment-flow",
+    "title": "Design a Resilient Checkout and Payment Flow",
+    "description": "Design a browser checkout that preserves quote authority, retries one payment intent safely, recovers status, protects card data, and handles multiple tabs.",
+    "discovery": {
+      "teaser": "A lost payment response and competing browser tabs must converge without duplicate charges, stale totals, exposed card data, or false completion.",
+      "guideLabel": "Trace payment attempt recovery"
+    },
+    "tags": [
+      "ecommerce",
+      "forms",
+      "validation",
+      "state-management",
+      "frontend-architecture",
+      "api-calls",
+      "error-handling",
+      "security",
+      "accessibility",
+      "concurrency"
+    ],
+    "type": "system-design",
+    "access": "free",
+    "publishedAt": "2026-08-12",
+    "updatedAt": "2026-08-12",
+    "difficulty": "intermediate",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "mid",
+      "timeboxMinutes": 15,
+      "candidatePrompt": "Design the browser checkout and payment flow for a cart whose prices, discounts, tax, shipping, and stock can change. A customer may double-click Pay, lose the creation response, return from bank authentication, or continue the same checkout in another tab. Assign authority among client state, merchant backend, and payment provider. Explain how stable attempt identity, quote conflicts, status recovery, hosted card fields, accessible errors, and cross-tab signals prevent duplicate charges or false success.",
+      "constraints": [
+        "Server quote sets totals and stock.",
+        "One payment keeps one attempt identity.",
+        "Redirects never prove payment success.",
+        "Card secrets stay inside provider fields."
+      ],
+      "expectedDecisions": [
+        "Separate editable checkout input, authoritative quote, payment attempt, and order state.",
+        "Reuse attempt and idempotency identities when a creation response is uncertain.",
+        "Reconcile redirects, webhooks, and cross-tab observations through merchant server reads."
+      ],
+      "prerequisites": [
+        "Async form state",
+        "HTTP retry basics",
+        "Hosted payment fields"
+      ],
+      "coreSkills": [
+        "Authority modeling",
+        "Idempotent recovery",
+        "Secure payment UX",
+        "Concurrent state reconciliation"
+      ],
+      "guidedMock": true,
+      "evaluationSpine": {
+        "mustCover": [
+          "Authoritative quote version gates every payment attempt.",
+          "Stable attempt and idempotency identities survive transport uncertainty."
+        ],
+        "strongSignals": [
+          "Lost responses trigger status reads or same-key retries, never a fresh charge.",
+          "Accessible errors preserve input; cross-tab messages only accelerate server reconciliation."
+        ],
+        "expertStretch": "Webhook-led fulfillment and multi-tab supersession without browser authority.",
+        "redFlag": "Redirect success or tab locks are treated as payment truth."
+      }
+    }
+  },
+  {
     "id": "offline-email-client",
     "title": "Gmail-Style Offline Email Client Frontend System Design",
     "description": "Design an offline-first web email client with normalized mailbox state, incremental sync, durable drafts, idempotent sending, safe message rendering, and accessible navigation.",

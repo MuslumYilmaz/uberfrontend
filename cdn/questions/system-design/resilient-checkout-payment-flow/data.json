@@ -1,0 +1,57 @@
+{
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Separate editable form state from server facts. CheckoutQuote is a replaceable snapshot, not a client calculation. CheckoutAttempt is durable recovery state and excludes action secrets. CheckoutPhase limits honest UI claims; quote-conflict returns control to review."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type CheckoutPhase =\n  | 'quoting'\n  | 'ready'\n  | 'submitting'\n  | 'requires-action'\n  | 'processing'\n  | 'succeeded'\n  | 'failed'\n  | 'canceled'\n  | 'quote-conflict';\n\ninterface CheckoutLineItem {\n  productId: string;\n  quantity: number;\n  unitPriceMinor: number;\n  lineTotalMinor: number;\n}\n\ninterface CheckoutQuote {\n  quoteId: string;\n  quoteVersion: number;\n  currency: string;\n  lineItems: CheckoutLineItem[];\n  subtotalMinor: number;\n  discountMinor: number;\n  taxMinor: number;\n  shippingMinor: number;\n  totalMinor: number;\n  expiresAt: string;\n}\n\ninterface CheckoutAttempt {\n  checkoutId: string;\n  clientAttemptId: string;\n  idempotencyKey: string;\n  quoteId: string;\n  quoteVersion: number;\n  phase: CheckoutPhase;\n  orderId: string | null;\n  failureCode: string | null;\n  updatedAt: string;\n}\n\ninterface CheckoutFormState {\n  email: string;\n  shippingAddress: Record<string, string>;\n  shippingOptionId: string | null;\n  fieldErrors: Record<string, string>;\n}\n\ninterface CheckoutViewState {\n  form: CheckoutFormState;\n  quote: CheckoutQuote | null;\n  attempt: CheckoutAttempt | null;\n  phase: CheckoutPhase;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "resilient-checkout-payment-flow-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Identity and authority matrix",
+      "columns": [
+        "Identity",
+        "Reuse rule",
+        "Reason"
+      ],
+      "rows": [
+        [
+          "quoteId + quoteVersion",
+          "Freeze for one attempt; replace with a new quote",
+          "The server can reject stale totals or availability"
+        ],
+        [
+          "clientAttemptId",
+          "Reuse while recovering the same Pay intent",
+          "A lost response remains recoverable"
+        ],
+        [
+          "idempotencyKey",
+          "Reuse with the identical attempt payload",
+          "Transport retry cannot duplicate provider work"
+        ],
+        [
+          "orderId",
+          "Accept only from merchant status",
+          "A return URL cannot imply an order"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Sensitive data is deliberately absent",
+      "text": "Durable models exclude PAN, CVC, provider field values, and action tokens. Hosted fields yield an opaque paymentMethodReference. The adapter consumes required-action tokens directly from responses; persistence and telemetry redact them. Sensitive values never enter form state, replay, analytics, URLs, browser storage, or cross-tab messages."
+    }
+  ]
+}

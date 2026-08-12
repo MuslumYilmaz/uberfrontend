@@ -1,44 +1,44 @@
 {
   "schemaVersion": "1.0.0",
   "registryId": "interview-system-design-registry-v1",
-  "registryVersion": "1.1.0",
+  "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+  "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
   "reviewBatch": {
-    "reviewedDefinitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
-    "reviewedAt": "2026-08-06",
+    "reviewedDefinitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
+    "reviewedAt": "2026-08-12",
     "technical": {
-      "reviewer": "codex-system-design-technical-v7",
+      "reviewer": "codex-system-design-technical-v8",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
-        "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-        "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-        "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-        "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+        "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+        "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+        "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+        "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
       ]
     },
     "blind": {
-      "reviewer": "codex-system-design-blind-v7",
+      "reviewer": "codex-system-design-blind-v8",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
-        "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-        "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-        "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-        "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+        "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+        "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+        "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+        "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
       ]
     },
     "editorial": {
-      "reviewer": "codex-system-design-editorial-v7",
+      "reviewer": "codex-system-design-editorial-v8",
       "reviewerType": "ai",
       "status": "passed",
       "notes": [
-        "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-        "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-        "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-        "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+        "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+        "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+        "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+        "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
       ]
     }
   },
@@ -116,7 +116,7 @@
   "scenarios": [
     {
       "id": "int-sd-toast-lifecycle-jr-v1",
-      "revision": 5,
+      "revision": 6,
       "level": "junior",
       "timeLimitSeconds": 600,
       "public": {
@@ -644,18 +644,13 @@
                   }
                 },
                 {
-                  "id": "toast-change-design",
+                  "id": "toast-confirm-safe-policy",
                   "weight": 2,
-                  "evidence": "Changed a relevant lifecycle or overflow decision after the production change.",
+                  "evidence": "Kept or adopted a safe lifecycle or overflow policy after the production change.",
                   "rule": {
                     "anyOf": [
                       {
                         "allOf": [
-                          {
-                            "predicate": "changedFromBaseline",
-                            "target": "decision",
-                            "id": "toast-timing"
-                          },
                           {
                             "predicate": "decisionSelected",
                             "decisionId": "toast-timing",
@@ -670,11 +665,6 @@
                       },
                       {
                         "allOf": [
-                          {
-                            "predicate": "changedFromBaseline",
-                            "target": "decision",
-                            "id": "toast-overflow"
-                          },
                           {
                             "predicate": "decisionSelected",
                             "decisionId": "toast-overflow",
@@ -1011,9 +1001,9 @@
                 },
                 {
                   "decisionId": "toast-overflow",
-                  "optionId": "toast-overflow-drop",
+                  "optionId": "toast-overflow-queue",
                   "rationaleIds": [
-                    "toast-rationale-newest"
+                    "toast-rationale-bounded"
                   ]
                 },
                 {
@@ -1470,7 +1460,7 @@
     },
     {
       "id": "int-sd-autocomplete-race-mid-v1",
-      "revision": 4,
+      "revision": 5,
       "level": "mid",
       "timeLimitSeconds": 900,
       "public": {
@@ -1842,23 +1832,51 @@
               ],
               "criteria": [
                 {
-                  "id": "search-place-controller",
+                  "id": "search-place-controller-and-ui",
                   "weight": 1,
-                  "evidence": "Placed query coordination in the state lane.",
+                  "evidence": "Placed query coordination in state and included both input and results UI boundaries.",
                   "rule": {
-                    "predicate": "cardInLane",
-                    "cardId": "search-controller",
-                    "laneId": "state"
+                    "allOf": [
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "search-controller",
+                        "laneId": "state"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "search-input",
+                        "laneId": "ui"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "search-results",
+                        "laneId": "ui"
+                      }
+                    ]
                   }
                 },
                 {
-                  "id": "search-owner-choice",
+                  "id": "search-owner-choice-and-ui",
                   "weight": 1,
-                  "evidence": "Selected one controller as the transition owner.",
+                  "evidence": "Selected one controller as transition owner while retaining both UI boundaries.",
                   "rule": {
-                    "predicate": "decisionSelected",
-                    "decisionId": "search-state-owner",
-                    "optionId": "search-owner-controller"
+                    "allOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "search-state-owner",
+                        "optionId": "search-owner-controller"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "search-input",
+                        "laneId": "ui"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "search-results",
+                        "laneId": "ui"
+                      }
+                    ]
                   }
                 }
               ]
@@ -1989,18 +2007,13 @@
                   }
                 },
                 {
-                  "id": "search-change-key",
+                  "id": "search-confirm-key-or-control",
                   "weight": 2,
-                  "evidence": "Changed cache identity or async ownership after the locale constraint.",
+                  "evidence": "Kept or adopted safe cache identity or async ownership after the locale constraint.",
                   "rule": {
                     "anyOf": [
                       {
                         "allOf": [
-                          {
-                            "predicate": "changedFromBaseline",
-                            "target": "decision",
-                            "id": "search-cache-identity"
-                          },
                           {
                             "predicate": "decisionSelected",
                             "decisionId": "search-cache-identity",
@@ -2015,11 +2028,6 @@
                       },
                       {
                         "allOf": [
-                          {
-                            "predicate": "changedFromBaseline",
-                            "target": "decision",
-                            "id": "search-async-control"
-                          },
                           {
                             "predicate": "decisionSelected",
                             "decisionId": "search-async-control",
@@ -2122,9 +2130,19 @@
                   "order": 0
                 },
                 {
-                  "cardId": "search-status",
+                  "cardId": "search-input",
                   "laneId": "ui",
                   "order": 0
+                },
+                {
+                  "cardId": "search-results",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "search-status",
+                  "laneId": "ui",
+                  "order": 2
                 }
               ],
               "connections": [
@@ -2212,9 +2230,19 @@
                   "order": 0
                 },
                 {
-                  "cardId": "search-status",
+                  "cardId": "search-input",
                   "laneId": "ui",
                   "order": 0
+                },
+                {
+                  "cardId": "search-results",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "search-status",
+                  "laneId": "ui",
+                  "order": 2
                 }
               ],
               "connections": [
@@ -2290,9 +2318,14 @@
                   "order": 0
                 },
                 {
-                  "cardId": "search-status",
+                  "cardId": "search-results",
                   "laneId": "ui",
                   "order": 1
+                },
+                {
+                  "cardId": "search-status",
+                  "laneId": "ui",
+                  "order": 2
                 },
                 {
                   "cardId": "search-controller",
@@ -2330,9 +2363,9 @@
               "decisions": [
                 {
                   "decisionId": "search-async-control",
-                  "optionId": "search-async-debounce",
+                  "optionId": "search-async-generation",
                   "rationaleIds": [
-                    "search-rationale-fewer-starts"
+                    "search-rationale-correctness"
                   ]
                 },
                 {
@@ -2379,9 +2412,14 @@
                   "order": 0
                 },
                 {
-                  "cardId": "search-status",
+                  "cardId": "search-results",
                   "laneId": "ui",
                   "order": 1
+                },
+                {
+                  "cardId": "search-status",
+                  "laneId": "ui",
+                  "order": 2
                 },
                 {
                   "cardId": "search-controller",
@@ -4381,7 +4419,7 @@
     },
     {
       "id": "int-sd-ranked-feed-sr-v1",
-      "revision": 4,
+      "revision": 5,
       "level": "senior",
       "timeLimitSeconds": 1200,
       "public": {
@@ -4692,29 +4730,29 @@
           }
         ],
         "twist": {
-          "id": "feed-live-rerank",
-          "title": "Production change: live ranking while reading",
-          "prompt": "A live ranking version inserts and removes items above the current viewport while images are still changing height. Adapt the design so fresh content is discoverable without moving the reader or corrupting pagination.",
+          "id": "feed-anchor-removal",
+          "title": "Production change: the active anchor is removed",
+          "prompt": "A moderation event removes the item currently anchoring the reader's viewport while late image measurements settle above it. Adapt the design so focus and reading position recover to a surviving neighbor, and commit the authoritative removal without corrupting cursor membership.",
           "responseActions": [
             {
-              "id": "feed-twist-anchor",
-              "label": "Preserve item identity and offset",
-              "description": "Correct geometry relative to the anchored item after measurements change."
+              "id": "feed-twist-neighbor-anchor",
+              "label": "Promote a surviving neighbor anchor",
+              "description": "Choose the next stable item, or the previous item as fallback, and preserve its viewport offset."
             },
             {
-              "id": "feed-twist-stage",
-              "label": "Stage the incoming ordering version",
-              "description": "Offer a controlled reveal while preserving the active reading window."
+              "id": "feed-twist-reconcile-removal",
+              "label": "Reconcile removal with page identity",
+              "description": "Commit the server version, entity removal, and cursor-page membership as one transition."
             },
             {
-              "id": "feed-twist-immediate",
-              "label": "Apply ranking moves as received",
-              "description": "Reconcile visible order when each ranking event reaches the client."
+              "id": "feed-twist-retain-removed",
+              "label": "Keep the removed item as anchor",
+              "description": "Retain a local copy in the visible order until the reader leaves the current window."
             },
             {
               "id": "feed-twist-reset",
               "label": "Reset reading position to top",
-              "description": "Start from the newest version when ordering changes."
+              "description": "Start from the newest version when ordering changes and restore focus to its first item."
             }
           ]
         },
@@ -4765,24 +4803,62 @@
               ],
               "criteria": [
                 {
-                  "id": "feed-place-controller",
+                  "id": "feed-place-controller-and-models",
                   "weight": 1,
-                  "evidence": "Placed request admission in the state boundary.",
+                  "evidence": "Placed request admission in state and included view, entity, and page-model boundaries.",
                   "rule": {
-                    "predicate": "cardInLane",
-                    "cardId": "feed-controller",
-                    "laneId": "state"
+                    "allOf": [
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "feed-controller",
+                        "laneId": "state"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "feed-view",
+                        "laneId": "ui"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "feed-entities",
+                        "laneId": "data"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "feed-pages",
+                        "laneId": "data"
+                      }
+                    ]
                   }
                 },
                 {
-                  "id": "feed-controller-gate",
+                  "id": "feed-controller-gate-and-models",
                   "weight": 1,
-                  "evidence": "Connected feed intent to a dedicated request gate.",
+                  "evidence": "Connected feed intent to a request gate while retaining all three rendering-model boundaries.",
                   "rule": {
-                    "predicate": "connectionExists",
-                    "fromCardId": "feed-controller",
-                    "toCardId": "feed-request-gate",
-                    "typeId": "event-flow"
+                    "allOf": [
+                      {
+                        "predicate": "connectionExists",
+                        "fromCardId": "feed-controller",
+                        "toCardId": "feed-request-gate",
+                        "typeId": "event-flow"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "feed-view",
+                        "laneId": "ui"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "feed-entities",
+                        "laneId": "data"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "feed-pages",
+                        "laneId": "data"
+                      }
+                    ]
                   }
                 }
               ]
@@ -4890,38 +4966,33 @@
               "id": "adaptation-tradeoffs",
               "title": "Adaptation and trade-offs",
               "remediationTopics": [
-                "Live-rank staging",
-                "Stable anchors under geometry change"
+                "Removed-anchor recovery",
+                "Atomic page-membership reconciliation"
               ],
               "criteria": [
                 {
                   "id": "feed-twist-safe",
                   "weight": 1,
-                  "evidence": "Preserved the anchor and staged live ordering.",
+                  "evidence": "Promoted a surviving anchor and reconciled authoritative page membership.",
                   "rule": {
                     "allOf": [
                       {
                         "predicate": "twistActionSelected",
-                        "actionId": "feed-twist-anchor"
+                        "actionId": "feed-twist-neighbor-anchor"
                       },
                       {
                         "predicate": "twistActionSelected",
-                        "actionId": "feed-twist-stage"
+                        "actionId": "feed-twist-reconcile-removal"
                       }
                     ]
                   }
                 },
                 {
-                  "id": "feed-change-order",
+                  "id": "feed-confirm-order-policy",
                   "weight": 2,
-                  "evidence": "Changed ranking policy after the live-update constraint.",
+                  "evidence": "Kept or adopted a reading-safe ordering policy after the removal constraint.",
                   "rule": {
                     "allOf": [
-                      {
-                        "predicate": "changedFromBaseline",
-                        "target": "decision",
-                        "id": "feed-order-change"
-                      },
                       {
                         "predicate": "decisionSelected",
                         "decisionId": "feed-order-change",
@@ -4960,6 +5031,20 @@
                     "optionId": "feed-merge-append"
                   }
                 ]
+              }
+            },
+            {
+              "id": "feed-critical-retained-anchor",
+              "severity": "critical",
+              "axisIds": [
+                "architecture-ownership",
+                "accessibility-product-ux",
+                "adaptation-tradeoffs"
+              ],
+              "summary": "Retaining a server-removed anchor leaves focus and page membership attached to a nonexistent ranked item.",
+              "rule": {
+                "predicate": "twistActionSelected",
+                "actionId": "feed-twist-retain-removed"
               }
             },
             {
@@ -5016,6 +5101,11 @@
                   "order": 1
                 },
                 {
+                  "cardId": "feed-view",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
                   "cardId": "feed-api",
                   "laneId": "external",
                   "order": 0
@@ -5024,6 +5114,16 @@
                   "cardId": "feed-measurements",
                   "laneId": "data",
                   "order": 0
+                },
+                {
+                  "cardId": "feed-entities",
+                  "laneId": "data",
+                  "order": 1
+                },
+                {
+                  "cardId": "feed-pages",
+                  "laneId": "data",
+                  "order": 2
                 }
               ],
               "connections": [
@@ -5105,6 +5205,11 @@
                   "order": 1
                 },
                 {
+                  "cardId": "feed-view",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
                   "cardId": "feed-api",
                   "laneId": "external",
                   "order": 0
@@ -5113,6 +5218,16 @@
                   "cardId": "feed-measurements",
                   "laneId": "data",
                   "order": 0
+                },
+                {
+                  "cardId": "feed-entities",
+                  "laneId": "data",
+                  "order": 1
+                },
+                {
+                  "cardId": "feed-pages",
+                  "laneId": "data",
+                  "order": 2
                 }
               ],
               "connections": [
@@ -5158,8 +5273,8 @@
                 }
               ],
               "twistResponseActionIds": [
-                "feed-twist-anchor",
-                "feed-twist-stage"
+                "feed-twist-neighbor-anchor",
+                "feed-twist-reconcile-removal"
               ],
               "scratchpad": "Apply the new version only behind the current anchor."
             }
@@ -5202,9 +5317,14 @@
                   "order": 1
                 },
                 {
-                  "cardId": "feed-pages",
+                  "cardId": "feed-entities",
                   "laneId": "data",
                   "order": 0
+                },
+                {
+                  "cardId": "feed-pages",
+                  "laneId": "data",
+                  "order": 1
                 },
                 {
                   "cardId": "feed-api",
@@ -5248,9 +5368,9 @@
                 },
                 {
                   "decisionId": "feed-order-change",
-                  "optionId": "feed-order-arrival",
+                  "optionId": "feed-order-stage",
                   "rationaleIds": [
-                    "feed-rationale-no-version"
+                    "feed-rationale-reading-context"
                   ]
                 }
               ],
@@ -5291,9 +5411,14 @@
                   "order": 1
                 },
                 {
-                  "cardId": "feed-pages",
+                  "cardId": "feed-entities",
                   "laneId": "data",
                   "order": 0
+                },
+                {
+                  "cardId": "feed-pages",
+                  "laneId": "data",
+                  "order": 1
                 },
                 {
                   "cardId": "feed-api",
@@ -5344,8 +5469,8 @@
                 }
               ],
               "twistResponseActionIds": [
-                "feed-twist-anchor",
-                "feed-twist-stage"
+                "feed-twist-neighbor-anchor",
+                "feed-twist-reconcile-removal"
               ],
               "scratchpad": "Reload evicted pages from a known cursor boundary."
             }
@@ -5463,7 +5588,7 @@
                 }
               ],
               "twistResponseActionIds": [
-                "feed-twist-anchor"
+                "feed-twist-neighbor-anchor"
               ],
               "scratchpad": ""
             }
@@ -5628,8 +5753,8 @@
                 }
               ],
               "twistResponseActionIds": [
-                "feed-twist-anchor",
-                "feed-twist-stage"
+                "feed-twist-retain-removed",
+                "feed-twist-reset"
               ],
               "scratchpad": ""
             }
@@ -11139,6 +11264,1871 @@
               "license": "W3C Document License",
               "role": "Validate semantic alternatives and detailed descriptions for charts",
               "accessedAt": "2026-08-04"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "int-sd-checkout-recovery-mid-v1",
+      "revision": 1,
+      "level": "mid",
+      "timeLimitSeconds": 900,
+      "public": {
+        "title": "Design a Resilient Checkout and Payment Flow",
+        "prompt": "Design the browser-side checkout flow for a commerce application. Prices, shipping, tax, discounts, and availability can change while the user pays; duplicate clicks and lost responses must not create duplicate charges. The payment provider may redirect away for bank verification, and the same checkout can be open in two tabs. Explain quote authority, payment-attempt identity, recovery after return, sensitive-data boundaries, and accessible error handling.",
+        "clarifications": [
+          {
+            "id": "checkout-price-authority",
+            "prompt": "Which system owns the final price, discount, tax, shipping, and stock decision?"
+          },
+          {
+            "id": "checkout-attempt-uncertainty",
+            "prompt": "What can happen when the create-payment response is lost after the server receives it?"
+          },
+          {
+            "id": "checkout-provider-return",
+            "prompt": "What information does the browser receive after bank verification or a provider redirect?"
+          },
+          {
+            "id": "checkout-inventory-window",
+            "prompt": "Can availability or fulfillment choices change while payment is in progress?"
+          },
+          {
+            "id": "checkout-card-data",
+            "prompt": "Which sensitive payment fields may application code, logs, or storage observe?"
+          },
+          {
+            "id": "checkout-multi-tab",
+            "prompt": "Can one shopper change or submit the same checkout from multiple tabs?"
+          },
+          {
+            "id": "checkout-error-recovery",
+            "prompt": "How should validation, quote conflicts, and payment failures be presented and corrected?"
+          }
+        ],
+        "requirements": [
+          {
+            "id": "checkout-authoritative-quote",
+            "title": "Authoritative versioned quote",
+            "description": "The browser submits a server-issued quote version and requires explicit review when totals or availability change."
+          },
+          {
+            "id": "checkout-idempotent-attempt",
+            "title": "Idempotent payment attempt",
+            "description": "Retries for one user intent reuse stable identity so response loss and duplicate clicks do not duplicate payment work."
+          },
+          {
+            "id": "checkout-explicit-lifecycle",
+            "title": "Recoverable payment lifecycle",
+            "description": "Pending, action-required, succeeded, failed, and quote-conflict states can be resumed from merchant server state."
+          },
+          {
+            "id": "checkout-provider-boundary",
+            "title": "Provider-owned sensitive fields",
+            "description": "Card secrets stay inside hosted or embedded provider surfaces and outside application state, logs, and browser storage."
+          },
+          {
+            "id": "checkout-accessible-errors",
+            "title": "Accessible correction path",
+            "description": "Errors identify affected fields, preserve correctable input, move focus deliberately, and expose status without relying on color."
+          },
+          {
+            "id": "checkout-cross-tab-recovery",
+            "title": "Server-backed tab reconciliation",
+            "description": "Tabs may exchange hints, but each return or retry reconciles quote, attempt, and order state with the merchant backend."
+          }
+        ],
+        "cards": [
+          {
+            "id": "checkout-form",
+            "title": "Checkout form",
+            "description": "Collects fulfillment choices and emits review or submit intent."
+          },
+          {
+            "id": "checkout-status-view",
+            "title": "Payment status view",
+            "description": "Renders processing, action-required, success, and failure states."
+          },
+          {
+            "id": "checkout-error-summary",
+            "title": "Error summary and field links",
+            "description": "Names correction targets and provides deliberate focus movement."
+          },
+          {
+            "id": "checkout-coordinator",
+            "title": "Checkout coordinator",
+            "description": "Owns browser transitions and accepts only current server state."
+          },
+          {
+            "id": "checkout-attempt-registry",
+            "title": "Attempt identity registry",
+            "description": "Retains client attempt identity and the latest merchant status."
+          },
+          {
+            "id": "checkout-tab-channel",
+            "title": "Cross-tab hint channel",
+            "description": "Shares same-origin progress hints without becoming a correctness authority."
+          },
+          {
+            "id": "checkout-quote-snapshot",
+            "title": "Versioned quote snapshot",
+            "description": "Holds display totals and the server version submitted with payment intent."
+          },
+          {
+            "id": "checkout-client",
+            "title": "Merchant API client",
+            "description": "Carries quote, attempt, and status commands with stable identities."
+          },
+          {
+            "id": "checkout-telemetry",
+            "title": "Checkout telemetry",
+            "description": "Records state transitions and identifiers without sensitive card values."
+          },
+          {
+            "id": "checkout-merchant-api",
+            "title": "Merchant checkout API",
+            "description": "Owns quotes, payment attempts, order status, and idempotent command handling."
+          },
+          {
+            "id": "checkout-hosted-payment",
+            "title": "Hosted payment page",
+            "description": "Collects payment details and redirects through provider-managed UI."
+          },
+          {
+            "id": "checkout-embedded-fields",
+            "title": "Embedded provider fields",
+            "description": "Collects payment details inside isolated provider-controlled elements."
+          },
+          {
+            "id": "checkout-direct-card-fields",
+            "title": "Application-owned card fields",
+            "description": "Places PAN and security-code values inside feature-owned controls and state."
+          },
+          {
+            "id": "checkout-provider-webhook",
+            "title": "Provider webhook path",
+            "description": "Delivers asynchronous payment outcomes to the merchant backend."
+          }
+        ],
+        "decisions": [
+          {
+            "id": "checkout-quote-authority",
+            "title": "Quote authority",
+            "prompt": "How should the browser submit totals that may have changed?",
+            "options": [
+              {
+                "id": "checkout-quote-versioned",
+                "label": "Submit a versioned server quote",
+                "description": "Bind payment creation to server totals and surface a conflict for explicit review."
+              },
+              {
+                "id": "checkout-quote-client",
+                "label": "Recompute totals in the browser",
+                "description": "Derive tax, discounts, shipping, and stock from the latest client-side inputs."
+              },
+              {
+                "id": "checkout-quote-submit-only",
+                "label": "Reprice only during final submit",
+                "description": "Send raw cart inputs and replace displayed totals after payment creation starts."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "checkout-rationale-version-bind",
+                "label": "Bind totals to an explicit server version"
+              },
+              {
+                "id": "checkout-rationale-client-feedback",
+                "label": "Keep pricing feedback immediate inside the browser"
+              },
+              {
+                "id": "checkout-rationale-fewer-quotes",
+                "label": "Reduce quote requests during fulfillment field editing"
+              }
+            ]
+          },
+          {
+            "id": "checkout-attempt-identity",
+            "title": "Payment attempt identity",
+            "prompt": "How should duplicate submit and uncertain retries identify one user intent?",
+            "options": [
+              {
+                "id": "checkout-attempt-stable-intent",
+                "label": "Reuse one intent identity",
+                "description": "Keep a client attempt ID and idempotency key stable through uncertain retries."
+              },
+              {
+                "id": "checkout-attempt-per-click",
+                "label": "Create identity for each click",
+                "description": "Treat a repeated interaction as a separate payment creation command."
+              },
+              {
+                "id": "checkout-attempt-browser-session",
+                "label": "Share one browser-session identity",
+                "description": "Use one key across payment intents until the browsing session expires."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "checkout-rationale-retry-intent",
+                "label": "Retry one user intent with stable identity"
+              },
+              {
+                "id": "checkout-rationale-independent-clicks",
+                "label": "Separate clicks as independent payment operations"
+              },
+              {
+                "id": "checkout-rationale-session-scope",
+                "label": "Scope payment state to one browsing session"
+              }
+            ]
+          },
+          {
+            "id": "checkout-result-authority",
+            "title": "Completion authority",
+            "prompt": "What proves the payment and order outcome after provider interaction?",
+            "options": [
+              {
+                "id": "checkout-result-server-status",
+                "label": "Reconcile merchant server status",
+                "description": "Read attempt and order state after return while webhooks advance backend truth."
+              },
+              {
+                "id": "checkout-result-provider-sdk",
+                "label": "Accept the provider SDK result",
+                "description": "Render the callback outcome immediately and refresh merchant state later."
+              },
+              {
+                "id": "checkout-result-redirect",
+                "label": "Infer status from redirect destination",
+                "description": "Treat arrival on the success route as proof that payment completed."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "checkout-rationale-merchant-authority",
+                "label": "Treat merchant state as the completion authority"
+              },
+              {
+                "id": "checkout-rationale-fast-provider",
+                "label": "Use provider callbacks for immediate visual feedback"
+              },
+              {
+                "id": "checkout-rationale-route-outcome",
+                "label": "Let navigation destination imply the final outcome"
+              }
+            ]
+          },
+          {
+            "id": "checkout-payment-surface",
+            "title": "Sensitive payment surface",
+            "prompt": "Where should card details be collected?",
+            "options": [
+              {
+                "id": "checkout-surface-hosted",
+                "label": "Use a hosted provider page",
+                "description": "Redirect to provider UI and recover merchant state after the return."
+              },
+              {
+                "id": "checkout-surface-embedded",
+                "label": "Use embedded provider fields",
+                "description": "Keep branded layout while isolated elements collect and tokenize sensitive values."
+              },
+              {
+                "id": "checkout-surface-direct",
+                "label": "Use application-owned card inputs",
+                "description": "Store field values in feature state and send them through merchant services."
+              }
+            ],
+            "rationales": [
+              {
+                "id": "checkout-rationale-minimize-card-contact",
+                "label": "Minimize sensitive-data contact in application code"
+              },
+              {
+                "id": "checkout-rationale-branded-provider",
+                "label": "Keep branded controls without handling card secrets"
+              },
+              {
+                "id": "checkout-rationale-own-card-flow",
+                "label": "Own validation and submission inside the feature"
+              }
+            ]
+          }
+        ],
+        "frameworkLenses": {
+          "core-web": {
+            "title": "Core Web implementation lens",
+            "prompt": "Which modules own attempt identity, redirect recovery, provider elements, focus, and BroadcastChannel cleanup without framework lifecycle support?"
+          },
+          "react": {
+            "title": "React implementation lens",
+            "prompt": "How will external server state, provider elements, effects, and submit transitions avoid duplicate commands or stale closures?"
+          },
+          "angular": {
+            "title": "Angular implementation lens",
+            "prompt": "Which service scope owns the checkout machine, and how will RxJS or signals reject stale quote and attempt completions?"
+          },
+          "vue": {
+            "title": "Vue implementation lens",
+            "prompt": "Which composable owns recovery and provider lifecycles while refs expose only non-sensitive checkout state?"
+          }
+        }
+      },
+      "private": {
+        "sourceContentId": "resilient-checkout-payment-flow",
+        "expectedSourceBundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea",
+        "clarificationAnswers": [
+          {
+            "clarificationId": "checkout-price-authority",
+            "answer": "The merchant backend calculates a quote with an opaque version covering price, promotions, tax, shipping, and stock."
+          },
+          {
+            "clarificationId": "checkout-attempt-uncertainty",
+            "answer": "The command may have committed even when the browser receives no response, so transport retry is not proof of a new payment intent."
+          },
+          {
+            "clarificationId": "checkout-provider-return",
+            "answer": "The return carries correlation information and a provider-facing result, but the browser must read current merchant state before claiming success."
+          },
+          {
+            "clarificationId": "checkout-inventory-window",
+            "answer": "Shipping choice, inventory, or promotion eligibility can change until the merchant commits the order boundary."
+          },
+          {
+            "clarificationId": "checkout-card-data",
+            "answer": "PAN and security-code values remain inside provider-owned collection surfaces and are excluded from application state, logs, analytics, and persistence."
+          },
+          {
+            "clarificationId": "checkout-multi-tab",
+            "answer": "Two same-origin tabs may hold different quote and attempt versions; browser messaging can improve responsiveness but cannot settle correctness."
+          },
+          {
+            "clarificationId": "checkout-error-recovery",
+            "answer": "The flow preserves correctable values, identifies fields in text, links a summary to controls, and distinguishes validation, quote, and payment outcomes."
+          }
+        ],
+        "twist": {
+          "id": "checkout-cross-tab-return",
+          "title": "Production change: stale bank return across tabs",
+          "prompt": "Tab A returns from bank verification for an older quote and payment attempt. While it was away, Tab B selected new shipping, received a new quote, and started another attempt. A BroadcastChannel message may arrive late or not at all. Reconcile the browser without treating a redirect, peer message, or local lock as payment truth.",
+          "responseActions": [
+            {
+              "id": "checkout-twist-read-server-state",
+              "label": "Fetch authoritative checkout state",
+              "description": "Reload quote, attempt, and order status from the merchant backend before presenting an outcome."
+            },
+            {
+              "id": "checkout-twist-reconcile-attempts",
+              "label": "Reconcile both attempt identities",
+              "description": "Compare returned and current attempt IDs, then mark stale UI without discarding valid server progress."
+            },
+            {
+              "id": "checkout-twist-trust-tab-lock",
+              "label": "Trust the peer-tab lock",
+              "description": "Treat a local storage lease as permission to skip the merchant status read."
+            },
+            {
+              "id": "checkout-twist-new-attempt",
+              "label": "Start a replacement payment",
+              "description": "Create a fresh attempt when the bank return lacks an immediate success signal."
+            }
+          ]
+        },
+        "rubric": {
+          "axes": [
+            {
+              "id": "requirement-discovery",
+              "title": "Requirement discovery",
+              "remediationTopics": [
+                "Uncertain payment outcomes",
+                "Quote and attempt priorities"
+              ],
+              "criteria": [
+                {
+                  "id": "checkout-discover-uncertainty",
+                  "weight": 1,
+                  "evidence": "Clarified what response loss means after payment creation may have committed.",
+                  "rule": {
+                    "predicate": "clarificationSelected",
+                    "clarificationId": "checkout-attempt-uncertainty"
+                  }
+                },
+                {
+                  "id": "checkout-prioritize-authority",
+                  "weight": 1,
+                  "evidence": "Prioritized both quote authority and idempotent attempt identity.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "requirementPrioritized",
+                        "requirementId": "checkout-authoritative-quote"
+                      },
+                      {
+                        "predicate": "requirementPrioritized",
+                        "requirementId": "checkout-idempotent-attempt"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "architecture-ownership",
+              "title": "Architecture and ownership",
+              "remediationTopics": [
+                "Checkout transition ownership",
+                "Provider-surface boundaries"
+              ],
+              "criteria": [
+                {
+                  "id": "checkout-place-owners",
+                  "weight": 1,
+                  "evidence": "Placed the coordinator and attempt identity registry in the state boundary.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "checkout-coordinator",
+                        "laneId": "state"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "checkout-attempt-registry",
+                        "laneId": "state"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "checkout-provider-architecture",
+                  "weight": 1,
+                  "evidence": "Matched an accepted provider surface decision with its external boundary.",
+                  "rule": {
+                    "anyOf": [
+                      {
+                        "allOf": [
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "checkout-payment-surface",
+                            "optionId": "checkout-surface-hosted"
+                          },
+                          {
+                            "predicate": "cardInLane",
+                            "cardId": "checkout-hosted-payment",
+                            "laneId": "external"
+                          }
+                        ]
+                      },
+                      {
+                        "allOf": [
+                          {
+                            "predicate": "decisionSelected",
+                            "decisionId": "checkout-payment-surface",
+                            "optionId": "checkout-surface-embedded"
+                          },
+                          {
+                            "predicate": "cardInLane",
+                            "cardId": "checkout-embedded-fields",
+                            "laneId": "external"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "data-interface-contracts",
+              "title": "Data and interface contracts",
+              "remediationTopics": [
+                "Versioned quote commands",
+                "Stable idempotency identity"
+              ],
+              "criteria": [
+                {
+                  "id": "checkout-versioned-quote",
+                  "weight": 1,
+                  "evidence": "Selected a version-bound server quote and its authority rationale.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "checkout-quote-authority",
+                        "optionId": "checkout-quote-versioned"
+                      },
+                      {
+                        "predicate": "rationaleSelected",
+                        "decisionId": "checkout-quote-authority",
+                        "rationaleId": "checkout-rationale-version-bind"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "checkout-stable-attempt",
+                  "weight": 1,
+                  "evidence": "Selected stable payment-intent identity for uncertain retries.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "checkout-attempt-identity",
+                        "optionId": "checkout-attempt-stable-intent"
+                      },
+                      {
+                        "predicate": "rationaleSelected",
+                        "decisionId": "checkout-attempt-identity",
+                        "rationaleId": "checkout-rationale-retry-intent"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "resilience-performance",
+              "title": "Resilience and performance",
+              "remediationTopics": [
+                "Server-reconciled completion",
+                "Webhook-backed recovery"
+              ],
+              "criteria": [
+                {
+                  "id": "checkout-server-result",
+                  "weight": 1,
+                  "evidence": "Selected merchant server state as the completion authority.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "checkout-result-authority",
+                        "optionId": "checkout-result-server-status"
+                      },
+                      {
+                        "predicate": "rationaleSelected",
+                        "decisionId": "checkout-result-authority",
+                        "rationaleId": "checkout-rationale-merchant-authority"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "checkout-status-paths",
+                  "weight": 1,
+                  "evidence": "Connected the merchant client and provider webhook to the backend authority.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "connectionExists",
+                        "fromCardId": "checkout-client",
+                        "toCardId": "checkout-merchant-api",
+                        "typeId": "data-flow"
+                      },
+                      {
+                        "predicate": "connectionExists",
+                        "fromCardId": "checkout-provider-webhook",
+                        "toCardId": "checkout-merchant-api",
+                        "typeId": "event-flow"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "accessibility-product-ux",
+              "title": "Accessibility and product UX",
+              "remediationTopics": [
+                "Error identification and focus",
+                "Recoverable payment status"
+              ],
+              "criteria": [
+                {
+                  "id": "checkout-prioritize-errors",
+                  "weight": 1,
+                  "evidence": "Prioritized the accessible correction path.",
+                  "rule": {
+                    "predicate": "requirementPrioritized",
+                    "requirementId": "checkout-accessible-errors"
+                  }
+                },
+                {
+                  "id": "checkout-error-boundaries",
+                  "weight": 1,
+                  "evidence": "Included both status and linked error-summary UI boundaries.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "checkout-status-view",
+                        "laneId": "ui"
+                      },
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "checkout-error-summary",
+                        "laneId": "ui"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "adaptation-tradeoffs",
+              "title": "Adaptation and trade-offs",
+              "remediationTopics": [
+                "Cross-tab server reconciliation",
+                "BroadcastChannel as a hint"
+              ],
+              "criteria": [
+                {
+                  "id": "checkout-reconcile-tabs",
+                  "weight": 1,
+                  "evidence": "Read authoritative state and correlated both payment attempts after the stale return.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "twistActionSelected",
+                        "actionId": "checkout-twist-read-server-state"
+                      },
+                      {
+                        "predicate": "twistActionSelected",
+                        "actionId": "checkout-twist-reconcile-attempts"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "checkout-hint-not-authority",
+                  "weight": 2,
+                  "evidence": "Kept cross-tab messaging as a coordinator hint while merchant state remained authoritative.",
+                  "rule": {
+                    "allOf": [
+                      {
+                        "predicate": "cardInLane",
+                        "cardId": "checkout-tab-channel",
+                        "laneId": "state"
+                      },
+                      {
+                        "predicate": "connectionExists",
+                        "fromCardId": "checkout-tab-channel",
+                        "toCardId": "checkout-coordinator",
+                        "typeId": "event-flow"
+                      },
+                      {
+                        "predicate": "decisionSelected",
+                        "decisionId": "checkout-result-authority",
+                        "optionId": "checkout-result-server-status"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "contradictions": [
+            {
+              "id": "checkout-critical-redirect-success",
+              "severity": "critical",
+              "axisIds": [
+                "resilience-performance",
+                "adaptation-tradeoffs"
+              ],
+              "summary": "A redirect destination cannot prove the merchant payment or order outcome.",
+              "rule": {
+                "predicate": "decisionSelected",
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-redirect"
+              }
+            },
+            {
+              "id": "checkout-critical-direct-card-data",
+              "severity": "critical",
+              "axisIds": [
+                "architecture-ownership",
+                "data-interface-contracts"
+              ],
+              "summary": "Feature-owned PAN and security-code state violates the required provider data boundary.",
+              "rule": {
+                "predicate": "decisionSelected",
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-direct"
+              }
+            },
+            {
+              "id": "checkout-critical-return-retry",
+              "severity": "critical",
+              "axisIds": [
+                "data-interface-contracts",
+                "resilience-performance",
+                "adaptation-tradeoffs"
+              ],
+              "summary": "Creating a replacement attempt on an uncertain return can duplicate payment work.",
+              "rule": {
+                "predicate": "twistActionSelected",
+                "actionId": "checkout-twist-new-attempt"
+              }
+            },
+            {
+              "id": "checkout-critical-tab-lock",
+              "severity": "critical",
+              "axisIds": [
+                "architecture-ownership",
+                "adaptation-tradeoffs"
+              ],
+              "summary": "A browser lock cannot replace merchant reconciliation across crashes, expiry, or missed tab messages.",
+              "rule": {
+                "predicate": "twistActionSelected",
+                "actionId": "checkout-twist-trust-tab-lock"
+              }
+            }
+          ]
+        },
+        "validationFixtures": [
+          {
+            "id": "checkout-strong-hosted",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "checkout-price-authority",
+                "checkout-attempt-uncertainty",
+                "checkout-provider-return"
+              ],
+              "priorityRequirementIds": [
+                "checkout-authoritative-quote",
+                "checkout-idempotent-attempt",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-form",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-attempt-registry",
+                  "laneId": "state",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-tab-channel",
+                  "laneId": "state",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-quote-snapshot",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-hosted-payment",
+                  "laneId": "external",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-provider-webhook",
+                  "laneId": "external",
+                  "order": 2
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-form",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-quote-snapshot",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-attempt-registry",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-hosted-payment",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-provider-webhook",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-status-view",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-error-summary",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-tab-channel",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-stable-intent",
+                  "rationaleIds": [
+                    "checkout-rationale-retry-intent"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-server-status",
+                  "rationaleIds": [
+                    "checkout-rationale-merchant-authority"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-hosted",
+                  "rationaleIds": [
+                    "checkout-rationale-minimize-card-contact"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "checkout-price-authority",
+                "checkout-attempt-uncertainty",
+                "checkout-provider-return"
+              ],
+              "priorityRequirementIds": [
+                "checkout-authoritative-quote",
+                "checkout-idempotent-attempt",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-form",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-attempt-registry",
+                  "laneId": "state",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-tab-channel",
+                  "laneId": "state",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-quote-snapshot",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-hosted-payment",
+                  "laneId": "external",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-provider-webhook",
+                  "laneId": "external",
+                  "order": 2
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-form",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-quote-snapshot",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-attempt-registry",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-hosted-payment",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-provider-webhook",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-status-view",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-error-summary",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-tab-channel",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-stable-intent",
+                  "rationaleIds": [
+                    "checkout-rationale-retry-intent"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-server-status",
+                  "rationaleIds": [
+                    "checkout-rationale-merchant-authority"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-hosted",
+                  "rationaleIds": [
+                    "checkout-rationale-minimize-card-contact"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [
+                "checkout-twist-read-server-state",
+                "checkout-twist-reconcile-attempts"
+              ],
+              "scratchpad": "Return is pending until merchant state resolves both attempt IDs."
+            }
+          },
+          {
+            "id": "checkout-strong-embedded",
+            "kind": "strong",
+            "expectedSignal": "Strong System Design Session",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "checkout-attempt-uncertainty",
+                "checkout-card-data",
+                "checkout-multi-tab"
+              ],
+              "priorityRequirementIds": [
+                "checkout-idempotent-attempt",
+                "checkout-authoritative-quote",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-form",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-attempt-registry",
+                  "laneId": "state",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-tab-channel",
+                  "laneId": "state",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-quote-snapshot",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-telemetry",
+                  "laneId": "data",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-embedded-fields",
+                  "laneId": "external",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-provider-webhook",
+                  "laneId": "external",
+                  "order": 2
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-form",
+                  "toCardId": "checkout-embedded-fields",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-embedded-fields",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-quote-snapshot",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-attempt-registry",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-provider-webhook",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-status-view",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-error-summary",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-tab-channel",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-stable-intent",
+                  "rationaleIds": [
+                    "checkout-rationale-retry-intent"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-server-status",
+                  "rationaleIds": [
+                    "checkout-rationale-merchant-authority"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-embedded",
+                  "rationaleIds": [
+                    "checkout-rationale-branded-provider"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "checkout-attempt-uncertainty",
+                "checkout-card-data",
+                "checkout-multi-tab"
+              ],
+              "priorityRequirementIds": [
+                "checkout-idempotent-attempt",
+                "checkout-authoritative-quote",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-form",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-attempt-registry",
+                  "laneId": "state",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-tab-channel",
+                  "laneId": "state",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-quote-snapshot",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-telemetry",
+                  "laneId": "data",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-embedded-fields",
+                  "laneId": "external",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-provider-webhook",
+                  "laneId": "external",
+                  "order": 2
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-form",
+                  "toCardId": "checkout-embedded-fields",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-embedded-fields",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-quote-snapshot",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-attempt-registry",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-provider-webhook",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-status-view",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-error-summary",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-tab-channel",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "event-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-stable-intent",
+                  "rationaleIds": [
+                    "checkout-rationale-retry-intent"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-server-status",
+                  "rationaleIds": [
+                    "checkout-rationale-merchant-authority"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-embedded",
+                  "rationaleIds": [
+                    "checkout-rationale-branded-provider"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [
+                "checkout-twist-read-server-state",
+                "checkout-twist-reconcile-attempts"
+              ],
+              "scratchpad": "Provider fields expose tokens only; merchant status resolves tab races."
+            }
+          },
+          {
+            "id": "checkout-developing",
+            "kind": "developing",
+            "expectedSignal": "On Track",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "checkout-price-authority",
+                "checkout-attempt-uncertainty"
+              ],
+              "priorityRequirementIds": [
+                "checkout-authoritative-quote",
+                "checkout-idempotent-attempt",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-hosted-payment",
+                  "laneId": "external",
+                  "order": 1
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-browser-session",
+                  "rationaleIds": [
+                    "checkout-rationale-session-scope"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-server-status",
+                  "rationaleIds": [
+                    "checkout-rationale-merchant-authority"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-hosted",
+                  "rationaleIds": [
+                    "checkout-rationale-minimize-card-contact"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "checkout-price-authority",
+                "checkout-attempt-uncertainty"
+              ],
+              "priorityRequirementIds": [
+                "checkout-authoritative-quote",
+                "checkout-idempotent-attempt",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-hosted-payment",
+                  "laneId": "external",
+                  "order": 1
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-browser-session",
+                  "rationaleIds": [
+                    "checkout-rationale-session-scope"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-server-status",
+                  "rationaleIds": [
+                    "checkout-rationale-merchant-authority"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-hosted",
+                  "rationaleIds": [
+                    "checkout-rationale-minimize-card-contact"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [
+                "checkout-twist-read-server-state"
+              ],
+              "scratchpad": "Read server status, but tab coordination and retry identity remain underspecified."
+            }
+          },
+          {
+            "id": "checkout-critical-redirect",
+            "kind": "critical-conflict",
+            "expectedSignal": "Needs Focus",
+            "baseline": {
+              "currentStep": "decisions",
+              "clarificationIds": [
+                "checkout-price-authority",
+                "checkout-attempt-uncertainty",
+                "checkout-card-data"
+              ],
+              "priorityRequirementIds": [
+                "checkout-authoritative-quote",
+                "checkout-idempotent-attempt",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-form",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-direct-card-fields",
+                  "laneId": "ui",
+                  "order": 3
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-attempt-registry",
+                  "laneId": "state",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-provider-webhook",
+                  "laneId": "external",
+                  "order": 1
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-attempt-registry",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-provider-webhook",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-per-click",
+                  "rationaleIds": [
+                    "checkout-rationale-independent-clicks"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-redirect",
+                  "rationaleIds": [
+                    "checkout-rationale-route-outcome"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-direct",
+                  "rationaleIds": [
+                    "checkout-rationale-own-card-flow"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [],
+              "scratchpad": ""
+            },
+            "draft": {
+              "currentStep": "twist",
+              "clarificationIds": [
+                "checkout-price-authority",
+                "checkout-attempt-uncertainty",
+                "checkout-card-data"
+              ],
+              "priorityRequirementIds": [
+                "checkout-authoritative-quote",
+                "checkout-idempotent-attempt",
+                "checkout-accessible-errors"
+              ],
+              "placements": [
+                {
+                  "cardId": "checkout-form",
+                  "laneId": "ui",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-status-view",
+                  "laneId": "ui",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-error-summary",
+                  "laneId": "ui",
+                  "order": 2
+                },
+                {
+                  "cardId": "checkout-direct-card-fields",
+                  "laneId": "ui",
+                  "order": 3
+                },
+                {
+                  "cardId": "checkout-coordinator",
+                  "laneId": "state",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-attempt-registry",
+                  "laneId": "state",
+                  "order": 1
+                },
+                {
+                  "cardId": "checkout-client",
+                  "laneId": "data",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-merchant-api",
+                  "laneId": "external",
+                  "order": 0
+                },
+                {
+                  "cardId": "checkout-provider-webhook",
+                  "laneId": "external",
+                  "order": 1
+                }
+              ],
+              "connections": [
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-attempt-registry",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-coordinator",
+                  "toCardId": "checkout-client",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-client",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "data-flow"
+                },
+                {
+                  "fromCardId": "checkout-provider-webhook",
+                  "toCardId": "checkout-merchant-api",
+                  "typeId": "event-flow"
+                },
+                {
+                  "fromCardId": "checkout-merchant-api",
+                  "toCardId": "checkout-coordinator",
+                  "typeId": "data-flow"
+                }
+              ],
+              "decisions": [
+                {
+                  "decisionId": "checkout-quote-authority",
+                  "optionId": "checkout-quote-versioned",
+                  "rationaleIds": [
+                    "checkout-rationale-version-bind"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-attempt-identity",
+                  "optionId": "checkout-attempt-per-click",
+                  "rationaleIds": [
+                    "checkout-rationale-independent-clicks"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-result-authority",
+                  "optionId": "checkout-result-redirect",
+                  "rationaleIds": [
+                    "checkout-rationale-route-outcome"
+                  ]
+                },
+                {
+                  "decisionId": "checkout-payment-surface",
+                  "optionId": "checkout-surface-direct",
+                  "rationaleIds": [
+                    "checkout-rationale-own-card-flow"
+                  ]
+                }
+              ],
+              "twistResponseActionIds": [
+                "checkout-twist-trust-tab-lock",
+                "checkout-twist-new-attempt"
+              ],
+              "scratchpad": "Use the peer lock, open a new attempt, and accept the success route."
+            }
+          }
+        ],
+        "provenance": {
+          "authoredAt": "2026-08-12",
+          "copiedText": false,
+          "sourceRole": "Technical validation and topic coverage only; prompt, choices, rubric, and fixtures are original.",
+          "references": [
+            {
+              "title": "Stripe API: Idempotent requests",
+              "url": "https://docs.stripe.com/api/idempotent_requests",
+              "license": "Stripe Documentation Terms",
+              "role": "Validate stable keys for safe retries of one payment command",
+              "accessedAt": "2026-08-12"
+            },
+            {
+              "title": "Stripe: Handle payment events with webhooks",
+              "url": "https://docs.stripe.com/webhooks/handling-payment-events",
+              "license": "Stripe Documentation Terms",
+              "role": "Validate asynchronous server-side payment outcome handling",
+              "accessedAt": "2026-08-12"
+            },
+            {
+              "title": "Stripe integration security guide",
+              "url": "https://docs.stripe.com/security/guide",
+              "license": "Stripe Documentation Terms",
+              "role": "Validate hosted or embedded collection boundaries for card data",
+              "accessedAt": "2026-08-12"
+            },
+            {
+              "title": "WCAG 2.2 Understanding Error Identification",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/error-identification",
+              "license": "W3C Document License",
+              "role": "Validate text identification of input and transaction errors",
+              "accessedAt": "2026-08-12"
+            },
+            {
+              "title": "MDN Broadcast Channel API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API",
+              "license": "CC BY-SA 2.5 or later",
+              "role": "Validate same-origin cross-context messaging as a coordination mechanism",
+              "accessedAt": "2026-08-12"
             }
           ]
         }

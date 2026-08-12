@@ -59,7 +59,7 @@ describe('interview runtime artifact gate', () => {
     expect(artifacts.coding.variants.filter((variant) => variant.enabled)).not.toHaveLength(0);
     const systemDesign = loadSystemDesignArtifacts({ force: true });
     expect(systemDesign.status).toBe('candidate');
-    expect(systemDesign.scenarios).toHaveLength(7);
+    expect(systemDesign.scenarios).toHaveLength(8);
     expect(systemDesign.scenarios.every((scenario) => scenario.enabled)).toBe(true);
   });
 
