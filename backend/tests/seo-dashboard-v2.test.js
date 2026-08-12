@@ -3,6 +3,7 @@
 const {
   detailCoverageHealth,
   enforceAnalysisReadiness,
+  latestCompleteDate,
   latestAnalysisSummary,
   reconciliationSubset,
   serializeAnalysis,
@@ -11,6 +12,7 @@ const {
   updatePageIntent,
 } = require('../services/seo/dashboard');
 const SeoPage = require('../models/SeoPage');
+const SeoMetricPartition = require('../models/SeoMetricPartition');
 const SeoSyncRun = require('../models/SeoSyncRun');
 
 function window(overrides = {}) {
@@ -47,6 +49,23 @@ describe('balanced-v2 dashboard contracts', () => {
     }));
   });
 
+  test('only uses complete non-truncated partitions as the latest analysis date', async () => {
+    const query = {
+      sort: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue({ date: '2026-08-03' }),
+    };
+    const findOne = jest.spyOn(SeoMetricPartition, 'findOne').mockReturnValue(query);
+
+    await expect(latestCompleteDate('sc-domain:frontendatlas.com')).resolves.toBe('2026-08-03');
+    expect(findOne).toHaveBeenCalledWith({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      slice: 'page',
+      status: 'complete',
+      truncated: { $ne: true },
+    });
+  });
+
   test('fails closed when a complete current analysis uses an outdated rule version', () => {
     const summary = serializeAnalysis({
       analysis: {
@@ -71,7 +90,7 @@ describe('balanced-v2 dashboard contracts', () => {
       analysis: {
         status: 'not_ready',
         reason: 'insufficient_contiguous_page_data',
-        ruleVersion: 'balanced-v2.1',
+        ruleVersion: 'balanced-v2.2',
         endDate: '2026-08-03',
         completedDays: 0,
         requiredDays: 56,
@@ -91,7 +110,7 @@ describe('balanced-v2 dashboard contracts', () => {
       analysis: {
         status: 'not_ready',
         reason: 'analysis_deadline',
-        ruleVersion: 'balanced-v2.1',
+        ruleVersion: 'balanced-v2.2',
         endDate: '2026-08-03',
         startedAt: null,
         completedAt: new Date('2026-08-07T12:00:00.000Z'),
@@ -130,7 +149,7 @@ describe('balanced-v2 dashboard contracts', () => {
       analysis: {
         status: 'failed',
         reason: 'analysis_failed',
-        ruleVersion: 'balanced-v2.1',
+        ruleVersion: 'balanced-v2.2',
         endDate: null,
         completedAt: new Date('2026-08-07T12:00:00.000Z'),
       },
@@ -165,7 +184,7 @@ describe('balanced-v2 dashboard contracts', () => {
       analysis: {
         status: 'not_ready',
         reason: 'production_marker_source_mismatch',
-        ruleVersion: 'balanced-v2.1',
+        ruleVersion: 'balanced-v2.2',
         endDate: null,
       },
     }, '2026-08-03', 56);
@@ -443,7 +462,7 @@ describe('balanced-v2 dashboard contracts', () => {
     const base = {
       primaryState: 'watch',
       endDate: '2026-08-03',
-      ruleVersion: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
       evaluatedAt: new Date('2026-08-05T00:00:00.000Z'),
     };
 
@@ -458,11 +477,134 @@ describe('balanced-v2 dashboard contracts', () => {
     }).currentForLatestData).toBe(false);
   });
 
+  test('honors the persisted primary detector finding before state-based fallback ordering', () => {
+    const assessment = serializeAssessment({
+      primaryState: 'watch',
+      disposition: 'investigate',
+      endDate: '2026-08-03',
+      ruleVersion: 'balanced-v2.2',
+      findings: [
+        {
+          detector: 'internal_link',
+          state: 'watch',
+          disposition: 'structural_review',
+          code: 'internal_link_structural_review',
+          confidence: 0.72,
+        },
+        {
+          detector: 'visibility_interruption',
+          state: 'watch',
+          disposition: 'investigate',
+          code: 'visibility_interruption',
+          confidence: 0.91,
+          patternConfidence: 0.91,
+          causeConfidence: 0.35,
+          decisionGates: ['url_inspection_required'],
+          nextReview: {
+            mode: 'event', event: 'url_inspection', rationale: 'verify_interruption',
+          },
+        },
+      ],
+      primaryFinding: {
+        detector: 'visibility_interruption',
+        state: 'watch',
+        disposition: 'investigate',
+        code: 'visibility_interruption',
+        patternConfidence: 0.91,
+        causeConfidence: 0.35,
+        decisionGates: ['url_inspection_required'],
+        nextReview: {
+          mode: 'event', event: 'url_inspection', rationale: 'verify_interruption',
+        },
+      },
+    }, '2026-08-03');
+
+    expect(assessment).toEqual(expect.objectContaining({
+      verdict: 'visibility_interruption',
+      primaryFinding: expect.objectContaining({
+        detector: 'visibility_interruption',
+        code: 'visibility_interruption',
+        disposition: 'investigate',
+        decisionGates: ['url_inspection_required'],
+      }),
+    }));
+  });
+
+  test('serializes post-inspection monitoring fields without leaking unknown evidence', () => {
+    const assessment = serializeAssessment({
+      primaryState: 'watch',
+      disposition: 'monitor',
+      endDate: '2026-08-03',
+      ruleVersion: 'balanced-v2.2',
+      visibility: {
+        state: 'watch',
+        disposition: 'monitor',
+        patternConfidence: 0.9,
+        causeConfidence: 0.1,
+        interrupted: true,
+        requiresInspection: false,
+        decisionGate: 'post_inspection_14_finalized_days',
+        reasonCodes: [
+          'visibility_interruption',
+          'visibility_inspection_passed',
+          'post_inspection_14_finalized_days',
+        ],
+        evidence: {
+          inspectionCurrent: true,
+          inspectionPass: true,
+          cleanFinalizedDays: 5,
+          cleanWindowStartDate: '2026-08-01',
+          rawInspectionPayload: 'private inspection details',
+        },
+        inspectionLifecycle: {
+          requestBoundaryAt: new Date('2026-08-04T10:00:00.000Z'),
+          accepted: {
+            key: 'a'.repeat(64),
+            observedAt: new Date('2026-08-05T10:00:00.000Z'),
+            crawlAt: new Date('2026-08-05T08:00:00.000Z'),
+            pageVersionKey: 'version-current',
+            indexStatus: 'PASS',
+            robots: 'ALLOWED',
+            canonicalVerdict: 'match',
+            verdict: 'pass',
+          },
+        },
+        nextReview: {
+          mode: 'event',
+          event: '14_finalized_days',
+          rationale: 'observe_initial_post_inspection_recovery_window',
+        },
+      },
+    }, '2026-08-03');
+
+    expect(assessment.visibility).toEqual(expect.objectContaining({
+      disposition: 'monitor',
+      requiresInspection: false,
+      decisionGate: 'post_inspection_14_finalized_days',
+      inspectionCurrent: true,
+      inspectionPass: true,
+      cleanFinalizedDays: 5,
+      cleanWindowStartDate: '2026-08-01',
+      inspectionLifecycle: {
+        requestBoundaryAt: '2026-08-04T10:00:00.000Z',
+        accepted: {
+          key: 'a'.repeat(64),
+          observedAt: '2026-08-05T10:00:00.000Z',
+          crawlAt: '2026-08-05T08:00:00.000Z',
+          pageVersionKey: 'version-current',
+          verdict: 'pass',
+        },
+      },
+      nextReview: expect.objectContaining({ event: '14_finalized_days' }),
+    }));
+    expect(JSON.stringify(assessment.visibility)).not.toContain('private inspection details');
+  });
+
   test('uses analysisInvalidatedAt as a monotonic assessment freshness cutoff', () => {
     const assessment = {
       primaryState: 'clear',
       endDate: '2026-08-03',
-      ruleVersion: 'balanced-v2.1',
+      ruleVersion: 'balanced-v2.2',
       evaluatedAt: new Date('2026-08-05T00:00:00.000Z'),
     };
 
@@ -702,7 +844,7 @@ describe('balanced-v2 dashboard contracts', () => {
       current: { clicks: 3, impressions: 2519, position: 6.7 },
       previous: { clicks: 6, impressions: 3156, position: 6.68 },
     });
-    expect(assessment.coverage).toEqual({ query: 0.297, semantic: 0.95 });
+    expect(assessment.coverage).toEqual({ query: 0.297, semantic: 0.95, device: null });
     expect(assessment.cooldown).toEqual(expect.objectContaining({
       state: 'observing',
       detector: 'content_decay',

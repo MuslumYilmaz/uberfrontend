@@ -11,7 +11,7 @@ const SeoPropertyDailyMetric = require('../../models/SeoPropertyDailyMetric');
 const SeoQueryPageDailyMetric = require('../../models/SeoQueryPageDailyMetric');
 const SeoSyncRun = require('../../models/SeoSyncRun');
 const SeoSyncState = require('../../models/SeoSyncState');
-const { serializeAction } = require('./actions');
+const { serializeAction, sanitizeNextReview } = require('./actions');
 const { cooldownsForPage } = require('./assessment');
 const {
   BALANCED_ANALYSIS_REQUIRED_DAYS,
@@ -20,9 +20,10 @@ const {
 const { finalizedDateKey, shiftDateKey } = require('./dates');
 const { activeMetricPipeline } = require('./metrics-store');
 const { analysisInputHashForPage } = require('./manifest');
+const { reviewsForAssessment, serializeOpportunity } = require('./opportunity-api');
 const { MIN_QUERY_COVERAGE, isKnownReasonCode, reasonSummaryForCode } = require('./rule-engine');
 
-const CURRENT_ANALYSIS_RULE_VERSION = 'balanced-v2.1';
+const CURRENT_ANALYSIS_RULE_VERSION = 'balanced-v2.2';
 const UNHEALTHY_SYNC_STATUSES = new Set(['failed', 'running', 'waiting', 'disabled']);
 const SAFE_SEMANTIC_FACETS = new Set([
   'official_reference', 'direct_answer', 'implementation', 'debugging',
@@ -33,6 +34,13 @@ const SAFE_CLUSTER_TECH = new Set([
   'node', 'html', 'css',
 ]);
 const SAFE_ASSESSMENT_STATES = new Set(['not_evaluable', 'clear', 'watch', 'actionable']);
+const SAFE_ASSESSMENT_DISPOSITIONS = new Set([
+  'insufficient_evidence', 'monitor', 'investigate', 'structural_review', 'change_ready', 'no_change',
+]);
+const SAFE_FINDING_DETECTORS = new Set([
+  'ctr_snippet', 'intent_mismatch', 'content_decay', 'cannibalization',
+  'internal_link', 'technical_indexing', 'visibility_interruption',
+]);
 const SAFE_EVIDENCE_LEVELS = new Set([
   'insufficient', 'directional', 'moderate', 'strong', 'decision_grade',
 ]);
@@ -95,6 +103,10 @@ const SAFE_PAGE_FINGERPRINT_VERSIONS = new Set([
 ]);
 const SAFE_ANALYSIS_INPUT_VERSIONS = new Set(['seo-analysis-input.v1']);
 const SAFE_SEMANTIC_VERSIONS = new Set(['semantic-v1']);
+
+function isSafeDecisionGate(value) {
+  return /^[a-z0-9][a-z0-9_-]{0,99}$/.test(String(value || ''));
+}
 
 function round(value, digits = 2) {
   const factor = 10 ** digits;
@@ -569,12 +581,13 @@ async function getOverview({ config, windowDays = 28, segment = 'all', now = new
   const previousEndDate = shiftDateKey(startDate, -1);
   const previousStartDate = shiftDateKey(previousEndDate, -(windowDays - 1));
   const slice = segment === 'brand' || segment === 'nonbrand' ? 'queryPage' : 'property';
-  const [currentRows, previousRows, counts, partitions] = await Promise.all([
+  const [currentRows, previousRows, counts, nowCount, partitions] = await Promise.all([
     config.siteUrl ? metricRowsForRange({ siteUrl: config.siteUrl, startDate, endDate, segment }) : [],
     config.siteUrl ? metricRowsForRange({ siteUrl: config.siteUrl, startDate: previousStartDate, endDate: previousEndDate, segment }) : [],
     SeoAction.aggregate([
       { $group: { _id: '$state', count: { $sum: 1 } } },
     ]),
+    SeoAction.countDocuments(actNowFilter()),
     config.siteUrl ? SeoMetricPartition.find({
       siteUrl: config.siteUrl,
       slice,
@@ -625,7 +638,7 @@ async function getOverview({ config, windowDays = 28, segment = 'all', now = new
     },
     trend: fillTrend(usableCurrentRows, startDate, endDate, currentWindow.completeDates),
     actionSummary: {
-      nowCount: (countMap.proposed || 0) + (countMap.approved || 0) + (countMap.implementation_pending || 0),
+      nowCount,
       backlogCount: Object.values(countMap).reduce((sum, count) => sum + count, 0),
       measuringCount: countMap.measuring || 0,
     },
@@ -650,6 +663,21 @@ function escapeRegex(value) {
   return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function actNowFilter() {
+  return {
+    state: { $in: ['proposed', 'approved', 'implementation_pending'] },
+    $or: [
+      { queueKind: 'technical' },
+      { type: 'technical_indexing' },
+      {
+        queueKind: 'performance',
+        'expectedImpact.quality': 'modeled',
+        'expectedImpact.point': { $gt: 0 },
+      },
+    ],
+  };
+}
+
 async function listActions({ queue = 'backlog', status, type, search, cursor, limit = 30 }) {
   const filter = {};
   if (status && status !== 'all') filter.state = status;
@@ -658,7 +686,7 @@ async function listActions({ queue = 'backlog', status, type, search, cursor, li
     const pattern = new RegExp(escapeRegex(String(search).trim().slice(0, 200)), 'i');
     filter.$or = [{ canonicalUrl: pattern }, { summary: pattern }, { hypothesis: pattern }];
   }
-  const nowFilter = { state: { $in: ['proposed', 'approved', 'implementation_pending'] } };
+  const nowFilter = actNowFilter();
   const topDocs = await SeoAction.find(nowFilter).sort({ priorityScore: -1, createdAt: -1 }).limit(10).select('_id').lean();
   const topIds = topDocs.map((doc) => doc._id);
   if (queue === 'now') {
@@ -719,7 +747,12 @@ async function metricsByPage({ siteUrl, pageKeys, startDate, endDate }) {
 
 async function latestCompleteDate(siteUrl, slice = 'page') {
   if (!siteUrl) return null;
-  const partition = await SeoMetricPartition.findOne({ siteUrl, slice, status: 'complete' }).sort({ date: -1 }).select('date').lean();
+  const partition = await SeoMetricPartition.findOne({
+    siteUrl,
+    slice,
+    status: 'complete',
+    truncated: { $ne: true },
+  }).sort({ date: -1 }).select('date').lean();
   return partition?.date || null;
 }
 
@@ -1054,6 +1087,7 @@ function safeAssessmentCoverage(value) {
   return {
     query: finiteNumberOrNull(value.query, { minimum: 0 }),
     semantic: finiteNumberOrNull(value.semantic, { minimum: 0 }),
+    device: finiteNumberOrNull(value.device, { minimum: 0 }),
   };
 }
 
@@ -1127,6 +1161,83 @@ function safeCtrBaseline(value) {
   };
 }
 
+function safeVisibility(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const evidence = value.evidence && typeof value.evidence === 'object' && !Array.isArray(value.evidence)
+    ? value.evidence
+    : {};
+  const safeTotals = (totals) => {
+    if (!totals || typeof totals !== 'object' || Array.isArray(totals)) return null;
+    return {
+      pageImpressions: finiteNumberOrNull(totals.pageImpressions, { minimum: 0 }),
+      propertyImpressions: finiteNumberOrNull(totals.propertyImpressions, { minimum: 0 }),
+      visibleDays: finiteNumberOrNull(totals.visibleDays, { minimum: 0, maximum: 3650 }),
+      siteActiveDays: finiteNumberOrNull(totals.siteActiveDays, { minimum: 0, maximum: 3650 }),
+    };
+  };
+  const lifecycle = value.inspectionLifecycle && typeof value.inspectionLifecycle === 'object'
+    && !Array.isArray(value.inspectionLifecycle)
+    ? value.inspectionLifecycle
+    : {};
+  const acceptedSource = lifecycle.accepted && typeof lifecycle.accepted === 'object'
+    && !Array.isArray(lifecycle.accepted)
+    ? lifecycle.accepted
+    : null;
+  const acceptedKey = String(acceptedSource?.key || '').toLowerCase();
+  const acceptedVerdict = ['pass', 'anomaly'].includes(String(acceptedSource?.verdict))
+    ? String(acceptedSource.verdict)
+    : null;
+  const accepted = acceptedSource
+    && /^[a-f0-9]{64}$/.test(acceptedKey)
+    && isoOrNull(acceptedSource.observedAt)
+    && acceptedVerdict
+    ? {
+      key: acceptedKey,
+      observedAt: isoOrNull(acceptedSource.observedAt),
+      crawlAt: isoOrNull(acceptedSource.crawlAt),
+      pageVersionKey: String(acceptedSource.pageVersionKey || '').slice(0, 128),
+      verdict: acceptedVerdict,
+    }
+    : null;
+  return {
+    state: SAFE_ASSESSMENT_STATES.has(String(value.state)) ? String(value.state) : 'not_evaluable',
+    disposition: SAFE_ASSESSMENT_DISPOSITIONS.has(String(value.disposition))
+      ? String(value.disposition)
+      : 'insufficient_evidence',
+    patternConfidence: finiteNumberOrNull(value.patternConfidence, { minimum: 0, maximum: 1 }) ?? 0,
+    causeConfidence: finiteNumberOrNull(value.causeConfidence, { minimum: 0, maximum: 1 }) ?? 0,
+    interrupted: value.interrupted === true,
+    requiresInspection: value.requiresInspection === true,
+    decisionGate: isKnownReasonCode(value.decisionGate) ? String(value.decisionGate) : null,
+    reasonCodes: Array.from(new Set((Array.isArray(value.reasonCodes) ? value.reasonCodes : [])
+      .map(String)
+      .filter(isKnownReasonCode))).slice(0, 12),
+    firstVisibleDate: safeDateKey(evidence.firstVisibleDate),
+    completePreviousDays: finiteNumberOrNull(evidence.completePreviousDays, { minimum: 0, maximum: 3650 }),
+    completeCurrentDays: finiteNumberOrNull(evidence.completeCurrentDays, { minimum: 0, maximum: 3650 }),
+    previous: safeTotals(evidence.previous),
+    current: safeTotals(evidence.current),
+    previousShare: finiteNumberOrNull(evidence.previousShare, { minimum: 0, maximum: 1 }),
+    currentShare: finiteNumberOrNull(evidence.currentShare, { minimum: 0, maximum: 1 }),
+    shareDrop: finiteNumberOrNull(evidence.shareDrop, { minimum: 0, maximum: 1 }),
+    zeroImpressionStreak: finiteNumberOrNull(evidence.zeroImpressionStreak, { minimum: 0, maximum: 3650 }),
+    trailingZeroImpressionStreak: finiteNumberOrNull(
+      evidence.trailingZeroImpressionStreak,
+      { minimum: 0, maximum: 3650 }
+    ),
+    mature: evidence.mature === true,
+    inspectionCurrent: evidence.inspectionCurrent === true,
+    inspectionPass: typeof evidence.inspectionPass === 'boolean' ? evidence.inspectionPass : null,
+    cleanFinalizedDays: finiteNumberOrNull(evidence.cleanFinalizedDays, { minimum: 0, maximum: 3650 }),
+    cleanWindowStartDate: safeDateKey(evidence.cleanWindowStartDate),
+    inspectionLifecycle: {
+      requestBoundaryAt: isoOrNull(lifecycle.requestBoundaryAt),
+      accepted,
+    },
+    nextReview: sanitizeNextReview(value.nextReview),
+  };
+}
+
 function serializeAssessment(assessment, latestFinalizedDate, {
   materialChangedAt = null,
   analysisInvalidatedAt = null,
@@ -1147,11 +1258,23 @@ function serializeAssessment(assessment, latestFinalizedDate, {
     return isKnownReasonCode(code) ? code : null;
   };
   const knownFindings = findings.filter((finding) => findingCode(finding));
-  const primaryFinding = knownFindings.find((finding) => finding.state === 'actionable')
+  const persistedPrimaryCode = findingCode(value.primaryFinding);
+  const persistedPrimaryDetector = SAFE_FINDING_DETECTORS.has(String(value.primaryFinding?.detector || ''))
+    ? String(value.primaryFinding.detector)
+    : null;
+  const persistedPrimaryFinding = persistedPrimaryCode
+    ? knownFindings.find((finding) => (
+      findingCode(finding) === persistedPrimaryCode
+      && (!persistedPrimaryDetector || String(finding.detector || '') === persistedPrimaryDetector)
+    ))
+    : null;
+  const primaryFinding = persistedPrimaryFinding
+    || knownFindings.find((finding) => finding.state === 'actionable')
     || knownFindings.find((finding) => finding.state === 'watch')
     || knownFindings.find((finding) => finding.state === 'not_evaluable')
     || knownFindings[0]
     || null;
+  const primaryFindingSource = persistedPrimaryFinding ? value.primaryFinding : primaryFinding;
   const primaryFindingCode = findingCode(primaryFinding);
   const safePrimaryState = SAFE_ASSESSMENT_STATES.has(String(value.primaryState))
     ? String(value.primaryState)
@@ -1186,6 +1309,9 @@ function serializeAssessment(assessment, latestFinalizedDate, {
     && versionedInputCurrent
     && globallyCurrent
   );
+  const disposition = SAFE_ASSESSMENT_DISPOSITIONS.has(String(value.disposition))
+    ? String(value.disposition)
+    : 'insufficient_evidence';
   const reasonCodes = Array.from(new Set([
     ...findings.map((finding) => finding.code),
     ...Object.values(detectorAssessments).flatMap((detector) => detector.reasonCodes || []),
@@ -1193,7 +1319,7 @@ function serializeAssessment(assessment, latestFinalizedDate, {
   const safeFindings = findings.flatMap((finding) => {
     const code = String(finding.code || finding.reasonCodes?.[0] || '');
     if (!isKnownReasonCode(code)) return [];
-    const detector = LINEAGE_DETECTORS.includes(String(finding.detector || ''))
+    const detector = SAFE_FINDING_DETECTORS.has(String(finding.detector || ''))
       ? String(finding.detector)
       : null;
     const state = SAFE_ASSESSMENT_STATES.has(String(finding.state))
@@ -1205,6 +1331,21 @@ function serializeAssessment(assessment, latestFinalizedDate, {
       detector,
       state,
       confidence: confidence ?? 0,
+      patternConfidence: finiteNumberOrNull(
+        finding.patternConfidence,
+        { minimum: 0, maximum: 1 }
+      ) ?? confidence ?? 0,
+      causeConfidence: finiteNumberOrNull(
+        finding.causeConfidence,
+        { minimum: 0, maximum: 1 }
+      ) ?? 0,
+      disposition: SAFE_ASSESSMENT_DISPOSITIONS.has(String(finding.disposition))
+        ? String(finding.disposition)
+        : 'insufficient_evidence',
+      decisionGates: Array.from(new Set((Array.isArray(finding.decisionGates)
+        ? finding.decisionGates
+        : []).map(String).filter(isSafeDecisionGate))).slice(0, 12),
+      nextReview: sanitizeNextReview(finding.nextReview),
       summary: reasonSummaryForCode(code),
       counterEvidence: Array.isArray(finding.counterEvidence)
         ? finding.counterEvidence.map(String).filter(isKnownReasonCode).slice(0, 10)
@@ -1214,7 +1355,7 @@ function serializeAssessment(assessment, latestFinalizedDate, {
   const safeCounterEvidence = counterEvidence.flatMap((finding) => {
     const code = String(finding.code || finding.reasonCodes?.[0] || '');
     if (!isKnownReasonCode(code)) return [];
-    const detector = LINEAGE_DETECTORS.includes(String(finding.detector || ''))
+    const detector = SAFE_FINDING_DETECTORS.has(String(finding.detector || ''))
       ? String(finding.detector)
       : null;
     return [{
@@ -1229,9 +1370,37 @@ function serializeAssessment(assessment, latestFinalizedDate, {
   });
   return {
     primaryState: safePrimaryState,
+    disposition,
     verdict,
     summary: reasonSummaryForCode(primaryFindingCode || ''),
     confidence: finiteNumberOrNull(primaryFinding?.confidence, { minimum: 0, maximum: 1 }) ?? 0,
+    patternConfidence: finiteNumberOrNull(value.patternConfidence, { minimum: 0, maximum: 1 }) ?? 0,
+    causeConfidence: finiteNumberOrNull(value.causeConfidence, { minimum: 0, maximum: 1 }) ?? 0,
+    primaryFinding: primaryFindingCode ? {
+      code: primaryFindingCode,
+      detector: SAFE_FINDING_DETECTORS.has(String(primaryFindingSource?.detector || ''))
+        ? String(primaryFindingSource.detector)
+        : null,
+      state: SAFE_ASSESSMENT_STATES.has(String(primaryFindingSource?.state || ''))
+        ? String(primaryFindingSource.state)
+        : safePrimaryState,
+      disposition: SAFE_ASSESSMENT_DISPOSITIONS.has(String(primaryFindingSource?.disposition || ''))
+        ? String(primaryFindingSource.disposition)
+        : disposition,
+      patternConfidence: finiteNumberOrNull(
+        primaryFindingSource?.patternConfidence,
+        { minimum: 0, maximum: 1 }
+      ) ?? finiteNumberOrNull(value.patternConfidence, { minimum: 0, maximum: 1 }) ?? 0,
+      causeConfidence: finiteNumberOrNull(
+        primaryFindingSource?.causeConfidence,
+        { minimum: 0, maximum: 1 }
+      ) ?? finiteNumberOrNull(value.causeConfidence, { minimum: 0, maximum: 1 }) ?? 0,
+      decisionGates: Array.from(new Set((Array.isArray(primaryFindingSource?.decisionGates)
+        ? primaryFindingSource.decisionGates
+        : []).map(String).filter(isSafeDecisionGate))).slice(0, 12),
+      nextReview: sanitizeNextReview(primaryFindingSource?.nextReview),
+      summary: reasonSummaryForCode(primaryFindingCode),
+    } : null,
     reasonCodes,
     evidenceLevel: SAFE_EVIDENCE_LEVELS.has(String(value.evidenceLevel))
       ? String(value.evidenceLevel)
@@ -1259,6 +1428,15 @@ function serializeAssessment(assessment, latestFinalizedDate, {
     detectorCooldowns,
     ctrBaseline: safeCtrBaseline(value.ctrBaseline),
     semanticClusters: clusters.map(serializeSemanticCluster).slice(0, 10),
+    visibility: safeVisibility(value.visibility),
+    queryOpportunities: (Array.isArray(value.queryOpportunities) ? value.queryOpportunities : [])
+      .map(serializeOpportunity)
+      .filter(Boolean)
+      .slice(0, 10),
+    decisionGates: Array.from(new Set((Array.isArray(value.decisionGates) ? value.decisionGates : [])
+      .map(String)
+      .filter(isSafeDecisionGate))).slice(0, 20),
+    nextReview: sanitizeNextReview(value.nextReview),
     nextReviewDate: isoOrNull(value.nextReviewDate),
     evaluatedAt: isoOrNull(value.evaluatedAt),
     updatedAt: isoOrNull(value.updatedAt),
@@ -1542,6 +1720,20 @@ async function getPageDetail({ config, pageKey, now = new Date() }) {
     pageVersionKey: page.changeTracking?.currentVersionKey || '',
     analysisReadiness: analysis,
   });
+  const reviewMap = assessment?.input?.hash
+    ? await reviewsForAssessment({
+      siteUrl: config.siteUrl,
+      pageKey,
+      assessmentInputHash: assessment.input.hash,
+      assessmentEvaluatedAt: storedAssessment?.evaluatedAt,
+    })
+    : new Map();
+  if (assessment) {
+    assessment.queryOpportunities = assessment.queryOpportunities.map((opportunity) => ({
+      ...opportunity,
+      review: reviewMap.get(opportunity.key) || null,
+    }));
+  }
   return {
     ...detail,
     description: page.description || null,
@@ -1639,6 +1831,7 @@ async function updatePageIntent(pageKey, input, now = new Date()) {
 }
 
 module.exports = {
+  actNowFilter,
   aggregateMetricRows,
   contiguousDateCount,
   currentPageAssessmentCount,

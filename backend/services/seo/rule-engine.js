@@ -2,9 +2,11 @@
 
 const { sha256 } = require('./keys');
 const { dominantSemanticCluster, normalizeTokens } = require('./semantic-clustering');
+const { assessVisibilityInterruption: assessVisibilityPattern } = require('./visibility-interruption');
 
-const RULE_VERSION = 'balanced-v2.1';
+const RULE_VERSION = 'balanced-v2.2';
 const MIN_PAGE_IMPRESSIONS = 100;
+const MIN_INTERNAL_LINK_IMPRESSIONS = 300;
 const MIN_DECAY_IMPRESSIONS = 300;
 const MIN_DECAY_PRIOR_CLICKS = 20;
 const MIN_DECAY_LOST_CLICKS = 5;
@@ -19,9 +21,12 @@ const REQUIRED_WEEK_COUNT = 4;
 const WILSON_90_Z = 1.6448536269514722;
 
 const DETECTOR_STATES = Object.freeze(['not_evaluable', 'clear', 'watch', 'actionable']);
+const DISPOSITIONS = Object.freeze([
+  'insufficient_evidence', 'monitor', 'investigate', 'structural_review', 'change_ready', 'no_change',
+]);
 const BASELINE_QUALITY = Object.freeze(['insufficient', 'low', 'medium', 'high']);
 const PERFORMANCE_DETECTORS = new Set([
-  'ctr_snippet', 'intent_mismatch', 'content_decay', 'cannibalization', 'internal_link',
+  'ctr_snippet', 'intent_mismatch', 'content_decay', 'cannibalization',
 ]);
 
 const REASON_SUMMARIES = Object.freeze({
@@ -65,9 +70,32 @@ const REASON_SUMMARIES = Object.freeze({
   outside_internal_link_opportunity_range: 'The page is outside the position 8–20 internal-link opportunity range.',
   no_internal_link_gap: 'Internal-link support is not below the comparable-page threshold.',
   supported_internal_link_gap: 'A near-page-one URL has a supported internal-link gap.',
+  internal_link_cohort_insufficient: 'Fewer than ten mature, comparable pages are available for an internal-link benchmark.',
+  internal_link_gap_below_floor: 'The page is not at least two contextual links below its comparable-page lower quartile.',
+  internal_link_donors_insufficient: 'Fewer than two safe, semantically relevant donor pages are available.',
+  internal_link_structural_review: 'A measurable internal-link deficit has safe donor candidates, but its ranking effect is not yet proven.',
+  ranking_effect_not_estimated: 'The structural gap is supported, but its ranking effect has not been estimated.',
   page_not_intended_for_indexing: 'The page is not intended for indexing.',
   no_technical_indexing_anomaly: 'No technical indexing or canonical anomaly is present.',
   technical_indexing_anomaly: 'A technical indexing or canonical signal requires review.',
+  technical_state_unverified: 'Google indexing state is unverified because a current URL Inspection result is unavailable.',
+  visibility_partitions_incomplete: 'Complete page and property partitions are required before zero-impression days can be interpreted.',
+  visibility_prior_floor_unmet: 'The prior window lacks the impressions or visible days required for interruption detection.',
+  new_or_ramping_page: 'The page is new or still ramping, so classic decay and interruption comparisons are withheld.',
+  no_visibility_interruption: 'No sustained page-level visibility interruption is supported by complete partitions.',
+  visibility_interruption: 'The page lost most of its property impression share during a sustained zero-impression run.',
+  url_inspection_required: 'A current URL Inspection result is required before the interruption cause can be assessed.',
+  visibility_inspection_passed: 'A current URL Inspection passed, so the interruption is being monitored through post-crawl finalized windows.',
+  visibility_inspection_anomaly: 'A current URL Inspection confirms an indexing, robots, or canonical anomaly that requires technical diagnosis.',
+  post_inspection_14_finalized_days: 'Fourteen clean finalized days after the inspected crawl are required for the first recovery review.',
+  post_inspection_28_finalized_days: 'Twenty-eight clean finalized days after the inspected crawl are required for the full recovery review.',
+  visibility_interruption_requires_diagnosis: 'A visibility interruption must be diagnosed before content or snippet actions can open.',
+  performance_window_precedes_production: 'The finalized GSC window predates the current production version.',
+  production_timing_unverified: 'Production timing is not verified, so the finalized GSC window cannot be attributed to this page version.',
+  post_deploy_crawl_required: 'Google has not crawled the page after the current production version became available.',
+  serp_review_required: 'A manual SERP review is required before a query-pattern hypothesis can become a change action.',
+  device_evidence_unavailable: 'Device evidence is unavailable, so the query opportunity is directional only.',
+  device_coverage_below_threshold: 'Visible device rows cover too little of the authoritative page total.',
   fingerprint_evidence_unavailable: 'Required rendered fingerprint evidence is unavailable, so this detector is not evaluable.',
   technical_clear_awaiting_post_deploy_crawl: 'Technical checks are clear in the manifest, but Google has not yet confirmed the deployed version.',
   observing_change: 'A recent material change is still inside its clean finalized-data observation window.',
@@ -101,6 +129,10 @@ function fingerprint(type, pageKey, signalParts = []) {
 }
 
 function baseAction(page, type, values) {
+  const hasModeledClicks = values.expectedAdditionalClicks !== null
+    && values.expectedAdditionalClicks !== undefined
+    && Number.isFinite(Number(values.expectedAdditionalClicks));
+  const modeledClicks = hasModeledClicks ? Math.max(0, Number(values.expectedAdditionalClicks)) : null;
   return {
     pageKey: page.pageKey,
     canonicalUrl: page.canonicalUrl,
@@ -108,7 +140,18 @@ function baseAction(page, type, values) {
     source: RULE_VERSION,
     ruleVersion: RULE_VERSION,
     confidence: clamp(values.confidence, 0, 1),
-    expectedAdditionalClicks: Math.max(0, finite(values.expectedAdditionalClicks)),
+    patternConfidence: clamp(values.patternConfidence ?? values.confidence, 0, 1),
+    causeConfidence: clamp(values.causeConfidence ?? values.confidence, 0, 1),
+    queueKind: values.queueKind || (type === 'technical_indexing' ? 'technical' : 'performance'),
+    expectedAdditionalClicks: modeledClicks,
+    expectedImpact: values.expectedImpact || (modeledClicks === null ? null : {
+      metric: 'clicks',
+      low: null,
+      point: modeledClicks,
+      high: null,
+      windowDays: 28,
+      quality: 'directional',
+    }),
     priorityScore: Math.max(0, finite(values.priorityScore)),
     summary: values.summary,
     hypothesis: values.hypothesis || '',
@@ -122,6 +165,11 @@ function baseAction(page, type, values) {
 function detectorAssessment(detector, state, {
   reasonCodes = [],
   confidence = 0,
+  patternConfidence = confidence,
+  causeConfidence = state === 'actionable' ? confidence : 0,
+  disposition = null,
+  nextReview = null,
+  decisionGates = [],
   evidence = {},
   action = null,
 } = {}) {
@@ -131,12 +179,22 @@ function detectorAssessment(detector, state, {
     ...evidence,
     summary: String(evidence.summary || REASON_SUMMARIES[normalizedReasonCodes[0]] || ''),
   };
+  const defaultDisposition = state === 'actionable'
+    ? 'change_ready'
+    : state === 'clear' ? 'no_change'
+      : state === 'watch' ? 'monitor' : 'insufficient_evidence';
+  const normalizedDisposition = DISPOSITIONS.includes(disposition) ? disposition : defaultDisposition;
   return {
     detector,
     type: detector,
     state,
     reasonCodes: normalizedReasonCodes,
     confidence: clamp(confidence),
+    patternConfidence: clamp(patternConfidence),
+    causeConfidence: clamp(causeConfidence),
+    disposition: normalizedDisposition,
+    decisionGates: unique(decisionGates).slice(0, 20),
+    nextReview,
     evidence: normalizedEvidence,
     action: state === 'actionable' ? action : null,
   };
@@ -257,28 +315,15 @@ function assessCtrSnippet(context = {}) {
     });
   }
   const confidence = Math.min(0.95, 0.62 + Math.min(0.18, impressions / 10000) + Math.min(0.15, deficit / 2));
-  const action = baseAction(page, 'ctr_snippet', {
+  return detectorAssessment('ctr_snippet', 'watch', {
+    reasonCodes: ['supported_ctr_gap', 'serp_review_required'],
     confidence,
-    expectedAdditionalClicks,
-    priorityScore: expectedAdditionalClicks * confidence,
-    summary: 'Search snippet underperforms a sufficiently supported peer baseline for its ranking range.',
-    hypothesis: 'The page is visible enough to win clicks, but its title, description, or promise may not match the result-page choice.',
-    evidence: {
-      summary: `CTR is ${(ctr * 100).toFixed(2)}% versus a ${(baseline.ctr * 100).toFixed(2)}% peer baseline.`,
-      ...evidence,
-      signals: ['stable top-10 visibility', `${baseline.quality} peer baseline`, 'non-overlapping 90% Wilson intervals'],
-    },
-    recommendation: {
-      title: 'Run one controlled snippet experiment',
-      rationale: 'Change one search-result promise at a time, then measure against an equal finalized window.',
-      checklist: ['Confirm the dominant non-brand query intent', 'Align title and H1 without making them identical', 'Keep one clear benefit in the title', 'Record the live title and implementation date'],
-      copyDirection: 'Lead with the dominant search task and the page’s concrete outcome.',
-    },
-    successCriteria: { metric: 'ctr', minimumRelativeLift: 0.15, guardrail: 'averagePosition', maximumPositionLoss: 1 },
-    fingerprintParts: [baseline.cohort, Math.round(position), Math.round(baseline.ctr * 1000)],
-  });
-  return detectorAssessment('ctr_snippet', 'actionable', {
-    reasonCodes: ['supported_ctr_gap'], confidence, evidence, action,
+    patternConfidence: confidence,
+    causeConfidence: 0.45,
+    disposition: 'investigate',
+    decisionGates: ['serp_review_required'],
+    nextReview: { mode: 'event', event: 'serp_review', rationale: 'validate_snippet_hypothesis' },
+    evidence,
   });
 }
 
@@ -418,27 +463,15 @@ function assessIntentMismatch(context = {}) {
     });
   }
   const confidence = Math.min(0.9, 0.55 + inputs.visibleShare * 0.2 + inputs.queryCoverage * 0.1);
-  const action = baseAction(page, 'intent_mismatch', {
+  return detectorAssessment('intent_mismatch', 'watch', {
+    reasonCodes: ['dominant_semantic_mismatch', 'serp_review_required'],
     confidence,
-    priorityScore: inputs.impressions * inputs.visibleShare * confidence * 0.02,
-    summary: 'The dominant search demand appears misaligned with the page’s confirmed reader promise.',
-    hypothesis: 'Google is testing this URL for a different job than the page was designed to complete.',
-    evidence: {
-      summary: `${Math.round(inputs.visibleShare * 100)}% of visible impressions come from a low-alignment semantic cluster.`,
-      ...evidence,
-      signals: ['confirmed page intent', 'dominant alternate semantic cluster', 'sufficient query and semantic coverage'],
-    },
-    recommendation: {
-      title: 'Validate the live SERP before changing the page',
-      rationale: 'Intent changes are higher risk than snippet changes and require a human SERP check.',
-      checklist: ['Inspect the top results manually', 'Choose retarget, format change, split, merge, or leave alone', 'Do not redirect or canonicalize automatically'],
-      copyDirection: 'If retargeting, make the page format and reader promise explicit above the fold.',
-    },
-    successCriteria: { metric: 'qualifiedClicks', observationWindowDays: 28 },
-    fingerprintParts: [inputs.cluster.clusterKey || 'alternate-intent'],
-  });
-  return detectorAssessment('intent_mismatch', 'actionable', {
-    reasonCodes: ['dominant_semantic_mismatch'], confidence, evidence, action,
+    patternConfidence: confidence,
+    causeConfidence: 0.35,
+    disposition: 'investigate',
+    decisionGates: ['serp_review_required'],
+    nextReview: { mode: 'event', event: 'serp_review', rationale: 'confirm_search_intent' },
+    evidence,
   });
 }
 
@@ -511,6 +544,13 @@ function assessContentDecay(context = {}) {
   if (!completeDecayWindows(context)) {
     return detectorAssessment('content_decay', 'not_evaluable', { reasonCodes: ['incomplete_equal_windows'], evidence });
   }
+  if (context.visibility?.mature === false) {
+    return detectorAssessment('content_decay', 'not_evaluable', {
+      reasonCodes: ['new_or_ramping_page'],
+      evidence: { ...evidence, firstVisibleDate: context.visibility.firstVisibleDate || null },
+      nextReview: { mode: 'event', event: 'next_finalized_sync', rationale: 'await_mature_comparison_window' },
+    });
+  }
   if (currentImpressions < MIN_DECAY_IMPRESSIONS || previousImpressions < MIN_DECAY_IMPRESSIONS) {
     return detectorAssessment('content_decay', 'not_evaluable', { reasonCodes: ['insufficient_impressions'], evidence });
   }
@@ -564,6 +604,16 @@ function assessContentDecay(context = {}) {
   const action = baseAction(page, 'content_decay', {
     confidence,
     expectedAdditionalClicks: lostClicks,
+    patternConfidence: confidence,
+    causeConfidence: Math.max(0.55, confidence - 0.15),
+    expectedImpact: {
+      metric: 'clicks',
+      low: Math.max(1, Math.floor(lostClicks * 0.35)),
+      point: lostClicks,
+      high: lostClicks,
+      windowDays: 28,
+      quality: 'modeled',
+    },
     priorityScore: Math.max(1, lostClicks) * confidence,
     summary: 'Organic performance declined across two complete windows with persistent supporting evidence.',
     hypothesis: 'The page may have lost freshness, topical coverage, or ranking strength.',
@@ -666,12 +716,32 @@ function assessCannibalization(context = {}) {
 function assessInternalLinkGap(context = {}) {
   const { page = {}, current = {}, internalLinks = {} } = context;
   const position = finite(current.position);
-  const donors = Array.isArray(internalLinks.donorPageKeys) ? internalLinks.donorPageKeys : [];
+  const donors = (Array.isArray(internalLinks.qualifiedDonors) ? internalLinks.qualifiedDonors : [])
+    .filter((donor) => donor && typeof donor === 'object')
+    .map((donor) => ({
+      title: String(donor.title || '').slice(0, 300),
+      canonicalUrl: String(donor.canonicalUrl || '').slice(0, 2048),
+      relevanceScore: clamp(donor.relevanceScore),
+      reasonCodes: unique(donor.reasonCodes).slice(0, 10),
+      anchorDirection: String(donor.anchorDirection || '').slice(0, 300),
+    }))
+    .filter((donor) => donor.canonicalUrl && donor.relevanceScore >= 0.35);
   const inboundCount = finite(internalLinks.inboundCount);
-  const familyP25 = finite(internalLinks.familyP25, 1);
+  const cohortP25 = finite(internalLinks.cohortP25, finite(internalLinks.familyP25, 1));
+  const peerCount = Math.max(0, finite(internalLinks.peerCount));
   const impressions = finite(current.impressions);
-  const evidence = { position, impressions, inboundCount, familyP25, donorPageCount: donors.length };
-  if (impressions < MIN_PAGE_IMPRESSIONS) {
+  const linkDeficit = Math.max(0, cohortP25 - inboundCount);
+  const evidence = {
+    position,
+    impressions,
+    inboundCount,
+    cohortP25,
+    peerCount,
+    linkDeficit,
+    donorPageCount: donors.length,
+    qualifiedDonors: donors.slice(0, 10),
+  };
+  if (impressions < MIN_INTERNAL_LINK_IMPRESSIONS) {
     return detectorAssessment('internal_link', 'not_evaluable', {
       reasonCodes: ['insufficient_impressions'], evidence,
     });
@@ -681,32 +751,34 @@ function assessInternalLinkGap(context = {}) {
       reasonCodes: ['outside_internal_link_opportunity_range'], confidence: 0.75, evidence,
     });
   }
-  if (inboundCount >= familyP25 || donors.length < 2) {
-    return detectorAssessment('internal_link', 'clear', { reasonCodes: ['no_internal_link_gap'], confidence: 0.7, evidence });
+  if (peerCount < 10) {
+    return detectorAssessment('internal_link', 'not_evaluable', {
+      reasonCodes: ['internal_link_cohort_insufficient'], confidence: 0.2, evidence,
+    });
   }
-  const confidence = 0.72;
-  const action = baseAction(page, 'internal_link', {
-    confidence,
-    priorityScore: impressions * confidence * 0.01,
-    summary: 'A near-page-one URL has fewer relevant internal links than comparable pages.',
-    hypothesis: 'Additional contextual links from strong related pages may improve discovery and topical reinforcement.',
-    evidence: {
-      summary: `${inboundCount} inbound links versus a family lower-quartile reference of ${familyP25}.`,
-      windowDays: context.windowDays || 28,
-      signals: ['position 8–20', 'low internal-link count', 'at least two relevant donor pages'],
-      donorPageKeys: donors.slice(0, 10),
-    },
-    recommendation: {
-      title: 'Add contextual links from relevant donor pages',
-      rationale: 'Use descriptive anchors that help readers, without forcing exact-match repetition.',
-      checklist: donors.slice(0, 5).map((key) => `Review donor page ${key}`),
-      copyDirection: 'Use anchors that describe the destination task naturally.',
-    },
-    successCriteria: { metric: 'averagePosition', minimumImprovement: 1 },
-    fingerprintParts: [Math.floor(position), donors.slice(0, 3).sort().join(',')],
-  });
-  return detectorAssessment('internal_link', 'actionable', {
-    reasonCodes: ['supported_internal_link_gap'], confidence, evidence, action,
+  if (linkDeficit < 2) {
+    return detectorAssessment('internal_link', 'clear', {
+      reasonCodes: ['internal_link_gap_below_floor', 'no_internal_link_gap'], confidence: 0.7, evidence,
+    });
+  }
+  if (donors.length < 2) {
+    return detectorAssessment('internal_link', 'not_evaluable', {
+      reasonCodes: ['internal_link_donors_insufficient'], confidence: 0.25, evidence,
+    });
+  }
+  const patternConfidence = clamp(
+    0.55 + Math.min(0.15, peerCount / 100) + Math.min(0.12, linkDeficit * 0.03)
+      + Math.min(0.08, donors.length * 0.02)
+  );
+  return detectorAssessment('internal_link', 'watch', {
+    reasonCodes: ['internal_link_structural_review', 'supported_internal_link_gap'],
+    confidence: patternConfidence,
+    patternConfidence,
+    causeConfidence: 0.3,
+    disposition: 'structural_review',
+    decisionGates: ['ranking_effect_not_estimated'],
+    nextReview: { mode: 'event', event: 'structural_review', rationale: 'review_qualified_donors' },
+    evidence,
   });
 }
 
@@ -725,9 +797,28 @@ function assessTechnicalIndexing(context = {}) {
     inspectionIssue,
     manifestRobotsBlocked,
     canonicalMissing,
+    inspectionAvailable: technical.inspectionAvailable === true,
   };
   if (!page.indexable) {
     return detectorAssessment('technical_indexing', 'clear', { reasonCodes: ['page_not_intended_for_indexing'], confidence: 0.8, evidence });
+  }
+  if (
+    technical.inspectionAvailable === false
+    && !canonicalChanged
+    && !inspectionIssue
+    && !manifestRobotsBlocked
+    && !canonicalMissing
+  ) {
+    return detectorAssessment('technical_indexing', 'watch', {
+      reasonCodes: ['technical_state_unverified'],
+      confidence: 0.35,
+      patternConfidence: 0.35,
+      causeConfidence: 0,
+      disposition: 'investigate',
+      decisionGates: ['url_inspection_required'],
+      nextReview: { mode: 'event', event: 'url_inspection', rationale: 'verify_google_index_state' },
+      evidence,
+    });
   }
   if (!noVisibility && !canonicalChanged && !inspectionIssue && !manifestRobotsBlocked && !canonicalMissing) {
     return detectorAssessment('technical_indexing', 'clear', { reasonCodes: ['no_technical_indexing_anomaly'], confidence: 0.8, evidence });
@@ -779,6 +870,25 @@ function assessTechnicalIndexing(context = {}) {
   });
 }
 
+function assessVisibilityInterruption(context = {}) {
+  const result = context.visibility?.assessment || assessVisibilityPattern(context.visibility || {});
+  return detectorAssessment('visibility_interruption', result.state || 'not_evaluable', {
+    reasonCodes: result.reasonCodes,
+    confidence: result.patternConfidence,
+    patternConfidence: result.patternConfidence,
+    causeConfidence: result.causeConfidence,
+    disposition: result.disposition,
+    nextReview: result.nextReview,
+    decisionGates: result.requiresInspection
+      ? ['url_inspection_required']
+      : result.decisionGate ? [result.decisionGate] : [],
+    evidence: {
+      ...(result.evidence || {}),
+      requiresInspection: result.requiresInspection === true,
+    },
+  });
+}
+
 function applyCooldown(assessments, cooldown = {}) {
   return assessments.map((assessment) => {
     const detectorCooldown = cooldown?.[assessment.detector] || cooldown;
@@ -787,10 +897,18 @@ function applyCooldown(assessments, cooldown = {}) {
       return detectorAssessment(assessment.detector, 'watch', {
         reasonCodes: ['technical_clear_awaiting_post_deploy_crawl', ...assessment.reasonCodes],
         confidence: assessment.confidence,
+        patternConfidence: assessment.patternConfidence,
+        causeConfidence: assessment.causeConfidence,
+        disposition: 'investigate',
+        nextReview: detectorCooldown?.nextReviewDate
+          ? { mode: 'date', at: detectorCooldown.nextReviewDate, rationale: 'post_change_cooldown' }
+          : { mode: 'event', event: 'post_deploy_crawl', rationale: 'await_post_change_crawl' },
         evidence: { ...assessment.evidence, cooldown: detectorCooldown },
       });
     }
-    if (!PERFORMANCE_DETECTORS.has(assessment.detector) || assessment.state !== 'actionable') return assessment;
+    const cooldownScoped = PERFORMANCE_DETECTORS.has(assessment.detector)
+      || assessment.detector === 'internal_link';
+    if (!cooldownScoped || !['watch', 'actionable'].includes(assessment.state)) return assessment;
     if (status === 'eligible') return assessment;
     const cooldownReason = String(detectorCooldown?.reason || (
       status === 'observing' || status === 'directional' ? 'observing_change' : status
@@ -798,11 +916,51 @@ function applyCooldown(assessments, cooldown = {}) {
     return detectorAssessment(assessment.detector, 'watch', {
       reasonCodes: [cooldownReason, 'performance_action_suppressed_by_cooldown', ...assessment.reasonCodes],
       confidence: assessment.confidence,
+      patternConfidence: assessment.patternConfidence,
+      causeConfidence: 0,
+      disposition: status === 'awaiting_recrawl' ? 'investigate' : 'monitor',
+      nextReview: detectorCooldown?.nextReviewDate
+        ? { mode: 'date', at: detectorCooldown.nextReviewDate, rationale: 'post_change_cooldown' }
+        : { mode: 'event', event: 'post_deploy_crawl', rationale: cooldownReason },
+      decisionGates: [cooldownReason, ...(assessment.decisionGates || [])],
       evidence: {
         ...assessment.evidence,
         cooldown: detectorCooldown,
         suppressedActionType: assessment.action?.type || assessment.detector,
       },
+    });
+  });
+}
+
+function applyCrossDetectorVeto(assessments, context = {}) {
+  const visibility = assessments.find((assessment) => (
+    assessment.detector === 'visibility_interruption'
+    && assessment.reasonCodes.includes('visibility_interruption')
+  ));
+  const temporalBlocked = context.temporalGate?.eligible === false;
+  if (!visibility && !temporalBlocked) return assessments;
+  return assessments.map((assessment) => {
+    const scoped = PERFORMANCE_DETECTORS.has(assessment.detector)
+      || assessment.detector === 'internal_link';
+    if (!scoped || assessment.state === 'clear' || assessment.state === 'not_evaluable') return assessment;
+    const reasonCode = visibility
+      ? 'visibility_interruption_requires_diagnosis'
+      : String(context.temporalGate?.reason || 'performance_window_precedes_production');
+    const temporalStructural = temporalBlocked && !visibility && assessment.detector === 'internal_link';
+    return detectorAssessment(assessment.detector, 'watch', {
+      reasonCodes: [reasonCode, ...assessment.reasonCodes],
+      confidence: assessment.patternConfidence,
+      patternConfidence: assessment.patternConfidence,
+      causeConfidence: 0,
+      disposition: temporalStructural ? 'structural_review' : 'investigate',
+      decisionGates: [reasonCode, ...(assessment.decisionGates || [])],
+      nextReview: visibility
+        ? visibility.nextReview
+        : temporalStructural
+          ? (assessment.nextReview || { mode: 'event', event: 'structural_review', rationale: 'review_qualified_donors' })
+          : (context.temporalGate?.nextReview
+            || { mode: 'event', event: 'post_deploy_crawl', rationale: reasonCode }),
+      evidence: { ...assessment.evidence, vetoedBy: reasonCode },
     });
   });
 }
@@ -816,6 +974,7 @@ function evaluatePageDetectors(context = {}) {
     assessCannibalization(context),
     assessInternalLinkGap(context),
     assessTechnicalIndexing(context),
+    ...(context.visibility ? [assessVisibilityInterruption(context)] : []),
   ];
   const tracking = context.page.changeTracking || {};
   if (
@@ -823,7 +982,7 @@ function evaluatePageDetectors(context = {}) {
     || String(tracking.fingerprintVersion).startsWith('legacy-derived')
     || !tracking.fingerprintEvidence?.statuses
   ) {
-    return assessments;
+    return applyCrossDetectorVeto(assessments, context);
   }
   const statuses = tracking.fingerprintEvidence?.statuses || {};
   const requirements = {
@@ -833,8 +992,9 @@ function evaluatePageDetectors(context = {}) {
     cannibalization: ['intent'],
     internal_link: ['internalLinks'],
     technical_indexing: ['canonical', 'robots', 'indexability', 'structuredData'],
+    visibility_interruption: [],
   };
-  return assessments.map((assessment) => {
+  const fingerprintChecked = assessments.map((assessment) => {
     const unavailable = (requirements[assessment.detector] || [])
       .filter((component) => ['partial', 'unavailable'].includes(statuses[component]));
     if (!unavailable.length) return assessment;
@@ -848,6 +1008,7 @@ function evaluatePageDetectors(context = {}) {
       },
     });
   });
+  return applyCrossDetectorVeto(fingerprintChecked, context);
 }
 
 function evidenceLevelFor(state, assessments, cooldown) {
@@ -887,6 +1048,11 @@ function evaluatePageAssessment(context = {}) {
       evidenceLevel: 'insufficient',
       reasonCodes: ['page_identity_missing'],
       confidence: 0,
+      patternConfidence: 0,
+      causeConfidence: 0,
+      disposition: 'insufficient_evidence',
+      decisionGates: ['page_identity_missing'],
+      nextReview: null,
       findings: [],
       counterEvidence: [],
       action: null,
@@ -926,6 +1092,11 @@ function evaluatePageAssessment(context = {}) {
     evidenceLevel: evidenceLevelFor(state, assessments, context.cooldown),
     reasonCodes,
     confidence: primary?.confidence || 0,
+    patternConfidence: primary?.patternConfidence || 0,
+    causeConfidence: primary?.causeConfidence || 0,
+    disposition: primary?.disposition || (state === 'actionable' ? 'change_ready' : state === 'clear' ? 'no_change' : 'insufficient_evidence'),
+    decisionGates: primary?.decisionGates || [],
+    nextReview: primary?.nextReview || null,
     findings: assessments.filter((assessment) => assessment.state !== 'clear'),
     counterEvidence: assessments.filter((assessment) => assessment.state === 'clear'),
     action: selected?.action || null,
@@ -968,6 +1139,7 @@ function evaluatePage(context) {
 module.exports = {
   BASELINE_QUALITY,
   DETECTOR_STATES,
+  DISPOSITIONS,
   MAX_ALIGNED_TOPIC_SCORE,
   MIN_DECAY_IMPRESSIONS,
   MIN_DECAY_LOST_CLICKS,
@@ -975,6 +1147,7 @@ module.exports = {
   MIN_DOMINANT_CLUSTER_SHARE,
   MIN_FULL_PAGE_CLUSTER_SHARE,
   MIN_PAGE_IMPRESSIONS,
+  MIN_INTERNAL_LINK_IMPRESSIONS,
   MIN_QUERY_COVERAGE,
   MIN_QUERY_IMPRESSIONS,
   MIN_SEMANTIC_COVERAGE,
@@ -987,6 +1160,7 @@ module.exports = {
   assessIntentMismatch,
   assessInternalLinkGap,
   assessTechnicalIndexing,
+  assessVisibilityInterruption,
   detectCannibalization,
   detectContentDecay,
   detectCtrSnippet,

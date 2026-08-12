@@ -585,12 +585,15 @@ async function inspectUrlCandidates({
   for (const candidate of selected) {
     try {
       const raw = await client.inspectUrl({ siteUrl, inspectionUrl: candidate.canonicalUrl });
+      const data = sanitizeInspectionResult(raw, candidate.canonicalUrl);
+      const pageVersionKey = safeString(candidate.changeTracking?.currentVersionKey, 128);
+      if (pageVersionKey) data.pageVersionKey = pageVersionKey;
       snapshots.push({
         siteUrl,
         pageKey: String(candidate.pageKey),
         kind: 'urlInspection',
         observedAt,
-        data: sanitizeInspectionResult(raw, candidate.canonicalUrl),
+        data,
         expiresAt: new Date(observedAt.getTime() + SNAPSHOT_TTL_DAYS * DAY_MS),
       });
     } catch {

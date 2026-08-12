@@ -11,7 +11,16 @@ const { isKnownReasonCode, reasonSummaryForCode } = require('./rule-engine');
 
 const ACTIVE_STATES = ['proposed', 'approved', 'implementation_pending', 'measuring', 'evaluated', 'snoozed'];
 const ALLOWED_SNOOZE_DAYS = new Set([14, 30, 60, 90]);
-const DETECTOR_SOURCES = Object.freeze(['balanced-v1', 'balanced-v2', 'balanced-v2.1']);
+const CURRENT_DETECTOR_SOURCE = 'balanced-v2.2';
+const DETECTOR_SOURCES = Object.freeze([
+  'balanced-v1', 'balanced-v2', 'balanced-v2.1', CURRENT_DETECTOR_SOURCE,
+]);
+const SAFE_QUEUE_KINDS = new Set(['performance', 'technical', 'structural']);
+const SAFE_IMPACT_QUALITIES = new Set(['not_estimated', 'directional', 'modeled']);
+const SAFE_REVIEW_EVENTS = new Set([
+  'url_inspection', 'post_deploy_crawl', '14_finalized_days', '28_finalized_days',
+  'coverage_threshold', 'serp_review', 'next_finalized_sync', 'structural_review',
+]);
 const ACTION_CHANGED_COMPONENTS = Object.freeze({
   ctr_snippet: Object.freeze(['title', 'description']),
   intent_mismatch: Object.freeze(['h1', 'mainContent', 'headingOutline', 'intent']),
@@ -98,6 +107,7 @@ function successCriteriaText(value) {
 }
 
 function boundedNumber(value, minimum, maximum) {
+  if (value === null || value === undefined || value === '') return null;
   const normalized = Number(value);
   return Number.isFinite(normalized) && normalized >= minimum && normalized <= maximum
     ? normalized
@@ -251,7 +261,59 @@ function sanitizeDurableEvidence(evidence = {}) {
 }
 
 function finiteOrNull(value) {
+  if (value === null || value === undefined || value === '') return null;
   return Number.isFinite(Number(value)) ? Number(value) : null;
+}
+
+function sanitizeExpectedImpact(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { metric: 'clicks', low: null, point: null, high: null, windowDays: 28, quality: 'not_estimated' };
+  }
+  let low = boundedNumber(value.low, 0, 1_000_000_000);
+  let point = boundedNumber(value.point, 0, 1_000_000_000);
+  let high = boundedNumber(value.high, 0, 1_000_000_000);
+  const ordered = [low, point, high].filter((item) => item !== null);
+  if (ordered.some((item, index) => index > 0 && item < ordered[index - 1])) {
+    low = null;
+    point = null;
+    high = null;
+  }
+  const quality = SAFE_IMPACT_QUALITIES.has(String(value.quality))
+    ? String(value.quality)
+    : 'not_estimated';
+  return {
+    metric: 'clicks',
+    low,
+    point,
+    high,
+    windowDays: boundedNumber(value.windowDays, 1, 365) ?? 28,
+    quality: point === null ? 'not_estimated' : quality,
+  };
+}
+
+function sanitizeNextReview(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const rationale = String(value.rationale || '').trim().slice(0, 1000);
+  if (value.mode === 'date') {
+    if (value.event !== null && value.event !== undefined && value.event !== '') return null;
+    const at = value.at ? new Date(value.at) : null;
+    if (!at || Number.isNaN(at.getTime())) return null;
+    return { mode: 'date', at: at.toISOString(), rationale };
+  }
+  const event = String(value.event || '');
+  if (
+    value.mode !== 'event'
+    || !SAFE_REVIEW_EVENTS.has(event)
+    || (value.at !== null && value.at !== undefined && value.at !== '')
+  ) return null;
+  return { mode: 'event', event, rationale };
+}
+
+function queueKindForAction(value) {
+  if (SAFE_QUEUE_KINDS.has(String(value?.queueKind))) return String(value.queueKind);
+  if (value?.type === 'technical_indexing') return 'technical';
+  if (value?.type === 'internal_link') return 'structural';
+  return 'performance';
 }
 
 function serializeAction(action, page = null) {
@@ -271,12 +333,17 @@ function serializeAction(action, page = null) {
     url: String(value.canonicalUrl || ''),
     pageTitle: page?.title || null,
     type: value.type,
+    queueKind: queueKindForAction(value),
     status: value.state,
     verdict: value.evaluation?.verdict || null,
     title: String(value.summary || ''),
     priorityScore: Number(value.priorityScore || 0),
     confidence: Number(value.confidence || 0),
+    patternConfidence: boundedNumber(value.patternConfidence, 0, 1) ?? Number(value.confidence || 0),
+    causeConfidence: boundedNumber(value.causeConfidence, 0, 1) ?? 0,
     expectedAdditionalClicks: Number.isFinite(value.expectedAdditionalClicks) ? value.expectedAdditionalClicks : null,
+    expectedImpact: sanitizeExpectedImpact(value.expectedImpact),
+    nextReview: sanitizeNextReview(value.nextReview),
     effort: value.effort || null,
     risk: value.risk || null,
     detectedAt: new Date(value.createdAt || Date.now()).toISOString(),
@@ -326,7 +393,7 @@ function resurfaceExpiredSnooze(action, now) {
 async function upsertRecommendations(
   recommendations,
   now = new Date(),
-  { deadlineMs = Infinity, clock = Date.now, progress = null } = {}
+  { deadlineMs = Infinity, clock = Date.now, progress = null, session = null } = {}
 ) {
   const items = recommendations || [];
   const results = [];
@@ -338,17 +405,21 @@ async function upsertRecommendations(
     if (clock() >= deadlineMs) break;
     processed += 1;
     if (recommendation.type === 'ctr_snippet') {
-      const suppression = await SeoAction.exists({
+      const suppressionQuery = SeoAction.exists({
         pageKey: recommendation.pageKey,
         type: 'ctr_snippet',
         suppressedUntil: { $gt: now },
       });
+      if (session) suppressionQuery.session(session);
+      const suppression = await suppressionQuery;
       if (suppression) continue;
     }
-    const existing = await SeoAction.findOne({
+    const existingQuery = SeoAction.findOne({
       fingerprint: recommendation.fingerprint,
       state: { $in: ACTIVE_STATES },
     }).sort({ createdAt: -1 });
+    if (session) existingQuery.session(session);
+    const existing = await existingQuery;
     if (existing) {
       if (['proposed', 'snoozed'].includes(existing.state)) {
         const detectorManaged = isDetectorManagedAction(existing);
@@ -356,8 +427,9 @@ async function upsertRecommendations(
           && (existing.state === 'proposed' || (!existing.approvedAt && !existing.implementedAt));
         if (detectorManaged) {
           if (detectorOwned) {
-            existing.source = recommendation.source || 'balanced-v2.1';
-            existing.ruleVersion = recommendation.ruleVersion || 'balanced-v2.1';
+            existing.source = recommendation.source || CURRENT_DETECTOR_SOURCE;
+            existing.ruleVersion = recommendation.ruleVersion || CURRENT_DETECTOR_SOURCE;
+            existing.queueKind = queueKindForAction(recommendation);
             existing.summary = recommendation.summary;
             existing.hypothesis = recommendation.hypothesis;
             existing.recommendation = recommendation.recommendation;
@@ -365,7 +437,15 @@ async function upsertRecommendations(
           }
           existing.priorityScore = recommendation.priorityScore;
           existing.confidence = recommendation.confidence;
-          existing.expectedAdditionalClicks = recommendation.expectedAdditionalClicks;
+          existing.patternConfidence = boundedNumber(recommendation.patternConfidence, 0, 1)
+            ?? boundedNumber(recommendation.confidence, 0, 1)
+            ?? 0;
+          existing.causeConfidence = boundedNumber(recommendation.causeConfidence, 0, 1) ?? 0;
+          existing.expectedAdditionalClicks = Number.isFinite(recommendation.expectedAdditionalClicks)
+            ? recommendation.expectedAdditionalClicks
+            : null;
+          existing.expectedImpact = sanitizeExpectedImpact(recommendation.expectedImpact);
+          existing.nextReview = sanitizeNextReview(recommendation.nextReview);
           existing.evidence = sanitizeDurableEvidence(recommendation.evidence);
           existing.detectorActive = true;
           existing.lastDetectedAt = now;
@@ -373,21 +453,24 @@ async function upsertRecommendations(
           existing.autoResolved = false;
           if (detectorOwned) resurfaceExpiredSnooze(existing, now);
           existing.version += 1;
-          await existing.save();
+          await existing.save(session ? { session } : undefined);
         }
       }
       results.push(existing);
       continue;
     }
-    const autoResolved = await SeoAction.findOne({
+    const autoResolvedQuery = SeoAction.findOne({
       fingerprint: recommendation.fingerprint,
       source: { $in: DETECTOR_SOURCES },
       state: 'closed',
       autoResolved: true,
     }).sort({ createdAt: -1 });
+    if (session) autoResolvedQuery.session(session);
+    const autoResolved = await autoResolvedQuery;
     if (autoResolved) {
-      autoResolved.source = recommendation.source || 'balanced-v2.1';
-      autoResolved.ruleVersion = recommendation.ruleVersion || 'balanced-v2.1';
+      autoResolved.source = recommendation.source || CURRENT_DETECTOR_SOURCE;
+      autoResolved.ruleVersion = recommendation.ruleVersion || CURRENT_DETECTOR_SOURCE;
+      autoResolved.queueKind = queueKindForAction(recommendation);
       autoResolved.state = 'proposed';
       autoResolved.summary = recommendation.summary;
       autoResolved.hypothesis = recommendation.hypothesis;
@@ -395,7 +478,15 @@ async function upsertRecommendations(
       autoResolved.successCriteria = recommendation.successCriteria;
       autoResolved.priorityScore = recommendation.priorityScore;
       autoResolved.confidence = recommendation.confidence;
-      autoResolved.expectedAdditionalClicks = recommendation.expectedAdditionalClicks;
+      autoResolved.patternConfidence = boundedNumber(recommendation.patternConfidence, 0, 1)
+        ?? boundedNumber(recommendation.confidence, 0, 1)
+        ?? 0;
+      autoResolved.causeConfidence = boundedNumber(recommendation.causeConfidence, 0, 1) ?? 0;
+      autoResolved.expectedAdditionalClicks = Number.isFinite(recommendation.expectedAdditionalClicks)
+        ? recommendation.expectedAdditionalClicks
+        : null;
+      autoResolved.expectedImpact = sanitizeExpectedImpact(recommendation.expectedImpact);
+      autoResolved.nextReview = sanitizeNextReview(recommendation.nextReview);
       autoResolved.evidence = sanitizeDurableEvidence(recommendation.evidence);
       autoResolved.detectorActive = true;
       autoResolved.lastDetectedAt = now;
@@ -405,23 +496,27 @@ async function upsertRecommendations(
       autoResolved.events.push({
         event: 'detector_redetected', at: now, fromState: 'closed', toState: 'proposed',
       });
-      await autoResolved.save();
+      await autoResolved.save(session ? { session } : undefined);
       results.push(autoResolved);
       continue;
     }
-    const dismissed = await SeoAction.findOne({
+    const dismissedQuery = SeoAction.findOne({
       fingerprint: recommendation.fingerprint,
       state: 'dismissed',
     }).sort({ createdAt: -1 });
+    if (session) dismissedQuery.session(session);
+    const dismissed = await dismissedQuery;
     if (dismissed) {
       results.push(dismissed);
       continue;
     }
-    const activeSameType = await SeoAction.findOne({
+    const activeSameTypeQuery = SeoAction.findOne({
       pageKey: recommendation.pageKey,
       type: recommendation.type,
       state: { $in: ACTIVE_STATES },
     }).sort({ createdAt: -1 });
+    if (session) activeSameTypeQuery.session(session);
+    const activeSameType = await activeSameTypeQuery;
     if (activeSameType) {
       if (['proposed', 'snoozed'].includes(activeSameType.state)) {
         const detectorManaged = isDetectorManagedAction(activeSameType);
@@ -431,8 +526,9 @@ async function upsertRecommendations(
         );
         if (detectorManaged) {
           if (detectorOwned) {
-            activeSameType.source = recommendation.source || 'balanced-v2.1';
-            activeSameType.ruleVersion = recommendation.ruleVersion || 'balanced-v2.1';
+            activeSameType.source = recommendation.source || CURRENT_DETECTOR_SOURCE;
+            activeSameType.ruleVersion = recommendation.ruleVersion || CURRENT_DETECTOR_SOURCE;
+            activeSameType.queueKind = queueKindForAction(recommendation);
             activeSameType.fingerprint = recommendation.fingerprint;
             activeSameType.summary = recommendation.summary;
             activeSameType.hypothesis = recommendation.hypothesis;
@@ -441,7 +537,15 @@ async function upsertRecommendations(
           }
           activeSameType.priorityScore = recommendation.priorityScore;
           activeSameType.confidence = recommendation.confidence;
-          activeSameType.expectedAdditionalClicks = recommendation.expectedAdditionalClicks;
+          activeSameType.patternConfidence = boundedNumber(recommendation.patternConfidence, 0, 1)
+            ?? boundedNumber(recommendation.confidence, 0, 1)
+            ?? 0;
+          activeSameType.causeConfidence = boundedNumber(recommendation.causeConfidence, 0, 1) ?? 0;
+          activeSameType.expectedAdditionalClicks = Number.isFinite(recommendation.expectedAdditionalClicks)
+            ? recommendation.expectedAdditionalClicks
+            : null;
+          activeSameType.expectedImpact = sanitizeExpectedImpact(recommendation.expectedImpact);
+          activeSameType.nextReview = sanitizeNextReview(recommendation.nextReview);
           activeSameType.evidence = sanitizeDurableEvidence(recommendation.evidence);
           activeSameType.detectorActive = true;
           activeSameType.lastDetectedAt = now;
@@ -449,20 +553,33 @@ async function upsertRecommendations(
           activeSameType.autoResolved = false;
           if (detectorOwned) resurfaceExpiredSnooze(activeSameType, now);
           activeSameType.version += 1;
-          await activeSameType.save();
+          await activeSameType.save(session ? { session } : undefined);
         }
       }
       results.push(activeSameType);
       continue;
     }
-    const action = await SeoAction.create({
+    const action = new SeoAction({
       ...recommendation,
+      source: recommendation.source || CURRENT_DETECTOR_SOURCE,
+      ruleVersion: recommendation.ruleVersion || CURRENT_DETECTOR_SOURCE,
+      queueKind: queueKindForAction(recommendation),
+      patternConfidence: boundedNumber(recommendation.patternConfidence, 0, 1)
+        ?? boundedNumber(recommendation.confidence, 0, 1)
+        ?? 0,
+      causeConfidence: boundedNumber(recommendation.causeConfidence, 0, 1) ?? 0,
+      expectedAdditionalClicks: Number.isFinite(recommendation.expectedAdditionalClicks)
+        ? recommendation.expectedAdditionalClicks
+        : null,
+      expectedImpact: sanitizeExpectedImpact(recommendation.expectedImpact),
+      nextReview: sanitizeNextReview(recommendation.nextReview),
       evidence: sanitizeDurableEvidence(recommendation.evidence),
       state: 'proposed',
       detectorActive: true,
       lastDetectedAt: now,
       events: [{ event: 'detected', at: now, fromState: '', toState: 'proposed' }],
     });
+    await action.save(session ? { session } : undefined);
     results.push(action);
   }
   if (progress && typeof progress === 'object') {
@@ -481,6 +598,7 @@ async function reconcileDetectorRecommendations({
   deadlineMs = Infinity,
   clock = Date.now,
   progress = null,
+  session = null,
 } = {}) {
   const pageKeys = Array.from(new Set(evaluatedPageKeys || []));
   if (!pageKeys.length) {
@@ -490,11 +608,13 @@ async function reconcileDetectorRecommendations({
     return 0;
   }
   const emitted = new Set((recommendations || []).map((item) => `${item.pageKey}|${item.type}`));
-  const candidates = await SeoAction.find({
+  const candidateQuery = SeoAction.find({
     source: { $in: DETECTOR_SOURCES },
     state: 'proposed',
     pageKey: { $in: pageKeys },
   }).select('_id pageKey type source version').lean();
+  if (session) candidateQuery.session(session);
+  const candidates = await candidateQuery;
   let cleared = 0;
   let processed = 0;
   if (progress && typeof progress === 'object') {
@@ -504,9 +624,17 @@ async function reconcileDetectorRecommendations({
     if (clock() >= deadlineMs) break;
     processed += 1;
     if (emitted.has(`${action.pageKey}|${action.type}`)) continue;
-    const typeEligibility = action.source === 'balanced-v1' && migrationEligibleTypesByPage instanceof Map
-      ? migrationEligibleTypesByPage
-      : eligibleTypesByPage;
+    // The first complete v2.2 run may retire detector-owned proposals from
+    // any older rule generation. Approved, measuring, manual, dismissed and
+    // owner-authored rows never enter this proposed-only candidate set.
+    const legacyProposal = action.source !== CURRENT_DETECTOR_SOURCE;
+    // Migration is intentionally narrow: v2.2 only retires the old
+    // detector-owned false-positive internal-link/snippet proposals that the
+    // complete v2.2 assessment explicitly marks safe to close. It must never
+    // sweep other legacy proposal types merely because the page was evaluated.
+    if (legacyProposal && !['internal_link', 'ctr_snippet'].includes(action.type)) continue;
+    if (legacyProposal && !(migrationEligibleTypesByPage instanceof Map)) continue;
+    const typeEligibility = legacyProposal ? migrationEligibleTypesByPage : eligibleTypesByPage;
     if (typeEligibility instanceof Map) {
       const eligibleTypes = typeEligibility.get(action.pageKey);
       if (!(eligibleTypes instanceof Set) || !eligibleTypes.has(action.type)) continue;
@@ -530,7 +658,8 @@ async function reconcileDetectorRecommendations({
             note: 'A complete analysis run no longer detected this condition.',
           },
         },
-      }
+      },
+      session ? { session } : undefined
     );
     cleared += result.modifiedCount || 0;
   }
@@ -1021,6 +1150,7 @@ async function transitionAction(actionId, request, actorUserId, now = new Date()
 
 module.exports = {
   ACTIVE_STATES,
+  CURRENT_DETECTOR_SOURCE,
   SeoActionError,
   activatePendingMeasurements,
   activateTechnicalMeasurementsFromInspections,
@@ -1029,6 +1159,8 @@ module.exports = {
   serializeAction,
   serializeEvidence,
   sanitizeDurableEvidence,
+  sanitizeExpectedImpact,
+  sanitizeNextReview,
   transitionAction,
   transitionMutation,
   upsertRecommendations,

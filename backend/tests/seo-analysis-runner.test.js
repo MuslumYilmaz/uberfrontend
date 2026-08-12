@@ -30,6 +30,7 @@ function fakeRun() {
 
 describe('manual balanced-v2 analysis runner', () => {
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
     jest.clearAllMocks();
   });
@@ -45,7 +46,7 @@ describe('manual balanced-v2 analysis runner', () => {
       lifecycleRun.analysis = {
         status: 'complete',
         reason: 'analysis_complete',
-        ruleVersion: 'balanced-v2.1',
+        ruleVersion: 'balanced-v2.2',
         endDate,
         windowDays: 28,
         completedDays: 56,
@@ -97,12 +98,73 @@ describe('manual balanced-v2 analysis runner', () => {
     expect(result).toEqual(expect.objectContaining({
       status: 'complete',
       analysis: expect.objectContaining({
-        ruleVersion: 'balanced-v2.1',
+        ruleVersion: 'balanced-v2.2',
         endDate: '2026-08-04',
         evaluatedPages: 435,
         totalPages: 435,
       }),
     }));
+  });
+
+  test('immediately requests at most five URL Inspections after a complete manual interruption analysis', async () => {
+    const run = fakeRun();
+    const now = new Date('2026-08-10T12:00:00.000Z');
+    jest.useFakeTimers({ now });
+    const requestBoundary = new Date('2026-08-10T12:01:00.000Z');
+    const postAnalysisAt = new Date('2026-08-10T12:01:00.001Z');
+    const interruptionMap = new Map(Array.from({ length: 8 }, (_, index) => [
+      `page-${index}`,
+      requestBoundary,
+    ]));
+    const client = { inspectUrl: jest.fn() };
+    const inspectDiagnostics = jest.fn().mockResolvedValue({ inspected: 5 });
+    const loadVisibilityInterruptions = jest.fn().mockResolvedValue(interruptionMap);
+    const releaseLease = jest.fn().mockResolvedValue(undefined);
+
+    const result = await runSeoAnalysis({
+      config: configuredSeo(),
+      client,
+      now,
+      acquireLease: jest.fn().mockResolvedValue({ token: 'shared-token', state: {} }),
+      releaseLease,
+      createRun: jest.fn().mockResolvedValue(run),
+      refreshManifest: jest.fn().mockResolvedValue({ total: 435 }),
+      loadEndDate: jest.fn().mockResolvedValue('2026-08-07'),
+      loadVisibilityInterruptions,
+      inspectDiagnostics,
+      analyzeLifecycle: jest.fn(async ({ run: lifecycleRun, endDate }) => {
+        // The analysis packet creates a request boundary after the runner's
+        // entry timestamp. Post-analysis Inspection must use a fresh clock.
+        jest.setSystemTime(requestBoundary);
+        lifecycleRun.analysis = {
+          status: 'complete',
+          reason: 'analysis_complete',
+          ruleVersion: 'balanced-v2.2',
+          endDate,
+          completedDays: 56,
+          requiredDays: 56,
+          evaluatedPages: 435,
+          committedAssessmentPages: 435,
+          totalPages: 435,
+        };
+      }),
+    });
+
+    expect(result.status).toBe('complete');
+    expect(loadVisibilityInterruptions).toHaveBeenCalledWith({
+      siteUrl: 'sc-domain:frontendatlas.com',
+      endDate: '2026-08-07',
+    });
+    expect(inspectDiagnostics).toHaveBeenCalledTimes(1);
+    expect(inspectDiagnostics).toHaveBeenCalledWith(expect.objectContaining({
+      client,
+      endDate: '2026-08-07',
+      now: postAnalysisAt,
+      limit: 5,
+      visibilityInterruptions: interruptionMap,
+    }));
+    expect(createGscClient).not.toHaveBeenCalled();
+    expect(inspectDiagnostics.mock.invocationCallOrder[0]).toBeLessThan(releaseLease.mock.invocationCallOrder[0]);
   });
 
   test('fails busy before creating a run when sync owns the shared lease', async () => {

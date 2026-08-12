@@ -4,6 +4,7 @@ const express = require('express');
 const SeoPage = require('../models/SeoPage');
 const SeoSyncRun = require('../models/SeoSyncRun');
 const { applySeoPrivateResponsePolicy } = require('../middleware/SeoResponsePolicy');
+const { rateLimit } = require('../middleware/rateLimit');
 const {
   SeoActionError,
   createManualAction,
@@ -21,6 +22,12 @@ const {
   listPages,
   updatePageIntent,
 } = require('../services/seo/dashboard');
+const {
+  getQueryOpportunityExamples,
+  listOpportunities,
+  promoteOpportunity,
+  putSerpReview,
+} = require('../services/seo/opportunity-api');
 const { SeoSyncError, runSeoAnalysis, runSeoSync } = require('../services/seo/sync');
 
 const router = express.Router();
@@ -30,6 +37,31 @@ const MANUAL_SYNC_HARD_DEADLINE_MS = 60_000;
 const MANUAL_SYNC_DATE_CAP = 30;
 const MANUAL_ANALYSIS_HARD_DEADLINE_MS = 55_000;
 const AUTO_SYNC_CONFIG_WARNING = 'Production auto-sync is disabled until CRON_SECRET is configured with at least 32 characters. Manual Sync now remains available.';
+const ownerRateLimitKey = (req) => String(req.seoOwner?.userId || req.ip || 'unknown');
+const opportunityListLimiter = rateLimit({
+  name: 'seo-opportunity-list',
+  windowMs: 60_000,
+  max: 60,
+  keyGenerator: ownerRateLimitKey,
+  message: 'Too many SEO opportunity requests. Please wait and try again.',
+  code: 'SEO_OPPORTUNITY_RATE_LIMITED',
+});
+const opportunityExamplesLimiter = rateLimit({
+  name: 'seo-opportunity-examples',
+  windowMs: 60_000,
+  max: 10,
+  keyGenerator: ownerRateLimitKey,
+  message: 'Too many query example requests. Please wait and try again.',
+  code: 'SEO_OPPORTUNITY_EXAMPLES_RATE_LIMITED',
+});
+const opportunityMutationLimiter = rateLimit({
+  name: 'seo-opportunity-mutation',
+  windowMs: 10 * 60_000,
+  max: 30,
+  keyGenerator: ownerRateLimitKey,
+  message: 'Too many SEO opportunity changes. Please wait and try again.',
+  code: 'SEO_OPPORTUNITY_MUTATION_RATE_LIMITED',
+});
 
 router.use((_req, res, next) => {
   applySeoPrivateResponsePolicy(res);
@@ -117,6 +149,7 @@ router.get('/access', (req, res) => {
     capabilities: {
       contractVersion: 'seo-admin.v2',
       manualAnalysis: true,
+      queryOpportunities: true,
     },
   });
 });
@@ -157,6 +190,19 @@ router.get('/actions/:id', async (req, res) => {
     return res.json(action);
   } catch (error) {
     if (error?.name === 'CastError') return res.status(400).json({ code: 'SEO_ACTION_INVALID_ID', error: 'Invalid action id' });
+    return sendError(res, error);
+  }
+});
+
+router.get('/opportunities', opportunityListLimiter, async (req, res) => {
+  try {
+    return res.json(await listOpportunities({
+      config: getSeoRuntimeConfig(),
+      lane: req.query.lane,
+      cursor: req.query.cursor,
+      limit: req.query.limit,
+    }));
+  } catch (error) {
     return sendError(res, error);
   }
 });
@@ -206,6 +252,61 @@ router.get('/pages/:pageKey', async (req, res) => {
     return sendError(res, error);
   }
 });
+
+router.get(
+  '/pages/:pageKey/query-opportunities/:opportunityKey/examples',
+  opportunityExamplesLimiter,
+  async (req, res) => {
+    try {
+      return res.json(await getQueryOpportunityExamples({
+        config: getSeoRuntimeConfig(),
+        pageKey: req.params.pageKey,
+        opportunityKey: req.params.opportunityKey,
+        assessmentInputHash: req.query.assessmentInputHash,
+        limit: req.query.limit,
+      }));
+    } catch (error) {
+      return sendError(res, error);
+    }
+  }
+);
+
+router.put(
+  '/pages/:pageKey/query-opportunities/:opportunityKey/serp-review',
+  opportunityMutationLimiter,
+  async (req, res) => {
+    try {
+      return res.json(await putSerpReview({
+        config: getSeoRuntimeConfig(),
+        pageKey: req.params.pageKey,
+        opportunityKey: req.params.opportunityKey,
+        assessmentInputHash: req.body?.assessmentInputHash,
+        input: req.body,
+        actorUserId: req.seoOwner.userId,
+      }));
+    } catch (error) {
+      return sendError(res, error);
+    }
+  }
+);
+
+router.post(
+  '/pages/:pageKey/query-opportunities/:opportunityKey/promote',
+  opportunityMutationLimiter,
+  async (req, res) => {
+    try {
+      return res.json(await promoteOpportunity({
+        config: getSeoRuntimeConfig(),
+        pageKey: req.params.pageKey,
+        opportunityKey: req.params.opportunityKey,
+        assessmentInputHash: req.body?.assessmentInputHash,
+        actorUserId: req.seoOwner.userId,
+      }));
+    } catch (error) {
+      return sendError(res, error);
+    }
+  }
+);
 
 router.put('/pages/:pageKey/intent', async (req, res) => {
   try {

@@ -138,7 +138,7 @@ async function buildWeeklyDigest({
   const stateQuery = syncStateModel.findOne({ stateKey: `gsc:${siteUrl}` });
   const [actions, state] = await Promise.all([
     queryWithLean(actionsQuery, [
-      ['select', 'type state canonicalUrl priorityScore expectedAdditionalClicks createdAt'],
+      ['select', 'type state canonicalUrl priorityScore expectedAdditionalClicks expectedImpact impactKind queueKind createdAt'],
       ['sort', { priorityScore: -1, createdAt: -1, _id: -1 }],
       ['limit', 10],
     ]),
@@ -166,10 +166,19 @@ function formatAction(action, index) {
   const status = Object.hasOwn(STATUS_LABELS, action?.state) ? action.state : null;
   const path = safePagePath(action?.canonicalUrl);
   const score = Math.round(finiteNonNegative(action?.priorityScore) * 10) / 10;
-  const expectedClicks = Math.round(finiteNonNegative(action?.expectedAdditionalClicks) * 10) / 10;
+  const modeledPoint = action?.expectedImpact?.point === null || action?.expectedImpact?.point === undefined
+    ? Number.NaN
+    : Number(action.expectedImpact.point);
+  const legacyPoint = Number(action?.expectedAdditionalClicks);
+  const expectedClicks = Number.isFinite(modeledPoint) && action?.expectedImpact?.quality === 'modeled'
+    ? Math.round(Math.max(0, modeledPoint) * 10) / 10
+    : Number.isFinite(legacyPoint) && legacyPoint > 0 && action?.impactKind !== 'structural'
+      ? Math.round(legacyPoint * 10) / 10
+      : null;
+  const impactText = expectedClicks === null ? 'Impact not estimated' : `Potential clicks +${expectedClicks}`;
   return {
-    text: `${index + 1}. ${type ? ACTION_LABELS[type] : 'SEO action'} | ${status ? STATUS_LABELS[status] : 'Active'} | ${path} | Priority ${score} | Potential clicks +${expectedClicks}`,
-    html: `<li><strong>${escapeHtml(type ? ACTION_LABELS[type] : 'SEO action')}</strong> <span>(${escapeHtml(status ? STATUS_LABELS[status] : 'Active')})</span><br>${escapeHtml(path)} · Priority ${score} · Potential clicks +${expectedClicks}</li>`,
+    text: `${index + 1}. ${type ? ACTION_LABELS[type] : 'SEO action'} | ${status ? STATUS_LABELS[status] : 'Active'} | ${path} | Priority ${score} | ${impactText}`,
+    html: `<li><strong>${escapeHtml(type ? ACTION_LABELS[type] : 'SEO action')}</strong> <span>(${escapeHtml(status ? STATUS_LABELS[status] : 'Active')})</span><br>${escapeHtml(path)} · Priority ${score} · ${escapeHtml(impactText)}</li>`,
   };
 }
 

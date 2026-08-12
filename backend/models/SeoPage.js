@@ -29,6 +29,10 @@ const SeoChangeTrackingSchema = new mongoose.Schema(
     currentVersionKey: { type: String, trim: true, maxlength: 128, default: '' },
     currentOccurrenceKey: { type: String, trim: true, maxlength: 128, default: '' },
     analysisInputHash: { type: String, trim: true, maxlength: 128, default: '' },
+    // Owner promotion touches this guard in the same transaction as the
+    // action insert. Any page-only invalidation then conflicts with that
+    // transaction and forces currentness to be re-evaluated.
+    promotionGuardRevision: { type: Number, min: 0, default: 0 },
     componentHashes: {
       title: { type: String, trim: true, maxlength: 128, default: '' },
       description: { type: String, trim: true, maxlength: 128, default: '' },

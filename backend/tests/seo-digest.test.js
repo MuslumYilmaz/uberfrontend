@@ -257,6 +257,38 @@ describe('weekly SEO digest', () => {
     expect(message.text).not.toContain('/twelve');
   });
 
+  test('does not present an unmodeled structural opportunity as zero click impact', async () => {
+    const fixtures = createDependencies({
+      actions: [action(1, {
+        type: 'internal_link',
+        queueKind: 'structural',
+        impactKind: 'structural',
+        expectedAdditionalClicks: 0,
+        expectedImpact: {
+          metric: 'clicks',
+          low: null,
+          point: null,
+          high: null,
+          windowDays: 28,
+          quality: 'not_estimated',
+        },
+      })],
+    });
+
+    await sendWeeklySeoDigest({
+      config: VALID_CONFIG,
+      ownerConfig: VALID_OWNER,
+      now: NOW,
+      dependencies: fixtures.dependencies,
+    });
+    const message = fixtures.sendMail.mock.calls[0][0];
+
+    expect(message.text).toContain('Impact not estimated');
+    expect(message.text).not.toContain('Potential clicks +0');
+    expect(message.html).toContain('Impact not estimated');
+    expect(message.html).not.toContain('Potential clicks +0');
+  });
+
   test('treats an unavailable SMTP configuration as a safe, non-retried skip', async () => {
     const smtpError = Object.assign(new Error('secret provider detail'), { code: 'SMTP_NOT_CONFIGURED' });
     const fixtures = createDependencies({

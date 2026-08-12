@@ -436,66 +436,160 @@
     </ng-container>
   </section>
 
-  <section class="seo-section" aria-labelledby="seo-now-title">
+  <section class="seo-section decision-lanes" aria-labelledby="seo-now-title">
     <div class="seo-section__head">
       <div>
-        <p class="seo-eyebrow">Highest expected impact</p>
-        <h2 id="seo-now-title">Now</h2>
-        <p>At most ten actions, ordered by expected additional clicks and confidence.</p>
+        <p class="seo-eyebrow">Decision workspace</p>
+        <h2 id="seo-now-title">Evidence lanes</h2>
+        <p>Act only on modeled impact; investigate uncertain causes and review structural opportunities separately.</p>
       </div>
-      <span *ngIf="overview()?.actionSummary as summary" class="section-count">{{ summary.nowCount }} active</span>
+      <span class="section-count">
+        <ng-container [ngSwitch]="decisionLane()">
+          <ng-container *ngSwitchCase="'investigate'">{{ investigateTotal() }} to investigate</ng-container>
+          <ng-container *ngSwitchCase="'structural'">{{ structuralTotal() }} structural</ng-container>
+          <ng-container *ngSwitchDefault>{{ overview()?.actionSummary?.nowCount || nowActions().length }} ready</ng-container>
+        </ng-container>
+      </span>
     </div>
 
-    <div *ngIf="nowLoading()" class="seo-state seo-state--compact" faCard role="status" data-testid="seo-now-loading">
-      <fa-spinner size="1.5rem" label="Loading priority actions"></fa-spinner>
-      <div><strong>Prioritizing actions</strong><p>Applying the current evidence and confidence thresholds.</p></div>
-    </div>
-    <div *ngIf="!nowLoading() && nowError()" class="seo-alert seo-alert--error" role="alert">
-      <span>{{ nowError() }}</span>
-      <button faButton variant="ghost" size="sm" type="button" (click)="refreshDashboard()">Retry</button>
-    </div>
-    <div
-      *ngIf="nowEmptyState() as state"
-      class="seo-state seo-now-state"
-      faCard
-      [attr.data-kind]="state.kind"
-      [attr.data-tone]="state.tone"
-      [attr.role]="state.tone === 'error' ? 'alert' : 'status'"
-      data-testid="seo-now-empty">
-      <i [class]="state.icon" aria-hidden="true"></i>
-      <div>
-        <strong>{{ state.title }}</strong>
-        <p>{{ state.detail }}</p>
-      </div>
+    <div class="decision-tabs" role="tablist" aria-label="SEO decision lanes">
+      <button
+        id="seo-tab-act-now"
+        type="button"
+        role="tab"
+        aria-controls="seo-panel-act-now"
+        [attr.aria-label]="'Act now, ' + (overview()?.actionSummary?.nowCount || nowActions().length)"
+        [attr.aria-selected]="decisionLane() === 'act_now'"
+        [attr.tabindex]="decisionLane() === 'act_now' ? 0 : -1"
+        [class.is-active]="decisionLane() === 'act_now'"
+        (click)="setDecisionLane('act_now')"
+        (keydown)="onDecisionTabKeydown($event, 'act_now')"
+        data-testid="seo-lane-act-now">
+        <span>Act now</span> <strong>{{ overview()?.actionSummary?.nowCount || nowActions().length }}</strong>
+      </button>
+      <button
+        id="seo-tab-investigate"
+        type="button"
+        role="tab"
+        aria-controls="seo-panel-investigate"
+        [attr.aria-label]="'Investigate, ' + investigateTotal()"
+        [attr.aria-selected]="decisionLane() === 'investigate'"
+        [attr.tabindex]="decisionLane() === 'investigate' ? 0 : -1"
+        [class.is-active]="decisionLane() === 'investigate'"
+        (click)="setDecisionLane('investigate')"
+        (keydown)="onDecisionTabKeydown($event, 'investigate')"
+        data-testid="seo-lane-investigate">
+        <span>Investigate</span> <strong>{{ investigateTotal() }}</strong>
+      </button>
+      <button
+        id="seo-tab-structural"
+        type="button"
+        role="tab"
+        aria-controls="seo-panel-structural"
+        [attr.aria-label]="'Structural opportunities, ' + structuralTotal()"
+        [attr.aria-selected]="decisionLane() === 'structural'"
+        [attr.tabindex]="decisionLane() === 'structural' ? 0 : -1"
+        [class.is-active]="decisionLane() === 'structural'"
+        (click)="setDecisionLane('structural')"
+        (keydown)="onDecisionTabKeydown($event, 'structural')"
+        data-testid="seo-lane-structural">
+        <span>Structural opportunities</span> <strong>{{ structuralTotal() }}</strong>
+      </button>
     </div>
 
-    <div class="now-grid" *ngIf="!nowLoading() && !nowError() && nowActions().length">
-      <article
-        *ngFor="let action of nowActions(); let rank = index; trackBy: trackAction"
-        class="now-card"
+    <div *ngIf="decisionLane() === 'act_now'" id="seo-panel-act-now" role="tabpanel" aria-labelledby="seo-tab-act-now" class="decision-panel" data-testid="seo-lane-panel-act-now">
+      <div *ngIf="nowLoading()" class="seo-state seo-state--compact" faCard role="status" data-testid="seo-now-loading">
+        <fa-spinner size="1.5rem" label="Loading priority actions"></fa-spinner>
+        <div><strong>Checking change-ready actions</strong><p>Only proven technical issues or positive modeled impact appear here.</p></div>
+      </div>
+      <div *ngIf="!nowLoading() && nowError()" class="seo-alert seo-alert--error" role="alert">
+        <span>{{ nowError() }}</span>
+        <button faButton variant="ghost" size="sm" type="button" (click)="refreshDashboard()">Retry</button>
+      </div>
+      <div
+        *ngIf="nowEmptyState() as state"
+        class="seo-state seo-now-state"
         faCard
-        elevated
-        [attr.data-testid]="'seo-now-action-' + action.id">
-        <div class="now-card__rank" aria-hidden="true">{{ rank + 1 }}</div>
-        <div class="action-card__head">
-          <span class="type-pill">{{ typeLabel(action.type) }}</span>
-          <span class="status-pill" [attr.data-status]="action.status">{{ statusLabel(action.status) }}</span>
+        [attr.data-kind]="state.kind"
+        [attr.data-tone]="state.tone"
+        [attr.role]="state.tone === 'error' ? 'alert' : 'status'"
+        data-testid="seo-now-empty">
+        <i [class]="state.icon" aria-hidden="true"></i>
+        <div><strong>{{ state.title }}</strong><p>{{ state.detail }}</p></div>
+      </div>
+
+      <div class="now-grid" *ngIf="!nowLoading() && !nowError() && nowActions().length">
+        <article
+          *ngFor="let action of nowActions(); let rank = index; trackBy: trackAction"
+          class="now-card"
+          faCard
+          elevated
+          [attr.data-testid]="'seo-now-action-' + action.id">
+          <div class="now-card__rank" aria-hidden="true">{{ rank + 1 }}</div>
+          <div class="action-card__head">
+            <span class="type-pill">{{ typeLabel(action.type) }}</span>
+            <span class="status-pill" [attr.data-status]="action.status">{{ statusLabel(action.status) }}</span>
+          </div>
+          <h3>{{ action.title }}</h3>
+          <a class="action-url" [href]="action.url" target="_blank" rel="noopener noreferrer">{{ action.url }}</a>
+          <p>{{ action.evidence.summary }}</p>
+          <div class="action-proof">
+            <span><strong>{{ action.priorityScore | number:'1.0-1' }}</strong> priority</span>
+            <span><strong>{{ confidencePercent(action) }}%</strong> confidence</span>
+            <span *ngIf="action.patternConfidence != null"><strong>{{ confidenceValueLabel(action.patternConfidence) }}</strong> pattern</span>
+            <span *ngIf="action.causeConfidence != null"><strong>{{ confidenceValueLabel(action.causeConfidence) }}</strong> cause</span>
+            <span><strong>{{ actionImpactLabel(action) || 'Impact not estimated' }}</strong></span>
+          </div>
+          <div class="action-card__footer">
+            <button faButton variant="ghost" size="sm" type="button" (click)="openPage(action.pageKey)">Page evidence</button>
+            <button faButton variant="primary" size="sm" type="button" (click)="openAction(action)">Review action</button>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div
+      *ngIf="decisionLane() !== 'act_now'"
+      [id]="decisionLane() === 'investigate' ? 'seo-panel-investigate' : 'seo-panel-structural'"
+      role="tabpanel"
+      [attr.aria-labelledby]="decisionLane() === 'investigate' ? 'seo-tab-investigate' : 'seo-tab-structural'"
+      class="decision-panel"
+      data-testid="seo-lane-panel-opportunities">
+      <div *ngIf="decisionLaneLoading()" class="seo-state seo-state--compact" faCard role="status">
+        <fa-spinner size="1.5rem" label="Loading decision opportunities"></fa-spinner>
+        <div><strong>Loading evidence packets</strong><p>No cause is promoted while this lane is loading.</p></div>
+      </div>
+      <div *ngIf="!decisionLaneLoading() && decisionLaneError() as error" class="seo-alert seo-alert--error" role="alert">
+        <span>{{ error }}</span>
+        <button faButton variant="ghost" size="sm" type="button" (click)="refreshDashboard()">Retry</button>
+      </div>
+      <div *ngIf="!decisionLaneLoading() && !decisionLaneError() && !decisionLaneItems().length" class="seo-state" faCard role="status">
+        <i class="pi pi-check-circle" aria-hidden="true"></i>
+        <div>
+          <strong>No {{ decisionLane() === 'investigate' ? 'investigations' : 'structural opportunities' }} are waiting</strong>
+          <p>The latest completed analysis did not place a page in this lane.</p>
         </div>
-        <h3>{{ action.title }}</h3>
-        <a class="action-url" [href]="action.url" target="_blank" rel="noopener noreferrer">{{ action.url }}</a>
-        <p>{{ action.evidence.summary }}</p>
-        <div class="action-proof">
-          <span><strong>{{ action.priorityScore | number:'1.0-1' }}</strong> priority</span>
-          <span><strong>{{ confidencePercent(action) }}%</strong> confidence</span>
-          <span *ngIf="action.expectedAdditionalClicks !== null && action.expectedAdditionalClicks !== undefined">
-            <strong>+{{ action.expectedAdditionalClicks | number:'1.0-0' }}</strong> clicks
-          </span>
-        </div>
-        <div class="action-card__footer">
-          <button faButton variant="ghost" size="sm" type="button" (click)="openPage(action.pageKey)">Page evidence</button>
-          <button faButton variant="primary" size="sm" type="button" (click)="openAction(action)">Review action</button>
-        </div>
-      </article>
+      </div>
+      <div class="opportunity-grid" *ngIf="!decisionLaneLoading() && !decisionLaneError() && decisionLaneItems().length">
+        <article *ngFor="let opportunity of decisionLaneItems(); trackBy: trackOpportunity" class="opportunity-card" faCard>
+          <div class="action-card__head">
+            <span class="type-pill">{{ dispositionLabel(laneItemDisposition(opportunity)) }}</span>
+            <span class="assessment-pill" [attr.data-tone]="assessmentTone(laneItemState(opportunity))">{{ assessmentStateLabel(laneItemState(opportunity)) }}</span>
+          </div>
+          <h3>{{ opportunity.pageTitle || laneItemUrl(opportunity) }}</h3>
+          <a class="action-url" [href]="laneItemUrl(opportunity)" target="_blank" rel="noopener noreferrer">{{ laneItemUrl(opportunity) }}</a>
+          <p>{{ opportunityFinding(opportunity) }}</p>
+          <dl class="opportunity-confidence">
+            <div><dt>Pattern</dt><dd>{{ confidenceValueLabel(laneItemPatternConfidence(opportunity)) }}</dd></div>
+            <div><dt>Cause</dt><dd>{{ confidenceValueLabel(laneItemCauseConfidence(opportunity)) }}</dd></div>
+            <div><dt>Next review</dt><dd>{{ nextReviewLabel(laneItemNextReview(opportunity)) }}</dd></div>
+          </dl>
+          <p class="impact-readout">{{ expectedImpactLabel(laneItemExpectedImpact(opportunity)) || 'Impact not estimated' }}</p>
+          <div class="action-card__footer">
+            <button faButton variant="primary" size="sm" type="button" (click)="openPage(opportunity.pageKey)">Review evidence</button>
+          </div>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -736,9 +830,22 @@
     <section class="detail-panel" aria-labelledby="action-plan-title">
       <h3 id="action-plan-title">Action plan</h3>
       <p *ngIf="action.recommendation.rationale">{{ action.recommendation.rationale }}</p>
-      <ol>
-        <li *ngFor="let item of action.recommendation.checklist">{{ item }}</li>
+      <ol *ngIf="filteredChecklist(action).length">
+        <li *ngFor="let item of filteredChecklist(action)">{{ item }}</li>
       </ol>
+      <div *ngIf="action.recommendation.donors?.length" class="donor-grid" aria-label="Qualified internal-link donors">
+        <article *ngFor="let donor of action.recommendation.donors" class="donor-card transition-panel">
+          <div>
+            <strong>{{ donor.title }}</strong>
+            <a [href]="donor.canonicalUrl" target="_blank" rel="noopener noreferrer">{{ donor.canonicalUrl }}</a>
+          </div>
+          <span *ngIf="donor.relevanceScore != null">{{ formatShare(donor.relevanceScore) }} relevance</span>
+          <p *ngIf="donor.anchorDirection">Anchor direction: {{ donor.anchorDirection }}</p>
+          <div *ngIf="donor.reasonCodes?.length" class="reason-list">
+            <span *ngFor="let reason of donor.reasonCodes">{{ humanizeCode(reason) }}</span>
+          </div>
+        </article>
+      </div>
       <div class="detail-form-grid" *ngIf="action.status === 'proposed'">
         <fa-field label="Copy direction" hint="Editable before approval">
           <textarea class="seo-control" rows="3" [ngModel]="copyDirectionDraft()" (ngModelChange)="copyDirectionDraft.set($event)"></textarea>
@@ -859,8 +966,20 @@
           <dd>{{ assessment.evidenceLevel ? humanizeCode(assessment.evidenceLevel) : 'Unavailable' }}</dd>
         </div>
         <div>
-          <dt>Confidence</dt>
-          <dd>{{ confidenceLabel(assessment.confidence) || 'Unavailable' }}</dd>
+          <dt>Disposition</dt>
+          <dd>{{ dispositionLabel(assessment.disposition) }}</dd>
+        </div>
+        <div>
+          <dt>Pattern confidence</dt>
+          <dd>{{ confidenceValueLabel(assessment.patternConfidence) }}</dd>
+        </div>
+        <div>
+          <dt>Cause confidence</dt>
+          <dd>{{ confidenceValueLabel(assessment.causeConfidence) }}</dd>
+        </div>
+        <div>
+          <dt>Technical status</dt>
+          <dd [attr.data-status]="technicalStatus(page)">{{ technicalStatusLabel(page) }}</dd>
         </div>
         <div>
           <dt>Data through</dt>
@@ -868,13 +987,12 @@
         </div>
         <div>
           <dt>Next review</dt>
-          <dd>
-            {{ assessmentNextReviewDate(page)
-              ? ((dateKeyForDisplay(assessmentNextReviewDate(page)) || assessmentNextReviewDate(page)) | date:'mediumDate':'UTC')
-              : 'No scheduled review' }}
-          </dd>
+          <dd>{{ pageNextReviewLabel(page) }}</dd>
         </div>
       </dl>
+      <div *ngIf="assessment.decisionGates?.length" class="decision-gates reason-list" aria-label="Decision gates">
+        <span *ngFor="let gate of assessment.decisionGates" [attr.data-passed]="decisionGatePassed(gate)">{{ decisionGateLabel(gate) }}</span>
+      </div>
       <ng-container *ngIf="!lineageAvailable(page)">
         <div *ngIf="lineageCooldown(page) as cooldown" class="cooldown-readout" role="status">
           <i class="pi pi-clock" aria-hidden="true"></i>
@@ -907,9 +1025,172 @@
           </div>
           <span class="assessment-pill" data-tone="neutral">Not evaluated</span>
         </div>
-        <p>Manifest details remain editable, but no decision should be inferred until a current balanced-v2.1 assessment is available.</p>
+        <p>Manifest details remain editable, but no decision should be inferred until a current balanced-v2.2 assessment is available.</p>
       </section>
     </ng-template>
+
+    <section
+      *ngIf="page.assessment?.queryOpportunities?.length"
+      class="detail-panel query-opportunity-map"
+      aria-labelledby="query-opportunity-map-title"
+      data-testid="seo-query-opportunity-map">
+      <div class="detail-panel__head">
+        <div>
+          <p class="seo-eyebrow">Pattern before cause</p>
+          <h3 id="query-opportunity-map-title">Query Opportunity Map</h3>
+          <p>Clusters are persisted without raw query text. Examples appear only after an owner request.</p>
+        </div>
+      </div>
+      <div class="query-opportunity-grid">
+        <article *ngFor="let opportunity of page.assessment?.queryOpportunities; trackBy: trackOpportunity" class="query-opportunity-card transition-panel">
+          <div class="query-opportunity-card__head detail-panel__head">
+            <div>
+              <span class="type-pill">{{ humanizeCode(opportunity.classification) }}</span>
+              <span class="status-pill" [attr.data-status]="opportunity.state || 'watch'">{{ assessmentStateLabel(opportunity.state) }}</span>
+            </div>
+            <strong>{{ dispositionLabel(opportunity.disposition) }}</strong>
+          </div>
+          <h4>{{ queryOpportunityTitle(opportunity) }}</h4>
+          <p class="query-opportunity-card__surface">Suggested surface: {{ opportunity.recommendedSurface ? humanizeCode(opportunity.recommendedSurface) : 'No change surface selected' }}</p>
+
+          <dl class="query-metric-grid">
+            <div><dt>Current</dt><dd>{{ formatMetric(opportunity.current?.clicks, 'number') }} clicks / {{ formatMetric(opportunity.current?.impressions, 'number') }} impressions</dd></div>
+            <div><dt>Prior</dt><dd>{{ formatMetric(opportunity.previous?.clicks, 'number') }} clicks / {{ formatMetric(opportunity.previous?.impressions, 'number') }} impressions</dd></div>
+            <div><dt>Position</dt><dd>{{ formatMetric(queryOpportunityPosition(opportunity), 'position') }}</dd></div>
+            <div><dt>Persistence</dt><dd>{{ opportunityPersistence(opportunity) }}</dd></div>
+            <div><dt>Query coverage</dt><dd>{{ opportunityCoverage(opportunity, 'query') }}</dd></div>
+            <div><dt>Semantic coverage</dt><dd>{{ opportunityCoverage(opportunity, 'semantic') }}</dd></div>
+            <div><dt>Device coverage</dt><dd>{{ opportunityCoverage(opportunity, 'device') }}</dd></div>
+            <div><dt>Next review</dt><dd>{{ nextReviewLabel(opportunity.nextReview) }}</dd></div>
+          </dl>
+
+          <div class="confidence-pair">
+            <span><strong>{{ confidenceValueLabel(opportunity.patternConfidence) }}</strong> pattern</span>
+            <span><strong>{{ confidenceValueLabel(opportunity.causeConfidence) }}</strong> cause</span>
+          </div>
+          <div *ngIf="opportunityBlockers(opportunity).length" class="reason-list" aria-label="Opportunity blockers">
+            <span *ngFor="let blocker of opportunityBlockers(opportunity)">{{ blocker }}</span>
+          </div>
+          <p class="impact-readout">{{ expectedImpactLabel(opportunity.expectedImpact) || 'Impact not estimated' }}</p>
+
+          <div class="query-opportunity-card__actions transition-actions">
+            <button
+              *ngIf="opportunity.clusterKey && opportunity.canRequestExamples !== false"
+              faButton
+              variant="ghost"
+              size="sm"
+              type="button"
+              [attr.aria-expanded]="!!queryExamples()[opportunity.key]"
+              [attr.aria-controls]="'seo-query-examples-' + opportunity.key"
+              [disabled]="queryExamplesLoading()[opportunity.key]"
+              (click)="loadQueryExamples(page, opportunity)"
+              [attr.data-testid]="'seo-show-query-examples-' + opportunity.key">
+              {{ queryExamples()[opportunity.key] ? 'Refresh examples' : 'Show examples' }}
+            </button>
+            <button
+              *ngIf="opportunity.reviewReady || opportunity.canReviewSerp"
+              faButton
+              variant="ghost"
+              size="sm"
+              type="button"
+              [attr.aria-expanded]="activeSerpReviewKey() === opportunity.key"
+              [attr.aria-controls]="'seo-serp-review-' + opportunity.key"
+              (click)="beginSerpReview(opportunity)"
+              [attr.data-testid]="'seo-review-serp-' + opportunity.key">
+              {{ opportunity.review ? 'Update SERP review' : 'Review SERP' }}
+            </button>
+            <button
+              *ngIf="canPromoteOpportunity(opportunity)"
+              faButton
+              variant="primary"
+              size="sm"
+              type="button"
+              [disabled]="promoteBusyKey() !== null"
+              (click)="promoteOpportunity(page, opportunity)"
+              [attr.data-testid]="'seo-promote-opportunity-' + opportunity.key">
+              {{ promoteBusyKey() === opportunity.key ? 'Creating…' : 'Create experiment' }}
+            </button>
+          </div>
+
+          <div *ngIf="queryExamplesLoading()[opportunity.key]" class="inline-state" role="status">
+            <fa-spinner size="1rem" label="Loading owner-requested query examples"></fa-spinner>
+            <span>Recomputing up to ten examples without storing them.</span>
+          </div>
+          <p *ngIf="queryExamplesError()[opportunity.key] as examplesError" class="inline-error" role="alert">{{ examplesError }}</p>
+          <div
+            *ngIf="queryExamples()[opportunity.key] as examples"
+            [id]="'seo-query-examples-' + opportunity.key"
+            class="query-examples transition-panel"
+            data-testid="seo-query-examples">
+            <div class="query-examples__head detail-panel__head">
+              <strong>Owner-requested examples</strong>
+              <span>{{ examples.items.length }}/10 response-only</span>
+            </div>
+            <p *ngIf="!examples.items.length" class="muted-copy">No visible examples are available for this cluster.</p>
+            <div *ngFor="let example of examples.items; trackBy: trackQueryExample" class="query-example-row">
+              <strong>{{ example.query }}</strong>
+              <span>{{ formatMetric(example.current?.clicks, 'number') }} / {{ formatMetric(example.current?.impressions, 'number') }} current</span>
+              <span>{{ formatMetric(example.previous?.clicks, 'number') }} / {{ formatMetric(example.previous?.impressions, 'number') }} prior</span>
+            </div>
+          </div>
+
+          <form
+            *ngIf="activeSerpReviewKey() === opportunity.key"
+            [id]="'seo-serp-review-' + opportunity.key"
+            class="serp-review-form transition-panel"
+            (submit)="$event.preventDefault(); saveSerpReview(page, opportunity)"
+            [attr.aria-label]="'SERP review for ' + queryOpportunityTitle(opportunity)">
+            <div class="serp-review-form__head detail-panel__head"><h5>Structured SERP review</h5><span>No scraping or competitor HTML is stored.</span></div>
+            <div class="serp-review-fields">
+              <fa-field label="Locale"><input class="seo-control" name="serpLocale" [(ngModel)]="serpReviewForm.locale" /></fa-field>
+              <fa-field label="Device">
+                <select class="seo-control" name="serpDevice" [(ngModel)]="serpReviewForm.device">
+                  <option value="unknown">Unknown</option><option value="desktop">Desktop</option><option value="mobile">Mobile</option><option value="tablet">Tablet</option>
+                </select>
+              </fa-field>
+              <fa-field label="Dominant result type">
+                <select class="seo-control" name="serpResultType" [(ngModel)]="serpReviewForm.dominantResultType">
+                  <option value="unknown">Unknown</option><option value="official">Official</option><option value="community">Community</option><option value="publisher">Publisher</option><option value="mixed">Mixed</option>
+                </select>
+              </fa-field>
+              <fa-field label="Own result">
+                <select class="seo-control" name="serpOwnResult" [(ngModel)]="serpReviewForm.ownResultStatus">
+                  <option value="unknown">Unknown</option><option value="not_visible">Not visible</option><option value="present_weak">Present, weak</option><option value="present_competitive">Present, competitive</option>
+                </select>
+              </fa-field>
+              <fa-field label="SERP features" hint="Choose only what is visibly present; no competitor content is stored">
+                <select class="seo-control seo-control--multi" name="serpFeatures" multiple [(ngModel)]="serpReviewForm.serpFeatures">
+                  <option *ngFor="let feature of serpFeatureOptions" [value]="feature.value">{{ feature.label }}</option>
+                </select>
+              </fa-field>
+              <fa-field label="Decision">
+                <select class="seo-control" name="serpOutcome" [(ngModel)]="serpReviewForm.outcome">
+                  <option value="needs_more_evidence">Needs more evidence</option><option value="no_change">No change</option><option value="snippet_test">Snippet test</option><option value="content_test">Content test</option>
+                </select>
+              </fa-field>
+              <fa-field
+                class="serp-review-reason"
+                label="Primary reason"
+                hint="Structured only; raw queries, URLs, and copied result text are not stored">
+                <fa-select
+                  inputId="seo-serp-review-reason"
+                  ariaLabel="Choose the primary SERP review reason"
+                  [options]="serpReasonOptions"
+                  [value]="serpReviewForm.reasonCode"
+                  (valueChange)="serpReviewForm.reasonCode = $event">
+                </fa-select>
+              </fa-field>
+            </div>
+            <p *ngIf="serpReviewError()" class="inline-error" role="alert">{{ serpReviewError() }}</p>
+            <div class="serp-review-form__actions transition-actions">
+              <button faButton variant="ghost" size="sm" type="button" (click)="cancelSerpReview()">Cancel</button>
+              <button faButton variant="primary" size="sm" type="submit" [disabled]="serpReviewBusy()" [attr.data-testid]="'seo-save-serp-review-' + opportunity.key">{{ serpReviewBusy() ? 'Saving…' : 'Save review' }}</button>
+            </div>
+          </form>
+          <p *ngIf="promoteError() && promoteBusyKey() === null" class="inline-error" role="alert">{{ promoteError() }}</p>
+        </article>
+      </div>
+    </section>
 
     <section
       *ngIf="lineageAvailable(page); else pageLineageUnavailable"
@@ -985,7 +1266,7 @@
               <ng-container *ngIf="lineageCooldown(page)?.nextReviewDate; else noLineageReview">
                 Next review {{ dateKeyForDisplay(lineageCooldown(page)?.nextReviewDate) | date:'mediumDate':'UTC' }}
               </ng-container>
-              <ng-template #noLineageReview>No review date available</ng-template>
+              <ng-template #noLineageReview>After the next verified evidence event</ng-template>
             </small>
           </div>
         </li>
@@ -1081,11 +1362,7 @@
               </div>
               <div>
                 <dt>Next review</dt>
-                <dd>
-                  {{ entry.state.cooldown?.nextReviewDate
-                    ? ((dateKeyForDisplay(entry.state.cooldown?.nextReviewDate) || entry.state.cooldown?.nextReviewDate) | date:'mediumDate':'UTC')
-                    : 'No scheduled review' }}
-                </dd>
+                <dd>{{ detectorNextReviewLabel(page, entry) }}</dd>
               </div>
             </dl>
             <small *ngIf="entry.detector === 'technical_indexing'" class="lineage-detector__note">

@@ -1,6 +1,7 @@
 'use strict';
 
 const {
+  DEFAULT_MAX_QUERIES,
   SEMANTIC_CLUSTER_VERSION,
   buildSemanticClusters,
   classifyFacet,
@@ -8,7 +9,8 @@ const {
   normalizeTokens,
   weightedSimilarity,
 } = require('../services/seo/semantic-clustering');
-const { semanticCannibalizationByPage } = require('../services/seo/analysis');
+const { SEMANTIC_QUERY_CAP, semanticCannibalizationByPage } = require('../services/seo/analysis');
+const { EXAMPLE_CLUSTER_QUERY_CAP } = require('../services/seo/opportunity-api');
 
 describe('deterministic semantic query clustering', () => {
   test('merges cancel/abort/unsubscribe variants and retains intent facets', () => {
@@ -76,6 +78,26 @@ describe('deterministic semantic query clustering', () => {
       current: expect.objectContaining({ impressions: 90 }),
       previous: expect.objectContaining({ impressions: 50 }),
     }));
+  });
+
+  test('uses the shared 500-query cap so evidence beyond the old 250-row boundary is reproducible', () => {
+    const rows = Array.from({ length: 300 }, (_, index) => ({
+      queryKey: `query-${index}`,
+      query: `react isolated topic token${index}`,
+      impressions: 1,
+    }));
+    const result = buildSemanticClusters({
+      currentRows: rows,
+      pageIntent: 'react topic',
+      pageTech: 'react',
+      pageCurrentImpressions: rows.length,
+    });
+
+    expect(SEMANTIC_QUERY_CAP).toBe(DEFAULT_MAX_QUERIES);
+    expect(EXAMPLE_CLUSTER_QUERY_CAP).toBe(DEFAULT_MAX_QUERIES);
+    expect(DEFAULT_MAX_QUERIES).toBe(500);
+    expect(result.processedImpressions.current).toBe(300);
+    expect(result.currentSemanticCoverage).toBe(1);
   });
 
   test('normalization and similarity are deterministic and facet-aware', () => {

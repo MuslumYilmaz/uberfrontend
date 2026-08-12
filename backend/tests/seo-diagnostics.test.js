@@ -236,7 +236,7 @@ describe('candidate-only URL Inspection diagnostics', () => {
     const result = await inspectUrlCandidates({
       candidates: [
         candidate(1),
-        candidate(2),
+        candidate(2, { changeTracking: { currentVersionKey: 'version-current' } }),
         candidate(3, { impressions: 10 }),
         candidate(4, { impressions: 10, canonicalAnomaly: true }),
         candidate(5, { indexable: false }),
@@ -269,6 +269,7 @@ describe('candidate-only URL Inspection diagnostics', () => {
         coverageState: 'Crawled - currently not indexed',
         robots: 'BLOCKED',
         canonicalVerdict: 'mismatch',
+        pageVersionKey: 'version-current',
       },
     }));
     expect(JSON.stringify(persisted)).not.toContain('credential');
@@ -354,6 +355,27 @@ describe('candidate-only URL Inspection diagnostics', () => {
       }),
     ], { now, limit: 3 });
     expect(selected.map((item) => item.pageKey)).toEqual(['page-2', 'page-3', 'page-4']);
+  });
+
+  test('puts current visibility interruptions first without exceeding the inspection cap', () => {
+    const now = new Date('2026-08-10T12:00:00.000Z');
+    const visibility = Array.from({ length: 6 }, (_, index) => candidate(index + 10, {
+      impressions: 500,
+      visibilityInterruptionPending: true,
+      forceInspection: true,
+      latestInspection: { observedAt: now },
+    }));
+    const selected = orderInspectionCandidates([
+      candidate(1, {
+        changePending: true,
+        changeTracking: { materialChangedAt: new Date('2026-08-03T00:00:00.000Z') },
+        latestInspection: { observedAt: now },
+      }),
+      ...visibility,
+    ], { now, limit: 5 });
+
+    expect(selected).toHaveLength(5);
+    expect(selected.every((item) => item.visibilityInterruptionPending)).toBe(true);
   });
 
   test('retains sanitized crawl time and clears recrawl only after the material change', async () => {

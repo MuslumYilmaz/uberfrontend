@@ -261,4 +261,62 @@ describe('SeoAdminService', () => {
 
     expect(status).toBe('not_ready');
   });
+
+  it('uses owner-only opportunity endpoints and unwraps an explicitly promoted action', () => {
+    const inputHash = 'assessment-input-hash';
+    const opportunityKey = 'a'.repeat(64);
+    let promotedAction: { id?: string } | undefined;
+
+    service.getOpportunities('investigate', 'cursor-1', 12).subscribe();
+    const list = http.expectOne((candidate) => candidate.url.endsWith('/api/admin/seo/opportunities'));
+    expect(list.request.method).toBe('GET');
+    expect(list.request.withCredentials).toBeTrue();
+    expect(list.request.params.get('lane')).toBe('investigate');
+    expect(list.request.params.get('cursor')).toBe('cursor-1');
+    expect(list.request.params.get('limit')).toBe('12');
+    list.flush({ lane: 'investigate', items: [], total: 0, nextCursor: null });
+
+    service.getQueryOpportunityExamples('page/key', opportunityKey, inputHash, 99).subscribe();
+    const examples = http.expectOne((candidate) => candidate.url.includes('/query-opportunities/'));
+    expect(examples.request.url).toContain('/pages/page%2Fkey/query-opportunities/');
+    expect(examples.request.params.get('assessmentInputHash')).toBe(inputHash);
+    expect(examples.request.params.get('limit')).toBe('10');
+    expect(examples.request.withCredentials).toBeTrue();
+    examples.flush({ opportunityKey, assessmentInputHash: inputHash, items: [] });
+
+    service.saveOpportunityReview('page/key', opportunityKey, {
+      assessmentInputHash: inputHash,
+      observedAt: '2026-08-10T08:00:00.000Z',
+      locale: 'en-US',
+      device: 'mobile',
+      dominantResultType: 'mixed',
+      serpFeatures: ['people_also_ask'],
+      ownResultStatus: 'present_weak',
+      outcome: 'snippet_test',
+      reasonCode: 'snippet_not_specific',
+    }).subscribe();
+    const review = http.expectOne((candidate) => candidate.url.endsWith('/serp-review'));
+    expect(review.request.method).toBe('PUT');
+    expect(review.request.body).toEqual(jasmine.objectContaining({
+      assessmentInputHash: inputHash,
+      ownResultStatus: 'present_weak',
+      outcome: 'snippet_test',
+      reasonCode: 'snippet_not_specific',
+    }));
+    expect(review.request.body.notes).toBeUndefined();
+    review.flush({ review: review.request.body });
+
+    service.promoteOpportunity('page/key', opportunityKey, {
+      assessmentInputHash: inputHash,
+    }).subscribe((action) => promotedAction = action);
+    const promotion = http.expectOne((candidate) => candidate.url.endsWith('/promote'));
+    expect(promotion.request.method).toBe('POST');
+    expect(promotion.request.body).toEqual({ assessmentInputHash: inputHash });
+    promotion.flush({
+      assessmentInputHash: inputHash,
+      opportunityKey,
+      action: { id: 'promoted-action' },
+    });
+    expect(promotedAction?.id).toBe('promoted-action');
+  });
 });
