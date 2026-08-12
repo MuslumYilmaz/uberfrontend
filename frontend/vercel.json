@@ -14,13 +14,6 @@
       ]
     },
     {
-      "source": "/seo-intelligence-build.json",
-      "headers": [
-        { "key": "Cache-Control", "value": "private, no-store, max-age=0" },
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
-      ]
-    },
-    {
       "source": "/coding",
       "has": [{ "type": "query", "key": "reset" }],
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
@@ -31,14 +24,6 @@
     },
     {
       "source": "/interview/:path*",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    },
-    {
-      "source": "/admin/seo",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    },
-    {
-      "source": "/admin/seo/:path*",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },
     {

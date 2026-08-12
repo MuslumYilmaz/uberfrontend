@@ -9,7 +9,6 @@ import {
 
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
-import { seoOwnerGuard } from './core/guards/seo-owner.guard';
 import {
   companyPreviewAccessGuard,
   premiumGuard,
@@ -116,19 +115,6 @@ export const routes: Routes = [
     path: 'admin',
     canMatch: [adminMatchGuard],
     children: [
-      {
-        path: 'seo',
-        loadComponent: () =>
-          import('./features/admin/seo/seo-dashboard.component').then((m) => m.SeoDashboardComponent),
-        canActivate: [adminGuard, seoOwnerGuard],
-        data: {
-          seo: {
-            title: 'Admin • SEO Intelligence',
-            description: 'Owner-only Search Console intelligence and SEO action queue.',
-            robots: 'noindex,nofollow',
-          },
-        },
-      },
       {
         path: 'users',
         loadComponent: () =>

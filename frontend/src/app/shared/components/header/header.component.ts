@@ -1,15 +1,13 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, DestroyRef, effect, ElementRef, HostListener, inject, OnInit, signal, untracked, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { NavigationEnd, Params, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
 import { AppSidebarDrawerService } from '../../../core/services/app-sidebar-drawer.service';
-import { SeoAdminService } from '../../../core/services/seo-admin.service';
 
 type Mode =
   | 'dashboard'
@@ -65,8 +63,6 @@ export class HeaderComponent implements OnInit {
   private hostEl = inject(ElementRef<HTMLElement>);
   private drawerState = inject(AppSidebarDrawerService);
   private analytics = inject(AnalyticsService);
-  private seoAdmin = inject(SeoAdminService);
-  private destroyRef = inject(DestroyRef);
 
   // route state
   mode = signal<Mode>('dashboard');
@@ -106,7 +102,6 @@ export class HeaderComponent implements OnInit {
   }
 
   public auth = inject(AuthService);
-  canAccessSeo = computed(() => this.isAdmin() && this.seoAdmin.ownerAllowed());
   isPro = computed(() => isProActive(this.auth.user()));
   ctaLabel = computed(() => {
     if (this.isPro()) return 'Manage subscription';
@@ -223,22 +218,6 @@ export class HeaderComponent implements OnInit {
         this.loadRecents();
       });
 
-    effect(() => {
-      const user = this.auth.user();
-      const ownerPrincipal = user?.role === 'admin' ? String(user._id) : null;
-
-      untracked(() => {
-        // Route guards and the global header can observe auth hydration in
-        // either order. Principal binding is idempotent for the same account,
-        // preventing one observer from invalidating the other's access probe.
-        this.seoAdmin.bindOwnerPrincipal(ownerPrincipal);
-        if (user?.role === 'admin') {
-          this.seoAdmin.ensureAccess()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe();
-        }
-      });
-    }, { allowSignalWrites: true });
   }
 
   isAdmin(): boolean {

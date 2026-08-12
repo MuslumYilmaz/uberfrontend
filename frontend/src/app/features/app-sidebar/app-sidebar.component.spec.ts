@@ -310,7 +310,6 @@ describe('AppSidebarComponent', () => {
       .from(fixture.nativeElement.querySelectorAll('a') as NodeListOf<HTMLAnchorElement>)
       .filter((link) => (link.getAttribute('href') || '').startsWith('/admin'));
     expect(adminLinks).toEqual([]);
-    expect(fixture.nativeElement.textContent || '').not.toContain('SEO Intelligence');
   });
 
   it('exposes internal preview navigation to admins', async () => {
