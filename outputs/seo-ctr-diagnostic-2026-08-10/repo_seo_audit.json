@@ -1,0 +1,23 @@
+[
+  {
+    "rank": 1,
+    "finding": "Dashboard canlı SERP metadata yerine kaynak registry metnini tercih ediyor",
+    "evidence": "348/435 title ve 356/435 description manifest ile prerender HTML arasında farklı.",
+    "ctr_link": "Kötü snippet'leri iç SEO ekranında görünmez kılabilir; doğrudan CTR etkisi henüz cohort ile ölçülmedi.",
+    "priority": "P1 ölçüm güveni"
+  },
+  {
+    "rank": 2,
+    "finding": "Otomatik trivia title üretimi bazı promptları dilbilgisel olarak bozuyor",
+    "evidence": "46 indexlenebilir title `Interview Answer` kalıbı içeriyor; 3 ayda GSC'de görünen 24'ü 1.069 gösterim/2 tık (%0,187 CTR) aldı.",
+    "ctr_link": "Gerçek bir snippet kusuru, ancak property gösterimlerinin yalnız %1,49'u; site-geneli düşük CTR'yi açıklayamaz.",
+    "priority": "P1 snippet kalitesi"
+  },
+  {
+    "rank": 3,
+    "finding": "Teknik crawl tabanı mevcut build'de bütün",
+    "evidence": "612 prerender sayfasında title/description/robots/canonical/H1 var; 435 sitemap URL'sinin tamamı prerender listesinde.",
+    "ctr_link": "Site-geneli eksik tag/canonical arızası ana açıklama değil.",
+    "priority": "Doğrulandı"
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "rank": 1,
+    "page": "/guides/system-design-blueprint/radio-framework",
+    "title": "RADIO Framework: Frontend System Design Interview Template",
+    "title_chars": 58,
+    "description_chars": 136,
+    "h1_alignment": "Exact",
+    "ctr_3m": 0.0007272727272727272,
+    "assessment": "Snippet temeli güçlü; sorgu karması/AI-benzeri görünüm daha olası."
+  },
+  {
+    "rank": 2,
+    "page": "/angular/trivia/angular-http-what-actually-cancels-request",
+    "title": "Angular HttpClient Unsubscribe: 6 Tests & DevTools",
+    "title_chars": 50,
+    "description_chars": 140,
+    "h1_alignment": "Yakın ama birebir değil",
+    "ctr_3m": 0.0013659766733214247,
+    "assessment": "3 Ağu değişikliği henüz olgunlaşmadı; yeniden değiştirme."
+  },
+  {
+    "rank": 3,
+    "page": "/react/trivia/react-render-nothing-return-value",
+    "title": "Can React Return undefined? React 18 vs null",
+    "title_chars": 44,
+    "description_chars": 154,
+    "h1_alignment": "Yakın",
+    "ctr_3m": 0.00040595399188092014,
+    "assessment": "Başlık açık; exact export görünür sorgularda source-preference niyetini doğruluyor."
+  },
+  {
+    "rank": 4,
+    "page": "/javascript/trivia/js-async-race-conditions",
+    "title": "JavaScript Async Race Conditions: Fix Stale UI",
+    "title_chars": 46,
+    "description_chars": 139,
+    "h1_alignment": "Yakın",
+    "ctr_3m": 0.003032600454890068,
+    "assessment": "Öncelikli üç sayfadan daha iyi; izleme adayı."
+  },
+  {
+    "rank": 5,
+    "page": "/html/trivia/html-form-default-method",
+    "title": "HTML Form Default Method: GET or POST? (With Example)",
+    "title_chars": 53,
+    "description_chars": 152,
+    "h1_alignment": "Yakın",
+    "ctr_3m": 0.0,
+    "assessment": "Metadata düzgün; exact exportta görünür sorguların %68,4'ü açıkça MDN içeriyor."
+  }
+]
