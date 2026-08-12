@@ -1,0 +1,70 @@
+{
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "steps",
+      "title": "A 15-minute checkout trace",
+      "steps": [
+        {
+          "title": "Name the customer outcome",
+          "text": "A customer reviews a cart, enters delivery details, receives a current total, and authorizes one payment. Success means the merchant backend confirms the order; a provider redirect is insufficient. Follow one attempt through double-click, a lost response, bank authentication, and another tab so each decision is observable."
+        },
+        {
+          "title": "Fix the authority boundary",
+          "text": "The browser owns editable form input and presentation. The merchant backend owns versioned price, discount, tax, shipping, stock, and checkout-to-order relationships. The merchant backend is an explicit frontend contract. The provider owns card collection and payment execution. Provider internals stay a black box; fulfillment is outside frontend scope."
+        },
+        {
+          "title": "Preserve one payment identity",
+          "text": "On Pay, freeze the accepted quote version and create a clientAttemptId with one idempotencyKey. Disable repeated activation for usability, but expect duplicate events. If the response disappears, read by clientAttemptId; retransmission uses the same immutable payload and key. A new identity is allowed only after merchant status proves a terminal no-charge state: failed, canceled, or quote-conflict."
+        },
+        {
+          "title": "Reconcile uncertain outcomes",
+          "text": "Submitting can become requires-action, processing, succeeded, failed, or quote-conflict. After bank return, refresh, reconnect, or a sibling-tab message, read merchant attempt and order state. Redirect parameters and SDK callbacks are hints, never proof. A changed quote returns to review with corrected totals and preserved form input."
+        },
+        {
+          "title": "Close with trust and access",
+          "text": "Hosted provider fields keep PAN and CVC outside application state, logs, analytics, and storage. Validation describes problems in text, links fields, focuses a summary when appropriate, and preserves correctable input. Cross-tab messages prompt refresh, but only server reads settle conflicts. Completion requires confirmed order state."
+        }
+      ],
+      "editorialRole": "timeboxed-answer"
+    },
+    {
+      "type": "table",
+      "title": "Checkout boundary decisions",
+      "columns": [
+        "Concern",
+        "Authority",
+        "Browser responsibility"
+      ],
+      "rows": [
+        [
+          "Customer details",
+          "Customer before submission; server after requests",
+          "Preserve input and label errors"
+        ],
+        [
+          "Price, discount, tax, shipping, stock",
+          "Versioned server quote",
+          "Display quoteId and quoteVersion without recalculating totals"
+        ],
+        [
+          "Card number and security code",
+          "Hosted provider fields",
+          "Request a reference without reading PAN or CVC"
+        ],
+        [
+          "Payment and order outcome",
+          "Merchant backend after provider reconciliation",
+          "Refresh status and render truthful recovery or completion"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Rejected alternative: trust the return URL",
+      "text": "We reject treating a success parameter, provider callback, or disabled Pay button as proof. Navigation can be replayed, callbacks can precede merchant reconciliation, and buttons do not stop duplicate requests. Those signals can show false completion or hide recovery after a lost response."
+    }
+  ]
+}

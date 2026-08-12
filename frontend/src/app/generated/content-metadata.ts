@@ -1533,7 +1533,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 512,
+  "totalQuestions": 513,
   "companyCounts": {
     "airbnb": {
       "all": 3,

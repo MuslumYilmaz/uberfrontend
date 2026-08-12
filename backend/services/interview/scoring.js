@@ -380,7 +380,12 @@ function buildSystemDesignResult(plain, finalizedAt) {
     || draft.twistResponseActionIds.length === 0
     || !plain.systemDesignTwistRevealedAt
   );
-  const practiceSignal = designPracticeSignal(axes, contradictions);
+  const partialEvidence = incomplete || plain.systemDesignOutcome !== 'submitted';
+  const scoredPracticeSignal = designPracticeSignal(axes, contradictions);
+  const practiceSignal = partialEvidence
+    && scoredPracticeSignal === 'strong-system-design-session'
+    ? 'on-track'
+    : scoredPracticeSignal;
   const publicAxes = axes.map((axis) => ({
     id: axis.id,
     title: axis.title,
@@ -415,7 +420,7 @@ function buildSystemDesignResult(plain, finalizedAt) {
       remediation,
       design: draft,
       summary: systemDesignSummary(scenario, privateScenario, draft),
-      partialEvidence: incomplete || plain.systemDesignOutcome !== 'submitted',
+      partialEvidence,
     },
     reviewNext: remediation,
     employmentPrediction: null,

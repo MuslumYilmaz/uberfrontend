@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="460" viewBox="0 0 960 460" role="img" aria-labelledby="title desc">
+  <title id="title">Two checkout tabs reconcile through merchant status</title>
+  <desc id="desc">Tab A returns from bank authentication for an older attempt while Tab B holds a newer quote. A broadcast observation prompts both tabs to read merchant status, which determines whether a confirmed order wins or review resumes.</desc>
+  <rect width="960" height="460" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#172033">Cross-tab messages prompt reads; they do not decide</text>
+  <g stroke="#9aa7bc" stroke-width="2">
+    <line x1="150" y1="122" x2="150" y2="378"/>
+    <line x1="480" y1="122" x2="480" y2="378"/>
+    <line x1="810" y1="122" x2="810" y2="378"/>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle" fill="#172033">
+    <text x="150" y="104" font-size="17" font-weight="700">Tab A · attempt ca_7</text>
+    <text x="480" y="104" font-size="17" font-weight="700">Merchant backend</text>
+    <text x="810" y="104" font-size="17" font-weight="700">Tab B · quote v5</text>
+  </g>
+  <g stroke="#315ee8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M150 156H480"/>
+    <path d="m468 146 12 10-12 10"/>
+    <path d="M810 218H150" stroke="#7950b8"/>
+    <path d="m162 208-12 10 12 10" stroke="#7950b8"/>
+    <path d="M810 272H480"/>
+    <path d="m492 262-12 10 12 10"/>
+    <path d="M480 334H150" stroke="#268455"/>
+    <path d="m162 324-12 10 12 10" stroke="#268455"/>
+    <path d="M480 334H810" stroke="#268455"/>
+    <path d="m798 324 12 10-12 10" stroke="#268455"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#526078">
+    <text x="240" y="145" font-size="14">return → GET attempt ca_7</text>
+    <text x="315" y="207" font-size="14">BroadcastChannel observation only</text>
+    <text x="584" y="261" font-size="14">GET current quote and attempt</text>
+    <rect x="333" y="306" width="294" height="58" rx="14" fill="#eaf8ef" stroke="#268455" stroke-width="2"/>
+    <text x="480" y="330" text-anchor="middle" font-size="15" font-weight="700" fill="#172033">authoritative result</text>
+    <text x="480" y="351" text-anchor="middle" font-size="13" fill="#526078">confirmed order or review latest quote</text>
+  </g>
+  <text x="48" y="424" font-family="Arial, sans-serif" font-size="14" fill="#526078">A missing, delayed, or reordered browser message cannot create a second charge or a false receipt.</text>
+</svg>

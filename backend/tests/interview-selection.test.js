@@ -412,6 +412,24 @@ describe('interview form selection', () => {
     }));
   });
 
+  test('pins the resilient checkout guided case through its source bundle', () => {
+    const registry = loadSystemDesignArtifacts({ force: true });
+    const selected = selectSystemDesignScenario({
+      scenarios: registry.scenarios,
+      privateByKey: registry.privateByKey,
+      sourceContentId: 'resilient-checkout-payment-flow',
+      level: 'mid',
+      seed: 'targeted-checkout-source',
+    });
+
+    expect(selected).toEqual(expect.objectContaining({
+      id: 'int-sd-checkout-recovery-mid-v1',
+      enabled: true,
+      level: 'mid',
+      timeLimitSeconds: 900,
+    }));
+  });
+
   test('rejects unknown, level-mismatched, and disabled targeted System Design cases', () => {
     const registry = loadSystemDesignArtifacts({ force: true });
     const selectTarget = (overrides = {}) => selectSystemDesignScenario({
@@ -445,12 +463,13 @@ describe('interview form selection', () => {
     }));
   });
 
-  test('rotates the three Mid System Design scenarios by least-seen and deterministic ties', () => {
+  test('rotates the four Mid System Design scenarios by least-seen and deterministic ties', () => {
     const registry = loadSystemDesignArtifacts({ force: true });
     const midScenarios = registry.scenarios.filter((scenario) => scenario.level === 'mid');
     expect(midScenarios.map((scenario) => scenario.id).sort()).toEqual([
       'int-sd-ai-chat-composer-mid-v1',
       'int-sd-autocomplete-race-mid-v1',
+      'int-sd-checkout-recovery-mid-v1',
       'int-sd-live-chart-pipeline-mid-v1',
     ]);
 
@@ -467,9 +486,13 @@ describe('interview form selection', () => {
           count: 1,
           lastSeenAt: '2026-07-29T12:00:00.000Z',
         }],
+        ['int-sd-live-chart-pipeline-mid-v1', {
+          count: 1,
+          lastSeenAt: '2026-07-30T12:00:00.000Z',
+        }],
       ]),
     });
-    expect(newlyUnseen.id).toBe('int-sd-live-chart-pipeline-mid-v1');
+    expect(newlyUnseen.id).toBe('int-sd-checkout-recovery-mid-v1');
 
     const leastSeen = selectSystemDesignScenario({
       scenarios: registry.scenarios,
@@ -487,6 +510,10 @@ describe('interview form selection', () => {
         ['int-sd-live-chart-pipeline-mid-v1', {
           count: 3,
           lastSeenAt: '2026-04-01T00:00:00.000Z',
+        }],
+        ['int-sd-checkout-recovery-mid-v1', {
+          count: 5,
+          lastSeenAt: '2026-08-12T00:00:00.000Z',
         }],
       ]),
     });
@@ -509,6 +536,10 @@ describe('interview form selection', () => {
           count: 2,
           lastSeenAt: '2026-06-15T00:00:00.000Z',
         }],
+        ['int-sd-checkout-recovery-mid-v1', {
+          count: 2,
+          lastSeenAt: '2026-08-12T00:00:00.000Z',
+        }],
       ]),
     });
     expect(oldestSeen.id).toBe('int-sd-ai-chat-composer-mid-v1');
@@ -523,6 +554,7 @@ describe('interview form selection', () => {
     expect(new Set(tieSelections)).toEqual(new Set([
       'int-sd-ai-chat-composer-mid-v1',
       'int-sd-autocomplete-race-mid-v1',
+      'int-sd-checkout-recovery-mid-v1',
       'int-sd-live-chart-pipeline-mid-v1',
     ]));
     expect(selectSystemDesignScenario({

@@ -1,0 +1,144 @@
+{
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Failure response matrix",
+      "columns": [
+        "Failure",
+        "Recovery",
+        "Preserved invariant"
+      ],
+      "rows": [
+        [
+          "Quote changes before Pay",
+          "Replace the quote and require review",
+          "Only a current server quote enters an attempt"
+        ],
+        [
+          "Attempt response is lost",
+          "Read by clientAttemptId; permitted retry keeps the same Idempotency-Key and payload",
+          "One intent maps to at most one provider operation"
+        ],
+        [
+          "Authentication return arrives first",
+          "Show checking and refresh merchant state",
+          "Redirect and SDK results never prove success"
+        ],
+        [
+          "Attempt remains processing",
+          "Use bounded, visibility-aware polling plus manual refresh",
+          "The UI stays truthful without another charge"
+        ],
+        [
+          "Customer requests another payment",
+          "Read the old attempt; replace only after failed, canceled, or quote-conflict",
+          "Processing cannot become an unexpected second charge"
+        ],
+        [
+          "Provider field rejects input",
+          "Keep input and present linked text errors",
+          "Recovery stays accessible; card secrets remain excluded"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Cross-tab reconciliation without browser authority"
+    },
+    {
+      "type": "text",
+      "text": "BroadcastChannel says state may have changed. Siblings ignore their own sourceTabId and refresh by checkoutId; they never copy a sender's phase into confirmed UI. Missing or reordered delivery is safe because the channel is advisory and the server remains the concurrency boundary."
+    },
+    {
+      "type": "steps",
+      "title": "Scenario walkthrough: two tabs diverge",
+      "steps": [
+        {
+          "title": "Older tab leaves for authentication",
+          "text": "Tab A creates ca_7 on quote version 4 and leaves for authentication. Its identity remains recoverable."
+        },
+        {
+          "title": "Newer tab changes shipping",
+          "text": "Tab B gets quote version 5 but cannot replace uncertain ca_7. It proceeds only after merchant status reports failed, canceled, or quote-conflict."
+        },
+        {
+          "title": "Return reconciles both identities",
+          "text": "Tab A reads ca_7 and the quote. A confirmed order stops Tab B; failure or quote-conflict resumes review."
+        },
+        {
+          "title": "Advisory event speeds convergence",
+          "text": "An attempt observation prompts refresh. Crashes strand local locks, and browsers cannot settle webhook truth."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/resilient-checkout-payment-flow/checkout-recovery-race.svg",
+      "alt": "Two checkout tabs reconcile an older authenticated attempt and a newer quote by reading authoritative merchant server status.",
+      "caption": "BroadcastChannel prompts refresh; merchant reads decide current quote, attempt, and order.",
+      "width": 960,
+      "height": 460,
+      "fallbackText": "Text fallback: Tab A returns for ca_7 while Tab B holds a newer quote. Both read merchant state. Confirmation stops competing work; failure restores review."
+    },
+    {
+      "type": "heading",
+      "text": "Verification, accessibility, and measurement"
+    },
+    {
+      "type": "checklist",
+      "title": "Tests tied to customer trust",
+      "items": [
+        "Replay Pay; assert one clientAttemptId, one Idempotency-Key, and one merchant attempt.",
+        "Lose creation response; assert lookup or same-key retry reaches the existing attempt.",
+        "Return before webhook reconciliation; assert processing remains and no receipt appears.",
+        "Request replacement while processing; assert no new identity before terminal state or successful cancellation.",
+        "Change quote version; assert review is required and correctable input survives.",
+        "Reorder cross-tab events; assert receivers refresh instead of copying browser claims.",
+        "Check keyboard and screen-reader recovery, linked errors, focus, preserved values, and redacted telemetry."
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Measure duplicate suppression, uncertainty duration, quote conflicts, authentication abandonment, polling, cancellation, and recovery. Segment by provider, lifecycle, and network before tuning refresh. Logs keep correlation IDs but exclude hosted-field values and secrets. A kill switch stops initiation without hiding existing status."
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "Stripe idempotent requests",
+          "href": "https://docs.stripe.com/api/idempotent_requests?lang=curl",
+          "description": "Stable keys make creation retries converge."
+        },
+        {
+          "label": "Stripe payment-event webhooks",
+          "href": "https://docs.stripe.com/webhooks/handling-payment-events?lang=node",
+          "description": "Fulfillment follows server events, not redirects."
+        },
+        {
+          "label": "Stripe PaymentIntent cancellation",
+          "href": "https://docs.stripe.com/api/payment_intents/cancel?lang=node",
+          "description": "Only eligible provider states can be canceled."
+        },
+        {
+          "label": "Stripe integration security guide",
+          "href": "https://docs.stripe.com/security/guide",
+          "description": "Hosted controls reduce card-data exposure."
+        },
+        {
+          "label": "MDN Broadcast Channel API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API",
+          "description": "Same-origin contexts exchange advisory observations."
+        },
+        {
+          "label": "WCAG error identification",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/error-identification",
+          "description": "Input errors require text identification."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}

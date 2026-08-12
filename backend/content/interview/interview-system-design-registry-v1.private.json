@@ -1,8 +1,8 @@
 {
-  "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+  "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
   "finalApproval": null,
   "registryId": "interview-system-design-registry-v1",
-  "registryVersion": "1.1.0",
+  "registryVersion": "1.2.0",
   "scenarios": [
     {
       "clarificationAnswers": [
@@ -64,38 +64,38 @@
       "review": {
         "blind": {
           "notes": [
-            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
           ],
-          "reviewer": "codex-system-design-blind-v7",
+          "reviewer": "codex-system-design-blind-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
         "contentHash": "4255f79fd212920ece9b6710ed61c05f6c812ae3f636a161d47cde9bcd202693",
-        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
         "editorial": {
           "notes": [
-            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
           ],
-          "reviewer": "codex-system-design-editorial-v7",
+          "reviewer": "codex-system-design-editorial-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-12",
         "reviewedRevision": 3,
         "technical": {
           "notes": [
-            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
           ],
-          "reviewer": "codex-system-design-technical-v7",
+          "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
           "status": "passed"
         }
@@ -1479,7 +1479,7 @@
           "clarificationId": "search-navigation"
         }
       ],
-      "contentHash": "e75d5dee0a8ffcca803fe12cd0703a76ebc9638f00357095405f8fab8e36c0d3",
+      "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",
       "id": "int-sd-autocomplete-race-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -1505,43 +1505,43 @@
       "review": {
         "blind": {
           "notes": [
-            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
           ],
-          "reviewer": "codex-system-design-blind-v7",
+          "reviewer": "codex-system-design-blind-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "e75d5dee0a8ffcca803fe12cd0703a76ebc9638f00357095405f8fab8e36c0d3",
-        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+        "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
         "editorial": {
           "notes": [
-            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
           ],
-          "reviewer": "codex-system-design-editorial-v7",
+          "reviewer": "codex-system-design-editorial-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-06",
-        "reviewedRevision": 4,
+        "reviewedAt": "2026-08-12",
+        "reviewedRevision": 5,
         "technical": {
           "notes": [
-            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
           ],
-          "reviewer": "codex-system-design-technical-v7",
+          "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 4,
+      "revision": 5,
       "rubric": {
         "axes": [
           {
@@ -1576,22 +1576,50 @@
           {
             "criteria": [
               {
-                "evidence": "Placed query coordination in the state lane.",
-                "id": "search-place-controller",
+                "evidence": "Placed query coordination in state and included both input and results UI boundaries.",
+                "id": "search-place-controller-and-ui",
                 "rule": {
-                  "cardId": "search-controller",
-                  "laneId": "state",
-                  "predicate": "cardInLane"
+                  "allOf": [
+                    {
+                      "cardId": "search-controller",
+                      "laneId": "state",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "search-input",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "search-results",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    }
+                  ]
                 },
                 "weight": 1
               },
               {
-                "evidence": "Selected one controller as the transition owner.",
-                "id": "search-owner-choice",
+                "evidence": "Selected one controller as transition owner while retaining both UI boundaries.",
+                "id": "search-owner-choice-and-ui",
                 "rule": {
-                  "decisionId": "search-state-owner",
-                  "optionId": "search-owner-controller",
-                  "predicate": "decisionSelected"
+                  "allOf": [
+                    {
+                      "decisionId": "search-state-owner",
+                      "optionId": "search-owner-controller",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "cardId": "search-input",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "search-results",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    }
+                  ]
                 },
                 "weight": 1
               }
@@ -1723,17 +1751,12 @@
                 "weight": 1
               },
               {
-                "evidence": "Changed cache identity or async ownership after the locale constraint.",
-                "id": "search-change-key",
+                "evidence": "Kept or adopted safe cache identity or async ownership after the locale constraint.",
+                "id": "search-confirm-key-or-control",
                 "rule": {
                   "anyOf": [
                     {
                       "allOf": [
-                        {
-                          "id": "search-cache-identity",
-                          "predicate": "changedFromBaseline",
-                          "target": "decision"
-                        },
                         {
                           "decisionId": "search-cache-identity",
                           "optionId": "search-key-complete",
@@ -1748,11 +1771,6 @@
                     },
                     {
                       "allOf": [
-                        {
-                          "id": "search-async-control",
-                          "predicate": "changedFromBaseline",
-                          "target": "decision"
-                        },
                         {
                           "decisionId": "search-async-control",
                           "optionId": "search-async-generation",
@@ -1955,9 +1973,19 @@
                 "order": 0
               },
               {
-                "cardId": "search-status",
+                "cardId": "search-input",
                 "laneId": "ui",
                 "order": 0
+              },
+              {
+                "cardId": "search-results",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 2
               }
             ],
             "priorityRequirementIds": [
@@ -2045,9 +2073,19 @@
                 "order": 0
               },
               {
-                "cardId": "search-status",
+                "cardId": "search-input",
                 "laneId": "ui",
                 "order": 0
+              },
+              {
+                "cardId": "search-results",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 2
               }
             ],
             "priorityRequirementIds": [
@@ -2088,9 +2126,9 @@
             "decisions": [
               {
                 "decisionId": "search-async-control",
-                "optionId": "search-async-debounce",
+                "optionId": "search-async-generation",
                 "rationaleIds": [
-                  "search-rationale-fewer-starts"
+                  "search-rationale-correctness"
                 ]
               },
               {
@@ -2122,9 +2160,14 @@
                 "order": 0
               },
               {
-                "cardId": "search-status",
+                "cardId": "search-results",
                 "laneId": "ui",
                 "order": 1
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 2
               },
               {
                 "cardId": "search-controller",
@@ -2211,9 +2254,14 @@
                 "order": 0
               },
               {
-                "cardId": "search-status",
+                "cardId": "search-results",
                 "laneId": "ui",
                 "order": 1
+              },
+              {
+                "cardId": "search-status",
+                "laneId": "ui",
+                "order": 2
               },
               {
                 "cardId": "search-controller",
@@ -2533,6 +2581,1634 @@
     {
       "clarificationAnswers": [
         {
+          "answer": "The merchant backend calculates a quote with an opaque version covering price, promotions, tax, shipping, and stock.",
+          "clarificationId": "checkout-price-authority"
+        },
+        {
+          "answer": "The command may have committed even when the browser receives no response, so transport retry is not proof of a new payment intent.",
+          "clarificationId": "checkout-attempt-uncertainty"
+        },
+        {
+          "answer": "The return carries correlation information and a provider-facing result, but the browser must read current merchant state before claiming success.",
+          "clarificationId": "checkout-provider-return"
+        },
+        {
+          "answer": "Shipping choice, inventory, or promotion eligibility can change until the merchant commits the order boundary.",
+          "clarificationId": "checkout-inventory-window"
+        },
+        {
+          "answer": "PAN and security-code values remain inside provider-owned collection surfaces and are excluded from application state, logs, analytics, and persistence.",
+          "clarificationId": "checkout-card-data"
+        },
+        {
+          "answer": "Two same-origin tabs may hold different quote and attempt versions; browser messaging can improve responsiveness but cannot settle correctness.",
+          "clarificationId": "checkout-multi-tab"
+        },
+        {
+          "answer": "The flow preserves correctable values, identifies fields in text, links a summary to controls, and distinguishes validation, quote, and payment outcomes.",
+          "clarificationId": "checkout-error-recovery"
+        }
+      ],
+      "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
+      "id": "int-sd-checkout-recovery-mid-v1",
+      "provenance": {
+        "authoredAt": "2026-08-12",
+        "copiedText": false,
+        "references": [
+          {
+            "accessedAt": "2026-08-12",
+            "license": "Stripe Documentation Terms",
+            "role": "Validate stable keys for safe retries of one payment command",
+            "title": "Stripe API: Idempotent requests",
+            "url": "https://docs.stripe.com/api/idempotent_requests"
+          },
+          {
+            "accessedAt": "2026-08-12",
+            "license": "Stripe Documentation Terms",
+            "role": "Validate asynchronous server-side payment outcome handling",
+            "title": "Stripe: Handle payment events with webhooks",
+            "url": "https://docs.stripe.com/webhooks/handling-payment-events"
+          },
+          {
+            "accessedAt": "2026-08-12",
+            "license": "Stripe Documentation Terms",
+            "role": "Validate hosted or embedded collection boundaries for card data",
+            "title": "Stripe integration security guide",
+            "url": "https://docs.stripe.com/security/guide"
+          },
+          {
+            "accessedAt": "2026-08-12",
+            "license": "W3C Document License",
+            "role": "Validate text identification of input and transaction errors",
+            "title": "WCAG 2.2 Understanding Error Identification",
+            "url": "https://www.w3.org/WAI/WCAG22/Understanding/error-identification"
+          },
+          {
+            "accessedAt": "2026-08-12",
+            "license": "CC BY-SA 2.5 or later",
+            "role": "Validate same-origin cross-context messaging as a coordination mechanism",
+            "title": "MDN Broadcast Channel API",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API"
+          }
+        ],
+        "sourceRole": "Technical validation and topic coverage only; prompt, choices, rubric, and fixtures are original."
+      },
+      "review": {
+        "blind": {
+          "notes": [
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
+          ],
+          "reviewer": "codex-system-design-blind-v8",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
+        "editorial": {
+          "notes": [
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
+          ],
+          "reviewer": "codex-system-design-editorial-v8",
+          "reviewerType": "ai",
+          "status": "passed"
+        },
+        "reviewedAt": "2026-08-12",
+        "reviewedRevision": 1,
+        "technical": {
+          "notes": [
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
+          ],
+          "reviewer": "codex-system-design-technical-v8",
+          "reviewerType": "ai",
+          "status": "passed"
+        }
+      },
+      "revision": 1,
+      "rubric": {
+        "axes": [
+          {
+            "criteria": [
+              {
+                "evidence": "Clarified what response loss means after payment creation may have committed.",
+                "id": "checkout-discover-uncertainty",
+                "rule": {
+                  "clarificationId": "checkout-attempt-uncertainty",
+                  "predicate": "clarificationSelected"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Prioritized both quote authority and idempotent attempt identity.",
+                "id": "checkout-prioritize-authority",
+                "rule": {
+                  "allOf": [
+                    {
+                      "predicate": "requirementPrioritized",
+                      "requirementId": "checkout-authoritative-quote"
+                    },
+                    {
+                      "predicate": "requirementPrioritized",
+                      "requirementId": "checkout-idempotent-attempt"
+                    }
+                  ]
+                },
+                "weight": 1
+              }
+            ],
+            "id": "requirement-discovery",
+            "remediationTopics": [
+              "Uncertain payment outcomes",
+              "Quote and attempt priorities"
+            ],
+            "title": "Requirement discovery"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Placed the coordinator and attempt identity registry in the state boundary.",
+                "id": "checkout-place-owners",
+                "rule": {
+                  "allOf": [
+                    {
+                      "cardId": "checkout-coordinator",
+                      "laneId": "state",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "checkout-attempt-registry",
+                      "laneId": "state",
+                      "predicate": "cardInLane"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Matched an accepted provider surface decision with its external boundary.",
+                "id": "checkout-provider-architecture",
+                "rule": {
+                  "anyOf": [
+                    {
+                      "allOf": [
+                        {
+                          "decisionId": "checkout-payment-surface",
+                          "optionId": "checkout-surface-hosted",
+                          "predicate": "decisionSelected"
+                        },
+                        {
+                          "cardId": "checkout-hosted-payment",
+                          "laneId": "external",
+                          "predicate": "cardInLane"
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "decisionId": "checkout-payment-surface",
+                          "optionId": "checkout-surface-embedded",
+                          "predicate": "decisionSelected"
+                        },
+                        {
+                          "cardId": "checkout-embedded-fields",
+                          "laneId": "external",
+                          "predicate": "cardInLane"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "weight": 1
+              }
+            ],
+            "id": "architecture-ownership",
+            "remediationTopics": [
+              "Checkout transition ownership",
+              "Provider-surface boundaries"
+            ],
+            "title": "Architecture and ownership"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected a version-bound server quote and its authority rationale.",
+                "id": "checkout-versioned-quote",
+                "rule": {
+                  "allOf": [
+                    {
+                      "decisionId": "checkout-quote-authority",
+                      "optionId": "checkout-quote-versioned",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "decisionId": "checkout-quote-authority",
+                      "predicate": "rationaleSelected",
+                      "rationaleId": "checkout-rationale-version-bind"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Selected stable payment-intent identity for uncertain retries.",
+                "id": "checkout-stable-attempt",
+                "rule": {
+                  "allOf": [
+                    {
+                      "decisionId": "checkout-attempt-identity",
+                      "optionId": "checkout-attempt-stable-intent",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "decisionId": "checkout-attempt-identity",
+                      "predicate": "rationaleSelected",
+                      "rationaleId": "checkout-rationale-retry-intent"
+                    }
+                  ]
+                },
+                "weight": 1
+              }
+            ],
+            "id": "data-interface-contracts",
+            "remediationTopics": [
+              "Versioned quote commands",
+              "Stable idempotency identity"
+            ],
+            "title": "Data and interface contracts"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Selected merchant server state as the completion authority.",
+                "id": "checkout-server-result",
+                "rule": {
+                  "allOf": [
+                    {
+                      "decisionId": "checkout-result-authority",
+                      "optionId": "checkout-result-server-status",
+                      "predicate": "decisionSelected"
+                    },
+                    {
+                      "decisionId": "checkout-result-authority",
+                      "predicate": "rationaleSelected",
+                      "rationaleId": "checkout-rationale-merchant-authority"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Connected the merchant client and provider webhook to the backend authority.",
+                "id": "checkout-status-paths",
+                "rule": {
+                  "allOf": [
+                    {
+                      "fromCardId": "checkout-client",
+                      "predicate": "connectionExists",
+                      "toCardId": "checkout-merchant-api",
+                      "typeId": "data-flow"
+                    },
+                    {
+                      "fromCardId": "checkout-provider-webhook",
+                      "predicate": "connectionExists",
+                      "toCardId": "checkout-merchant-api",
+                      "typeId": "event-flow"
+                    }
+                  ]
+                },
+                "weight": 1
+              }
+            ],
+            "id": "resilience-performance",
+            "remediationTopics": [
+              "Server-reconciled completion",
+              "Webhook-backed recovery"
+            ],
+            "title": "Resilience and performance"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Prioritized the accessible correction path.",
+                "id": "checkout-prioritize-errors",
+                "rule": {
+                  "predicate": "requirementPrioritized",
+                  "requirementId": "checkout-accessible-errors"
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Included both status and linked error-summary UI boundaries.",
+                "id": "checkout-error-boundaries",
+                "rule": {
+                  "allOf": [
+                    {
+                      "cardId": "checkout-status-view",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "checkout-error-summary",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    }
+                  ]
+                },
+                "weight": 1
+              }
+            ],
+            "id": "accessibility-product-ux",
+            "remediationTopics": [
+              "Error identification and focus",
+              "Recoverable payment status"
+            ],
+            "title": "Accessibility and product UX"
+          },
+          {
+            "criteria": [
+              {
+                "evidence": "Read authoritative state and correlated both payment attempts after the stale return.",
+                "id": "checkout-reconcile-tabs",
+                "rule": {
+                  "allOf": [
+                    {
+                      "actionId": "checkout-twist-read-server-state",
+                      "predicate": "twistActionSelected"
+                    },
+                    {
+                      "actionId": "checkout-twist-reconcile-attempts",
+                      "predicate": "twistActionSelected"
+                    }
+                  ]
+                },
+                "weight": 1
+              },
+              {
+                "evidence": "Kept cross-tab messaging as a coordinator hint while merchant state remained authoritative.",
+                "id": "checkout-hint-not-authority",
+                "rule": {
+                  "allOf": [
+                    {
+                      "cardId": "checkout-tab-channel",
+                      "laneId": "state",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "fromCardId": "checkout-tab-channel",
+                      "predicate": "connectionExists",
+                      "toCardId": "checkout-coordinator",
+                      "typeId": "event-flow"
+                    },
+                    {
+                      "decisionId": "checkout-result-authority",
+                      "optionId": "checkout-result-server-status",
+                      "predicate": "decisionSelected"
+                    }
+                  ]
+                },
+                "weight": 2
+              }
+            ],
+            "id": "adaptation-tradeoffs",
+            "remediationTopics": [
+              "Cross-tab server reconciliation",
+              "BroadcastChannel as a hint"
+            ],
+            "title": "Adaptation and trade-offs"
+          }
+        ],
+        "contradictions": [
+          {
+            "axisIds": [
+              "resilience-performance",
+              "adaptation-tradeoffs"
+            ],
+            "id": "checkout-critical-redirect-success",
+            "rule": {
+              "decisionId": "checkout-result-authority",
+              "optionId": "checkout-result-redirect",
+              "predicate": "decisionSelected"
+            },
+            "severity": "critical",
+            "summary": "A redirect destination cannot prove the merchant payment or order outcome."
+          },
+          {
+            "axisIds": [
+              "architecture-ownership",
+              "data-interface-contracts"
+            ],
+            "id": "checkout-critical-direct-card-data",
+            "rule": {
+              "decisionId": "checkout-payment-surface",
+              "optionId": "checkout-surface-direct",
+              "predicate": "decisionSelected"
+            },
+            "severity": "critical",
+            "summary": "Feature-owned PAN and security-code state violates the required provider data boundary."
+          },
+          {
+            "axisIds": [
+              "data-interface-contracts",
+              "resilience-performance",
+              "adaptation-tradeoffs"
+            ],
+            "id": "checkout-critical-return-retry",
+            "rule": {
+              "actionId": "checkout-twist-new-attempt",
+              "predicate": "twistActionSelected"
+            },
+            "severity": "critical",
+            "summary": "Creating a replacement attempt on an uncertain return can duplicate payment work."
+          },
+          {
+            "axisIds": [
+              "architecture-ownership",
+              "adaptation-tradeoffs"
+            ],
+            "id": "checkout-critical-tab-lock",
+            "rule": {
+              "actionId": "checkout-twist-trust-tab-lock",
+              "predicate": "twistActionSelected"
+            },
+            "severity": "critical",
+            "summary": "A browser lock cannot replace merchant reconciliation across crashes, expiry, or missed tab messages."
+          }
+        ]
+      },
+      "sourceEvidence": {
+        "bundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea",
+        "files": [
+          {
+            "file": "cdn/questions/system-design/resilient-checkout-payment-flow/meta.json",
+            "sha256": "d4d15b38088e594e2638cf1b557bc94bc41321110f4392c9774d4c41b8f2d5eb"
+          },
+          {
+            "file": "cdn/questions/system-design/resilient-checkout-payment-flow/requirements.json",
+            "sha256": "3a730d463c4791ea3d7bd3c09ffb48efb980a230950758164a9f172c341c08b7"
+          },
+          {
+            "file": "cdn/questions/system-design/resilient-checkout-payment-flow/architecture.json",
+            "sha256": "e6f4e3c252ab3e124d6ba58b2f01dd67ea480cb4274831b528634bf23d723ec5"
+          },
+          {
+            "file": "cdn/questions/system-design/resilient-checkout-payment-flow/data.json",
+            "sha256": "6ed616744e5540bbbea4704fa0acc9e03dccdcfbf0548c3415260e7e760d2286"
+          },
+          {
+            "file": "cdn/questions/system-design/resilient-checkout-payment-flow/interfaces.json",
+            "sha256": "7f993361041cb88a49cc5c6240bad6e1eb6301f733d776cc29ae1258b739d608"
+          },
+          {
+            "file": "cdn/questions/system-design/resilient-checkout-payment-flow/optimizations.json",
+            "sha256": "c0a921b5239b225091b410a16861b96a842170cf9a276ba4d0073b4318e7b827"
+          }
+        ],
+        "sourceContentId": "resilient-checkout-payment-flow",
+        "sourceUpdatedAt": "2026-08-12"
+      },
+      "twist": {
+        "id": "checkout-cross-tab-return",
+        "prompt": "Tab A returns from bank verification for an older quote and payment attempt. While it was away, Tab B selected new shipping, received a new quote, and started another attempt. A BroadcastChannel message may arrive late or not at all. Reconcile the browser without treating a redirect, peer message, or local lock as payment truth.",
+        "responseActions": [
+          {
+            "description": "Reload quote, attempt, and order status from the merchant backend before presenting an outcome.",
+            "id": "checkout-twist-read-server-state",
+            "label": "Fetch authoritative checkout state"
+          },
+          {
+            "description": "Compare returned and current attempt IDs, then mark stale UI without discarding valid server progress.",
+            "id": "checkout-twist-reconcile-attempts",
+            "label": "Reconcile both attempt identities"
+          },
+          {
+            "description": "Treat a local storage lease as permission to skip the merchant status read.",
+            "id": "checkout-twist-trust-tab-lock",
+            "label": "Trust the peer-tab lock"
+          },
+          {
+            "description": "Create a fresh attempt when the bank return lacks an immediate success signal.",
+            "id": "checkout-twist-new-attempt",
+            "label": "Start a replacement payment"
+          }
+        ],
+        "title": "Production change: stale bank return across tabs"
+      },
+      "validationFixtures": [
+        {
+          "baseline": {
+            "clarificationIds": [
+              "checkout-price-authority",
+              "checkout-attempt-uncertainty",
+              "checkout-provider-return"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-form",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-quote-snapshot",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-attempt-registry",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-hosted-payment",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-provider-webhook",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-status-view",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-error-summary",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-tab-channel",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-stable-intent",
+                "rationaleIds": [
+                  "checkout-rationale-retry-intent"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-server-status",
+                "rationaleIds": [
+                  "checkout-rationale-merchant-authority"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-hosted",
+                "rationaleIds": [
+                  "checkout-rationale-minimize-card-contact"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-form",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-attempt-registry",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-tab-channel",
+                "laneId": "state",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-quote-snapshot",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-hosted-payment",
+                "laneId": "external",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-provider-webhook",
+                "laneId": "external",
+                "order": 2
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-authoritative-quote",
+              "checkout-idempotent-attempt",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "checkout-price-authority",
+              "checkout-attempt-uncertainty",
+              "checkout-provider-return"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-form",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-quote-snapshot",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-attempt-registry",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-hosted-payment",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-provider-webhook",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-status-view",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-error-summary",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-tab-channel",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-stable-intent",
+                "rationaleIds": [
+                  "checkout-rationale-retry-intent"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-server-status",
+                "rationaleIds": [
+                  "checkout-rationale-merchant-authority"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-hosted",
+                "rationaleIds": [
+                  "checkout-rationale-minimize-card-contact"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-form",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-attempt-registry",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-tab-channel",
+                "laneId": "state",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-quote-snapshot",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-hosted-payment",
+                "laneId": "external",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-provider-webhook",
+                "laneId": "external",
+                "order": 2
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-authoritative-quote",
+              "checkout-idempotent-attempt",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "Return is pending until merchant state resolves both attempt IDs.",
+            "twistResponseActionIds": [
+              "checkout-twist-read-server-state",
+              "checkout-twist-reconcile-attempts"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "checkout-strong-hosted",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "checkout-attempt-uncertainty",
+              "checkout-card-data",
+              "checkout-multi-tab"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-form",
+                "toCardId": "checkout-embedded-fields",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-embedded-fields",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-quote-snapshot",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-attempt-registry",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-provider-webhook",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-status-view",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-error-summary",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-tab-channel",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-stable-intent",
+                "rationaleIds": [
+                  "checkout-rationale-retry-intent"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-server-status",
+                "rationaleIds": [
+                  "checkout-rationale-merchant-authority"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-embedded",
+                "rationaleIds": [
+                  "checkout-rationale-branded-provider"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-form",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-attempt-registry",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-tab-channel",
+                "laneId": "state",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-quote-snapshot",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-telemetry",
+                "laneId": "data",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-embedded-fields",
+                "laneId": "external",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-provider-webhook",
+                "laneId": "external",
+                "order": 2
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-idempotent-attempt",
+              "checkout-authoritative-quote",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "checkout-attempt-uncertainty",
+              "checkout-card-data",
+              "checkout-multi-tab"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-form",
+                "toCardId": "checkout-embedded-fields",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-embedded-fields",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-quote-snapshot",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-attempt-registry",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-provider-webhook",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-status-view",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-error-summary",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-tab-channel",
+                "toCardId": "checkout-coordinator",
+                "typeId": "event-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-stable-intent",
+                "rationaleIds": [
+                  "checkout-rationale-retry-intent"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-server-status",
+                "rationaleIds": [
+                  "checkout-rationale-merchant-authority"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-embedded",
+                "rationaleIds": [
+                  "checkout-rationale-branded-provider"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-form",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-attempt-registry",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-tab-channel",
+                "laneId": "state",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-quote-snapshot",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-telemetry",
+                "laneId": "data",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-embedded-fields",
+                "laneId": "external",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-provider-webhook",
+                "laneId": "external",
+                "order": 2
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-idempotent-attempt",
+              "checkout-authoritative-quote",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "Provider fields expose tokens only; merchant status resolves tab races.",
+            "twistResponseActionIds": [
+              "checkout-twist-read-server-state",
+              "checkout-twist-reconcile-attempts"
+            ]
+          },
+          "expectedSignal": "Strong System Design Session",
+          "id": "checkout-strong-embedded",
+          "kind": "strong"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "checkout-price-authority",
+              "checkout-attempt-uncertainty"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-browser-session",
+                "rationaleIds": [
+                  "checkout-rationale-session-scope"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-server-status",
+                "rationaleIds": [
+                  "checkout-rationale-merchant-authority"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-hosted",
+                "rationaleIds": [
+                  "checkout-rationale-minimize-card-contact"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-hosted-payment",
+                "laneId": "external",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-authoritative-quote",
+              "checkout-idempotent-attempt",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "checkout-price-authority",
+              "checkout-attempt-uncertainty"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-browser-session",
+                "rationaleIds": [
+                  "checkout-rationale-session-scope"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-server-status",
+                "rationaleIds": [
+                  "checkout-rationale-merchant-authority"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-hosted",
+                "rationaleIds": [
+                  "checkout-rationale-minimize-card-contact"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-hosted-payment",
+                "laneId": "external",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-authoritative-quote",
+              "checkout-idempotent-attempt",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "Read server status, but tab coordination and retry identity remain underspecified.",
+            "twistResponseActionIds": [
+              "checkout-twist-read-server-state"
+            ]
+          },
+          "expectedSignal": "On Track",
+          "id": "checkout-developing",
+          "kind": "developing"
+        },
+        {
+          "baseline": {
+            "clarificationIds": [
+              "checkout-price-authority",
+              "checkout-attempt-uncertainty",
+              "checkout-card-data"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-attempt-registry",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-provider-webhook",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "decisions",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-per-click",
+                "rationaleIds": [
+                  "checkout-rationale-independent-clicks"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-redirect",
+                "rationaleIds": [
+                  "checkout-rationale-route-outcome"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-direct",
+                "rationaleIds": [
+                  "checkout-rationale-own-card-flow"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-form",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-direct-card-fields",
+                "laneId": "ui",
+                "order": 3
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-attempt-registry",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-provider-webhook",
+                "laneId": "external",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-authoritative-quote",
+              "checkout-idempotent-attempt",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "",
+            "twistResponseActionIds": []
+          },
+          "draft": {
+            "clarificationIds": [
+              "checkout-price-authority",
+              "checkout-attempt-uncertainty",
+              "checkout-card-data"
+            ],
+            "connections": [
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-attempt-registry",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-coordinator",
+                "toCardId": "checkout-client",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-client",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "data-flow"
+              },
+              {
+                "fromCardId": "checkout-provider-webhook",
+                "toCardId": "checkout-merchant-api",
+                "typeId": "event-flow"
+              },
+              {
+                "fromCardId": "checkout-merchant-api",
+                "toCardId": "checkout-coordinator",
+                "typeId": "data-flow"
+              }
+            ],
+            "currentStep": "twist",
+            "decisions": [
+              {
+                "decisionId": "checkout-quote-authority",
+                "optionId": "checkout-quote-versioned",
+                "rationaleIds": [
+                  "checkout-rationale-version-bind"
+                ]
+              },
+              {
+                "decisionId": "checkout-attempt-identity",
+                "optionId": "checkout-attempt-per-click",
+                "rationaleIds": [
+                  "checkout-rationale-independent-clicks"
+                ]
+              },
+              {
+                "decisionId": "checkout-result-authority",
+                "optionId": "checkout-result-redirect",
+                "rationaleIds": [
+                  "checkout-rationale-route-outcome"
+                ]
+              },
+              {
+                "decisionId": "checkout-payment-surface",
+                "optionId": "checkout-surface-direct",
+                "rationaleIds": [
+                  "checkout-rationale-own-card-flow"
+                ]
+              }
+            ],
+            "placements": [
+              {
+                "cardId": "checkout-form",
+                "laneId": "ui",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-status-view",
+                "laneId": "ui",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-error-summary",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
+                "cardId": "checkout-direct-card-fields",
+                "laneId": "ui",
+                "order": 3
+              },
+              {
+                "cardId": "checkout-coordinator",
+                "laneId": "state",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-attempt-registry",
+                "laneId": "state",
+                "order": 1
+              },
+              {
+                "cardId": "checkout-client",
+                "laneId": "data",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-merchant-api",
+                "laneId": "external",
+                "order": 0
+              },
+              {
+                "cardId": "checkout-provider-webhook",
+                "laneId": "external",
+                "order": 1
+              }
+            ],
+            "priorityRequirementIds": [
+              "checkout-authoritative-quote",
+              "checkout-idempotent-attempt",
+              "checkout-accessible-errors"
+            ],
+            "scratchpad": "Use the peer lock, open a new attempt, and accept the success route.",
+            "twistResponseActionIds": [
+              "checkout-twist-trust-tab-lock",
+              "checkout-twist-new-attempt"
+            ]
+          },
+          "expectedSignal": "Needs Focus",
+          "id": "checkout-critical-redirect",
+          "kind": "critical-conflict"
+        }
+      ]
+    },
+    {
+      "clarificationAnswers": [
+        {
           "answer": "A dashboard normally contains twenty to fifty charts or tables. Their data loads independently, and several visualizations are costly to rerender.",
           "clarificationId": "dash-widget-scale"
         },
@@ -2583,38 +4259,38 @@
       "review": {
         "blind": {
           "notes": [
-            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
           ],
-          "reviewer": "codex-system-design-blind-v7",
+          "reviewer": "codex-system-design-blind-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
         "contentHash": "6235e3f8b607b86c652287bd538f6fc11bceb2ed1842fca3c19bf6209614bb35",
-        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
         "editorial": {
           "notes": [
-            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
           ],
-          "reviewer": "codex-system-design-editorial-v7",
+          "reviewer": "codex-system-design-editorial-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-12",
         "reviewedRevision": 2,
         "technical": {
           "notes": [
-            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
           ],
-          "reviewer": "codex-system-design-technical-v7",
+          "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
           "status": "passed"
         }
@@ -3986,38 +5662,38 @@
       "review": {
         "blind": {
           "notes": [
-            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
           ],
-          "reviewer": "codex-system-design-blind-v7",
+          "reviewer": "codex-system-design-blind-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
         "contentHash": "eeb26e0a93d42a9662990f5cc4aef2ce5fc0d8fcf4c1221511db5ff28126aca4",
-        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
         "editorial": {
           "notes": [
-            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
           ],
-          "reviewer": "codex-system-design-editorial-v7",
+          "reviewer": "codex-system-design-editorial-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-12",
         "reviewedRevision": 2,
         "technical": {
           "notes": [
-            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
           ],
-          "reviewer": "codex-system-design-technical-v7",
+          "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
           "status": "passed"
         }
@@ -5758,38 +7434,38 @@
       "review": {
         "blind": {
           "notes": [
-            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
           ],
-          "reviewer": "codex-system-design-blind-v7",
+          "reviewer": "codex-system-design-blind-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
         "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
-        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
         "editorial": {
           "notes": [
-            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
           ],
-          "reviewer": "codex-system-design-editorial-v7",
+          "reviewer": "codex-system-design-editorial-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-12",
         "reviewedRevision": 2,
         "technical": {
           "notes": [
-            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
           ],
-          "reviewer": "codex-system-design-technical-v7",
+          "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
           "status": "passed"
         }
@@ -7414,7 +9090,7 @@
           "clarificationId": "feed-accessibility"
         }
       ],
-      "contentHash": "6483429a1be771ae59ca9df59c9ae05815f750810a107fb55384e7f233d9dedd",
+      "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
       "id": "int-sd-ranked-feed-sr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -7440,43 +9116,43 @@
       "review": {
         "blind": {
           "notes": [
-            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
           ],
-          "reviewer": "codex-system-design-blind-v7",
+          "reviewer": "codex-system-design-blind-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "6483429a1be771ae59ca9df59c9ae05815f750810a107fb55384e7f233d9dedd",
-        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+        "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
         "editorial": {
           "notes": [
-            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
           ],
-          "reviewer": "codex-system-design-editorial-v7",
+          "reviewer": "codex-system-design-editorial-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-06",
-        "reviewedRevision": 4,
+        "reviewedAt": "2026-08-12",
+        "reviewedRevision": 5,
         "technical": {
           "notes": [
-            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
           ],
-          "reviewer": "codex-system-design-technical-v7",
+          "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 4,
+      "revision": 5,
       "rubric": {
         "axes": [
           {
@@ -7518,23 +9194,61 @@
           {
             "criteria": [
               {
-                "evidence": "Placed request admission in the state boundary.",
-                "id": "feed-place-controller",
+                "evidence": "Placed request admission in state and included view, entity, and page-model boundaries.",
+                "id": "feed-place-controller-and-models",
                 "rule": {
-                  "cardId": "feed-controller",
-                  "laneId": "state",
-                  "predicate": "cardInLane"
+                  "allOf": [
+                    {
+                      "cardId": "feed-controller",
+                      "laneId": "state",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "feed-view",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "feed-entities",
+                      "laneId": "data",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "feed-pages",
+                      "laneId": "data",
+                      "predicate": "cardInLane"
+                    }
+                  ]
                 },
                 "weight": 1
               },
               {
-                "evidence": "Connected feed intent to a dedicated request gate.",
-                "id": "feed-controller-gate",
+                "evidence": "Connected feed intent to a request gate while retaining all three rendering-model boundaries.",
+                "id": "feed-controller-gate-and-models",
                 "rule": {
-                  "fromCardId": "feed-controller",
-                  "predicate": "connectionExists",
-                  "toCardId": "feed-request-gate",
-                  "typeId": "event-flow"
+                  "allOf": [
+                    {
+                      "fromCardId": "feed-controller",
+                      "predicate": "connectionExists",
+                      "toCardId": "feed-request-gate",
+                      "typeId": "event-flow"
+                    },
+                    {
+                      "cardId": "feed-view",
+                      "laneId": "ui",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "feed-entities",
+                      "laneId": "data",
+                      "predicate": "cardInLane"
+                    },
+                    {
+                      "cardId": "feed-pages",
+                      "laneId": "data",
+                      "predicate": "cardInLane"
+                    }
+                  ]
                 },
                 "weight": 1
               }
@@ -7648,16 +9362,16 @@
           {
             "criteria": [
               {
-                "evidence": "Preserved the anchor and staged live ordering.",
+                "evidence": "Promoted a surviving anchor and reconciled authoritative page membership.",
                 "id": "feed-twist-safe",
                 "rule": {
                   "allOf": [
                     {
-                      "actionId": "feed-twist-anchor",
+                      "actionId": "feed-twist-neighbor-anchor",
                       "predicate": "twistActionSelected"
                     },
                     {
-                      "actionId": "feed-twist-stage",
+                      "actionId": "feed-twist-reconcile-removal",
                       "predicate": "twistActionSelected"
                     }
                   ]
@@ -7665,15 +9379,10 @@
                 "weight": 1
               },
               {
-                "evidence": "Changed ranking policy after the live-update constraint.",
-                "id": "feed-change-order",
+                "evidence": "Kept or adopted a reading-safe ordering policy after the removal constraint.",
+                "id": "feed-confirm-order-policy",
                 "rule": {
                   "allOf": [
-                    {
-                      "id": "feed-order-change",
-                      "predicate": "changedFromBaseline",
-                      "target": "decision"
-                    },
                     {
                       "decisionId": "feed-order-change",
                       "optionId": "feed-order-stage",
@@ -7691,8 +9400,8 @@
             ],
             "id": "adaptation-tradeoffs",
             "remediationTopics": [
-              "Live-rank staging",
-              "Stable anchors under geometry change"
+              "Removed-anchor recovery",
+              "Atomic page-membership reconciliation"
             ],
             "title": "Adaptation and trade-offs"
           }
@@ -7720,6 +9429,20 @@
             },
             "severity": "critical",
             "summary": "List-length offsets plus blind append cannot preserve ranked page identity under overlap or reordering."
+          },
+          {
+            "axisIds": [
+              "architecture-ownership",
+              "accessibility-product-ux",
+              "adaptation-tradeoffs"
+            ],
+            "id": "feed-critical-retained-anchor",
+            "rule": {
+              "actionId": "feed-twist-retain-removed",
+              "predicate": "twistActionSelected"
+            },
+            "severity": "critical",
+            "summary": "Retaining a server-removed anchor leaves focus and page membership attached to a nonexistent ranked item."
           },
           {
             "axisIds": [
@@ -7768,31 +9491,31 @@
         "sourceUpdatedAt": "2026-08-06"
       },
       "twist": {
-        "id": "feed-live-rerank",
-        "prompt": "A live ranking version inserts and removes items above the current viewport while images are still changing height. Adapt the design so fresh content is discoverable without moving the reader or corrupting pagination.",
+        "id": "feed-anchor-removal",
+        "prompt": "A moderation event removes the item currently anchoring the reader's viewport while late image measurements settle above it. Adapt the design so focus and reading position recover to a surviving neighbor, and commit the authoritative removal without corrupting cursor membership.",
         "responseActions": [
           {
-            "description": "Correct geometry relative to the anchored item after measurements change.",
-            "id": "feed-twist-anchor",
-            "label": "Preserve item identity and offset"
+            "description": "Choose the next stable item, or the previous item as fallback, and preserve its viewport offset.",
+            "id": "feed-twist-neighbor-anchor",
+            "label": "Promote a surviving neighbor anchor"
           },
           {
-            "description": "Offer a controlled reveal while preserving the active reading window.",
-            "id": "feed-twist-stage",
-            "label": "Stage the incoming ordering version"
+            "description": "Commit the server version, entity removal, and cursor-page membership as one transition.",
+            "id": "feed-twist-reconcile-removal",
+            "label": "Reconcile removal with page identity"
           },
           {
-            "description": "Reconcile visible order when each ranking event reaches the client.",
-            "id": "feed-twist-immediate",
-            "label": "Apply ranking moves as received"
+            "description": "Retain a local copy in the visible order until the reader leaves the current window.",
+            "id": "feed-twist-retain-removed",
+            "label": "Keep the removed item as anchor"
           },
           {
-            "description": "Start from the newest version when ordering changes.",
+            "description": "Start from the newest version when ordering changes and restore focus to its first item.",
             "id": "feed-twist-reset",
             "label": "Reset reading position to top"
           }
         ],
-        "title": "Production change: live ranking while reading"
+        "title": "Production change: the active anchor is removed"
       },
       "validationFixtures": [
         {
@@ -7867,6 +9590,11 @@
                 "order": 1
               },
               {
+                "cardId": "feed-view",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
                 "cardId": "feed-api",
                 "laneId": "external",
                 "order": 0
@@ -7875,6 +9603,16 @@
                 "cardId": "feed-measurements",
                 "laneId": "data",
                 "order": 0
+              },
+              {
+                "cardId": "feed-entities",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "feed-pages",
+                "laneId": "data",
+                "order": 2
               }
             ],
             "priorityRequirementIds": [
@@ -7956,6 +9694,11 @@
                 "order": 1
               },
               {
+                "cardId": "feed-view",
+                "laneId": "ui",
+                "order": 2
+              },
+              {
                 "cardId": "feed-api",
                 "laneId": "external",
                 "order": 0
@@ -7964,6 +9707,16 @@
                 "cardId": "feed-measurements",
                 "laneId": "data",
                 "order": 0
+              },
+              {
+                "cardId": "feed-entities",
+                "laneId": "data",
+                "order": 1
+              },
+              {
+                "cardId": "feed-pages",
+                "laneId": "data",
+                "order": 2
               }
             ],
             "priorityRequirementIds": [
@@ -7973,8 +9726,8 @@
             ],
             "scratchpad": "Apply the new version only behind the current anchor.",
             "twistResponseActionIds": [
-              "feed-twist-anchor",
-              "feed-twist-stage"
+              "feed-twist-neighbor-anchor",
+              "feed-twist-reconcile-removal"
             ]
           },
           "expectedSignal": "Strong System Design Session",
@@ -8025,9 +9778,9 @@
               },
               {
                 "decisionId": "feed-order-change",
-                "optionId": "feed-order-arrival",
+                "optionId": "feed-order-stage",
                 "rationaleIds": [
-                  "feed-rationale-no-version"
+                  "feed-rationale-reading-context"
                 ]
               }
             ],
@@ -8053,9 +9806,14 @@
                 "order": 1
               },
               {
-                "cardId": "feed-pages",
+                "cardId": "feed-entities",
                 "laneId": "data",
                 "order": 0
+              },
+              {
+                "cardId": "feed-pages",
+                "laneId": "data",
+                "order": 1
               },
               {
                 "cardId": "feed-api",
@@ -8142,9 +9900,14 @@
                 "order": 1
               },
               {
-                "cardId": "feed-pages",
+                "cardId": "feed-entities",
                 "laneId": "data",
                 "order": 0
+              },
+              {
+                "cardId": "feed-pages",
+                "laneId": "data",
+                "order": 1
               },
               {
                 "cardId": "feed-api",
@@ -8159,8 +9922,8 @@
             ],
             "scratchpad": "Reload evicted pages from a known cursor boundary.",
             "twistResponseActionIds": [
-              "feed-twist-anchor",
-              "feed-twist-stage"
+              "feed-twist-neighbor-anchor",
+              "feed-twist-reconcile-removal"
             ]
           },
           "expectedSignal": "Strong System Design Session",
@@ -8278,7 +10041,7 @@
             ],
             "scratchpad": "",
             "twistResponseActionIds": [
-              "feed-twist-anchor"
+              "feed-twist-neighbor-anchor"
             ]
           },
           "expectedSignal": "On Track",
@@ -8443,8 +10206,8 @@
             ],
             "scratchpad": "",
             "twistResponseActionIds": [
-              "feed-twist-anchor",
-              "feed-twist-stage"
+              "feed-twist-retain-removed",
+              "feed-twist-reset"
             ]
           },
           "expectedSignal": "Needs Focus",
@@ -8480,7 +10243,7 @@
           "clarificationId": "toast-navigation"
         }
       ],
-      "contentHash": "7334b8cb8a7403fa0754b18796f16f77c8d866c7e378cfd98a9ee9a4e0ce7a4d",
+      "contentHash": "0a691d04fd291d4973821fe1de752c7b6f78bb029e3aaef8b4d07ec674e9863b",
       "id": "int-sd-toast-lifecycle-jr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -8506,43 +10269,43 @@
       "review": {
         "blind": {
           "notes": [
-            "The revised Toast and AI Chat public scenarios were re-read without private answers, twists, rubric rules, fixtures, provenance, or review metadata.",
-            "Each prompt names a concrete actor-visible failure before asking for ownership, recovery, accessibility, and trade-off decisions.",
-            "Toast remains a focused Junior ten-minute session, while AI Chat remains a Mid fifteen-minute session with explicit command and stream boundaries.",
-            "Candidate-facing cards, balanced choices, and rationale ordering remain capability-oriented and do not expose the scoring path."
+            "The checkout prompt was reviewed without private answers, twist actions, rubric rules, fixtures, provenance, or review metadata.",
+            "It gives a concrete lost-response and redirect problem while leaving quote authority, attempt identity, recovery, and provider surface choices to the candidate.",
+            "The seven clarifications, six requirements, fourteen cards, and four decisions fit a focused Mid fifteen-minute guided session.",
+            "Revised Toast, Autocomplete, and Ranked Feed candidate surfaces remain capability-oriented and do not disclose private scoring rules."
           ],
-          "reviewer": "codex-system-design-blind-v7",
+          "reviewer": "codex-system-design-blind-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "7334b8cb8a7403fa0754b18796f16f77c8d866c7e378cfd98a9ee9a4e0ce7a4d",
-        "definitionHash": "21c6d9ff5530b22f0ed7938898d53029243d6bf7a3d4771ec080cc12c9359ad8",
+        "contentHash": "0a691d04fd291d4973821fe1de752c7b6f78bb029e3aaef8b4d07ec674e9863b",
+        "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
         "editorial": {
           "notes": [
-            "Toast and AI Chat guided titles and prompts now match the V2.1 static pilot stories and preserve their existing case IDs.",
-            "Toast rubric language centers the dismiss-timeout cleanup race; AI Chat centers active-stream gating, stable command identity, and stale-event rejection.",
-            "The other five guided scenarios remain unchanged, and the AI bulk-edit proposal pilot intentionally has no guided session.",
-            "No drafting, review, assistant, or template notes appear in candidate-facing scenario text or generated runtime artifacts."
+            "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
+            "The stale bank-return twist adds a new cross-tab conflict and makes BroadcastChannel advisory while merchant reads retain authority.",
+            "Ranked Feed now adds a distinct active-anchor removal problem; Toast and Autocomplete retain their original user-facing production changes.",
+            "Candidate text contains no drafting, review, assistant, template, or fixture-calibration notes."
           ],
-          "reviewer": "codex-system-design-editorial-v7",
+          "reviewer": "codex-system-design-editorial-v8",
           "reviewerType": "ai",
           "status": "passed"
         },
-        "reviewedAt": "2026-08-06",
-        "reviewedRevision": 5,
+        "reviewedAt": "2026-08-12",
+        "reviewedRevision": 6,
         "technical": {
           "notes": [
-            "Toast and AI Chat revisions now pin their final V2.1 six-file source bundles; the other five source pins and scenario revisions are unchanged.",
-            "Toast keeps ordered records and overflow in one store, timer handles in the lifecycle coordinator, rendering in the viewport, and one-time speech history in the announcer.",
-            "AI Chat blocks IME and unready-attachment sends, converts Send to Stop during an active reply, separates retransmission from user Retry, and treats local abort as transport-only.",
-            "Executable fixtures, rubric axes, twist mutations, contradictions, level and duration invariants, and release artifact parity remain covered by the registry validator."
+            "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
+            "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
+            "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
+            "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
           ],
-          "reviewer": "codex-system-design-technical-v7",
+          "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
           "status": "passed"
         }
       },
-      "revision": 5,
+      "revision": 6,
       "rubric": {
         "axes": [
           {
@@ -8733,17 +10496,12 @@
                 "weight": 1
               },
               {
-                "evidence": "Changed a relevant lifecycle or overflow decision after the production change.",
-                "id": "toast-change-design",
+                "evidence": "Kept or adopted a safe lifecycle or overflow policy after the production change.",
+                "id": "toast-confirm-safe-policy",
                 "rule": {
                   "anyOf": [
                     {
                       "allOf": [
-                        {
-                          "id": "toast-timing",
-                          "predicate": "changedFromBaseline",
-                          "target": "decision"
-                        },
                         {
                           "decisionId": "toast-timing",
                           "optionId": "toast-time-remaining",
@@ -8758,11 +10516,6 @@
                     },
                     {
                       "allOf": [
-                        {
-                          "id": "toast-overflow",
-                          "predicate": "changedFromBaseline",
-                          "target": "decision"
-                        },
                         {
                           "decisionId": "toast-overflow",
                           "optionId": "toast-overflow-queue",
@@ -9124,9 +10877,9 @@
               },
               {
                 "decisionId": "toast-overflow",
-                "optionId": "toast-overflow-drop",
+                "optionId": "toast-overflow-queue",
                 "rationaleIds": [
-                  "toast-rationale-newest"
+                  "toast-rationale-bounded"
                 ]
               },
               {

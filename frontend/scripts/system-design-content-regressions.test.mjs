@@ -82,6 +82,7 @@ const pilotExpectations = {
   'notification-toast-system': { targetLevel: 'junior', timeboxMinutes: 10, guidedMock: true },
   'ai-chat-textarea-design': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: true },
   'ai-ux-considerations': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: false },
+  'resilient-checkout-payment-flow': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: true },
 };
 
 for (const [id, expected] of Object.entries(pilotExpectations)) {
@@ -380,6 +381,97 @@ assert.ok(generatedProposalContract, 'AI proposal must define generated proposal
 assert.doesNotMatch(generatedProposalContract, /\bcapabilities\b/);
 assert.match(aiUx, /Cancel stays pending intent|Cancel is pending intent/i);
 assert.match(aiUx, /rollback (?:is|uses) a separate compensating/i);
+
+const checkout = bundleText('resilient-checkout-payment-flow');
+const checkoutDataCode = read('resilient-checkout-payment-flow', 'data').blocks
+  .filter((block) => block.type === 'code')
+  .map((block) => block.code)
+  .join('\n');
+const checkoutInterfaceCode = read('resilient-checkout-payment-flow', 'interfaces').blocks
+  .filter((block) => block.type === 'code')
+  .map((block) => block.code)
+  .join('\n');
+const checkoutContractCode = `${checkoutDataCode}\n${checkoutInterfaceCode}`;
+assert.match(
+  checkout,
+  /server returns CheckoutQuote.{0,80}quoteId.{0,40}quoteVersion/i,
+);
+assert.match(checkout, /CheckoutQuote.{0,100}not a client calculation/i);
+assert.match(checkout, /one clientAttemptId and idempotencyKey.{0,120}(?:across|for) retransmission/i);
+assert.match(checkout, /clientAttemptId.{0,120}Reuse while recovering the same Pay intent/i);
+assert.match(checkout, /idempotencyKey.{0,100}Reuse with the identical attempt payload/i);
+assert.match(
+  checkout,
+  /redirect parameters.{0,80}(?:provider )?SDK callbacks.{0,80}hints.{0,40}never (?:payment )?proof/i,
+);
+assert.match(
+  checkout,
+  /(?:bank return|return route).{0,180}(?:ask|read).{0,120}attempt (?:and order )?state/i,
+);
+assert.match(checkout, /hosted(?: or embedded)? (?:provider )?fields/i);
+assert.match(
+  checkout,
+  /PAN and CVC.{0,80}outside application state.{0,60}logs.{0,80}(?:browser )?storage/i,
+);
+assert.match(
+  checkout,
+  /Validation (?:identifies|describes).{0,60}problems? in text.{0,60}links? (?:each )?(?:problem|summary item|field)/i,
+);
+assert.match(checkout, /preserves correctable input/i);
+assert.match(checkout, /BroadcastChannel/);
+assert.match(checkout, /advisory/i);
+assert.match(checkout, /never copy a sender's phase into confirmed UI/i);
+assert.match(checkout, /server remains the (?:correctness|concurrency) boundary/i);
+for (const contract of [
+  'CheckoutQuote',
+  'CheckoutAttempt',
+  'CheckoutPhase',
+  'CheckoutGateway',
+  'CrossTabCheckoutEvent',
+]) {
+  assert.match(
+    checkoutContractCode,
+    new RegExp(`(?:interface|type)\\s+${contract}\\b`),
+    `Checkout must define ${contract}`,
+  );
+}
+for (const phase of [
+  'quoting',
+  'ready',
+  'submitting',
+  'requires-action',
+  'processing',
+  'succeeded',
+  'failed',
+  'canceled',
+  'quote-conflict',
+]) {
+  assert.match(
+    checkoutContractCode,
+    new RegExp(`['"]${phase}['"]`),
+    `CheckoutPhase must include ${phase}`,
+  );
+}
+assert.match(checkoutContractCode, /(?:interface|type)\s+CheckoutQuote\b[\s\S]*?quoteVersion/);
+assert.match(checkoutContractCode, /(?:interface|type)\s+CheckoutAttempt\b[\s\S]*?clientAttemptId/);
+assert.match(checkoutContractCode, /(?:interface|type)\s+CheckoutAttempt\b[\s\S]*?idempotencyKey/);
+const checkoutAttemptBody = checkoutContractCode.match(
+  /interface CheckoutAttempt\s*\{([\s\S]*?)\}/,
+)?.[1] || '';
+assert.doesNotMatch(checkoutAttemptBody, /providerActionToken/);
+assert.match(
+  checkoutContractCode,
+  /interface AttemptStatusResponse\s*\{[\s\S]*?providerActionToken/,
+);
+assert.match(
+  checkout,
+  /new identity.{0,160}merchant status.{0,140}failed.{0,40}canceled.{0,40}quote-conflict/i,
+);
+assert.match(checkoutContractCode, /(?:interface|type)\s+CrossTabCheckoutEvent\b[\s\S]*?clientAttemptId/);
+assert.match(
+  checkoutContractCode,
+  /interface CheckoutGateway\s*\{[\s\S]*?getQuote[\s\S]*?createAttempt[\s\S]*?getAttempt[\s\S]*?cancelAttempt[\s\S]*?getOrder/,
+);
 
 const autosave = bundleText('multi-step-form-autosave');
 assert.match(autosave, /schemaVersion/);

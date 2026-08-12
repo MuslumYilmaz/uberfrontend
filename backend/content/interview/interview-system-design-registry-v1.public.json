@@ -1,6 +1,6 @@
 {
   "registryId": "interview-system-design-registry-v1",
-  "registryVersion": "1.1.0",
+  "registryVersion": "1.2.0",
   "scenarios": [
     {
       "cards": [
@@ -410,7 +410,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "e75d5dee0a8ffcca803fe12cd0703a76ebc9638f00357095405f8fab8e36c0d3",
+      "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",
       "decisions": [
         {
           "id": "search-async-control",
@@ -633,7 +633,7 @@
           "title": "Owned cancellation and cleanup"
         }
       ],
-      "revision": 4,
+      "revision": 5,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -666,6 +666,383 @@
       ],
       "timeLimitSeconds": 900,
       "title": "Design a Race-Safe Autocomplete"
+    },
+    {
+      "cards": [
+        {
+          "description": "Collects fulfillment choices and emits review or submit intent.",
+          "id": "checkout-form",
+          "title": "Checkout form"
+        },
+        {
+          "description": "Renders processing, action-required, success, and failure states.",
+          "id": "checkout-status-view",
+          "title": "Payment status view"
+        },
+        {
+          "description": "Names correction targets and provides deliberate focus movement.",
+          "id": "checkout-error-summary",
+          "title": "Error summary and field links"
+        },
+        {
+          "description": "Owns browser transitions and accepts only current server state.",
+          "id": "checkout-coordinator",
+          "title": "Checkout coordinator"
+        },
+        {
+          "description": "Retains client attempt identity and the latest merchant status.",
+          "id": "checkout-attempt-registry",
+          "title": "Attempt identity registry"
+        },
+        {
+          "description": "Shares same-origin progress hints without becoming a correctness authority.",
+          "id": "checkout-tab-channel",
+          "title": "Cross-tab hint channel"
+        },
+        {
+          "description": "Holds display totals and the server version submitted with payment intent.",
+          "id": "checkout-quote-snapshot",
+          "title": "Versioned quote snapshot"
+        },
+        {
+          "description": "Carries quote, attempt, and status commands with stable identities.",
+          "id": "checkout-client",
+          "title": "Merchant API client"
+        },
+        {
+          "description": "Records state transitions and identifiers without sensitive card values.",
+          "id": "checkout-telemetry",
+          "title": "Checkout telemetry"
+        },
+        {
+          "description": "Owns quotes, payment attempts, order status, and idempotent command handling.",
+          "id": "checkout-merchant-api",
+          "title": "Merchant checkout API"
+        },
+        {
+          "description": "Collects payment details and redirects through provider-managed UI.",
+          "id": "checkout-hosted-payment",
+          "title": "Hosted payment page"
+        },
+        {
+          "description": "Collects payment details inside isolated provider-controlled elements.",
+          "id": "checkout-embedded-fields",
+          "title": "Embedded provider fields"
+        },
+        {
+          "description": "Places PAN and security-code values inside feature-owned controls and state.",
+          "id": "checkout-direct-card-fields",
+          "title": "Application-owned card fields"
+        },
+        {
+          "description": "Delivers asynchronous payment outcomes to the merchant backend.",
+          "id": "checkout-provider-webhook",
+          "title": "Provider webhook path"
+        }
+      ],
+      "clarifications": [
+        {
+          "id": "checkout-price-authority",
+          "prompt": "Which system owns the final price, discount, tax, shipping, and stock decision?"
+        },
+        {
+          "id": "checkout-attempt-uncertainty",
+          "prompt": "What can happen when the create-payment response is lost after the server receives it?"
+        },
+        {
+          "id": "checkout-provider-return",
+          "prompt": "What information does the browser receive after bank verification or a provider redirect?"
+        },
+        {
+          "id": "checkout-inventory-window",
+          "prompt": "Can availability or fulfillment choices change while payment is in progress?"
+        },
+        {
+          "id": "checkout-card-data",
+          "prompt": "Which sensitive payment fields may application code, logs, or storage observe?"
+        },
+        {
+          "id": "checkout-multi-tab",
+          "prompt": "Can one shopper change or submit the same checkout from multiple tabs?"
+        },
+        {
+          "id": "checkout-error-recovery",
+          "prompt": "How should validation, quote conflicts, and payment failures be presented and corrected?"
+        }
+      ],
+      "connectionTypes": [
+        {
+          "description": "Values or snapshots move in this direction.",
+          "id": "data-flow",
+          "title": "Data flow"
+        },
+        {
+          "description": "Commands, intents, or lifecycle events move in this direction.",
+          "id": "event-flow",
+          "title": "Event flow"
+        },
+        {
+          "description": "Telemetry or browser signals are observed in this direction.",
+          "id": "observation",
+          "title": "Observation"
+        }
+      ],
+      "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
+      "decisions": [
+        {
+          "id": "checkout-quote-authority",
+          "options": [
+            {
+              "description": "Bind payment creation to server totals and surface a conflict for explicit review.",
+              "id": "checkout-quote-versioned",
+              "label": "Submit a versioned server quote"
+            },
+            {
+              "description": "Derive tax, discounts, shipping, and stock from the latest client-side inputs.",
+              "id": "checkout-quote-client",
+              "label": "Recompute totals in the browser"
+            },
+            {
+              "description": "Send raw cart inputs and replace displayed totals after payment creation starts.",
+              "id": "checkout-quote-submit-only",
+              "label": "Reprice only during final submit"
+            }
+          ],
+          "prompt": "How should the browser submit totals that may have changed?",
+          "rationales": [
+            {
+              "id": "checkout-rationale-version-bind",
+              "label": "Bind totals to an explicit server version"
+            },
+            {
+              "id": "checkout-rationale-client-feedback",
+              "label": "Keep pricing feedback immediate inside the browser"
+            },
+            {
+              "id": "checkout-rationale-fewer-quotes",
+              "label": "Reduce quote requests during fulfillment field editing"
+            }
+          ],
+          "title": "Quote authority"
+        },
+        {
+          "id": "checkout-attempt-identity",
+          "options": [
+            {
+              "description": "Keep a client attempt ID and idempotency key stable through uncertain retries.",
+              "id": "checkout-attempt-stable-intent",
+              "label": "Reuse one intent identity"
+            },
+            {
+              "description": "Treat a repeated interaction as a separate payment creation command.",
+              "id": "checkout-attempt-per-click",
+              "label": "Create identity for each click"
+            },
+            {
+              "description": "Use one key across payment intents until the browsing session expires.",
+              "id": "checkout-attempt-browser-session",
+              "label": "Share one browser-session identity"
+            }
+          ],
+          "prompt": "How should duplicate submit and uncertain retries identify one user intent?",
+          "rationales": [
+            {
+              "id": "checkout-rationale-retry-intent",
+              "label": "Retry one user intent with stable identity"
+            },
+            {
+              "id": "checkout-rationale-independent-clicks",
+              "label": "Separate clicks as independent payment operations"
+            },
+            {
+              "id": "checkout-rationale-session-scope",
+              "label": "Scope payment state to one browsing session"
+            }
+          ],
+          "title": "Payment attempt identity"
+        },
+        {
+          "id": "checkout-result-authority",
+          "options": [
+            {
+              "description": "Read attempt and order state after return while webhooks advance backend truth.",
+              "id": "checkout-result-server-status",
+              "label": "Reconcile merchant server status"
+            },
+            {
+              "description": "Render the callback outcome immediately and refresh merchant state later.",
+              "id": "checkout-result-provider-sdk",
+              "label": "Accept the provider SDK result"
+            },
+            {
+              "description": "Treat arrival on the success route as proof that payment completed.",
+              "id": "checkout-result-redirect",
+              "label": "Infer status from redirect destination"
+            }
+          ],
+          "prompt": "What proves the payment and order outcome after provider interaction?",
+          "rationales": [
+            {
+              "id": "checkout-rationale-merchant-authority",
+              "label": "Treat merchant state as the completion authority"
+            },
+            {
+              "id": "checkout-rationale-fast-provider",
+              "label": "Use provider callbacks for immediate visual feedback"
+            },
+            {
+              "id": "checkout-rationale-route-outcome",
+              "label": "Let navigation destination imply the final outcome"
+            }
+          ],
+          "title": "Completion authority"
+        },
+        {
+          "id": "checkout-payment-surface",
+          "options": [
+            {
+              "description": "Redirect to provider UI and recover merchant state after the return.",
+              "id": "checkout-surface-hosted",
+              "label": "Use a hosted provider page"
+            },
+            {
+              "description": "Keep branded layout while isolated elements collect and tokenize sensitive values.",
+              "id": "checkout-surface-embedded",
+              "label": "Use embedded provider fields"
+            },
+            {
+              "description": "Store field values in feature state and send them through merchant services.",
+              "id": "checkout-surface-direct",
+              "label": "Use application-owned card inputs"
+            }
+          ],
+          "prompt": "Where should card details be collected?",
+          "rationales": [
+            {
+              "id": "checkout-rationale-minimize-card-contact",
+              "label": "Minimize sensitive-data contact in application code"
+            },
+            {
+              "id": "checkout-rationale-branded-provider",
+              "label": "Keep branded controls without handling card secrets"
+            },
+            {
+              "id": "checkout-rationale-own-card-flow",
+              "label": "Own validation and submission inside the feature"
+            }
+          ],
+          "title": "Sensitive payment surface"
+        }
+      ],
+      "enabled": true,
+      "frameworkLenses": {
+        "angular": {
+          "prompt": "Which service scope owns the checkout machine, and how will RxJS or signals reject stale quote and attempt completions?",
+          "title": "Angular implementation lens"
+        },
+        "core-web": {
+          "prompt": "Which modules own attempt identity, redirect recovery, provider elements, focus, and BroadcastChannel cleanup without framework lifecycle support?",
+          "title": "Core Web implementation lens"
+        },
+        "react": {
+          "prompt": "How will external server state, provider elements, effects, and submit transitions avoid duplicate commands or stale closures?",
+          "title": "React implementation lens"
+        },
+        "vue": {
+          "prompt": "Which composable owns recovery and provider lifecycles while refs expose only non-sensitive checkout state?",
+          "title": "Vue implementation lens"
+        }
+      },
+      "id": "int-sd-checkout-recovery-mid-v1",
+      "lanes": [
+        {
+          "description": "Rendered components and user-facing interaction boundaries.",
+          "id": "ui",
+          "title": "UI"
+        },
+        {
+          "description": "Client ownership, coordination, and lifecycle state.",
+          "id": "state",
+          "title": "State"
+        },
+        {
+          "description": "Cached records, normalized models, and transport adapters.",
+          "id": "data",
+          "title": "Data"
+        },
+        {
+          "description": "Browser services, APIs, and systems outside the feature.",
+          "id": "external",
+          "title": "External"
+        }
+      ],
+      "level": "mid",
+      "prompt": "Design the browser-side checkout flow for a commerce application. Prices, shipping, tax, discounts, and availability can change while the user pays; duplicate clicks and lost responses must not create duplicate charges. The payment provider may redirect away for bank verification, and the same checkout can be open in two tabs. Explain quote authority, payment-attempt identity, recovery after return, sensitive-data boundaries, and accessible error handling.",
+      "requirements": [
+        {
+          "description": "The browser submits a server-issued quote version and requires explicit review when totals or availability change.",
+          "id": "checkout-authoritative-quote",
+          "title": "Authoritative versioned quote"
+        },
+        {
+          "description": "Retries for one user intent reuse stable identity so response loss and duplicate clicks do not duplicate payment work.",
+          "id": "checkout-idempotent-attempt",
+          "title": "Idempotent payment attempt"
+        },
+        {
+          "description": "Pending, action-required, succeeded, failed, and quote-conflict states can be resumed from merchant server state.",
+          "id": "checkout-explicit-lifecycle",
+          "title": "Recoverable payment lifecycle"
+        },
+        {
+          "description": "Card secrets stay inside hosted or embedded provider surfaces and outside application state, logs, and browser storage.",
+          "id": "checkout-provider-boundary",
+          "title": "Provider-owned sensitive fields"
+        },
+        {
+          "description": "Errors identify affected fields, preserve correctable input, move focus deliberately, and expose status without relying on color.",
+          "id": "checkout-accessible-errors",
+          "title": "Accessible correction path"
+        },
+        {
+          "description": "Tabs may exchange hints, but each return or retry reconciles quote, attempt, and order state with the merchant backend.",
+          "id": "checkout-cross-tab-recovery",
+          "title": "Server-backed tab reconciliation"
+        }
+      ],
+      "revision": 1,
+      "selectionLimits": {
+        "clarifications": 3,
+        "connections": 12,
+        "priorities": 3,
+        "rationalesPerDecision": 2,
+        "scratchpadChars": 200,
+        "twistActions": 2
+      },
+      "steps": [
+        {
+          "id": "clarifications",
+          "title": "Clarify the brief"
+        },
+        {
+          "id": "requirements",
+          "title": "Set priorities"
+        },
+        {
+          "id": "architecture",
+          "title": "Build the architecture"
+        },
+        {
+          "id": "decisions",
+          "title": "Defend key decisions"
+        },
+        {
+          "id": "twist",
+          "title": "Respond to a production change"
+        }
+      ],
+      "timeLimitSeconds": 900,
+      "title": "Design a Resilient Checkout and Payment Flow"
     },
     {
       "cards": [
@@ -1812,7 +2189,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "6483429a1be771ae59ca9df59c9ae05815f750810a107fb55384e7f233d9dedd",
+      "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
       "decisions": [
         {
           "id": "feed-pagination-model",
@@ -2035,7 +2412,7 @@
           "title": "Accessible loading path"
         }
       ],
-      "revision": 4,
+      "revision": 5,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,
@@ -2160,7 +2537,7 @@
           "title": "Observation"
         }
       ],
-      "contentHash": "7334b8cb8a7403fa0754b18796f16f77c8d866c7e378cfd98a9ee9a4e0ce7a4d",
+      "contentHash": "0a691d04fd291d4973821fe1de752c7b6f78bb029e3aaef8b4d07ec674e9863b",
       "decisions": [
         {
           "id": "toast-ownership",
@@ -2383,7 +2760,7 @@
           "title": "Single terminal cleanup"
         }
       ],
-      "revision": 5,
+      "revision": 6,
       "selectionLimits": {
         "clarifications": 3,
         "connections": 12,

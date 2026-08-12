@@ -1,6 +1,149 @@
 {
   "version": 1,
   "questions": {
+    "resilient-checkout-payment-flow": {
+      "assertions": [
+        {
+          "id": "server-quote-is-authoritative",
+          "target": "all",
+          "require": [
+            "(?:versioned )?server quote|server-computed total",
+            "quoteId",
+            "quoteVersion"
+          ]
+        },
+        {
+          "id": "lost-response-reuses-payment-identity",
+          "target": "all",
+          "require": [
+            "(?:lost response|response disappears|network loses the response)",
+            "clientAttemptId",
+            "(?:idempotencyKey|Idempotency-Key)",
+            "(?:same|existing).{0,80}(?:key|payload|attempt)|(?:key|payload|attempt).{0,80}(?:same|existing)"
+          ]
+        },
+        {
+          "id": "redirect-is-not-payment-proof",
+          "target": "visible",
+          "require": [
+            "(?:redirect|return URL).{0,100}(?:not enough|never.{0,30}(?:proof|prove)|not.{0,30}(?:proof|completion))",
+            "webhook",
+            "confirmed order"
+          ]
+        },
+        {
+          "id": "replacement-requires-authoritative-terminal-state",
+          "target": "visible",
+          "require": [
+            "new identity.{0,140}(?:merchant status|merchant reconciliation).{0,140}failed.{0,40}canceled.{0,40}quote-conflict",
+            "cancelAttempt",
+            "(?:ineligible cancellation|cannot replace (?:the )?uncertain).{0,100}(?:old|original|attempt|ca_7)"
+          ]
+        },
+        {
+          "id": "provider-action-token-is-transient",
+          "target": "all",
+          "require": [
+            "required-action token.{0,100}transient",
+            "never stored with CheckoutAttempt|CheckoutAttempt.{0,100}excludes action secrets",
+            "redact(?:ed)? before persistence|persistence.{0,40}redact"
+          ]
+        },
+        {
+          "id": "hosted-fields-exclude-card-secrets",
+          "target": "all",
+          "require": [
+            "hosted|embedded",
+            "PAN",
+            "CVC",
+            "paymentMethodReference"
+          ],
+          "forbid": [
+            "(?:pan|cvc|cardNumber)\\??:\\s*string"
+          ]
+        },
+        {
+          "id": "cross-tab-is-advisory-only",
+          "target": "visible",
+          "require": [
+            "BroadcastChannel",
+            "advisory",
+            "server remains the concurrency boundary|only server reads settle conflicts"
+          ]
+        },
+        {
+          "id": "accessible-errors-preserve-correctable-input",
+          "target": "visible",
+          "sections": [
+            "interfaces",
+            "optimizations"
+          ],
+          "require": [
+            "text summary",
+            "links each summary item to its control",
+            "(?:preserve|preserved|remain intact).{0,80}(?:input|values)|(?:input|values).{0,80}(?:preserve|preserved|remain intact)"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "resilient-checkout-payment-flow-contract",
+          "name": "CheckoutQuote",
+          "requiredMembers": [
+            "quoteId",
+            "quoteVersion",
+            "totalMinor",
+            "expiresAt"
+          ]
+        },
+        {
+          "group": "resilient-checkout-payment-flow-contract",
+          "name": "CheckoutAttempt",
+          "requiredMembers": [
+            "clientAttemptId",
+            "idempotencyKey",
+            "quoteId",
+            "quoteVersion",
+            "phase",
+            "orderId"
+          ]
+        },
+        {
+          "group": "resilient-checkout-payment-flow-contract",
+          "name": "CheckoutPhase",
+          "requiredLiterals": [
+            "quoting",
+            "ready",
+            "submitting",
+            "requires-action",
+            "processing",
+            "succeeded",
+            "failed",
+            "canceled",
+            "quote-conflict"
+          ]
+        },
+        {
+          "group": "resilient-checkout-payment-flow-contract",
+          "name": "CheckoutGateway",
+          "requiredMembers": [
+            "getQuote",
+            "createAttempt",
+            "getAttempt",
+            "cancelAttempt",
+            "getOrder"
+          ]
+        },
+        {
+          "group": "resilient-checkout-payment-flow-contract",
+          "name": "CrossTabCheckoutEvent",
+          "requiredLiterals": [
+            "checkout.quote-observed",
+            "checkout.attempt-observed"
+          ]
+        }
+      ]
+    },
     "offline-email-client": {
       "assertions": [
         {

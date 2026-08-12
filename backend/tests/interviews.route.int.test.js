@@ -838,6 +838,32 @@ describe('Interview Mode API', () => {
     expect(conflictingSource.body.code).toBe('INTERVIEW_IDEMPOTENCY_CONFLICT');
   });
 
+  test('starts the resilient checkout guided case by exact source', async () => {
+    const user = await createUser('system_design_checkout_source', { premium: true });
+    const created = await request(app)
+      .post('/api/interviews')
+      .set('Authorization', authHeader(user._id))
+      .set('Idempotency-Key', 'system-design-checkout-source-0001')
+      .send({
+        format: 'system-design',
+        level: 'mid',
+        track: 'core-web',
+        timingMode: 'standard',
+        viewportWidth: 1366,
+        systemDesignSourceContentId: 'resilient-checkout-payment-flow',
+      });
+
+    expect(created.status).toBe(201);
+    expect(created.body.session.systemDesign.scenario).toEqual(expect.objectContaining({
+      id: 'int-sd-checkout-recovery-mid-v1',
+      level: 'mid',
+      timeLimitSeconds: 900,
+    }));
+    expect(created.body.session.systemDesign.scenario.prompt).toMatch(
+      /duplicate clicks and lost responses/i
+    );
+  });
+
   test('rejects invalid and level-mismatched guided sources before quota reservation', async () => {
     const invalidUser = await createUser('system_design_invalid_source');
     const invalid = await request(app)
