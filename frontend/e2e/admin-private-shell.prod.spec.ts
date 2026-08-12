@@ -10,6 +10,7 @@ const OWNER_TOKEN = 'e2e-admin-seo-owner-token';
 const EXPECTED_SEO_REQUESTS = [
   '/api/admin/seo/access',
   '/api/admin/seo/actions',
+  '/api/admin/seo/opportunities',
   '/api/admin/seo/overview',
   '/api/admin/seo/pages',
   '/api/admin/seo/sync-runs',
@@ -102,7 +103,8 @@ async function installOwnerSeoMocks(page: Page, baseURL: string): Promise<Set<st
       return;
     }
 
-    const path = new URL(request.url()).pathname;
+    const requestUrl = new URL(request.url());
+    const path = requestUrl.pathname;
     requestedPaths.add(path);
     if (request.method() !== 'GET') {
       await fulfillJson(route, 405, { error: 'Method not allowed' });
@@ -207,6 +209,17 @@ async function installOwnerSeoMocks(page: Page, baseURL: string): Promise<Set<st
           availableDays: 28,
           expectedDays: 28,
         },
+      });
+      return;
+    }
+
+    if (path === '/api/admin/seo/opportunities') {
+      const lane = requestUrl.searchParams.get('lane');
+      await fulfillJson(route, 200, {
+        lane: lane === 'structural' ? 'structural' : 'investigate',
+        items: [],
+        total: 0,
+        nextCursor: null,
       });
       return;
     }
