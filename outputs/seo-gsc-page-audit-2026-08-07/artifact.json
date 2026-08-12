@@ -1,0 +1,1128 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "FrontendAtlas Angular HttpClient sayfası: GSC ve uygulama denetimi",
+    "description": "A source-backed comparison of GSC exports, the live page and the owner-only SEO application's current logic.",
+    "generatedAt": "2026-08-07T13:48:39Z",
+    "cards": [
+      {
+        "id": "clicks_card",
+        "description": "Exact-page all-query clicks for the current and prior 28-day windows.",
+        "dataset": "headline",
+        "sourceId": "target_compare",
+        "metrics": [
+          {
+            "label": "Current clicks",
+            "field": "current_clicks",
+            "format": "number"
+          },
+          {
+            "label": "Prior clicks",
+            "field": "prior_clicks",
+            "format": "number"
+          },
+          {
+            "label": "Change",
+            "field": "click_change",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      },
+      {
+        "id": "impressions_card",
+        "description": "Exact-page all-query impressions for the current and prior 28-day windows.",
+        "dataset": "headline",
+        "sourceId": "target_compare",
+        "metrics": [
+          {
+            "label": "Current impressions",
+            "field": "current_impressions",
+            "format": "compact"
+          },
+          {
+            "label": "Prior impressions",
+            "field": "prior_impressions",
+            "format": "compact"
+          },
+          {
+            "label": "Change",
+            "field": "impression_change",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      },
+      {
+        "id": "ctr_card",
+        "description": "All-query page CTR, calculated from page totals rather than visible query rows.",
+        "dataset": "headline",
+        "sourceId": "target_compare",
+        "metrics": [
+          {
+            "label": "Current CTR",
+            "field": "current_ctr",
+            "format": "percent"
+          },
+          {
+            "label": "Prior CTR",
+            "field": "prior_ctr",
+            "format": "percent"
+          },
+          {
+            "label": "Relative change",
+            "field": "ctr_change",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      },
+      {
+        "id": "position_card",
+        "description": "GSC average position; lower values are better.",
+        "dataset": "headline",
+        "sourceId": "target_compare",
+        "metrics": [
+          {
+            "label": "Current position",
+            "field": "current_position",
+            "format": "number"
+          },
+          {
+            "label": "Prior position",
+            "field": "prior_position",
+            "format": "number"
+          },
+          {
+            "label": "Movement",
+            "field": "position_change",
+            "format": "number",
+            "signed": true
+          }
+        ]
+      },
+      {
+        "id": "coverage_card",
+        "description": "Share of all-query page impressions represented by visible query rows.",
+        "dataset": "headline",
+        "sourceId": "target_compare",
+        "metrics": [
+          {
+            "label": "Visible query coverage",
+            "field": "query_coverage",
+            "format": "percent"
+          },
+          {
+            "label": "Prior coverage",
+            "field": "prior_query_coverage",
+            "format": "percent"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "query_cluster_chart",
+        "title": "Intent kümesine göre görünür sorgu gösterimleri",
+        "subtitle": "Yalnızca mevcut dönem; görünür alt küme tüm sayfa gösterimlerinin %29,7'sini kapsıyor.",
+        "headerMarkdown": "Kümeler deterministik anahtar kelime aileleridir; model tarafından üretilmiş kesin intent etiketleri değildir. Sayfanın üç tıklaması da query satırlarından gizlendiği için tıklamalar grafiğe dahil edilmedi.",
+        "type": "horizontalBar",
+        "dataset": "clusters",
+        "sourceId": "target_compare",
+        "encodings": {
+          "x": {
+            "field": "cluster",
+            "type": "nominal",
+            "label": "Intent kümesi"
+          },
+          "y": {
+            "field": "current_impressions",
+            "type": "quantitative",
+            "label": "Görünür gösterimler"
+          },
+          "tooltip": [
+            {
+              "field": "current_visible_share",
+              "type": "quantitative",
+              "label": "Visible share",
+              "format": "percent"
+            },
+            {
+              "field": "current_full_page_lower_bound",
+              "type": "quantitative",
+              "label": "Full-page lower bound",
+              "format": "percent"
+            },
+            {
+              "field": "prior_impressions",
+              "type": "quantitative",
+              "label": "Prior visible impressions",
+              "format": "number"
+            },
+            {
+              "field": "current_position",
+              "type": "quantitative",
+              "label": "Current average position",
+              "format": "number"
+            }
+          ]
+        },
+        "xAxisTitle": "Query intent kümesi",
+        "yAxisTitle": "Görünür gösterimler (8 Tem-4 Ağu)",
+        "valueFormat": "number",
+        "layout": "wide",
+        "maxRows": 10
+      }
+    ],
+    "tables": [
+      {
+        "id": "period_table",
+        "title": "Hedef sayfa dönem karşılaştırması",
+        "subtitle": "All-query sayfa toplamları; 8 Tem-4 Ağu ile 10 Haz-7 Tem.",
+        "dataset": "period_comparison",
+        "sourceId": "target_compare",
+        "density": "comfortable",
+        "columns": [
+          {
+            "field": "metric",
+            "label": "Metric",
+            "type": "text"
+          },
+          {
+            "field": "current",
+            "label": "Current",
+            "type": "text"
+          },
+          {
+            "field": "prior",
+            "label": "Prior",
+            "type": "text"
+          },
+          {
+            "field": "change",
+            "label": "Change",
+            "type": "text"
+          },
+          {
+            "field": "interpretation",
+            "label": "Safe interpretation",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "reconciliation_table",
+        "title": "Sayfa bazında veri-grain uzlaştırması",
+        "subtitle": "Query ve device detayının neden all-query sayfa toplamının yerini alamadığı.",
+        "dataset": "reconciliation",
+        "sourceId": "target_compare",
+        "density": "comfortable",
+        "columns": [
+          {
+            "field": "grain",
+            "label": "Grain",
+            "type": "text"
+          },
+          {
+            "field": "current_clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "current_impressions",
+            "label": "Impressions",
+            "type": "number"
+          },
+          {
+            "field": "coverage",
+            "label": "Coverage",
+            "type": "percent"
+          },
+          {
+            "field": "safe_use",
+            "label": "Safe use",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "cluster_table",
+        "title": "Query kümesi detayı",
+        "subtitle": "Yalnızca gösterim tabanlıdır; sayfa alt sınırı görünür satırların ötesine taşan iddiaları engeller.",
+        "dataset": "clusters",
+        "sourceId": "target_compare",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "current_impressions",
+          "direction": "desc"
+        },
+        "columns": [
+          {
+            "field": "cluster",
+            "label": "Cluster",
+            "type": "text"
+          },
+          {
+            "field": "current_impressions",
+            "label": "Current imps",
+            "type": "number"
+          },
+          {
+            "field": "current_visible_share",
+            "label": "Visible share",
+            "type": "percent"
+          },
+          {
+            "field": "current_full_page_lower_bound",
+            "label": "Page lower bound",
+            "type": "percent"
+          },
+          {
+            "field": "current_position",
+            "label": "Current pos",
+            "type": "number"
+          },
+          {
+            "field": "prior_impressions",
+            "label": "Prior imps",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "top_queries_table",
+        "title": "En yüksek görünür sorgular",
+        "subtitle": "Mevcut gösterime göre sıralı; query tıklamalarının tamamı bu exportta gizli.",
+        "dataset": "top_queries",
+        "sourceId": "target_compare",
+        "density": "compact",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number"
+          },
+          {
+            "field": "query",
+            "label": "Query",
+            "type": "text"
+          },
+          {
+            "field": "cluster",
+            "label": "Cluster",
+            "type": "text"
+          },
+          {
+            "field": "current_impressions",
+            "label": "Current imps",
+            "type": "number"
+          },
+          {
+            "field": "current_position",
+            "label": "Current pos",
+            "type": "number"
+          },
+          {
+            "field": "prior_impressions",
+            "label": "Prior imps",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "timeline_table",
+        "title": "Ölçüm zaman çizgisi",
+        "subtitle": "Temiz pencere bilinen Google crawl sınırından sonra başlamalı.",
+        "dataset": "timeline",
+        "sourceId": "audit_synthesis",
+        "density": "comfortable",
+        "columns": [
+          {
+            "field": "date",
+            "label": "Date",
+            "type": "text"
+          },
+          {
+            "field": "event",
+            "label": "Event",
+            "type": "text"
+          },
+          {
+            "field": "meaning",
+            "label": "Decision meaning",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "app_comparison_table",
+        "title": "Uygulama çıktısı ve audit sonucu",
+        "subtitle": "Mevcut balanced-v1 davranışında doğru, eksik veya riskli olan noktalar.",
+        "dataset": "app_comparison",
+        "sourceId": "app_audit",
+        "density": "comfortable",
+        "columns": [
+          {
+            "field": "area",
+            "label": "Area",
+            "type": "text"
+          },
+          {
+            "field": "current_app",
+            "label": "Current app",
+            "type": "text"
+          },
+          {
+            "field": "audit_verdict",
+            "label": "Audit conclusion",
+            "type": "text"
+          },
+          {
+            "field": "state",
+            "label": "State",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "actions_table",
+        "title": "Öncelikli uygulama iyileştirmeleri",
+        "subtitle": "Önce yanlış güven ve false-positive SEO aksiyonlarını engelleyecek şekilde sıralandı.",
+        "dataset": "actions",
+        "sourceId": "audit_synthesis",
+        "density": "comfortable",
+        "columns": [
+          {
+            "field": "priority",
+            "label": "Priority",
+            "type": "text"
+          },
+          {
+            "field": "action",
+            "label": "Change",
+            "type": "text"
+          },
+          {
+            "field": "why",
+            "label": "Why",
+            "type": "text"
+          },
+          {
+            "field": "acceptance",
+            "label": "Acceptance",
+            "type": "text"
+          },
+          {
+            "field": "effort",
+            "label": "Effort",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "target_compare",
+        "label": "GSC target-page comparison",
+        "path": "frontendatlas.com-Performance-on-Search-2026-08-07 (1).xlsx"
+      },
+      {
+        "id": "target_history",
+        "label": "GSC target-page history",
+        "path": "frontendatlas.com-Performance-on-Search-2026-08-07.xlsx"
+      },
+      {
+        "id": "site_compare",
+        "label": "GSC site-wide comparison",
+        "path": "frontendatlas.com-Performance-on-Search-2026-08-07 (2).xlsx"
+      },
+      {
+        "id": "inspection",
+        "label": "User-provided URL Inspection result",
+        "path": "URL Inspection snapshot, 2026-08-07"
+      },
+      {
+        "id": "live_page",
+        "label": "Live target page",
+        "href": "https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request"
+      },
+      {
+        "id": "angular_docs",
+        "label": "Angular official HttpClient guide",
+        "href": "https://angular.dev/guide/http/making-requests"
+      },
+      {
+        "id": "app_audit",
+        "label": "Local SEO analysis code and deterministic rule replay",
+        "path": "analysis.js, rule-engine.js, seo-dashboard.component.html"
+      },
+      {
+        "id": "audit_synthesis",
+        "label": "Derived audit synthesis",
+        "path": "GSC exports plus local application audit"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# FrontendAtlas Angular HttpClient sayfası: GSC ve uygulama denetimi"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n### Kullanılan tanımlar\n\n- **All-query sayfa toplamı**, exact URL'nin sayfa seviyesindeki tıklama ve gösterimleridir; KPI paydası budur.\n- **Visible query coverage**, görünür query gösterimlerinin all-query sayfa gösterimlerine oranıdır; sayfa toplamının kalitesini değil, ne kadarının teşhis edilebildiğini gösterir.\n- **Average position**, GSC'nin gösterim-ağırlıklı sıralama değeridir; daha düşük daha iyidir.\n\n### Karar\n\nExport ile uygulama sayfa toplamlarında uyuşuyor. Teknik indeksleme arızası veya konu seviyesinde intent mismatch kanıtı yok. Bugün için doğru aksiyon: **yeni title/meta/H1'i sabit tutmak, temiz bir post-crawl pencere toplamak ve henüz yeniden yazmamak**.\n\nUygulamanın zorla snippet ya da intent değişikliği üretmemesi yön olarak doğru; fakat ekran yanıltıcı. Gereken 56 günün yalnızca 32'si varken hiçbir sayfa değerlendirilmediği halde UI güven veren bir no-action durumu gösteriyor. Tam veri geldiğinde ise mevcut decay kuralı ters hatayı yaparak düşük hacim ve sabit sıralamaya rağmen 6'dan 3'e tıklamayı `content_decay` sayacak."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "clicks_card",
+          "impressions_card",
+          "ctr_card",
+          "position_card",
+          "coverage_card"
+        ]
+      },
+      {
+        "id": "findings",
+        "type": "markdown",
+        "body": "## Görsel kanıtla temel bulgular\n\nMevcut 28 günlük pencerede **2,519 gösterimden 3 tıklama** ve **6.65** ortalama konum var. Önceki pencerede **3,156 gösterimden 6 tıklama** ve **6.68** konum vardı. Bu hacimde CTR farkı ikna edici değil (iki taraflı Fisher p yaklaşık **0.74**).\n\nHedef, mevcut gösterime göre export edilen 321 sayfa içinde **#2**; dolayısıyla izlenmeye değer. Ancak query/device detayı sayfa gösterimlerinin yalnızca **29.7%**'sini ve tıklamaların hiçbirini temsil ediyor."
+      },
+      {
+        "id": "period_table_block",
+        "type": "table",
+        "tableId": "period_table"
+      },
+      {
+        "id": "reconciliation_block",
+        "type": "table",
+        "tableId": "reconciliation_table"
+      },
+      {
+        "id": "cluster_chart_block",
+        "type": "chart",
+        "chartId": "query_cluster_chart"
+      },
+      {
+        "id": "intent",
+        "type": "markdown",
+        "body": "## Intent teşhisi\n\nGörünür talep sayfanın temel sorusuyla güçlü biçimde uyumlu: **739/749 (98.7%)** görünür gösterimde HttpClient + unsubscribe + cancel/abort semantiği var. Bu bir intent mismatch değil.\n\nAsıl nüans bir **kaynak/güven tercihi**: **460/749 (61.4%)** görünür gösterim ayrıca `official`, `docs`, `documentation` veya `angular.dev` içeriyor. Sayfa soruyu zaten yanıtlıyor ve Angular kaynaklarına atıf yapıyor; fırsat doğrudan cevabı ve resmi-kaynak köprüsünü daha belirgin yapmak. Sayfayı resmi dokümantasyon gibi sunmak veya interview/debugging intent'ine çevirmek değil.\n\nCoverage düşük olduğu için bunlar visible-subset yön sinyalleridir. Otomatik page-wide intent aksiyonu değil, `investigate/monitor` durumu üretmelidir."
+      },
+      {
+        "id": "cluster_table_block",
+        "type": "table",
+        "tableId": "cluster_table"
+      },
+      {
+        "id": "top_queries_block",
+        "type": "table",
+        "tableId": "top_queries_table"
+      },
+      {
+        "id": "technical_and_change",
+        "type": "markdown",
+        "body": "## Teknik durum ve değişiklik sınırı\n\nPaylaşılan URL Inspection sonucu sayfa seviyesinde teknik PASS: sayfa indexli, fetch başarılı, crawl/index izni açık, Googlebot smartphone ve Google-selected canonical beyan edilen canonical ile aynı. Sitemap'teki geçici işleme hatası ayrı bir property-level uyarı; bu indexli URL'yi bloke etmiyor.\n\nKaynak içerik **3 Ağu 2026**'da değişti ve Google **4 Ağu 2026 01:09**'da crawl etti. Export 4 Ağu'da bitiyor; 3-4 Ağu yalnızca **329 gösterim ve 0 tıklama** içeriyor ve tamamen temiz bir post-crawl gün yok. Bu nedenle bu rapor yeni title'ı henüz puanlayamaz."
+      },
+      {
+        "id": "timeline_block",
+        "type": "table",
+        "tableId": "timeline_table"
+      },
+      {
+        "id": "app_comparison",
+        "type": "markdown",
+        "body": "## Uygulama karşılaştırması\n\nUygulama sayfa KPI grain'ini doğru koruyor ve düşük-coverage intent iddialarını doğru blokluyor. Geniş 6-10 konum baseline'ı yalnızca **9** peer'dan **10/9,393 = 0.106%** üretiyor; bu nedenle no-op makul, fakat 'CTR sağlıklı' sonucu değil.\n\nEn yüksek riskli iki açık state semantiği ve decay mantığı: `not evaluated` pozitif bir empty-state gibi gösteriliyor; tamamlanan 56 günlük replay ise düşük örneklemli bir `content_decay` false positive üretecek."
+      },
+      {
+        "id": "app_comparison_table_block",
+        "type": "table",
+        "tableId": "app_comparison_table"
+      },
+      {
+        "id": "recommended_steps",
+        "type": "markdown",
+        "body": "## Önerilen sonraki adımlar\n\n1. **Bu sayfa için şimdi:** 3 Ağu title, meta ve H1'ı temiz 5 Ağu-1 Eyl gözlem penceresi boyunca değiştirme. 1 Eyl'e kadar veri kesinleştiğinde, mevcut lag ile 4 Eyl veya sonrasında tekrar değerlendir.\n2. **Pencere sonrası karar kuralı:** konum bugünkü görünürlük seviyesini korur ve all-query CTR yine yaklaşık %0,1'de kalırsa tek bir kontrollü title deneyi yap. Mantıklı tek aday: `Does Angular HttpClient Unsubscribe Cancel Requests? 6 Tests`. Description önce 'Yes' cevabını, sonra caveat'leri ve resmi Angular kaynaklarını vermeli.\n3. **Küçük lift'leri kesin sonuç sayma:** bu trafik düzeyinde 3 ve 6 tıklama gürültü. 28 günü garantili istatistiksel kanıt değil, cooldown/karar kontrol noktası say. Sabit gösterim ve konumda çift haneli tıklamaya yaklaşan maddi bir sonuç, küçük yüzde hareketinden daha kullanışlıdır.\n4. **Ürün için:** semantic clustering'i zenginleştirmeden önce P0 state/readiness, recent-change ve low-volume guard'larını uygula."
+      },
+      {
+        "id": "actions_table_block",
+        "type": "table",
+        "tableId": "actions_table"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further questions\n\n- 4 Ağu crawl'u yeni snippet'i hemen seçti mi, yoksa Google önceki title'ı yazmaya/göstermeye devam etti mi?\n- Anonimleştirilmiş tıklamalar hangi query ailelerinden geliyor? GSC mevcut privacy eşiğinde bunu açıklayamıyor; uygulama attribution uydurmamalı.\n- 90 günlük page-type/technology cohort yeterince büyük CTR baseline'ı üretiyor mu, yoksa bu sayfa benchmark-insufficient olarak mı kalmalı?\n- Aynı semantic cluster için ikinci bir URL sırayla görünüyor mu? Verilen exportlar cannibalization kararı için gereken query-to-multiple-page bağını korumuyor."
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Caveats and assumptions\n\n- Query, country ve device satırları privacy/truncation nedeniyle sınırlı alt kümelerdir; page totals yetkili KPI kaynağı olarak kalır.\n- Query cluster'ları şeffaf anahtar kelime heuristics'idir ve yalnızca gösterim kullanır. Kesin intent etiketi değildir.\n- Tıklama karşılaştırmasının gücü çok düşük; istatistiksel kanıt yokluğu değişiklik olmadığını kanıtlamaz.\n- Search Appearance exportunda satır yok; bu, sayfanın hiçbir search feature almadığını kanıtlamaz.\n- URL Inspection alanları owner tarafından paylaşıldı; API'den bağımsız olarak istenmedi.\n- Bu audit hiçbir kaynak workbook'u, uygulama dosyasını, DB kaydını veya production state'i değiştirmedi."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-07T13:48:39Z",
+    "status": "ready",
+    "datasets": {
+      "headline": [
+        {
+          "current_clicks": 3,
+          "prior_clicks": 6,
+          "click_change": -0.5,
+          "current_impressions": 2519,
+          "prior_impressions": 3156,
+          "impression_change": -0.20183776932826364,
+          "current_ctr": 0.0011909487892020642,
+          "prior_ctr": 0.0019011406844106464,
+          "ctr_change": -0.3735609368797142,
+          "current_position": 6.65,
+          "prior_position": 6.68,
+          "position_change": -0.02999999999999936,
+          "query_coverage": 0.29734021437078206,
+          "prior_query_coverage": 0.35329531051964513
+        }
+      ],
+      "period_comparison": [
+        {
+          "metric": "Clicks",
+          "current": "3",
+          "prior": "6",
+          "change": "-50.0%",
+          "interpretation": "Yalnızca 3 ve 6 tıklama var; iki taraflı Fisher p=0.74, bu nedenle watch seviyesinde gürültü."
+        },
+        {
+          "metric": "Impressions",
+          "current": "2,519",
+          "prior": "3,156",
+          "change": "-20.2%",
+          "interpretation": "Ortalama konum sabitken talep/gösterim azaldı; content decay kanıtı değil."
+        },
+        {
+          "metric": "All-query CTR",
+          "current": "0.119%",
+          "prior": "0.190%",
+          "change": "-37.4%",
+          "interpretation": "Sayfa toplamını kullan; 0 tıklamalı görünür-query alt kümesini kullanma."
+        },
+        {
+          "metric": "Average position",
+          "current": "6.65",
+          "prior": "6.68",
+          "change": "-0.03",
+          "interpretation": "Pratikte sabit; daha düşük değer daha iyidir."
+        }
+      ],
+      "reconciliation": [
+        {
+          "grain": "All-query page total",
+          "current_clicks": 3,
+          "current_impressions": 2519,
+          "coverage": 1.0,
+          "safe_use": "Authoritative page KPI denominator"
+        },
+        {
+          "grain": "Visible query subset",
+          "current_clicks": 0,
+          "current_impressions": 749,
+          "coverage": 0.29734021437078206,
+          "safe_use": "Directional intent evidence only; no query CTR attribution"
+        },
+        {
+          "grain": "Visible device subset",
+          "current_clicks": 0,
+          "current_impressions": 749,
+          "coverage": 0.29734021437078206,
+          "safe_use": "Partial subset; not true device mix or device CTR"
+        }
+      ],
+      "clusters": [
+        {
+          "cluster": "Official docs / adjacent",
+          "current_impressions": 469,
+          "prior_impressions": 1063,
+          "current_visible_share": 0.6261682242990654,
+          "prior_visible_share": 0.9533632286995516,
+          "current_full_page_lower_bound": 0.18618499404525604,
+          "current_position": 6.6943923240938155,
+          "prior_position": 6.746848541862653,
+          "query_count": 38
+        },
+        {
+          "cluster": "Direct answer",
+          "current_impressions": 262,
+          "prior_impressions": 36,
+          "current_visible_share": 0.34979973297730305,
+          "prior_visible_share": 0.03228699551569507,
+          "current_full_page_lower_bound": 0.10400952759031362,
+          "current_position": 4.881259541984733,
+          "prior_position": 5.4991666666666665,
+          "query_count": 12
+        },
+        {
+          "cluster": "Implementation",
+          "current_impressions": 18,
+          "prior_impressions": 15,
+          "current_visible_share": 0.02403204272363151,
+          "prior_visible_share": 0.013452914798206279,
+          "current_full_page_lower_bound": 0.007145692735212386,
+          "current_position": 5.002777777777777,
+          "prior_position": 9.464666666666666,
+          "query_count": 4
+        },
+        {
+          "cluster": "Debugging / testing",
+          "current_impressions": 0,
+          "prior_impressions": 1,
+          "current_visible_share": 0.0,
+          "prior_visible_share": 0.0008968609865470852,
+          "current_full_page_lower_bound": 0.0,
+          "current_position": 0.0,
+          "prior_position": 2.0,
+          "query_count": 1
+        },
+        {
+          "cluster": "Interview",
+          "current_impressions": 0,
+          "prior_impressions": 0,
+          "current_visible_share": 0.0,
+          "prior_visible_share": 0.0,
+          "current_full_page_lower_bound": 0.0,
+          "current_position": 0.0,
+          "prior_position": 0.0,
+          "query_count": 0
+        }
+      ],
+      "top_queries": [
+        {
+          "rank": 1,
+          "query": "angular httpclient unsubscribe cancels request official docs",
+          "cluster": "Official docs / adjacent",
+          "current_impressions": 109,
+          "current_position": 6.87,
+          "prior_impressions": 286,
+          "prior_position": 5.72,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 2,
+          "query": "angular httpclient unsubscribe cancels http request",
+          "cluster": "Direct answer",
+          "current_impressions": 101,
+          "current_position": 5.01,
+          "prior_impressions": 0,
+          "prior_position": 0.0,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 3,
+          "query": "angular httpclient unsubscribe abort request docs",
+          "cluster": "Official docs / adjacent",
+          "current_impressions": 68,
+          "current_position": 7.53,
+          "prior_impressions": 69,
+          "prior_position": 7.17,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 4,
+          "query": "angular httpclient unsubscribe cancels request",
+          "cluster": "Direct answer",
+          "current_impressions": 63,
+          "current_position": 4.25,
+          "prior_impressions": 21,
+          "prior_position": 4.57,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 5,
+          "query": "angular httpclient unsubscribe cancels request docs",
+          "cluster": "Official docs / adjacent",
+          "current_impressions": 57,
+          "current_position": 4.79,
+          "prior_impressions": 171,
+          "prior_position": 7.37,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 6,
+          "query": "angular httpclient unsubscribe cancels request documentation",
+          "cluster": "Official docs / adjacent",
+          "current_impressions": 54,
+          "current_position": 5.24,
+          "prior_impressions": 91,
+          "prior_position": 6.99,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 7,
+          "query": "angular httpclient unsubscribe abort request official docs",
+          "cluster": "Official docs / adjacent",
+          "current_impressions": 43,
+          "current_position": 8.86,
+          "prior_impressions": 137,
+          "prior_position": 5.97,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 8,
+          "query": "angular httpclient unsubscribe cancels http request abort",
+          "cluster": "Direct answer",
+          "current_impressions": 34,
+          "current_position": 6.24,
+          "prior_impressions": 0,
+          "prior_position": 0.0,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 9,
+          "query": "angular httpclient unsubscribe abort request documentation",
+          "cluster": "Official docs / adjacent",
+          "current_impressions": 29,
+          "current_position": 7.41,
+          "prior_impressions": 20,
+          "prior_position": 7.05,
+          "visible_clicks": 0
+        },
+        {
+          "rank": 10,
+          "query": "angular httpclient unsubscribe cancels request aborts",
+          "cluster": "Direct answer",
+          "current_impressions": 21,
+          "current_position": 3.14,
+          "prior_impressions": 0,
+          "prior_position": 0.0,
+          "visible_clicks": 0
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-03",
+          "event": "Content/SEO metadata updated",
+          "meaning": "New title: Angular HttpClient Unsubscribe: 6 Tests & DevTools"
+        },
+        {
+          "date": "2026-08-04 01:09",
+          "event": "Google smartphone crawl",
+          "meaning": "URL Inspection reports successful fetch and matching canonical"
+        },
+        {
+          "date": "2026-08-05 to 2026-09-01",
+          "event": "Clean 28-day observation window",
+          "meaning": "Keep title, meta and H1 unchanged; use finalized all-query page totals"
+        },
+        {
+          "date": "2026-09-04 or later",
+          "event": "Earliest 28-day decision read",
+          "meaning": "Assumes the configured 3-day finalized-data lag"
+        }
+      ],
+      "app_comparison": [
+        {
+          "area": "Page KPI totals",
+          "current_app": "3 / 2,519 / 0.119% / 6.646",
+          "audit_verdict": "Matches GSC export (rounding only)",
+          "state": "Correct"
+        },
+        {
+          "area": "Current empty state",
+          "current_app": "Green 'No urgent action' with 32/56 days",
+          "audit_verdict": "No page was evaluated; state should be 'Not evaluated'",
+          "state": "Misleading UI"
+        },
+        {
+          "area": "Decay detector after full backfill",
+          "current_app": "content_decay; confidence 0.68; +3 expected clicks",
+          "audit_verdict": "6 to 3 clicks is low-volume noise (p about 0.74), rank improved",
+          "state": "False-positive risk"
+        },
+        {
+          "area": "CTR detector",
+          "current_app": "No action; target 0.119% exceeds 0.106% peer baseline",
+          "audit_verdict": "No action is fine, but 9 peers/10 clicks is an insufficient baseline",
+          "state": "Under-explained"
+        },
+        {
+          "area": "Intent detector",
+          "current_app": "No mismatch; exact top query share 14.6%, coverage 29.7%",
+          "audit_verdict": "Topical intent aligns; exact-query-as-cluster misses semantic family and docs trust modifier",
+          "state": "Conservative but shallow"
+        },
+        {
+          "area": "Technical detector",
+          "current_app": "No technical action",
+          "audit_verdict": "Correct: indexed, fetch allowed, self-canonical, visible",
+          "state": "Correct"
+        },
+        {
+          "area": "Recent-change awareness",
+          "current_app": "No pre-detector cooldown tied to live metadata/crawl",
+          "audit_verdict": "Current window is almost entirely pre-change; action generation must pause",
+          "state": "Missing guard"
+        }
+      ],
+      "actions": [
+        {
+          "priority": "P0",
+          "action": "Persist analysis readiness and gate reasons",
+          "why": "The current green empty state hides that 0 pages were evaluated.",
+          "acceptance": "32/56 shows Not evaluated; green no-action only after a complete current run.",
+          "effort": "M"
+        },
+        {
+          "priority": "P0",
+          "action": "Add material-change and crawl-aware cooldown",
+          "why": "The 28-day export does not measure the Aug 3 title change.",
+          "acceptance": "This URL shows observing_change 0/14 and no detector action through Aug 4.",
+          "effort": "M"
+        },
+        {
+          "priority": "P0",
+          "action": "Harden content-decay rules for low click counts",
+          "why": "The current rule would call 6 to 3 clicks content decay despite p about 0.74.",
+          "acceptance": "Fixture becomes low_sample/watch; high-volume persistent loss still triggers.",
+          "effort": "S-M"
+        },
+        {
+          "priority": "P1",
+          "action": "Separate semantic clusters from exact queries",
+          "why": "740/749 visible impressions share cancel/abort semantics although no exact query dominates.",
+          "acceptance": "Show visible share, full-page lower bound and coverage; keep exact-query drilldown.",
+          "effort": "L"
+        },
+        {
+          "priority": "P1",
+          "action": "Attach quality metadata to CTR peer baselines",
+          "why": "Nine mixed peers and ten clicks can normalize a weak CTR.",
+          "acceptance": "Baseline marked insufficient and the page is monitor, not healthy or urgent.",
+          "effort": "M-L"
+        },
+        {
+          "priority": "P1",
+          "action": "Show per-page grain reconciliation",
+          "why": "Query/device rows expose only 29.7% of page impressions and zero attributed clicks.",
+          "acceptance": "Page, query and device totals are labeled separately with coverage.",
+          "effort": "M"
+        },
+        {
+          "priority": "P2",
+          "action": "Store owner-triggered URL Inspection snapshots",
+          "why": "Index/crawl/canonical evidence should be distinct from sitemap property health.",
+          "acceptance": "This URL stays technical PASS; sitemap temporary error is a separate warning.",
+          "effort": "S-M"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "target_compare",
+      "label": "GSC target-page comparison",
+      "path": "frontendatlas.com-Performance-on-Search-2026-08-07 (1).xlsx",
+      "query": {
+        "engine": "xlsx",
+        "sql": "SELECT * FROM target_page_compare WHERE page_url = 'exact target URL' AND current_window = '2026-07-08/2026-08-04'",
+        "description": "Reads the exact URL current and prior 28-day totals plus visible query and device rows.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "Sayfa sayisi!A1:I2",
+          "Sorgular!A1:I56",
+          "Cihazlar!A1:I4",
+          "Filtreler!A1:B4"
+        ],
+        "filters": [
+          "Search type = Web",
+          "Page = exact target URL",
+          "Current = 2026-07-08 to 2026-08-04",
+          "Prior = 2026-06-10 to 2026-07-07"
+        ],
+        "metric_definitions": [
+          "All-query CTR = page clicks / page impressions.",
+          "Visible query coverage = sum of visible query impressions / all-query page impressions.",
+          "Query-cluster shares use impressions only because visible query clicks are zero while page clicks are privacy-filtered.",
+          "Average position is the GSC impression-weighted average; lower is better."
+        ]
+      }
+    },
+    {
+      "id": "target_history",
+      "label": "GSC target-page history",
+      "path": "frontendatlas.com-Performance-on-Search-2026-08-07.xlsx",
+      "query": {
+        "engine": "xlsx",
+        "sql": "SELECT * FROM target_page_history WHERE page_url = 'exact target URL' AND date BETWEEN DATE '2026-01-25' AND DATE '2026-08-04'",
+        "description": "Reads daily history and long-window page/query totals for the exact URL.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "Grafik!A1:E193",
+          "Sayfa sayisi!A1:E2",
+          "Sorgular!A1:E71",
+          "Filtreler!A1:B4"
+        ],
+        "filters": [
+          "Search type = Web",
+          "Page = exact target URL",
+          "Date = 2026-01-25 to 2026-08-04"
+        ],
+        "metric_definitions": [
+          "Long-window query coverage = visible query impressions / all-query page impressions."
+        ]
+      }
+    },
+    {
+      "id": "site_compare",
+      "label": "GSC site-wide comparison",
+      "path": "frontendatlas.com-Performance-on-Search-2026-08-07 (2).xlsx",
+      "query": {
+        "engine": "xlsx",
+        "sql": "SELECT * FROM site_page_compare WHERE current_window = '2026-07-08/2026-08-04'",
+        "description": "Reads site-wide page rows for impression rank and the application's leave-one-out position bucket.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "Sayfa sayisi!A1:I322",
+          "Filtreler!A1:B3"
+        ],
+        "filters": [
+          "Search type = Web",
+          "No page filter",
+          "Current = 2026-07-08 to 2026-08-04",
+          "Prior = 2026-06-10 to 2026-07-07"
+        ],
+        "metric_definitions": [
+          "Peer CTR = peer clicks / peer impressions for pages with at least 100 impressions and average position above 5 through 10, excluding the target."
+        ]
+      }
+    },
+    {
+      "id": "inspection",
+      "label": "User-provided URL Inspection result",
+      "path": "URL Inspection snapshot, 2026-08-07",
+      "query": {
+        "engine": "manual",
+        "sql": "SELECT indexed, crawl_allowed, fetch_status, canonical_status, last_crawl, sitemap_message FROM url_inspection_snapshot WHERE page_url = 'exact target URL'",
+        "description": "User supplied the URL Inspection fields in chat.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "URL Inspection result"
+        ],
+        "filters": [
+          "Target URL only",
+          "Observed 2026-08-07"
+        ],
+        "metric_definitions": [
+          "Technical pass requires indexed, crawl/index allowed, successful fetch and matching selected canonical."
+        ]
+      }
+    },
+    {
+      "id": "live_page",
+      "label": "Live target page",
+      "href": "https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request",
+      "query": {
+        "engine": "http",
+        "sql": "SELECT seo_title, meta_description, canonical_url, h1, content_updated_at FROM live_page_snapshot WHERE page_url = 'exact target URL'",
+        "description": "Verifies the currently served SEO title, description, canonical and page content.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "Live HTML response"
+        ],
+        "filters": [
+          "Fetched 2026-08-07"
+        ],
+        "metric_definitions": [
+          "Current SEO title is the served HTML title, not the inventory display title."
+        ]
+      }
+    },
+    {
+      "id": "angular_docs",
+      "label": "Angular official HttpClient guide",
+      "href": "https://angular.dev/guide/http/making-requests",
+      "query": {
+        "engine": "http",
+        "sql": "SELECT section_heading, reviewed_claim FROM angular_http_guide_review WHERE section_heading = 'HTTP Observables'",
+        "description": "Confirms the official documentation discusses unsubscribe, request abort and switchMap cleanup.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "Angular Making HTTP requests guide"
+        ],
+        "filters": [
+          "Reviewed 2026-08-07"
+        ],
+        "metric_definitions": [
+          "Used only to validate topical/source-intent alignment, not to calculate GSC metrics."
+        ]
+      }
+    },
+    {
+      "id": "app_audit",
+      "label": "Local SEO analysis code and deterministic rule replay",
+      "path": "analysis.js, rule-engine.js, seo-dashboard.component.html",
+      "query": {
+        "engine": "javascript",
+        "sql": "SELECT * FROM rule_engine_replay WHERE page_url = 'exact target URL' AND rule_version = 'balanced-v1'",
+        "description": "Reviews balanced-analysis readiness, detector thresholds, baseline construction and the empty action state.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "analysis.js:68-89",
+          "analysis.js:105-180",
+          "rule-engine.js:42-168",
+          "seo-dashboard.component.html:348-353"
+        ],
+        "filters": [
+          "Rule version = balanced-v1",
+          "Target URL only",
+          "Uses exact export totals"
+        ],
+        "metric_definitions": [
+          "Balanced analysis requires two contiguous 28-day page windows.",
+          "Current content-decay rule fires on at least 20% click decline with prior impressions at least 100, without a click-count or significance floor.",
+          "Current CTR baseline uses leave-one-out pages in the same broad position bucket and at least 300 remaining impressions."
+        ]
+      }
+    },
+    {
+      "id": "audit_synthesis",
+      "label": "Derived audit synthesis",
+      "path": "GSC exports plus local application audit",
+      "query": {
+        "engine": "python",
+        "sql": "SELECT * FROM audit_synthesis WHERE page_url = 'exact target URL' AND snapshot_date = DATE '2026-08-07'",
+        "description": "Combines reviewed evidence into the comparison and prioritized action plan.",
+        "executed_at": "2026-08-07",
+        "tables_used": [
+          "frontendatlas.com-Performance-on-Search-2026-08-07 (1).xlsx",
+          "frontendatlas.com-Performance-on-Search-2026-08-07.xlsx",
+          "frontendatlas.com-Performance-on-Search-2026-08-07 (2).xlsx",
+          "URL Inspection result",
+          "Local SEO analysis code"
+        ],
+        "filters": [
+          "Target URL only",
+          "No mutation of source workbooks or production data"
+        ],
+        "metric_definitions": [
+          "Fisher exact p-value compares 3 of 2519 with 6 of 3156 clicks.",
+          "A recent-change guard uses clean finalized days after the last known Google crawl.",
+          "Recommendations are audit judgments, not automated production changes."
+        ]
+      }
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://frontendatlas-angular-httpclient-gsc-audit-2026-08-07",
+    "controls": {
+      "edit": false,
+      "refresh": false,
+      "share": false,
+      "export": false
+    }
+  }
+}
