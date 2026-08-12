@@ -6,6 +6,7 @@ import {
   setMonacoModelValue,
   waitForIndexedDbKeyPrefixContains,
   waitForIndexedDbKeyPrefixNotContains,
+  waitForMonacoModel,
 } from './helpers';
 
 type RequestFailure = {
@@ -76,6 +77,96 @@ async function waitForTwoAnimationFrames(page: Page) {
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
   }));
 }
+
+test('CSS coding route completes a real Monaco language-worker round trip', async ({ page }) => {
+  const requestFailures = trackRequestFailures(page);
+  const pageErrors: string[] = [];
+  const fallbackWarnings: string[] = [];
+  const workerUrls: string[] = [];
+  const workerMainPath = /\/assets\/monaco\/min\/vs\/base\/worker\/workerMain\.js(?:\?.*)?$/i;
+  const cssWorkerPath = /\/assets\/monaco\/min\/vs\/language\/css\/cssWorker\.js(?:\?.*)?$/i;
+
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('worker', (worker) => workerUrls.push(worker.url()));
+  page.on('console', (message) => {
+    if (
+      message.type() === 'warning'
+      && /Could not create web worker\(s\)|Falling back to loading web worker code in main thread/i.test(message.text())
+    ) {
+      fallbackWarnings.push(message.text());
+    }
+  });
+
+  const workerMainResponsePromise = page.waitForResponse((response) => workerMainPath.test(response.url()));
+  const cssWorkerResponsePromise = page.waitForResponse((response) => cssWorkerPath.test(response.url()));
+
+  await page.goto('/css/coding/css-fluid-clamp');
+  await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+  await waitForMonacoModel(page, 'q-css-fluid-clamp-html');
+  await waitForMonacoModel(page, 'q-css-fluid-clamp-css');
+
+  const models = await page.evaluate(() => {
+    const monaco = (window as any).monaco;
+    return (monaco?.editor?.getModels?.() || [])
+      .filter((model: any) => model.uri.toString().includes('q-css-fluid-clamp-'))
+      .map((model: any) => ({
+        language: model.getLanguageId(),
+        uri: model.uri.toString(),
+      }));
+  });
+
+  expect(models).toHaveLength(2);
+  expect(models).toEqual(expect.arrayContaining([
+    expect.objectContaining({ language: 'html', uri: expect.stringContaining('q-css-fluid-clamp-html') }),
+    expect.objectContaining({ language: 'css', uri: expect.stringContaining('q-css-fluid-clamp-css') }),
+  ]));
+
+  const cssRoundTrip = await page.evaluate(async (modelKey: string) => {
+    const monaco = (window as any).monaco;
+    const model = (monaco?.editor?.getModels?.() || [])
+      .find((candidate: any) => candidate.uri.toString().includes(modelKey));
+    if (!model) throw new Error(`Monaco CSS model not found: ${modelKey}`);
+
+    const originalValue = model.getValue();
+    try {
+      model.setValue('.worker-round-trip { color: #12; }');
+      const cssMode = await new Promise<any>((resolve, reject) => {
+        (window as any).require(['vs/language/css/cssMode'], resolve, reject);
+      });
+      const manager = new cssMode.WorkerManager(monaco.languages.css.cssDefaults);
+      try {
+        const worker = await manager.getLanguageServiceWorker(model.uri);
+        const diagnostics = await worker.doValidation(model.uri.toString());
+        return {
+          language: model.getLanguageId(),
+          diagnostics: diagnostics.map((diagnostic: any) => String(diagnostic.message || '')),
+        };
+      } finally {
+        manager.dispose();
+      }
+    } finally {
+      model.setValue(originalValue);
+    }
+  }, 'q-css-fluid-clamp-css');
+
+  expect(cssRoundTrip.language).toBe('css');
+  expect(cssRoundTrip.diagnostics.length).toBeGreaterThan(0);
+
+  const [workerMainResponse, cssWorkerResponse] = await Promise.all([
+    workerMainResponsePromise,
+    cssWorkerResponsePromise,
+  ]);
+  for (const response of [workerMainResponse, cssWorkerResponse]) {
+    expect(response.status(), response.url()).toBe(200);
+    expect(response.headers()['content-type'] ?? '', response.url()).toMatch(/^(?:application|text)\/javascript\b/i);
+  }
+
+  await waitForTwoAnimationFrames(page);
+  expect(workerUrls.some((url) => workerMainPath.test(url)), workerUrls.join('\n')).toBe(true);
+  expect(fallbackWarnings, fallbackWarnings.join('\n')).toEqual([]);
+  expect(pageErrors, pageErrors.join('\n')).toEqual([]);
+  assertNoRequestFailures(requestFailures);
+});
 
 test('editor reset clears persisted override and survives refresh', async ({ page }) => {
   const requestFailures = trackRequestFailures(page, {

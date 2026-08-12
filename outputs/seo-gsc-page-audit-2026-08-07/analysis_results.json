@@ -1,0 +1,303 @@
+{
+  "target_url": "https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request",
+  "current": {
+    "clicks": 3,
+    "impressions": 2519,
+    "ctr": 0.0011909487892020642,
+    "position": 6.65
+  },
+  "prior": {
+    "clicks": 6,
+    "impressions": 3156,
+    "ctr": 0.0019011406844106464,
+    "position": 6.68
+  },
+  "fisher_two_sided_p": 0.7396125209742682,
+  "query_detail": {
+    "current_impressions": 749,
+    "prior_impressions": 1115,
+    "current_clicks": 0,
+    "prior_clicks": 0,
+    "current_coverage": 0.29734021437078206,
+    "prior_coverage": 0.35329531051964513,
+    "semantic_core_impressions": 739,
+    "semantic_core_visible_share": 0.986648865153538,
+    "docs_semantic_impressions": 460,
+    "docs_semantic_visible_share": 0.6141522029372497
+  },
+  "history": {
+    "clicks": 15,
+    "impressions": 13065,
+    "ctr": 0.001148105625717566,
+    "position": 7.41,
+    "query_impressions": 4444,
+    "query_coverage": 0.3401454267125909
+  },
+  "site_context": {
+    "page_count": 321,
+    "target_impression_rank": 2,
+    "peer_count": 9,
+    "peer_clicks": 10,
+    "peer_impressions": 9393,
+    "peer_ctr": 0.0010646225912913873
+  },
+  "change_boundary": {
+    "aug_3_4_impressions": 329,
+    "aug_3_4_clicks": 0,
+    "clean_post_crawl_days_in_export": 0
+  },
+  "clusters": [
+    {
+      "cluster": "Official docs / adjacent",
+      "current_impressions": 469,
+      "prior_impressions": 1063,
+      "current_visible_share": 0.6261682242990654,
+      "prior_visible_share": 0.9533632286995516,
+      "current_full_page_lower_bound": 0.18618499404525604,
+      "current_position": 6.6943923240938155,
+      "prior_position": 6.746848541862653,
+      "query_count": 38
+    },
+    {
+      "cluster": "Direct answer",
+      "current_impressions": 262,
+      "prior_impressions": 36,
+      "current_visible_share": 0.34979973297730305,
+      "prior_visible_share": 0.03228699551569507,
+      "current_full_page_lower_bound": 0.10400952759031362,
+      "current_position": 4.881259541984733,
+      "prior_position": 5.4991666666666665,
+      "query_count": 12
+    },
+    {
+      "cluster": "Implementation",
+      "current_impressions": 18,
+      "prior_impressions": 15,
+      "current_visible_share": 0.02403204272363151,
+      "prior_visible_share": 0.013452914798206279,
+      "current_full_page_lower_bound": 0.007145692735212386,
+      "current_position": 5.002777777777777,
+      "prior_position": 9.464666666666666,
+      "query_count": 4
+    },
+    {
+      "cluster": "Debugging / testing",
+      "current_impressions": 0,
+      "prior_impressions": 1,
+      "current_visible_share": 0.0,
+      "prior_visible_share": 0.0008968609865470852,
+      "current_full_page_lower_bound": 0.0,
+      "current_position": 0.0,
+      "prior_position": 2.0,
+      "query_count": 1
+    },
+    {
+      "cluster": "Interview",
+      "current_impressions": 0,
+      "prior_impressions": 0,
+      "current_visible_share": 0.0,
+      "prior_visible_share": 0.0,
+      "current_full_page_lower_bound": 0.0,
+      "current_position": 0.0,
+      "prior_position": 0.0,
+      "query_count": 0
+    }
+  ],
+  "top_queries": [
+    {
+      "rank": 1,
+      "query": "angular httpclient unsubscribe cancels request official docs",
+      "cluster": "Official docs / adjacent",
+      "current_impressions": 109,
+      "current_position": 6.87,
+      "prior_impressions": 286,
+      "prior_position": 5.72,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 2,
+      "query": "angular httpclient unsubscribe cancels http request",
+      "cluster": "Direct answer",
+      "current_impressions": 101,
+      "current_position": 5.01,
+      "prior_impressions": 0,
+      "prior_position": 0.0,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 3,
+      "query": "angular httpclient unsubscribe abort request docs",
+      "cluster": "Official docs / adjacent",
+      "current_impressions": 68,
+      "current_position": 7.53,
+      "prior_impressions": 69,
+      "prior_position": 7.17,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 4,
+      "query": "angular httpclient unsubscribe cancels request",
+      "cluster": "Direct answer",
+      "current_impressions": 63,
+      "current_position": 4.25,
+      "prior_impressions": 21,
+      "prior_position": 4.57,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 5,
+      "query": "angular httpclient unsubscribe cancels request docs",
+      "cluster": "Official docs / adjacent",
+      "current_impressions": 57,
+      "current_position": 4.79,
+      "prior_impressions": 171,
+      "prior_position": 7.37,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 6,
+      "query": "angular httpclient unsubscribe cancels request documentation",
+      "cluster": "Official docs / adjacent",
+      "current_impressions": 54,
+      "current_position": 5.24,
+      "prior_impressions": 91,
+      "prior_position": 6.99,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 7,
+      "query": "angular httpclient unsubscribe abort request official docs",
+      "cluster": "Official docs / adjacent",
+      "current_impressions": 43,
+      "current_position": 8.86,
+      "prior_impressions": 137,
+      "prior_position": 5.97,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 8,
+      "query": "angular httpclient unsubscribe cancels http request abort",
+      "cluster": "Direct answer",
+      "current_impressions": 34,
+      "current_position": 6.24,
+      "prior_impressions": 0,
+      "prior_position": 0.0,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 9,
+      "query": "angular httpclient unsubscribe abort request documentation",
+      "cluster": "Official docs / adjacent",
+      "current_impressions": 29,
+      "current_position": 7.41,
+      "prior_impressions": 20,
+      "prior_position": 7.05,
+      "visible_clicks": 0
+    },
+    {
+      "rank": 10,
+      "query": "angular httpclient unsubscribe cancels request aborts",
+      "cluster": "Direct answer",
+      "current_impressions": 21,
+      "current_position": 3.14,
+      "prior_impressions": 0,
+      "prior_position": 0.0,
+      "visible_clicks": 0
+    }
+  ],
+  "app_comparison": [
+    {
+      "area": "Page KPI totals",
+      "current_app": "3 / 2,519 / 0.119% / 6.646",
+      "audit_verdict": "Matches GSC export (rounding only)",
+      "state": "Correct"
+    },
+    {
+      "area": "Current empty state",
+      "current_app": "Green 'No urgent action' with 32/56 days",
+      "audit_verdict": "No page was evaluated; state should be 'Not evaluated'",
+      "state": "Misleading UI"
+    },
+    {
+      "area": "Decay detector after full backfill",
+      "current_app": "content_decay; confidence 0.68; +3 expected clicks",
+      "audit_verdict": "6 to 3 clicks is low-volume noise (p about 0.74), rank improved",
+      "state": "False-positive risk"
+    },
+    {
+      "area": "CTR detector",
+      "current_app": "No action; target 0.119% exceeds 0.106% peer baseline",
+      "audit_verdict": "No action is fine, but 9 peers/10 clicks is an insufficient baseline",
+      "state": "Under-explained"
+    },
+    {
+      "area": "Intent detector",
+      "current_app": "No mismatch; exact top query share 14.6%, coverage 29.7%",
+      "audit_verdict": "Topical intent aligns; exact-query-as-cluster misses semantic family and docs trust modifier",
+      "state": "Conservative but shallow"
+    },
+    {
+      "area": "Technical detector",
+      "current_app": "No technical action",
+      "audit_verdict": "Correct: indexed, fetch allowed, self-canonical, visible",
+      "state": "Correct"
+    },
+    {
+      "area": "Recent-change awareness",
+      "current_app": "No pre-detector cooldown tied to live metadata/crawl",
+      "audit_verdict": "Current window is almost entirely pre-change; action generation must pause",
+      "state": "Missing guard"
+    }
+  ],
+  "recommended_actions": [
+    {
+      "priority": "P0",
+      "action": "Persist analysis readiness and gate reasons",
+      "why": "The current green empty state hides that 0 pages were evaluated.",
+      "acceptance": "32/56 shows Not evaluated; green no-action only after a complete current run.",
+      "effort": "M"
+    },
+    {
+      "priority": "P0",
+      "action": "Add material-change and crawl-aware cooldown",
+      "why": "The 28-day export does not measure the Aug 3 title change.",
+      "acceptance": "This URL shows observing_change 0/14 and no detector action through Aug 4.",
+      "effort": "M"
+    },
+    {
+      "priority": "P0",
+      "action": "Harden content-decay rules for low click counts",
+      "why": "The current rule would call 6 to 3 clicks content decay despite p about 0.74.",
+      "acceptance": "Fixture becomes low_sample/watch; high-volume persistent loss still triggers.",
+      "effort": "S-M"
+    },
+    {
+      "priority": "P1",
+      "action": "Separate semantic clusters from exact queries",
+      "why": "740/749 visible impressions share cancel/abort semantics although no exact query dominates.",
+      "acceptance": "Show visible share, full-page lower bound and coverage; keep exact-query drilldown.",
+      "effort": "L"
+    },
+    {
+      "priority": "P1",
+      "action": "Attach quality metadata to CTR peer baselines",
+      "why": "Nine mixed peers and ten clicks can normalize a weak CTR.",
+      "acceptance": "Baseline marked insufficient and the page is monitor, not healthy or urgent.",
+      "effort": "M-L"
+    },
+    {
+      "priority": "P1",
+      "action": "Show per-page grain reconciliation",
+      "why": "Query/device rows expose only 29.7% of page impressions and zero attributed clicks.",
+      "acceptance": "Page, query and device totals are labeled separately with coverage.",
+      "effort": "M"
+    },
+    {
+      "priority": "P2",
+      "action": "Store owner-triggered URL Inspection snapshots",
+      "why": "Index/crawl/canonical evidence should be distinct from sitemap property health.",
+      "acceptance": "This URL stays technical PASS; sitemap temporary error is a separate warning.",
+      "effort": "S-M"
+    }
+  ]
+}

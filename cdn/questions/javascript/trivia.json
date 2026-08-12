@@ -1,8 +1,8 @@
 [
   {
     "id": "js-event-loop",
-    "title": "Explain the JavaScript Event Loop",
-    "description": "JavaScript runs on a single thread, but the real production pitfall is queue ordering: synchronous work runs first, then microtasks drain before the next macrotask, which is why long Promise chains can starve rendering and confuse debugging.",
+    "title": "JavaScript Event Loop Visualizer: Learn by Predicting",
+    "description": "Predict a browser event-loop trace, then step through the current task, Promise microtasks, a zero-delay timer, and a render opportunity to see why queue order—not callback speed—determines what runs next.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "hard",
@@ -21,7 +21,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Big Picture</strong>\n\nThe event loop matters most when you have to <strong>debug async UI behavior</strong> that still feels blocked. JavaScript runs <strong>on a single thread</strong>, so the runtime decides whether to keep draining microtasks, take the next macrotask, or finally let the browser paint.\n\nThat under-the-hood order is the real production pitfall: many developers assume any async boundary yields rendering time, but a long microtask chain can still freeze the screen."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Big Picture</strong>\n\nThe event loop matters most when you have to <strong>debug async UI behavior</strong> that still feels blocked. On the browser's main thread, the current task runs to completion, then the browser drains the microtask queue. Once that checkpoint is complete, the browser may take a rendering opportunity before selecting another task.\n\nThat order is the real production pitfall: an async boundary does not automatically yield rendering time, and a self-sustaining microtask chain can keep delaying both rendering and later tasks."
         },
         {
           "type": "text",
@@ -42,35 +42,35 @@
               "<code>console.log</code>, loops, math operations, synchronous functions"
             ],
             [
-              "<strong>Task Queues (two types)</strong>",
-              "Where async tasks wait until the stack is clear — split into Microtask and Macrotask queues.",
-              "Async callbacks, Promises, timers, I/O events"
+              "<strong>Task and Microtask Queues</strong>",
+              "Where scheduled work waits. Browsers can have multiple task queues plus a separate microtask queue.",
+              "Promise reactions, timers, DOM events, network callbacks"
             ],
             [
               "<strong>Microtask Queue</strong>",
-              "Smaller, high-priority tasks that run immediately after the stack is clear.",
-              "<code>Promise.then</code>, <code>queueMicrotask</code>, <code>process.nextTick</code>"
+              "Jobs drained at a microtask checkpoint after the current task finishes.",
+              "<code>Promise.then</code>, <code>queueMicrotask</code>"
             ],
             [
-              "<strong>Macrotask Queue</strong>",
-              "Larger, lower-priority tasks that can yield to the browser for rendering between runs.",
-              "<code>setTimeout</code>, DOM events, I/O, <code>setInterval</code>"
+              "<strong>Task Queue</strong>",
+              "Eligible callbacks the browser can select as a later task; often called macrotasks in tutorials.",
+              "<code>setTimeout</code>, DOM events, network callbacks, <code>setInterval</code>"
             ]
           ],
           "caption": "Call Stack and Task Queues at a glance."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-repeat'></i> <strong>The Event Loop</strong>\n\nThe event loop constantly checks:\n1. Is the call stack empty?  \n2. Any microtasks waiting? → Run all of them.  \n3. Take one macrotask and run it.  \nThen the cycle repeats forever."
+          "text": "<i class='fa-solid fa-repeat'></i> <strong>The Browser Event Loop</strong>\n\nFor the browser trace used in this page:\n1. Run the current task to completion.  \n2. Perform a microtask checkpoint, draining microtasks until the queue is empty.  \n3. The browser may take a rendering opportunity.  \n4. Select and run another eligible task.  \n\nA zero-delay timer becomes eligible for a later task; it does not interrupt the current task or the following microtask checkpoint."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log('A');\n\nsetTimeout(() => console.log('B (macrotask)'));\n\nPromise.resolve()\n  .then(() => console.log('C (microtask)'))\n  .then(() => console.log('D (microtask)'));\n\nconsole.log('E');\n\n// Output:\n// A\n// E\n// C\n// D\n// B"
+          "code": "console.log('start');\n\nsetTimeout(() => console.log('timer'), 0);\n\nPromise.resolve().then(() => console.log('promise'));\n\nconsole.log('end');\n\n// Output:\n// start\n// end\n// promise\n// timer"
         },
         {
           "type": "text",
-          "text": "<strong>Why this order?</strong>\n- <code>A</code> and <code>E</code> → run first (synchronous stack).  \n- Then the event loop runs <strong>all microtasks</strong> → <code>C</code>, <code>D</code>.  \n- Finally, the next macrotask runs → <code>B</code>.  \n\nThat’s why <strong>Promises always run before timers</strong>, even when scheduled “at the same time.”"
+          "text": "<strong>Why this order?</strong>\n- <code>start</code> and <code>end</code> run inside the current task.  \n- The Promise reaction was queued as a microtask, so it runs at the checkpoint after that task.  \n- The timer callback is eligible for a later task, so it runs afterward in this trace.  \n\nThis is queue ordering, not callback speed. It does not mean every Promise callback universally runs before every timer; the result depends on when each callback is queued and which task is currently running."
         },
         {
           "type": "text",
@@ -83,7 +83,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Paint-first fix</strong><br>If the user must see the UI update first, split heavy work into a macrotask or a frame callback. The follow-up rule is simple: <code>await Promise.resolve()</code> still stays in microtask territory, so it does <strong>not</strong> guarantee a paint."
+          "text": "<strong>Create a rendering opportunity</strong><br>Yield heavy work to a later task instead of extending the current microtask checkpoint. A frame callback can coordinate the handoff with rendering, but the browser still decides whether an actual paint is needed. The follow-up rule is simple: <code>await Promise.resolve()</code> stays in microtask territory, so it does <strong>not</strong> guarantee a paint."
         },
         {
           "type": "code",
@@ -100,27 +100,27 @@
             "Type",
             "Examples",
             "Runs When",
-            "Priority"
+            "Key Point"
           ],
           "rows": [
             [
               "<strong>Microtask</strong>",
               "<code>Promise.then</code>, <code>queueMicrotask</code>",
-              "After the current call stack, before rendering",
-              "High"
+              "At the checkpoint after the current task",
+              "Drained until the microtask queue is empty"
             ],
             [
-              "<strong>Macrotask</strong>",
+              "<strong>Task (often called macrotask)</strong>",
               "<code>setTimeout</code>, <code>setInterval</code>, DOM events",
-              "After microtasks, allows rendering",
-              "Normal"
+              "When selected as another eligible task",
+              "The browser may render between tasks"
             ]
           ],
-          "caption": "Microtasks run before macrotasks within each event loop cycle."
+          "caption": "After a browser task, the microtask checkpoint completes before another task is selected."
         },
         {
           "type": "text",
-          "text": "After each macrotask, <strong>all microtasks</strong> are drained before the next one starts. That’s why too many microtasks (like recursive Promises) can block rendering."
+          "text": "After a task completes, the browser drains <strong>all queued microtasks</strong>, including microtasks added by other microtasks, before moving to a rendering opportunity or another task. That’s why recursive Promise work can delay rendering."
         },
         {
           "type": "code",
@@ -129,16 +129,16 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-server'></i> <strong>In Node.js</strong>\n\nThe event loop runs through several <strong>phases</strong>:\n<pre class='md-pre'>timers → pending callbacks → poll → check → close callbacks</pre>\nMicrotasks (<code>Promise.then</code>, <code>process.nextTick</code>) run <strong>after each phase</strong>, unlike browsers where they run once per loop."
+          "text": "<i class='fa-solid fa-server'></i> <strong>Node.js is a separate model</strong>\n\nNode.js has a phase-based event loop:\n<pre class='md-pre'>timers → pending callbacks → poll → check → close callbacks</pre>\nThe browser trace above should not be reused as an exact Node trace. <code>process.nextTick</code> is a Node-only queue with ordering rules distinct from browser microtasks, while Promise reactions and <code>queueMicrotask</code> run at Node's microtask checkpoints. The relative order of <code>setTimeout</code> and <code>setImmediate</code> can depend on the scheduling context."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('microtask'));\n\n// Common order:\n// microtask → timer → immediate"
+          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('promise microtask'));\n\n// Do not infer a universal timer vs. immediate order\n// from one run; their order depends on scheduling context."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript executes <strong>synchronously</strong> on a single thread.  \n- The <strong>event loop</strong> coordinates between the stack and queues.  \n- <strong>Microtasks</strong> (Promises) always run before <strong>macrotasks</strong> (timers).  \n- Too many microtasks can freeze rendering.  \n- Use macrotasks for deferred work and microtasks for quick follow-ups."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- A browser task runs to completion on the main thread.  \n- After that task, the browser drains the microtask queue until it is empty.  \n- The browser may then take a rendering opportunity before selecting another task.  \n- A zero-delay timer is eligible for a later task; it is not immediate.  \n- Self-sustaining microtasks can delay both rendering and later tasks.  \n- Node.js has additional queues and phases, so treat it as a separate runtime model."
         },
         {
           "type": "text",
@@ -147,14 +147,15 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-08",
+    "updatedAt": "2026-08-11",
     "seo": {
-      "title": "JavaScript Event Loop: microtasks, macrotasks, and rendering debug",
-      "description": "Understand the JavaScript event loop under the hood: why Promise callbacks beat timers, how microtask starvation blocks paint, and what to debug first."
+      "title": "JavaScript Event Loop Visualizer: Predict Output Order",
+      "description": "Predict the output, then step through JavaScript’s call stack, microtasks, timers, and render opportunity in a 75-second browser event-loop challenge.",
+      "h1": "JavaScript Event Loop Visualizer: Learn by Predicting"
     },
     "incidentCard": {
       "title": "Event Loop Root Cause Check",
-      "scenario": "A teammate sees this output order: synchronous logs first, then a `Promise.then`, then a `setTimeout(..., 0)`. They say, \"Promises must just be faster than timers, so the browser randomly finishes them first.\" Another teammate says, \"The real reason is the event loop: after the current stack finishes, JavaScript drains the microtask queue before it runs the next macrotask.\" Which explanation is better?",
+      "scenario": "A teammate sees this output order: synchronous logs first, then a `Promise.then`, then a `setTimeout(..., 0)`. They say, \"Promises must just be faster than timers, so the browser randomly finishes them first.\" Another teammate says, \"For this trace, the Promise reaction is already queued when the current task ends, so the microtask checkpoint drains it before the browser selects the eligible timer task.\" Which explanation is better?",
       "options": [
         {
           "id": "timer-first",
@@ -162,7 +163,7 @@
         },
         {
           "id": "microtask-loop",
-          "label": "The second explanation is better. `Promise.then` callbacks go into the microtask queue, and the event loop drains microtasks before it takes the next macrotask like `setTimeout`, which is why promise callbacks run first."
+          "label": "The second explanation is better. In this trace, the queued Promise reaction runs at the microtask checkpoint before the browser selects the eligible timer task. That ordering comes from when each callback was queued, not from Promise callbacks being universally faster or always first."
         },
         {
           "id": "dom-heavy",
@@ -170,7 +171,7 @@
         }
       ],
       "correctOptionId": "microtask-loop",
-      "rereadPrompt": "Re-read the event loop ordering. The key lesson is queue priority, not \"speed.\" After synchronous code finishes, JavaScript drains all pending microtasks before it runs the next macrotask, so promise callbacks beat timers."
+      "rereadPrompt": "Re-read this trace's ordering. The key lesson is scheduling context, not \"speed.\" When the current task ends here, the Promise reaction is already in the microtask queue and the timer is only eligible for a later task, so the microtask runs first in this trace."
     }
   },
   {

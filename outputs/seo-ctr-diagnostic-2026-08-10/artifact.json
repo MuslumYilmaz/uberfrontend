@@ -1,0 +1,4638 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "FrontendAtlas CTR neden düşük?",
+    "description": "Source-backed diagnosis of FrontendAtlas Google Search CTR, the Aug 5 US/desktop exposure wave, trivia zero-click behavior, visible-query intent, metadata quality, and prioritized actions.",
+    "generatedAt": "2026-08-11T00:00:00+03:00",
+    "cards": [
+      {
+        "id": "ctr_3m_card",
+        "description": "Property-level finalized Web search performance, May 9–Aug 8, 2026.",
+        "dataset": "headline",
+        "sourceId": "gsc_3m",
+        "metrics": [
+          {
+            "label": "3-month CTR",
+            "field": "ctr_3m",
+            "format": "percent"
+          },
+          {
+            "label": "Clicks",
+            "field": "clicks_3m",
+            "format": "number"
+          },
+          {
+            "label": "Impressions",
+            "field": "impressions_3m",
+            "format": "number"
+          },
+          {
+            "label": "Average position",
+            "field": "position_3m",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "recent_ctr_card",
+        "description": "Finalized nested windows; short-window movement is noisy.",
+        "dataset": "headline",
+        "sourceId": "analysis_results",
+        "metrics": [
+          {
+            "label": "28-day CTR",
+            "field": "ctr_28d",
+            "format": "percent"
+          },
+          {
+            "label": "7-day CTR",
+            "field": "ctr_7d",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "us_mix_card",
+        "description": "US traffic is the dominant impression pool but has extremely low click propensity.",
+        "dataset": "headline",
+        "sourceId": "gsc_3m",
+        "metrics": [
+          {
+            "label": "US impression share",
+            "field": "us_share_3m",
+            "format": "percent"
+          },
+          {
+            "label": "US CTR",
+            "field": "us_ctr_3m",
+            "format": "percent"
+          },
+          {
+            "label": "Non-US CTR",
+            "field": "non_us_ctr_3m",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "aug5_card",
+        "description": "One anomalous day dominates the last-7-day denominator.",
+        "dataset": "headline",
+        "sourceId": "followup_analysis",
+        "metrics": [
+          {
+            "label": "Aug 5 share of 7d impressions",
+            "field": "aug5_share_7d",
+            "format": "percent"
+          },
+          {
+            "label": "7d CTR excluding Aug 5",
+            "field": "ctr_7d_ex_aug5",
+            "format": "percent"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "daily_impressions_chart",
+        "title": "Daily property impressions",
+        "subtitle": "May 9–Aug 8, 2026; Aug 5 is a one-day outlier rather than a sustained step-change.",
+        "type": "line",
+        "dataset": "daily_3m",
+        "sourceId": "analysis_results",
+        "encodings": {
+          "x": {
+            "field": "date",
+            "type": "temporal",
+            "label": "Date"
+          },
+          "y": {
+            "field": "impressions",
+            "type": "quantitative",
+            "label": "Impressions"
+          },
+          "tooltip": [
+            {
+              "field": "clicks",
+              "type": "quantitative",
+              "label": "Clicks",
+              "format": "number"
+            },
+            {
+              "field": "ctr",
+              "type": "quantitative",
+              "label": "CTR",
+              "format": "percent"
+            },
+            {
+              "field": "position",
+              "type": "quantitative",
+              "label": "Average position",
+              "format": "number"
+            }
+          ]
+        },
+        "xAxisTitle": "Date",
+        "yAxisTitle": "Impressions",
+        "valueFormat": "number",
+        "layout": "wide",
+        "maxRows": 100
+      },
+      {
+        "id": "country_ctr_chart",
+        "title": "CTR by US vs non-US traffic",
+        "subtitle": "Three finalized windows; the US segment supplies most impressions but far fewer clicks per impression.",
+        "type": "bar",
+        "dataset": "country_rows",
+        "sourceId": "analysis_results",
+        "encodings": {
+          "x": {
+            "field": "period",
+            "type": "nominal",
+            "label": "Period"
+          },
+          "y": {
+            "field": "ctr",
+            "type": "quantitative",
+            "label": "CTR"
+          },
+          "color": {
+            "field": "segment",
+            "type": "nominal",
+            "label": "Segment"
+          },
+          "tooltip": [
+            {
+              "field": "impressions",
+              "type": "quantitative",
+              "label": "Impressions",
+              "format": "number"
+            },
+            {
+              "field": "impression_share",
+              "type": "quantitative",
+              "label": "Impression share",
+              "format": "percent"
+            },
+            {
+              "field": "position",
+              "type": "quantitative",
+              "label": "Average position",
+              "format": "number"
+            }
+          ]
+        },
+        "xAxisTitle": "Period",
+        "yAxisTitle": "CTR",
+        "valueFormat": "percent",
+        "layout": "wide",
+        "maxRows": 10
+      },
+      {
+        "id": "page_group_ctr_chart",
+        "title": "Page-table CTR by content group",
+        "subtitle": "Three-month URL-level rows; impressions are page-aggregated and must not be summed into the property CTR.",
+        "type": "horizontalBar",
+        "dataset": "page_groups_3m",
+        "sourceId": "analysis_results",
+        "encodings": {
+          "x": {
+            "field": "group",
+            "type": "nominal",
+            "label": "Content group"
+          },
+          "y": {
+            "field": "ctr",
+            "type": "quantitative",
+            "label": "CTR"
+          },
+          "tooltip": [
+            {
+              "field": "impressions",
+              "type": "quantitative",
+              "label": "Page impressions",
+              "format": "number"
+            },
+            {
+              "field": "impression_share",
+              "type": "quantitative",
+              "label": "Page-table share",
+              "format": "percent"
+            },
+            {
+              "field": "position",
+              "type": "quantitative",
+              "label": "Average position",
+              "format": "number"
+            }
+          ]
+        },
+        "xAxisTitle": "Content group",
+        "yAxisTitle": "CTR",
+        "valueFormat": "percent",
+        "layout": "wide",
+        "maxRows": 12
+      },
+      {
+        "id": "aug5_group_chart",
+        "title": "5 Ağustos gösterimleri: içerik ailesi",
+        "subtitle": "Interview hub ve framework-prep sayfaları 4.281 gösterim ve sıfır tık üretti; trivia ile birlikte sayfa tablosunun %85,2'sini oluşturdu.",
+        "type": "horizontalBar",
+        "dataset": "aug5_group_rows",
+        "sourceId": "followup_analysis",
+        "encodings": {
+          "x": {
+            "field": "group",
+            "type": "nominal",
+            "label": "Content group"
+          },
+          "y": {
+            "field": "impressions",
+            "type": "quantitative",
+            "label": "Page impressions"
+          },
+          "tooltip": [
+            {
+              "field": "clicks",
+              "type": "quantitative",
+              "label": "Clicks",
+              "format": "number"
+            },
+            {
+              "field": "ctr",
+              "type": "quantitative",
+              "label": "CTR",
+              "format": "percent"
+            },
+            {
+              "field": "position",
+              "type": "quantitative",
+              "label": "Average position",
+              "format": "number"
+            },
+            {
+              "field": "page_table_share",
+              "type": "quantitative",
+              "label": "Page-table share",
+              "format": "percent"
+            }
+          ]
+        },
+        "xAxisTitle": "Content group",
+        "yAxisTitle": "Page impressions",
+        "valueFormat": "number",
+        "layout": "wide",
+        "maxRows": 10
+      },
+      {
+        "id": "exact_page_daily_chart",
+        "title": "Exact-page günlük gösterimler",
+        "subtitle": "React'te ilk-hafta dalgası sönüyor; HTML görünürlüğü daha geç ve kalıcı büyüyor. Ortalama sıralamalar dönem boyunca yaklaşık sabit.",
+        "type": "line",
+        "dataset": "exact_daily_rows",
+        "sourceId": "followup_analysis",
+        "encodings": {
+          "x": {
+            "field": "date",
+            "type": "temporal",
+            "label": "Date"
+          },
+          "y": {
+            "field": "impressions",
+            "type": "quantitative",
+            "label": "Impressions"
+          },
+          "color": {
+            "field": "page",
+            "type": "nominal",
+            "label": "Page"
+          },
+          "tooltip": [
+            {
+              "field": "clicks",
+              "type": "quantitative",
+              "label": "Clicks",
+              "format": "number"
+            },
+            {
+              "field": "ctr",
+              "type": "quantitative",
+              "label": "CTR",
+              "format": "percent"
+            },
+            {
+              "field": "position",
+              "type": "quantitative",
+              "label": "Average position",
+              "format": "number"
+            }
+          ]
+        },
+        "xAxisTitle": "Date",
+        "yAxisTitle": "Impressions",
+        "valueFormat": "number",
+        "layout": "wide",
+        "maxRows": 60
+      },
+      {
+        "id": "trivia_intent_position_chart",
+        "title": "Visible trivia-query impressions by intent and position",
+        "subtitle": "High-confidence mapped three-month visible sample; this is not all-query or page-level traffic.",
+        "type": "bar",
+        "dataset": "trivia_intent_position_rows",
+        "sourceId": "zero_click_analysis",
+        "encodings": {
+          "x": {
+            "field": "position_band",
+            "type": "nominal",
+            "label": "Query position band"
+          },
+          "y": {
+            "field": "impressions",
+            "type": "quantitative",
+            "label": "Visible impressions"
+          },
+          "color": {
+            "field": "intent",
+            "type": "nominal",
+            "label": "Intent"
+          },
+          "tooltip": [
+            {
+              "field": "query_rows",
+              "type": "quantitative",
+              "label": "Query rows",
+              "format": "number"
+            },
+            {
+              "field": "clicks",
+              "type": "quantitative",
+              "label": "Clicks",
+              "format": "number"
+            },
+            {
+              "field": "ctr",
+              "type": "quantitative",
+              "label": "CTR",
+              "format": "percent"
+            },
+            {
+              "field": "position",
+              "type": "quantitative",
+              "label": "Weighted position",
+              "format": "number"
+            }
+          ]
+        },
+        "xAxisTitle": "Query position band",
+        "yAxisTitle": "Visible impressions",
+        "valueFormat": "number",
+        "layout": "wide",
+        "maxRows": 8
+      }
+    ],
+    "tables": [
+      {
+        "id": "period_table",
+        "title": "Property performance by exported window",
+        "subtitle": "CTR is recalculated from clicks/impressions; the 24-hour window is preliminary.",
+        "dataset": "period_rows",
+        "sourceId": "analysis_results",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "period",
+            "label": "Window",
+            "type": "text"
+          },
+          {
+            "field": "dates",
+            "label": "Dates",
+            "type": "text"
+          },
+          {
+            "field": "clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Impressions",
+            "type": "number"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Avg pos.",
+            "type": "number"
+          },
+          {
+            "field": "query_impression_coverage",
+            "label": "Query coverage",
+            "type": "percent"
+          },
+          {
+            "field": "status",
+            "label": "Use",
+            "type": "text"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "mix_table",
+        "title": "US mix: previous 21 days vs latest 7 days",
+        "subtitle": "The last seven days are subtracted from the 28-day export to form a non-overlapping 21-day baseline.",
+        "dataset": "mix_rows",
+        "sourceId": "analysis_results",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "segment",
+            "label": "Segment",
+            "type": "text"
+          },
+          {
+            "field": "prior21_impressions",
+            "label": "Prior 21d imps",
+            "type": "number"
+          },
+          {
+            "field": "prior21_share",
+            "label": "Prior share",
+            "type": "percent"
+          },
+          {
+            "field": "prior21_ctr",
+            "label": "Prior CTR",
+            "type": "percent"
+          },
+          {
+            "field": "last7_impressions",
+            "label": "Last 7d imps",
+            "type": "number"
+          },
+          {
+            "field": "last7_share",
+            "label": "Last share",
+            "type": "percent"
+          },
+          {
+            "field": "last7_ctr",
+            "label": "Last CTR",
+            "type": "percent"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "position_table",
+        "title": "Page rows by average-position band",
+        "subtitle": "Ecological check only: a row's average position is not an impression-level rank distribution.",
+        "dataset": "position_rows",
+        "sourceId": "analysis_results",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "band",
+            "label": "Avg position band",
+            "type": "text"
+          },
+          {
+            "field": "pages",
+            "label": "Pages",
+            "type": "number"
+          },
+          {
+            "field": "clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Page imps",
+            "type": "number"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Weighted pos.",
+            "type": "number"
+          },
+          {
+            "field": "impression_share",
+            "label": "Page-table share",
+            "type": "percent"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "trivia_page_position_table",
+        "title": "Trivia zero-click profile by page position",
+        "subtitle": "Mutually exclusive URL-level average-position bands; this is an ecological page-row view, not impression-level rank.",
+        "dataset": "trivia_page_position_rows",
+        "sourceId": "zero_click_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "position_band",
+            "label": "Avg position band",
+            "type": "text"
+          },
+          {
+            "field": "pages",
+            "label": "Trivia pages",
+            "type": "number"
+          },
+          {
+            "field": "clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Page imps",
+            "type": "number"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Weighted pos.",
+            "type": "number"
+          },
+          {
+            "field": "zero_click_pages",
+            "label": "Zero-click pages",
+            "type": "number"
+          },
+          {
+            "field": "zero_click_impressions",
+            "label": "Zero-click imps",
+            "type": "number"
+          },
+          {
+            "field": "zero_click_impression_share",
+            "label": "Zero-click imp share",
+            "type": "percent"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "trivia_tech_cohort_table",
+        "title": "Trivia CTR by technology cohort",
+        "subtitle": "Three-month GSC Pages rows; cohorts show that the zero-click problem is not uniform across technologies.",
+        "dataset": "trivia_tech_cohort_rows",
+        "sourceId": "zero_click_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "technology",
+            "label": "Technology",
+            "type": "text"
+          },
+          {
+            "field": "pages",
+            "label": "Trivia pages",
+            "type": "number"
+          },
+          {
+            "field": "clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Page imps",
+            "type": "number"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Weighted pos.",
+            "type": "number"
+          },
+          {
+            "field": "zero_click_impression_share",
+            "label": "Zero-click imp share",
+            "type": "percent"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "priority_pages_table",
+        "title": "High-impression pages averaging positions 5–10",
+        "subtitle": "Sorted by three-month page impressions; URL-level aggregation is appropriate for page diagnosis, not property totals.",
+        "dataset": "priority_pages",
+        "sourceId": "analysis_results",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "page",
+            "label": "Page",
+            "type": "text"
+          },
+          {
+            "field": "group",
+            "label": "Group",
+            "type": "text"
+          },
+          {
+            "field": "clicks_3m",
+            "label": "3m clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions_3m",
+            "label": "3m imps",
+            "type": "number"
+          },
+          {
+            "field": "ctr_3m",
+            "label": "3m CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position_3m",
+            "label": "3m pos.",
+            "type": "number"
+          },
+          {
+            "field": "ctr_28d",
+            "label": "28d CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position_28d",
+            "label": "28d pos.",
+            "type": "number"
+          },
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "query_clusters_table",
+        "title": "Visible query signals",
+        "subtitle": "Rule-defined, overlapping lower bounds from the truncated three-month query table.",
+        "dataset": "query_cluster_rows",
+        "sourceId": "analysis_results",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "impressions",
+          "direction": "desc"
+        },
+        "columns": [
+          {
+            "field": "cluster",
+            "label": "Signal",
+            "type": "text"
+          },
+          {
+            "field": "definition",
+            "label": "Rule",
+            "type": "text"
+          },
+          {
+            "field": "query_rows",
+            "label": "Rows",
+            "type": "number"
+          },
+          {
+            "field": "clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Visible imps",
+            "type": "number"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Avg pos.",
+            "type": "number"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "aug5_mix_table",
+        "title": "5 Ağustos vs diğer altı gün: ABD karması",
+        "subtitle": "Ülke toplamları property grafiğiyle tam uzlaşır; iki dönem birbirini dışlar.",
+        "dataset": "aug5_mix_rows",
+        "sourceId": "followup_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "segment",
+            "label": "Segment",
+            "type": "text"
+          },
+          {
+            "field": "other6_impressions",
+            "label": "Other 6d imps",
+            "type": "number"
+          },
+          {
+            "field": "other6_share",
+            "label": "Other 6d share",
+            "type": "percent"
+          },
+          {
+            "field": "other6_ctr",
+            "label": "Other 6d CTR",
+            "type": "percent"
+          },
+          {
+            "field": "aug5_impressions",
+            "label": "Aug 5 imps",
+            "type": "number"
+          },
+          {
+            "field": "aug5_share",
+            "label": "Aug 5 share",
+            "type": "percent"
+          },
+          {
+            "field": "aug5_ctr",
+            "label": "Aug 5 CTR",
+            "type": "percent"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "aug5_top_pages_table",
+        "title": "5 Ağustos: en yüksek gösterimli sayfalar",
+        "subtitle": "Top 10 sayfa property gösterimlerinin %60,1'ini taşır; patlama tek URL'ye bağlı değildir.",
+        "dataset": "aug5_top_page_rows",
+        "sourceId": "followup_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "page",
+            "label": "Page",
+            "type": "text"
+          },
+          {
+            "field": "group",
+            "label": "Group",
+            "type": "text"
+          },
+          {
+            "field": "clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Impressions",
+            "type": "number"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Avg pos.",
+            "type": "number"
+          },
+          {
+            "field": "property_share",
+            "label": "Property share",
+            "type": "percent"
+          },
+          {
+            "field": "seven_day_share",
+            "label": "Share of page's 7d imps",
+            "type": "percent"
+          },
+          {
+            "field": "daily_lift",
+            "label": "vs other-6 daily avg",
+            "type": "number"
+          },
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "exact_page_table",
+        "title": "Exact-page sonuçları",
+        "subtitle": "Grafik/Sayfa toplamları kontrol kaynağıdır; source-preference oranları yalnız görünür query alt kümesidir.",
+        "dataset": "exact_page_rows",
+        "sourceId": "followup_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "page",
+            "label": "Page",
+            "type": "text"
+          },
+          {
+            "field": "clicks",
+            "label": "Clicks",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Impressions",
+            "type": "number"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Avg pos.",
+            "type": "number"
+          },
+          {
+            "field": "visible_query_coverage",
+            "label": "Visible query coverage",
+            "type": "percent"
+          },
+          {
+            "field": "source_preference_share",
+            "label": "Source-pref. share (visible)",
+            "type": "percent"
+          },
+          {
+            "field": "first7_share",
+            "label": "First-7 share",
+            "type": "percent"
+          },
+          {
+            "field": "assessment",
+            "label": "Assessment",
+            "type": "text"
+          },
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "exact_query_table",
+        "title": "Exact-page görünür query kümeleri",
+        "subtitle": "Kümeler örtüşür. React'te yalnız 251, HTML'de 155 raporlanabilir gösterim vardır; yüzdeler tüm sayfa trafiğini temsil etmez.",
+        "dataset": "exact_query_rows",
+        "sourceId": "followup_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "page",
+            "label": "Page",
+            "type": "text"
+          },
+          {
+            "field": "cluster",
+            "label": "Signal",
+            "type": "text"
+          },
+          {
+            "field": "definition",
+            "label": "Rule",
+            "type": "text"
+          },
+          {
+            "field": "rows",
+            "label": "Rows",
+            "type": "number"
+          },
+          {
+            "field": "impressions",
+            "label": "Visible imps",
+            "type": "number"
+          },
+          {
+            "field": "visible_impression_share",
+            "label": "Visible share",
+            "type": "percent"
+          },
+          {
+            "field": "ctr",
+            "label": "CTR",
+            "type": "percent"
+          },
+          {
+            "field": "position",
+            "label": "Avg pos.",
+            "type": "number"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "trivia_exact_intent_table",
+        "title": "Exact-page docs vs non-doc visible queries",
+        "subtitle": "Angular and React/HTML use adjacent but non-identical windows; query rows are reportable subsets, while page totals remain authoritative.",
+        "dataset": "trivia_exact_intent_rows",
+        "sourceId": "zero_click_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "page",
+            "label": "Page",
+            "type": "text"
+          },
+          {
+            "field": "window",
+            "label": "Window",
+            "type": "text"
+          },
+          {
+            "field": "page_clicks",
+            "label": "Page clicks",
+            "type": "number"
+          },
+          {
+            "field": "page_impressions",
+            "label": "Page imps",
+            "type": "number"
+          },
+          {
+            "field": "page_ctr",
+            "label": "Page CTR",
+            "type": "percent"
+          },
+          {
+            "field": "page_position",
+            "label": "Page pos.",
+            "type": "number"
+          },
+          {
+            "field": "visible_query_coverage",
+            "label": "Visible coverage",
+            "type": "percent"
+          },
+          {
+            "field": "docs_impressions",
+            "label": "Docs imps",
+            "type": "number"
+          },
+          {
+            "field": "docs_visible_share",
+            "label": "Docs visible share",
+            "type": "percent"
+          },
+          {
+            "field": "docs_clicks",
+            "label": "Docs clicks",
+            "type": "number"
+          },
+          {
+            "field": "docs_position",
+            "label": "Docs pos.",
+            "type": "number"
+          },
+          {
+            "field": "non_docs_impressions",
+            "label": "Non-doc imps",
+            "type": "number"
+          },
+          {
+            "field": "non_docs_clicks",
+            "label": "Non-doc clicks",
+            "type": "number"
+          },
+          {
+            "field": "non_docs_position",
+            "label": "Non-doc pos.",
+            "type": "number"
+          },
+          {
+            "field": "rank",
+            "label": "Order",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "metadata_table",
+        "title": "Current rendered metadata on priority pages",
+        "subtitle": "Extracted from the current prerendered HTML, not from the internal SEO manifest.",
+        "dataset": "metadata_rows",
+        "sourceId": "rendered_metadata",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "page",
+            "label": "Page",
+            "type": "text"
+          },
+          {
+            "field": "title",
+            "label": "Rendered title",
+            "type": "text"
+          },
+          {
+            "field": "title_chars",
+            "label": "Title chars",
+            "type": "number"
+          },
+          {
+            "field": "description_chars",
+            "label": "Desc chars",
+            "type": "number"
+          },
+          {
+            "field": "h1_alignment",
+            "label": "H1 alignment",
+            "type": "text"
+          },
+          {
+            "field": "ctr_3m",
+            "label": "3m CTR",
+            "type": "percent"
+          },
+          {
+            "field": "assessment",
+            "label": "Assessment",
+            "type": "text"
+          },
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "repo_risk_table",
+        "title": "SEO implementation findings",
+        "subtitle": "Current repository and prerender output; no source file was edited for this diagnosis.",
+        "dataset": "repo_risk_rows",
+        "sourceId": "repo_seo_generator",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "finding",
+            "label": "Finding",
+            "type": "text"
+          },
+          {
+            "field": "evidence",
+            "label": "Evidence",
+            "type": "text"
+          },
+          {
+            "field": "ctr_link",
+            "label": "CTR relevance",
+            "type": "text"
+          },
+          {
+            "field": "priority",
+            "label": "Priority",
+            "type": "text"
+          },
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "quality_table",
+        "title": "Data quality and interpretation checks",
+        "subtitle": "Checks that determine which exported grains are safe to use for each claim.",
+        "dataset": "quality_rows",
+        "sourceId": "analysis_results",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "check",
+            "label": "Check",
+            "type": "text"
+          },
+          {
+            "field": "evidence",
+            "label": "Evidence",
+            "type": "text"
+          },
+          {
+            "field": "impact",
+            "label": "Analytical impact",
+            "type": "text"
+          },
+          {
+            "field": "assessment",
+            "label": "Assessment",
+            "type": "text"
+          },
+          {
+            "field": "rank",
+            "label": "Rank",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "exports_table",
+        "title": "Requested evidence status",
+        "subtitle": "The three requested workbooks are received and validated; the generative-AI report is optional.",
+        "dataset": "export_rows",
+        "sourceId": "followup_analysis",
+        "density": "comfortable",
+        "defaultSort": {
+          "field": "priority",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "priority",
+            "label": "Priority",
+            "type": "number"
+          },
+          {
+            "field": "export",
+            "label": "Export",
+            "type": "text"
+          },
+          {
+            "field": "filters",
+            "label": "Filters",
+            "type": "text"
+          },
+          {
+            "field": "why",
+            "label": "What it resolves",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "analysis_results",
+        "label": "FrontendAtlas GSC CTR analysis results",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/analysis_results.json",
+        "query": {
+          "engine": "Python standard library",
+          "language": "python",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/analysis_results.json')",
+          "description": "Read-only OOXML extraction, reconciliation, weighted CTR/position summaries, Shapley country-mix decomposition, and page/query cohorting.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "frontendatlas.com-Performance-on-Search-2026-08-10.xlsx",
+            "frontendatlas.com-Performance-on-Search-2026-08-10 (1).xlsx",
+            "frontendatlas.com-Performance-on-Search-2026-08-10 (2).xlsx",
+            "frontendatlas.com-Performance-on-Search-2026-08-10 (3).xlsx"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Windows end 2026-08-08 except preliminary 24h export"
+          ],
+          "metric_definitions": [
+            "CTR = clicks / impressions; CTR cells are not averaged.",
+            "Average position = impression-weighted position from the exported rows.",
+            "Property totals use the Grafik/Ülkeler/Cihazlar grain; page rows are not summed into site CTR.",
+            "Mix/within effects use a symmetric two-segment Shapley decomposition for US vs non-US."
+          ]
+        }
+      },
+      {
+        "id": "gsc_3m",
+        "label": "GSC Search performance — last 3 months (materialized prior export)",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+        "query": {
+          "engine": "DuckDB JSON reader",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '3m'",
+          "description": "Read the preserved, read-only extraction of the finalized property-level Web export for May 9–Aug 8, 2026.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Prior export Grafik!A1:E93, preserved under source_extract.json['3m']"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Date: 2026-05-09 through 2026-08-08"
+          ],
+          "metric_definitions": [
+            "CTR = SUM(clicks) / SUM(impressions)",
+            "Average position = SUM(impressions * position) / SUM(impressions)"
+          ]
+        }
+      },
+      {
+        "id": "gsc_28d",
+        "label": "GSC Search performance — last 28 days (materialized prior export)",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+        "query": {
+          "engine": "DuckDB JSON reader",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '28d'",
+          "description": "Read the preserved, read-only extraction of the finalized property-level Web export for Jul 12–Aug 8, 2026.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Prior export Grafik!A1:E29, preserved under source_extract.json['28d']"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Date: 2026-07-12 through 2026-08-08"
+          ],
+          "metric_definitions": [
+            "CTR = SUM(clicks) / SUM(impressions)",
+            "Average position = SUM(impressions * position) / SUM(impressions)"
+          ]
+        }
+      },
+      {
+        "id": "gsc_7d",
+        "label": "GSC Search performance — last 7 days (materialized prior export)",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+        "query": {
+          "engine": "DuckDB JSON reader",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '7d'",
+          "description": "Read the preserved, read-only extraction of the finalized property-level Web export for Aug 2–Aug 8, 2026.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Prior export Grafik!A1:E8, preserved under source_extract.json['7d']"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Date: 2026-08-02 through 2026-08-08"
+          ],
+          "metric_definitions": [
+            "CTR = SUM(clicks) / SUM(impressions)",
+            "Average position = SUM(impressions * position) / SUM(impressions)"
+          ]
+        }
+      },
+      {
+        "id": "gsc_24h",
+        "label": "GSC Search performance — last 24 hours (materialized preliminary export)",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+        "query": {
+          "engine": "DuckDB JSON reader",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '24h'",
+          "description": "Read the preserved preliminary hourly property-level Web extraction from the initial export set.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Prior export Grafik!A1:E25, preserved under source_extract.json['24h']"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Timezone: UTC+03:00"
+          ],
+          "metric_definitions": [
+            "CTR = SUM(clicks) / SUM(impressions)",
+            "Average position = SUM(impressions * position) / SUM(impressions)"
+          ]
+        }
+      },
+      {
+        "id": "followup_analysis",
+        "label": "Follow-up GSC workbook analysis",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/followup_analysis.json",
+        "query": {
+          "engine": "Python standard library",
+          "language": "python",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/followup_analysis.json')",
+          "description": "Read-only reconciliation and cohort analysis of the Aug 5 sitewide export and the two exact-page exports.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Aug 5: Grafik, Sorgular, Sayfa sayısı, Ülkeler, Cihazlar, Filtreler",
+            "React exact page: Grafik, Sorgular, Sayfa sayısı, Ülkeler, Cihazlar, Filtreler",
+            "HTML exact page: Grafik, Sorgular, Sayfa sayısı, Ülkeler, Cihazlar, Filtreler"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Aug 5, 2026 sitewide",
+            "Jul 12–Aug 8, 2026 exact-page windows"
+          ],
+          "metric_definitions": [
+            "CTR = clicks / impressions; exported CTR cells are not averaged.",
+            "Exact-page Graph/Page totals are authoritative; dimension sheets are reportable-query subsets.",
+            "Aug 5 country mix/within effects use a symmetric US vs non-US Shapley decomposition against the other six days."
+          ]
+        }
+      },
+      {
+        "id": "zero_click_analysis",
+        "label": "Trivia zero-click and visible-query intent cohorts",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/zero_click_analysis.json",
+        "query": {
+          "engine": "Python standard library",
+          "language": "python",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/zero_click_analysis.json')",
+          "description": "Reproduce URL-level trivia cohorts and an exclusive, rule-defined intent split from materialized GSC extracts.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "source_extract.json: 3m/28d Grafik, Sorgular, Sayfa sayısı",
+            "followup_source_extract.json: React and HTML exact-page exports",
+            "seo-gsc-page-audit-2026-08-07/source_extract.json: Angular exact-page comparison"
+          ],
+          "filters": [
+            "Trivia URL contains the trivia route segment",
+            "Zero-click URL row has exactly zero clicks in the stated window",
+            "Visible-query topic mapping is exclusive and first-match-wins",
+            "Docs modifier regex is recorded in zero_click_analysis.json"
+          ],
+          "metric_definitions": [
+            "CTR = SUM(clicks) / SUM(impressions); exported CTR cells are not averaged.",
+            "Average position = SUM(impressions * position) / SUM(impressions).",
+            "The 75.3% docs share is limited to the 4,600-impression mapped visible-query sample.",
+            "Property-level query rows have no page dimension; exact-page rows are reported separately."
+          ]
+        }
+      },
+      {
+        "id": "gsc_aug5",
+        "label": "GSC Search performance — Aug 5, 2026 sitewide",
+        "path": "frontendatlas.com-Performance-on-Search-2026-08-10.xlsx",
+        "query": {
+          "engine": "DuckDB Excel extension",
+          "language": "sql",
+          "sql": "SELECT * FROM read_xlsx('frontendatlas.com-Performance-on-Search-2026-08-10.xlsx', sheet = 'Grafik')",
+          "description": "Read the one-day, unfiltered property-level Web export and its page/country/device marginals.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Grafik!A1:E2",
+            "Sayfa sayısı!A1:E143",
+            "Ülkeler!A1:E75",
+            "Cihazlar!A1:E4",
+            "Filtreler!A1:B3"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Date: 2026-08-05",
+            "No page filter"
+          ],
+          "metric_definitions": [
+            "Property CTR = Grafik clicks / Grafik impressions",
+            "Country/device totals must reconcile to Grafik"
+          ]
+        }
+      },
+      {
+        "id": "gsc_react_exact",
+        "label": "GSC exact-page performance — React render-nothing",
+        "path": "frontendatlas.com-Performance-on-Search-2026-08-10 (1).xlsx",
+        "query": {
+          "engine": "DuckDB Excel extension",
+          "language": "sql",
+          "sql": "SELECT * FROM read_xlsx('frontendatlas.com-Performance-on-Search-2026-08-10 (1).xlsx', sheet = 'Grafik')",
+          "description": "Read the 28-day exact-page Web export for the React render-nothing URL.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Grafik!A1:E29",
+            "Sorgular!A1:E68",
+            "Sayfa sayısı!A1:E2",
+            "Filtreler!A1:B4"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Date: 2026-07-12 through 2026-08-08",
+            "Exact page URL: https://frontendatlas.com/react/trivia/react-render-nothing-return-value"
+          ],
+          "metric_definitions": [
+            "Graph/Page totals are authoritative",
+            "Query/country/device rows describe only the 251 reportable impressions"
+          ]
+        }
+      },
+      {
+        "id": "gsc_html_exact",
+        "label": "GSC exact-page performance — HTML form default method",
+        "path": "frontendatlas.com-Performance-on-Search-2026-08-10 (2).xlsx",
+        "query": {
+          "engine": "DuckDB Excel extension",
+          "language": "sql",
+          "sql": "SELECT * FROM read_xlsx('frontendatlas.com-Performance-on-Search-2026-08-10 (2).xlsx', sheet = 'Grafik')",
+          "description": "Read the 28-day exact-page Web export for the HTML form-default URL.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "Grafik!A1:E29",
+            "Sorgular!A1:E41",
+            "Sayfa sayısı!A1:E2",
+            "Filtreler!A1:B4"
+          ],
+          "filters": [
+            "Search type: Web",
+            "Date: 2026-07-12 through 2026-08-08",
+            "Exact page URL: https://frontendatlas.com/html/trivia/html-form-default-method"
+          ],
+          "metric_definitions": [
+            "Graph/Page totals are authoritative",
+            "Query/country/device rows describe only the 155 reportable impressions"
+          ]
+        }
+      },
+      {
+        "id": "rendered_metadata",
+        "label": "Current prerendered FrontendAtlas HTML metadata",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/rendered_metadata_audit.json",
+        "query": {
+          "engine": "DuckDB JSON reader",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/rendered_metadata_audit.json')",
+          "description": "Read the bounded metadata audit rows extracted from the current prerendered HTML.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "frontend/dist/frontendatlas/browser/*/index.html"
+          ],
+          "filters": [
+            "Five highest-priority low-CTR pages"
+          ],
+          "metric_definitions": [
+            "Title and description characters use Unicode string length",
+            "CTR = GSC page clicks / page impressions"
+          ]
+        }
+      },
+      {
+        "id": "repo_seo_generator",
+        "label": "FrontendAtlas SEO generators and intelligence manifest",
+        "path": "outputs/seo-ctr-diagnostic-2026-08-10/repo_seo_audit.json",
+        "query": {
+          "engine": "DuckDB JSON reader",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/repo_seo_audit.json')",
+          "description": "Read the bounded repository/prerender audit findings and their GSC cohort cross-match.",
+          "executed_at": "2026-08-11T00:00:00+03:00",
+          "tables_used": [
+            "frontend/src/app/features/trivia/trivia-detail/trivia-seo.util.ts",
+            "frontend/scripts/generate-seo-intelligence-manifest.mjs",
+            "frontend/dist/frontendatlas/browser/*/index.html"
+          ],
+          "filters": [
+            "Current local prerender output",
+            "Three-month GSC Pages export"
+          ],
+          "metric_definitions": [
+            "Cohort CTR = cohort page clicks / cohort page impressions",
+            "Cohort share = cohort page impressions / property impressions"
+          ]
+        }
+      },
+      {
+        "id": "prior_angular_audit",
+        "label": "Angular HttpClient page GSC audit — 2026-08-07",
+        "path": "outputs/seo-gsc-page-audit-2026-08-07/analysis_results.json"
+      },
+      {
+        "id": "gsc_dimensions_docs",
+        "label": "Google Search Console — dimensions and data groupings",
+        "href": "https://support.google.com/webmasters/answer/17011259?hl=en"
+      },
+      {
+        "id": "gsc_aggregation_docs",
+        "label": "Google Search Console — about the data",
+        "href": "https://support.google.com/webmasters/answer/17011364?hl=en"
+      },
+      {
+        "id": "gsc_ai_docs",
+        "label": "Google Search Console — generative AI performance report",
+        "href": "https://support.google.com/webmasters/answer/16984139?hl=en"
+      },
+      {
+        "id": "google_title_docs",
+        "label": "Google Search Central — title link guidance",
+        "href": "https://developers.google.com/search/docs/appearance/title-link"
+      },
+      {
+        "id": "google_snippet_docs",
+        "label": "Google Search Central — snippet guidance",
+        "href": "https://developers.google.com/search/docs/appearance/snippet"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# FrontendAtlas CTR neden düşük?"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n- **Kısa dönem düşüşü artık net: 5 Ağustos'ta geniş bir ABD/masaüstü görünürlük dalgası oluştu.** Günün 7.884 gösteriminin %92,3'ü ABD, %99,5'i masaüstü; CTR %0,076. Aynı gün ABD ve ABD dışı ortalama pozisyonları neredeyse eşitken CTR farkı 59,8 kattı.\n- **Bu tek sayfa veya tek bozuk title olayı değil.** Interview hub + framework-prep sayfaları 4.281 gösterim ve sıfır tık üretti; trivia ile birlikte 5 Ağustos sayfa tablosunun %85,2'sini oluşturdu. İlk beş sayfa 3.292 gösterim/sıfır tık aldı, fakat en büyük sayfanın payı yalnız %11.\n- **Docs/reference intent büyük ama tek neden değil.** Yüksek güvenle trivia konularına eşlenen 4.600 görünür gösterimin %75,3'ü docs/reference modifier taşıyor ve sıfır tıkta; docs-dışı 1.138 gösterim de yalnız 1 tık aldı. Üç exact sayfada docs-dışı görünür sorgular toplam 0/402 ve 5,76 ağırlıklı pozisyonda.\n- **Karar iki parçalı olmalı.** Public trivia çıktısındaki ortak source/reference sinyalleri merkezden kaldırılmalı; fakat CTR iyileşmesi için direct-answer/factoid sayfalarına tek cümlelik cevabın ötesinde tıklama gerektiren pratik değer eklenmeli. Toplu title/meta değişikliği için hâlâ kanıt yok."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "ctr_3m_card",
+          "recent_ctr_card",
+          "us_mix_card",
+          "aug5_card"
+        ]
+      },
+      {
+        "id": "definitions",
+        "type": "markdown",
+        "body": "## Bu sayıları nasıl okumalıyız?\n\n**Site CTR'si** için grafik/ülke/cihaz toplamları yetkilidir. **Sayfa tablosu** URL bazında toplandığı için aynı sonuç sayfasında birden fazla FrontendAtlas URL'si göründüğünde property toplamını aşabilir. **Zero-click URL**, belirtilen pencerede GSC Pages satırında tam olarak sıfır tık alan URL'dir. **Query coverage** anonim sorgular nedeniyle eksiktir; “%75,3 docs” yalnız 4.600 gösterimlik, görünür ve kural-bazlı topic-mapped örnektir. Pozisyon bantları `0<p≤5`, `5<p≤10`, `10<p≤20`, `p>20` olarak birbirini dışlar."
+      },
+      {
+        "id": "period_table_block",
+        "type": "table",
+        "tableId": "period_table"
+      },
+      {
+        "id": "country_finding",
+        "type": "markdown",
+        "sourceId": "analysis_results",
+        "body": "## Son düşüşü ABD ağırlığındaki trafik karması açıklıyor\n\nSon 7 günde ABD gösterim payı önceki 21 gündeki %52,8'den %77,6'ya çıktı. ABD CTR'si %0,066'dan %0,030'a gerilerken ABD dışı CTR %0,666'dan %0,878'e yükseldi. İki segmentli Shapley ayrıştırması toplam −0,1295 yüzde puan CTR hareketini −0,1800 puan **mix etkisi** ve +0,0505 puan **segment içi etki** olarak tam uzlaştırıyor.\n\n**Sonuç:** kısa dönem alarmı, site-geneli snippet çöküşü olarak yorumlanmamalı. Önce ABD'deki gösterim türü ve sorgu/sayfa bileşimi bulunmalı."
+      },
+      {
+        "id": "country_chart_block",
+        "type": "chart",
+        "chartId": "country_ctr_chart"
+      },
+      {
+        "id": "mix_table_block",
+        "type": "table",
+        "tableId": "mix_table"
+      },
+      {
+        "id": "spike_finding",
+        "type": "markdown",
+        "sourceId": "followup_analysis",
+        "body": "## 5 Ağustos tek günlük bir gösterim patlaması\n\n5 Ağustos'taki 7.884 gösterim, bir gün önceki 724 gösterimin 10,9 katı; ertesi gün 979'a geri dönüyor. Bu gün son haftanın gösterimlerinin %62'sini ama tıkların yalnız %21,4'ünü üretti. Gün çıkarıldığında haftalık CTR %0,220'den %0,455'e yükseliyor.\n\nYeni export, günün %92,3 ABD ve %99,5 masaüstü olduğunu doğruluyor. ABD CTR'si %0,0137; ABD dışı CTR %0,822 ve ortalama pozisyonlar 17,35'e karşı 17,32. Diğer altı güne göre CTR kaybının %82,7'si ABD payının %53,7'den %92,3'e çıkmasıyla, %17,3'ü ülke-içi değişimle açıklanıyor.\n\n**Sonuç:** haftalık çöküş site-geneli title/meta arızası değil; düşük sıralı, ABD/masaüstü ağırlıklı geçici görünürlük genişlemesidir."
+      },
+      {
+        "id": "daily_chart_block",
+        "type": "chart",
+        "chartId": "daily_impressions_chart"
+      },
+      {
+        "id": "aug5_scope_finding",
+        "type": "markdown",
+        "sourceId": "followup_analysis",
+        "body": "## Patlama geniş bir interview/prep cohortuna yayıldı\n\nİlk beş sayfa 3.292 gösterim ve sıfır tık aldı: Angular prep path, Vue interview hub, Vue prep path, HTML/CSS interview hub ve React interview hub. Bu sayfalar o gün 17,7–19,1 ortalama pozisyonlardaydı. En büyük URL toplamın yalnız %11'ini, ilk 10 URL %60,1'ini taşıdı; dolayısıyla olay tek URL değildir.\n\nInterview hub + framework-prep aileleri 4.281 gösterim/sıfır tık üretti. Trivia ile birlikte sayfa tablosunun %85,2'sine ulaştı. 10–20 ortalama pozisyon bandı da sayfa gösterimlerinin yaklaşık %91'ini ve yalnız %0,056 CTR'yi taşıdı. Görünür query tablosu günün sadece %1,89'unu açıkladığı için bunu belirli sorgu ya da AI özelliğine bağlamak mümkün değildir."
+      },
+      {
+        "id": "aug5_group_chart_block",
+        "type": "chart",
+        "chartId": "aug5_group_chart"
+      },
+      {
+        "id": "aug5_mix_table_block",
+        "type": "table",
+        "tableId": "aug5_mix_table"
+      },
+      {
+        "id": "aug5_top_pages_block",
+        "type": "table",
+        "tableId": "aug5_top_pages_table"
+      },
+      {
+        "id": "content_finding",
+        "type": "markdown",
+        "sourceId": "analysis_results",
+        "body": "## Kalıcı düşük CTR birkaç içerik ailesinde yoğunlaşıyor\n\nÜç aylık sayfa tablosunda trivia sayfaları 34.629 gösterimde 37 tık (%0,107); system-design blueprint sayfaları 11.842 gösterimde 10 tık (%0,084) üretiyor. Buna karşılık doğrudan system-design problem sayfaları ve ana sayfa, daha kötü ortalama pozisyonlarda bile daha yüksek CTR alıyor.\n\nOrtalama pozisyonu **5'ten büyük ve 10'a eşit/daha iyi** olan sayfa satırları 37.228 gösterimde yalnız 36 tık (%0,097); 10–20 bandı %0,489. Bu ekolojik test gerçek impression-level pozisyon eğrisi değildir, fakat “sadece ikinci sayfadayız” açıklamasını reddetmek için yeterlidir."
+      },
+      {
+        "id": "page_group_chart_block",
+        "type": "chart",
+        "chartId": "page_group_ctr_chart"
+      },
+      {
+        "id": "position_table_block",
+        "type": "table",
+        "tableId": "position_table"
+      },
+      {
+        "id": "trivia_zero_click_finding",
+        "type": "markdown",
+        "sourceId": "zero_click_analysis",
+        "body": "## Trivia zero-click sorunu long-tail sayısından ibaret değil\n\nÜç ayda 133 trivia URL'si 34.629 gösterimde 37 tık aldı: CTR %0,107. URL'lerin 121'i literal zero-click olsa da bunlar gösterimlerin yalnız %31,3'ünü taşıyor. Tık alan 12 yüksek hacimli sayfanın CTR'si de yalnız %0,156; yani sorun yalnız çok sayıdaki küçük sayfanın sıfır tık alması değil.\n\nOrtalama pozisyonu 5–10 olan trivia satırları 26.003 gösterimde %0,100 CTR üretirken 10–20 bandı %0,133 üretiyor. Teknoloji kırılımı da uniform değil: JavaScript %0,248 ve Angular %0,148; React yalnız %0,0316, HTML/Vue sıfır. **Sonuç:** rank tek kök neden değil; React/HTML ve beş docs-heavy konu önce ele alınmalı."
+      },
+      {
+        "id": "trivia_page_position_table_block",
+        "type": "table",
+        "tableId": "trivia_page_position_table"
+      },
+      {
+        "id": "trivia_tech_cohort_table_block",
+        "type": "table",
+        "tableId": "trivia_tech_cohort_table"
+      },
+      {
+        "id": "priority_pages_block",
+        "type": "table",
+        "tableId": "priority_pages_table"
+      },
+      {
+        "id": "intent_finding",
+        "type": "markdown",
+        "sourceId": "analysis_results",
+        "body": "## Görünür sorgular source-preference ve AI-benzeri intent gösteriyor\n\nDar ve denetlenebilir tam ifade `official docs` alt kümesi dahi 1.443 görünür gösterim, 0 tık ve 6,85 ortalama pozisyon üretiyor. Daha geniş `official/docs/documentation` kuralı 3.278 gösterimde yine sıfır tıkta kalıyor. Angular HttpClient cancellation ve RADIO kümeleri benzer biçimde iyi ortalama pozisyona rağmen çok düşük CTR taşıyor.\n\nBu sonuç, kullanıcıların özellikle birincil dokümantasyon ararken FrontendAtlas yerine Angular/React/MDN gibi kaynakları tercih ettiğini düşündürüyor. Ayrıca uzun, şablonlaşmış RADIO sorguları AI Mode'un çoklu alt konu aramalarına benziyor; **bu bir hipotezdir**, generative-AI raporuyla sınanmalıdır. Query exportu toplam gösterimlerin yalnız %18,5'ini kapsadığı için kümeler alt sınırdır."
+      },
+      {
+        "id": "query_clusters_block",
+        "type": "table",
+        "tableId": "query_clusters_table"
+      },
+      {
+        "id": "trivia_intent_split_finding",
+        "type": "markdown",
+        "sourceId": "zero_click_analysis",
+        "body": "## Docs intent baskın; docs-dışı sorgular da tıklanmıyor\n\nYüksek güvenle trivia konularına eşlenen görünür üç aylık örnekte docs/reference sorguları 0/3.462, 7,49 pozisyonda; docs-dışı direct-answer/factoid sorgular 1/1.138, 8,12 pozisyonda. 5–10 query-position bandında docs 0/3.415, docs-dışı 1/952. Docs modifier, mapped görünür hacmin %75,3'ünü açıklıyor ama tek neden olamaz.\n\nExact Angular, React ve HTML sayfalarında docs-dışı görünür sorgular birleşik 0/402 ve 5,76 ağırlıklı pozisyonda. Bu, **answer-in-SERP / tıklamadan tatmin edilen factoid** davranışını ikinci ana mekanizma yapıyor. Search Appearance verisi olmadığından bunun featured snippet, AI sonucu veya sıradan no-click davranışından hangisi olduğu ayrıştırılamaz."
+      },
+      {
+        "id": "trivia_intent_position_chart_block",
+        "type": "chart",
+        "chartId": "trivia_intent_position_chart"
+      },
+      {
+        "id": "trivia_exact_intent_table_block",
+        "type": "table",
+        "tableId": "trivia_exact_intent_table"
+      },
+      {
+        "id": "exact_page_finding",
+        "type": "markdown",
+        "sourceId": "followup_analysis",
+        "body": "## Exact-page sonuçları aynı sorunun iki farklı biçimini gösteriyor\n\n### React: geçici exposure dalgası + iki intent\n\n`/react/trivia/react-render-nothing-return-value` 28 günde 2.719 gösterim/1 tık (%0,0368 CTR), 8,65 ortalama pozisyon aldı. İlk yedi gün gösterimlerin %63,2'sini taşıdı; sonraki 21 günde hacim 1.001'e indi, pozisyon yine yaklaşık 8,7 kaldı. Bu ranking çöküşünden çok geçici ilk-hafta exposure dalgasıdır. Görünür 251 gösterimin %64,1'i docs/documentation/official modifier, önemli bir kısmı da JSX-child ve eski React error semantiği taşıyor. Mevcut title component-return niyetini karşılıyor; snippet'teki “Practice…” dili kaynak arayan kullanıcıya zayıf kalıyor.\n\n**Karar:** public source-check bloğunu ve reference şemasını trivia'dan çıkarın; component-vs-JSX-child ayrımını interview-practice değer önerisi içinde tutun. Hemen yeniden title değiştirmeyin; önce merkezi intent temizliğinin cohort etkisini ölçün.\n\n### HTML: açık authority/navigational intent uyumsuzluğu\n\n`/html/trivia/html-form-default-method` 1.113 gösterim/sıfır tık ve 7,65 ortalama pozisyon aldı; 28 günün tamamı sıfır tık. Görünür 155 gösterimin %68,4'ü açıkça MDN, daha geniş source-preference kümesi %79,4. Bu, üçüncü taraf interview/trivia sayfasının MDN/standart navigational sorgularında 7–8. sırada görünmesi; iyi metadata bile tıklama üretmeyebilir. Basit factoid cevap SERP'te tıklamadan da tüketilebilir.\n\n**Karar:** başlığa `MDN` ekleyerek branded intent kovalamayın ve trivia'ya görünür reference bloğu eklemeyin. MDN/WHATWG derinliği ürün açısından gerekliyse ayrı, benzersiz ve self-canonical reference guide oluşturun. Trivia sayfası interview/practice rolünde kalsın; direct-answer sorgularında ise minimal örneğin ötesinde kullanıcıyı tıklamaya değer kılan test/decision değeri sunun."
+      },
+      {
+        "id": "exact_page_daily_chart_block",
+        "type": "chart",
+        "chartId": "exact_page_daily_chart"
+      },
+      {
+        "id": "exact_page_table_block",
+        "type": "table",
+        "tableId": "exact_page_table"
+      },
+      {
+        "id": "exact_query_table_block",
+        "type": "table",
+        "tableId": "exact_query_table"
+      },
+      {
+        "id": "metadata_finding",
+        "type": "markdown",
+        "sourceId": "rendered_metadata",
+        "body": "## Öncelikli sayfalarda toplu metadata değişikliği desteklenmiyor\n\nEn yüksek gösterimli beş düşük-CTR sayfanın güncel prerender title ve description'ları açık, benzersiz ve içerikle uyumlu. React ve HTML exact exportları da canonical/metadata kaybını değil, görünür sorgularda source-preference intentini işaret ediyor. Bu iki sayfada snippet testi yapılabilir; fakat bu, site-geneli otomatik başlık yeniden yazımı için kanıt değildir.\n\nAngular HttpClient sayfasının title'ı 3 Ağustos'ta değişti; önceki exact-page audit yeni snippet için temiz bir post-crawl pencere olmadığını gösterdi. **Bu sayfayı tekrar değiştirmeyin; ölçüm penceresini tamamlayın.**"
+      },
+      {
+        "id": "metadata_table_block",
+        "type": "table",
+        "tableId": "metadata_table"
+      },
+      {
+        "id": "repo_finding",
+        "type": "markdown",
+        "sourceId": "repo_seo_generator",
+        "body": "## Teknik temel iyi; iç SEO ölçüm ekranında kör nokta var\n\nMevcut build'de sitemap/prerender/canonical/H1 kapsamı güçlü; bu nedenle eksik tag veya genel canonical arızası ana neden değil. Buna karşılık SEO intelligence manifesti çoğu sayfada gerçek prerender `<title>`/description yerine registry metnini gösteriyor. 348/435 title ve 356/435 description farklı; dashboard bu alanları kullanıyor.\n\nEk olarak 46 indexlenebilir title `Interview Answer` kalıbı taşıyor ve bazı prompt dönüşümleri dilbilgisel olarak bozuk. GSC'de üç ayda görünen 24 URL 1.069 gösterim/2 tık (%0,187 CTR) aldı; bu property gösterimlerinin yalnız %1,49'u. Kusur gerçek, fakat aggregate düşük CTR'nin nedeni değil. **Dashboard gerçek prerender metadata ile uzlaştırılmadan otomatik snippet aksiyonu yine de güvenli değil.**"
+      },
+      {
+        "id": "repo_table_block",
+        "type": "table",
+        "tableId": "repo_risk_table"
+      },
+      {
+        "id": "data_quality",
+        "type": "markdown",
+        "body": "## Veri güvenilir; çapraz boyut eksikliği nedenselliği sınırlar\n\n5 Ağustos dosyasında ülke ve cihaz toplamları property grafiğiyle tam uzlaşıyor; üç yeni dosyada tarih, filtre, CTR yuvarlaması ve anahtar kontrolleri geçti. React ve HTML exact-page dosyalarında ise query/country/device sekmeleri sırasıyla yalnız 251 ve 155 raporlanabilir gösterime uzlaşıyor. Bu, dosya bozukluğu değil; anonim sorgu filtrelemesiyle tutarlı bir kapsam sınırıdır.\n\nXLSX'ler yine tek boyutlu marjinaller sunuyor; `date × page × query × country × device` birleşik grain yok. Bu nedenle 5 Ağustos'un en az %91,8'inin hem ABD hem masaüstü olduğu sınırlandırılabilir, fakat belirli sayfa + sorgu + ülke + cihaz zinciri kurulamaz."
+      },
+      {
+        "id": "quality_table_block",
+        "type": "table",
+        "tableId": "quality_table"
+      },
+      {
+        "id": "recommended_steps",
+        "type": "markdown",
+        "body": "## Önerilen sonraki adımlar\n\n1. **5 Ağustos için site-geneli metadata değiştirmeyin.** Olayı ayrı bir görünürlük dalgası olarak etiketleyin; interview hub ve framework-prep ailelerinde tekrar edip etmediğini günlük izleyin.\n2. **Merkezi trivia intent temizliğini tek müdahale olarak ölçün.** Source/reference-only bloklarını public route ve TransferState'ten çıkarın; trivia şemasını `BreadcrumbList + Article` ile sınırlandırın; practice değer önerisini quick answer sonrasına taşıyın. Aynı anda title/meta değiştirmeyin.\n3. **Beş docs-heavy konuyu cohort olarak izleyin.** Angular HttpClient, React render-nothing, stale closures, StrictMode ve HTML form-default üç aylık trivia gösterimlerinin %61,7'sini fakat yalnız %0,0796 CTR'yi taşıyor. Deploy sonrası 3–4 tamamlanmış hafta docs-modifier payı, non-doc CTR, gösterim ve pozisyonu birlikte karşılaştırın.\n4. **Direct-answer sayfalarına tıklama gerektiren değer ekleyin.** Tek cümlelik factoid cevabın ötesinde çalıştırılabilir test, karar ağacı, failure prediction veya gerçek debugging kanıtı sunun. Reference derinliği gerekiyorsa ayrı, benzersiz self-canonical guide'a taşıyın.\n5. **SEO dashboard'unu gerçek prerender metadata ile uzlaştırın.** Aksi halde yanlış başlık/description cohortları görünmez kalır. Generative AI raporu görünüyorsa yalnız exposure mekanizmasını daraltmak için isteğe bağlı kullanın."
+      },
+      {
+        "id": "exports_table_block",
+        "type": "table",
+        "tableId": "exports_table"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Açık kalan sorular\n\n- 5 Ağustos'taki düşük sıralı ABD/masaüstü exposure dalgası generative-AI görünümünden mi, klasik Web query inventory genişlemesinden mi geldi?\n- Google React ve HTML sayfalarında bildirilen `<title>`/description'ı mı gösterdi, yoksa query'ye göre başka bir title link/snippet mi üretti?\n- Merkezi source/schema temizliğinden 3–4 tamamlanmış hafta sonra docs-modifier payı düşerken non-doc CTR, ortalama pozisyon ve gösterim hacmi korunuyor mu?\n- Exact URL + docs-regex karşılaştırması, property-level proxy sorguların gerçekten aynı trivia URL'sine gitmeye devam ettiğini doğruluyor mu?"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Sınırlamalar ve varsayımlar\n\n- Exact-page query/country/device oranları React'te 251, HTML'de 155 raporlanabilir gösterime aittir; tüm 2.719/1.113 gösterime genellenmez.\n- `%75,3 docs` oranı yalnız 4.600 gösterimlik, görünür ve topic-mapped query örneğidir; bütün trivia trafiğine genellenmez.\n- Property-level query exportunda URL boyutu yoktur. Sorguda `docs`, `MDN` veya `official` bulunması tek başına uygulamanın Google'a docs sinyali gönderdiğini kanıtlamaz.\n- Angular exact-page penceresi 8 Temmuz–4 Ağustos, React/HTML pencereleri 12 Temmuz–8 Ağustos'tur; exact-page satırları yön gösterir fakat tek birleşik cohort değildir.\n- 5 Ağustos query tablosu gösterimlerin yalnız %1,89'unu kapsar; günün sorgu veya SERP-feature nedeni doğrulanamaz.\n- Sayfa tablosu URL bazında, grafik property bazında toplandığı için sayfa satırları site toplamına eklenmez.\n- Ortalama pozisyon, impression-level sıra dağılımı değildir; position-band karşılaştırması kaba bir ekolojik testtir.\n- Ülke ve cihaz ayrıştırmaları aynı trafiğin farklı marjinalleridir; etkileri birbirine eklenemez.\n- Search Appearance sekmesinin boş olması özel appearance sınıfı raporlanmadığını gösterir; normal Web sonucunun yokluğu anlamına gelmez.\n- Google'ın gerçek SERP title/snippet rewrite'ı ve canlı deploy'un local prerender ile birebir eşleşmesi XLSX'lerden doğrulanamaz.\n- Yeni dosyalar önceki exportlarla aynı adları kullandığı için 3 ay/28 gün/7 gün/24 saat geçmiş analizi raporda salt-okuma `source_extract.json` kopyasından sürdürülür.\n- Kaynak XLSX'ler ve production state değiştirilmedi. Bu raporun ardından public trivia intent sözleşmesi local uygulama kaynaklarında güncellendi; deploy ve GSC etkisi henüz gözlenmedi."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-11T00:00:00+03:00",
+    "status": "ready",
+    "datasets": {
+      "headline": [
+        {
+          "ctr_3m": 0.0026183114676471405,
+          "clicks_3m": 188,
+          "impressions_3m": 71802,
+          "position_3m": 13.815885351382965,
+          "ctr_28d": 0.002945015227067367,
+          "ctr_7d": 0.0022010848203757568,
+          "us_share_3m": 0.6833235843012729,
+          "us_ctr_3m": 0.000509538561878363,
+          "non_us_ctr_3m": 0.007168616413053039,
+          "aug5_share_7d": 0.6197625972800881,
+          "ctr_7d_ex_aug5": 0.0045482737233822615
+        }
+      ],
+      "daily_3m": [
+        {
+          "date": "2026-05-09",
+          "clicks": 0,
+          "impressions": 488,
+          "ctr": 0.0,
+          "position": 8.5
+        },
+        {
+          "date": "2026-05-10",
+          "clicks": 0,
+          "impressions": 523,
+          "ctr": 0.0,
+          "position": 10.0
+        },
+        {
+          "date": "2026-05-11",
+          "clicks": 2,
+          "impressions": 791,
+          "ctr": 0.0025,
+          "position": 10.2
+        },
+        {
+          "date": "2026-05-12",
+          "clicks": 0,
+          "impressions": 622,
+          "ctr": 0.0,
+          "position": 11.5
+        },
+        {
+          "date": "2026-05-13",
+          "clicks": 2,
+          "impressions": 1067,
+          "ctr": 0.0019,
+          "position": 9.8
+        },
+        {
+          "date": "2026-05-14",
+          "clicks": 0,
+          "impressions": 697,
+          "ctr": 0.0,
+          "position": 12.7
+        },
+        {
+          "date": "2026-05-15",
+          "clicks": 1,
+          "impressions": 699,
+          "ctr": 0.0014000000000000002,
+          "position": 11.9
+        },
+        {
+          "date": "2026-05-16",
+          "clicks": 0,
+          "impressions": 487,
+          "ctr": 0.0,
+          "position": 11.5
+        },
+        {
+          "date": "2026-05-17",
+          "clicks": 0,
+          "impressions": 601,
+          "ctr": 0.0,
+          "position": 11.6
+        },
+        {
+          "date": "2026-05-18",
+          "clicks": 0,
+          "impressions": 414,
+          "ctr": 0.0,
+          "position": 13.9
+        },
+        {
+          "date": "2026-05-19",
+          "clicks": 0,
+          "impressions": 199,
+          "ctr": 0.0,
+          "position": 24.2
+        },
+        {
+          "date": "2026-05-20",
+          "clicks": 0,
+          "impressions": 195,
+          "ctr": 0.0,
+          "position": 28.3
+        },
+        {
+          "date": "2026-05-21",
+          "clicks": 1,
+          "impressions": 358,
+          "ctr": 0.0028000000000000004,
+          "position": 18.0
+        },
+        {
+          "date": "2026-05-22",
+          "clicks": 0,
+          "impressions": 535,
+          "ctr": 0.0,
+          "position": 20.3
+        },
+        {
+          "date": "2026-05-23",
+          "clicks": 0,
+          "impressions": 434,
+          "ctr": 0.0,
+          "position": 18.3
+        },
+        {
+          "date": "2026-05-24",
+          "clicks": 0,
+          "impressions": 478,
+          "ctr": 0.0,
+          "position": 16.1
+        },
+        {
+          "date": "2026-05-25",
+          "clicks": 1,
+          "impressions": 306,
+          "ctr": 0.0033,
+          "position": 17.4
+        },
+        {
+          "date": "2026-05-26",
+          "clicks": 3,
+          "impressions": 344,
+          "ctr": 0.0087,
+          "position": 11.5
+        },
+        {
+          "date": "2026-05-27",
+          "clicks": 3,
+          "impressions": 266,
+          "ctr": 0.0113,
+          "position": 24.9
+        },
+        {
+          "date": "2026-05-28",
+          "clicks": 2,
+          "impressions": 286,
+          "ctr": 0.006999999999999999,
+          "position": 25.6
+        },
+        {
+          "date": "2026-05-29",
+          "clicks": 1,
+          "impressions": 340,
+          "ctr": 0.0029,
+          "position": 15.6
+        },
+        {
+          "date": "2026-05-30",
+          "clicks": 0,
+          "impressions": 381,
+          "ctr": 0.0,
+          "position": 10.0
+        },
+        {
+          "date": "2026-05-31",
+          "clicks": 0,
+          "impressions": 568,
+          "ctr": 0.0,
+          "position": 9.7
+        },
+        {
+          "date": "2026-06-01",
+          "clicks": 0,
+          "impressions": 282,
+          "ctr": 0.0,
+          "position": 16.8
+        },
+        {
+          "date": "2026-06-02",
+          "clicks": 0,
+          "impressions": 478,
+          "ctr": 0.0,
+          "position": 14.9
+        },
+        {
+          "date": "2026-06-03",
+          "clicks": 2,
+          "impressions": 553,
+          "ctr": 0.0036,
+          "position": 11.6
+        },
+        {
+          "date": "2026-06-04",
+          "clicks": 0,
+          "impressions": 572,
+          "ctr": 0.0,
+          "position": 10.2
+        },
+        {
+          "date": "2026-06-05",
+          "clicks": 0,
+          "impressions": 636,
+          "ctr": 0.0,
+          "position": 9.5
+        },
+        {
+          "date": "2026-06-06",
+          "clicks": 0,
+          "impressions": 753,
+          "ctr": 0.0,
+          "position": 10.0
+        },
+        {
+          "date": "2026-06-07",
+          "clicks": 2,
+          "impressions": 320,
+          "ctr": 0.0062,
+          "position": 10.5
+        },
+        {
+          "date": "2026-06-08",
+          "clicks": 3,
+          "impressions": 594,
+          "ctr": 0.0051,
+          "position": 12.9
+        },
+        {
+          "date": "2026-06-09",
+          "clicks": 2,
+          "impressions": 454,
+          "ctr": 0.0044,
+          "position": 10.8
+        },
+        {
+          "date": "2026-06-10",
+          "clicks": 0,
+          "impressions": 565,
+          "ctr": 0.0,
+          "position": 17.0
+        },
+        {
+          "date": "2026-06-11",
+          "clicks": 2,
+          "impressions": 438,
+          "ctr": 0.0046,
+          "position": 10.5
+        },
+        {
+          "date": "2026-06-12",
+          "clicks": 1,
+          "impressions": 341,
+          "ctr": 0.0029,
+          "position": 10.8
+        },
+        {
+          "date": "2026-06-13",
+          "clicks": 0,
+          "impressions": 268,
+          "ctr": 0.0,
+          "position": 15.5
+        },
+        {
+          "date": "2026-06-14",
+          "clicks": 0,
+          "impressions": 538,
+          "ctr": 0.0,
+          "position": 11.2
+        },
+        {
+          "date": "2026-06-15",
+          "clicks": 1,
+          "impressions": 316,
+          "ctr": 0.0032,
+          "position": 18.7
+        },
+        {
+          "date": "2026-06-16",
+          "clicks": 1,
+          "impressions": 679,
+          "ctr": 0.0015,
+          "position": 14.9
+        },
+        {
+          "date": "2026-06-17",
+          "clicks": 1,
+          "impressions": 521,
+          "ctr": 0.0019,
+          "position": 16.5
+        },
+        {
+          "date": "2026-06-18",
+          "clicks": 3,
+          "impressions": 602,
+          "ctr": 0.005,
+          "position": 13.3
+        },
+        {
+          "date": "2026-06-19",
+          "clicks": 1,
+          "impressions": 538,
+          "ctr": 0.0019,
+          "position": 19.3
+        },
+        {
+          "date": "2026-06-20",
+          "clicks": 0,
+          "impressions": 453,
+          "ctr": 0.0,
+          "position": 10.6
+        },
+        {
+          "date": "2026-06-21",
+          "clicks": 2,
+          "impressions": 424,
+          "ctr": 0.004699999999999999,
+          "position": 10.1
+        },
+        {
+          "date": "2026-06-22",
+          "clicks": 2,
+          "impressions": 638,
+          "ctr": 0.0031,
+          "position": 12.0
+        },
+        {
+          "date": "2026-06-23",
+          "clicks": 3,
+          "impressions": 637,
+          "ctr": 0.004699999999999999,
+          "position": 12.8
+        },
+        {
+          "date": "2026-06-24",
+          "clicks": 2,
+          "impressions": 535,
+          "ctr": 0.0037,
+          "position": 11.8
+        },
+        {
+          "date": "2026-06-25",
+          "clicks": 6,
+          "impressions": 532,
+          "ctr": 0.0113,
+          "position": 11.2
+        },
+        {
+          "date": "2026-06-26",
+          "clicks": 4,
+          "impressions": 851,
+          "ctr": 0.004699999999999999,
+          "position": 11.4
+        },
+        {
+          "date": "2026-06-27",
+          "clicks": 0,
+          "impressions": 714,
+          "ctr": 0.0,
+          "position": 10.3
+        },
+        {
+          "date": "2026-06-28",
+          "clicks": 3,
+          "impressions": 888,
+          "ctr": 0.0034000000000000002,
+          "position": 9.2
+        },
+        {
+          "date": "2026-06-29",
+          "clicks": 3,
+          "impressions": 763,
+          "ctr": 0.0039000000000000003,
+          "position": 11.8
+        },
+        {
+          "date": "2026-06-30",
+          "clicks": 8,
+          "impressions": 1006,
+          "ctr": 0.008,
+          "position": 10.5
+        },
+        {
+          "date": "2026-07-01",
+          "clicks": 4,
+          "impressions": 1079,
+          "ctr": 0.0037,
+          "position": 11.4
+        },
+        {
+          "date": "2026-07-02",
+          "clicks": 4,
+          "impressions": 1176,
+          "ctr": 0.0034000000000000002,
+          "position": 10.0
+        },
+        {
+          "date": "2026-07-03",
+          "clicks": 2,
+          "impressions": 1165,
+          "ctr": 0.0017000000000000001,
+          "position": 8.3
+        },
+        {
+          "date": "2026-07-04",
+          "clicks": 0,
+          "impressions": 1008,
+          "ctr": 0.0,
+          "position": 7.5
+        },
+        {
+          "date": "2026-07-05",
+          "clicks": 3,
+          "impressions": 1021,
+          "ctr": 0.0029,
+          "position": 8.3
+        },
+        {
+          "date": "2026-07-06",
+          "clicks": 3,
+          "impressions": 1186,
+          "ctr": 0.0025,
+          "position": 8.3
+        },
+        {
+          "date": "2026-07-07",
+          "clicks": 5,
+          "impressions": 942,
+          "ctr": 0.0053,
+          "position": 9.5
+        },
+        {
+          "date": "2026-07-08",
+          "clicks": 5,
+          "impressions": 1249,
+          "ctr": 0.004,
+          "position": 9.0
+        },
+        {
+          "date": "2026-07-09",
+          "clicks": 2,
+          "impressions": 846,
+          "ctr": 0.0024,
+          "position": 15.8
+        },
+        {
+          "date": "2026-07-10",
+          "clicks": 3,
+          "impressions": 2961,
+          "ctr": 0.001,
+          "position": 23.3
+        },
+        {
+          "date": "2026-07-11",
+          "clicks": 1,
+          "impressions": 1320,
+          "ctr": 0.0008,
+          "position": 15.5
+        },
+        {
+          "date": "2026-07-12",
+          "clicks": 0,
+          "impressions": 1466,
+          "ctr": 0.0,
+          "position": 15.6
+        },
+        {
+          "date": "2026-07-13",
+          "clicks": 2,
+          "impressions": 1415,
+          "ctr": 0.0014000000000000002,
+          "position": 12.6
+        },
+        {
+          "date": "2026-07-14",
+          "clicks": 1,
+          "impressions": 1291,
+          "ctr": 0.0008,
+          "position": 14.7
+        },
+        {
+          "date": "2026-07-15",
+          "clicks": 1,
+          "impressions": 884,
+          "ctr": 0.0011,
+          "position": 16.0
+        },
+        {
+          "date": "2026-07-16",
+          "clicks": 5,
+          "impressions": 522,
+          "ctr": 0.0096,
+          "position": 12.4
+        },
+        {
+          "date": "2026-07-17",
+          "clicks": 2,
+          "impressions": 572,
+          "ctr": 0.0034999999999999996,
+          "position": 13.6
+        },
+        {
+          "date": "2026-07-18",
+          "clicks": 1,
+          "impressions": 581,
+          "ctr": 0.0017000000000000001,
+          "position": 10.7
+        },
+        {
+          "date": "2026-07-19",
+          "clicks": 3,
+          "impressions": 491,
+          "ctr": 0.0060999999999999995,
+          "position": 11.7
+        },
+        {
+          "date": "2026-07-20",
+          "clicks": 4,
+          "impressions": 517,
+          "ctr": 0.0077,
+          "position": 12.6
+        },
+        {
+          "date": "2026-07-21",
+          "clicks": 4,
+          "impressions": 452,
+          "ctr": 0.0088,
+          "position": 15.6
+        },
+        {
+          "date": "2026-07-22",
+          "clicks": 4,
+          "impressions": 516,
+          "ctr": 0.0078000000000000005,
+          "position": 15.4
+        },
+        {
+          "date": "2026-07-23",
+          "clicks": 7,
+          "impressions": 570,
+          "ctr": 0.0123,
+          "position": 12.8
+        },
+        {
+          "date": "2026-07-24",
+          "clicks": 2,
+          "impressions": 804,
+          "ctr": 0.0025,
+          "position": 14.4
+        },
+        {
+          "date": "2026-07-25",
+          "clicks": 1,
+          "impressions": 651,
+          "ctr": 0.0015,
+          "position": 15.1
+        },
+        {
+          "date": "2026-07-26",
+          "clicks": 2,
+          "impressions": 796,
+          "ctr": 0.0025,
+          "position": 14.2
+        },
+        {
+          "date": "2026-07-27",
+          "clicks": 5,
+          "impressions": 993,
+          "ctr": 0.005,
+          "position": 14.5
+        },
+        {
+          "date": "2026-07-28",
+          "clicks": 5,
+          "impressions": 976,
+          "ctr": 0.0051,
+          "position": 14.6
+        },
+        {
+          "date": "2026-07-29",
+          "clicks": 4,
+          "impressions": 1117,
+          "ctr": 0.0036,
+          "position": 15.6
+        },
+        {
+          "date": "2026-07-30",
+          "clicks": 1,
+          "impressions": 961,
+          "ctr": 0.001,
+          "position": 16.7
+        },
+        {
+          "date": "2026-07-31",
+          "clicks": 5,
+          "impressions": 813,
+          "ctr": 0.0062,
+          "position": 15.6
+        },
+        {
+          "date": "2026-08-01",
+          "clicks": 1,
+          "impressions": 772,
+          "ctr": 0.0013,
+          "position": 18.5
+        },
+        {
+          "date": "2026-08-02",
+          "clicks": 3,
+          "impressions": 860,
+          "ctr": 0.0034999999999999996,
+          "position": 15.9
+        },
+        {
+          "date": "2026-08-03",
+          "clicks": 3,
+          "impressions": 966,
+          "ctr": 0.0031,
+          "position": 14.8
+        },
+        {
+          "date": "2026-08-04",
+          "clicks": 4,
+          "impressions": 724,
+          "ctr": 0.0055000000000000005,
+          "position": 14.4
+        },
+        {
+          "date": "2026-08-05",
+          "clicks": 6,
+          "impressions": 7884,
+          "ctr": 0.0008,
+          "position": 17.4
+        },
+        {
+          "date": "2026-08-06",
+          "clicks": 3,
+          "impressions": 979,
+          "ctr": 0.0031,
+          "position": 12.3
+        },
+        {
+          "date": "2026-08-07",
+          "clicks": 6,
+          "impressions": 673,
+          "ctr": 0.0089,
+          "position": 11.3
+        },
+        {
+          "date": "2026-08-08",
+          "clicks": 3,
+          "impressions": 635,
+          "ctr": 0.004699999999999999,
+          "position": 8.2
+        }
+      ],
+      "period_rows": [
+        {
+          "rank": 1,
+          "period": "Son 3 ay",
+          "dates": "2026-05-09 – 2026-08-08",
+          "clicks": 188,
+          "impressions": 71802,
+          "ctr": 0.0026183114676471405,
+          "position": 13.815885351382965,
+          "query_impression_coverage": 0.18488342943093508,
+          "status": "Tamamlanmış pencere"
+        },
+        {
+          "rank": 2,
+          "period": "Son 28 gün",
+          "dates": "2026-07-12 – 2026-08-08",
+          "clicks": 88,
+          "impressions": 29881,
+          "ctr": 0.002945015227067367,
+          "position": 15.095572437334761,
+          "query_impression_coverage": 0.12379103778320671,
+          "status": "Tamamlanmış pencere"
+        },
+        {
+          "rank": 3,
+          "period": "Son 7 gün",
+          "dates": "2026-08-02 – 2026-08-08",
+          "clicks": 28,
+          "impressions": 12721,
+          "ctr": 0.0022010848203757568,
+          "position": 15.755962581558052,
+          "query_impression_coverage": 0.07436522285983806,
+          "status": "Tamamlanmış pencere"
+        },
+        {
+          "rank": 4,
+          "period": "Son 24 saat (ön veri)",
+          "dates": "2026-08-09 – 2026-08-10",
+          "clicks": 1,
+          "impressions": 1055,
+          "ctr": 0.0009478672985781991,
+          "position": 14.420189573459718,
+          "query_impression_coverage": 0.10995260663507109,
+          "status": "Ön veri; karar için kullanma"
+        }
+      ],
+      "country_rows": [
+        {
+          "rank": 1,
+          "period": "Son 3 ay",
+          "segment": "ABD",
+          "clicks": 25,
+          "impressions": 49064,
+          "ctr": 0.000509538561878363,
+          "impression_share": 0.6833235843012729,
+          "position": 11.71
+        },
+        {
+          "rank": 2,
+          "period": "Son 3 ay",
+          "segment": "ABD dışı",
+          "clicks": 163,
+          "impressions": 22738,
+          "ctr": 0.007168616413053039,
+          "impression_share": 0.31667641569872707,
+          "position": 18.355113906236255
+        },
+        {
+          "rank": 3,
+          "period": "Son 28 gün",
+          "segment": "ABD",
+          "clicks": 9,
+          "impressions": 18929,
+          "ctr": 0.00047546093296000843,
+          "impression_share": 0.6334794685586158,
+          "position": 12.83
+        },
+        {
+          "rank": 4,
+          "period": "Son 28 gün",
+          "segment": "ABD dışı",
+          "clicks": 79,
+          "impressions": 10952,
+          "ctr": 0.007213294375456538,
+          "impression_share": 0.36652053144138413,
+          "position": 18.987527392257128
+        },
+        {
+          "rank": 5,
+          "period": "Son 7 gün",
+          "segment": "ABD",
+          "clicks": 3,
+          "impressions": 9875,
+          "ctr": 0.0003037974683544304,
+          "impression_share": 0.7762754500432356,
+          "position": 15.16
+        },
+        {
+          "rank": 6,
+          "period": "Son 7 gün",
+          "segment": "ABD dışı",
+          "clicks": 25,
+          "impressions": 2846,
+          "ctr": 0.008784258608573436,
+          "impression_share": 0.2237245499567644,
+          "position": 17.67567111735769
+        }
+      ],
+      "mix_rows": [
+        {
+          "rank": 1,
+          "segment": "ABD",
+          "prior21_clicks": 6,
+          "prior21_impressions": 9054,
+          "prior21_ctr": 0.0006626905235255136,
+          "prior21_share": 0.5276223776223776,
+          "last7_clicks": 3,
+          "last7_impressions": 9875,
+          "last7_ctr": 0.0003037974683544304,
+          "last7_share": 0.7762754500432356
+        },
+        {
+          "rank": 2,
+          "segment": "ABD dışı",
+          "prior21_clicks": 54,
+          "prior21_impressions": 8106,
+          "prior21_ctr": 0.006661732050333087,
+          "prior21_share": 0.4723776223776224,
+          "last7_clicks": 25,
+          "last7_impressions": 2846,
+          "last7_ctr": 0.008784258608573436,
+          "last7_share": 0.2237245499567644
+        }
+      ],
+      "page_groups_3m": [
+        {
+          "rank": 1,
+          "group": "Trivia / answer",
+          "pages": 133,
+          "clicks": 37,
+          "impressions": 34629,
+          "impression_share": 0.459404600811908,
+          "ctr": 0.0010684686245632275,
+          "position": 10.38022899881602
+        },
+        {
+          "rank": 2,
+          "group": "System-design blueprint",
+          "pages": 22,
+          "clicks": 10,
+          "impressions": 11842,
+          "impression_share": 0.15710154156385153,
+          "ctr": 0.0008444519506840061,
+          "position": 9.20297331531836
+        },
+        {
+          "rank": 3,
+          "group": "Interview hub",
+          "pages": 9,
+          "clicks": 30,
+          "impressions": 10144,
+          "impression_share": 0.13457507495555732,
+          "ctr": 0.0029574132492113563,
+          "position": 23.11513308359621
+        },
+        {
+          "rank": 4,
+          "group": "System design",
+          "pages": 17,
+          "clicks": 48,
+          "impressions": 3837,
+          "impression_share": 0.05090344662898989,
+          "ctr": 0.012509773260359656,
+          "position": 16.838118321605418
+        },
+        {
+          "rank": 5,
+          "group": "Framework prep",
+          "pages": 5,
+          "clicks": 3,
+          "impressions": 3545,
+          "impression_share": 0.047029637294701374,
+          "ctr": 0.000846262341325811,
+          "position": 16.707308885754586
+        },
+        {
+          "rank": 6,
+          "group": "Coding",
+          "pages": 146,
+          "clicks": 16,
+          "impressions": 3329,
+          "impression_share": 0.0441640797049537,
+          "ctr": 0.004806248122559327,
+          "position": 23.67912586362271
+        },
+        {
+          "rank": 7,
+          "group": "Interview blueprint",
+          "pages": 13,
+          "clicks": 1,
+          "impressions": 3076,
+          "impression_share": 0.04080766271325851,
+          "ctr": 0.00032509752925877764,
+          "position": 14.298657347204161
+        },
+        {
+          "rank": 8,
+          "group": "Other",
+          "pages": 21,
+          "clicks": 15,
+          "impressions": 2824,
+          "impression_share": 0.03746451219188623,
+          "ctr": 0.005311614730878187,
+          "position": 15.001441218130312
+        },
+        {
+          "rank": 9,
+          "group": "Ana sayfa",
+          "pages": 1,
+          "clicks": 24,
+          "impressions": 927,
+          "impression_share": 0.012298017989333759,
+          "ctr": 0.025889967637540454,
+          "position": 16.13
+        },
+        {
+          "rank": 10,
+          "group": "Tracks",
+          "pages": 3,
+          "clicks": 3,
+          "impressions": 706,
+          "impression_share": 0.009366128047971557,
+          "ctr": 0.00424929178470255,
+          "position": 9.075920679886686
+        },
+        {
+          "rank": 11,
+          "group": "Other guides",
+          "pages": 3,
+          "clicks": 1,
+          "impressions": 261,
+          "impression_share": 0.0034625487542784368,
+          "ctr": 0.0038314176245210726,
+          "position": 12.725747126436781
+        },
+        {
+          "rank": 12,
+          "group": "Behavioral guides",
+          "pages": 5,
+          "clicks": 2,
+          "impressions": 146,
+          "impression_share": 0.0019369046671442597,
+          "ctr": 0.0136986301369863,
+          "position": 13.202945205479452
+        }
+      ],
+      "position_rows": [
+        {
+          "rank": 1,
+          "band": "1-3",
+          "pages": 12,
+          "clicks": 0,
+          "impressions": 60,
+          "ctr": 0.0,
+          "position": 1.5153333333333332,
+          "impression_share": 0.0007959882193743533
+        },
+        {
+          "rank": 2,
+          "band": "3-5",
+          "pages": 18,
+          "clicks": 3,
+          "impressions": 81,
+          "ctr": 0.037037037037037035,
+          "position": 4.431851851851851,
+          "impression_share": 0.0010745840961553768
+        },
+        {
+          "rank": 3,
+          "band": "5-8",
+          "pages": 51,
+          "clicks": 21,
+          "impressions": 22125,
+          "ctr": 0.0009491525423728814,
+          "position": 7.332265762711866,
+          "impression_share": 0.29352065589429277
+        },
+        {
+          "rank": 4,
+          "band": "8-10",
+          "pages": 40,
+          "clicks": 15,
+          "impressions": 15103,
+          "ctr": 0.0009931801628815468,
+          "position": 9.01749718598954,
+          "impression_share": 0.20036350128684763
+        },
+        {
+          "rank": 5,
+          "band": "10-20",
+          "pages": 155,
+          "clicks": 113,
+          "impressions": 23129,
+          "ctr": 0.004885641402568204,
+          "position": 14.70988499286609,
+          "impression_share": 0.3068401920984903
+        },
+        {
+          "rank": 6,
+          "band": "20+",
+          "pages": 125,
+          "clicks": 38,
+          "impressions": 14880,
+          "ctr": 0.002553763440860215,
+          "position": 25.6018192204301,
+          "impression_share": 0.19740507840483962
+        }
+      ],
+      "priority_pages": [
+        {
+          "rank": 1,
+          "page": "/guides/system-design-blueprint/radio-framework",
+          "url": "https://frontendatlas.com/guides/system-design-blueprint/radio-framework",
+          "group": "System-design blueprint",
+          "clicks_3m": 7,
+          "impressions_3m": 9625,
+          "ctr_3m": 0.0007272727272727272,
+          "position_3m": 7.28,
+          "clicks_28d": 4,
+          "impressions_28d": 699,
+          "ctr_28d": 0.005722460658082976,
+          "position_28d": 6.74
+        },
+        {
+          "rank": 2,
+          "page": "/angular/trivia/angular-http-what-actually-cancels-request",
+          "url": "https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request",
+          "group": "Trivia / answer",
+          "clicks_3m": 13,
+          "impressions_3m": 9517,
+          "ctr_3m": 0.0013659766733214247,
+          "position_3m": 7.4,
+          "clicks_28d": 4,
+          "impressions_28d": 2933,
+          "ctr_28d": 0.0013637913399249914,
+          "position_28d": 6.9
+        },
+        {
+          "rank": 3,
+          "page": "/react/trivia/react-render-nothing-return-value",
+          "url": "https://frontendatlas.com/react/trivia/react-render-nothing-return-value",
+          "group": "Trivia / answer",
+          "clicks_3m": 3,
+          "impressions_3m": 7390,
+          "ctr_3m": 0.00040595399188092014,
+          "position_3m": 8.82,
+          "clicks_28d": 1,
+          "impressions_28d": 2719,
+          "ctr_28d": 0.0003677822728944465,
+          "position_28d": 8.67
+        },
+        {
+          "rank": 4,
+          "page": "/javascript/trivia/js-async-race-conditions",
+          "url": "https://frontendatlas.com/javascript/trivia/js-async-race-conditions",
+          "group": "Trivia / answer",
+          "clicks_3m": 8,
+          "impressions_3m": 2638,
+          "ctr_3m": 0.003032600454890068,
+          "position_3m": 8.57,
+          "clicks_28d": 5,
+          "impressions_28d": 1496,
+          "ctr_28d": 0.0033422459893048127,
+          "position_28d": 8.5
+        },
+        {
+          "rank": 5,
+          "page": "/react/trivia/react-stale-state-closures",
+          "url": "https://frontendatlas.com/react/trivia/react-stale-state-closures",
+          "group": "Trivia / answer",
+          "clicks_3m": 1,
+          "impressions_3m": 2016,
+          "ctr_3m": 0.000496031746031746,
+          "position_3m": 9.73,
+          "clicks_28d": 1,
+          "impressions_28d": 1713,
+          "ctr_28d": 0.0005837711617046118,
+          "position_28d": 9.9
+        },
+        {
+          "rank": 6,
+          "page": "/react/trivia/react-strictmode-double-invoke-effects",
+          "url": "https://frontendatlas.com/react/trivia/react-strictmode-double-invoke-effects",
+          "group": "Trivia / answer",
+          "clicks_3m": 0,
+          "impressions_3m": 1323,
+          "ctr_3m": 0.0,
+          "position_3m": 9.81,
+          "clicks_28d": 0,
+          "impressions_28d": 127,
+          "ctr_28d": 0.0,
+          "position_28d": 10.36
+        },
+        {
+          "rank": 7,
+          "page": "/html/trivia/html-form-default-method",
+          "url": "https://frontendatlas.com/html/trivia/html-form-default-method",
+          "group": "Trivia / answer",
+          "clicks_3m": 0,
+          "impressions_3m": 1113,
+          "ctr_3m": 0.0,
+          "position_3m": 7.65,
+          "clicks_28d": 0,
+          "impressions_28d": 1113,
+          "ctr_28d": 0.0,
+          "position_28d": 7.65
+        },
+        {
+          "rank": 8,
+          "page": "/react/trivia/react-derived-state-anti-pattern",
+          "url": "https://frontendatlas.com/react/trivia/react-derived-state-anti-pattern",
+          "group": "Trivia / answer",
+          "clicks_3m": 0,
+          "impressions_3m": 682,
+          "ctr_3m": 0.0,
+          "position_3m": 6.96,
+          "clicks_28d": 0,
+          "impressions_28d": 0,
+          "ctr_28d": 0.0,
+          "position_28d": null
+        },
+        {
+          "rank": 9,
+          "page": "/angular/trivia/ngrx-selectors-memoization-derived-state-performance",
+          "url": "https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance",
+          "group": "Trivia / answer",
+          "clicks_3m": 0,
+          "impressions_3m": 597,
+          "ctr_3m": 0.0,
+          "position_3m": 7.53,
+          "clicks_28d": 0,
+          "impressions_28d": 118,
+          "ctr_28d": 0.0,
+          "position_28d": 8.73
+        },
+        {
+          "rank": 10,
+          "page": "/tracks",
+          "url": "https://frontendatlas.com/tracks",
+          "group": "Tracks",
+          "clicks_3m": 1,
+          "impressions_3m": 358,
+          "ctr_3m": 0.002793296089385475,
+          "position_3m": 8.78,
+          "clicks_28d": 1,
+          "impressions_28d": 115,
+          "ctr_28d": 0.008695652173913044,
+          "position_28d": 9.83
+        }
+      ],
+      "query_cluster_rows": [
+        {
+          "rank": 1,
+          "cluster": "Exact \"official docs\"",
+          "definition": "query contains the exact phrase \"official docs\"",
+          "query_rows": 52,
+          "clicks": 0,
+          "impressions": 1443,
+          "ctr": 0.0,
+          "position": 6.853659043659045,
+          "note": "Clusters overlap; values are visible-query lower bounds."
+        },
+        {
+          "rank": 2,
+          "cluster": "Official/docs modifier",
+          "definition": "query contains official, docs, or documentation",
+          "query_rows": 173,
+          "clicks": 0,
+          "impressions": 3278,
+          "ctr": 0.0,
+          "position": 7.350848078096403,
+          "note": "Clusters overlap; values are visible-query lower bounds."
+        },
+        {
+          "rank": 3,
+          "cluster": "Angular HttpClient cancellation",
+          "definition": "query contains angular + httpclient + cancel/abort/unsubscribe",
+          "query_rows": 44,
+          "clicks": 0,
+          "impressions": 3036,
+          "ctr": 0.0,
+          "position": 6.768748353096179,
+          "note": "Clusters overlap; values are visible-query lower bounds."
+        },
+        {
+          "rank": 4,
+          "cluster": "RADIO framework",
+          "definition": "query contains radio",
+          "query_rows": 157,
+          "clicks": 5,
+          "impressions": 4512,
+          "ctr": 0.0011081560283687944,
+          "position": 7.465837765957447,
+          "note": "Clusters overlap; values are visible-query lower bounds."
+        }
+      ],
+      "metadata_rows": [
+        {
+          "rank": 1,
+          "page": "/guides/system-design-blueprint/radio-framework",
+          "title": "RADIO Framework: Frontend System Design Interview Template",
+          "title_chars": 58,
+          "description_chars": 136,
+          "h1_alignment": "Exact",
+          "ctr_3m": 0.0007272727272727272,
+          "assessment": "Snippet temeli güçlü; sorgu karması/AI-benzeri görünüm daha olası."
+        },
+        {
+          "rank": 2,
+          "page": "/angular/trivia/angular-http-what-actually-cancels-request",
+          "title": "Angular HttpClient Unsubscribe: 6 Tests & DevTools",
+          "title_chars": 50,
+          "description_chars": 140,
+          "h1_alignment": "Yakın ama birebir değil",
+          "ctr_3m": 0.0013659766733214247,
+          "assessment": "3 Ağu değişikliği henüz olgunlaşmadı; yeniden değiştirme."
+        },
+        {
+          "rank": 3,
+          "page": "/react/trivia/react-render-nothing-return-value",
+          "title": "Can React Return undefined? React 18 vs null",
+          "title_chars": 44,
+          "description_chars": 154,
+          "h1_alignment": "Yakın",
+          "ctr_3m": 0.00040595399188092014,
+          "assessment": "Başlık açık; exact export görünür sorgularda source-preference niyetini doğruluyor."
+        },
+        {
+          "rank": 4,
+          "page": "/javascript/trivia/js-async-race-conditions",
+          "title": "JavaScript Async Race Conditions: Fix Stale UI",
+          "title_chars": 46,
+          "description_chars": 139,
+          "h1_alignment": "Yakın",
+          "ctr_3m": 0.003032600454890068,
+          "assessment": "Öncelikli üç sayfadan daha iyi; izleme adayı."
+        },
+        {
+          "rank": 5,
+          "page": "/html/trivia/html-form-default-method",
+          "title": "HTML Form Default Method: GET or POST? (With Example)",
+          "title_chars": 53,
+          "description_chars": 152,
+          "h1_alignment": "Yakın",
+          "ctr_3m": 0.0,
+          "assessment": "Metadata düzgün; exact exportta görünür sorguların %68,4'ü açıkça MDN içeriyor."
+        }
+      ],
+      "repo_risk_rows": [
+        {
+          "rank": 1,
+          "finding": "Dashboard canlı SERP metadata yerine kaynak registry metnini tercih ediyor",
+          "evidence": "348/435 title ve 356/435 description manifest ile prerender HTML arasında farklı.",
+          "ctr_link": "Kötü snippet'leri iç SEO ekranında görünmez kılabilir; doğrudan CTR etkisi henüz cohort ile ölçülmedi.",
+          "priority": "P1 ölçüm güveni"
+        },
+        {
+          "rank": 2,
+          "finding": "Otomatik trivia title üretimi bazı promptları dilbilgisel olarak bozuyor",
+          "evidence": "46 indexlenebilir title `Interview Answer` kalıbı içeriyor; 3 ayda GSC'de görünen 24'ü 1.069 gösterim/2 tık (%0,187 CTR) aldı.",
+          "ctr_link": "Gerçek bir snippet kusuru, ancak property gösterimlerinin yalnız %1,49'u; site-geneli düşük CTR'yi açıklayamaz.",
+          "priority": "P1 snippet kalitesi"
+        },
+        {
+          "rank": 3,
+          "finding": "Teknik crawl tabanı mevcut build'de bütün",
+          "evidence": "612 prerender sayfasında title/description/robots/canonical/H1 var; 435 sitemap URL'sinin tamamı prerender listesinde.",
+          "ctr_link": "Site-geneli eksik tag/canonical arızası ana açıklama değil.",
+          "priority": "Doğrulandı"
+        }
+      ],
+      "quality_rows": [
+        {
+          "rank": 1,
+          "check": "Property totals",
+          "evidence": "Ülke ve cihaz toplamları grafikle dört pencerede birebir uyuşuyor.",
+          "impact": "Site CTR ve mix ayrıştırması güvenilir.",
+          "assessment": "Pass"
+        },
+        {
+          "rank": 2,
+          "check": "Query coverage",
+          "evidence": "3 ay gösterim kapsamı 18.5%, tıklama kapsamı 11.7%; tablo 1.000 satırda bitiyor.",
+          "impact": "Intent kümeleri yalnız görünür alt sınır; site toplamına genellenemez.",
+          "assessment": "Material caveat"
+        },
+        {
+          "rank": 3,
+          "check": "Page aggregation",
+          "evidence": "Sayfa satırları grafik toplamından 3,576 gösterim (5.0%) yüksek.",
+          "impact": "Google property ve URL sonuçlarını farklı sayar; sayfa satırlarını site CTR paydası olarak toplama.",
+          "assessment": "Expected limitation"
+        },
+        {
+          "rank": 4,
+          "check": "Nested windows",
+          "evidence": "28 ve 7 günlük satırlar 3 aylık dosyanın aynı tarihlerdeki satırlarıyla eşleşiyor.",
+          "impact": "Dört dosya bağımsız örnek değildir; ayrı deneyler gibi yorumlanamaz.",
+          "assessment": "Pass"
+        },
+        {
+          "rank": 5,
+          "check": "URL variants",
+          "evidence": "3 ayda 14 fragment URL satırı 295 gösterim/0 tık; query/http/www/trailing-slash varyantı yok.",
+          "impact": "Canonical/URL varyant gürültüsü düşük CTR'nin ana nedeni değil.",
+          "assessment": "Low risk"
+        },
+        {
+          "rank": 6,
+          "check": "24-hour export",
+          "evidence": "1 tık ve son saatte 0 gösterim; en yeni veri ön nitelikte olabilir.",
+          "impact": "Karar ve trend çıkarımı için kullanma.",
+          "assessment": "Preliminary"
+        },
+        {
+          "rank": 7,
+          "check": "Exact-page dimension coverage",
+          "evidence": "React query/country/device tabloları 251/2.719 (%9,23); HTML tabloları 155/1.113 (%13,93) gösterimi kapsıyor.",
+          "impact": "Exact-page query, ülke ve cihaz oranları yalnız raporlanabilir alt kümeye aittir; tüm sayfaya genellenemez.",
+          "assessment": "Material caveat"
+        },
+        {
+          "rank": 8,
+          "check": "Follow-up workbook integrity",
+          "evidence": "Üç yeni dosyada filtre hedefleri, tarih sürekliliği, CTR yuvarlaması, anahtar benzersizliği ve property/page uzlaşımı doğrulandı.",
+          "impact": "5 Ağustos property kırılımları ve exact-page tarih toplamları karar için güvenilir.",
+          "assessment": "Pass"
+        }
+      ],
+      "export_rows": [
+        {
+          "priority": 1,
+          "export": "5 Ağustos 2026 — site geneli",
+          "filters": "Alındı ve doğrulandı",
+          "why": "Patlama %92,3 ABD, %99,5 masaüstü; interview/prep aileleri günün ana hacmini oluşturuyor."
+        },
+        {
+          "priority": 2,
+          "export": "React render-nothing exact page",
+          "filters": "Alındı ve doğrulandı",
+          "why": "2.719 gösterim/1 tık; görünür sorguların %64,1'i docs/official modifier taşıyor."
+        },
+        {
+          "priority": 3,
+          "export": "HTML form default method exact page",
+          "filters": "Alındı ve doğrulandı",
+          "why": "1.113 gösterim/0 tık; görünür sorguların %68,4'ü açıkça MDN içeriyor."
+        },
+        {
+          "priority": 4,
+          "export": "Generative AI performance (varsa)",
+          "filters": "İsteğe bağlı; zorunlu değil",
+          "why": "AI görünümü hipotezini sınar; mevcut üç export ana aksiyonu belirlemek için yeterli."
+        }
+      ],
+      "aug5_group_rows": [
+        {
+          "rank": 1,
+          "group": "Trivia / answer",
+          "pages": 52,
+          "clicks": 1,
+          "impressions": 2446,
+          "ctr": 0.0004088307440719542,
+          "position": 14.850433360588712,
+          "page_table_share": 0.3099341104916371
+        },
+        {
+          "rank": 2,
+          "group": "Interview hub",
+          "pages": 8,
+          "clicks": 0,
+          "impressions": 2236,
+          "ctr": 0.0,
+          "position": 18.954074239713773,
+          "page_table_share": 0.2833248859604663
+        },
+        {
+          "rank": 3,
+          "group": "Framework prep",
+          "pages": 5,
+          "clicks": 0,
+          "impressions": 2045,
+          "ctr": 0.0,
+          "position": 18.762728606356973,
+          "page_table_share": 0.2591231626964014
+        },
+        {
+          "rank": 4,
+          "group": "System design",
+          "pages": 8,
+          "clicks": 0,
+          "impressions": 564,
+          "ctr": 0.0,
+          "position": 14.367978723404253,
+          "page_table_share": 0.07146477445514444
+        },
+        {
+          "rank": 5,
+          "group": "Other",
+          "pages": 10,
+          "clicks": 1,
+          "impressions": 166,
+          "ctr": 0.006024096385542169,
+          "position": 20.88234939759036,
+          "page_table_share": 0.021033958438925495
+        },
+        {
+          "rank": 6,
+          "group": "System-design blueprint",
+          "pages": 14,
+          "clicks": 1,
+          "impressions": 138,
+          "ctr": 0.007246376811594203,
+          "position": 15.151811594202897,
+          "page_table_share": 0.017486061834769386
+        },
+        {
+          "rank": 7,
+          "group": "Interview blueprint",
+          "pages": 7,
+          "clicks": 0,
+          "impressions": 121,
+          "ctr": 0.0,
+          "position": 20.212561983471076,
+          "page_table_share": 0.015331981753674607
+        },
+        {
+          "rank": 8,
+          "group": "Coding",
+          "pages": 31,
+          "clicks": 2,
+          "impressions": 86,
+          "ctr": 0.023255813953488372,
+          "position": 24.895465116279073,
+          "page_table_share": 0.010897110998479472
+        },
+        {
+          "rank": 9,
+          "group": "Ana sayfa",
+          "pages": 1,
+          "clicks": 0,
+          "impressions": 47,
+          "ctr": 0.0,
+          "position": 19.13,
+          "page_table_share": 0.005955397871262038
+        },
+        {
+          "rank": 10,
+          "group": "Tracks",
+          "pages": 3,
+          "clicks": 1,
+          "impressions": 38,
+          "ctr": 0.02631578947368421,
+          "position": 16.605,
+          "page_table_share": 0.00481500253421186
+        }
+      ],
+      "aug5_top_page_rows": [
+        {
+          "rank": 1,
+          "page": "/guides/framework-prep/angular-prep-path",
+          "group": "Framework prep",
+          "clicks": 0,
+          "impressions": 871,
+          "ctr": 0.0,
+          "position": 19.06,
+          "property_share": 0.11047691527143581,
+          "seven_day_share": 0.963495575221239,
+          "other6_daily_average": 5.5,
+          "daily_lift": 158.36363636363637
+        },
+        {
+          "rank": 2,
+          "page": "/vue/interview-questions",
+          "group": "Interview hub",
+          "clicks": 0,
+          "impressions": 850,
+          "ctr": 0.0,
+          "position": 19.09,
+          "property_share": 0.10781329274479959,
+          "seven_day_share": 0.9169363538295577,
+          "other6_daily_average": 12.833333333333334,
+          "daily_lift": 66.23376623376623
+        },
+        {
+          "rank": 3,
+          "page": "/guides/framework-prep/vue-prep-path",
+          "group": "Framework prep",
+          "clicks": 0,
+          "impressions": 705,
+          "ctr": 0.0,
+          "position": 17.67,
+          "property_share": 0.08942161339421613,
+          "seven_day_share": 0.9684065934065934,
+          "other6_daily_average": 3.8333333333333335,
+          "daily_lift": 183.91304347826087
+        },
+        {
+          "rank": 4,
+          "page": "/html-css/interview-questions",
+          "group": "Interview hub",
+          "clicks": 0,
+          "impressions": 447,
+          "ctr": 0.0,
+          "position": 19.12,
+          "property_share": 0.05669710806697108,
+          "seven_day_share": 0.8498098859315589,
+          "other6_daily_average": 13.166666666666666,
+          "daily_lift": 33.949367088607595
+        },
+        {
+          "rank": 5,
+          "page": "/react/interview-questions",
+          "group": "Interview hub",
+          "clicks": 0,
+          "impressions": 419,
+          "ctr": 0.0,
+          "position": 18.43,
+          "property_share": 0.053145611364789444,
+          "seven_day_share": 0.8280632411067194,
+          "other6_daily_average": 14.5,
+          "daily_lift": 28.896551724137932
+        },
+        {
+          "rank": 6,
+          "page": "/angular/trivia/angular-http-what-actually-cancels-request",
+          "group": "Trivia / answer",
+          "clicks": 1,
+          "impressions": 380,
+          "ctr": 0.002631578947368421,
+          "position": 12.63,
+          "property_share": 0.04819888381532217,
+          "seven_day_share": 0.30944625407166126,
+          "other6_daily_average": 141.33333333333334,
+          "daily_lift": 2.688679245283019
+        },
+        {
+          "rank": 7,
+          "page": "/guides/framework-prep/react-prep-path",
+          "group": "Framework prep",
+          "clicks": 0,
+          "impressions": 297,
+          "ctr": 0.0,
+          "position": 19.87,
+          "property_share": 0.03767123287671233,
+          "seven_day_share": 0.9,
+          "other6_daily_average": 5.5,
+          "daily_lift": 54.0
+        },
+        {
+          "rank": 8,
+          "page": "/javascript/trivia/js-async-race-conditions",
+          "group": "Trivia / answer",
+          "clicks": 0,
+          "impressions": 295,
+          "ctr": 0.0,
+          "position": 15.87,
+          "property_share": 0.03741755454084221,
+          "seven_day_share": 0.43833580980683506,
+          "other6_daily_average": 63.0,
+          "daily_lift": 4.682539682539683
+        },
+        {
+          "rank": 9,
+          "page": "/angular/interview-questions",
+          "group": "Interview hub",
+          "clicks": 0,
+          "impressions": 255,
+          "ctr": 0.0,
+          "position": 19.13,
+          "property_share": 0.032343987823439876,
+          "seven_day_share": 0.8823529411764706,
+          "other6_daily_average": 5.666666666666667,
+          "daily_lift": 45.0
+        },
+        {
+          "rank": 10,
+          "page": "/system-design/notification-toast-system",
+          "group": "System design",
+          "clicks": 0,
+          "impressions": 220,
+          "ctr": 0.0,
+          "position": 13.69,
+          "property_share": 0.027904616945712835,
+          "seven_day_share": 0.5913978494623656,
+          "other6_daily_average": 25.333333333333332,
+          "daily_lift": 8.68421052631579
+        }
+      ],
+      "aug5_mix_rows": [
+        {
+          "rank": 1,
+          "segment": "ABD",
+          "other6_clicks": 2,
+          "other6_impressions": 2599,
+          "other6_share": 0.5373165185032045,
+          "other6_ctr": 0.0007695267410542517,
+          "aug5_clicks": 1,
+          "aug5_impressions": 7276,
+          "aug5_share": 0.9228817858954845,
+          "aug5_ctr": 0.00013743815283122595
+        },
+        {
+          "rank": 2,
+          "segment": "ABD dışı",
+          "other6_clicks": 20,
+          "other6_impressions": 2238,
+          "other6_share": 0.46268348149679556,
+          "other6_ctr": 0.008936550491510277,
+          "aug5_clicks": 5,
+          "aug5_impressions": 608,
+          "aug5_share": 0.07711821410451547,
+          "aug5_ctr": 0.008223684210526315
+        }
+      ],
+      "exact_page_rows": [
+        {
+          "rank": 1,
+          "page": "React render-nothing",
+          "clicks": 1,
+          "impressions": 2719,
+          "ctr": 0.0003677822728944465,
+          "position": 8.650937844795878,
+          "visible_query_coverage": 0.09231335049650607,
+          "source_preference_share": 0.6414342629482072,
+          "first7_share": 0.6318499448326591,
+          "assessment": "Geçici ilk-hafta görünürlük dalgası + docs/official source-preference sinyali."
+        },
+        {
+          "rank": 2,
+          "page": "HTML form default method",
+          "clicks": 0,
+          "impressions": 1113,
+          "ctr": 0.0,
+          "position": 7.649505840071877,
+          "visible_query_coverage": 0.13926325247079965,
+          "source_preference_share": 0.7935483870967742,
+          "first7_share": 0.09613656783468104,
+          "assessment": "Açık MDN/specification niyeti; trivia sayfası sonuç türüyle uyumsuz."
+        }
+      ],
+      "exact_daily_rows": [
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-12",
+          "clicks": 0,
+          "impressions": 473,
+          "ctr": 0.0,
+          "position": 9.0
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-13",
+          "clicks": 0,
+          "impressions": 492,
+          "ctr": 0.0,
+          "position": 8.2
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-14",
+          "clicks": 0,
+          "impressions": 254,
+          "ctr": 0.0,
+          "position": 9.7
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-15",
+          "clicks": 0,
+          "impressions": 148,
+          "ctr": 0.0,
+          "position": 9.0
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-16",
+          "clicks": 0,
+          "impressions": 130,
+          "ctr": 0.0,
+          "position": 7.9
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-17",
+          "clicks": 0,
+          "impressions": 115,
+          "ctr": 0.0,
+          "position": 8.1
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-18",
+          "clicks": 0,
+          "impressions": 106,
+          "ctr": 0.0,
+          "position": 7.5
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-19",
+          "clicks": 0,
+          "impressions": 9,
+          "ctr": 0.0,
+          "position": 8.4
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-20",
+          "clicks": 0,
+          "impressions": 12,
+          "ctr": 0.0,
+          "position": 8.5
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-21",
+          "clicks": 0,
+          "impressions": 2,
+          "ctr": 0.0,
+          "position": 8.0
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-22",
+          "clicks": 0,
+          "impressions": 5,
+          "ctr": 0.0,
+          "position": 8.6
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-23",
+          "clicks": 0,
+          "impressions": 8,
+          "ctr": 0.0,
+          "position": 6.8
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-24",
+          "clicks": 0,
+          "impressions": 23,
+          "ctr": 0.0,
+          "position": 9.3
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-25",
+          "clicks": 0,
+          "impressions": 25,
+          "ctr": 0.0,
+          "position": 8.6
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-26",
+          "clicks": 0,
+          "impressions": 60,
+          "ctr": 0.0,
+          "position": 9.0
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-27",
+          "clicks": 0,
+          "impressions": 71,
+          "ctr": 0.0,
+          "position": 8.9
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-28",
+          "clicks": 0,
+          "impressions": 72,
+          "ctr": 0.0,
+          "position": 8.8
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-29",
+          "clicks": 0,
+          "impressions": 67,
+          "ctr": 0.0,
+          "position": 8.9
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-30",
+          "clicks": 1,
+          "impressions": 87,
+          "ctr": 0.011494252873563218,
+          "position": 8.5
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-07-31",
+          "clicks": 0,
+          "impressions": 62,
+          "ctr": 0.0,
+          "position": 8.6
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-01",
+          "clicks": 0,
+          "impressions": 66,
+          "ctr": 0.0,
+          "position": 8.6
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-02",
+          "clicks": 0,
+          "impressions": 52,
+          "ctr": 0.0,
+          "position": 8.6
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-03",
+          "clicks": 0,
+          "impressions": 69,
+          "ctr": 0.0,
+          "position": 9.2
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-04",
+          "clicks": 0,
+          "impressions": 59,
+          "ctr": 0.0,
+          "position": 8.4
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-05",
+          "clicks": 0,
+          "impressions": 81,
+          "ctr": 0.0,
+          "position": 9.8
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-06",
+          "clicks": 0,
+          "impressions": 49,
+          "ctr": 0.0,
+          "position": 8.2
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-07",
+          "clicks": 0,
+          "impressions": 66,
+          "ctr": 0.0,
+          "position": 7.8
+        },
+        {
+          "page": "React render-nothing",
+          "date": "2026-08-08",
+          "clicks": 0,
+          "impressions": 56,
+          "ctr": 0.0,
+          "position": 7.7
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-12",
+          "clicks": 0,
+          "impressions": 5,
+          "ctr": 0.0,
+          "position": 9.0
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-13",
+          "clicks": 0,
+          "impressions": 10,
+          "ctr": 0.0,
+          "position": 8.0
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-14",
+          "clicks": 0,
+          "impressions": 10,
+          "ctr": 0.0,
+          "position": 8.6
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-15",
+          "clicks": 0,
+          "impressions": 10,
+          "ctr": 0.0,
+          "position": 7.8
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-16",
+          "clicks": 0,
+          "impressions": 16,
+          "ctr": 0.0,
+          "position": 8.0
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-17",
+          "clicks": 0,
+          "impressions": 18,
+          "ctr": 0.0,
+          "position": 7.6
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-18",
+          "clicks": 0,
+          "impressions": 38,
+          "ctr": 0.0,
+          "position": 7.5
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-19",
+          "clicks": 0,
+          "impressions": 13,
+          "ctr": 0.0,
+          "position": 7.5
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-20",
+          "clicks": 0,
+          "impressions": 19,
+          "ctr": 0.0,
+          "position": 6.5
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-21",
+          "clicks": 0,
+          "impressions": 18,
+          "ctr": 0.0,
+          "position": 7.2
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-22",
+          "clicks": 0,
+          "impressions": 17,
+          "ctr": 0.0,
+          "position": 9.2
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-23",
+          "clicks": 0,
+          "impressions": 21,
+          "ctr": 0.0,
+          "position": 5.8
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-24",
+          "clicks": 0,
+          "impressions": 35,
+          "ctr": 0.0,
+          "position": 7.8
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-25",
+          "clicks": 0,
+          "impressions": 42,
+          "ctr": 0.0,
+          "position": 8.0
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-26",
+          "clicks": 0,
+          "impressions": 109,
+          "ctr": 0.0,
+          "position": 7.8
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-27",
+          "clicks": 0,
+          "impressions": 74,
+          "ctr": 0.0,
+          "position": 7.9
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-28",
+          "clicks": 0,
+          "impressions": 46,
+          "ctr": 0.0,
+          "position": 8.8
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-29",
+          "clicks": 0,
+          "impressions": 108,
+          "ctr": 0.0,
+          "position": 6.2
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-30",
+          "clicks": 0,
+          "impressions": 63,
+          "ctr": 0.0,
+          "position": 7.4
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-07-31",
+          "clicks": 0,
+          "impressions": 65,
+          "ctr": 0.0,
+          "position": 7.2
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-01",
+          "clicks": 0,
+          "impressions": 48,
+          "ctr": 0.0,
+          "position": 7.1
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-02",
+          "clicks": 0,
+          "impressions": 79,
+          "ctr": 0.0,
+          "position": 7.8
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-03",
+          "clicks": 0,
+          "impressions": 50,
+          "ctr": 0.0,
+          "position": 10.3
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-04",
+          "clicks": 0,
+          "impressions": 54,
+          "ctr": 0.0,
+          "position": 6.3
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-05",
+          "clicks": 0,
+          "impressions": 72,
+          "ctr": 0.0,
+          "position": 8.9
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-06",
+          "clicks": 0,
+          "impressions": 22,
+          "ctr": 0.0,
+          "position": 7.5
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-07",
+          "clicks": 0,
+          "impressions": 28,
+          "ctr": 0.0,
+          "position": 7.1
+        },
+        {
+          "page": "HTML form default method",
+          "date": "2026-08-08",
+          "clicks": 0,
+          "impressions": 23,
+          "ctr": 0.0,
+          "position": 7.7
+        }
+      ],
+      "exact_query_rows": [
+        {
+          "rank": 1,
+          "page": "React render-nothing",
+          "clicks": 0,
+          "impressions": 161,
+          "ctr": 0.0,
+          "position": 8.584906832298136,
+          "rows": 48,
+          "cluster": "Source-preference modifier",
+          "definition": "docs, documentation, or official",
+          "visible_impression_share": 0.6414342629482072
+        },
+        {
+          "rank": 2,
+          "page": "React render-nothing",
+          "clicks": 0,
+          "impressions": 31,
+          "ctr": 0.0,
+          "position": 8.709354838709677,
+          "rows": 11,
+          "cluster": "Exact official docs",
+          "definition": "exact phrase: official docs",
+          "visible_impression_share": 0.12350597609561753
+        },
+        {
+          "rank": 3,
+          "page": "React render-nothing",
+          "clicks": 0,
+          "impressions": 55,
+          "ctr": 0.0,
+          "position": 8.14690909090909,
+          "rows": 19,
+          "cluster": "Legacy error wording",
+          "definition": "nothing was returned or error",
+          "visible_impression_share": 0.21912350597609562
+        },
+        {
+          "rank": 4,
+          "page": "React render-nothing",
+          "clicks": 0,
+          "impressions": 197,
+          "ctr": 0.0,
+          "position": 8.193654822335025,
+          "rows": 53,
+          "cluster": "Undefined intent",
+          "definition": "contains undefined",
+          "visible_impression_share": 0.7848605577689243
+        },
+        {
+          "rank": 5,
+          "page": "React render-nothing",
+          "clicks": 0,
+          "impressions": 55,
+          "ctr": 0.0,
+          "position": 9.290727272727272,
+          "rows": 15,
+          "cluster": "Null comparison",
+          "definition": "contains null",
+          "visible_impression_share": 0.21912350597609562
+        },
+        {
+          "rank": 6,
+          "page": "HTML form default method",
+          "clicks": 0,
+          "impressions": 106,
+          "ctr": 0.0,
+          "position": 8.215660377358489,
+          "rows": 26,
+          "cluster": "MDN intent",
+          "definition": "contains mdn",
+          "visible_impression_share": 0.6838709677419355
+        },
+        {
+          "rank": 7,
+          "page": "HTML form default method",
+          "clicks": 0,
+          "impressions": 123,
+          "ctr": 0.0,
+          "position": 8.242845528455284,
+          "rows": 31,
+          "cluster": "Source-preference modifier",
+          "definition": "mdn, specification, whatwg, docs, documentation, or official",
+          "visible_impression_share": 0.7935483870967742
+        },
+        {
+          "rank": 8,
+          "page": "HTML form default method",
+          "clicks": 0,
+          "impressions": 155,
+          "ctr": 0.0,
+          "position": 7.966709677419354,
+          "rows": 40,
+          "cluster": "Omitted/default behavior",
+          "definition": "contains omitted, default, or if omitted",
+          "visible_impression_share": 1.0
+        },
+        {
+          "rank": 9,
+          "page": "HTML form default method",
+          "clicks": 0,
+          "impressions": 43,
+          "ctr": 0.0,
+          "position": 7.488372093023256,
+          "rows": 14,
+          "cluster": "Action fallback",
+          "definition": "contains action and current url",
+          "visible_impression_share": 0.27741935483870966
+        }
+      ],
+      "trivia_page_position_rows": [
+        {
+          "rank": 1,
+          "position_band": "1–5",
+          "pages": 10,
+          "clicks": 0,
+          "impressions": 42,
+          "ctr": 0.0,
+          "position": 4.022619047619047,
+          "zero_click_pages": 10,
+          "zero_click_impressions": 42,
+          "zero_click_impression_share": 1.0
+        },
+        {
+          "rank": 2,
+          "position_band": "5–10",
+          "pages": 30,
+          "clicks": 26,
+          "impressions": 26003,
+          "ctr": 0.0009998846286966888,
+          "position": 8.259360458408649,
+          "zero_click_pages": 25,
+          "zero_click_impressions": 4431,
+          "zero_click_impression_share": 0.170403414990578
+        },
+        {
+          "rank": 3,
+          "position_band": "10–20",
+          "pages": 62,
+          "clicks": 9,
+          "impressions": 6778,
+          "ctr": 0.0013278253172027148,
+          "position": 14.460811448804957,
+          "zero_click_pages": 57,
+          "zero_click_impressions": 4847,
+          "zero_click_impression_share": 0.7151077013868398
+        },
+        {
+          "rank": 4,
+          "position_band": "20+",
+          "pages": 31,
+          "clicks": 2,
+          "impressions": 1806,
+          "ctr": 0.0011074197120708748,
+          "position": 25.74998338870432,
+          "zero_click_pages": 29,
+          "zero_click_impressions": 1535,
+          "zero_click_impression_share": 0.8499446290143965
+        }
+      ],
+      "trivia_tech_cohort_rows": [
+        {
+          "rank": 1,
+          "technology": "Angular",
+          "pages": 21,
+          "clicks": 21,
+          "impressions": 14202,
+          "ctr": 0.001478664976763836,
+          "position": 9.92843754400789,
+          "zero_click_pages": 16,
+          "zero_click_impressions": 2713,
+          "zero_click_impression_share": 0.1910294324742994
+        },
+        {
+          "rank": 2,
+          "technology": "React",
+          "pages": 24,
+          "clicks": 4,
+          "impressions": 12647,
+          "ctr": 0.00031628054083972484,
+          "position": 9.399525579188742,
+          "zero_click_pages": 22,
+          "zero_click_impressions": 3241,
+          "zero_click_impression_share": 0.25626630821538704
+        },
+        {
+          "rank": 3,
+          "technology": "JavaScript",
+          "pages": 44,
+          "clicks": 12,
+          "impressions": 4843,
+          "ctr": 0.0024778030146603344,
+          "position": 12.720842453024984,
+          "zero_click_pages": 39,
+          "zero_click_impressions": 1964,
+          "zero_click_impression_share": 0.4055337600660747
+        },
+        {
+          "rank": 4,
+          "technology": "HTML",
+          "pages": 14,
+          "clicks": 0,
+          "impressions": 1306,
+          "ctr": 0.0,
+          "position": 9.799012251148545,
+          "zero_click_pages": 14,
+          "zero_click_impressions": 1306,
+          "zero_click_impression_share": 1.0
+        },
+        {
+          "rank": 5,
+          "technology": "Vue",
+          "pages": 12,
+          "clicks": 0,
+          "impressions": 938,
+          "ctr": 0.0,
+          "position": 12.330639658848616,
+          "zero_click_pages": 12,
+          "zero_click_impressions": 938,
+          "zero_click_impression_share": 1.0
+        },
+        {
+          "rank": 6,
+          "technology": "CSS",
+          "pages": 18,
+          "clicks": 0,
+          "impressions": 693,
+          "ctr": 0.0,
+          "position": 19.634617604617606,
+          "zero_click_pages": 18,
+          "zero_click_impressions": 693,
+          "zero_click_impression_share": 1.0
+        }
+      ],
+      "trivia_intent_position_rows": [
+        {
+          "rank": 1,
+          "position_band": "1–5",
+          "intent": "Docs/reference",
+          "query_rows": 4,
+          "clicks": 0,
+          "impressions": 9,
+          "ctr": 0.0,
+          "position": 4.222222222222222
+        },
+        {
+          "rank": 2,
+          "position_band": "1–5",
+          "intent": "Docs dışı",
+          "query_rows": 9,
+          "clicks": 0,
+          "impressions": 67,
+          "ctr": 0.0,
+          "position": 3.6253731343283584
+        },
+        {
+          "rank": 3,
+          "position_band": "5–10",
+          "intent": "Docs/reference",
+          "query_rows": 198,
+          "clicks": 0,
+          "impressions": 3415,
+          "ctr": 0.0,
+          "position": 7.386219619326504
+        },
+        {
+          "rank": 4,
+          "position_band": "5–10",
+          "intent": "Docs dışı",
+          "query_rows": 62,
+          "clicks": 1,
+          "impressions": 952,
+          "ctr": 0.0010504201680672268,
+          "position": 6.800735294117647
+        },
+        {
+          "rank": 5,
+          "position_band": "10–20",
+          "intent": "Docs/reference",
+          "query_rows": 14,
+          "clicks": 0,
+          "impressions": 30,
+          "ctr": 0.0,
+          "position": 10.667
+        },
+        {
+          "rank": 6,
+          "position_band": "10–20",
+          "intent": "Docs dışı",
+          "query_rows": 13,
+          "clicks": 0,
+          "impressions": 66,
+          "ctr": 0.0,
+          "position": 12.225757575757575
+        },
+        {
+          "rank": 7,
+          "position_band": "20+",
+          "intent": "Docs/reference",
+          "query_rows": 3,
+          "clicks": 0,
+          "impressions": 8,
+          "ctr": 0.0,
+          "position": 44.125
+        },
+        {
+          "rank": 8,
+          "position_band": "20+",
+          "intent": "Docs dışı",
+          "query_rows": 16,
+          "clicks": 0,
+          "impressions": 53,
+          "ctr": 0.0,
+          "position": 32.39528301886793
+        }
+      ],
+      "trivia_exact_intent_rows": [
+        {
+          "rank": 1,
+          "page": "Angular HttpClient cancellation",
+          "window": "2026-07-08–2026-08-04",
+          "page_clicks": 3,
+          "page_impressions": 2519,
+          "page_ctr": 0.0011909487892020642,
+          "page_position": 6.65,
+          "visible_query_impressions": 749,
+          "visible_query_coverage": 0.29734021437078206,
+          "docs_clicks": 0,
+          "docs_impressions": 469,
+          "docs_visible_share": 0.6261682242990654,
+          "docs_position": 6.6943923240938155,
+          "non_docs_clicks": 0,
+          "non_docs_impressions": 280,
+          "non_docs_visible_share": 0.37383177570093457,
+          "non_docs_position": 4.889071428571428
+        },
+        {
+          "rank": 2,
+          "page": "React render nothing",
+          "window": "2026-07-12–2026-08-08",
+          "page_clicks": 1,
+          "page_impressions": 2719,
+          "page_ctr": 0.0003677822728944465,
+          "page_position": 8.67,
+          "visible_query_impressions": 251,
+          "visible_query_coverage": 0.09231335049650607,
+          "docs_clicks": 0,
+          "docs_impressions": 161,
+          "docs_visible_share": 0.6414342629482072,
+          "docs_position": 8.584906832298136,
+          "non_docs_clicks": 0,
+          "non_docs_impressions": 90,
+          "non_docs_visible_share": 0.35856573705179284,
+          "non_docs_position": 8.077444444444446
+        },
+        {
+          "rank": 3,
+          "page": "HTML form defaults",
+          "window": "2026-07-12–2026-08-08",
+          "page_clicks": 0,
+          "page_impressions": 1113,
+          "page_ctr": 0.0,
+          "page_position": 7.65,
+          "visible_query_impressions": 155,
+          "visible_query_coverage": 0.13926325247079965,
+          "docs_clicks": 0,
+          "docs_impressions": 123,
+          "docs_visible_share": 0.7935483870967742,
+          "docs_position": 8.242845528455284,
+          "non_docs_clicks": 0,
+          "non_docs_impressions": 32,
+          "non_docs_visible_share": 0.2064516129032258,
+          "non_docs_position": 6.9053125
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "analysis_results",
+      "label": "FrontendAtlas GSC CTR analysis results",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/analysis_results.json",
+      "query": {
+        "engine": "Python standard library",
+        "language": "python",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/analysis_results.json')",
+        "description": "Read-only OOXML extraction, reconciliation, weighted CTR/position summaries, Shapley country-mix decomposition, and page/query cohorting.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "frontendatlas.com-Performance-on-Search-2026-08-10.xlsx",
+          "frontendatlas.com-Performance-on-Search-2026-08-10 (1).xlsx",
+          "frontendatlas.com-Performance-on-Search-2026-08-10 (2).xlsx",
+          "frontendatlas.com-Performance-on-Search-2026-08-10 (3).xlsx"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Windows end 2026-08-08 except preliminary 24h export"
+        ],
+        "metric_definitions": [
+          "CTR = clicks / impressions; CTR cells are not averaged.",
+          "Average position = impression-weighted position from the exported rows.",
+          "Property totals use the Grafik/Ülkeler/Cihazlar grain; page rows are not summed into site CTR.",
+          "Mix/within effects use a symmetric two-segment Shapley decomposition for US vs non-US."
+        ]
+      }
+    },
+    {
+      "id": "gsc_3m",
+      "label": "GSC Search performance — last 3 months (materialized prior export)",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+      "query": {
+        "engine": "DuckDB JSON reader",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '3m'",
+        "description": "Read the preserved, read-only extraction of the finalized property-level Web export for May 9–Aug 8, 2026.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Prior export Grafik!A1:E93, preserved under source_extract.json['3m']"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Date: 2026-05-09 through 2026-08-08"
+        ],
+        "metric_definitions": [
+          "CTR = SUM(clicks) / SUM(impressions)",
+          "Average position = SUM(impressions * position) / SUM(impressions)"
+        ]
+      }
+    },
+    {
+      "id": "gsc_28d",
+      "label": "GSC Search performance — last 28 days (materialized prior export)",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+      "query": {
+        "engine": "DuckDB JSON reader",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '28d'",
+        "description": "Read the preserved, read-only extraction of the finalized property-level Web export for Jul 12–Aug 8, 2026.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Prior export Grafik!A1:E29, preserved under source_extract.json['28d']"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Date: 2026-07-12 through 2026-08-08"
+        ],
+        "metric_definitions": [
+          "CTR = SUM(clicks) / SUM(impressions)",
+          "Average position = SUM(impressions * position) / SUM(impressions)"
+        ]
+      }
+    },
+    {
+      "id": "gsc_7d",
+      "label": "GSC Search performance — last 7 days (materialized prior export)",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+      "query": {
+        "engine": "DuckDB JSON reader",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '7d'",
+        "description": "Read the preserved, read-only extraction of the finalized property-level Web export for Aug 2–Aug 8, 2026.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Prior export Grafik!A1:E8, preserved under source_extract.json['7d']"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Date: 2026-08-02 through 2026-08-08"
+        ],
+        "metric_definitions": [
+          "CTR = SUM(clicks) / SUM(impressions)",
+          "Average position = SUM(impressions * position) / SUM(impressions)"
+        ]
+      }
+    },
+    {
+      "id": "gsc_24h",
+      "label": "GSC Search performance — last 24 hours (materialized preliminary export)",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json",
+      "query": {
+        "engine": "DuckDB JSON reader",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/source_extract.json') WHERE period = '24h'",
+        "description": "Read the preserved preliminary hourly property-level Web extraction from the initial export set.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Prior export Grafik!A1:E25, preserved under source_extract.json['24h']"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Timezone: UTC+03:00"
+        ],
+        "metric_definitions": [
+          "CTR = SUM(clicks) / SUM(impressions)",
+          "Average position = SUM(impressions * position) / SUM(impressions)"
+        ]
+      }
+    },
+    {
+      "id": "followup_analysis",
+      "label": "Follow-up GSC workbook analysis",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/followup_analysis.json",
+      "query": {
+        "engine": "Python standard library",
+        "language": "python",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/followup_analysis.json')",
+        "description": "Read-only reconciliation and cohort analysis of the Aug 5 sitewide export and the two exact-page exports.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Aug 5: Grafik, Sorgular, Sayfa sayısı, Ülkeler, Cihazlar, Filtreler",
+          "React exact page: Grafik, Sorgular, Sayfa sayısı, Ülkeler, Cihazlar, Filtreler",
+          "HTML exact page: Grafik, Sorgular, Sayfa sayısı, Ülkeler, Cihazlar, Filtreler"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Aug 5, 2026 sitewide",
+          "Jul 12–Aug 8, 2026 exact-page windows"
+        ],
+        "metric_definitions": [
+          "CTR = clicks / impressions; exported CTR cells are not averaged.",
+          "Exact-page Graph/Page totals are authoritative; dimension sheets are reportable-query subsets.",
+          "Aug 5 country mix/within effects use a symmetric US vs non-US Shapley decomposition against the other six days."
+        ]
+      }
+    },
+    {
+      "id": "zero_click_analysis",
+      "label": "Trivia zero-click and visible-query intent cohorts",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/zero_click_analysis.json",
+      "query": {
+        "engine": "Python standard library",
+        "language": "python",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/zero_click_analysis.json')",
+        "description": "Reproduce URL-level trivia cohorts and an exclusive, rule-defined intent split from materialized GSC extracts.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "source_extract.json: 3m/28d Grafik, Sorgular, Sayfa sayısı",
+          "followup_source_extract.json: React and HTML exact-page exports",
+          "seo-gsc-page-audit-2026-08-07/source_extract.json: Angular exact-page comparison"
+        ],
+        "filters": [
+          "Trivia URL contains the trivia route segment",
+          "Zero-click URL row has exactly zero clicks in the stated window",
+          "Visible-query topic mapping is exclusive and first-match-wins",
+          "Docs modifier regex is recorded in zero_click_analysis.json"
+        ],
+        "metric_definitions": [
+          "CTR = SUM(clicks) / SUM(impressions); exported CTR cells are not averaged.",
+          "Average position = SUM(impressions * position) / SUM(impressions).",
+          "The 75.3% docs share is limited to the 4,600-impression mapped visible-query sample.",
+          "Property-level query rows have no page dimension; exact-page rows are reported separately."
+        ]
+      }
+    },
+    {
+      "id": "gsc_aug5",
+      "label": "GSC Search performance — Aug 5, 2026 sitewide",
+      "path": "frontendatlas.com-Performance-on-Search-2026-08-10.xlsx",
+      "query": {
+        "engine": "DuckDB Excel extension",
+        "language": "sql",
+        "sql": "SELECT * FROM read_xlsx('frontendatlas.com-Performance-on-Search-2026-08-10.xlsx', sheet = 'Grafik')",
+        "description": "Read the one-day, unfiltered property-level Web export and its page/country/device marginals.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Grafik!A1:E2",
+          "Sayfa sayısı!A1:E143",
+          "Ülkeler!A1:E75",
+          "Cihazlar!A1:E4",
+          "Filtreler!A1:B3"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Date: 2026-08-05",
+          "No page filter"
+        ],
+        "metric_definitions": [
+          "Property CTR = Grafik clicks / Grafik impressions",
+          "Country/device totals must reconcile to Grafik"
+        ]
+      }
+    },
+    {
+      "id": "gsc_react_exact",
+      "label": "GSC exact-page performance — React render-nothing",
+      "path": "frontendatlas.com-Performance-on-Search-2026-08-10 (1).xlsx",
+      "query": {
+        "engine": "DuckDB Excel extension",
+        "language": "sql",
+        "sql": "SELECT * FROM read_xlsx('frontendatlas.com-Performance-on-Search-2026-08-10 (1).xlsx', sheet = 'Grafik')",
+        "description": "Read the 28-day exact-page Web export for the React render-nothing URL.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Grafik!A1:E29",
+          "Sorgular!A1:E68",
+          "Sayfa sayısı!A1:E2",
+          "Filtreler!A1:B4"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Date: 2026-07-12 through 2026-08-08",
+          "Exact page URL: https://frontendatlas.com/react/trivia/react-render-nothing-return-value"
+        ],
+        "metric_definitions": [
+          "Graph/Page totals are authoritative",
+          "Query/country/device rows describe only the 251 reportable impressions"
+        ]
+      }
+    },
+    {
+      "id": "gsc_html_exact",
+      "label": "GSC exact-page performance — HTML form default method",
+      "path": "frontendatlas.com-Performance-on-Search-2026-08-10 (2).xlsx",
+      "query": {
+        "engine": "DuckDB Excel extension",
+        "language": "sql",
+        "sql": "SELECT * FROM read_xlsx('frontendatlas.com-Performance-on-Search-2026-08-10 (2).xlsx', sheet = 'Grafik')",
+        "description": "Read the 28-day exact-page Web export for the HTML form-default URL.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "Grafik!A1:E29",
+          "Sorgular!A1:E41",
+          "Sayfa sayısı!A1:E2",
+          "Filtreler!A1:B4"
+        ],
+        "filters": [
+          "Search type: Web",
+          "Date: 2026-07-12 through 2026-08-08",
+          "Exact page URL: https://frontendatlas.com/html/trivia/html-form-default-method"
+        ],
+        "metric_definitions": [
+          "Graph/Page totals are authoritative",
+          "Query/country/device rows describe only the 155 reportable impressions"
+        ]
+      }
+    },
+    {
+      "id": "rendered_metadata",
+      "label": "Current prerendered FrontendAtlas HTML metadata",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/rendered_metadata_audit.json",
+      "query": {
+        "engine": "DuckDB JSON reader",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/rendered_metadata_audit.json')",
+        "description": "Read the bounded metadata audit rows extracted from the current prerendered HTML.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "frontend/dist/frontendatlas/browser/*/index.html"
+        ],
+        "filters": [
+          "Five highest-priority low-CTR pages"
+        ],
+        "metric_definitions": [
+          "Title and description characters use Unicode string length",
+          "CTR = GSC page clicks / page impressions"
+        ]
+      }
+    },
+    {
+      "id": "repo_seo_generator",
+      "label": "FrontendAtlas SEO generators and intelligence manifest",
+      "path": "outputs/seo-ctr-diagnostic-2026-08-10/repo_seo_audit.json",
+      "query": {
+        "engine": "DuckDB JSON reader",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('outputs/seo-ctr-diagnostic-2026-08-10/repo_seo_audit.json')",
+        "description": "Read the bounded repository/prerender audit findings and their GSC cohort cross-match.",
+        "executed_at": "2026-08-11T00:00:00+03:00",
+        "tables_used": [
+          "frontend/src/app/features/trivia/trivia-detail/trivia-seo.util.ts",
+          "frontend/scripts/generate-seo-intelligence-manifest.mjs",
+          "frontend/dist/frontendatlas/browser/*/index.html"
+        ],
+        "filters": [
+          "Current local prerender output",
+          "Three-month GSC Pages export"
+        ],
+        "metric_definitions": [
+          "Cohort CTR = cohort page clicks / cohort page impressions",
+          "Cohort share = cohort page impressions / property impressions"
+        ]
+      }
+    },
+    {
+      "id": "prior_angular_audit",
+      "label": "Angular HttpClient page GSC audit — 2026-08-07",
+      "path": "outputs/seo-gsc-page-audit-2026-08-07/analysis_results.json"
+    },
+    {
+      "id": "gsc_dimensions_docs",
+      "label": "Google Search Console — dimensions and data groupings",
+      "href": "https://support.google.com/webmasters/answer/17011259?hl=en"
+    },
+    {
+      "id": "gsc_aggregation_docs",
+      "label": "Google Search Console — about the data",
+      "href": "https://support.google.com/webmasters/answer/17011364?hl=en"
+    },
+    {
+      "id": "gsc_ai_docs",
+      "label": "Google Search Console — generative AI performance report",
+      "href": "https://support.google.com/webmasters/answer/16984139?hl=en"
+    },
+    {
+      "id": "google_title_docs",
+      "label": "Google Search Central — title link guidance",
+      "href": "https://developers.google.com/search/docs/appearance/title-link"
+    },
+    {
+      "id": "google_snippet_docs",
+      "label": "Google Search Central — snippet guidance",
+      "href": "https://developers.google.com/search/docs/appearance/snippet"
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://frontendatlas-gsc-ctr-diagnostic-2026-08-10",
+    "controls": {
+      "edit": false,
+      "refresh": false,
+      "share": false,
+      "export": false
+    }
+  }
+}

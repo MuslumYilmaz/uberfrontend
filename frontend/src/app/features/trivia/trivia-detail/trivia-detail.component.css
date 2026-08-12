@@ -1731,6 +1731,96 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   }
 }
 
+.event-loop-experience-slot {
+  min-width: 0;
+}
+
+.event-loop-experience-shell {
+  min-width: 0;
+  min-height: 64rem;
+}
+
+.event-loop-experience-shell {
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  background: var(--uf-surface);
+}
+
+.event-loop-experience-shell__body {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  padding: clamp(20px, 4vw, 34px);
+}
+
+.event-loop-experience-shell__eyebrow {
+  margin: 0;
+  color: var(--uf-accent-strong);
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.event-loop-experience-shell__title,
+.event-loop-experience-shell__copy {
+  margin: 0;
+}
+
+.event-loop-experience-shell__title {
+  max-width: 28ch;
+}
+
+.event-loop-experience-shell__copy {
+  max-width: 68ch;
+  color: var(--uf-text-secondary);
+}
+
+.event-loop-experience-shell__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.event-loop-experience-shell__steps span {
+  padding: 7px 10px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-pill);
+  background: var(--uf-surface-alt);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.event-loop-experience-shell--status {
+  gap: 8px;
+  padding: 24px;
+  align-content: center;
+  color: var(--uf-text-secondary);
+}
+
+.event-loop-experience-shell--status a {
+  color: var(--uf-accent-strong);
+  font-weight: 800;
+}
+
+@media (max-width: 520px) {
+  .event-loop-experience-shell {
+    min-height: 74rem;
+  }
+
+  .event-loop-experience-shell__body {
+    padding: 20px 16px;
+  }
+
+  .event-loop-experience-shell__steps {
+    display: grid;
+  }
+
+  .event-loop-experience-shell__steps span {
+    white-space: normal;
+  }
+}
+
 /* Prism line numbers (moved from JS import for build compatibility) */
 pre[class*="language-"].line-numbers {
   position: relative;

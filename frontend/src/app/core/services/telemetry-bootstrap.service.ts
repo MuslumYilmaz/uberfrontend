@@ -1,9 +1,11 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Injectable, InjectionToken, PLATFORM_ID, effect, inject } from '@angular/core';
+import type { ErrorEvent as SentryErrorEvent, EventHint as SentryEventHint } from '@sentry/browser';
 import { environment } from '../../../environments/environment';
 import { AnalyticsService } from './analytics.service';
 import { AuthService } from './auth.service';
 import { isMarketingPath } from '../utils/marketing-route.util';
+import { isTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
 
 type SentryModule = typeof import('@sentry/browser');
 type SentryBrowserClient = Pick<SentryModule, 'browserTracingIntegration' | 'init' | 'setUser'>;
@@ -17,6 +19,47 @@ export const SENTRY_BROWSER_LOADER = new InjectionToken<() => Promise<SentryBrow
 );
 
 const SENTRY_ANONYMOUS_ID_KEY = 'fa:sentry:anonymous-id';
+const BROWSER_API_ERRORS_MECHANISM_PREFIX = 'auto.browser.browserapierrors';
+
+export function filterExpectedMonacoWorkerError(
+  event: SentryErrorEvent,
+  hint: SentryEventHint,
+): SentryErrorEvent | null {
+  // Monaco rethrows this opaque Event after its recoverable main-thread fallback.
+  const originalException = hint.originalException;
+  if (typeof Event === 'undefined' || !(originalException instanceof Event)) return event;
+  if (originalException.type !== 'error') return event;
+
+  const errorEvent = originalException as Event & {
+    message?: unknown;
+    filename?: unknown;
+    error?: unknown;
+  };
+  if (
+    isNonEmptyString(errorEvent.message)
+    || isNonEmptyString(errorEvent.filename)
+    || errorEvent.error != null
+  ) {
+    return event;
+  }
+
+  if (
+    !isTrackedMonacoWorker(originalException.target)
+    && !isTrackedMonacoWorker(originalException.currentTarget)
+  ) {
+    return event;
+  }
+
+  const isBrowserApiError = event.exception?.values?.some((exception) =>
+    exception.mechanism?.type?.startsWith(BROWSER_API_ERRORS_MECHANISM_PREFIX),
+  ) ?? false;
+
+  return isBrowserApiError ? null : event;
+}
+
+function isNonEmptyString(value: unknown): boolean {
+  return typeof value === 'string' && value.trim().length > 0;
+}
 
 @Injectable({ providedIn: 'root' })
 export class TelemetryBootstrapService {
@@ -110,6 +153,7 @@ export class TelemetryBootstrapService {
               integrations: [sentry.browserTracingIntegration()],
               tracePropagationTargets: [environment.apiBase, /^\//],
               tracesSampleRate: environment.sentryTracesSampleRate,
+              beforeSend: filterExpectedMonacoWorkerError,
             });
             this.sentry = sentry;
             this.applySentryUser(this.auth.user()?._id ?? null);

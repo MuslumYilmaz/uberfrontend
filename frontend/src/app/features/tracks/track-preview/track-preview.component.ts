@@ -391,7 +391,7 @@ const CRASH_7D_FALLBACKS: Record<string, Omit<PreviewQuestion, 'kind' | 'tech'>>
   },
   'js-event-loop': {
     id: 'js-event-loop',
-    title: 'Explain the JavaScript Event Loop',
+    title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
     difficulty: 'hard',
     access: 'free',
   },

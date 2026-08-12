@@ -1,0 +1,332 @@
+<section
+  class="event-loop-experience"
+  data-testid="javascript-event-loop-experience"
+  aria-labelledby="event-loop-experience-title"
+>
+  <header class="event-loop-experience__header">
+    <p class="event-loop-experience__eyebrow">Interactive browser lab</p>
+    <h2 id="event-loop-experience-title">Predict the browser event loop before it runs</h2>
+    <p>
+      Commit to an output, then advance a deterministic browser trace. Nothing here executes
+      your code: each state is a curated reasoning model for tasks, microtasks, and rendering.
+    </p>
+    <div class="event-loop-experience__meta" aria-label="Lab details">
+      <span>Browser runtime</span>
+      <span>About 75 seconds</span>
+      <span>3 decisions</span>
+    </div>
+  </header>
+
+  <article
+    faCard
+    elevated
+    padding="lg"
+    class="event-loop-experience__code-card"
+  >
+    <div class="event-loop-experience__card-heading" data-focus-target="prediction" tabindex="-1">
+      <div>
+        <span class="event-loop-experience__step">Decision 1 of 3</span>
+        <h3>What reaches the console?</h3>
+      </div>
+      <span class="event-loop-experience__zero-delay">0 ms is not “run now”</span>
+    </div>
+    <pre class="event-loop-experience__code" tabindex="0" aria-label="JavaScript Promise and timer example"><code>{{ code }}</code></pre>
+
+    <fieldset
+      *ngIf="state().phase === 'prediction'"
+      class="event-loop-experience__choices"
+      data-testid="event-loop-prediction"
+    >
+      <legend>Choose the complete output order before starting the trace.</legend>
+      <label
+        *ngFor="let choice of predictionChoices; let index = index; trackBy: trackChoice"
+        class="event-loop-experience__choice"
+        [class.is-selected]="state().predictionSelection === choice.id"
+      >
+        <input
+          type="radio"
+          name="event-loop-prediction"
+          [value]="choice.id"
+          [checked]="state().predictionSelection === choice.id"
+          (change)="selectPrediction(choice.id)"
+        />
+        <span class="event-loop-experience__choice-marker" aria-hidden="true">{{ choiceMarker(index) }}</span>
+        <span>{{ choice.label }}</span>
+      </label>
+      <button
+        faButton
+        type="button"
+        variant="primary"
+        size="md"
+        data-testid="event-loop-submit-prediction"
+        [disabled]="!state().predictionSelection"
+        (click)="submitPrediction()"
+      >
+        Lock prediction
+      </button>
+    </fieldset>
+
+    <div
+      *ngIf="state().phase !== 'prediction'"
+      class="event-loop-experience__prediction-locked"
+    >
+      <span aria-hidden="true">✓</span>
+      Prediction locked. The trace now reveals the order one state at a time.
+    </div>
+  </article>
+
+  <section
+    *ngIf="state().phase === 'trace-ready'"
+    faCard
+    padding="lg"
+    class="event-loop-experience__action-card"
+    aria-labelledby="event-loop-trace-ready-title"
+  >
+    <div data-focus-target="trace-ready" tabindex="-1">
+      <span class="event-loop-experience__step">Manual trace</span>
+      <h3 id="event-loop-trace-ready-title">Run the current script to completion</h3>
+      <p>Synchronous statements finish before the browser chooses queued work.</p>
+    </div>
+    <button
+      faButton
+      type="button"
+      variant="primary"
+      size="md"
+      data-testid="event-loop-start-trace"
+      (click)="startTrace()"
+    >
+      Start trace
+    </button>
+  </section>
+
+  <section
+    *ngIf="state().traceStep > 0"
+    class="event-loop-experience__trace"
+    aria-labelledby="event-loop-trace-title"
+  >
+    <div class="event-loop-experience__trace-heading">
+      <div>
+        <span class="event-loop-experience__step">Deterministic trace</span>
+        <h3 id="event-loop-trace-title">Browser scheduling state</h3>
+      </div>
+      <span class="event-loop-experience__active-line">Just ran: {{ snapshot().lastTransition }}</span>
+    </div>
+
+    <div class="event-loop-experience__lanes">
+      <article faCard padding="md" class="event-loop-experience__lane" data-lane="current">
+        <span>Current task</span>
+        <p>{{ snapshot().currentTask }}</p>
+      </article>
+      <article faCard padding="md" class="event-loop-experience__lane" data-lane="microtasks">
+        <span>Microtasks</span>
+        <ul *ngIf="snapshot().microtasks.length; else noMicrotasks">
+          <li *ngFor="let item of snapshot().microtasks">{{ item }}</li>
+        </ul>
+        <ng-template #noMicrotasks><p>Queue empty</p></ng-template>
+      </article>
+      <article faCard padding="md" class="event-loop-experience__lane" data-lane="tasks">
+        <span>Timer tasks</span>
+        <ul *ngIf="snapshot().timerTasks.length; else noTimerTasks">
+          <li *ngFor="let item of snapshot().timerTasks">{{ item }}</li>
+        </ul>
+        <ng-template #noTimerTasks><p>Queue empty</p></ng-template>
+      </article>
+      <article faCard padding="md" class="event-loop-experience__lane" data-lane="render">
+        <span>Render opportunity</span>
+        <p>{{ snapshot().renderOpportunity }}</p>
+      </article>
+    </div>
+
+    <div class="event-loop-experience__console" aria-label="Console output so far">
+      <span>Console</span>
+      <code *ngIf="snapshot().consoleOutput.length; else consoleEmpty">{{ snapshot().consoleOutput.join('  ') }}</code>
+      <ng-template #consoleEmpty><code>No output yet</code></ng-template>
+    </div>
+  </section>
+
+  <section
+    *ngIf="state().phase === 'checkpoint'"
+    faCard
+    padding="lg"
+    class="event-loop-experience__decision-card"
+    aria-labelledby="event-loop-checkpoint-title"
+  >
+    <span class="event-loop-experience__step">Decision 2 of 3</span>
+    <h3 id="event-loop-checkpoint-title" data-focus-target="checkpoint" tabindex="-1">The current task is complete. What runs next?</h3>
+    <fieldset class="event-loop-experience__choices event-loop-experience__choices--compact">
+      <legend>Choose one scheduling outcome.</legend>
+      <label
+        *ngFor="let choice of checkpointChoices; let index = index; trackBy: trackChoice"
+        class="event-loop-experience__choice"
+        [class.is-selected]="state().checkpointSelection === choice.id"
+      >
+        <input
+          type="radio"
+          name="event-loop-checkpoint"
+          [value]="choice.id"
+          [checked]="state().checkpointSelection === choice.id"
+          (change)="selectCheckpoint(choice.id)"
+        />
+        <span class="event-loop-experience__choice-marker" aria-hidden="true">{{ choiceMarker(index) }}</span>
+        <span>{{ choice.label }}</span>
+      </label>
+      <button
+        faButton
+        type="button"
+        variant="primary"
+        size="md"
+        data-testid="event-loop-submit-checkpoint"
+        [disabled]="!state().checkpointSelection"
+        (click)="submitCheckpoint()"
+      >
+        Check decision
+      </button>
+    </fieldset>
+  </section>
+
+  <section
+    *ngIf="state().checkpointCorrect !== null"
+    class="event-loop-experience__feedback"
+    [class.is-correct]="state().checkpointCorrect"
+    [attr.data-testid]="'event-loop-checkpoint-feedback'"
+    data-focus-target="checkpoint-feedback"
+    tabindex="-1"
+    aria-labelledby="event-loop-checkpoint-feedback-title"
+  >
+    <strong id="event-loop-checkpoint-feedback-title">
+      {{ state().checkpointCorrect ? 'Good call' : 'Common misconception' }}
+    </strong>
+    <p>{{ checkpointFeedback() }}</p>
+  </section>
+
+  <div *ngIf="state().phase === 'microtask-ready'" class="event-loop-experience__advance">
+    <button
+      faButton
+      type="button"
+      variant="primary"
+      size="md"
+      data-testid="event-loop-drain-microtasks"
+      (click)="drainMicrotasks()"
+    >
+      Drain microtasks
+    </button>
+  </div>
+
+  <section
+    *ngIf="state().phase === 'paint'"
+    faCard
+    padding="lg"
+    class="event-loop-experience__decision-card"
+    aria-labelledby="event-loop-paint-title"
+  >
+    <span class="event-loop-experience__step">Decision 3 of 3</span>
+    <h3 id="event-loop-paint-title" data-focus-target="paint" tabindex="-1">What if each microtask queues another microtask?</h3>
+    <p class="event-loop-experience__decision-copy">
+      When can the browser reach a render opportunity in that starvation scenario?
+    </p>
+    <fieldset class="event-loop-experience__choices event-loop-experience__choices--compact">
+      <legend>Choose the accurate browser-runtime rule.</legend>
+      <label
+        *ngFor="let choice of paintChoices; let index = index; trackBy: trackChoice"
+        class="event-loop-experience__choice"
+        [class.is-selected]="state().paintSelection === choice.id"
+      >
+        <input
+          type="radio"
+          name="event-loop-paint"
+          [value]="choice.id"
+          [checked]="state().paintSelection === choice.id"
+          (change)="selectPaint(choice.id)"
+        />
+        <span class="event-loop-experience__choice-marker" aria-hidden="true">{{ choiceMarker(index) }}</span>
+        <span>{{ choice.label }}</span>
+      </label>
+      <button
+        faButton
+        type="button"
+        variant="primary"
+        size="md"
+        data-testid="event-loop-submit-paint"
+        [disabled]="!state().paintSelection"
+        (click)="submitPaint()"
+      >
+        Check decision
+      </button>
+    </fieldset>
+  </section>
+
+  <section
+    *ngIf="state().paintCorrect !== null"
+    class="event-loop-experience__feedback"
+    [class.is-correct]="state().paintCorrect"
+    data-testid="event-loop-paint-feedback"
+    data-focus-target="paint-feedback"
+    tabindex="-1"
+    aria-labelledby="event-loop-paint-feedback-title"
+  >
+    <strong id="event-loop-paint-feedback-title">
+      {{ state().paintCorrect ? 'Exactly' : 'Watch the checkpoint boundary' }}
+    </strong>
+    <p>{{ paintFeedback() }}</p>
+  </section>
+
+  <div *ngIf="state().phase === 'next-task-ready'" class="event-loop-experience__advance">
+    <button
+      faButton
+      type="button"
+      variant="primary"
+      size="md"
+      data-testid="event-loop-finish-trace"
+      (click)="finishTrace()"
+    >
+      Run next task and finish
+    </button>
+  </div>
+
+  <section
+    *ngIf="state().phase === 'complete'"
+    faCard
+    elevated
+    padding="lg"
+    class="event-loop-experience__result"
+    data-testid="event-loop-result"
+    aria-labelledby="event-loop-result-title"
+  >
+    <div data-focus-target="result" tabindex="-1">
+      <span class="event-loop-experience__step">Trace complete</span>
+      <h3 id="event-loop-result-title">Your first-answer score: {{ score() }} / 3</h3>
+      <p>
+        Your output prediction was
+        <strong>{{ state().predictionCorrect ? 'correct' : 'different from the trace' }}</strong>.
+        The deterministic output is <code>start → end → promise → timer</code>.
+      </p>
+    </div>
+    <div class="event-loop-experience__takeaway">
+      <span>Keep this sequence</span>
+      <code>{{ finalTakeaway }}</code>
+    </div>
+    <div class="event-loop-experience__result-actions">
+      <button
+        faButton
+        type="button"
+        variant="neutral"
+        size="md"
+        data-testid="event-loop-replay"
+        (click)="replay()"
+      >
+        Try again
+      </button>
+      <fa-chip
+        label="Try the nested microtask challenge →"
+        variant="filled"
+        size="md"
+        [toggle]="false"
+        [routerLink]="['/javascript/trivia/js-event-loop-nested-microtask-output']"
+        testId="event-loop-related-challenge"
+        (chipClick)="onRelatedChallengeClick()"
+      ></fa-chip>
+    </div>
+  </section>
+
+  <p class="sr-only" aria-live="polite" aria-atomic="true">{{ liveMessage() }}</p>
+</section>

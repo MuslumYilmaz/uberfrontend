@@ -69,7 +69,8 @@ test('seo: HTML form default method page preserves intent-specific metadata and 
 
   const jsonLd = page.locator('script#seo-jsonld');
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
-  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('"@type":"Article"');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').not.toContain('TechArticle');
 });
 
 test('seo: coding query variants keep clean canonical, noindex, and filter state', async ({ page }) => {
@@ -167,7 +168,8 @@ test('seo: css display flex page keeps route identity + structured data', async 
 
   const jsonLd = page.locator('script#seo-jsonld');
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
-  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('TechArticle');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('"@type":"Article"');
+  await expect.poll(async () => (await jsonLd.textContent()) || '').not.toContain('TechArticle');
   await expect.poll(async () => (await jsonLd.textContent()) || '').not.toContain('FAQPage');
 
   const triviaMain = page.getByTestId('trivia-detail-main');

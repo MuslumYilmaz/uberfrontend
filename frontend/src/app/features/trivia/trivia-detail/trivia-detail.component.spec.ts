@@ -252,6 +252,7 @@ describe('TriviaDetailComponent', () => {
   });
 
   afterEach(() => {
+    sessionStorage.removeItem('fa:trivia:lab-complete:js_event_loop_75s_v1');
     window.history.pushState({}, '', originalPath || '/');
     if (originalHiddenDescriptor) {
       Object.defineProperty(document, 'hidden', originalHiddenDescriptor);
@@ -273,6 +274,25 @@ describe('TriviaDetailComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     return fixture;
+  }
+
+  function expectCommonTriviaSchema(payload = seo.updateTags.calls.mostRecent().args[0] as any) {
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const typeNames = graph.map((node: any) => node?.['@type']);
+    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
+    const article = graph.find((node: any) => node?.['@type'] === 'Article');
+
+    expect(typeNames).toEqual(['BreadcrumbList', 'Article']);
+    expect(typeNames).not.toContain('TechArticle');
+    expect(typeNames).not.toContain('Question');
+    expect(typeNames).not.toContain('FAQPage');
+    expect(typeNames).not.toContain('QAPage');
+    expect(breadcrumb).toBeTruthy();
+    expect(article).toBeTruthy();
+    expect(article?.citation).toBeUndefined();
+    expect(article?.hasPart).toBeUndefined();
+
+    return { graph, breadcrumb, article };
   }
 
   it('shows report issue button on unlocked trivia detail', async () => {
@@ -301,7 +321,7 @@ describe('TriviaDetailComponent', () => {
     expect(h1?.textContent?.trim()).toBe('What is closure?');
     expect(h1?.querySelector('.title__intent')).toBeNull();
     expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
-      'Frontend interview answer',
+      'Frontend interview practice question',
     );
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -310,16 +330,11 @@ describe('TriviaDetailComponent', () => {
       'Practice explaining JavaScript closures in interviews without losing the original question title.',
     );
 
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const faq = graph.find((node: any) => node?.['@type'] === 'FAQPage');
-    const qaPage = graph.find((node: any) => node?.['@type'] === 'QAPage');
+    const { article } = expectCommonTriviaSchema(payload);
 
-    expect(article?.headline).toBe('What is closure? - Frontend interview answer');
+    expect(article?.headline).toBe('What is closure? - Frontend interview practice question');
     expect(article?.isAccessibleForFree).toBeTrue();
     expect(payload.robots).toBeUndefined();
-    expect(faq).toBeUndefined();
-    expect(qaPage).toBeUndefined();
   });
 
   it('marks premium trivia content noindex without accepted-answer schema, even for premium users', async () => {
@@ -331,14 +346,11 @@ describe('TriviaDetailComponent', () => {
     });
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
+    const { article } = expectCommonTriviaSchema(payload);
 
     expect(payload.robots).toBe('noindex,follow');
     expect(payload.canonical).toBe('https://frontendatlas.com/javascript/trivia/js-async-race-conditions');
     expect(article?.isAccessibleForFree).toBeFalse();
-    expect(questionSchema).toBeUndefined();
   });
 
   it('keeps internal company tags out of trivia metadata and structured-data keywords', async () => {
@@ -348,12 +360,12 @@ describe('TriviaDetailComponent', () => {
     });
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const { article } = expectCommonTriviaSchema(payload);
 
     expect(payload.keywords).toContain('closures');
     expect(payload.keywords).not.toContain('google');
     expect(payload.keywords).not.toContain('meta');
+    expect(article?.keywords).toBeUndefined();
     expect(String(article?.keywords || '')).not.toContain('google');
     expect(String(article?.keywords || '')).not.toContain('meta');
   });
@@ -377,13 +389,12 @@ describe('TriviaDetailComponent', () => {
     );
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const { article } = expectCommonTriviaSchema(payload);
 
     expect(article?.headline).toBe('What is closure? - Debugging interview answer');
   });
 
-  it('uses question-level SEO H1 override without appending the default intent label', async () => {
+  it('keeps the interview-practice label alongside a question-level SEO H1 override', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
         title: 'Can React Return undefined? React 18 vs null',
@@ -401,13 +412,16 @@ describe('TriviaDetailComponent', () => {
       'Can React Components Return undefined? React 18 vs null',
     );
     expect(h1?.querySelector('.title__intent')).toBeNull();
-    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
+      'Frontend interview practice question',
+    );
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const { article } = expectCommonTriviaSchema(payload);
 
-    expect(article?.headline).toBe('Can React Components Return undefined? React 18 vs null');
+    expect(article?.headline).toBe(
+      'Can React Components Return undefined? React 18 vs null - Frontend interview practice question',
+    );
   });
 
   it('renders article body card headings as H2 and markdown answer headings as H3', async () => {
@@ -493,7 +507,7 @@ describe('TriviaDetailComponent', () => {
     expect(isBefore(practiceFrame, fullHead)).toBeTrue();
   });
 
-  it('renders the React stale-closure case files before the editorial review with fragment schema', async () => {
+  it('renders the React stale-closure practice block before case files and uses the common schema', async () => {
     const expectedTitle = 'React Stale Closures: 6 PRs, Which Fix Is Right?';
     const expectedH1 = 'React Stale Closure Case Files: Diagnose Six Pull Requests';
     const expectedDescription =
@@ -561,18 +575,22 @@ describe('TriviaDetailComponent', () => {
 
     expect(h1s.length).toBe(1);
     expect(h1s[0]?.textContent?.trim()).toBe(expectedH1);
-    expect(root.querySelector('.title-copy > .title__intent')).toBeNull();
+    expect(root.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
+      'Frontend interview practice question',
+    );
     expect(directHead).toBeTruthy();
     expect(caseFiles).toBeTruthy();
     expect(fullHead).toBeTruthy();
     expect(focusHead).toBeTruthy();
     expect(practiceFrame).toBeTruthy();
     expect(prepEntry).toBeTruthy();
-    expect(isBefore(directHead, caseFiles)).toBeTrue();
-    expect(isBefore(caseFiles, fullHead)).toBeTrue();
-    expect(isBefore(fullHead, focusHead)).toBeTrue();
+    expect(isBefore(directHead, focusHead)).toBeTrue();
     expect(isBefore(focusHead, practiceFrame)).toBeTrue();
-    expect(isBefore(practiceFrame, prepEntry)).toBeTrue();
+    expect(isBefore(practiceFrame, caseFiles)).toBeTrue();
+    expect(isBefore(caseFiles, fullHead)).toBeTrue();
+    expect(isBefore(fullHead, prepEntry)).toBeTrue();
+    expect(root.textContent || '').not.toContain('Source check');
+    expect(root.textContent || '').not.toContain('official React references');
     expect(root.textContent).toContain(
       'These are representative FrontendAtlas code-review scenarios, not real pull requests or leaked interview material.',
     );
@@ -582,40 +600,19 @@ describe('TriviaDetailComponent', () => {
     expect(renderedCaseFiles.map((element) => element.id)).toEqual(expectedFragments);
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const typeNames = graph.map((node: any) => node?.['@type']);
-    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const { breadcrumb, article } = expectCommonTriviaSchema(payload);
 
     expect(payload.title).toBe(expectedTitle);
     expect(payload.description).toBe(expectedDescription);
     expect(payload.canonical).toBe('https://frontendatlas.com/react/trivia/react-stale-state-closures');
     expect(payload.robots).toBeUndefined();
-    expect(typeNames).toContain('BreadcrumbList');
-    expect(typeNames).toContain('TechArticle');
-    expect(typeNames).not.toContain('FAQPage');
-    expect(typeNames).not.toContain('QAPage');
-    expect(typeNames).not.toContain('Question');
     expect(breadcrumb?.itemListElement?.[2]?.item).toBe(payload.canonical);
-    expect(article?.headline).toBe(expectedH1);
+    expect(article?.headline).toBe(`${expectedH1} - Frontend interview practice question`);
     expect(article?.datePublished).toBe('2026-01-25T00:00:00.000Z');
     expect(article?.dateModified).toBe('2026-08-03T00:00:00.000Z');
-    expect(article?.learningResourceType).toBe('Code review exercise');
-    expect((article?.about || []).map((item: any) => item.name)).toContain('React stale closures');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('useEffectEvent');
-    expect((article?.hasPart || []).map((item: any) => item.url)).toEqual(
-      expectedFragments.map((fragment) => `${payload.canonical}#${fragment}`),
-    );
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://react.dev/learn/state-as-a-snapshot',
-      'https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps',
-      'https://react.dev/reference/react/useEffectEvent',
-      'https://react.dev/reference/react/useRef',
-      'https://frontendatlas.com/legal/editorial-policy',
-    ]);
   });
 
-  it('renders the Angular HttpClient cancellation lab developer-first with conservative SEO schema', async () => {
+  it('renders Angular HttpClient interview practice before the lab with the common schema', async () => {
     const expectedTitle = 'Angular HttpClient Unsubscribe: 6 Tests & DevTools';
     const expectedH1 = 'Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI';
     const expectedDescription =
@@ -699,7 +696,9 @@ describe('TriviaDetailComponent', () => {
 
     expect(h1s.length).toBe(1);
     expect(h1s[0]?.textContent?.trim()).toBe(expectedH1);
-    expect(root.querySelector('.title-copy > .title__intent')).toBeNull();
+    expect(root.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
+      'Frontend interview practice question',
+    );
     expect(quickHead).toBeTruthy();
     expect(quickHead?.parentElement?.textContent).toContain(
       'That does not prove server work stopped or stale UI is impossible.',
@@ -707,9 +706,12 @@ describe('TriviaDetailComponent', () => {
     expect(lab).toBeTruthy();
     expect(fullHead).toBeTruthy();
     expect(focusHead).toBeTruthy();
-    expect(isBefore(quickHead, lab)).toBeTrue();
+    const practiceFrame = root.querySelector('[data-testid="trivia-practice-frame"]') as HTMLElement | null;
+    expect(practiceFrame).toBeTruthy();
+    expect(isBefore(quickHead, focusHead)).toBeTrue();
+    expect(isBefore(focusHead, practiceFrame)).toBeTrue();
+    expect(isBefore(practiceFrame, lab)).toBeTrue();
     expect(isBefore(lab, fullHead)).toBeTrue();
-    expect(isBefore(fullHead, focusHead)).toBeTrue();
     expect(fixture.componentInstance.angularHttpCancellationTestSuite().match(/\bit\(/g)?.length).toBe(6);
     expect(
       (lab?.querySelector('[data-testid="angular-http-cancellation-copy-suite"]') as HTMLButtonElement)
@@ -719,11 +721,11 @@ describe('TriviaDetailComponent', () => {
     expect(root.querySelector('[data-trivia-link-zone="similar"]')).toBeNull();
     expect(Array.from(root.querySelectorAll('h2.card-head, .card-head')).some((node) =>
       node.textContent?.trim() === 'Guides')).toBeFalse();
+    expect(root.textContent || '').not.toContain('Source check');
+    expect(root.textContent || '').not.toContain('Angular HTTP and testing guides');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const types = graph.map((node: any) => node?.['@type']);
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const { article } = expectCommonTriviaSchema(payload);
 
     expect(payload.title).toBe(expectedTitle);
     expect(payload.description).toBe(expectedDescription);
@@ -731,25 +733,9 @@ describe('TriviaDetailComponent', () => {
       'https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request',
     );
     expect(payload.robots).toBeUndefined();
-    expect(types).toEqual(['BreadcrumbList', 'TechArticle']);
-    expect(types).not.toContain('FAQPage');
-    expect(types).not.toContain('QAPage');
-    expect(types).not.toContain('Question');
-    expect(article?.headline).toBe(expectedH1);
+    expect(article?.headline).toBe(`${expectedH1} - Frontend interview practice question`);
     expect(article?.datePublished).toBe('2026-01-25T00:00:00.000Z');
     expect(article?.dateModified).toBe('2026-08-03T00:00:00.000Z');
-    expect(article?.articleSection).toBe('Angular HTTP cancellation and RxJS');
-    expect(article?.learningResourceType).toBe('Interactive debugging lab');
-    expect((article?.about || []).map((item: any) => item.name)).toContain('Angular HttpClient cancellation');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('TestRequest.cancelled');
-    expect((article?.hasPart || []).map((item: any) => item.name)).toContain('Cancellation behavior model');
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://angular.dev/guide/http/making-requests',
-      'https://angular.dev/guide/http/testing',
-      'https://angular.dev/api/common/http/testing/TestRequest',
-      'https://angular.dev/api/common/http/HttpRequest',
-      'https://frontendatlas.com/legal/editorial-policy',
-    ]);
   });
 
   it('does not render the Angular HttpClient cancellation lab for generic trivia', async () => {
@@ -827,7 +813,7 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('Equality predictor');
   });
 
-  it('renders external source links from markdown with safe blank-target attributes', async () => {
+  it('keeps reference-only source blocks and their links out of the rendered DOM', async () => {
     const fixture = await createLoadedFixture('free', {
       answer: {
         blocks: [
@@ -840,16 +826,15 @@ describe('TriviaDetailComponent', () => {
       },
     });
 
-    const link = fixture.nativeElement.querySelector(
+    const root = fixture.nativeElement as HTMLElement;
+    const link = root.querySelector(
       '.blocks a[href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality"]'
     ) as HTMLAnchorElement | null;
-    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
 
-    expect(sourceCheck).toBeTruthy();
-    expect(link?.textContent?.trim()).toBe('MDN Equality');
-    expect(link?.getAttribute('target')).toBe('_blank');
-    expect(link?.getAttribute('rel') || '').toContain('noopener');
-    expect(link?.getAttribute('rel') || '').toContain('noreferrer');
+    expect(root.querySelector('.source-check')).toBeNull();
+    expect(link).toBeNull();
+    expect(root.textContent || '').not.toContain('Source check');
+    expect(root.textContent || '').not.toContain('MDN Equality');
   });
 
   it('renders safe raw html anchors as links without exposing literal anchor text', async () => {
@@ -859,7 +844,7 @@ describe('TriviaDetailComponent', () => {
           {
             type: 'text',
             text:
-              '## Source check\n\nIn Angular tests, use <a href="https://angular.dev/api/common/http/testing/TestRequest" target="_blank" rel="noopener"><code>TestRequest.cancelled</code></a> as the proof point.',
+              '## Testable proof\n\nIn Angular tests, use <a href="https://angular.dev/api/common/http/testing/TestRequest" target="_blank" rel="noopener"><code>TestRequest.cancelled</code></a> as the proof point.',
           },
         ],
       },
@@ -869,9 +854,7 @@ describe('TriviaDetailComponent', () => {
     const link = root.querySelector(
       '.blocks a[href="https://angular.dev/api/common/http/testing/TestRequest"]'
     ) as HTMLAnchorElement | null;
-    const sourceCheck = root.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
 
-    expect(sourceCheck).toBeTruthy();
     expect(link).toBeTruthy();
     expect(link?.textContent?.trim()).toBe('TestRequest.cancelled');
     expect(link?.querySelector('code')?.textContent?.trim()).toBe('TestRequest.cancelled');
@@ -879,6 +862,29 @@ describe('TriviaDetailComponent', () => {
     expect(link?.getAttribute('rel') || '').toContain('noopener');
     expect(link?.getAttribute('rel') || '').toContain('noreferrer');
     expect(root.querySelector('.blocks')?.textContent || '').not.toContain('<a href=');
+  });
+
+  it('keeps anchor markup inside code literal instead of creating a crawlable link', async () => {
+    const href = 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality';
+    const fixture = await createLoadedFixture('free', {
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text: `## Code review\n\nUse <code><a href="${href}">MDN Equality</a></code> only as a string example.`,
+          },
+        ],
+      },
+    });
+
+    const root = fixture.nativeElement as HTMLElement;
+    const code = root.querySelector('.blocks code') as HTMLElement | null;
+
+    expect(code).toBeTruthy();
+    expect(code?.querySelector('a')).toBeNull();
+    expect(root.querySelector(`.blocks a[href="${href}"]`)).toBeNull();
+    expect(code?.textContent || '').toContain('<a href=');
+    expect(code?.textContent || '').toContain('MDN Equality');
   });
 
   it('keeps unsafe raw html anchors escaped instead of making them clickable', async () => {
@@ -935,7 +941,9 @@ describe('TriviaDetailComponent', () => {
     );
     expect(h1?.textContent?.trim()).toBe('Async Race Conditions and Stale UI Updates');
     expect(h1?.querySelector('.title__intent')).toBeNull();
-    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
+      'Frontend interview practice question',
+    );
     expect(fixture.nativeElement.querySelector('.main-stack--async-race')).toBeTruthy();
 
     const h2Text = Array.from(fixture.nativeElement.querySelectorAll('h2.card-head'))
@@ -953,14 +961,12 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('When the async work cannot be aborted');
     expect(h3Text).toContain('Shared-controller follow-up');
     expect(h3Text).toContain('Pitfalls');
-    expect(h3Text).toContain('Source check');
+    expect(h3Text).not.toContain('Source check');
     expect(h3Text).toContain('Testable proof');
     expect(h3Text).toContain('FrontendAtlas review note');
     expect(h3Text).toContain('Production debugging standard');
 
-    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
-    expect(sourceCheck).toBeTruthy();
-    expect(sourceCheck?.textContent || '').not.toContain('official docs');
+    expect(fixture.nativeElement.querySelector('.source-check')).toBeNull();
   });
 
   it('uses async race practice-frame copy only for the target question', async () => {
@@ -1182,7 +1188,7 @@ describe('TriviaDetailComponent', () => {
     expect(simulator.textContent || '').toContain('Mounted and visible as text unless your condition prevents it.');
   });
 
-  it('adds async race TechArticle schema fields only for the target question', async () => {
+  it('uses the common trivia schema for async race and generic questions', async () => {
     const targetFixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',
       title: 'Async Race Conditions and Stale UI Updates',
@@ -1195,71 +1201,14 @@ describe('TriviaDetailComponent', () => {
     });
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
-    const typeNames = graph.map((node: any) => node?.['@type']);
+    const { article } = expectCommonTriviaSchema(payload);
 
-    expect(typeNames).toContain('Question');
-    expect(typeNames).not.toContain('FAQPage');
-    expect(typeNames).not.toContain('QAPage');
-    expect(article?.articleSection).toBe('JavaScript async concurrency');
-    expect(article?.educationalLevel).toBe('Intermediate');
-    expect(article?.learningResourceType).toBe('Interview answer');
     expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
-    expect(article?.reviewedBy).toBeUndefined();
+    expect(article?.headline).toBe(
+      'Async Race Conditions and Stale UI Updates - Frontend interview practice question',
+    );
     expect(article?.datePublished).toBe('2026-04-10T00:00:00.000Z');
     expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
-    expect((article?.about || []).map((item: any) => item.name)).toEqual([
-      'Async race conditions',
-      'Stale UI updates',
-      'Request cancellation',
-    ]);
-    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
-      'AbortController',
-      'AbortSignal',
-      'React useEffect cleanup',
-      'AbortError',
-      'search-as-you-type',
-      'visual race timeline',
-      'request id guard',
-      'takeLatest',
-      'switchMap',
-      'Promise.race',
-      'debounce',
-      'IndexedDB',
-      'autosave',
-      'Fetch API',
-    ]);
-    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
-      'The core issue',
-      'How to prevent it',
-      'Before / after: stale search UI',
-      'React useEffect cleanup version',
-      'Choosing the right guard',
-      'When async work cannot be aborted',
-      'Shared-controller follow-up',
-      'Pitfalls',
-      'Source check',
-      'Testable proof',
-      'FrontendAtlas review note',
-      'Production debugging standard',
-      'Async race visual timeline',
-      'Async race simulator',
-    ]);
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://developer.mozilla.org/en-US/docs/Web/API/AbortController',
-      'https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal',
-      'https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch',
-      'https://react.dev/reference/react/useEffect',
-      'https://rxjs.dev/api/operators/switchMap',
-      'https://frontendatlas.com/legal/editorial',
-    ]);
-    expect(questionSchema?.name).toBe('Async Race Conditions and Stale UI Updates');
-    expect(questionSchema?.acceptedAnswer?.['@type']).toBe('Answer');
-    expect(questionSchema?.acceptedAnswer?.text).toBe(
-      'Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI. Fix stale updates with AbortController cancellation, a latest request-id check, or takeLatest-style ownership so only the newest result can render.',
-    );
 
     targetFixture.destroy();
 
@@ -1270,16 +1219,12 @@ describe('TriviaDetailComponent', () => {
       tags: ['event-loop'],
     });
 
-    const nonTargetPayload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const nonTargetGraph = Array.isArray(nonTargetPayload?.jsonLd) ? nonTargetPayload.jsonLd : [];
-    const nonTargetArticle = nonTargetGraph.find((node: any) => node?.['@type'] === 'TechArticle');
-    expect(nonTargetArticle?.articleSection).not.toBe('JavaScript async concurrency');
-    expect((nonTargetArticle?.mentions || []).map((item: any) => item.name)).not.toContain('AbortController');
+    expectCommonTriviaSchema();
 
     nonTargetFixture.destroy();
   });
 
-  it('adds NgRx selector TechArticle and Question schema without FAQPage or QAPage markup', async () => {
+  it('uses the common trivia schema and hides source-only copy for the NgRx selector page', async () => {
     const question = {
       id: 'ngrx-selectors-memoization-derived-state-performance',
       title: 'NgRx selectors beyond getting state: memoization, derived state, and Angular performance',
@@ -1374,10 +1319,7 @@ describe('TriviaDetailComponent', () => {
     fixture.detectChanges();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
-    const typeNames = graph.map((node: any) => node?.['@type']);
+    const { graph, article } = expectCommonTriviaSchema(payload);
 
     expect(payload.title).toBe('NgRx selector memoization: why projectors rerun');
     expect(payload.description).toBe(
@@ -1397,75 +1339,7 @@ describe('TriviaDetailComponent', () => {
     expect(quickAnswerText).toContain('projector test');
     expect(quickAnswerText).toContain('component churn');
 
-    expect(typeNames).not.toContain('FAQPage');
-    expect(typeNames).not.toContain('QAPage');
-    expect(article?.articleSection).toBe('Angular state management');
-    expect((article?.about || []).map((item: any) => item.name)).toEqual([
-      'NgRx selectors',
-      'selector memoization',
-      'derived state',
-      'immutable reducer outputs',
-    ]);
-    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
-      'createSelector',
-      'createFeatureSelector',
-      'feature selector',
-      'entity/base selectors',
-      'view model selector',
-      'projector function',
-      'stable references',
-      'root state selection',
-      'filter/sort/map derivation',
-      'selector factory',
-      'projector tests',
-      'selector purity',
-      'component contract',
-      'AsyncPipe',
-      'selector projector',
-      'memoization trace',
-      'NgRx selectors guide',
-      'primary source link',
-      'projector unit test',
-      'FrontendAtlas review note',
-      'review evidence',
-      'editorial policy',
-      'interactive memoization trace',
-      'selector recomputation simulator',
-      'projector run visualization',
-    ]);
-    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
-      'Interview quick answer',
-      'Memoized read model',
-      'Worked example',
-      'Failure pattern',
-      'Composed selector flow',
-      'Memoization behavior',
-      'Selector purity and projector tests',
-      'Testable proof',
-      'Projector run trace',
-      'Selector performance pitfalls',
-      'Selector factory boundary',
-      'Selector review checklist',
-      'FrontendAtlas review note',
-      'Source check',
-      'Selector memoization trace simulator',
-      'Interview summary',
-    ]);
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://ngrx.io/guide/store/selectors',
-      'https://ngrx.io/api/store/createSelector',
-      'https://frontendatlas.com/legal/editorial-policy',
-    ]);
-    expect(questionSchema).toEqual(jasmine.objectContaining({
-      '@id': 'https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance#question',
-      name: question.title,
-      url: 'https://frontendatlas.com/angular/trivia/ngrx-selectors-memoization-derived-state-performance',
-      acceptedAnswer: jasmine.objectContaining({
-        '@type': 'Answer',
-        text: jasmine.stringMatching(/^NgRx selectors are memoized, pure projection functions/),
-      }),
-    }));
-    expect(questionSchema?.acceptedAnswer?.text).toContain('projector unit tests prove the derived contract');
+    expect(article?.headline).toBe(`${question.title} - Frontend interview practice question`);
     expect(JSON.stringify(graph).toLowerCase()).not.toContain('official docs');
     expect(JSON.stringify(graph).toLowerCase()).not.toContain('documentation');
     expect(JSON.stringify(graph).toLowerCase()).not.toContain('docs wording');
@@ -1482,7 +1356,6 @@ describe('TriviaDetailComponent', () => {
       'Selector factory boundary',
       'Selector review checklist',
       'FrontendAtlas review note',
-      'Source check',
       'Interview summary',
     ]);
 
@@ -1490,22 +1363,12 @@ describe('TriviaDetailComponent', () => {
     expect(h1?.textContent?.trim()).toBe(question.title);
     expect(h1?.querySelector('.title__intent')).toBeNull();
     expect(fixture.nativeElement.querySelector('.title-copy > .title__intent')?.textContent?.trim()).toBe(
-      'Frontend interview answer',
+      'Frontend interview practice question',
     );
 
-    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
-    expect(sourceCheck).toBeTruthy();
-    expect((sourceCheck?.textContent || '').toLowerCase()).not.toContain('official docs');
-    expect((sourceCheck?.textContent || '').toLowerCase()).not.toContain('official ngrx');
-    const sourceLinks = Array.from(sourceCheck?.querySelectorAll('a') || []) as HTMLAnchorElement[];
-    expect(sourceLinks.map((link) => link.getAttribute('href'))).toEqual([
-      'https://ngrx.io/guide/store/selectors',
-      'https://ngrx.io/api/store/createSelector',
-    ]);
-    expect(sourceLinks.map((link) => link.textContent?.trim())).toEqual([
-      'selectors guide',
-      'createSelector API page',
-    ]);
+    expect(fixture.nativeElement.querySelector('.source-check')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="https://ngrx.io/guide/store/selectors"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="https://ngrx.io/api/store/createSelector"]')).toBeNull();
 
     const simulator = fixture.nativeElement.querySelector(
       '[data-testid="selector-trace-simulator"]'
@@ -1525,7 +1388,7 @@ describe('TriviaDetailComponent', () => {
     expect(simulator?.textContent || '').toContain('Good memoization boundary for unrelated updates.');
   });
 
-  it('adds NgRx data flow TechArticle and Question schema without FAQPage or QAPage markup', async () => {
+  it('uses the common trivia schema and hides source-only copy for the NgRx data-flow page', async () => {
     const question = {
       id: 'ngrx-data-flow-end-to-end-angular',
       title: 'NgRx data flow end-to-end in Angular: actions, reducers, effects, selectors',
@@ -1729,11 +1592,7 @@ describe('TriviaDetailComponent', () => {
     fixture.detectChanges();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const breadcrumb = graph.find((node: any) => node?.['@type'] === 'BreadcrumbList');
-    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
-    const typeNames = graph.map((node: any) => node?.['@type']);
+    const { breadcrumb, article } = expectCommonTriviaSchema(payload);
 
     expect(payload.title).toBe('NgRx Data Flow in Angular: From Action to Retry UI');
     expect(payload.description).toBe(
@@ -1741,120 +1600,12 @@ describe('TriviaDetailComponent', () => {
     );
     expect(payload.canonical).toBe('https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular');
 
-    expect(typeNames).toContain('BreadcrumbList');
-    expect(typeNames).toContain('TechArticle');
-    expect(typeNames).toContain('Question');
-    expect(typeNames).not.toContain('FAQPage');
-    expect(typeNames).not.toContain('QAPage');
     expect(breadcrumb?.itemListElement?.[2]?.item).toBe(
       'https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular',
     );
 
-    expect(article?.articleSection).toBe('Angular state management');
-    expect(article?.educationalLevel).toBe('Intermediate');
-    expect(article?.learningResourceType).toBe('Interview answer');
+    expect(article?.headline).toBe(`${question.title} - Frontend interview practice question`);
     expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
-    expect(article?.reviewedBy).toBeUndefined();
-    expect((article?.about || []).map((item: any) => item.name)).toEqual([
-      'NgRx data flow',
-      'Angular state management',
-      'one-way data flow',
-      'immutable state updates',
-      'shared state',
-      'state vs view model',
-      'interactive DevTools trace',
-      'retry UI trace',
-    ]);
-    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
-      'actions',
-      'reducers',
-      'effects',
-      'selectors',
-      'Store',
-      'createAction',
-      'createReducer',
-      'createEffect',
-      'ofType',
-      'switchMap',
-      'createSelector',
-      'createFeatureSelector',
-      'AsyncPipe',
-      'OnPush change detection',
-      'success/failure actions',
-      'view model selector',
-      'action naming',
-      'debug loop',
-      'local UI state',
-      'feature state registration',
-      'provideState',
-      'provideEffects',
-      'DevTools trace',
-      'state diff',
-      'failure action',
-      'error state',
-      'retry UI',
-      'retry button',
-      'testable proof',
-      'reducer test',
-      'selector projector test',
-      'FrontendAtlas review note',
-      'source check',
-      'official NgRx guides',
-      'editorial policy',
-      'interactive DevTools trace',
-      'state diff proof',
-      'retry UI trace',
-      'selector VM proof',
-    ]);
-    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
-      'Interview quick answer',
-      'Operational loop',
-      'NgRx data flow diagram (end-to-end loop)',
-      'Actions example',
-      'Reducer example',
-      'Effect example',
-      'Selectors example',
-      'Component example',
-      'What interviewers flag quickly',
-      'Pure reducer update vs effect-driven async update',
-      'Compact trace you should be able to say out loud',
-      'Selectors are memoized read models',
-      'When this loop is worth the ceremony',
-      'NgRx ceremony decision check',
-      'Store state vs selector view model',
-      'Store truth vs selector read model',
-      'Where this plugs into Angular',
-      'Debugging an NgRx loop in DevTools',
-      'NgRx DevTools debugging trace',
-      'Failure path and retry UI trace',
-      'Failure action to retry UI trace',
-      'NgRx DevTools trace visual',
-      'Testable proof',
-      'FrontendAtlas review note',
-      'Source check',
-      'Interview summary',
-    ]);
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://ngrx.io/guide/store/actions',
-      'https://ngrx.io/guide/store/reducers',
-      'https://ngrx.io/guide/effects',
-      'https://ngrx.io/guide/store/selectors',
-      'https://frontendatlas.com/legal/editorial-policy',
-    ]);
-
-    expect(questionSchema).toEqual(jasmine.objectContaining({
-      '@id': 'https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular#question',
-      name: question.title,
-      url: 'https://frontendatlas.com/angular/trivia/ngrx-data-flow-end-to-end-angular',
-      inLanguage: 'en',
-      acceptedAnswer: jasmine.objectContaining({
-        '@type': 'Answer',
-        text: jasmine.stringMatching(/^NgRx data flow in Angular is a 5-step, DevTools-traceable loop/),
-      }),
-    }));
-    expect(questionSchema?.acceptedAnswer?.text).toContain('immutable reducer state diff');
-    expect(questionSchema?.acceptedAnswer?.text).toContain('selector VM');
-    expect(questionSchema?.acceptedAnswer?.text).toContain('template loading/data/error/retry UI');
 
     const quickAnswerText = String(
       fixture.nativeElement.querySelector('.card .content')?.textContent || ''
@@ -1881,7 +1632,6 @@ describe('TriviaDetailComponent', () => {
       'Interactive DevTools trace visual',
       'Testable proof',
       'FrontendAtlas review note',
-      'Source check',
       'Interview summary',
     ]);
 
@@ -1902,23 +1652,11 @@ describe('TriviaDetailComponent', () => {
     expect(dataFlowTrace?.textContent || '').toContain('Try again button');
     expect(dataFlowTrace?.textContent || '').toContain('retry dispatches loadBooks again');
 
-    const sourceCheck = fixture.nativeElement.querySelector('.source-check[data-nosnippet]') as HTMLElement | null;
-    expect(sourceCheck).toBeTruthy();
-    const sourceLinks = Array.from(sourceCheck?.querySelectorAll('a') || []) as HTMLAnchorElement[];
-    expect(sourceLinks.map((link) => link.getAttribute('href'))).toEqual([
-      'https://ngrx.io/guide/store/actions',
-      'https://ngrx.io/guide/store/reducers',
-      'https://ngrx.io/guide/effects',
-      'https://ngrx.io/guide/store/selectors',
-      '/legal/editorial-policy',
-    ]);
-    expect(sourceLinks.map((link) => link.textContent?.trim())).toEqual([
-      'Actions guide',
-      'Reducers guide',
-      'Effects guide',
-      'Selectors guide',
-      'Editorial Policy',
-    ]);
+    expect(fixture.nativeElement.querySelector('.source-check')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="https://ngrx.io/guide/store/actions"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="https://ngrx.io/guide/store/reducers"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="https://ngrx.io/guide/effects"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="https://ngrx.io/guide/store/selectors"]')).toBeNull();
 
     const findTableByCaption = (caption: string): HTMLTableElement | null => {
       const figure = Array.from(fixture.nativeElement.querySelectorAll('figure.b-list'))
@@ -1937,7 +1675,7 @@ describe('TriviaDetailComponent', () => {
     });
   });
 
-  it('adds Angular forms schema and stacks target comparison tables on mobile', async () => {
+  it('uses the common schema, hides source-only copy, and stacks Angular forms tables', async () => {
     const question = {
       id: 'angular-template-driven-vs-reactive-forms-which-scales',
       title: 'Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?',
@@ -2154,7 +1892,6 @@ describe('TriviaDetailComponent', () => {
       'Senior-level pitfalls',
       'Testable proof',
       'FrontendAtlas review note',
-      'Source check',
       'Practice next',
       'Interview summary',
     ]);
@@ -2179,7 +1916,8 @@ describe('TriviaDetailComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Email and password checks');
     expect(fixture.nativeElement.textContent).toContain('Reactive form rules can be checked without rendering the template');
     expect(fixture.nativeElement.textContent).toContain('When we review Angular forms answers');
-    expect(fixture.nativeElement.textContent).toContain('Editorial Policy');
+    expect(fixture.nativeElement.textContent).not.toContain('Source check');
+    expect(fixture.nativeElement.textContent).not.toContain('Editorial Policy');
     expect(fixture.nativeElement.textContent).toContain('The comparator below turns the abstract choice into four traces');
     expect(fixture.nativeElement.textContent).toContain('Angular prep path');
     expect(fixture.nativeElement.textContent).not.toContain('❌');
@@ -2193,17 +1931,17 @@ describe('TriviaDetailComponent', () => {
     expect(codeText).toContain("email.hasError('email')");
     expect(
       fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms"]')
-    ).toBeTruthy();
+    ).toBeNull();
     expect(
       fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/reactive-forms"]')
-    ).toBeTruthy();
+    ).toBeNull();
     expect(
       fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/template-driven-forms"]')
-    ).toBeTruthy();
+    ).toBeNull();
     expect(
       fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/form-validation"]')
-    ).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/legal/editorial-policy"]')).toBeTruthy();
+    ).toBeNull();
+    expect(fixture.nativeElement.querySelector('a[href="/legal/editorial-policy"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/angular-prep-path"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/coding/angular-contact-form-starter"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/coding/angular-multi-step-form-starter"]')).toBeTruthy();
@@ -2212,106 +1950,10 @@ describe('TriviaDetailComponent', () => {
     ).toBeTruthy();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const questionSchema = graph.find((node: any) => node?.['@type'] === 'Question');
-    const typeNames = graph.map((node: any) => node?.['@type']);
+    const { article } = expectCommonTriviaSchema(payload);
 
-    expect(typeNames).toContain('Question');
-    expect(typeNames).not.toContain('FAQPage');
-    expect(typeNames).not.toContain('QAPage');
-    expect(article?.articleSection).toBe('Angular forms');
-    expect(article?.educationalLevel).toBe('Intermediate');
-    expect(article?.learningResourceType).toBe('Interview answer');
+    expect(article?.headline).toBe(`${question.title} - Frontend interview practice question`);
     expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
-    expect(article?.reviewedBy).toBeUndefined();
-    expect((article?.about || []).map((item: any) => item.name)).toEqual([
-      'Angular forms',
-      'Template-driven forms',
-      'Reactive forms',
-      'Form model source of truth',
-    ]);
-    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
-      'ngModel',
-      'ngModelChange',
-      'FormGroup',
-      'FormControl',
-      'FormArray',
-      'valueChanges',
-      'FormBuilder',
-      'Validators',
-      'setValue',
-      'patchValue',
-      'reset',
-      'two-way binding',
-      'cross-field validation',
-      'dynamic controls',
-      'dirty',
-      'touched',
-      'pristine',
-      'valid',
-      'invalid',
-      'custom validator',
-      'async validator',
-      'draft autosave',
-      'migration threshold',
-      'OnPush change detection',
-      'Observable-based workflows',
-      'ControlValueAccessor',
-      'unit testing',
-      'Angular forms guide',
-      'Angular form validation',
-      'editorial policy',
-      'review evidence',
-      'interactive form flow comparator',
-      'reactive input update trace',
-      'template-driven change detection trace',
-      'Angular prep path',
-      'reactive forms coding drill',
-    ]);
-    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
-      'Interview quick answer',
-      'Source of truth',
-      'Worked example',
-      'Decision rule',
-      'Template-driven example',
-      'Reactive example',
-      'Scaling pressure points',
-      'Data flow timing',
-      'Validation state and error UX',
-      'API ergonomics',
-      'Migration threshold checklist',
-      'Same form, three changes later',
-      'Interactive form flow comparator',
-      'Large-form tradeoffs',
-      'Architecture fit',
-      'When template-driven forms are still OK',
-      'Senior-level pitfalls',
-      'Testable proof',
-      'FrontendAtlas review note',
-      'Source check',
-      'Practice next',
-      'Interview summary',
-    ]);
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://angular.dev/guide/forms',
-      'https://angular.dev/guide/forms/reactive-forms',
-      'https://angular.dev/guide/forms/template-driven-forms',
-      'https://angular.dev/guide/forms/form-validation',
-      'https://frontendatlas.com/legal/editorial-policy',
-    ]);
-    expect(questionSchema).toEqual(jasmine.objectContaining({
-      '@id': 'https://frontendatlas.com/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales#question',
-      name: question.title,
-      url: 'https://frontendatlas.com/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales',
-      inLanguage: 'en',
-      acceptedAnswer: jasmine.objectContaining({
-        '@type': 'Answer',
-        text: jasmine.stringMatching(/^Reactive forms are the better default for large or dynamic Angular forms/),
-      }),
-    }));
-    expect(questionSchema?.acceptedAnswer?.text).toContain('migrate once dynamic rows');
-    expect(questionSchema?.acceptedAnswer?.text).toContain('autosave');
   });
 
   it('renders the Angular forms flow comparator only for the target question', async () => {
@@ -2382,7 +2024,7 @@ describe('TriviaDetailComponent', () => {
     nonTargetFixture.destroy();
   });
 
-  it('adds equality TechArticle and Question schema without FAQPage or QAPage markup', async () => {
+  it('uses the common trivia schema for the equality page', async () => {
     const fixture = await createLoadedFixture('free', {
       id: 'js-equality-vs-strict-equality',
       title: 'What is the difference between == and === in JavaScript?',
@@ -2400,70 +2042,20 @@ describe('TriviaDetailComponent', () => {
     });
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const question = graph.find((node: any) => node?.['@type'] === 'Question');
-    const typeNames = graph.map((node: any) => node?.['@type']);
+    const { article } = expectCommonTriviaSchema(payload);
 
     expect(payload?.title).toBe('JavaScript == vs ===: frontend coercion bug playbook');
     expect(payload?.description).toContain('Debug form, query param, storage, API, NaN');
-    expect(typeNames).not.toContain('FAQPage');
-    expect(typeNames).not.toContain('QAPage');
-    expect(article?.articleSection).toBe('JavaScript equality and coercion');
+    expect(article?.headline).toBe(
+      'What is the difference between == and === in JavaScript? - Frontend interview practice question',
+    );
     expect(article?.datePublished).toBe('2025-11-08T00:00:00.000Z');
     expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
-    expect((article?.about || []).map((item: any) => item.name)).toEqual([
-      'JavaScript equality operators',
-      'Loose equality',
-      'Strict equality',
-      'Type coercion',
-    ]);
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('implicit coercion');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('Number.isNaN');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('Object.is');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('SameValueZero');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('IsLooselyEqual');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('!==');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('Array.prototype.includes');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('DOM input');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('URLSearchParams');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('boundary normalization');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('equality test checklist');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('senior interview answer');
-    expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('MDN Web Docs');
-    expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('ECMAScript specification');
-    expect((article?.mentions || []).map((item: any) => item.name)).not.toContain('source reference');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('FrontendAtlas review note');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('edge-case test');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('interactive equality predictor');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('coercion matrix');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('SameValueZero comparison');
-    expect((article?.mentions || []).map((item: any) => item.name)).toContain('edge-case comparison drill');
-    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
-      'Core idea',
-      'Frontend coercion bug matrix',
-      'Loose equality',
-      'How == decides',
-      'Strict equality',
-      'Boundary normalization recipes',
-      'Junior, mid, and senior interview answer',
-      'Beyond ===: Object.is and SameValueZero',
-      'Pitfalls',
-      'Equality test checklist',
-      'Practical rule',
-      'FrontendAtlas review note',
-      'Equality predictor',
-    ]);
-    expect(article?.citation).toBeUndefined();
-    expect(question?.name).toBe('What is the difference between == and === in JavaScript?');
-    expect(question?.acceptedAnswer?.['@type']).toBe('Answer');
-    expect(question?.acceptedAnswer?.text).toContain('== performs implicit coercion');
-    expect(question?.acceptedAnswer?.text).toContain('=== compares type and value without coercion');
 
     fixture.destroy();
   });
 
-  it('adds render-nothing TechArticle schema fields without FAQPage or QAPage markup', async () => {
+  it('uses the common trivia schema for the React render-nothing page', async () => {
     const question = {
       id: 'react-render-nothing-return-value',
       title: 'Can a React component return undefined?',
@@ -2507,61 +2099,11 @@ describe('TriviaDetailComponent', () => {
     fixture.detectChanges();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
-    const typeNames = graph.map((node: any) => node?.['@type']);
+    const { article } = expectCommonTriviaSchema(payload);
 
-    expect(typeNames).not.toContain('FAQPage');
-    expect(typeNames).not.toContain('QAPage');
-    expect(article?.articleSection).toBe('React rendering');
-    expect((article?.about || []).map((item: any) => item.name)).toEqual([
-      'React component return values',
-      'Conditional rendering',
-      'Rendering nothing',
-    ]);
-    expect((article?.mentions || []).map((item: any) => item.name)).toEqual([
-      'null',
-      'false',
-      'undefined',
-      'React 18',
-      'React 17 and earlier',
-      'Fragment',
-      'ReactNode',
-      'missing return',
-      'TypeScript return types',
-      'ESLint consistent-return',
-      'short-circuit rendering',
-      'parent conditional rendering',
-      'JSX holes',
-      'mounted component',
-      'effects',
-      'React Testing Library',
-      'DOM absence assertion',
-      'editorial review',
-      'interactive demo',
-      'DOM output',
-      'mounted state',
-      'source check',
-    ]);
-    expect((article?.hasPart || []).map((item: any) => item.name)).toEqual([
-      'Quick answer',
-      'React 17 and earlier vs React 18+ comparison',
-      'Return value map',
-      'Explicit return undefined',
-      'Accidental missing return',
-      'return null',
-      'Return value simulator',
-      'Return null vs parent conditional rendering',
-      'Component return vs JSX child semantics',
-      'Follow-up question',
-      'Common production mistake',
-      'Source check',
-      'Testable proof',
-      'FrontendAtlas review note',
-    ]);
-    expect((article?.citation || []).map((item: any) => item.url)).toEqual([
-      'https://github.com/reactwg/react-18/discussions/75',
-    ]);
+    expect(article?.headline).toBe(
+      'Can React Components Return undefined? React 18 vs null - Frontend interview practice question',
+    );
   });
 
   it('renders non-crawlable sidebar buttons and crawlable practice entry links', async () => {
@@ -2693,7 +2235,7 @@ describe('TriviaDetailComponent', () => {
     expect(lockedHeading?.textContent?.trim()).toBe('What is closure?');
     expect(lockedHeading?.querySelector('.locked-title__intent')).toBeNull();
     expect(fixture.nativeElement.querySelector('.locked-title__intent')?.textContent?.trim()).toBe(
-      'Frontend interview answer',
+      'Frontend interview practice question',
     );
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -2853,7 +2395,7 @@ describe('TriviaDetailComponent', () => {
     expect(trackCalls('trivia_internal_link_clicked').length).toBe(0);
   });
 
-  it('adds interview context fields to TechArticle json-ld', async () => {
+  it('publishes the common BreadcrumbList and Article json-ld contract', async () => {
     routeData$.next({ questionDetail: makeResolved('free') });
 
     const fixture = TestBed.createComponent(TriviaDetailComponent);
@@ -2863,24 +2405,12 @@ describe('TriviaDetailComponent', () => {
 
     expect(seo.updateTags).toHaveBeenCalled();
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
+    const { breadcrumb, article } = expectCommonTriviaSchema(payload);
 
-    expect(article).toBeTruthy();
-    expect(article?.headline).toBe('What is closure? - Frontend interview answer');
-    expect(graph.some((node: any) => node?.['@type'] === 'FAQPage')).toBeFalse();
-    expect(String(article?.isPartOf?.url || '')).toContain('/javascript/interview-questions');
-    expect(Array.isArray(article?.about)).toBeTrue();
-    expect(Array.isArray(article?.mentions)).toBeTrue();
-    expect((article.about || []).some((entry: any) =>
-      String(entry?.name || '').toLowerCase().includes('frontend interview preparation')
-    )).toBeTrue();
-    expect((article.mentions || []).some((entry: any) =>
-      String(entry?.url || '').includes('/guides/framework-prep/javascript-prep-path/mastery')
-    )).toBeTrue();
-    expect((article.mentions || []).some((entry: any) =>
-      String(entry?.url || '').includes('/companies')
-    )).toBeTrue();
+    expect(breadcrumb?.itemListElement?.[2]?.item).toBe(payload.canonical);
+    expect(article?.headline).toBe('What is closure? - Frontend interview practice question');
+    expect(article?.mainEntityOfPage).toBe(payload.canonical);
+    expect(article?.isAccessibleForFree).toBeTrue();
   });
 
   it('opens bug report flow from report issue action', async () => {
@@ -2902,6 +2432,135 @@ describe('TriviaDetailComponent', () => {
     }));
   });
 
+  it('places the deferred event-loop experience after the quick answer and before interview practice', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+      tags: ['event-loop', 'microtasks', 'timers'],
+    });
+
+    const quickAnswer = Array.from(fixture.nativeElement.querySelectorAll('.card'))
+      .find((element: any) => element.querySelector('.card-head')?.textContent?.includes('Interview quick answer')) as HTMLElement | undefined;
+    const experienceSlot = fixture.nativeElement.querySelector('[data-testid="javascript-event-loop-experience-slot"]') as HTMLElement | null;
+    const interviewFocus = fixture.nativeElement.querySelector('.interview-focus') as HTMLElement | null;
+    const fullAnswer = fixture.nativeElement.querySelector('[data-testid="trivia-full-answer"]') as HTMLElement | null;
+
+    expect(quickAnswer).toBeTruthy();
+    expect(experienceSlot).toBeTruthy();
+    expect(interviewFocus).toBeTruthy();
+    expect(fullAnswer).toBeTruthy();
+    expect(quickAnswer!.compareDocumentPosition(experienceSlot!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(experienceSlot!.compareDocumentPosition(interviewFocus!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(interviewFocus!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(experienceSlot?.textContent || '').toContain('Predict the browser event loop');
+  });
+
+  it('does not render the event-loop experience on other trivia questions', async () => {
+    const fixture = await createLoadedFixture('free');
+
+    expect(fixture.nativeElement.querySelector('[data-testid="javascript-event-loop-experience-slot"]')).toBeNull();
+  });
+
+  it('uses a completed event-loop experience instead of the incident gate without auto-completing', async () => {
+    auth.isLoggedIn.and.returnValue(true);
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'js-event-loop',
+      tech: 'javascript' as any,
+      title: 'Event loop checkpoint',
+      scenario: 'Which queue runs first?',
+      options: [
+        { id: 'timer', label: 'Timer task' },
+        { id: 'microtask', label: 'Microtask checkpoint' },
+      ],
+    }));
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+    const component = fixture.componentInstance;
+
+    component.onJavascriptEventLoopExperienceCompleted();
+
+    expect(component.eventLoopCompletedQuestionId()).toBe('js-event-loop');
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+
+    await component.markComplete();
+
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'trivia',
+      tech: 'javascript',
+      itemId: 'js-event-loop',
+    }));
+  });
+
+  it('keeps the existing incident gate when the event-loop experience is incomplete', async () => {
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'js-event-loop',
+      tech: 'javascript' as any,
+      title: 'Event loop checkpoint',
+      scenario: 'Which queue runs first?',
+      options: [
+        { id: 'timer', label: 'Timer task' },
+        { id: 'microtask', label: 'Microtask checkpoint' },
+      ],
+    }));
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+
+    await fixture.componentInstance.markComplete();
+
+    expect(triviaIncident.getIncident).toHaveBeenCalledWith('javascript', 'js-event-loop');
+    expect(fixture.componentInstance.incidentPromptOpen).toBeTrue();
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('preserves guest auth behavior after the event-loop experience completes', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+    const component = fixture.componentInstance;
+
+    component.onJavascriptEventLoopExperienceCompleted();
+    await component.markComplete();
+
+    expect(component.loginPromptOpen).toBeTrue();
+    expect(onboarding.markPending).toHaveBeenCalledWith('save_prompt');
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('restores event-loop incident eligibility from session storage without leaking it to another question', async () => {
+    sessionStorage.setItem('fa:trivia:lab-complete:js_event_loop_75s_v1', 'js-event-loop');
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.eventLoopCompletedQuestionId()).toBe('js-event-loop');
+
+    const nextResolved = makeResolved('free', { id: 'js-event-loop-second-question' });
+    const nextQuestion = nextResolved.list[0];
+    routeData$.next({
+      questionDetail: {
+        ...nextResolved,
+        id: nextQuestion.id,
+        question: nextQuestion,
+      },
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.question()?.id).toBe('js-event-loop-second-question');
+    expect(component.eventLoopCompletedQuestionId()).toBeNull();
+  });
+
   it('places the output challenge before the hidden deep dive without rendering the quick answer', async () => {
     const fixture = await createLoadedFixture('free', outputQuestionExtras());
 
@@ -2914,7 +2573,12 @@ describe('TriviaDetailComponent', () => {
     expect(fullAnswer?.hidden).toBeTrue();
     expect(outputCard!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(trackCalls('trivia_output_shown')).toEqual([
-      ['trivia_output_shown', { runtime: 'browser', option_count: 3 }],
+      ['trivia_output_shown', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+        runtime: 'browser',
+        option_count: 3,
+      }],
     ]);
   });
 
@@ -3011,13 +2675,27 @@ describe('TriviaDetailComponent', () => {
     component.openOutputDeepDive();
 
     expect(trackCalls('trivia_output_shown')).toEqual([
-      ['trivia_output_shown', { runtime: 'browser', option_count: 3 }],
+      ['trivia_output_shown', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+        runtime: 'browser',
+        option_count: 3,
+      }],
     ]);
     expect(trackCalls('trivia_output_answered')).toEqual([
-      ['trivia_output_answered', { correct: true, runtime: 'browser', option_count: 3 }],
+      ['trivia_output_answered', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+        correct: true,
+        runtime: 'browser',
+        option_count: 3,
+      }],
     ]);
     expect(trackCalls('trivia_output_deep_dive_opened')).toEqual([
-      ['trivia_output_deep_dive_opened'],
+      ['trivia_output_deep_dive_opened', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+      }],
     ]);
   });
 

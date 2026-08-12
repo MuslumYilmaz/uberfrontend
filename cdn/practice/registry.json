@@ -4444,27 +4444,6 @@
     "assetRef": "questions/javascript/trivia.json#js-var-let-const-hoisting"
   },
   {
-    "id": "js-event-loop",
-    "family": "question",
-    "title": "Explain the JavaScript Event Loop",
-    "route": "/javascript/trivia/js-event-loop",
-    "tech": "javascript",
-    "difficulty": "hard",
-    "summary": "JavaScript runs on a single thread, but the real production pitfall is queue ordering: synchronous work runs first, then microtasks drain before the next macrotask, which is why long Promise chains can starve rendering and confuse debugging.",
-    "tags": [
-      "event-loop",
-      "async",
-      "microtasks",
-      "promise",
-      "timers"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-08",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-event-loop"
-  },
-  {
     "id": "js-compact",
     "family": "question",
     "title": "Falsy Bouncer",
@@ -5282,6 +5261,27 @@
     "updatedAt": "2026-03-02",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-static-vs-dynamic-typing"
+  },
+  {
+    "id": "js-event-loop",
+    "family": "question",
+    "title": "JavaScript Event Loop Visualizer: Learn by Predicting",
+    "route": "/javascript/trivia/js-event-loop",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "Predict a browser event-loop trace, then step through the current task, Promise microtasks, a zero-delay timer, and a render opportunity to see why queue order—not callback speed—determines what runs next.",
+    "tags": [
+      "event-loop",
+      "async",
+      "microtasks",
+      "promise",
+      "timers"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-08-11",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-event-loop"
   },
   {
     "id": "js-intl-datetime-timezone",
