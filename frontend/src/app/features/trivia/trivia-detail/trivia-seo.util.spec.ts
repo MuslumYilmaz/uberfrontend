@@ -151,6 +151,32 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
+  it('preserves the exact JavaScript event-loop visualizer SEO contract', () => {
+    const expectedH1 = 'JavaScript Event Loop Visualizer: Learn by Predicting';
+    const expectedTitle = 'JavaScript Event Loop Visualizer: Predict Output Order';
+    const expectedDescription =
+      'Predict the output, then step through JavaScript’s call stack, microtasks, timers, and render opportunity in a 75-second browser event-loop challenge.';
+    const question = {
+      id: 'js-event-loop',
+      title: expectedH1,
+      technology: 'javascript',
+      seo: {
+        h1: expectedH1,
+        title: expectedTitle,
+        description: expectedDescription,
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'javascript');
+
+    expect(question.seo.h1).toBe(expectedH1);
+    expect(title).toBe(expectedTitle);
+    expect(description).toBe(expectedDescription);
+    expect(title.length).toBeLessThanOrEqual(54);
+    expect(description.length).toBeLessThanOrEqual(155);
+  });
+
   it('preserves React render-nothing SEO title when description carries interview intent', () => {
     const question = {
       id: 'react-render-nothing-return-value',

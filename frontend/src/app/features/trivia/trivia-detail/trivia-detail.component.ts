@@ -59,6 +59,7 @@ import {
 } from '../../../core/utils/onboarding-personalization.util';
 import { TAG_REGISTRY, TOPIC_REGISTRY } from '../../../generated/content-metadata';
 import { AngularHttpCancellationLabComponent } from './angular-http-cancellation-lab/angular-http-cancellation-lab.component';
+import { JavaScriptEventLoopExperienceComponent } from './javascript-event-loop-experience/javascript-event-loop-experience.component';
 import { ReactStaleClosureCaseFilesComponent } from './react-stale-closure-case-files/react-stale-closure-case-files.component';
 
 /** ============== Rich Answer Format ============== */
@@ -194,6 +195,8 @@ const NGRX_SELECTOR_TRACE_QUESTION_ID = 'ngrx-selectors-memoization-derived-stat
 const NGRX_DATA_FLOW_TRACE_QUESTION_ID = 'ngrx-data-flow-end-to-end-angular';
 const ANGULAR_FORMS_FLOW_QUESTION_ID = 'angular-template-driven-vs-reactive-forms-which-scales';
 const ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID = 'angular-http-what-actually-cancels-request';
+const JAVASCRIPT_EVENT_LOOP_QUESTION_ID = 'js-event-loop';
+const JAVASCRIPT_EVENT_LOOP_COMPLETION_STORAGE_KEY = 'fa:trivia:lab-complete:js_event_loop_75s_v1';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
     key: 'null',
@@ -606,6 +609,7 @@ function buildTagRegex(tag: string): RegExp {
     FaGlyphComponent,
     OutputQuestionCardComponent,
     AngularHttpCancellationLabComponent,
+    JavaScriptEventLoopExperienceComponent,
     ReactStaleClosureCaseFilesComponent,
   ],
   templateUrl: './trivia-detail.component.html',
@@ -636,6 +640,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   solved = signal(false);
   outputAttempted = signal(false);
   outputDeepDiveOpen = signal(false);
+  eventLoopCompletedQuestionId = signal<string | null>(null);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
   lifecyclePromptOpen = false;
@@ -917,6 +922,24 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return q?.id === ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID;
   }
 
+  showJavascriptEventLoopExperience(q?: Question | null): boolean {
+    return q?.id === JAVASCRIPT_EVENT_LOOP_QUESTION_ID;
+  }
+
+  onJavascriptEventLoopExperienceCompleted(): void {
+    const q = this.question();
+    if (!q || !this.showJavascriptEventLoopExperience(q)) return;
+
+    this.eventLoopCompletedQuestionId.set(q.id);
+    if (!this.isBrowser) return;
+
+    try {
+      sessionStorage.setItem(JAVASCRIPT_EVENT_LOOP_COMPLETION_STORAGE_KEY, q.id);
+    } catch {
+      // In-memory eligibility still covers the current route when storage is unavailable.
+    }
+  }
+
   isReactStaleClosuresLanding(q?: Question | null): boolean {
     return q?.id === REACT_STALE_CLOSURES_QUESTION_ID;
   }
@@ -1167,6 +1190,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       ? resolvedQuestion
       : this.isFullQuestion(listHit) ? listHit : null;
     this.question.set(found);
+    this.restoreEventLoopCompletionEligibility(found);
     this.ensureQuestionIconFonts(found);
     this.resetTriviaEngagementState();
     this.resetOutputQuestionState();
@@ -1692,10 +1716,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onOutputQuestionShown(event: OutputQuestionShownEvent): void {
     const q = this.question();
-    if (!this.isOutputQuestion(q) || this.outputShownTracked) return;
+    if (!q || !this.isOutputQuestion(q) || this.outputShownTracked) return;
 
     this.outputShownTracked = true;
     this.analytics.track('trivia_output_shown', {
+      question_id: q.id,
+      tech: this.tech,
       runtime: event.runtime,
       option_count: event.optionCount,
     });
@@ -1703,10 +1729,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onOutputQuestionAnswered(event: OutputQuestionAnsweredEvent): void {
     const q = this.question();
-    if (!this.isOutputQuestion(q) || this.outputAttempted()) return;
+    if (!q || !this.isOutputQuestion(q) || this.outputAttempted()) return;
 
     this.outputAttempted.set(true);
     this.analytics.track('trivia_output_answered', {
+      question_id: q.id,
+      tech: this.tech,
       correct: event.correct,
       runtime: event.runtime,
       option_count: event.optionCount,
@@ -1715,13 +1743,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   openOutputDeepDive(): void {
     const q = this.question();
-    if (!this.isOutputQuestion(q) || !this.outputAttempted()) return;
+    if (!q || !this.isOutputQuestion(q) || !this.outputAttempted()) return;
 
     this.outputDeepDiveOpen.set(true);
     if (this.outputDeepDiveTracked) return;
 
     this.outputDeepDiveTracked = true;
-    this.analytics.track('trivia_output_deep_dive_opened');
+    this.analytics.track('trivia_output_deep_dive_opened', {
+      question_id: q.id,
+      tech: this.tech,
+    });
   }
 
   reportIssue() {
@@ -1755,8 +1786,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.solved() && this.isOutputQuestion(q) && !this.outputAttempted()) return;
     if (!this.solved()) {
       if (!this.isOutputQuestion(q)) {
-        const opened = await this.tryOpenIncidentPrompt(q);
-        if (opened) return;
+        const experienceReplacesIncident = this.showJavascriptEventLoopExperience(q)
+          && this.eventLoopCompletedQuestionId() === q.id;
+        if (!experienceReplacesIncident) {
+          const opened = await this.tryOpenIncidentPrompt(q);
+          if (opened) return;
+        }
       }
     }
     await this.applyCompletionState(q);
@@ -1944,6 +1979,19 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const key = this.incidentCacheKey(questionId);
     if (!this.incidentPromptCache.has(key)) return undefined;
     return this.incidentPromptCache.get(key) ?? null;
+  }
+
+  private restoreEventLoopCompletionEligibility(q: Question | null): void {
+    this.eventLoopCompletedQuestionId.set(null);
+    if (!q || !this.showJavascriptEventLoopExperience(q) || !this.isBrowser) return;
+
+    try {
+      if (sessionStorage.getItem(JAVASCRIPT_EVENT_LOOP_COMPLETION_STORAGE_KEY) === q.id) {
+        this.eventLoopCompletedQuestionId.set(q.id);
+      }
+    } catch {
+      // Storage is optional; a fresh completion still grants in-memory eligibility.
+    }
   }
 
   private async applyCompletionState(q: Question) {

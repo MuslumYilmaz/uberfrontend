@@ -171,6 +171,47 @@
                 </div>
             </section>
 
+            <section
+                *ngIf="showJavascriptEventLoopExperience(q)"
+                id="event-loop-experience"
+                class="event-loop-experience-slot"
+                data-testid="javascript-event-loop-experience-slot"
+                aria-label="JavaScript event loop interactive experience">
+                @defer (on viewport; prefetch on idle) {
+                    <app-javascript-event-loop-experience
+                        (completed)="onJavascriptEventLoopExperienceCompleted()">
+                    </app-javascript-event-loop-experience>
+                } @placeholder {
+                    <div class="card event-loop-experience-shell" data-testid="event-loop-experience-placeholder">
+                        <div class="event-loop-experience-shell__body">
+                            <p class="event-loop-experience-shell__eyebrow">Interactive browser challenge · about 75 seconds</p>
+                            <h2 class="event-loop-experience-shell__title">Predict the browser event loop before you see the trace</h2>
+                            <p class="event-loop-experience-shell__copy">
+                                Commit to an output order, step through the current task, microtasks, and timer task,
+                                then decide when the browser gets a render opportunity.
+                            </p>
+                            <div class="event-loop-experience-shell__steps" aria-label="Challenge steps">
+                                <span>1 · Predict</span>
+                                <span>2 · Step through</span>
+                                <span>3 · Explain paint</span>
+                            </div>
+                        </div>
+                    </div>
+                } @loading (minimum 120ms) {
+                    <div class="card event-loop-experience-shell event-loop-experience-shell--status" role="status">
+                        Preparing the deterministic browser trace…
+                    </div>
+                } @error {
+                    <div class="card event-loop-experience-shell event-loop-experience-shell--status" role="alert">
+                        <strong>The interactive trace could not load.</strong>
+                        <span>The full answer remains available below.</span>
+                        <a [routerLink]="['/javascript', 'trivia', 'js-event-loop-nested-microtask-output']">
+                            Open the nested microtask challenge
+                        </a>
+                    </div>
+                }
+            </section>
+
             <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
 
             <app-angular-http-cancellation-lab

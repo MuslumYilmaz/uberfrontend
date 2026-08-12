@@ -52,6 +52,12 @@ const ASYNC_RACE_H1 = 'Async Race Conditions and Stale UI Updates';
 const ASYNC_RACE_DESCRIPTION =
   'Fix the stale UI bug where older async work overwrites newer results; compare AbortController, request-id guards, and takeLatest ownership.';
 
+const EVENT_LOOP_PATH = '/javascript/trivia/js-event-loop';
+const EVENT_LOOP_TITLE = 'JavaScript Event Loop Visualizer: Predict Output Order';
+const EVENT_LOOP_H1 = 'JavaScript Event Loop Visualizer: Learn by Predicting';
+const EVENT_LOOP_DESCRIPTION =
+  'Predict the output, then step through JavaScript’s call stack, microtasks, timers, and render opportunity in a 75-second browser event-loop challenge.';
+
 const ANGULAR_HTTP_CANCELLATION_LAB_PATH =
   '/angular/trivia/angular-http-what-actually-cancels-request';
 const ANGULAR_HTTP_CANCELLATION_LAB_TITLE =
@@ -126,9 +132,16 @@ const CASES = [
   {
     path: '/javascript/trivia/js-event-loop',
     titleIncludes: 'JavaScript Event Loop',
-    h1: 'Explain the JavaScript Event Loop',
+    h1: 'JavaScript Event Loop Visualizer: Learn by Predicting',
     detail: true,
+    indexable: true,
     expectNoMonaco: true,
+    bodyTextIncludes: [
+      'Interview quick answer',
+      'Predict the browser event loop',
+      'Interview focus',
+      'Full interview answer',
+    ],
   },
   {
     path: '/react/trivia/react-render-nothing-return-value',
@@ -824,6 +837,18 @@ test.describe('seo-ssr', () => {
     await context.close();
   });
 
+  test('JavaScript event-loop SSR shell remains meaningful with JavaScript disabled', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    const entry = CASES.find((candidate) => candidate.path === EVENT_LOOP_PATH);
+
+    expect(entry).toBeTruthy();
+    await page.goto(fullUrl(EVENT_LOOP_PATH), { waitUntil: 'domcontentloaded' });
+    await assertSsrBasics(page, entry!);
+
+    await context.close();
+  });
+
   test('raw prerendered HTML carries premium index intent without paid-content exposure', async ({ request }) => {
     for (const entry of RAW_HTML_CASES) {
       const html = await readRawHtml(request, entry.path);
@@ -911,6 +936,59 @@ test.describe('seo-ssr', () => {
     expect(rawBodyMarkup(html).match(/<h1\b/gi) || []).toHaveLength(1);
     expect(extractRawCanonical(html)).toBe(expectedCanonical(ASYNC_RACE_PATH));
     expect(robots).toBe('index,follow');
+  });
+
+  test('raw JavaScript event-loop pilot exposes exact SEO, a meaningful lab shell, and supported schema', async ({ request }) => {
+    const html = await readRawHtml(request, EVENT_LOOP_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(EVENT_LOOP_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(EVENT_LOOP_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(EVENT_LOOP_H1);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(EVENT_LOOP_PATH));
+    expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+
+    expectTextOrder(text, [
+      'Interview quick answer',
+      'Predict the browser event loop before you see the trace',
+      'Interview focus',
+      'Interview answer drill',
+      'Full interview answer',
+    ], 'raw JavaScript event-loop HTML');
+    for (const expectedText of [
+      'about 75 seconds',
+      'Commit to an output order',
+      'Current task',
+      'render opportunity',
+    ]) {
+      expect(text, `event-loop raw HTML includes ${expectedText}`).toContain(
+        normalizeText(expectedText),
+      );
+    }
+
+    expect(schemaTypes).toContain('BreadcrumbList');
+    expect(schemaTypes).toContain('Article');
+    for (const forbiddenType of ['TechArticle', 'Question', 'Quiz', 'FAQPage', 'QAPage']) {
+      expect(schemaTypes, `event-loop schema excludes ${forbiddenType}`).not.toContain(forbiddenType);
+    }
+    expect(JSON.stringify(schemaNodes)).not.toContain('"citation"');
+    expect(JSON.stringify(schemaNodes)).not.toContain('"hasPart"');
+
+    const article = schemaNodes.find((node) => node['@type'] === 'Article');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(EVENT_LOOP_PATH),
+      headline: `${EVENT_LOOP_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}`,
+      description: EVENT_LOOP_DESCRIPTION,
+      url: expectedCanonical(EVENT_LOOP_PATH),
+      mainEntityOfPage: expectedCanonical(EVENT_LOOP_PATH),
+      isAccessibleForFree: true,
+    });
   });
 
   test('raw Angular HttpClient cancellation lab exposes the complete public debugging answer and schema', async ({ request }) => {

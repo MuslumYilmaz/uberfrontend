@@ -252,6 +252,7 @@ describe('TriviaDetailComponent', () => {
   });
 
   afterEach(() => {
+    sessionStorage.removeItem('fa:trivia:lab-complete:js_event_loop_75s_v1');
     window.history.pushState({}, '', originalPath || '/');
     if (originalHiddenDescriptor) {
       Object.defineProperty(document, 'hidden', originalHiddenDescriptor);
@@ -2431,6 +2432,135 @@ describe('TriviaDetailComponent', () => {
     }));
   });
 
+  it('places the deferred event-loop experience after the quick answer and before interview practice', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+      tags: ['event-loop', 'microtasks', 'timers'],
+    });
+
+    const quickAnswer = Array.from(fixture.nativeElement.querySelectorAll('.card'))
+      .find((element: any) => element.querySelector('.card-head')?.textContent?.includes('Interview quick answer')) as HTMLElement | undefined;
+    const experienceSlot = fixture.nativeElement.querySelector('[data-testid="javascript-event-loop-experience-slot"]') as HTMLElement | null;
+    const interviewFocus = fixture.nativeElement.querySelector('.interview-focus') as HTMLElement | null;
+    const fullAnswer = fixture.nativeElement.querySelector('[data-testid="trivia-full-answer"]') as HTMLElement | null;
+
+    expect(quickAnswer).toBeTruthy();
+    expect(experienceSlot).toBeTruthy();
+    expect(interviewFocus).toBeTruthy();
+    expect(fullAnswer).toBeTruthy();
+    expect(quickAnswer!.compareDocumentPosition(experienceSlot!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(experienceSlot!.compareDocumentPosition(interviewFocus!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(interviewFocus!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(experienceSlot?.textContent || '').toContain('Predict the browser event loop');
+  });
+
+  it('does not render the event-loop experience on other trivia questions', async () => {
+    const fixture = await createLoadedFixture('free');
+
+    expect(fixture.nativeElement.querySelector('[data-testid="javascript-event-loop-experience-slot"]')).toBeNull();
+  });
+
+  it('uses a completed event-loop experience instead of the incident gate without auto-completing', async () => {
+    auth.isLoggedIn.and.returnValue(true);
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'js-event-loop',
+      tech: 'javascript' as any,
+      title: 'Event loop checkpoint',
+      scenario: 'Which queue runs first?',
+      options: [
+        { id: 'timer', label: 'Timer task' },
+        { id: 'microtask', label: 'Microtask checkpoint' },
+      ],
+    }));
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+    const component = fixture.componentInstance;
+
+    component.onJavascriptEventLoopExperienceCompleted();
+
+    expect(component.eventLoopCompletedQuestionId()).toBe('js-event-loop');
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+
+    await component.markComplete();
+
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'trivia',
+      tech: 'javascript',
+      itemId: 'js-event-loop',
+    }));
+  });
+
+  it('keeps the existing incident gate when the event-loop experience is incomplete', async () => {
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'js-event-loop',
+      tech: 'javascript' as any,
+      title: 'Event loop checkpoint',
+      scenario: 'Which queue runs first?',
+      options: [
+        { id: 'timer', label: 'Timer task' },
+        { id: 'microtask', label: 'Microtask checkpoint' },
+      ],
+    }));
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+
+    await fixture.componentInstance.markComplete();
+
+    expect(triviaIncident.getIncident).toHaveBeenCalledWith('javascript', 'js-event-loop');
+    expect(fixture.componentInstance.incidentPromptOpen).toBeTrue();
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('preserves guest auth behavior after the event-loop experience completes', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+    const component = fixture.componentInstance;
+
+    component.onJavascriptEventLoopExperienceCompleted();
+    await component.markComplete();
+
+    expect(component.loginPromptOpen).toBeTrue();
+    expect(onboarding.markPending).toHaveBeenCalledWith('save_prompt');
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('restores event-loop incident eligibility from session storage without leaking it to another question', async () => {
+    sessionStorage.setItem('fa:trivia:lab-complete:js_event_loop_75s_v1', 'js-event-loop');
+    const fixture = await createLoadedFixture('free', {
+      id: 'js-event-loop',
+      title: 'JavaScript Event Loop Visualizer: Learn by Predicting',
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.eventLoopCompletedQuestionId()).toBe('js-event-loop');
+
+    const nextResolved = makeResolved('free', { id: 'js-event-loop-second-question' });
+    const nextQuestion = nextResolved.list[0];
+    routeData$.next({
+      questionDetail: {
+        ...nextResolved,
+        id: nextQuestion.id,
+        question: nextQuestion,
+      },
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.question()?.id).toBe('js-event-loop-second-question');
+    expect(component.eventLoopCompletedQuestionId()).toBeNull();
+  });
+
   it('places the output challenge before the hidden deep dive without rendering the quick answer', async () => {
     const fixture = await createLoadedFixture('free', outputQuestionExtras());
 
@@ -2443,7 +2573,12 @@ describe('TriviaDetailComponent', () => {
     expect(fullAnswer?.hidden).toBeTrue();
     expect(outputCard!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(trackCalls('trivia_output_shown')).toEqual([
-      ['trivia_output_shown', { runtime: 'browser', option_count: 3 }],
+      ['trivia_output_shown', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+        runtime: 'browser',
+        option_count: 3,
+      }],
     ]);
   });
 
@@ -2540,13 +2675,27 @@ describe('TriviaDetailComponent', () => {
     component.openOutputDeepDive();
 
     expect(trackCalls('trivia_output_shown')).toEqual([
-      ['trivia_output_shown', { runtime: 'browser', option_count: 3 }],
+      ['trivia_output_shown', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+        runtime: 'browser',
+        option_count: 3,
+      }],
     ]);
     expect(trackCalls('trivia_output_answered')).toEqual([
-      ['trivia_output_answered', { correct: true, runtime: 'browser', option_count: 3 }],
+      ['trivia_output_answered', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+        correct: true,
+        runtime: 'browser',
+        option_count: 3,
+      }],
     ]);
     expect(trackCalls('trivia_output_deep_dive_opened')).toEqual([
-      ['trivia_output_deep_dive_opened'],
+      ['trivia_output_deep_dive_opened', {
+        question_id: 'js-event-loop-nested-microtask-output',
+        tech: 'javascript',
+      }],
     ]);
   });
 

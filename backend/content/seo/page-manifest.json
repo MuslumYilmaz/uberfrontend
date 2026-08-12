@@ -41829,7 +41829,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "4882b5fafcde0a84322ffb9e7620d6452f7f179d01132196643ec6677181087b",
+        "aggregate": "058ffded9a1130aa9794b42ce70bd2a1b0932a0bff0ebe1fdb3d6d5aa5983a0c",
         "seoMetadata": {
           "hash": "cdec2cb4197ee5d1ce71b7efb4cd5ddc8c984a7ff6829d3de7c897cf50c9307a",
           "status": "complete",
@@ -41863,17 +41863,17 @@
           }
         },
         "mainContent": {
-          "hash": "7037771c31b0d8ce6e8c1e07c749ff856bb9e99f548635d0feceb64e7c04ad36",
+          "hash": "6a5d0b5ea55cf7432047818da3584e32d457f91ddad34a1e408a10c06f860955",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 14427,
+          "normalizedCharCount": 14447,
           "semanticTokenCount": 822,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "fd51bf466a90b7bebe06800fd99019a512bcbbd0b0d4fda584f19901ca1fed12"
+            "hash": "d1438bed6babb9b00f26522eb9d0747ead54d26a7abcf6b30d1115d76b594677"
           }
         },
         "headingOutline": {
@@ -41883,8 +41883,8 @@
           "count": 21
         },
         "structuredData": {
-          "hash": "520b8c35f44e93bc164873dd0b6cd41d990af4eeb8d1f713763092a7a52ec649",
-          "causalHash": "20b725b0dd9398b0273e393002d7495dde287d497a35828386fffff30d49cf62",
+          "hash": "8ffbf673f8f80d08bb7a29fe3b55b26cffc946fa17849547de3e16d9f9e1c2ef",
+          "causalHash": "f1615f6a3c8f50751d7e544e41b263d93976d1fad37a54af8c3a48d5914cc58d",
           "schemaHash": "0e752fb7fffdc44aec868030b8d5ce64c77b4be406e2b14d74e288252443285d",
           "status": "complete",
           "source": "prerendered_production_html",
@@ -41910,7 +41910,7 @@
           ]
         },
         "internalLinks": {
-          "hash": "1308e148e5e2f9c7fe8325412f54aa02df8759231f65aeb108296b7319d8092a",
+          "hash": "f86dded9758c97aeb2185824a83dd576e0d82a22b48125d713d2a3cd34c00057",
           "status": "complete",
           "source": "prerendered_production_html",
           "count": 29,
@@ -41979,7 +41979,7 @@
             },
             {
               "route": "/javascript/trivia/js-event-loop",
-              "hash": "71db5c84afcd549b602636f03006422cf9c61db913bbd7c975d970e60f4f017f"
+              "hash": "f21aa5e861129195b304f7af28fa531429221a485949d920d001d109e32d9771"
             },
             {
               "route": "/javascript/trivia/js-mutability-vs-immutability",
@@ -54473,7 +54473,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "e9cb1aa0792dc6459bd0b8b2899f50cc6fd82534221911e9fe467fecb024ab7a",
+        "aggregate": "6b145ef1b4cf244be6ed8dd58daa570ea1336e45808315da4d59840a51e6409c",
         "seoMetadata": {
           "hash": "715e7e6ca7091ca76e0588f63fb132c945fd53614523ad00b1fe23b4ba78f8d7",
           "status": "complete",
@@ -54507,17 +54507,17 @@
           }
         },
         "mainContent": {
-          "hash": "30630fce29b8da1a31a2bd58df3bd8e724f0c30d0e75e4a23d730b066421bdd7",
+          "hash": "dc75534f603c04360715c894ef6da29477c8e47bcba5dab17d272fc422124e94",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 4430,
+          "normalizedCharCount": 4450,
           "semanticTokenCount": 276,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "3f74c2616188b435b583b0137638fbe591d9497e6291c84bd9c5741bf235492b"
+            "hash": "a133cc272cdd36a1f60472221e8d2ee346b56315a0f7d24443810195629cc9af"
           }
         },
         "headingOutline": {
@@ -54551,7 +54551,7 @@
           ]
         },
         "internalLinks": {
-          "hash": "bd5acd46aed612c112a4e4b4778aa69fa35137148daa0e142809cde18d726556",
+          "hash": "022f234c07265cc68d242e12a23e04642b618410529f83c677654454a193e8c5",
           "status": "complete",
           "source": "prerendered_production_html",
           "count": 20,
@@ -54612,7 +54612,7 @@
             },
             {
               "route": "/javascript/trivia/js-event-loop",
-              "hash": "f4a483a74dad54477216e27ad249612a4f29a40240742139513c86c8c85798f5"
+              "hash": "8466db4d22ce5ed44d309cbcce5de97e8b840f0ad3e33773fbe9b2b3210d0ee4"
             },
             {
               "route": "/javascript/trivia/js-higher-order-function",
@@ -58503,13 +58503,13 @@
       "tech": "javascript",
       "indexable": true,
       "robots": "index,follow",
-      "title": "Explain the JavaScript Event Loop",
-      "description": "JavaScript runs on a single thread, but the real production pitfall is queue ordering: synchronous work runs first, then microtasks drain before the next macrotask, which is why long Promise chains can starve rendering and confuse debugging.",
-      "h1": "Explain the JavaScript Event Loop",
-      "updatedAt": "2026-04-08",
-      "targetKeyword": "explain the javascript event loop",
-      "intendedIntent": "JavaScript runs on a single thread, but the real production pitfall is queue ordering: synchronous work runs first, then microtasks drain before the next macrotask, which is why long Promise chains can starve rendering and confuse debugging.",
-      "readerPromise": "JavaScript runs on a single thread, but the real production pitfall is queue ordering: synchronous work runs first, then microtasks drain before the next macrotask, which is why long Promise chains can starve rendering and confuse debugging.",
+      "title": "JavaScript Event Loop Visualizer: Learn by Predicting",
+      "description": "Predict a browser event-loop trace, then step through the current task, Promise microtasks, a zero-delay timer, and a render opportunity to see why queue order—not callback speed—determines what runs next.",
+      "h1": "JavaScript Event Loop Visualizer: Learn by Predicting",
+      "updatedAt": "2026-08-11",
+      "targetKeyword": "javascript event loop visualizer: learn by predicting",
+      "intendedIntent": "Predict a browser event-loop trace, then step through the current task, Promise microtasks, a zero-delay timer, and a render opportunity to see why queue order—not callback speed—determines what runs next.",
+      "readerPromise": "Predict a browser event-loop trace, then step through the current task, Promise microtasks, a zero-delay timer, and a render opportunity to see why queue order—not callback speed—determines what runs next.",
       "intentSource": "derived",
       "intentConfirmed": false,
       "tags": [
@@ -58544,19 +58544,19 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "bfd3ad9a3380ba4e497cae77333de8f239285b5a4f2e40c1b5cba4997c0bd6f3",
+        "aggregate": "627410958bfd959e90facc2beaa6173529bfb794537ddad0440ee183a0282a7e",
         "seoMetadata": {
-          "hash": "1d3a28f299c754b15d5b90768b20902f6b9f47a5769d4bedaa75073ba448b45e",
+          "hash": "3b5539176167914d4117f334393d6f4372075c22609573175875c599c3937949",
           "status": "complete",
           "source": "prerendered_production_html",
           "fields": {
             "title": {
-              "hash": "da15822088b7e89f0ef4850fa93f261f7000f816fe218531eb7b4973abc7d5f0",
+              "hash": "98c411b724f08513b2c148e00a2ce9e12707ddb29505f470574d72b4861bad83",
               "status": "complete",
               "source": "prerendered_production_html"
             },
             "description": {
-              "hash": "2f7d802c1bb10ffdf086290b1592b666bdf0b9a01db71709ecb0ad116f6f1429",
+              "hash": "06c7f32a1cfcea548818f45496cac2f263d10bf115679f1c55d006319cc722fc",
               "status": "complete",
               "source": "prerendered_production_html"
             },
@@ -58578,28 +58578,28 @@
           }
         },
         "mainContent": {
-          "hash": "ad99e553f98b8fc226876c828eecda17ff43f703f60e63a7c87fe22a51b57376",
+          "hash": "4437a37a9e305ff410fb2dc79429f2175dad7d28dd8123840c9eb4140c4cfdee",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 6523,
-          "semanticTokenCount": 582,
+          "normalizedCharCount": 8021,
+          "semanticTokenCount": 565,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "73c96a65fcc9ff712c78fab54c2cc3932a2ef28fd606882a8f94871c628f04df"
+            "hash": "bb378dc03a27e55548a577ec371cd96081bbf146f9870cf94c407ff279428646"
           }
         },
         "headingOutline": {
-          "hash": "8633fb57608dd7faeed8d3733e8567099befb510ffcf1c0975d2b134e9200857",
+          "hash": "bdb2767e09a0744a1f097578624c17b857708f840a781c513780e3669d101299",
           "status": "complete",
           "source": "prerendered_production_html",
-          "count": 6
+          "count": 7
         },
         "structuredData": {
-          "hash": "d501a65b0c2883207cf1412111c990db66a86791a8db9722853382642ba917e8",
-          "causalHash": "869e2cb7dec17fa84c11b35edc9f3ecb940339f07a6e56dee9f0acb467a91617",
+          "hash": "4e5a4b39a8177874aa667c64334df396543dbe95a288e5b2cd96daf6e4cd0fa0",
+          "causalHash": "cd7b4562bb82f88fa72efa653904993f81c1bdebe4d0cc28afbca514537a4310",
           "schemaHash": "d6492d8706612b44d811f12ee203f5e926a6b1e9497d3bf2ec942ec4537e1339",
           "status": "complete",
           "source": "prerendered_production_html",
@@ -58708,7 +58708,7 @@
           ]
         },
         "intent": {
-          "hash": "8290a362fa6bdd5cb772c75b6b7281468bdf610a2fcb9dfc37bacc3b5959fd1e",
+          "hash": "a094dbd830e70bc450c15f07470389dc7c8236b7ee5b2581512153ea2f2c0daf",
           "causalHash": "dda5081aec67e795e3bd405a05d7d19a0be326b819468642ebe82355efc12c88",
           "status": "complete",
           "source": "manifest_intent_contract",
@@ -58783,7 +58783,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "fa1c309f706739a31448c5a9ae3e90737035ccb1bf24bcb491fcdb83edb02ca5",
+        "aggregate": "6748a4163477298341240e3c341357874d5bf4315b7483eb170f7f3a2ed52314",
         "seoMetadata": {
           "hash": "582322a479d49ef672b971ff0b41dbfe14df9584c2be0292d4b81d8e395a3657",
           "status": "complete",
@@ -58817,17 +58817,17 @@
           }
         },
         "mainContent": {
-          "hash": "935817fbad33b21722509f137458f0bb0167ac7ec1055adcce42ee6aa35dd1b7",
+          "hash": "78fb8f8044838378e79cca9f6af6c5429920d7ba664d3340b92ebcec610f11c7",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 3369,
+          "normalizedCharCount": 3389,
           "semanticTokenCount": 261,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "d260bf34032ff18d4c7786a2d3325d478b460f7fc18380ef8c1088d16f2133ee"
+            "hash": "75af1d4cb10a031e0087f5ed3b3dbad073727a409e110954250277a03b8818f3"
           }
         },
         "headingOutline": {
@@ -58861,7 +58861,7 @@
           ]
         },
         "internalLinks": {
-          "hash": "dc77f38cc771b2758826f12c66918c5ff2dea6b304789707c50f01d3de18ddb9",
+          "hash": "f1d6559e9dd3529e544d589f1c7e86ceef3b15797be164084b627a007fd6e671",
           "status": "complete",
           "source": "prerendered_production_html",
           "count": 20,
@@ -58922,7 +58922,7 @@
             },
             {
               "route": "/javascript/trivia/js-event-loop",
-              "hash": "f4a483a74dad54477216e27ad249612a4f29a40240742139513c86c8c85798f5"
+              "hash": "8466db4d22ce5ed44d309cbcce5de97e8b840f0ad3e33773fbe9b2b3210d0ee4"
             },
             {
               "route": "/javascript/trivia/js-microtasks-vs-macrotasks",
@@ -61902,7 +61902,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "7f22ffedd1c8649476bbb3a96091cd4c9cbc0cee9abd8ca5ee1a8b6bd86d11b0",
+        "aggregate": "91c5eae1805ae7b37a3ba421f416c0b8e34f1149a8ba49c2285c63a1197a399b",
         "seoMetadata": {
           "hash": "17fa48e66c1ba3bb749ed84d2b1b7801d086e7ba10116c0560c47bfd1903fa78",
           "status": "complete",
@@ -61936,17 +61936,17 @@
           }
         },
         "mainContent": {
-          "hash": "bd566a3fc4bcb52beaaf5987dbd6fd6dc396c354483946b177e874309c9b6339",
+          "hash": "d41e71b6447ead592869b3b60eba9a19e740b1ec7d55c1d8539303de0a4e8448",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 5715,
+          "normalizedCharCount": 5735,
           "semanticTokenCount": 415,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "231c095de5d6955c968b73bd94595191a8b48742e3eaa50f16af23fb563c380c"
+            "hash": "af847d5887ab27b74bc9efe96f33e735ec9ab6c39d9ef5b11a1bfdc57ed4ba29"
           }
         },
         "headingOutline": {
@@ -61980,7 +61980,7 @@
           ]
         },
         "internalLinks": {
-          "hash": "62315bf1c2ef29e34da7ce66070896eb3ff28d22471389388ef0b77ac64a5556",
+          "hash": "520dc1fe1041f8fbf3056d5f510a46d6ca55468dffc6075c8cc469b578e30e16",
           "status": "complete",
           "source": "prerendered_production_html",
           "count": 20,
@@ -62041,7 +62041,7 @@
             },
             {
               "route": "/javascript/trivia/js-event-loop",
-              "hash": "f4a483a74dad54477216e27ad249612a4f29a40240742139513c86c8c85798f5"
+              "hash": "8466db4d22ce5ed44d309cbcce5de97e8b840f0ad3e33773fbe9b2b3210d0ee4"
             },
             {
               "route": "/javascript/trivia/js-event-loop-nested-microtask-output",
@@ -84583,7 +84583,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "782e6be1c423a3d4e20677c10c04cac9904df97110f4895d23ce874ad8fd6fbb",
+        "aggregate": "9eb5d78ab11595d06b86d9056dd226ae82f79da265432274300016d8d8cd563e",
         "seoMetadata": {
           "hash": "81ed8db9b54ee614df3d14ba267dbf09ed6f924e6fae49fd69c948bad5725bca",
           "status": "complete",
@@ -84617,17 +84617,17 @@
           }
         },
         "mainContent": {
-          "hash": "93fd4c3962536c44c7eb9e1d8e18df1e269ad4d0b0ff9ed60d204957ded1cd91",
+          "hash": "4663d3545b9f357d470337ee3e267f5b7b9d48567445625433f494ff9e06a722",
           "status": "complete",
           "source": "prerendered_production_html",
           "region": "main",
           "normalizationProfile": "normalized_text_semantic_markup.v2",
-          "normalizedCharCount": 8208,
+          "normalizedCharCount": 8228,
           "semanticTokenCount": 558,
           "compatibility": {
             "fingerprintVersion": "seo-page-fingerprints.v1",
             "normalizationProfile": "normalized_text_semantic_markup.v1",
-            "hash": "585bc7e6dd93a4f3446932dec8cb43de7931709281629895fbc6a71cad839a24"
+            "hash": "c52a262f290d231207ff08d2d8de00df2a02d1188b2af472115c7089b661dc75"
           }
         },
         "headingOutline": {
@@ -84637,8 +84637,8 @@
           "count": 23
         },
         "structuredData": {
-          "hash": "a474c2bd9134ef8c7ce2790baf3f94c0c6958caf7302fe75fdcef884192bb5b6",
-          "causalHash": "9f3c1a3f5d27459d9d4f887263e77bd32e96e43fbc3ce46f192727d7899b500f",
+          "hash": "0546d2acaeca88f6aaf9c13acf6797eca10fe22e3d597870621bd331f5376064",
+          "causalHash": "9043df7dd7f76ad4c3da288673868fae7ec047b872e44a0f293c9282cafb7b40",
           "schemaHash": "6695fb72cba7ecf90fa672c55d527435e65d10240d0addb1d4b61bf2e6cd36c9",
           "status": "complete",
           "source": "prerendered_production_html",
@@ -84667,7 +84667,7 @@
           ]
         },
         "internalLinks": {
-          "hash": "784e8f55c8d0122055af1cf3608478e5b77038ead763314e6d641f3b93cdc1d3",
+          "hash": "a2cae7629810ebaa6ddc9b2995dfaa2ba732779c5f74fc592459f4dfc76010b6",
           "status": "complete",
           "source": "prerendered_production_html",
           "count": 32,
@@ -84720,7 +84720,7 @@
             },
             {
               "route": "/javascript/trivia/js-event-loop",
-              "hash": "8698db0cc00de28eac568b960f4f66776d6afff3770143c969c0dba0588beb2b"
+              "hash": "b7ea5654f96014c76860a177de6dd9810a23e21e5f88442d7d3ccfc6fc53c837"
             },
             {
               "route": "/javascript/trivia/js-hoisting-tdz",
@@ -84849,7 +84849,7 @@
       "fingerprints": {
         "version": "seo-page-fingerprints.v2",
         "algorithm": "sha256",
-        "aggregate": "dc37853c88b08bb613f7ffc49a9767f0cb022e00c9bc9d1b645b10c5bc7c9c93",
+        "aggregate": "9ce6213b571d3c67659275b45aa1e4cd940a62d0d54262a0bd3f7ea2b2032925",
         "seoMetadata": {
           "hash": "33d7cd3e1f92ff6a3da46d112c8bffd9ebec665e1e8e692fc1601b686329527d",
           "status": "complete",
@@ -84903,8 +84903,8 @@
           "count": 29
         },
         "structuredData": {
-          "hash": "8aff507711e85846be0f32284a0c142e20629c2cca4359989dfaa875964634bb",
-          "causalHash": "637e46a27f1ad55d4aa8fc5b2431133c800cb1e45fd6894ea8423e73f25b4b11",
+          "hash": "a1e2cdaa87c4cbb5d8e248eea7efaf2739a0a1274eba39fe3448a583462c698f",
+          "causalHash": "542f819e780d9bbde9cd82724ea5c89db892ed70d3b8129d073ac405ac700cf2",
           "schemaHash": "1cbb7a97b2bf1ed3d077b9993d35c3d57258fbb3449e3208c044b2a1d19e8b23",
           "status": "complete",
           "source": "prerendered_production_html",
@@ -95482,13 +95482,13 @@
       }
     }
   ],
-  "sourceHash": "542ca6e67bfa7e071d04181f3c7f449392a6cea75177eac019eb28b1b39e02b4",
-  "generatedAt": "2026-08-10T21:42:24.561Z",
+  "sourceHash": "46b70e10744b26cbdfeb1ba307b98cc61f0dab6bbf18f4d567fc804e3f35882d",
+  "generatedAt": "2026-08-11T12:12:47.497Z",
   "provenance": {
     "version": "seo-build-provenance.v1",
     "schemaVersion": "seo-build-provenance.v1",
     "build": {
-      "observedAt": "2026-08-10T21:42:24.561Z",
+      "observedAt": "2026-08-11T12:12:47.497Z",
       "precision": "exact",
       "source": "manifest_generation"
     },
