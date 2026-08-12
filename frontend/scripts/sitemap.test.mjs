@@ -27,12 +27,7 @@ const MASTERY_ALIAS_PATHS = [
   '/track/javascript-prep-path/mastery',
 ];
 const PRIVATE_PRERENDER_SHELL_ROUTES = [
-  '/admin/seo',
   '/admin/users',
-];
-const PRIVATE_SEO_NOINDEX_HEADER_SOURCES = [
-  '/admin/seo',
-  '/admin/seo/:path*',
 ];
 const LOCKED_NOINDEX_HEADER_SOURCES = [
   '/tracks/:slug',
@@ -484,24 +479,6 @@ function assertPrivatePrerenderShellCoverage(sitemapPaths) {
     }
     if (sitemapPaths.has(route)) {
       throw new Error(`${route} is a private prerender shell and must not appear in the sitemap.`);
-    }
-  });
-}
-
-function assertPrivateSeoNoindexHeaders() {
-  const config = readVercelConfig();
-  const headers = Array.isArray(config.headers) ? config.headers : [];
-
-  PRIVATE_SEO_NOINDEX_HEADER_SOURCES.forEach((source) => {
-    const matches = headers.filter((rule) => rule?.source === source);
-    const robotsHeaders = (Array.isArray(matches[0]?.headers) ? matches[0].headers : [])
-      .filter((header) => String(header?.key || '').toLowerCase() === 'x-robots-tag');
-    if (
-      matches.length !== 1
-      || robotsHeaders.length !== 1
-      || normalizedRobotsHeaderValue(robotsHeaders[0]?.value) !== 'noindex,nofollow'
-    ) {
-      throw new Error(`${source} must use exactly X-Robots-Tag: noindex, nofollow.`);
     }
   });
 }
@@ -1107,7 +1084,6 @@ assertPreviewAndHubCoverage(paths);
 assertMasteryCanonicalCoverage(paths, locs);
 assertNoPrivateOrRedirectRoutes(paths);
 assertPrivatePrerenderShellCoverage(paths);
-assertPrivateSeoNoindexHeaders();
 assertCssThemeVariablesSitemapEntry(entries);
 assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertGoogleCompanyPreviewSitemapEntry(entries);

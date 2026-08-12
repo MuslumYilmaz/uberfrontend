@@ -8,7 +8,6 @@ const { createBillingEventStore } = require('../services/billing/billing-events'
 const { applyNormalizedLemonSqueezyEventToUser } = require('../services/billing/user-billing-state');
 const { normalizeLemonSqueezyEvent } = require('../services/billing/providers/lemonsqueezy');
 const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
-const { isConfiguredSeoOwnerUserId } = require('../middleware/RequireSeoOwner');
 const {
     SUPPORTED_SCENARIOS,
     buildLemonSqueezySimulationPayload,
@@ -175,15 +174,6 @@ router.get('/users', async (_req, res) => {
 router.put('/users/:id', async (req, res) => {
     try {
         const requestBody = req.body && typeof req.body === 'object' ? req.body : {};
-        const mutatesOwnerIdentity =
-            Object.prototype.hasOwnProperty.call(requestBody, 'email') ||
-            Object.prototype.hasOwnProperty.call(requestBody, 'role');
-
-        if (mutatesOwnerIdentity && isConfiguredSeoOwnerUserId(req.params.id)) {
-            return res.status(403).json({
-                error: 'SEO owner identity cannot be changed through this endpoint',
-            });
-        }
 
         const allowed = [
             'username',

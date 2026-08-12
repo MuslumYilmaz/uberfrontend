@@ -117,56 +117,6 @@ describe('Admin DB diagnostics', () => {
   });
 });
 
-describe('Admin user management', () => {
-  test('cannot mutate the configured SEO owner email or role through the generic admin route', async () => {
-    const actingAdmin = await User.create({
-      email: 'acting-admin@example.com',
-      username: 'acting_admin_user',
-      passwordHash: 'hash',
-      role: 'admin',
-    });
-    const owner = await User.create({
-      email: 'mslmyilmaz34@gmail.com',
-      emailVerifiedAt: new Date(),
-      username: 'seo_owner_user',
-      passwordHash: 'hash',
-      role: 'admin',
-    });
-    const previousOwnerId = process.env.SEO_OWNER_USER_ID;
-    const previousOwnerEmail = process.env.SEO_OWNER_EMAIL;
-
-    process.env.SEO_OWNER_USER_ID = String(owner._id);
-    process.env.SEO_OWNER_EMAIL = owner.email;
-
-    try {
-      const [roleResponse, emailResponse] = await Promise.all([
-        request(app)
-          .put(`/api/admin/users/${owner._id}`)
-          .set('Authorization', authHeader(actingAdmin._id))
-          .send({ role: 'user' }),
-        request(app)
-          .put(`/api/admin/users/${owner._id}`)
-          .set('Authorization', authHeader(actingAdmin._id))
-          .send({ email: 'attacker@example.com' }),
-      ]);
-
-      expect(roleResponse.status).toBe(403);
-      expect(emailResponse.status).toBe(403);
-      expect(roleResponse.body?.error).toContain('SEO owner identity');
-      expect(emailResponse.body?.error).toContain('SEO owner identity');
-
-      const reloaded = await User.findById(owner._id).lean();
-      expect(reloaded?.role).toBe('admin');
-      expect(reloaded?.email).toBe('mslmyilmaz34@gmail.com');
-    } finally {
-      if (previousOwnerId === undefined) delete process.env.SEO_OWNER_USER_ID;
-      else process.env.SEO_OWNER_USER_ID = previousOwnerId;
-      if (previousOwnerEmail === undefined) delete process.env.SEO_OWNER_EMAIL;
-      else process.env.SEO_OWNER_EMAIL = previousOwnerEmail;
-    }
-  });
-});
-
 describe('Admin billing simulator', () => {
   test('returns retryable 503 when the simulated event already has an active lease', async () => {
     const admin = await User.create({

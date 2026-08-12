@@ -80,9 +80,6 @@
                 <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-menu-admin-users">
                   <i class="pi pi-shield"></i> Admin: Users
                 </a>
-                <a *ngIf="canAccessSeo()" class="fah-menu-item" routerLink="/admin/seo" (click)="closeAll()" data-testid="header-menu-admin-seo">
-                  <i class="pi pi-chart-line"></i> SEO Intelligence
-                </a>
                 <div class="fah-divider"></div>
                 <button class="fah-menu-item" (click)="logout()" data-testid="header-menu-logout"><i class="pi pi-sign-out"></i> Log out</button>
               </ng-container>
