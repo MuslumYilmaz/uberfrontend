@@ -387,7 +387,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   template: `
       <fa-guide-shell
       title="RADIO Framework: Frontend System Design Interview Template"
-      subtitle="A practical RADIO template for frontend system design interviews"
+      subtitle="A 45-minute RADIO template for frontend system design interviews"
       [minutes]="20"
       [tags]="['system design', 'answer template', 'radio framework']"
       [prev]="prev"
@@ -465,6 +465,26 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         <li><strong>Interface:</strong> describe UI boundaries, component responsibilities, loading, error, and accessibility states.</li>
         <li><strong>Optimizations:</strong> discuss performance, resilience, observability, and trade-offs.</li>
       </ul>
+
+      <h2 id="source-and-frontendatlas-adaptation">Source and FrontendAtlas adaptation</h2>
+      <p>
+        The RADIO mnemonic was created by Yangshun Tay and published by GreatFrontEnd as a structured way to
+        approach system design interviews. Read
+        <a
+          href="https://www.greatfrontend.com/front-end-system-design-playbook/framework"
+          target="_blank"
+          rel="noopener noreferrer">GreatFrontEnd’s authoritative RADIO Framework guide</a>.
+      </p>
+      <p>
+        FrontendAtlas does not redefine the mnemonic. This guide adds a frontend interview practice layer:
+        45- and 60-minute timeboxes, copyable transition scripts, diagram outputs, accessibility and failure-state
+        prompts, and worked autocomplete, news feed, and chat examples.
+      </p>
+      <p>
+        If you are still learning the format, start with the
+        <a [routerLink]="['/', 'guides', 'interview-blueprint', 'system-design']">frontend system design interview preparation guide</a>,
+        then return here to run the timed answer script.
+      </p>
 
       <h2>When not to overuse RADIO</h2>
       <p>

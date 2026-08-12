@@ -661,7 +661,7 @@ describe('guide-seo.util', () => {
     ]);
   });
 
-  it('targets frontend system design framework intent with FAQ and practice ItemList schema', () => {
+  it('targets frontend system design preparation intent with FAQ and plan ItemList schema', () => {
     const systemDesign = PLAYBOOK.find((entry) => entry.slug === 'system-design');
     expect(systemDesign).toBeDefined();
 
@@ -672,21 +672,18 @@ describe('guide-seo.util', () => {
       systemDesign!
     );
 
-    expect(meta.title).toBe('Frontend System Design Interview Framework | 45-Minute Template');
+    expect(meta.title).toBe('Frontend System Design Interview Preparation Guide');
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/system-design');
     expect(meta.description).toBe(
-      'Answer frontend system design interviews with a 45-minute framework, autocomplete worked example, API/state contracts, rubric, and practice prompts.',
+      'Prepare for a frontend system design interview with the round format, question types, evaluation rubric, practice plan, and realistic prompts.',
     );
-    expect(meta.keywords?.[0]).toBe('frontend system design interview framework');
+    expect(meta.keywords?.[0]).toBe('frontend system design interview preparation');
     expect(meta.keywords).toEqual([
-      'frontend system design interview framework',
-      'frontend system design interviews',
-      'frontend system design interview questions',
-      'frontend system design answer template',
-      '45 minute frontend system design interview',
-      'frontend architecture interview',
-      'autocomplete frontend system design',
-      'design autocomplete frontend system design',
+      'frontend system design interview preparation',
+      'how to prepare for a frontend system design interview',
+      'frontend system design interview guide',
+      'frontend system design interview format',
+      'frontend system design practice plan',
       'frontend system design interview rubric',
       'frontend vs backend system design interview',
       'client side system design interview',
@@ -700,28 +697,43 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.headline).toBe('Frontend System Design Interview Framework | 45-Minute Template');
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.headline).toBe('Frontend System Design Interview Preparation Guide');
+    expect(article?.dateModified).toBe('2026-08-12T00:00:00.000Z');
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
     });
-    expect(itemList?.name).toBe('Frontend system design practice map');
-    expect(itemList?.itemListElement?.length).toBe(10);
-    expect(itemList?.itemListElement?.[0]?.name).toBe('Realtime search autocomplete');
-    expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/system-design/realtime-search-debounce-cache');
-    expect(itemList?.itemListElement?.[9]?.name).toBe('45-minute answer script');
-    expect(itemList?.itemListElement?.[9]?.url).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
-    expect(faqPage?.name).toBe('Frontend system design interview framework FAQ');
+    expect(itemList?.name).toBe('Frontend system design interview preparation plan');
+    expect(itemList?.itemListElement?.length).toBe(6);
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.name)).toEqual([
+      'Understand the interview scope',
+      'Learn the two question formats',
+      'Run a baseline prompt',
+      'Learn the RADIO method',
+      'Practice across prompt families',
+      'Score a timed mock',
+    ]);
+    expect(itemList?.itemListElement?.map((entry: any) => entry?.url)).toEqual([
+      'https://frontendatlas.com/guides/interview-blueprint/system-design#frontend-vs-backend-scope',
+      'https://frontendatlas.com/guides/interview-blueprint/system-design#frontend-system-design-interview-format',
+      'https://frontendatlas.com/system-design/notification-toast-system',
+      'https://frontendatlas.com/guides/system-design-blueprint/radio-framework',
+      'https://frontendatlas.com/system-design',
+      'https://frontendatlas.com/guides/system-design-blueprint/evaluation',
+    ]);
+    expect(faqPage?.name).toBe('Frontend system design interview preparation FAQ');
     expect(faqPage?.mainEntity?.length).toBe(6);
     expect(faqPage?.mainEntity?.map((entry: any) => entry?.name)).toEqual([
-      'What is a frontend system design interview framework?',
-      'How do I answer a frontend system design interview in 45 minutes?',
-      'What is the difference between frontend system design and backend system design?',
-      'How do I design autocomplete in a frontend system design interview?',
-      'What frontend system design trade-offs should senior engineers mention?',
-      'What should I practice for a frontend architecture interview?',
+      'What is a frontend system design interview?',
+      'How do I prepare for a frontend system design interview?',
+      'What format does a frontend system design interview use?',
+      'How are application architecture and UI component questions different?',
+      'How should I practice frontend system design questions?',
+      'How do I know I am ready for a frontend system design interview?',
     ]);
+    expect(meta.keywords).not.toContain('frontend system design interview framework');
+    expect(meta.keywords).not.toContain('frontend system design interview questions');
+    expect(meta.keywords).not.toContain('frontend system design answer template');
   });
 
   it('targets JavaScript coding interview questions intent with practice-map FAQ and ItemList schema', () => {
@@ -994,51 +1006,43 @@ describe('guide-seo.util', () => {
       radio!
     );
 
-    expect(meta.title).toBe('RADIO Framework: Frontend System Design Interview Template');
+    expect(meta.title).toBe('RADIO Framework: 45-Minute Frontend System Design Template');
     expect(meta.title?.length || 0).toBeLessThanOrEqual(74);
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/system-design-blueprint/radio-framework');
     expect(meta.description).toBe(
-      'A practical RADIO framework guide for frontend system design interviews with a 45-minute answer script, diagram checklist, and examples.',
+      'Use the RADIO framework for frontend system design with a 45-minute interview script, diagram checklist, and worked autocomplete example.',
     );
     expect(meta.description).toMatch(/RADIO/i);
-    expect(meta.description).toMatch(/frontend system design interviews/i);
-    expect(meta.description).toMatch(/45-minute answer script/i);
+    expect(meta.description).toMatch(/frontend system design/i);
+    expect(meta.description).toMatch(/45-minute interview script/i);
     expect(meta.description).toMatch(/diagram checklist/i);
-    expect(meta.description).toMatch(/examples/i);
-    expect(meta.keywords?.[0]).toBe('RADIO framework frontend system design');
+    expect(meta.description).toMatch(/worked autocomplete example/i);
+    expect(meta.keywords?.[0]).toBe('radio framework');
+    expect(meta.keywords).toContain('radio framework system design');
     expect(meta.keywords).toContain('RADIO framework frontend system design');
+    expect(meta.keywords).toContain('radio framework template');
+    expect(meta.keywords).toContain('radio framework example');
     expect(meta.keywords).toContain('requirements architecture data interface optimizations');
     expect(meta.keywords).toContain('what is the RADIO framework in frontend system design');
-    expect(meta.keywords).toContain('RADIO approach system design');
     expect(meta.keywords).toContain('RADIO framework for frontend system design interviews');
-    expect(meta.keywords).toContain('how to use RADIO framework for frontend system design interview');
-    expect(meta.keywords).toContain('RADIO answer template');
     expect(meta.keywords).toContain('frontend system design interview answer template');
-    expect(meta.keywords).toContain('45-minute frontend system design interview framework');
-    expect(meta.keywords).toContain('frontend system design interview checklist');
-    expect(meta.keywords).toContain('45-minute frontend system design framework');
-    expect(meta.keywords).toContain('how to answer frontend system design interview');
-    expect(meta.keywords).toContain('45-minute frontend system design answer template');
-    expect(meta.keywords).toContain('what should I draw during a frontend system design interview');
-    expect(meta.keywords).toContain('RADIO framework autocomplete frontend system design');
-    expect(meta.keywords).toContain('RADIO framework news feed frontend system design');
-    expect(meta.keywords).toContain('RADIO framework chat frontend system design');
-    expect(meta.keywords).toContain('frontend system design interface API taxonomy');
+    expect(meta.keywords).toContain('radio framework interview questions');
     expect(meta.keywords).not.toContain('frontend system design interview questions');
+    expect(meta.keywords).not.toContain('frontend system design interview checklist');
 
     const graph = Array.isArray(meta.jsonLd) ? meta.jsonLd : [];
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const itemList = graph.find((node: any) => node?.['@type'] === 'ItemList');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.headline).toBe('RADIO Framework: Frontend System Design Interview Template');
+    expect(article?.headline).toBe('RADIO Framework: 45-Minute Frontend System Design Template');
     expect(article?.description).toBe(
-      'A practical RADIO framework guide for frontend system design interviews with a 45-minute answer script, diagram checklist, and examples.'
+      'Use the RADIO framework for frontend system design with a 45-minute interview script, diagram checklist, and worked autocomplete example.'
     );
-    expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-08-12T00:00:00.000Z');
     expect(article?.keywords).toContain('frontend system design interview answer template');
+    expect(article?.keywords).toContain('radio framework');
     expect(article?.keywords).toContain('RADIO framework frontend system design');
-    expect(article?.keywords).toContain('frontend system design interface API taxonomy');
     expect(itemList?.name).toBe('RADIO framework frontend system design sections');
     expect(itemList?.itemListElement?.length).toBe(5);
     expect(itemList?.itemListElement?.map((entry: any) => entry?.name)).toEqual([

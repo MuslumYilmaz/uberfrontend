@@ -99,8 +99,15 @@ describe('SystemDesignListComponent', () => {
 
     const routeData = {
       seo: {
-        title: 'Frontend System Design Interview Questions',
-        description: 'Practice frontend system design scenarios focused on UI architecture.',
+        title: 'Frontend System Design Interview: Questions & Practice',
+        description: 'Practice frontend system design interviews with guided questions, worked examples, RADIO drills, UI architecture prompts, scoring rubrics, and trade-offs.',
+        keywords: [
+          'frontend system design interview',
+          'front end system design interview',
+          'frontend system design interview questions',
+          'frontend system design questions',
+          'frontend system design examples',
+        ],
         robots: 'index,follow',
       },
       systemDesignList: {
@@ -322,7 +329,8 @@ describe('SystemDesignListComponent', () => {
 
     expect(pageText).toContain('Build from a junior UI boundary to a senior architecture case');
     expect(pageText).toContain('Connect system design to the rest of frontend interview prep');
-    expect(pageText).toContain('Core frontend system design patterns');
+    expect(pageText).toContain('Common frontend system design interview questions');
+    expect(pageText).toContain('These core frontend system design patterns cover');
     expect(pageText).toContain('Frontend system design interview rubric');
     expect(pageText).toContain('Common mistakes');
     expect(pageText).toContain('Frontend system design interview questions FAQ');
@@ -330,30 +338,50 @@ describe('SystemDesignListComponent', () => {
     expect(pageText).toContain('Notification systems');
     expect(pageText).toContain('Streaming chat');
 
-    const mostAskedSection = host.querySelector('[data-testid="system-design-most-asked-section"]');
-    expect(mostAskedSection?.querySelectorAll('a').length).toBe(3);
-    expect(mostAskedSection?.textContent || '').toContain('AI Chat Textarea Design');
+    const commonQuestionsSection = host.querySelector('[data-testid="system-design-common-questions-section"]');
+    expect(commonQuestionsSection?.querySelectorAll('a').length).toBe(3);
+    expect(commonQuestionsSection?.textContent || '').toContain('AI Chat Textarea Design');
     expect(
-      mostAskedSection?.querySelector('a[href="/system-design/ai-chat-textarea-design"]')
+      commonQuestionsSection?.querySelector('a[href="/system-design/ai-chat-textarea-design"]')
         ?.getAttribute('data-access'),
     ).toBe('free');
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/machine-coding"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="system-design-related-focus-section"] a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
   });
 
-  it('places the start path above the filters and question bank', async () => {
+  it('places common questions directly after the hero, before the guided start path and bank', async () => {
     const { fixture } = await createComponent();
     const host = fixture.nativeElement as HTMLElement;
+    const hero = host.querySelector('.sd-hero');
+    const commonQuestions = host.querySelector('[data-testid="system-design-common-questions-section"]');
     const start = host.querySelector('[data-testid="system-design-start-section"]');
     const filter = host.querySelector('.sd-filter-bar');
     const bank = host.querySelector('[data-testid="system-design-bank"]');
     const related = host.querySelector('[data-testid="system-design-related-focus-section"]');
 
+    expect(hero?.nextElementSibling).toBe(commonQuestions);
+    expect(commonQuestions?.nextElementSibling).toBe(start);
     expect(start?.nextElementSibling).toBe(filter);
     expect(filter?.nextElementSibling).toBe(bank);
     expect(bank?.nextElementSibling).toBe(related);
     expect(text(fixture)).toContain('free full solutions');
-    expect(text(fixture)).not.toContain('Most asked frontend system design questions');
+  });
+
+  it('links the hero to distinct preparation and RADIO resources', async () => {
+    const { fixture } = await createComponent();
+    const h1s = fixture.nativeElement.querySelectorAll('h1') as NodeListOf<HTMLHeadingElement>;
+    const heroLinks = Array.from(
+      fixture.nativeElement.querySelectorAll('.sd-hero__links a'),
+    ) as HTMLAnchorElement[];
+
+    expect(h1s.length).toBe(1);
+    expect(h1s[0]?.textContent?.trim()).toBe('Frontend System Design Interview: Questions & Practice');
+    expect(heroLinks.map((link) => link.getAttribute('href'))).toEqual([
+      '/guides/interview-blueprint/system-design',
+      '/guides/system-design-blueprint/radio-framework',
+    ]);
+    expect(heroLinks[0]?.textContent || '').toContain('Frontend system design interview preparation guide');
+    expect(heroLinks[1]?.textContent || '').toContain('RADIO framework');
   });
 
   it('orders the start path Toast, RADIO, AI Chat, then the senior dashboard', async () => {
@@ -551,6 +579,17 @@ describe('SystemDesignListComponent', () => {
     const itemList = schema.find((entry: any) => entry?.['@type'] === 'ItemList');
     const faq = schema.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
+    expect(payload.title).toBe('Frontend System Design Interview: Questions & Practice');
+    expect(payload.description).toBe(
+      'Practice frontend system design interviews with guided questions, worked examples, RADIO drills, UI architecture prompts, scoring rubrics, and trade-offs.',
+    );
+    expect(payload.keywords).toEqual([
+      'frontend system design interview',
+      'front end system design interview',
+      'frontend system design interview questions',
+      'frontend system design questions',
+      'frontend system design examples',
+    ]);
     expect(itemList).toBeTruthy();
     expect(payload.canonical).toBe('https://frontendatlas.com/system-design');
     expect(itemList?.itemListElement?.[0]?.name).toBe('Design a Toast Notification System');
@@ -558,6 +597,12 @@ describe('SystemDesignListComponent', () => {
     expect(faq).toBeTruthy();
     expect(faq?.mainEntity?.length).toBe(5);
     expect(faq?.mainEntity?.[0]?.name).toBe('What is a frontend system design interview?');
+    expect(faq?.mainEntity?.[1]?.name).toBe(
+      'Which frontend system design interview question should I practice first?',
+    );
+    expect(faq?.mainEntity?.map((entry: any) => entry?.name)).not.toContain(
+      'How do I prepare for frontend system design interviews?',
+    );
   });
 
   it('keeps the base canonical and FAQ schema when the bank resolves empty', async () => {

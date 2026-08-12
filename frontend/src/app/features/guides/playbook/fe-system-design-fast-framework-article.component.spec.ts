@@ -23,7 +23,7 @@ describe('FeSystemDesignFastFrameworkArticle', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(FeSystemDesignFastFrameworkArticle);
-    fixture.componentInstance.readerPromise = 'Custom system design framework promise.';
+    fixture.componentInstance.readerPromise = 'Custom preparation guide promise.';
     fixture.detectChanges();
   });
 
@@ -41,100 +41,93 @@ describe('FeSystemDesignFastFrameworkArticle', () => {
       .map((anchor) => anchor.getAttribute('href') || '');
   }
 
-  it('renders the system design SEO landing shell and freshness signal', () => {
+  it('owns preparation intent with an exact H1 and freshness signal', () => {
     const hostText = text();
     const h1 = fixture.nativeElement.querySelector('h1') as HTMLHeadingElement | null;
     const freshness = fixture.nativeElement.querySelector('[data-testid="system-design-guide-freshness"]');
 
-    expect(h1?.textContent?.trim()).toBe('Frontend System Design Interview Framework: 45-Minute Answer Template');
-    expect(freshness?.textContent || '').toContain('Last updated: June 2026');
+    expect(h1?.textContent?.trim()).toBe('Frontend System Design Interview Preparation Guide');
+    expect(freshness?.textContent || '').toContain('Last updated: August 2026');
     expect(freshness?.textContent || '').toContain('Author: FrontendAtlas Editorial');
-    expect(freshness?.textContent || '').not.toContain('Reviewed by');
-    expect(hostText).toContain('Custom system design framework promise.');
+    expect(hostText).toContain('Custom preparation guide promise.');
   });
 
-  it('renders the major intent sections for the upgraded landing page', () => {
-    const hostText = text();
+  it('renders the preparation journey in the intended order', () => {
+    const headings = Array.from(
+      fixture.nativeElement.querySelectorAll('h2') as NodeListOf<HTMLHeadingElement>,
+    ).map((heading) => heading.textContent?.trim() || '');
 
-    expect(hostText).toContain('What frontend system design interviews test');
-    expect(hostText).toContain('Frontend vs backend system design interview scope');
-    expect(hostText).toContain('45-minute frontend system design interview answer template');
-    expect(hostText).toContain('Worked example: design autocomplete in a frontend system design interview');
-    expect(hostText).toContain('Frontend system design interview rubric');
-    expect(hostText).toContain('Common mistakes');
-    expect(hostText).toContain('Practice map');
-    expect(hostText).toContain('FAQ');
-    expect(hostText).toContain('What to practice next');
+    expect(headings).toEqual([
+      'What frontend system design interviews test',
+      'Frontend vs backend system design interview scope',
+      'The two frontend system design question formats',
+      'A practical frontend system design interview preparation sequence',
+      'Frontend system design interview readiness checklist',
+      'Frontend system design interview rubric',
+      'Common mistakes in frontend system design preparation',
+      'Practice map',
+      'A repeatable mock interview loop',
+      'Frontend system design interview preparation FAQ',
+    ]);
   });
 
-  it('renders long-tail keyword phrases without changing the route shell', () => {
-    const hostText = text();
-
-    expect(hostText).toContain('client-side system design interview');
-    expect(hostText).toContain('senior frontend system design interview');
-    expect(hostText).toContain('45-minute frontend system design interview answer template');
-    expect(hostText).toContain('design autocomplete in a frontend system design interview');
-    expect(hostText).toContain('Frontend system design interview rubric');
-    expect(hostText).toContain('frontend vs backend system design interview');
-    expect(hostText).toContain('Senior frontend engineers should mention trade-offs');
-  });
-
-  it('renders the 45-minute template and autocomplete worked example details', () => {
+  it('covers question formats, readiness, rubric, mistakes, practice, and mock feedback', () => {
     const host = fixture.nativeElement as HTMLElement;
     const hostText = text();
-    const templateSteps = host.querySelectorAll('[data-testid="system-design-answer-template"] li');
 
-    expect(templateSteps.length).toBe(6);
-    expect(hostText).toContain('0-5 min');
-    expect(hostText).toContain('40-45 min');
-    expect(hostText).toContain('Search input, debounced async suggestions');
-    expect(hostText).toContain('View shell');
-    expect(hostText).toContain('Combobox component');
-    expect(hostText).toContain('Query/cache layer');
-    expect(hostText).toContain('Telemetry hook');
-    expect(hostText).toContain('latestRequestId');
-    expect(hostText).toContain('AbortController');
-    expect(hostText).toContain('GET /suggestions?q=');
-    expect(hostText).toContain('cache key = normalized query + limit');
-    expect(hostText).toContain('Only the newest request can update the rendered list.');
-  });
-
-  it('renders rubric, mistakes, practice map, and FAQ content', () => {
-    const host = fixture.nativeElement as HTMLElement;
-    const hostText = text();
-    const practiceCards = host.querySelectorAll('[data-testid="system-design-practice-map"] .practice-card');
-
+    expect(host.querySelector('#frontend-vs-backend-scope')).not.toBeNull();
+    expect(host.querySelector('#frontend-system-design-interview-format')).not.toBeNull();
+    expect(host.querySelectorAll('[data-testid="system-design-question-formats"] .format-card').length).toBe(2);
+    expect(host.querySelectorAll('[data-testid="system-design-preparation-sequence"] li').length).toBe(5);
+    expect(host.querySelectorAll('[data-testid="system-design-readiness-checklist"] li').length).toBe(8);
     expect(host.querySelector('[data-testid="system-design-rubric-table"]')).not.toBeNull();
-    expect(hostText).toContain('Weak');
-    expect(hostText).toContain('Hire');
-    expect(hostText).toContain('Strong hire');
-    expect(hostText).toContain('Backend-heavy answer');
-    expect(hostText).toContain('No concrete contract');
-    expect(hostText).toContain('Happy-path only');
-    expect(hostText).toContain('Premature optimization');
-    expect(practiceCards.length).toBe(8);
-    expect(hostText).toContain('Realtime Search');
-    expect(hostText).toContain('Dashboard Widgets');
-    expect(hostText).toContain('What is a frontend system design interview framework?');
-    expect(hostText).toContain('How do I answer a frontend system design interview in 45 minutes?');
-    expect(hostText).toContain('How do I design autocomplete in a frontend system design interview?');
-    expect(hostText).toContain('What should I practice for a frontend architecture interview?');
+    expect(host.querySelectorAll('[data-testid="system-design-practice-map"] .practice-card').length).toBe(8);
+    expect(host.querySelectorAll('[data-testid="system-design-mock-loop"] li').length).toBe(5);
+    expect(hostText).toContain('Application architecture');
+    expect(hostText).toContain('UI component and system design');
+    expect(hostText).toContain('Collecting prompts without feedback');
+    expect(hostText).toContain('Score observable behavior');
   });
 
-  it('renders proof actions and critical internal links', () => {
-    const linkTargets = hrefs();
+  it('keeps visible FAQ ownership aligned with preparation metadata', () => {
+    const hostText = text();
 
+    expect(hostText).toContain('What is a frontend system design interview?');
+    expect(hostText).toContain('How do I prepare for a frontend system design interview?');
+    expect(hostText).toContain('What format does a frontend system design interview use?');
+    expect(hostText).toContain('How are application architecture and UI component questions different?');
+    expect(hostText).toContain('How should I practice frontend system design questions?');
+    expect(hostText).toContain('How do I know I am ready for a frontend system design interview?');
+  });
+
+  it('links early to the question hub and delegates full answer-method depth to RADIO', () => {
+    const linkTargets = hrefs();
+    const hubIndex = linkTargets.indexOf('/system-design');
+    const radioIndex = linkTargets.indexOf('/guides/system-design-blueprint/radio-framework');
+
+    expect(hubIndex).toBeGreaterThan(-1);
+    expect(radioIndex).toBeGreaterThan(hubIndex);
+    expect(linkTargets).toContain('/system-design/notification-toast-system');
     expect(linkTargets).toContain('/system-design/realtime-search-debounce-cache');
-    expect(linkTargets).toContain('/system-design');
-    expect(linkTargets).toContain('/guides/system-design-blueprint/radio-framework');
-    expect(linkTargets).toContain('/react/coding/react-autocomplete-search-starter');
     expect(linkTargets).toContain('/system-design/infinite-scroll-list');
     expect(linkTargets).toContain('/system-design/news-feed-timeline');
-    expect(linkTargets).toContain('/system-design/notification-toast-system');
     expect(linkTargets).toContain('/system-design/ai-chat-textarea-design');
     expect(linkTargets).toContain('/system-design/component-design-system-architecture');
     expect(linkTargets).toContain('/system-design/live-comments-global-stream');
     expect(linkTargets).toContain('/system-design/dashboard-widgets-draggable-resizable');
-    expect(linkTargets).toContain('/guides/system-design-blueprint/checklist');
+    expect(fixture.nativeElement.querySelector('[data-testid="system-design-radio-teaser"]')).not.toBeNull();
+    expect(text()).toContain('Use the RADIO framework for the 45-minute answer');
+  });
+
+  it('does not duplicate the full 45-minute script or autocomplete walkthrough', () => {
+    const hostText = text();
+
+    expect(hostText).not.toContain('45-minute frontend system design interview answer template');
+    expect(hostText).not.toContain('0-5 min');
+    expect(hostText).not.toContain('40-45 min');
+    expect(hostText).not.toContain('Worked example: design autocomplete');
+    expect(hostText).not.toContain('GET /suggestions?q=');
+    expect(hostText).not.toContain('latestRequestId');
+    expect(hostText).not.toContain('AbortController');
   });
 });
