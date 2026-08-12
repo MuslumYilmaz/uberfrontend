@@ -171,6 +171,8 @@
                 </div>
             </section>
 
+            <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
+
             <app-angular-http-cancellation-lab
                 *ngIf="showAngularHttpCancellationLab(q)"
                 [testSuite]="angularHttpCancellationTestSuite()">
@@ -179,10 +181,6 @@
             <app-react-stale-closure-case-files
                 *ngIf="isReactStaleClosuresLanding(q)">
             </app-react-stale-closure-case-files>
-
-            <ng-container *ngIf="!isReactStaleClosuresLanding(q) && !showAngularHttpCancellationLab(q)">
-                <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
-            </ng-container>
 
             <!-- Full interview answer -->
             <section
@@ -198,9 +196,7 @@
                                 <!-- TEXT -->
                                 <div
                                     *ngIf="b.type === 'text'"
-                                    class="block b-text"
-                                    [class.source-check]="isSourceCheckBlock($any(b))"
-                                    [attr.data-nosnippet]="isSourceCheckBlock($any(b)) ? '' : null">
+                                    class="block b-text">
                                     <div class="content" [innerHTML]="md($any(b).text) | safeHtml"></div>
                                 </div>
 
@@ -269,10 +265,6 @@
                     </ng-template>
                 </div>
             </section>
-
-            <ng-container *ngIf="isReactStaleClosuresLanding(q) || showAngularHttpCancellationLab(q)">
-                <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
-            </ng-container>
 
             <!-- NgRx data flow DevTools trace -->
             <section

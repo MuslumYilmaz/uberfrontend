@@ -18,6 +18,9 @@ const GOOGLE_PREVIEW_DESCRIPTION =
   'Prepare for a Google frontend interview with 7 representative questions covering DSA, JavaScript, browser APIs, UI coding, accessibility, and system design.';
 const GOOGLE_PREVIEW_H1 = 'Google Frontend Interview Questions';
 const GOOGLEBOT_USER_AGENT = 'Googlebot';
+const TRIVIA_SCHEMA_HEADLINE_SUFFIX = 'Frontend interview practice question';
+const TRIVIA_REQUIRED_SCHEMA_TYPES = ['BreadcrumbList', 'Article'];
+const TRIVIA_FORBIDDEN_SCHEMA_TYPES = ['TechArticle', 'FAQPage', 'QAPage', 'Question', 'Quiz'];
 const GOOGLE_PREVIEW_HEADINGS = [
   'What to study first for a Google frontend interview',
   'Seven Google frontend interview practice questions',
@@ -129,8 +132,8 @@ const ANGULAR_HTTP_CANCELLATION_LAB_CONTENT = [
   'HttpTestingController',
   'TestRequest.cancelled',
   'http-cancellation.spec.ts',
-  'Source check',
   'Interview focus',
+  'Interview answer drill',
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_RESOURCE_ROUTES = [
   '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
@@ -167,7 +170,6 @@ const REACT_STALE_CLOSURES_SECTION_HEADINGS = [
   'React stale closure case files',
   'Diagnosis table',
   'Production code-review checklist',
-  'Source check',
   '30-second interview answer',
 ];
 const REACT_STALE_CLOSURES_OFFICIAL_SOURCES = [
@@ -322,6 +324,66 @@ function hasSchemaType(node, expectedType) {
   return types.includes(expectedType);
 }
 
+function collectBuiltTriviaPages(buildDir) {
+  if (!fs.existsSync(buildDir)) return [];
+
+  const pages = [];
+  for (const technology of fs.readdirSync(buildDir, { withFileTypes: true })) {
+    if (!technology.isDirectory()) continue;
+    const triviaDir = path.join(buildDir, technology.name, 'trivia');
+    if (!fs.existsSync(triviaDir)) continue;
+
+    for (const question of fs.readdirSync(triviaDir, { withFileTypes: true })) {
+      if (!question.isDirectory()) continue;
+      const indexPath = path.join(triviaDir, question.name, 'index.html');
+      if (!fs.existsSync(indexPath)) continue;
+      pages.push({
+        route: `/${technology.name}/trivia/${question.name}`,
+        html: fs.readFileSync(indexPath, 'utf8'),
+      });
+    }
+  }
+
+  return pages.sort((left, right) => left.route.localeCompare(right.route));
+}
+
+function triviaIntentContractViolations({ route, html }) {
+  const violations = [];
+  const jsonLd = extractSeoJsonLd(html);
+  if (jsonLd.error) return [`${route}: ${jsonLd.error}`];
+
+  const schemaTypes = jsonLd.graph.flatMap((node) => {
+    const type = node?.['@type'];
+    return Array.isArray(type) ? type : type ? [type] : [];
+  });
+  const missingTypes = TRIVIA_REQUIRED_SCHEMA_TYPES.filter((type) => !schemaTypes.includes(type));
+  const forbiddenTypes = TRIVIA_FORBIDDEN_SCHEMA_TYPES.filter((type) => schemaTypes.includes(type));
+  if (missingTypes.length) violations.push(`missing ${missingTypes.join(',')}`);
+  if (forbiddenTypes.length) violations.push(`forbidden ${forbiddenTypes.join(',')}`);
+
+  const articles = jsonLd.graph.filter((node) => hasSchemaType(node, 'Article'));
+  if (articles.length !== 1) {
+    violations.push(`Article count ${articles.length}`);
+  } else {
+    const expectedHeadline = `${extractH1(html)} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}`;
+    if (articles[0]?.headline !== expectedHeadline) {
+      violations.push(`headline=${articles[0]?.headline || '(missing)'}`);
+    }
+  }
+
+  const forbiddenProperties = ['citation', 'hasPart'].filter((property) =>
+    jsonLd.graph.some((node) => Object.prototype.hasOwnProperty.call(node, property)),
+  );
+  if (forbiddenProperties.length) {
+    violations.push(`properties ${forbiddenProperties.join(',')}`);
+  }
+  if (/\bsource check\b/i.test(extractVisibleText(html))) {
+    violations.push('visible Source check');
+  }
+
+  return violations.map((violation) => `${route}: ${violation}`);
+}
+
 const systemDesignId = pickSystemDesignSampleId();
 if (!systemDesignId) {
   console.error('[seo:smoke] Could not find a system-design sample id.');
@@ -340,6 +402,16 @@ try {
 
   const base = server.baseUrl.replace(/\/+$/, '');
   const checks = [];
+
+  const triviaPages = collectBuiltTriviaPages(BUILD_DIR);
+  const triviaIntentViolations = triviaPages.flatMap(triviaIntentContractViolations);
+  checks.push({
+    name: 'all prerendered trivia pages follow the shared interview intent contract',
+    ok: triviaPages.length > 0 && triviaIntentViolations.length === 0,
+    detail: triviaIntentViolations.length
+      ? `pages=${triviaPages.length} violations=${triviaIntentViolations.slice(0, 5).join(' | ')}`
+      : `pages=${triviaPages.length}`,
+  });
 
   const unknownPath = '/non-existent-seo-check-abc123';
   const unknownUrl = `${base}${unknownPath}`;
@@ -457,7 +529,7 @@ try {
   const angularCancellationLinks = extractLinkHrefs(angularCancellationBody);
   const angularCancellationJsonLd = extractSeoJsonLd(angularCancellationBody);
   const angularCancellationArticle = angularCancellationJsonLd.graph.find((node) =>
-    hasSchemaType(node, 'TechArticle'),
+    hasSchemaType(node, 'Article'),
   );
   const angularCancellationSchemaTypes = angularCancellationJsonLd.graph.flatMap((node) => {
     const type = node?.['@type'];
@@ -510,6 +582,25 @@ try {
       ? `missing=${missingAngularCancellationContent.join(' | ')}`
       : 'all present',
   });
+  const angularCancellationMilestones = [
+    '15-second answer',
+    'Interview focus',
+    'Interview answer drill',
+    'Cancellation behavior model',
+  ];
+  const angularCancellationMilestonePositions = angularCancellationMilestones.map((label) =>
+    angularCancellationVisibleText.indexOf(normalizeText(label)),
+  );
+  const angularCancellationOrderIsStable = angularCancellationMilestonePositions.every(
+    (position, index) =>
+      position >= 0 &&
+      (index === 0 || position > angularCancellationMilestonePositions[index - 1]),
+  );
+  checks.push({
+    name: 'Angular interview framing follows the quick answer and precedes the lab',
+    ok: angularCancellationOrderIsStable,
+    detail: `positions=${angularCancellationMilestonePositions.join(',')}`,
+  });
 
   const missingAngularCancellationResources =
     ANGULAR_HTTP_CANCELLATION_LAB_RESOURCE_ROUTES.filter(
@@ -535,15 +626,17 @@ try {
     ok: !hasAngularCancellationAsyncRaceLink,
     detail: hasAngularCancellationAsyncRaceLink ? 'unexpected async-race link present' : 'none present',
   });
-  const missingAngularCancellationSources = ANGULAR_HTTP_CANCELLATION_LAB_OFFICIAL_SOURCES.filter(
-    (url) => !angularCancellationLinks.has(url),
+  const presentAngularCancellationSources = ANGULAR_HTTP_CANCELLATION_LAB_OFFICIAL_SOURCES.filter(
+    (url) => angularCancellationLinks.has(url),
   );
   checks.push({
-    name: 'Angular HttpClient cancellation lab cites all official Angular sources',
-    ok: missingAngularCancellationSources.length === 0,
-    detail: missingAngularCancellationSources.length
-      ? `missing=${missingAngularCancellationSources.join(', ')}`
-      : 'all present',
+    name: 'Angular trivia omits the reference-only source review and official-source links',
+    ok:
+      !/\bsource check\b/i.test(angularCancellationVisibleText) &&
+      presentAngularCancellationSources.length === 0,
+    detail: presentAngularCancellationSources.length
+      ? `present=${presentAngularCancellationSources.join(', ')}`
+      : 'none present',
   });
   checks.push({
     name: 'Angular HttpClient cancellation lab JSON-LD parses',
@@ -551,11 +644,16 @@ try {
     detail:
       angularCancellationJsonLd.error || `graph_nodes=${angularCancellationJsonLd.graph.length}`,
   });
-  const requiredAngularCancellationSchemaTypes = ['BreadcrumbList', 'TechArticle'];
+  const requiredAngularCancellationSchemaTypes = ['BreadcrumbList', 'Article'];
   const missingAngularCancellationSchemaTypes = requiredAngularCancellationSchemaTypes.filter(
     (type) => !angularCancellationSchemaTypes.includes(type),
   );
-  const forbiddenAngularCancellationSchemaTypes = ['FAQPage', 'QAPage', 'Question'];
+  const forbiddenAngularCancellationSchemaTypes = [
+    'TechArticle',
+    'FAQPage',
+    'QAPage',
+    'Question',
+  ];
   const presentForbiddenAngularCancellationSchemaTypes = forbiddenAngularCancellationSchemaTypes.filter(
     (type) => angularCancellationSchemaTypes.includes(type),
   );
@@ -569,19 +667,17 @@ try {
     }`,
   });
   checks.push({
-    name: 'Angular HttpClient cancellation TechArticle declares the public lab contract',
+    name: 'Angular HttpClient cancellation Article declares the shared interview intent',
     ok:
       angularCancellationArticle?.['@id'] === ANGULAR_HTTP_CANCELLATION_LAB_CANONICAL &&
-      angularCancellationArticle?.headline === ANGULAR_HTTP_CANCELLATION_LAB_H1 &&
+      angularCancellationArticle?.headline ===
+        `${ANGULAR_HTTP_CANCELLATION_LAB_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}` &&
       angularCancellationArticle?.description === ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION &&
       angularCancellationArticle?.datePublished === '2026-01-25T00:00:00.000Z' &&
       angularCancellationArticle?.dateModified === '2026-08-03T00:00:00.000Z' &&
       angularCancellationArticle?.isAccessibleForFree === true &&
-      angularCancellationArticle?.learningResourceType === 'Interactive debugging lab' &&
-      Array.isArray(angularCancellationArticle?.hasPart) &&
-      angularCancellationArticle.hasPart.length >= 6 &&
-      Array.isArray(angularCancellationArticle?.citation) &&
-      angularCancellationArticle.citation.length >= 4,
+      !Object.prototype.hasOwnProperty.call(angularCancellationArticle || {}, 'hasPart') &&
+      !Object.prototype.hasOwnProperty.call(angularCancellationArticle || {}, 'citation'),
     detail: `dateModified=${angularCancellationArticle?.dateModified || '(missing)'}`,
   });
 
@@ -602,7 +698,7 @@ try {
   ).filter(Boolean);
   const reactStaleClosuresJsonLd = extractSeoJsonLd(reactStaleClosuresBody);
   const reactStaleClosuresArticle = reactStaleClosuresJsonLd.graph.find((node) =>
-    hasSchemaType(node, 'TechArticle'),
+    hasSchemaType(node, 'Article'),
   );
   const reactStaleClosuresSchemaTypes = reactStaleClosuresJsonLd.graph.flatMap((node) => {
     const type = node?.['@type'];
@@ -665,6 +761,8 @@ try {
   );
   const reactStaleClosuresMilestones = [
     'React stale closures: direct answer',
+    'Interview focus',
+    'Interview answer drill',
     ...REACT_STALE_CLOSURES_SECTION_HEADINGS,
   ];
   const reactStaleClosuresMilestonePositions = reactStaleClosuresMilestones.map((label) =>
@@ -780,22 +878,30 @@ try {
     ok: reactAsyncRaceLinks.length === 1 && reactAsyncRaceLinks[0] === ASYNC_RACE_ROUTE,
     detail: reactAsyncRaceLinks.length ? reactAsyncRaceLinks.join(',') : 'missing',
   });
-  const missingReactStaleClosureSources = REACT_STALE_CLOSURES_OFFICIAL_SOURCES.filter(
-    (url) => !reactStaleClosuresLinks.has(url),
+  const presentReactStaleClosureSources = REACT_STALE_CLOSURES_OFFICIAL_SOURCES.filter(
+    (url) => reactStaleClosuresLinks.has(url),
   );
   checks.push({
-    name: 'React stale closure case files cite all four official React sources',
-    ok: missingReactStaleClosureSources.length === 0,
-    detail: missingReactStaleClosureSources.length
-      ? `missing=${missingReactStaleClosureSources.join(', ')}`
-      : 'all present',
+    name: 'React trivia omits the reference-only source review and official-source links',
+    ok:
+      !/\bsource check\b/i.test(reactStaleClosuresVisibleText) &&
+      presentReactStaleClosureSources.length === 0,
+    detail: presentReactStaleClosureSources.length
+      ? `present=${presentReactStaleClosureSources.join(', ')}`
+      : 'none present',
   });
 
-  const requiredReactStaleClosureSchemaTypes = ['BreadcrumbList', 'TechArticle'];
+  const requiredReactStaleClosureSchemaTypes = ['BreadcrumbList', 'Article'];
   const missingReactStaleClosureSchemaTypes = requiredReactStaleClosureSchemaTypes.filter(
     (type) => !reactStaleClosuresSchemaTypes.includes(type),
   );
-  const forbiddenReactStaleClosureSchemaTypes = ['FAQPage', 'QAPage', 'Question', 'Quiz'];
+  const forbiddenReactStaleClosureSchemaTypes = [
+    'TechArticle',
+    'FAQPage',
+    'QAPage',
+    'Question',
+    'Quiz',
+  ];
   const presentForbiddenReactStaleClosureSchemaTypes = forbiddenReactStaleClosureSchemaTypes.filter(
     (type) => reactStaleClosuresSchemaTypes.includes(type),
   );
@@ -812,41 +918,18 @@ try {
       }`,
   });
 
-  const reactStaleClosuresAboutNames = (reactStaleClosuresArticle?.about || [])
-    .map((item) => item?.name)
-    .join(' ');
-  const reactStaleClosuresMentionNames = (reactStaleClosuresArticle?.mentions || [])
-    .map((item) => item?.name)
-    .join(' ');
-  const reactStaleClosuresHasPartUrls = (reactStaleClosuresArticle?.hasPart || []).map((item) =>
-    String(item?.url || item?.['@id'] || ''),
-  );
-  const reactStaleClosuresCitations = (reactStaleClosuresArticle?.citation || []).map(
-    (item) => item?.url,
-  );
-  const reactStaleClosuresHasAllCaseFragments = REACT_STALE_CLOSURE_CASE_FILES.every(
-    (caseFile) =>
-      reactStaleClosuresHasPartUrls.includes(`${REACT_STALE_CLOSURES_CANONICAL}#${caseFile.id}`),
-  );
-  const reactStaleClosuresHasAllCitations = REACT_STALE_CLOSURES_OFFICIAL_SOURCES.every(
-    (url) => reactStaleClosuresCitations.includes(url),
-  );
   checks.push({
-    name: 'React stale closure TechArticle declares the complete code-review contract',
+    name: 'React stale closure Article declares the shared interview intent',
     ok:
       reactStaleClosuresArticle?.['@id'] === REACT_STALE_CLOSURES_CANONICAL &&
-      reactStaleClosuresArticle?.headline === REACT_STALE_CLOSURES_H1 &&
+      reactStaleClosuresArticle?.headline ===
+        `${REACT_STALE_CLOSURES_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}` &&
       reactStaleClosuresArticle?.description === REACT_STALE_CLOSURES_DESCRIPTION &&
       reactStaleClosuresArticle?.datePublished === '2026-01-25T00:00:00.000Z' &&
       reactStaleClosuresArticle?.dateModified === '2026-08-03T00:00:00.000Z' &&
       reactStaleClosuresArticle?.isAccessibleForFree === true &&
-      reactStaleClosuresArticle?.learningResourceType === 'Code review exercise' &&
-      /react/i.test(reactStaleClosuresAboutNames) &&
-      /stale closure|code review/i.test(reactStaleClosuresAboutNames) &&
-      /dependenc|exhaustive-deps/i.test(reactStaleClosuresMentionNames) &&
-      /ref|useeffectevent/i.test(reactStaleClosuresMentionNames) &&
-      reactStaleClosuresHasAllCaseFragments &&
-      reactStaleClosuresHasAllCitations,
+      !Object.prototype.hasOwnProperty.call(reactStaleClosuresArticle || {}, 'hasPart') &&
+      !Object.prototype.hasOwnProperty.call(reactStaleClosuresArticle || {}, 'citation'),
     detail: `dateModified=${reactStaleClosuresArticle?.dateModified || '(missing)'}`,
   });
 

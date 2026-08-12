@@ -24,6 +24,7 @@ import {
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import { isTriviaReferenceOnlyBlock } from '../../../core/utils/trivia-search-intent.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
@@ -184,7 +185,7 @@ type LockedPath = {
 };
 type TriviaAnalyticsLocation = 'sidebar' | 'mobile_nav' | 'similar' | 'guides' | 'prep_bridge' | 'body';
 
-const TRIVIA_H1_INTENT_LABEL = 'Frontend interview answer';
+const TRIVIA_H1_INTENT_LABEL = 'Frontend interview practice question';
 const REACT_STALE_CLOSURES_QUESTION_ID = 'react-stale-state-closures';
 const RETURN_VALUE_SIMULATOR_QUESTION_ID = 'react-render-nothing-return-value';
 const ASYNC_RACE_SIMULATOR_QUESTION_ID = 'js-async-race-conditions';
@@ -790,12 +791,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       && /<strong>\s*summary\s*<\/strong>|^#{1,6}\s*summary/i.test((b as any).text);
   }
 
-  isSourceCheckBlock(b: AnswerBlock | null | undefined): b is BlockText {
-    return (b as any)?.type === 'text'
-      && typeof (b as any).text === 'string'
-      && /^\s*##\s*Source check\b/i.test((b as any).text);
-  }
-
   /** Strip heading/icon from a help/summary text so only body remains */
   private stripLeadHeading(s: string): string {
     return s.replace(
@@ -827,12 +822,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.md(bodyOnly);
   });
 
-  /** Blocks for the main Answer card (exclude summary and extra-help) */
+  /** Blocks for the public answer card (exclude editorial-only reference review). */
   answerBlocks = computed<AnswerBlock[]>(() => {
     const q = this.question();
     const a = q?.answer as RichAnswer;
     if (!a?.blocks) return [];
-    return a.blocks.filter(b => !this.isExtraHelpBlock(b) && !this.isSummaryBlock(b));
+    return a.blocks.filter(b =>
+      !this.isExtraHelpBlock(b)
+      && !this.isSummaryBlock(b)
+      && !isTriviaReferenceOnlyBlock(b)
+    );
   });
 
   angularHttpCancellationTestSuite = computed<string>(() => {
@@ -1308,7 +1307,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   visibleH1IntentLabel(q?: Question | null): string {
-    if (String(q?.seo?.h1 || '').trim()) return '';
     return String(q?.seo?.h1IntentLabel || TRIVIA_H1_INTENT_LABEL).trim() || TRIVIA_H1_INTENT_LABEL;
   }
 
@@ -1347,9 +1345,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const imageUrl = this.structuredDataImageUrl();
     const interviewHubUrl = this.interviewQuestionsHubUrl();
     const interviewHubLabel = this.interviewQuestionsHubLabel();
-    const studyPlanUrl = this.seo.buildCanonicalUrl(this.studyPlanPath());
-    const companiesUrl = this.seo.buildCanonicalUrl('/companies');
-    const articleExtensions = this.articleStructuredDataExtensions(q);
     const accessibleForFree = isContentAccessibleForFree(q.access);
     const robots = robotsForContentAccess(q.access);
 
@@ -1378,7 +1373,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const article = {
-      '@type': 'TechArticle',
+      '@type': 'Article',
       '@id': canonical,
       headline: this.visibleQuestionHeadline(q),
       description,
@@ -1396,31 +1391,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           url: imageUrl,
         },
       },
-      isPartOf: {
-        '@type': 'CollectionPage',
-        '@id': interviewHubUrl,
-        url: interviewHubUrl,
-        name: interviewHubLabel,
-      },
-      about: [
-        { '@type': 'Thing', name: `${this.interviewTopicLabel()} interview concepts` },
-        { '@type': 'Thing', name: 'Frontend interview preparation' },
-      ],
-      mentions: [
-        { '@type': 'WebPage', name: interviewHubLabel, url: interviewHubUrl },
-        { '@type': 'WebPage', name: this.studyPlanLabel(), url: studyPlanUrl },
-        { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
-      ],
-      ...articleExtensions,
       isAccessibleForFree: accessibleForFree,
-      keywords: keywords.join(', '),
       dateModified: dateModified || datePublished,
     };
-
-    const questionStructuredData = accessibleForFree ? this.questionStructuredData(q, canonical) : null;
-    const jsonLd = questionStructuredData
-      ? [breadcrumb, article, questionStructuredData]
-      : [breadcrumb, article];
 
     this.seo.updateTags({
       title: seoTitle,
@@ -1429,710 +1402,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       robots,
       canonical,
       ogType: 'article',
-      jsonLd,
+      jsonLd: [breadcrumb, article],
     });
-  }
-
-  private articleStructuredDataExtensions(q: Question): Record<string, any> {
-    if (q.id === ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID) {
-      return {
-        articleSection: 'Angular HTTP cancellation and RxJS',
-        educationalLevel: 'Intermediate',
-        learningResourceType: 'Interactive debugging lab',
-        educationalUse: ['Debugging', 'Testing', 'Interview preparation'],
-        about: [
-          { '@type': 'Thing', name: 'Angular HttpClient cancellation' },
-          { '@type': 'Thing', name: 'RxJS subscription teardown' },
-          { '@type': 'Thing', name: 'Stale UI prevention' },
-          { '@type': 'Thing', name: 'HTTP request testing' },
-        ],
-        mentions: [
-          { '@type': 'Thing', name: 'unsubscribe' },
-          { '@type': 'Thing', name: 'switchMap' },
-          { '@type': 'Thing', name: 'mergeMap' },
-          { '@type': 'Thing', name: 'takeUntilDestroyed' },
-          { '@type': 'Thing', name: 'AsyncPipe' },
-          { '@type': 'Thing', name: 'shareReplay' },
-          { '@type': 'Thing', name: 'HttpTestingController' },
-          { '@type': 'Thing', name: 'TestRequest.cancelled' },
-          { '@type': 'Thing', name: 'Browser DevTools' },
-          { '@type': 'Thing', name: 'HTTP timeout' },
-        ],
-        hasPart: [
-          { '@type': 'WebPageElement', name: '15-second answer' },
-          { '@type': 'WebPageElement', name: 'Cancellation behavior model' },
-          { '@type': 'WebPageElement', name: 'Four-layer cancellation model' },
-          { '@type': 'WebPageElement', name: 'Six cancellation patterns' },
-          { '@type': 'WebPageElement', name: 'Symptom-driven debugging matrix' },
-          { '@type': 'WebPageElement', name: 'Browser DevTools proof' },
-          { '@type': 'WebPageElement', name: 'RxJS teardown proof' },
-          { '@type': 'WebPageElement', name: 'HttpTestingController test suite' },
-          { '@type': 'WebPageElement', name: 'UX contract decision table' },
-          { '@type': 'WebPageElement', name: 'Production cancellation limits' },
-          { '@type': 'WebPageElement', name: 'Source check' },
-        ],
-        citation: [
-          {
-            '@type': 'WebPage',
-            name: 'Angular: Making requests',
-            url: 'https://angular.dev/guide/http/making-requests',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'Angular: Testing HTTP requests',
-            url: 'https://angular.dev/guide/http/testing',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'Angular TestRequest API',
-            url: 'https://angular.dev/api/common/http/testing/TestRequest',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'Angular HttpRequest API',
-            url: 'https://angular.dev/api/common/http/HttpRequest',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'FrontendAtlas Editorial Policy',
-            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
-          },
-        ],
-      };
-    }
-
-    if (q.id === REACT_STALE_CLOSURES_QUESTION_ID) {
-      const canonical = this.seo.buildCanonicalUrl('/react/trivia/react-stale-state-closures');
-      const caseFiles = [
-        ['pr-interval-counter', 'Interval counter functional update'],
-        ['pr-chat-theme', 'Chat connection Effect Event'],
-        ['pr-escape-listener', 'Escape listener dependency and cleanup'],
-        ['pr-debounced-autosave', 'Debounced autosave invocation snapshot'],
-        ['pr-export-snapshot', 'Intentional export snapshot'],
-        ['pr-search-ordering', 'Search result async ordering'],
-      ];
-
-      return {
-        articleSection: 'React stale closures and code review',
-        educationalLevel: 'Intermediate',
-        learningResourceType: 'Code review exercise',
-        educationalUse: ['Code review', 'Debugging', 'Interview preparation'],
-        about: [
-          { '@type': 'Thing', name: 'React stale closures' },
-          { '@type': 'Thing', name: 'JavaScript closure snapshots' },
-          { '@type': 'Thing', name: 'React callback contracts' },
-          { '@type': 'Thing', name: 'Frontend code review' },
-        ],
-        mentions: [
-          { '@type': 'Thing', name: 'functional state updater' },
-          { '@type': 'Thing', name: 'Effect dependencies' },
-          { '@type': 'Thing', name: 'useEffectEvent' },
-          { '@type': 'Thing', name: 'useRef' },
-          { '@type': 'Thing', name: 'intentional render snapshot' },
-          { '@type': 'Thing', name: 'async response ordering' },
-          { '@type': 'Thing', name: 'React 19.2' },
-          { '@type': 'Thing', name: 'React 18.3.1' },
-        ],
-        hasPart: caseFiles.map(([fragment, name]) => ({
-          '@type': 'WebPageElement',
-          '@id': `${canonical}#${fragment}`,
-          name,
-          url: `${canonical}#${fragment}`,
-          learningResourceType: 'Pull request review case',
-        })),
-        citation: [
-          {
-            '@type': 'WebPage',
-            name: 'React: State as a Snapshot',
-            url: 'https://react.dev/learn/state-as-a-snapshot',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'React: exhaustive-deps lint',
-            url: 'https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'React: useEffectEvent',
-            url: 'https://react.dev/reference/react/useEffectEvent',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'React: useRef',
-            url: 'https://react.dev/reference/react/useRef',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'FrontendAtlas Editorial Policy',
-            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
-          },
-        ],
-      };
-    }
-
-    if (q.id === 'angular-template-driven-vs-reactive-forms-which-scales') {
-      return {
-        articleSection: 'Angular forms',
-        educationalLevel: 'Intermediate',
-        learningResourceType: 'Interview answer',
-        about: [
-          { '@type': 'Thing', name: 'Angular forms' },
-          { '@type': 'Thing', name: 'Template-driven forms' },
-          { '@type': 'Thing', name: 'Reactive forms' },
-          { '@type': 'Thing', name: 'Form model source of truth' },
-        ],
-        mentions: [
-          { '@type': 'Thing', name: 'ngModel' },
-          { '@type': 'Thing', name: 'ngModelChange' },
-          { '@type': 'Thing', name: 'FormGroup' },
-          { '@type': 'Thing', name: 'FormControl' },
-          { '@type': 'Thing', name: 'FormArray' },
-          { '@type': 'Thing', name: 'valueChanges' },
-          { '@type': 'Thing', name: 'FormBuilder' },
-          { '@type': 'Thing', name: 'Validators' },
-          { '@type': 'Thing', name: 'setValue' },
-          { '@type': 'Thing', name: 'patchValue' },
-          { '@type': 'Thing', name: 'reset' },
-          { '@type': 'Thing', name: 'two-way binding' },
-          { '@type': 'Thing', name: 'cross-field validation' },
-          { '@type': 'Thing', name: 'dynamic controls' },
-          { '@type': 'Thing', name: 'dirty' },
-          { '@type': 'Thing', name: 'touched' },
-          { '@type': 'Thing', name: 'pristine' },
-          { '@type': 'Thing', name: 'valid' },
-          { '@type': 'Thing', name: 'invalid' },
-          { '@type': 'Thing', name: 'custom validator' },
-          { '@type': 'Thing', name: 'async validator' },
-          { '@type': 'Thing', name: 'draft autosave' },
-          { '@type': 'Thing', name: 'migration threshold' },
-          { '@type': 'Thing', name: 'OnPush change detection' },
-          { '@type': 'Thing', name: 'Observable-based workflows' },
-          { '@type': 'Thing', name: 'ControlValueAccessor' },
-          { '@type': 'Thing', name: 'unit testing' },
-          { '@type': 'Thing', name: 'Angular forms guide' },
-          { '@type': 'Thing', name: 'Angular form validation' },
-          { '@type': 'Thing', name: 'editorial policy' },
-          { '@type': 'Thing', name: 'review evidence' },
-          { '@type': 'Thing', name: 'interactive form flow comparator' },
-          { '@type': 'Thing', name: 'reactive input update trace' },
-          { '@type': 'Thing', name: 'template-driven change detection trace' },
-          { '@type': 'Thing', name: 'Angular prep path' },
-          { '@type': 'Thing', name: 'reactive forms coding drill' },
-        ],
-        hasPart: [
-          { '@type': 'WebPageElement', name: 'Interview quick answer' },
-          { '@type': 'WebPageElement', name: 'Source of truth' },
-          { '@type': 'WebPageElement', name: 'Worked example' },
-          { '@type': 'WebPageElement', name: 'Decision rule' },
-          { '@type': 'WebPageElement', name: 'Template-driven example' },
-          { '@type': 'WebPageElement', name: 'Reactive example' },
-          { '@type': 'WebPageElement', name: 'Scaling pressure points' },
-          { '@type': 'WebPageElement', name: 'Data flow timing' },
-          { '@type': 'WebPageElement', name: 'Validation state and error UX' },
-          { '@type': 'WebPageElement', name: 'API ergonomics' },
-          { '@type': 'WebPageElement', name: 'Migration threshold checklist' },
-          { '@type': 'WebPageElement', name: 'Same form, three changes later' },
-          { '@type': 'WebPageElement', name: 'Interactive form flow comparator' },
-          { '@type': 'WebPageElement', name: 'Large-form tradeoffs' },
-          { '@type': 'WebPageElement', name: 'Architecture fit' },
-          { '@type': 'WebPageElement', name: 'When template-driven forms are still OK' },
-          { '@type': 'WebPageElement', name: 'Senior-level pitfalls' },
-          { '@type': 'WebPageElement', name: 'Testable proof' },
-          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
-          { '@type': 'WebPageElement', name: 'Source check' },
-          { '@type': 'WebPageElement', name: 'Practice next' },
-          { '@type': 'WebPageElement', name: 'Interview summary' },
-        ],
-        citation: [
-          {
-            '@type': 'WebPage',
-            name: 'Angular Forms',
-            url: 'https://angular.dev/guide/forms',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'Angular Reactive Forms',
-            url: 'https://angular.dev/guide/forms/reactive-forms',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'Angular Template-driven Forms',
-            url: 'https://angular.dev/guide/forms/template-driven-forms',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'Angular Form Validation',
-            url: 'https://angular.dev/guide/forms/form-validation',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'FrontendAtlas Editorial Policy',
-            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
-          },
-        ],
-      };
-    }
-
-    if (q.id === 'ngrx-selectors-memoization-derived-state-performance') {
-      return {
-        articleSection: 'Angular state management',
-        about: [
-          { '@type': 'Thing', name: 'NgRx selectors' },
-          { '@type': 'Thing', name: 'selector memoization' },
-          { '@type': 'Thing', name: 'derived state' },
-          { '@type': 'Thing', name: 'immutable reducer outputs' },
-        ],
-        mentions: [
-          { '@type': 'Thing', name: 'createSelector' },
-          { '@type': 'Thing', name: 'createFeatureSelector' },
-          { '@type': 'Thing', name: 'feature selector' },
-          { '@type': 'Thing', name: 'entity/base selectors' },
-          { '@type': 'Thing', name: 'view model selector' },
-          { '@type': 'Thing', name: 'projector function' },
-          { '@type': 'Thing', name: 'stable references' },
-          { '@type': 'Thing', name: 'root state selection' },
-          { '@type': 'Thing', name: 'filter/sort/map derivation' },
-          { '@type': 'Thing', name: 'selector factory' },
-          { '@type': 'Thing', name: 'projector tests' },
-          { '@type': 'Thing', name: 'selector purity' },
-          { '@type': 'Thing', name: 'component contract' },
-          { '@type': 'Thing', name: 'AsyncPipe' },
-          { '@type': 'Thing', name: 'selector projector' },
-          { '@type': 'Thing', name: 'memoization trace' },
-          { '@type': 'Thing', name: 'NgRx selectors guide' },
-          { '@type': 'Thing', name: 'primary source link' },
-          { '@type': 'Thing', name: 'projector unit test' },
-          { '@type': 'Thing', name: 'FrontendAtlas review note' },
-          { '@type': 'Thing', name: 'review evidence' },
-          { '@type': 'Thing', name: 'editorial policy' },
-          { '@type': 'Thing', name: 'interactive memoization trace' },
-          { '@type': 'Thing', name: 'selector recomputation simulator' },
-          { '@type': 'Thing', name: 'projector run visualization' },
-        ],
-        hasPart: [
-          { '@type': 'WebPageElement', name: 'Interview quick answer' },
-          { '@type': 'WebPageElement', name: 'Memoized read model' },
-          { '@type': 'WebPageElement', name: 'Worked example' },
-          { '@type': 'WebPageElement', name: 'Failure pattern' },
-          { '@type': 'WebPageElement', name: 'Composed selector flow' },
-          { '@type': 'WebPageElement', name: 'Memoization behavior' },
-          { '@type': 'WebPageElement', name: 'Selector purity and projector tests' },
-          { '@type': 'WebPageElement', name: 'Testable proof' },
-          { '@type': 'WebPageElement', name: 'Projector run trace' },
-          { '@type': 'WebPageElement', name: 'Selector performance pitfalls' },
-          { '@type': 'WebPageElement', name: 'Selector factory boundary' },
-          { '@type': 'WebPageElement', name: 'Selector review checklist' },
-          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
-          { '@type': 'WebPageElement', name: 'Source check' },
-          { '@type': 'WebPageElement', name: 'Selector memoization trace simulator' },
-          { '@type': 'WebPageElement', name: 'Interview summary' },
-        ],
-        citation: [
-          {
-            '@type': 'WebPage',
-            name: 'NgRx Selectors',
-            url: 'https://ngrx.io/guide/store/selectors',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'NgRx createSelector API',
-            url: 'https://ngrx.io/api/store/createSelector',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'FrontendAtlas Editorial Policy',
-            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
-          },
-        ],
-      };
-    }
-
-    if (q.id === 'ngrx-data-flow-end-to-end-angular') {
-      return {
-        articleSection: 'Angular state management',
-        educationalLevel: 'Intermediate',
-        learningResourceType: 'Interview answer',
-        about: [
-          { '@type': 'Thing', name: 'NgRx data flow' },
-          { '@type': 'Thing', name: 'Angular state management' },
-          { '@type': 'Thing', name: 'one-way data flow' },
-          { '@type': 'Thing', name: 'immutable state updates' },
-          { '@type': 'Thing', name: 'shared state' },
-          { '@type': 'Thing', name: 'state vs view model' },
-          { '@type': 'Thing', name: 'interactive DevTools trace' },
-          { '@type': 'Thing', name: 'retry UI trace' },
-        ],
-        mentions: [
-          { '@type': 'Thing', name: 'actions' },
-          { '@type': 'Thing', name: 'reducers' },
-          { '@type': 'Thing', name: 'effects' },
-          { '@type': 'Thing', name: 'selectors' },
-          { '@type': 'Thing', name: 'Store' },
-          { '@type': 'Thing', name: 'createAction' },
-          { '@type': 'Thing', name: 'createReducer' },
-          { '@type': 'Thing', name: 'createEffect' },
-          { '@type': 'Thing', name: 'ofType' },
-          { '@type': 'Thing', name: 'switchMap' },
-          { '@type': 'Thing', name: 'createSelector' },
-          { '@type': 'Thing', name: 'createFeatureSelector' },
-          { '@type': 'Thing', name: 'AsyncPipe' },
-          { '@type': 'Thing', name: 'OnPush change detection' },
-          { '@type': 'Thing', name: 'success/failure actions' },
-          { '@type': 'Thing', name: 'view model selector' },
-          { '@type': 'Thing', name: 'action naming' },
-          { '@type': 'Thing', name: 'debug loop' },
-          { '@type': 'Thing', name: 'local UI state' },
-          { '@type': 'Thing', name: 'feature state registration' },
-          { '@type': 'Thing', name: 'provideState' },
-          { '@type': 'Thing', name: 'provideEffects' },
-          { '@type': 'Thing', name: 'DevTools trace' },
-          { '@type': 'Thing', name: 'state diff' },
-          { '@type': 'Thing', name: 'failure action' },
-          { '@type': 'Thing', name: 'error state' },
-          { '@type': 'Thing', name: 'retry UI' },
-          { '@type': 'Thing', name: 'retry button' },
-          { '@type': 'Thing', name: 'testable proof' },
-          { '@type': 'Thing', name: 'reducer test' },
-          { '@type': 'Thing', name: 'selector projector test' },
-          { '@type': 'Thing', name: 'FrontendAtlas review note' },
-          { '@type': 'Thing', name: 'source check' },
-          { '@type': 'Thing', name: 'official NgRx guides' },
-          { '@type': 'Thing', name: 'editorial policy' },
-          { '@type': 'Thing', name: 'interactive DevTools trace' },
-          { '@type': 'Thing', name: 'state diff proof' },
-          { '@type': 'Thing', name: 'retry UI trace' },
-          { '@type': 'Thing', name: 'selector VM proof' },
-        ],
-        hasPart: [
-          { '@type': 'WebPageElement', name: 'Interview quick answer' },
-          { '@type': 'WebPageElement', name: 'Operational loop' },
-          { '@type': 'WebPageElement', name: 'NgRx data flow diagram (end-to-end loop)' },
-          { '@type': 'WebPageElement', name: 'Actions example' },
-          { '@type': 'WebPageElement', name: 'Reducer example' },
-          { '@type': 'WebPageElement', name: 'Effect example' },
-          { '@type': 'WebPageElement', name: 'Selectors example' },
-          { '@type': 'WebPageElement', name: 'Component example' },
-          { '@type': 'WebPageElement', name: 'What interviewers flag quickly' },
-          { '@type': 'WebPageElement', name: 'Pure reducer update vs effect-driven async update' },
-          { '@type': 'WebPageElement', name: 'Compact trace you should be able to say out loud' },
-          { '@type': 'WebPageElement', name: 'Selectors are memoized read models' },
-          { '@type': 'WebPageElement', name: 'When this loop is worth the ceremony' },
-          { '@type': 'WebPageElement', name: 'NgRx ceremony decision check' },
-          { '@type': 'WebPageElement', name: 'Store state vs selector view model' },
-          { '@type': 'WebPageElement', name: 'Store truth vs selector read model' },
-          { '@type': 'WebPageElement', name: 'Where this plugs into Angular' },
-          { '@type': 'WebPageElement', name: 'Debugging an NgRx loop in DevTools' },
-          { '@type': 'WebPageElement', name: 'NgRx DevTools debugging trace' },
-          { '@type': 'WebPageElement', name: 'Failure path and retry UI trace' },
-          { '@type': 'WebPageElement', name: 'Failure action to retry UI trace' },
-          { '@type': 'WebPageElement', name: 'NgRx DevTools trace visual' },
-          { '@type': 'WebPageElement', name: 'Testable proof' },
-          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
-          { '@type': 'WebPageElement', name: 'Source check' },
-          { '@type': 'WebPageElement', name: 'Interview summary' },
-        ],
-        citation: [
-          {
-            '@type': 'WebPage',
-            name: 'NgRx Actions',
-            url: 'https://ngrx.io/guide/store/actions',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'NgRx Reducers',
-            url: 'https://ngrx.io/guide/store/reducers',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'NgRx Effects',
-            url: 'https://ngrx.io/guide/effects',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'NgRx Selectors',
-            url: 'https://ngrx.io/guide/store/selectors',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'FrontendAtlas Editorial Policy',
-            url: this.seo.buildCanonicalUrl('/legal/editorial-policy'),
-          },
-        ],
-      };
-    }
-
-    if (q.id === 'js-equality-vs-strict-equality') {
-      return {
-        articleSection: 'JavaScript equality and coercion',
-        about: [
-          { '@type': 'Thing', name: 'JavaScript equality operators' },
-          { '@type': 'Thing', name: 'Loose equality' },
-          { '@type': 'Thing', name: 'Strict equality' },
-          { '@type': 'Thing', name: 'Type coercion' },
-        ],
-        mentions: [
-          { '@type': 'Thing', name: '==' },
-          { '@type': 'Thing', name: '===' },
-          { '@type': 'Thing', name: '!==' },
-          { '@type': 'Thing', name: 'implicit coercion' },
-          { '@type': 'Thing', name: 'explicit conversion' },
-          { '@type': 'Thing', name: 'IsLooselyEqual' },
-          { '@type': 'Thing', name: 'SameValue' },
-          { '@type': 'Thing', name: 'SameValueZero' },
-          { '@type': 'Thing', name: 'Object.is' },
-          { '@type': 'Thing', name: 'DOM input' },
-          { '@type': 'Thing', name: 'URLSearchParams' },
-          { '@type': 'Thing', name: 'form input' },
-          { '@type': 'Thing', name: 'query params' },
-          { '@type': 'Thing', name: 'localStorage' },
-          { '@type': 'Thing', name: 'API payloads' },
-          { '@type': 'Thing', name: 'boundary normalization' },
-          { '@type': 'Thing', name: 'null' },
-          { '@type': 'Thing', name: 'undefined' },
-          { '@type': 'Thing', name: 'NaN' },
-          { '@type': 'Thing', name: 'Number.isNaN' },
-          { '@type': 'Thing', name: 'Map' },
-          { '@type': 'Thing', name: 'Set' },
-          { '@type': 'Thing', name: 'Array.prototype.includes' },
-          { '@type': 'Thing', name: 'reference equality' },
-          { '@type': 'Thing', name: 'FrontendAtlas review note' },
-          { '@type': 'Thing', name: 'edge-case test' },
-          { '@type': 'Thing', name: 'equality test checklist' },
-          { '@type': 'Thing', name: 'senior interview answer' },
-          { '@type': 'Thing', name: 'interactive equality predictor' },
-          { '@type': 'Thing', name: 'coercion matrix' },
-          { '@type': 'Thing', name: 'SameValueZero comparison' },
-          { '@type': 'Thing', name: 'edge-case comparison drill' },
-        ],
-        hasPart: [
-          { '@type': 'WebPageElement', name: 'Core idea' },
-          { '@type': 'WebPageElement', name: 'Frontend coercion bug matrix' },
-          { '@type': 'WebPageElement', name: 'Loose equality' },
-          { '@type': 'WebPageElement', name: 'How == decides' },
-          { '@type': 'WebPageElement', name: 'Strict equality' },
-          { '@type': 'WebPageElement', name: 'Boundary normalization recipes' },
-          { '@type': 'WebPageElement', name: 'Junior, mid, and senior interview answer' },
-          { '@type': 'WebPageElement', name: 'Beyond ===: Object.is and SameValueZero' },
-          { '@type': 'WebPageElement', name: 'Pitfalls' },
-          { '@type': 'WebPageElement', name: 'Equality test checklist' },
-          { '@type': 'WebPageElement', name: 'Practical rule' },
-          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
-          { '@type': 'WebPageElement', name: 'Equality predictor' },
-        ],
-      };
-    }
-
-    if (q.id === 'js-async-race-conditions') {
-      return {
-        articleSection: 'JavaScript async concurrency',
-        educationalLevel: 'Intermediate',
-        learningResourceType: 'Interview answer',
-        about: [
-          { '@type': 'Thing', name: 'Async race conditions' },
-          { '@type': 'Thing', name: 'Stale UI updates' },
-          { '@type': 'Thing', name: 'Request cancellation' },
-        ],
-        mentions: [
-          { '@type': 'Thing', name: 'AbortController' },
-          { '@type': 'Thing', name: 'AbortSignal' },
-          { '@type': 'Thing', name: 'React useEffect cleanup' },
-          { '@type': 'Thing', name: 'AbortError' },
-          { '@type': 'Thing', name: 'search-as-you-type' },
-          { '@type': 'Thing', name: 'visual race timeline' },
-          { '@type': 'Thing', name: 'request id guard' },
-          { '@type': 'Thing', name: 'takeLatest' },
-          { '@type': 'Thing', name: 'switchMap' },
-          { '@type': 'Thing', name: 'Promise.race' },
-          { '@type': 'Thing', name: 'debounce' },
-          { '@type': 'Thing', name: 'IndexedDB' },
-          { '@type': 'Thing', name: 'autosave' },
-          { '@type': 'Thing', name: 'Fetch API' },
-        ],
-        hasPart: [
-          { '@type': 'WebPageElement', name: 'The core issue' },
-          { '@type': 'WebPageElement', name: 'How to prevent it' },
-          { '@type': 'WebPageElement', name: 'Before / after: stale search UI' },
-          { '@type': 'WebPageElement', name: 'React useEffect cleanup version' },
-          { '@type': 'WebPageElement', name: 'Choosing the right guard' },
-          { '@type': 'WebPageElement', name: 'When async work cannot be aborted' },
-          { '@type': 'WebPageElement', name: 'Shared-controller follow-up' },
-          { '@type': 'WebPageElement', name: 'Pitfalls' },
-          { '@type': 'WebPageElement', name: 'Source check' },
-          { '@type': 'WebPageElement', name: 'Testable proof' },
-          { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
-          { '@type': 'WebPageElement', name: 'Production debugging standard' },
-          { '@type': 'WebPageElement', name: 'Async race visual timeline' },
-          { '@type': 'WebPageElement', name: 'Async race simulator' },
-        ],
-        citation: [
-          {
-            '@type': 'WebPage',
-            name: 'MDN AbortController',
-            url: 'https://developer.mozilla.org/en-US/docs/Web/API/AbortController',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'MDN AbortSignal',
-            url: 'https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'MDN Using the Fetch API',
-            url: 'https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'React useEffect',
-            url: 'https://react.dev/reference/react/useEffect',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'RxJS switchMap',
-            url: 'https://rxjs.dev/api/operators/switchMap',
-          },
-          {
-            '@type': 'WebPage',
-            name: 'FrontendAtlas Editorial Policy',
-            url: this.seo.buildCanonicalUrl('/legal/editorial'),
-          },
-        ],
-      };
-    }
-
-    if (q.id !== 'react-render-nothing-return-value') return {};
-
-    return {
-      articleSection: 'React rendering',
-      about: [
-        { '@type': 'Thing', name: 'React component return values' },
-        { '@type': 'Thing', name: 'Conditional rendering' },
-        { '@type': 'Thing', name: 'Rendering nothing' },
-      ],
-      mentions: [
-        { '@type': 'Thing', name: 'null' },
-        { '@type': 'Thing', name: 'false' },
-        { '@type': 'Thing', name: 'undefined' },
-        { '@type': 'Thing', name: 'React 18' },
-        { '@type': 'Thing', name: 'React 17 and earlier' },
-        { '@type': 'Thing', name: 'Fragment' },
-        { '@type': 'Thing', name: 'ReactNode' },
-        { '@type': 'Thing', name: 'missing return' },
-        { '@type': 'Thing', name: 'TypeScript return types' },
-        { '@type': 'Thing', name: 'ESLint consistent-return' },
-        { '@type': 'Thing', name: 'short-circuit rendering' },
-        { '@type': 'Thing', name: 'parent conditional rendering' },
-        { '@type': 'Thing', name: 'JSX holes' },
-        { '@type': 'Thing', name: 'mounted component' },
-        { '@type': 'Thing', name: 'effects' },
-        { '@type': 'Thing', name: 'React Testing Library' },
-        { '@type': 'Thing', name: 'DOM absence assertion' },
-        { '@type': 'Thing', name: 'editorial review' },
-        { '@type': 'Thing', name: 'interactive demo' },
-        { '@type': 'Thing', name: 'DOM output' },
-        { '@type': 'Thing', name: 'mounted state' },
-        { '@type': 'Thing', name: 'source check' },
-      ],
-      hasPart: [
-        { '@type': 'WebPageElement', name: 'Quick answer' },
-        { '@type': 'WebPageElement', name: 'React 17 and earlier vs React 18+ comparison' },
-        { '@type': 'WebPageElement', name: 'Return value map' },
-        { '@type': 'WebPageElement', name: 'Explicit return undefined' },
-        { '@type': 'WebPageElement', name: 'Accidental missing return' },
-        { '@type': 'WebPageElement', name: 'return null' },
-        { '@type': 'WebPageElement', name: 'Return value simulator' },
-        { '@type': 'WebPageElement', name: 'Return null vs parent conditional rendering' },
-        { '@type': 'WebPageElement', name: 'Component return vs JSX child semantics' },
-        { '@type': 'WebPageElement', name: 'Follow-up question' },
-        { '@type': 'WebPageElement', name: 'Common production mistake' },
-        { '@type': 'WebPageElement', name: 'Source check' },
-        { '@type': 'WebPageElement', name: 'Testable proof' },
-        { '@type': 'WebPageElement', name: 'FrontendAtlas review note' },
-      ],
-      citation: [
-        {
-          '@type': 'WebPage',
-          name: 'React 18 Working Group: Update to allow components to render undefined',
-          url: 'https://github.com/reactwg/react-18/discussions/75',
-        },
-      ],
-    };
-  }
-
-  private questionStructuredData(q: Question, canonical: string): Record<string, any> | null {
-    if (q.id === 'angular-template-driven-vs-reactive-forms-which-scales') {
-      return {
-        '@type': 'Question',
-        '@id': `${canonical}#question`,
-        name: q.title,
-        url: canonical,
-        inLanguage: 'en',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text:
-            'Reactive forms are the better default for large or dynamic Angular forms because the form model, validators, and state transitions live explicitly in TypeScript. Use template-driven forms for small static forms, and migrate once dynamic rows, cross-field rules, async validation, autosave, or unit-tested business logic become part of the workflow.',
-        },
-      };
-    }
-
-    if (q.id === 'ngrx-selectors-memoization-derived-state-performance') {
-      return {
-        '@type': 'Question',
-        '@id': `${canonical}#question`,
-        name: q.title,
-        url: canonical,
-        inLanguage: 'en',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text:
-            'NgRx selectors are memoized, pure projection functions that turn store state into reusable derived state. They stay fast when reducers preserve immutable references, components select focused view-model selectors instead of rebuilding data locally, and projector unit tests prove the derived contract without Store setup.',
-        },
-      };
-    }
-
-    if (q.id === 'ngrx-data-flow-end-to-end-angular') {
-      return {
-        '@type': 'Question',
-        '@id': `${canonical}#question`,
-        name: q.title,
-        url: canonical,
-        inLanguage: 'en',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text:
-            'NgRx data flow in Angular is a 5-step, DevTools-traceable loop: component action dispatch, immutable reducer state diff, effect success/failure result, selector VM, and template loading/data/error/retry UI. This keeps user intent, state transitions, side effects, and read models traceable.',
-        },
-      };
-    }
-
-    if (q.id === 'js-async-race-conditions') {
-      return {
-        '@type': 'Question',
-        '@id': `${canonical}#question`,
-        name: q.title,
-        url: canonical,
-        inLanguage: 'en',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text:
-            'Async race conditions happen when an older request or async task resolves after a newer one and overwrites fresh UI. Fix stale updates with AbortController cancellation, a latest request-id check, or takeLatest-style ownership so only the newest result can render.',
-        },
-      };
-    }
-
-    if (q.id !== 'js-equality-vs-strict-equality') return null;
-
-    return {
-      '@type': 'Question',
-      '@id': `${canonical}#question`,
-      name: q.title,
-      url: canonical,
-      inLanguage: 'en',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text:
-          'In JavaScript, == performs implicit coercion before comparing. === compares type and value without coercion. Use === by default, and explicitly convert boundary values before comparing.',
-      },
-    };
   }
 
   navigateSidebarQuestion(q: QuestionListEntry) {
@@ -3351,6 +2622,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       (m: string) => `<code>${m}</code>`
     );
 
+    // Protect literal inline-code HTML before link conversion. Some legacy
+    // examples contain an escaped <a> inside <code>; it must stay code, not
+    // become a crawlable outbound link.
+    const inlineCodeTokens: string[] = [];
+    html = html.replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, (codeHtml: string) => {
+      const token = `__INLINE_CODE_${inlineCodeTokens.length}__`;
+      inlineCodeTokens.push(codeHtml);
+      return token;
+    });
+
     // Inline backticks + **bold**
     html = this.renderRawAnchorLinks(html);
     html = this.renderMarkdownLinks(html);
@@ -3392,6 +2673,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       .join('');
 
     // Restore protected literal tag mentions after all markdown/html transforms.
+    inlineCodeTokens.forEach((codeHtml, i) => {
+      html = html.replace(new RegExp(`__INLINE_CODE_${i}__`, 'g'), codeHtml);
+    });
     literalTagTokens.forEach((literalHtml, i) => {
       html = html.replace(new RegExp(`__LIT_TAG_${i}__`, 'g'), literalHtml);
     });

@@ -229,6 +229,28 @@ describe('triviaDetailResolver', () => {
     expect(cached?.question?.id).toBe(fullQuestion.id);
   });
 
+  it('keeps reference-only review blocks out of public trivia route data and TransferState', async () => {
+    const sourceBlock = {
+      type: 'text',
+      text: '## Source check\n\nCompare this answer with the official reference.',
+    };
+    const sourceQuestion = {
+      ...fullQuestion,
+      answer: {
+        blocks: [...(fullQuestion.answer as any).blocks, sourceBlock],
+      },
+    } as unknown as Question;
+    configure('server', [sourceQuestion]);
+    const transferState = TestBed.inject(TransferState);
+
+    const resolved = await resolve();
+    const cached = transferState.get(stateKey(), null as QuestionDetailResolved | null);
+
+    expect((resolved.question?.answer as any).blocks).toEqual((fullQuestion.answer as any).blocks);
+    expect((cached?.question?.answer as any).blocks).toEqual((fullQuestion.answer as any).blocks);
+    expect((sourceQuestion.answer as any).blocks).toContain(sourceBlock);
+  });
+
   it('does not embed the full coding bank in custom detail TransferState during prerender', async () => {
     const questionService = configure('server');
     const transferState = TestBed.inject(TransferState);

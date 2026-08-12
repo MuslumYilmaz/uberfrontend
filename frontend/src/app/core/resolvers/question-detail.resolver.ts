@@ -13,6 +13,7 @@ import {
 } from '../models/system-design.model';
 import { Tech } from '../models/user.model';
 import { QuestionListItem, QuestionService } from '../services/question.service';
+import { stripTriviaReferenceOnlyBlocks } from '../utils/trivia-search-intent.util';
 
 type QuestionKind = 'coding' | 'trivia' | 'debug';
 
@@ -64,13 +65,16 @@ function buildQuestionDetailResolved(
   list: Question[],
 ): QuestionDetailResolved {
   const useLightweightList = kind === 'trivia';
+  const matchedQuestion = list.find((q) => q.id === id) ?? null;
   return {
     tech,
     kind,
     id,
     list: useLightweightList ? [] : list,
     listSummaries: useLightweightList ? list.map(toDetailListItem) : undefined,
-    question: list.find((q) => q.id === id) ?? null,
+    question: useLightweightList && matchedQuestion
+      ? stripTriviaReferenceOnlyBlocks(matchedQuestion)
+      : matchedQuestion,
   };
 }
 
@@ -95,7 +99,10 @@ function resolveDetail(tech: Tech, kind: QuestionKind, id: string) {
       question: null,
     });
     transferState.remove(stateKey);
-    return of(cached);
+    return of({
+      ...cached,
+      question: cached.question ? stripTriviaReferenceOnlyBlocks(cached.question) : null,
+    });
   }
 
   return qs.loadQuestions(tech, kind, { transferState: false }).pipe(
