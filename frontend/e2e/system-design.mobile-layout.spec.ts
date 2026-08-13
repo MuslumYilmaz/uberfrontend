@@ -4,7 +4,7 @@ import { buildMockUser, installAuthMock } from './auth-mocks';
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const TABLET_VIEWPORT = { width: 834, height: 1112 };
 const DESKTOP_VIEWPORT = { width: 1366, height: 900 };
-const INFINITE_SCROLL_H1 = 'Infinite Scroll List System Design';
+const INFINITE_SCROLL_H1 = 'Infinite Scroll System Design: Frontend Interview Answer';
 const OFFLINE_EMAIL_PATH = '/system-design/offline-email-client';
 const OFFLINE_EMAIL_H1 = 'Gmail-Style Offline Email Client Frontend System Design';
 const E2E_BASE_URL = (

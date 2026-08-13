@@ -14,7 +14,7 @@ describe('SystemDesignListComponent', () => {
   const resolvedItems = [
     {
       id: 'infinite-scroll-list',
-      title: 'Infinite Scroll List System Design',
+      title: 'Infinite Scroll System Design: Frontend Interview Answer',
       description: 'Design a paginated list with virtualized rendering and resilient loading states.',
       tags: ['infinite-scroll', 'virtualization', 'performance', 'ux'],
       type: 'system-design',
@@ -167,7 +167,7 @@ describe('SystemDesignListComponent', () => {
     const { fixture, questionService } = await createComponent();
 
     expect(questionService.loadSystemDesign).not.toHaveBeenCalled();
-    expect(text(fixture)).toContain('Infinite Scroll List System Design');
+    expect(text(fixture)).toContain('Infinite Scroll System Design: Frontend Interview Answer');
     expect(text(fixture)).toContain('Design a Toast Notification System');
     expect(text(fixture)).toContain('AI Chat Textarea Design');
     expect(fixture.nativeElement.querySelector('[data-testid="system-design-list-loading"]')).toBeNull();
@@ -199,7 +199,7 @@ describe('SystemDesignListComponent', () => {
     fixture.detectChanges();
 
     expect(bankText(fixture)).toContain('Design a Toast Notification System');
-    expect(bankText(fixture)).not.toContain('Infinite Scroll List System Design');
+    expect(bankText(fixture)).not.toContain('Infinite Scroll System Design: Frontend Interview Answer');
     expect(bankText(fixture)).not.toContain('AI Chat Textarea Design');
 
     component.onSearchChanged('');
@@ -209,7 +209,7 @@ describe('SystemDesignListComponent', () => {
 
     expect(bankText(fixture)).toContain('AI Chat Textarea Design');
     expect(bankText(fixture)).not.toContain('Design a Toast Notification System');
-    expect(bankText(fixture)).not.toContain('Infinite Scroll List System Design');
+    expect(bankText(fixture)).not.toContain('Infinite Scroll System Design: Frontend Interview Answer');
   });
 
   it('uses discovery copy, searches both teaser and original description, and names the guide link with the question', async () => {
@@ -258,7 +258,7 @@ describe('SystemDesignListComponent', () => {
       },
       {
         id: 'infinite-scroll-list',
-        title: 'Infinite Scroll List System Design',
+        title: 'Infinite Scroll System Design: Frontend Interview Answer',
         description: 'Design a paginated list with virtualized rendering.',
         tags: ['infinite-scroll', 'virtualization', 'performance'],
         type: 'system-design',
@@ -480,7 +480,7 @@ describe('SystemDesignListComponent', () => {
     fixture.detectChanges();
 
     expect(bankText(fixture)).toContain('AI Chat Textarea Design');
-    expect(bankText(fixture)).toContain('Infinite Scroll List System Design');
+    expect(bankText(fixture)).toContain('Infinite Scroll System Design: Frontend Interview Answer');
     expect(bankText(fixture)).not.toContain('Design a Toast Notification System');
   });
 

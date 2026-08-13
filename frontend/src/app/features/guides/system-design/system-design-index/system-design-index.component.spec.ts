@@ -76,7 +76,8 @@ describe('SystemDesignIndexComponent', () => {
     const promptCards = host.querySelectorAll('.prompt-card');
 
     expect(promptCards.length).toBe(8);
-    expect(pageText).toContain('Infinite Scroll List System Design');
+    expect(pageText).toContain('Infinite scroll system design');
+    expect(pageText).toContain('infinite scroll system design');
     expect(pageText).toContain('Design a Toast Notification System');
     expect(pageText).toContain('Real-time Search with Debounce & Caching');
     expect(pageText).toContain('AI Chat Text Area');
@@ -87,7 +88,12 @@ describe('SystemDesignIndexComponent', () => {
     expect(pageText).toContain('design system architecture frontend interview');
     expect(pageText).toContain('realtime UI frontend system design');
     expect(pageText).toContain('dashboard widgets frontend system design');
-    expect(hasLink('/system-design/infinite-scroll-list')).toBeTrue();
+    const infiniteScrollLink = host.querySelector<HTMLAnchorElement>(
+      'a[href="/system-design/infinite-scroll-list"]'
+    );
+    expect(infiniteScrollLink?.querySelector('h3')?.textContent?.trim()).toBe(
+      'Infinite scroll system design'
+    );
     expect(hasLink('/system-design/notification-toast-system')).toBeTrue();
     expect(hasLink('/system-design/realtime-search-debounce-cache')).toBeTrue();
     expect(hasLink('/system-design/ai-chat-textarea-design')).toBeTrue();
@@ -133,6 +139,7 @@ describe('SystemDesignIndexComponent', () => {
     expect(payload.keywords).toContain('RADIO framework frontend system design');
     expect(payload.keywords).toContain('45 minute frontend system design interview');
     expect(payload.keywords).toContain('frontend vs backend system design');
+    expect(payload.keywords).toContain('infinite scroll system design');
     expect(payload.keywords).toContain('frontend system design checklist');
     expect(payload.keywords[payload.keywords.length - 1]).toBe('frontend system design interview questions');
     expect(collection).toBeTruthy();

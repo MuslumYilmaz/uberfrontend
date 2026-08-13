@@ -533,9 +533,9 @@ function assertInfiniteScrollSystemDesignSitemapEntry(entries) {
   if (matches.length !== 1) {
     throw new Error(`Sitemap must include exactly one Infinite Scroll system design loc: ${loc}`);
   }
-  if (matches[0].lastmod !== '2026-07-28') {
+  if (matches[0].lastmod !== '2026-08-13') {
     throw new Error(
-      `Infinite Scroll system design sitemap lastmod must be 2026-07-28, got ${matches[0].lastmod || '(missing)'}`,
+      `Infinite Scroll system design sitemap lastmod must be 2026-08-13, got ${matches[0].lastmod || '(missing)'}`,
     );
   }
 }

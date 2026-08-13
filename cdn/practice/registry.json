@@ -8922,7 +8922,7 @@
   {
     "id": "infinite-scroll-list",
     "family": "question",
-    "title": "Infinite Scroll List System Design",
+    "title": "Infinite Scroll System Design: Frontend Interview Answer",
     "route": "/system-design/infinite-scroll-list",
     "tech": "system-design",
     "difficulty": "intermediate",
@@ -8941,7 +8941,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 20,
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-13",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/infinite-scroll-list/meta.json"
   },

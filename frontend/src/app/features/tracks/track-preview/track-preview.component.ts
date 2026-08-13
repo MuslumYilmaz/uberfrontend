@@ -433,7 +433,7 @@ const CRASH_7D_FALLBACKS: Record<string, Omit<PreviewQuestion, 'kind' | 'tech'>>
   },
   'infinite-scroll-list': {
     id: 'infinite-scroll-list',
-    title: 'Infinite Scroll List System Design',
+    title: 'Infinite Scroll System Design: Frontend Interview Answer',
     difficulty: 'intermediate',
     access: 'free',
   },

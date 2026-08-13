@@ -177,7 +177,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </p>
       <ul>
         <li>
-          <a [routerLink]="['/system-design/infinite-scroll-list']">Infinite Scroll</a>:
+          <a [routerLink]="['/system-design/infinite-scroll-list']">Infinite scroll system design</a>:
           pagination, virtualization, loading policy, and scroll performance.
         </li>
         <li>

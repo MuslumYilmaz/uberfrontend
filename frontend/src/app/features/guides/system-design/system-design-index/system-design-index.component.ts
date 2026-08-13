@@ -762,8 +762,8 @@ export class SystemDesignIndexComponent implements OnInit {
 
   readonly featuredPrompts: FeaturedPrompt[] = [
     {
-      title: 'Infinite Scroll List System Design',
-      keyword: 'design infinite scroll frontend system design',
+      title: 'Infinite scroll system design',
+      keyword: 'infinite scroll system design',
       detail: 'Cursor pagination, virtualization, loading states, and scroll performance.',
       focus: ['pagination', 'virtualization', 'performance'],
       route: ['/', 'system-design', 'infinite-scroll-list'],
@@ -1001,7 +1001,7 @@ export class SystemDesignIndexComponent implements OnInit {
         'client side system design interview',
         'design autocomplete frontend system design',
         'design news feed frontend system design',
-        'design infinite scroll frontend system design',
+        'infinite scroll system design',
         'design toast notification system',
         'design notification system frontend',
         'design chat app frontend system design',

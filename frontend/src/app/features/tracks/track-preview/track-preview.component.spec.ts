@@ -109,7 +109,7 @@ describe('TrackPreviewComponent', () => {
     expect(text).toContain('Debounce Function');
     expect(text).toContain('Throttle Function');
     expect(text).toContain('Real-time Search with Debounce & Caching');
-    expect(text).toContain('Infinite Scroll List System Design');
+    expect(text).toContain('Infinite Scroll System Design: Frontend Interview Answer');
     expect(text).toContain('Free now');
     expect(text).toContain('Premium in full plan');
   });
