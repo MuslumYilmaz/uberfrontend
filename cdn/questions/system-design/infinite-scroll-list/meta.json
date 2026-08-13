@@ -1,6 +1,6 @@
 {
   "id": "infinite-scroll-list",
-  "title": "Infinite Scroll List System Design",
+  "title": "Infinite Scroll System Design: Frontend Interview Answer",
   "description": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
   "tags": [
     "infinite-scroll",
@@ -17,7 +17,7 @@
   "sections": [
     {
       "key": "R",
-      "title": "Requirements and a 60-second answer",
+      "title": "Infinite Scroll System Design: Requirements and a 60-Second Answer",
       "file": "requirements.json"
     },
     {
@@ -42,16 +42,16 @@
     }
   ],
   "publishedAt": "2025-11-22",
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-13",
   "seo": {
-    "title": "Infinite Scroll List Frontend System Design",
-    "description": "Design infinite scrolling with cursor pagination, request recovery, virtualization, stable scroll anchors, and accessible navigation alternatives."
+    "title": "Infinite Scroll System Design: Frontend Interview Guide",
+    "description": "Practice infinite scroll system design with cursor pagination, virtualization, stale-response guards, scroll restoration, and Load More recovery."
   },
   "editorial": {
     "draftSource": "content-drafts/system-design/infinite-scroll-list.md",
-    "primaryKeyword": "infinite scroll list frontend system design",
-    "searchIntent": "Prepare a frontend system design answer for Infinite Scroll List System Design.",
-    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Infinite Scroll List System Design.",
+    "primaryKeyword": "infinite scroll system design",
+    "searchIntent": "Prepare an interview-ready answer for an infinite scroll system design prompt.",
+    "readerPromise": "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for an infinite scroll system design.",
     "uniqueAngle": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
     "factCheckedAt": "2026-07-28",
     "reviewedBy": "FrontendAtlas editorial",

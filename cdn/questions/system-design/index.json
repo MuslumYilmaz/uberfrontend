@@ -124,7 +124,7 @@
   },
   {
     "id": "infinite-scroll-list",
-    "title": "Infinite Scroll List System Design",
+    "title": "Infinite Scroll System Design: Frontend Interview Answer",
     "description": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
     "discovery": {
       "teaser": "Page retries and changing results must extend a long list without duplicates, scroll jumps, unbounded DOM growth, or an inaccessible loading trap.",
@@ -145,7 +145,7 @@
     "type": "system-design",
     "access": "free",
     "publishedAt": "2025-11-22",
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-13",
     "difficulty": "intermediate"
   },
   {

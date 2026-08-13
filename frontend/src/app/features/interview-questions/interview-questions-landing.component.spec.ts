@@ -2,10 +2,37 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
+import { routes } from '../../app.routes';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { QuestionService } from '../../core/services/question.service';
 import { SeoService } from '../../core/services/seo.service';
 import { InterviewQuestionsLandingComponent } from './interview-questions-landing.component';
+
+const REACT_SEO_KEYWORDS = [
+  'react interview questions and answers',
+  'react interview questions',
+  'react 19 interview questions',
+  'react interview questions for experienced developers',
+  'react interview questions for beginners',
+  'react hooks interview questions',
+];
+
+describe('React interview route SEO contract', () => {
+  it('keeps Q&A ownership, ordered keywords, and the existing H1 route title', () => {
+    const reactRoute = routes.find((route) => route.path === 'react/interview-questions');
+    const config = reactRoute?.data?.['interviewQuestions'];
+    const seo = reactRoute?.data?.['seo'];
+
+    expect(config?.keyword).toBe('react interview questions');
+    expect(config?.title).toBe('React Interview Questions and Answers');
+    expect(seo).toEqual({
+      title: 'React Interview Questions and Answers: Hooks & React 19',
+      description:
+        '66 React interview questions and answers for frontend developers: hooks, state, React 19, Server Components, testing, performance, and code scenarios.',
+      keywords: REACT_SEO_KEYWORDS,
+    });
+  });
+});
 
 const JAVASCRIPT_SHORT_ANSWER_QUESTIONS = [
   'What are callbacks in JavaScript?',
@@ -579,6 +606,11 @@ describe('InterviewQuestionsLandingComponent', () => {
               { id: 'react-transfer-list', title: 'React Transfer List', type: 'coding', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 2, companies: [], description: 'Build a transfer list.', tech: 'react' },
               { id: 'react-search', title: 'React Search', type: 'coding', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 1, companies: [], description: 'Build search.', tech: 'react' },
               { id: 'react-form', title: 'React Form', type: 'coding', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Build a form.', tech: 'react' },
+              { id: 'react-accordion', title: 'React Accordion', type: 'coding', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Build an accordion.', tech: 'react' },
+              { id: 'react-autocomplete', title: 'React Autocomplete', type: 'coding', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 1, companies: [], description: 'Build autocomplete.', tech: 'react' },
+              { id: 'react-datatable', title: 'React Data Table', type: 'coding', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 1, companies: [], description: 'Build a data table.', tech: 'react' },
+              { id: 'react-star-rating', title: 'React Star Rating', type: 'coding', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Build a rating control.', tech: 'react' },
+              { id: 'react-tree', title: 'React Tree', type: 'coding', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 1, companies: [], description: 'Build a tree.', tech: 'react' },
             ],
             trivia: [
               { id: 'react-useeffect-purpose', title: 'useEffect in React', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain useEffect.', tech: 'react' },
@@ -588,11 +620,19 @@ describe('InterviewQuestionsLandingComponent', () => {
               { id: 'react-stale-closure', title: 'React stale closure', type: 'trivia', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 2, companies: [], description: 'Explain stale closures.', tech: 'react' },
               { id: 'react-keys', title: 'React keys', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain keys.', tech: 'react' },
               { id: 'react-refs', title: 'React refs', type: 'trivia', technology: 'react', difficulty: 'easy', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain refs.', tech: 'react' },
+              { id: 'react-actions', title: 'React Actions', type: 'trivia', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain Actions.', tech: 'react' },
+              { id: 'react-fiber', title: 'React Fiber', type: 'trivia', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain Fiber.', tech: 'react' },
+              { id: 'react-hydration', title: 'React hydration', type: 'trivia', technology: 'react', difficulty: 'hard', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain hydration.', tech: 'react' },
+              { id: 'react-reconciliation', title: 'React reconciliation', type: 'trivia', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain reconciliation.', tech: 'react' },
+              { id: 'react-testing', title: 'React testing', type: 'trivia', technology: 'react', difficulty: 'intermediate', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain behavior testing.', tech: 'react' },
+              { id: 'react-transitions', title: 'React transitions', type: 'trivia', technology: 'react', difficulty: 'advanced', access: 'free', tags: [], importance: 1, companies: [], description: 'Explain transitions.', tech: 'react' },
             ],
           },
           seo: {
-            title: 'React Interview Questions and Answers',
-            description: 'React interview questions and answers with coding prompts, concept questions, follow-ups, and common mistakes.',
+            title: 'React Interview Questions and Answers: Hooks & React 19',
+            description:
+              '66 React interview questions and answers for frontend developers: hooks, state, React 19, Server Components, testing, performance, and code scenarios.',
+            keywords: REACT_SEO_KEYWORDS,
           },
         },
         url: [{ path: 'react' }, { path: 'interview-questions' }],
@@ -627,7 +667,9 @@ describe('InterviewQuestionsLandingComponent', () => {
 
     expect(fixture.componentInstance.loading).toBeFalse();
     expect(fixture.nativeElement.textContent || '').toContain('React Interview Questions and Answers');
-    expect(fixture.nativeElement.textContent || '').toContain('answers hub with coding prompts, concept questions, follow-ups, and common mistakes');
+    expect(fixture.nativeElement.textContent || '').toContain(
+      'Review 66 React interview questions and answers for beginner-to-experienced frontend developers, covering hooks, state, rendering, React 19, Server Components, testing, performance, and code scenarios.'
+    );
     expect(fixture.nativeElement.querySelectorAll('.iq-route-card').length).toBe(0);
     expect(fixture.nativeElement.querySelectorAll('[data-testid^="prep-roadmap-item-"]').length).toBe(5);
     expect(fixture.componentInstance.previewRows('coding').length).toBe(6);
@@ -689,9 +731,15 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('React Interview Questions and Answers');
-    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain('Updated August 13, 2026');
     expect(text).toContain('FrontendAtlas Editorial');
-    expect(text).toContain('65 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance');
+    expect(text).toContain('66 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance');
+    expect(text).not.toContain('65 visible React questions');
+    expect(fixture.nativeElement.querySelectorAll('h1').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('h1')?.textContent?.trim()).toBe('React Interview Questions and Answers');
+    expect(text).toContain(
+      'Review 66 React interview questions and answers for beginner-to-experienced frontend developers, covering hooks, state, rendering, React 19, Server Components, testing, performance, and code scenarios.'
+    );
     expect(text).toContain('On this page');
     expect(text).toContain('Popular React interview question clusters');
     expect(text).toContain('Beginner');
@@ -708,7 +756,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('For beginners');
     expect(text).toContain('For experienced developers');
     expect(text).toContain('React rendering internals interview questions');
-    expect(text).toContain('React 19 and server-first React interview questions');
+    expect(text).toContain('React 19 interview questions and answers');
+    expect(text).not.toContain('React 19 and server-first React interview questions');
     expect(text).toContain('React testing interview questions with Testing Library, act, and mocked APIs');
     expect(text).toContain('React scenario and code interview questions');
     expect(text).toContain('Modern React interview questions');
@@ -750,7 +799,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('How do you debug a hydration mismatch?');
     expect(text).toContain('Are these React interview questions for beginners and experienced developers?');
     expect(text).toContain('Does this page cover React rendering internals?');
-    expect(text).toContain('Does this page include React 19 and server-first React questions?');
+    expect(text).toContain('Does this page include React 19 interview questions and answers?');
     expect(text).toContain('Does this page include React testing interview questions?');
     expect(text).toContain('How should I prepare after reviewing these React interview questions?');
     expect(text).toContain('Learn how to prepare for a React interview');
@@ -880,12 +929,48 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-functional-vs-class-components"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-prevent-unnecessary-rerenders"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/coding/react-debug-double-render"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/react-prep-path"]')).toBeTruthy();
+    const reactPrepLinks = fixture.nativeElement.querySelectorAll(
+      'a[href="/guides/framework-prep/react-prep-path"]'
+    );
+    expect(reactPrepLinks.length).toBe(4);
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--react-react19-server a[href="/guides/framework-prep/react-prep-path"]'
+      )
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--react-testing a[href="/guides/framework-prep/react-prep-path"]'
+      )
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--react-modern a[href="/guides/framework-prep/react-prep-path"]'
+      )
+    ).toBeNull();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+
+    expect(payload.title).toBe('React Interview Questions and Answers: Hooks & React 19');
+    expect(payload.description).toBe(
+      '66 React interview questions and answers for frontend developers: hooks, state, React 19, Server Components, testing, performance, and code scenarios.'
+    );
+    expect(payload.keywords).toEqual(REACT_SEO_KEYWORDS);
+    expect(payload.canonical).toBe('/react/interview-questions');
+    expect(collection?.name).toBe('React Interview Questions and Answers');
+    expect(collection?.mainEntity?.['@type']).toBe('ItemList');
+    const schemaItems = collection?.mainEntity?.itemListElement || [];
+    const schemaUrls = schemaItems.map((entry: any) => String(entry?.url || ''));
+    expect(schemaItems.length).toBe(20);
+    expect(new Set(schemaUrls).size).toBe(20);
+    expect(schemaUrls.slice(0, 12).every((url: string) => url.includes('/react/trivia/'))).toBeTrue();
+    expect(schemaUrls.slice(12).every((url: string) => url.includes('/react/coding/'))).toBeTrue();
+    expect(schemaItems.map((entry: any) => entry?.position)).toEqual(
+      Array.from({ length: 20 }, (_, index) => index + 1)
+    );
 
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('Beginner to advanced React interview questions')
@@ -1028,7 +1113,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Common React libraries')
     )).toBeTrue();
-    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(collection?.dateModified).toBe('2026-08-13T00:00:00.000Z');
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
     expect(faqPage?.name).toBe('Top React interview questions and short answers, beginner to advanced');

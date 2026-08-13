@@ -1,22 +1,22 @@
 ---
-title: "Infinite Scroll List System Design"
+title: "Infinite Scroll System Design: Frontend Interview Answer"
 slug: "infinite-scroll-list"
 family: "system-design"
 tech: "frontend"
 audience: "Frontend engineers preparing for system design interviews"
 intent: "Teach a concrete frontend architecture answer with explicit state, failure, accessibility, and rollout decisions."
 target_words: 2400
-primary_keyword: "infinite scroll list frontend system design"
+primary_keyword: "infinite scroll system design"
 status: "converted"
 notes_for_conversion:
   - "Keep the route, question ID, and access level stable."
   - "Keep backend execution out of scope; describe only UI-facing contracts."
   - "Maintain parity with the five shipped RADIO sections."
-search_intent: "Prepare a frontend system design answer for Infinite Scroll List System Design."
-reader_promise: "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for Infinite Scroll List System Design."
+search_intent: "Prepare an interview-ready answer for an infinite scroll system design prompt."
+reader_promise: "The reader can explain the frontend state, architecture, interfaces, failure recovery, accessibility, and rollout decisions for an infinite scroll system design."
 unique_angle: "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives."
-what_this_adds_beyond_basics: "Adds an end-to-end worked example, state ownership, recovery, accessibility, and measurable rollout guidance for Infinite Scroll List System Design."
-competitor_query: "Infinite Scroll List System Design frontend system design"
+what_this_adds_beyond_basics: "Adds an end-to-end worked example, state ownership, recovery, accessibility, and measurable rollout guidance for infinite scroll system design."
+competitor_query: "infinite scroll system design"
 competitor_takeaways:
   - "Catalog pages commonly list components but stop before reconciliation and failure recovery."
   - "Reference material is strongest when it anchors browser behavior in official platform guidance."
@@ -35,15 +35,15 @@ confidence: "high"
 ---
 # Prompt
 
-infinite scroll list frontend system design. Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.
+infinite scroll system design. Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.
 
-## Requirements and a 60-second answer
+## Infinite Scroll System Design: Requirements and a 60-Second Answer
 
-Begin by turning “infinite scroll” from an interaction pattern into a bounded product problem. Confirm what is being browsed, whether results can change while the session is open, how users return to an item, and whether the collection must remain discoverable without JavaScript. The design below assumes a one-way, changing feed with an unknown total, cursor pagination, variable-height rows, and scroll restoration after navigation.
+In an infinite scroll system design interview, begin by turning the interaction pattern into a bounded product problem. Confirm what is being browsed, whether results can change while the session is open, how users return to an item, and whether the collection must remain discoverable without JavaScript. The design below assumes a one-way, changing feed with an unknown total, cursor pagination, variable-height rows, and scroll restoration after navigation.
 
 ### A strong 60-second answer
 
-### Interview-ready opening
+### Infinite scroll system design: interview-ready opening
 
 Render a server-addressable first page, then ask a data controller for cursor-based pages as an IntersectionObserver sentinel approaches the viewport. The controller admits only one request for a cursor, aborts obsolete work, rejects responses from an older filter generation, and merges results through a stable ID map so retries or overlapping pages cannot create duplicates. The view starts as a normal list and adds windowing only after measurement shows that mounted DOM is the bottleneck. For variable-height rows, the window keeps a measurement cache and a small overscan range. Loading, end, and retry states remain in the list flow; aria-busy and polite status announcements explain changes; a visible Load More control provides keyboard, assistive-technology, and recovery access. Before navigation, save an anchor item and intra-item offset instead of only a fragile document pixel. Verification covers duplicates, gaps, stale responses, position restoration, bounded DOM size, and long tasks on a representative mid-range device.
 
@@ -80,6 +80,7 @@ Render a server-addressable first page, then ask a data controller for cursor-ba
 - Keep important collection content reachable through discoverable URLs and links.
 
 ### Requirements references
+- [Frontend system design interview questions and practice](/system-design) — Compare this worked answer with the broader prompt bank and guided practice flow.
 - [Google Search: lazy-loaded content](https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading) — Use Google’s guidance when automatic loading must coexist with discoverable, linkable collection pages.
 
 ### Requirement boundary
@@ -92,7 +93,7 @@ The browser owns observation, request admission, page merging, scroll anchoring,
 
 # Clarifying Questions
 
-- Which user journey and input modes must Infinite Scroll List System Design support first?
+- Which user journey and input modes must an infinite scroll system support first?
 - Which state is authoritative, which state may be optimistic, and how is freshness represented?
 - What ordering, identity, and version rules must survive retries or out-of-order responses?
 - Which interactions must remain usable with keyboard, assistive technology, and narrow screen widths?

@@ -271,7 +271,7 @@ const RAW_HTML_CASES: Array<{
   {
     path: '/system-design/infinite-scroll-list',
     access: 'free',
-    titleText: 'Infinite Scroll List System Design',
+    titleText: 'Infinite Scroll System Design: Frontend Interview Answer',
     includeText: ['cursor pagination', 'virtualization'],
   },
   {
@@ -413,20 +413,21 @@ const NETFLIX_PREVIEW_INBOUND_PAGES = [
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
-const INFINITE_SCROLL_TITLE = 'Infinite Scroll List Frontend System Design';
-const INFINITE_SCROLL_H1 = 'Infinite Scroll List System Design';
+const INFINITE_SCROLL_TITLE = 'Infinite Scroll System Design: Frontend Interview Guide';
+const INFINITE_SCROLL_H1 = 'Infinite Scroll System Design: Frontend Interview Answer';
 const INFINITE_SCROLL_SEO_DESCRIPTION =
-  'Design infinite scrolling with cursor pagination, request recovery, virtualization, stable scroll anchors, and accessible navigation alternatives.';
+  'Practice infinite scroll system design with cursor pagination, virtualization, stale-response guards, scroll restoration, and Load More recovery.';
 const INFINITE_SCROLL_CATALOG_DESCRIPTION =
   'Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.';
 const INFINITE_SCROLL_SECTION_TITLES = [
-  'Requirements and a 60-second answer',
+  'Infinite Scroll System Design: Requirements and a 60-Second Answer',
   'Architecture and data flow',
   'Pagination, state, and data correctness',
   'Interface contracts for components and pagination',
   'Optimizations for virtualization, accessibility, recovery, and verification',
 ] as const;
 const INFINITE_SCROLL_INTERNAL_RESOURCES = [
+  '/system-design',
   '/javascript/coding/js-take-latest',
   '/javascript/coding/js-abortable-helpers',
   '/guides/system-design-blueprint/performance',
@@ -1693,7 +1694,7 @@ test.describe('seo-ssr', () => {
       url: expectedCanonical(INFINITE_SCROLL_PATH),
       mainEntityOfPage: expectedCanonical(INFINITE_SCROLL_PATH),
       datePublished: '2025-11-22T00:00:00.000Z',
-      dateModified: '2026-07-28T00:00:00.000Z',
+      dateModified: '2026-08-13T00:00:00.000Z',
       isAccessibleForFree: true,
     });
 

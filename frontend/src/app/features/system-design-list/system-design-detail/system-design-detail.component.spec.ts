@@ -116,25 +116,58 @@ describe('SystemDesignDetailComponent', () => {
   it('keeps the infinite-scroll metadata contract and publishes truthful structured-data dates', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;
-    const description = 'Design an infinite-scroll list with paginated loading, error recovery, and virtualization strategy so scrolling stays fast while DOM size remains bounded.';
+    const title = 'Infinite Scroll System Design: Frontend Interview Answer';
+    const seoTitle = 'Infinite Scroll System Design: Frontend Interview Guide';
+    const description = 'Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.';
+    const seoDescription = 'Practice infinite scroll system design with cursor pagination, virtualization, stale-response guards, scroll restoration, and Load More recovery.';
 
     (component as any).applyResolvedQuestion({
       id: 'infinite-scroll-list',
-      title: 'Infinite Scroll List System Design',
+      title,
       description,
       tags: ['infinite-scroll', 'pagination', 'virtualization'],
       access: 'free',
-      difficulty: 'hard',
+      difficulty: 'intermediate',
       publishedAt: '2025-11-22',
-      updatedAt: '2026-07-27',
+      updatedAt: '2026-08-13',
+      seo: {
+        title: seoTitle,
+        description: seoDescription,
+      },
+      editorial: {
+        primaryKeyword: 'infinite scroll system design',
+        factCheckedAt: '2026-07-28',
+      },
       radio: [
         {
           key: 'R',
-          title: 'Requirements and a 60-second answer',
-          blocks: [{ type: 'text', text: 'Start with requirements visible on the page.' }],
+          title: 'Infinite Scroll System Design: Requirements and a 60-Second Answer',
+          blocks: [
+            {
+              type: 'text',
+              text: 'In an infinite scroll system design interview, begin by turning the interaction pattern into a bounded product problem.',
+            },
+            {
+              type: 'callout',
+              variant: 'info',
+              title: 'Infinite scroll system design: interview-ready opening',
+              text: 'Render a server-addressable first page before loading cursor-based pages.',
+            },
+            {
+              type: 'links',
+              title: 'Requirements references',
+              items: [
+                {
+                  label: 'Frontend system design interview questions and practice',
+                  href: '/system-design',
+                },
+              ],
+            },
+          ],
         },
       ],
     });
+    fixture.detectChanges();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
@@ -142,19 +175,28 @@ describe('SystemDesignDetailComponent', () => {
     const learningResource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
     const typeNames = graph.map((entry: any) => entry?.['@type']);
 
-    expect(component.title()).toBe('Infinite Scroll List System Design');
+    const host = fixture.nativeElement as HTMLElement;
+    expect(component.title()).toBe(title);
+    expect(component.q()?.editorial?.['primaryKeyword']).toBe('infinite scroll system design');
+    expect(host.querySelectorAll('h1')).toHaveSize(1);
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe(title);
+    expect(host.textContent || '').toContain('Infinite Scroll System Design: Requirements and a 60-Second Answer');
+    expect(host.textContent || '').toContain('In an infinite scroll system design interview, begin by');
+    expect(host.textContent || '').toContain('Infinite scroll system design: interview-ready opening');
+    expect(host.querySelector('a[href="/system-design"]')?.textContent || '')
+      .toContain('Frontend system design interview questions and practice');
     expect(payload).toEqual(jasmine.objectContaining({
-      title: 'Infinite Scroll List System Design',
-      description,
+      title: seoTitle,
+      description: seoDescription,
       canonical: '/system-design/infinite-scroll-list',
       robots: undefined,
     }));
     expect(article?.datePublished).toBe('2025-11-22T00:00:00.000Z');
-    expect(article?.dateModified).toBe('2026-07-27T00:00:00.000Z');
+    expect(article?.dateModified).toBe('2026-08-13T00:00:00.000Z');
     expect(article?.isAccessibleForFree).toBeTrue();
     expect(learningResource?.isAccessibleForFree).toBeTrue();
-    expect(learningResource?.educationalLevel).toBe('senior');
-    expect(learningResource?.timeRequired).toBe('PT20M');
+    expect(learningResource?.educationalLevel).toBe('mid');
+    expect(learningResource?.timeRequired).toBe('PT15M');
     expect(typeNames).toContain('BreadcrumbList');
     expect(typeNames).toContain('Article');
     expect(typeNames).toContain('LearningResource');

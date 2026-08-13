@@ -1,10 +1,10 @@
 {
   "key": "R",
-  "title": "Requirements and a 60-second answer",
+  "title": "Infinite Scroll System Design: Requirements and a 60-Second Answer",
   "blocks": [
     {
       "type": "text",
-      "text": "Begin by turning “infinite scroll” from an interaction pattern into a bounded product problem. Confirm what is being browsed, whether results can change while the session is open, how users return to an item, and whether the collection must remain discoverable without JavaScript. The design below assumes a one-way, changing feed with an unknown total, cursor pagination, variable-height rows, and scroll restoration after navigation."
+      "text": "In an infinite scroll system design interview, begin by turning the interaction pattern into a bounded product problem. Confirm what is being browsed, whether results can change while the session is open, how users return to an item, and whether the collection must remain discoverable without JavaScript. The design below assumes a one-way, changing feed with an unknown total, cursor pagination, variable-height rows, and scroll restoration after navigation."
     },
     {
       "type": "heading",
@@ -13,7 +13,7 @@
     {
       "type": "callout",
       "variant": "info",
-      "title": "Interview-ready opening",
+      "title": "Infinite scroll system design: interview-ready opening",
       "text": "Render a server-addressable first page, then ask a data controller for cursor-based pages as an IntersectionObserver sentinel approaches the viewport. The controller admits only one request for a cursor, aborts obsolete work, rejects responses from an older filter generation, and merges results through a stable ID map so retries or overlapping pages cannot create duplicates. The view starts as a normal list and adds windowing only after measurement shows that mounted DOM is the bottleneck. For variable-height rows, the window keeps a measurement cache and a small overscan range. Loading, end, and retry states remain in the list flow; aria-busy and polite status announcements explain changes; a visible Load More control provides keyboard, assistive-technology, and recovery access. Before navigation, save an anchor item and intra-item offset instead of only a fragile document pixel. Verification covers duplicates, gaps, stale responses, position restoration, bounded DOM size, and long tasks on a representative mid-range device."
     },
     {
@@ -104,6 +104,11 @@
       "type": "links",
       "title": "Requirements references",
       "items": [
+        {
+          "label": "Frontend system design interview questions and practice",
+          "href": "/system-design",
+          "description": "Compare this worked answer with the broader prompt bank and guided practice flow."
+        },
         {
           "label": "Google Search: lazy-loaded content",
           "href": "https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading",

@@ -37,6 +37,7 @@ describe('SystemDesignIntroArticle', () => {
     expect(pageText).toContain('Frontend vs backend system design');
     expect(pageText).toContain('Scoring rubric: what interviewers score');
     expect(pageText).toContain('Common prompt families to recognize');
+    expect(pageText).toContain('Infinite scroll system design');
     expect(pageText).toContain('How to use this blueprint after the intro');
     expect(pageText).toContain('Architecture boundary');
     expect(pageText).toContain('Requirements clarity');
@@ -44,9 +45,13 @@ describe('SystemDesignIntroArticle', () => {
   });
 
   it('routes readers to existing RADIO, checklist, and prompt practice pages', () => {
+    const host = fixture.nativeElement as HTMLElement;
     expect(hasLink('/guides/system-design-blueprint/radio-framework')).toBeTrue();
     expect(hasLink('/guides/system-design-blueprint/checklist')).toBeTrue();
-    expect(hasLink('/system-design/infinite-scroll-list')).toBeTrue();
+    const infiniteScrollLink = host.querySelector<HTMLAnchorElement>(
+      'a[href="/system-design/infinite-scroll-list"]'
+    );
+    expect(infiniteScrollLink?.textContent?.trim()).toBe('Infinite scroll system design');
     expect(hasLink('/system-design/realtime-search-debounce-cache')).toBeTrue();
     expect(hasLink('/system-design/component-design-system-architecture')).toBeTrue();
   });

@@ -1032,7 +1032,7 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
       a: 'Yes. The rendering internals section covers Virtual DOM, render and commit phases, reconciliation, diffing assumptions, Fiber, keys, fragments, and useLayoutEffect timing.',
     },
     {
-      q: 'Does this page include React 19 and server-first React questions?',
+      q: 'Does this page include React 19 interview questions and answers?',
       a: 'Yes. The React 19 section covers Actions, useActionState, useOptimistic, useFormStatus, use(), Server Components, Next.js App Router boundaries, streaming, Suspense, and hydration mismatches.',
     },
     {
@@ -2280,10 +2280,10 @@ const JAVASCRIPT_RESOURCE_LINKS: JavaScriptResourceLink[] = [
 ];
 
 const REACT_EDITORIAL_SIGNAL: ReactEditorialSignal = {
-  updatedLabel: 'Updated May 20, 2026',
+  updatedLabel: 'Updated August 13, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
-  coverage: '65 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance',
-  dateModified: '2026-05-20T00:00:00.000Z',
+  coverage: '66 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance',
+  dateModified: '2026-08-13T00:00:00.000Z',
 };
 
 const REACT_ANCHOR_ITEMS: ReactAnchorItem[] = [
@@ -2619,50 +2619,36 @@ const REACT_REACT19_SERVER_QUESTIONS: ReactFocusedQuestionItem[] = [
     level: 'advanced',
     q: 'What are React 19 Actions?',
     a: 'Actions are async functions used with transitions or form submissions to manage mutation workflows. React can coordinate pending state, errors, optimistic updates, and final state around the action. The practical benefit is reducing manual loading and error wiring for form-like mutations.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Open the React prep path',
   },
   {
     level: 'advanced',
     q: 'What is useActionState used for?',
     a: 'useActionState connects an action to state that updates when the action completes. It is useful when a form submit or mutation returns validation errors, success messages, or next state. The hook keeps pending and result handling close to the action, but the mutation contract still needs clear server and client ownership.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review React 19 actions',
   },
   {
     level: 'advanced',
     q: 'What is useOptimistic used for?',
     a: 'useOptimistic lets the UI show an expected result before the server confirms it. It is useful for quick feedback on mutations such as adding comments, toggling likes, or reordering items. The edge case is rollback and ordering: failed or out-of-order responses must not leave the UI in a false state.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review optimistic updates',
   },
   {
     level: 'advanced',
     q: 'What is useFormStatus used for?',
     a: 'useFormStatus reads the pending status of the nearest parent form submission. It lets a submit button or status message react to the form action without passing loading props through every component. It only works inside the form context, so placement matters.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review form status',
   },
   {
     level: 'advanced',
     q: 'What is use() with Suspense at a high level?',
     a: 'use() can read certain resources, such as promises or context, during rendering in supported React environments. When a promise is still pending, the nearest Suspense boundary can show fallback UI. The key requirement is that data ownership and caching are stable, otherwise rendering can repeatedly suspend or restart work.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review Suspense data flow',
   },
   {
     level: 'advanced',
     q: 'What is the difference between Server Components and Client Components?',
     a: 'Server Components render on the server and can access server-only data without shipping their component code to the browser. Client Components run in the browser and own interactivity, state, effects, and event handlers. Values passed from server to client boundaries must be serializable, and browser-only APIs belong on the client side.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review server/client boundaries',
   },
   {
     level: 'advanced',
     q: 'How do Next.js App Router boundaries affect data ownership?',
     a: 'The App Router encourages colocating data loading with server-rendered route segments and using client boundaries only where interactivity is needed. Caching, revalidation, and streaming behavior become part of the route contract. A good boundary keeps server data on the server while isolating client state to the smallest interactive surface.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Open the React prep path',
   },
   {
     level: 'advanced',
@@ -2678,43 +2664,31 @@ const REACT_TESTING_QUESTIONS: ReactFocusedQuestionItem[] = [
     level: 'intermediate',
     q: 'How should React Testing Library tests be written?',
     a: 'React Testing Library tests should assert behavior that a user can observe. Prefer role, label, text, and accessible name queries over component internals. A reliable test covers the visible state before and after interaction instead of asserting private methods or implementation details.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Open the React testing prep path',
   },
   {
     level: 'intermediate',
     q: 'What is the difference between Jest and Vitest for React tests?',
     a: 'Jest and Vitest both provide test runners, assertions, mocks, and watch workflows. Vitest is often faster in Vite-based projects because it integrates with the Vite transform pipeline. The important choice is consistency with the app tooling, DOM environment, mocks, and coverage setup.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review React test tooling',
   },
   {
     level: 'advanced',
     q: 'What does act() do in React tests?',
     a: 'act() makes React flush updates related to an interaction or async step before assertions run. Testing utilities often wrap common user events for you, but warnings appear when a state update escapes the test boundary. The fix is to await the user action or async UI transition that causes the update.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review async test timing',
   },
   {
     level: 'intermediate',
     q: 'How do you test async loading and error UI?',
     a: 'Start by asserting the initial state, trigger the user action or render path, then wait for loading, success, or error text that the user sees. The test should cover at least one failure path when the component has recovery UI. Avoid asserting raw promise timing because the visible transition is the behavior that matters.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review async UI tests',
   },
   {
     level: 'advanced',
     q: 'How do mocked API tests with MSW-style boundaries work?',
     a: 'Mock Service Worker style tests intercept requests at the network boundary instead of mocking every fetch call manually. That keeps the component closer to production behavior while still controlling success, error, delay, and malformed-response cases. The test should assert the UI contract, not the internals of the data-fetching library.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review mocked API testing',
   },
   {
     level: 'intermediate',
     q: 'How do you test hooks through components?',
     a: 'A hook should be tested through a component when its value affects rendered UI or user interactions. That keeps the test aligned with React behavior such as render, commit, effects, and cleanup. Direct hook helpers can be useful for low-level reusable hooks, but user-facing behavior is usually safer to protect.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review hook testing',
   },
   {
     level: 'advanced',
@@ -2727,8 +2701,6 @@ const REACT_TESTING_QUESTIONS: ReactFocusedQuestionItem[] = [
     level: 'intermediate',
     q: 'What makes React tests brittle?',
     a: 'React tests become brittle when they assert component names, state variables, exact DOM nesting, or implementation-specific mocks. They also become flaky when async updates, timers, and network responses are not awaited through visible UI. Prefer stable user-facing queries, realistic interactions, and one clear assertion target per behavior.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Review React testing mistakes',
   },
 ];
 
@@ -2854,8 +2826,6 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
     level: 'advanced',
     q: 'What are Suspense boundaries used for?',
     a: 'Suspense boundaries let part of the UI show a fallback while a child is waiting for supported async work. They create loading boundaries instead of forcing the whole screen to block. Placement matters because a boundary that is too high hides too much UI, while one that is too low can create noisy loading fragments.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Open the React prep path',
   },
   {
     level: 'advanced',
@@ -2868,15 +2838,11 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
     level: 'advanced',
     q: 'What are React Server Components at a high level?',
     a: 'Server Components render on the server and can access server-only resources without shipping their component code to the browser. Client Components still handle browser interactivity, state, effects, and event handlers. The boundary matters because props crossing from server to client must be serializable.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Open the React prep path',
   },
   {
     level: 'advanced',
     q: 'How do you debug a hydration mismatch?',
     a: 'A hydration mismatch happens when server-rendered markup does not match the first client render. Common causes include time-dependent output, random IDs, browser-only data, locale differences, and conditional rendering that differs between server and client. Make the initial render deterministic, then move browser-only reads into effects or client-only boundaries.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Open the React prep path',
   },
   {
     level: 'advanced',
@@ -2889,8 +2855,6 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
     level: 'intermediate',
     q: 'How should React behavior be tested?',
     a: 'React tests should assert user-visible behavior instead of private implementation details. Good coverage includes initial render, interactions, validation, loading, error, cleanup, and rerender edge cases. Testing Library style queries keep tests closer to the way users and assistive technology observe the UI.',
-    route: ['/guides', 'framework-prep', 'react-prep-path'],
-    cta: 'Open the React prep path',
   },
 ];
 
@@ -5548,6 +5512,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       return 'Vue.js interview questions and Vue JS answers for Vue 3 rounds, with short answers, reactivity scenarios, Composition API, Router, Pinia/Vuex, testing, security, performance, and coding prompts.';
     }
 
+    if (this.isReactHub()) {
+      return 'Review 66 React interview questions and answers for beginner-to-experienced frontend developers, covering hooks, state, rendering, React 19, Server Components, testing, performance, and code scenarios.';
+    }
+
     return `${this.keywordSentenceCase()} and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice concise answers first, then expand into Study Plans, guides, and Company Prep.`;
   }
 
@@ -7164,17 +7132,37 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   private schemaQuestionLinks(): SchemaQuestionLink[] {
     const seen = new Set<string>();
     const out: SchemaQuestionLink[] = [];
-    const combined = [...this.codingQuestions, ...this.triviaQuestions];
 
-    for (const row of combined) {
+    if (this.isReactHub()) {
+      this.appendSchemaQuestionLinks(out, seen, this.triviaQuestions, 12);
+      this.appendSchemaQuestionLinks(out, seen, this.codingQuestions, 8);
+      return out;
+    }
+
+    this.appendSchemaQuestionLinks(
+      out,
+      seen,
+      [...this.codingQuestions, ...this.triviaQuestions],
+      20
+    );
+    return out;
+  }
+
+  private appendSchemaQuestionLinks(
+    out: SchemaQuestionLink[],
+    seen: Set<string>,
+    rows: QuestionSummaryRow[],
+    limit: number
+  ): void {
+    let added = 0;
+    for (const row of rows) {
       const path = `/${row.tech}/${row.kind}/${row.id}`;
       if (seen.has(path)) continue;
       seen.add(path);
       out.push({ title: row.title, path });
-      if (out.length >= 20) break;
+      added += 1;
+      if (added >= limit) break;
     }
-
-    return out;
   }
 
   private breadcrumbItems(canonicalUrl: string, masterHubUrl: string): Array<Record<string, any>> {
