@@ -17,6 +17,13 @@ const REACT_SEO_KEYWORDS = [
   'react hooks interview questions',
 ];
 
+const VUE_SEO_KEYWORDS = [
+  'vue js interview questions',
+  'vue interview questions and answers',
+  'vue interview questions',
+  'vue 3 interview questions',
+];
+
 describe('React interview route SEO contract', () => {
   it('keeps Q&A ownership, ordered keywords, and the existing H1 route title', () => {
     const reactRoute = routes.find((route) => route.path === 'react/interview-questions');
@@ -30,6 +37,23 @@ describe('React interview route SEO contract', () => {
       description:
         '66 React interview questions and answers for frontend developers: hooks, state, React 19, Server Components, testing, performance, and code scenarios.',
       keywords: REACT_SEO_KEYWORDS,
+    });
+  });
+});
+
+describe('Vue interview route SEO contract', () => {
+  it('keeps Vue.js Q&A ownership, ordered keywords, and the existing H1 route title', () => {
+    const vueRoute = routes.find((route) => route.path === 'vue/interview-questions');
+    const config = vueRoute?.data?.['interviewQuestions'];
+    const seo = vueRoute?.data?.['seo'];
+
+    expect(config?.keyword).toBe('vue js interview questions');
+    expect(config?.title).toBe('Vue.js Interview Questions and Answers');
+    expect(seo).toEqual({
+      title: 'Vue.js Interview Questions and Answers: Vue 3 & Pinia',
+      description:
+        '65 Vue.js interview questions and answers for frontend developers: Vue 3, Composition API, reactivity, Pinia, Router, testing, performance, and scenarios.',
+      keywords: VUE_SEO_KEYWORDS,
     });
   });
 });
@@ -1946,18 +1970,46 @@ describe('InterviewQuestionsLandingComponent', () => {
       techs: ['vue'],
     };
     routeStub.snapshot.data.seo = {
-      title: 'Vue.js Interview Questions and Answers',
-      description: 'Vue.js interview questions and answers, beginner to advanced, for experienced developers with Vue 3, Composition API, ref vs reactive, computed vs watch, Vue Router, Pinia, Vuex, testing, security, performance, and scenario questions.',
+      title: 'Vue.js Interview Questions and Answers: Vue 3 & Pinia',
+      description:
+        '65 Vue.js interview questions and answers for frontend developers: Vue 3, Composition API, reactivity, Pinia, Router, testing, performance, and scenarios.',
+      keywords: VUE_SEO_KEYWORDS,
     };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['vue'],
       coding: [
         { id: 'vue-tabs', title: 'Vue Tabs', type: 'coding', technology: 'vue', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Build tabs.', tech: 'vue' },
         { id: 'vue-debounced-search', title: 'Vue Debounced Search', type: 'coding', technology: 'vue', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Build debounced search.', tech: 'vue' },
+        ...Array.from({ length: 6 }, (_, index) => ({
+          id: `vue-coding-${index + 1}`,
+          title: `Vue coding prompt ${index + 1}`,
+          type: 'coding',
+          technology: 'vue',
+          difficulty: 'intermediate',
+          access: 'free',
+          tags: [],
+          importance: 1,
+          companies: [],
+          description: `Build Vue prompt ${index + 1}.`,
+          tech: 'vue',
+        })),
       ],
       trivia: [
         { id: 'vue-reactivity-system', title: 'Vue reactivity system', type: 'trivia', technology: 'vue', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain reactivity.', tech: 'vue' },
         { id: 'vue-composition-api', title: 'Vue Composition API', type: 'trivia', technology: 'vue', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain Composition API.', tech: 'vue' },
+        ...Array.from({ length: 20 }, (_, index) => ({
+          id: `vue-trivia-${index + 1}`,
+          title: `Vue concept question ${index + 1}`,
+          type: 'trivia',
+          technology: 'vue',
+          difficulty: 'intermediate',
+          access: 'free',
+          tags: [],
+          importance: 1,
+          companies: [],
+          description: `Explain Vue concept ${index + 1}.`,
+          tech: 'vue',
+        })),
       ],
     };
     routeStub.snapshot.url = [{ path: 'vue' }, { path: 'interview-questions' }];
@@ -1973,10 +2025,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('Vue.js Interview Questions and Answers');
-    expect(text).toContain('Vue.js interview questions and Vue JS answers for Vue 3 rounds');
-    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain(
+      'Review 65 Vue.js interview questions and answers for beginner-to-experienced frontend developers, covering Vue 3, Composition API, reactivity, Router, Pinia, testing, performance, and code scenarios.'
+    );
+    expect(text).toContain('Updated August 13, 2026');
     expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance');
+    expect(fixture.nativeElement.querySelectorAll('h1').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('h1')?.textContent?.trim()).toBe('Vue.js Interview Questions and Answers');
     expect(text).toContain('On this page');
     expect(text).toContain('Popular Vue.js interview question clusters');
     expect(text).toContain('Beginner Vue.js questions');
@@ -1985,14 +2041,18 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Reactivity: ref, reactive, computed, watch');
     expect(text).toContain('Router, Pinia, and Vuex');
     expect(text).toContain('Testing, security, and performance');
-    expect(text).toContain('Top Vue.js interview questions and short answers, beginner to advanced');
+    expect(text).toContain('Vue.js interview questions and answers: beginner to advanced');
+    expect(text).not.toContain('Top Vue.js interview questions and short answers, beginner to advanced');
     expect(text).toContain('Vue.js interview questions for beginners and experienced developers');
     expect(text).toContain('Vue.js interview questions for beginners');
     expect(text).toContain('Vue.js interview questions for experienced developers');
     expect(text).toContain('Vue reactivity and rendering interview questions');
     expect(text).toContain('Vue component contract interview questions');
     expect(text).toContain('Vue scenario and code interview questions');
-    expect(text).toContain('Modern Vue 3 interview questions');
+    expect(text).toContain('Vue 3 interview questions and answers');
+    expect(text).not.toContain('Modern Vue 3 interview questions');
+    expect(text).toContain('Does this page include Vue 3 interview questions and answers?');
+    expect(text).not.toContain('Does this page cover Vue 3 and Composition API interview questions?');
     expect(text).toContain('Vue testing, security, and performance interview questions');
     for (const question of VUE_SHORT_ANSWER_QUESTIONS) {
       expect(text).toContain(question);
@@ -2012,20 +2072,20 @@ describe('InterviewQuestionsLandingComponent', () => {
     for (const question of VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS) {
       expect(text).toContain(question);
     }
-    expect(text.indexOf('Top Vue.js interview questions and short answers, beginner to advanced')).toBeLessThan(
+    expect(text.indexOf('Vue.js interview questions and answers: beginner to advanced')).toBeLessThan(
       text.indexOf('Vue reactivity and rendering interview questions')
     );
     expect(text.indexOf('Vue testing, security, and performance interview questions')).toBeLessThan(
       text.indexOf('Most crucial Vue coding interview questions')
     );
-    expect(text.indexOf('Modern Vue 3 interview questions')).toBeLessThan(
+    expect(text.indexOf('Vue 3 interview questions and answers')).toBeLessThan(
       text.indexOf('Most crucial Vue coding interview questions')
     );
     expect(text).toContain('What Vue.js interview rounds test');
     expect(text).toContain('Most crucial Vue coding interview questions');
     expect(text).toContain('Most crucial Vue concept questions for interviews');
     expect(text).toContain('Are these Vue.js interview questions for beginners and experienced developers?');
-    expect(text).toContain('Does this page cover Vue 3 and Composition API interview questions?');
+    expect(text).toContain('Does this page include Vue 3 interview questions and answers?');
     expect(text).toContain('Does this page include Vue reactivity interview questions like ref vs reactive and computed vs watch?');
     expect(text).toContain('Does this page include Vue scenario and code interview questions?');
     expect(text).toContain('Does this page include Vue testing, security, and performance interview questions?');
@@ -2129,14 +2189,51 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-slots-default-named-scoped-slot-props"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/vue/trivia/vue-provide-inject-vs-prop-drilling-tradeoffs"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/vue/coding/vue-debounced-search"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/vue-prep-path"]')).toBeTruthy();
+    const vuePrepLinks = fixture.nativeElement.querySelectorAll(
+      'a[href="/guides/framework-prep/vue-prep-path"]'
+    );
+    expect(vuePrepLinks.length).toBe(2);
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--vue-short-answers a[href="/guides/framework-prep/vue-prep-path"]'
+      )
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--vue-modern a[href="/guides/framework-prep/vue-prep-path"]'
+      )
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--vue-testing-security a[href="/guides/framework-prep/vue-prep-path"]'
+      )
+    ).toBeNull();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
-    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(payload.title).toBe('Vue.js Interview Questions and Answers: Vue 3 & Pinia');
+    expect(payload.description).toBe(
+      '65 Vue.js interview questions and answers for frontend developers: Vue 3, Composition API, reactivity, Pinia, Router, testing, performance, and scenarios.'
+    );
+    expect(payload.keywords).toEqual(VUE_SEO_KEYWORDS);
+    expect(payload.canonical).toBe('/vue/interview-questions');
+    expect(collection?.name).toBe('Vue.js Interview Questions and Answers');
+    expect(collection?.mainEntity?.['@type']).toBe('ItemList');
+    const schemaItems = collection?.mainEntity?.itemListElement || [];
+    const schemaUrls = schemaItems.map((entry: any) => String(entry?.url || ''));
+    expect(routeStub.snapshot.data.interviewQuestionsList.trivia.length).toBeGreaterThan(20);
+    expect(schemaItems.length).toBe(20);
+    expect(new Set(schemaUrls).size).toBe(20);
+    expect(schemaUrls.slice(0, 12).every((url: string) => url.includes('/vue/trivia/'))).toBeTrue();
+    expect(schemaUrls.slice(12).every((url: string) => url.includes('/vue/coding/'))).toBeTrue();
+    expect(schemaItems.map((entry: any) => entry?.position)).toEqual(
+      Array.from({ length: 20 }, (_, index) => index + 1)
+    );
+
+    expect(collection?.dateModified).toBe('2026-08-13T00:00:00.000Z');
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('Vue.js interview questions')
@@ -2190,6 +2287,9 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('Vue coding interview questions')
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
+      String(entry?.name || '').includes('Vue 3 interview questions and answers')
+    )).toBeTrue();
+    expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Vue scenario and code questions')
     )).toBeTrue();
     expect((collection?.mentions || []).some((entry: any) =>
@@ -2199,7 +2299,7 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('Vue SSR, Nuxt, and hydration')
     )).toBeTrue();
     expect(faqPage).toBeTruthy();
-    expect(faqPage?.name).toBe('Top Vue.js interview questions and short answers, beginner to advanced');
+    expect(faqPage?.name).toBe('Vue.js interview questions and answers: beginner to advanced');
     expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
     expect(faqPage?.mainEntity.length).toBe(25);
     expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(VUE_SHORT_ANSWER_QUESTIONS);

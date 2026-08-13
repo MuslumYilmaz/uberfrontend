@@ -1350,9 +1350,15 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'Vue.js Interview Questions: 65 Q&A, Vue 3 and Pinia',
+        title: 'Vue.js Interview Questions and Answers: Vue 3 & Pinia',
         description:
-          '65 Vue.js interview questions for frontend developers: beginner-to-advanced Q&A, Vue 3, Composition API, reactivity, Pinia, Router, performance, scenarios.',
+          '65 Vue.js interview questions and answers for frontend developers: Vue 3, Composition API, reactivity, Pinia, Router, testing, performance, and scenarios.',
+        keywords: [
+          'vue js interview questions',
+          'vue interview questions and answers',
+          'vue interview questions',
+          'vue 3 interview questions',
+        ],
       },
     },
   },
