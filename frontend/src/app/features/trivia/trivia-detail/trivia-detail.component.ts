@@ -61,6 +61,7 @@ import { TAG_REGISTRY, TOPIC_REGISTRY } from '../../../generated/content-metadat
 import { AngularHttpCancellationLabComponent } from './angular-http-cancellation-lab/angular-http-cancellation-lab.component';
 import { JavaScriptEventLoopExperienceComponent } from './javascript-event-loop-experience/javascript-event-loop-experience.component';
 import { ReactStaleClosureCaseFilesComponent } from './react-stale-closure-case-files/react-stale-closure-case-files.component';
+import { CssStickyDebuggingLabComponent } from './css-sticky-debugging-lab/css-sticky-debugging-lab.component';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -196,6 +197,7 @@ const NGRX_DATA_FLOW_TRACE_QUESTION_ID = 'ngrx-data-flow-end-to-end-angular';
 const ANGULAR_FORMS_FLOW_QUESTION_ID = 'angular-template-driven-vs-reactive-forms-which-scales';
 const ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID = 'angular-http-what-actually-cancels-request';
 const JAVASCRIPT_EVENT_LOOP_QUESTION_ID = 'js-event-loop';
+const CSS_STICKY_DEBUGGING_LAB_QUESTION_ID = 'css-position-sticky-not-working';
 const JAVASCRIPT_EVENT_LOOP_COMPLETION_STORAGE_KEY = 'fa:trivia:lab-complete:js_event_loop_75s_v1';
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
@@ -611,6 +613,7 @@ function buildTagRegex(tag: string): RegExp {
     AngularHttpCancellationLabComponent,
     JavaScriptEventLoopExperienceComponent,
     ReactStaleClosureCaseFilesComponent,
+    CssStickyDebuggingLabComponent,
   ],
   templateUrl: './trivia-detail.component.html',
   styleUrls: ['./trivia-detail.component.css'],
@@ -926,6 +929,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return q?.id === JAVASCRIPT_EVENT_LOOP_QUESTION_ID;
   }
 
+  showCssStickyDebuggingLab(q?: Question | null): boolean {
+    return q?.id === CSS_STICKY_DEBUGGING_LAB_QUESTION_ID;
+  }
+
   onJavascriptEventLoopExperienceCompleted(): void {
     const q = this.question();
     if (!q || !this.showJavascriptEventLoopExperience(q)) return;
@@ -946,6 +953,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   primaryAnswerHeading(q?: Question | null): string {
     if (this.showAngularHttpCancellationLab(q)) return '15-second answer';
+    if (this.showCssStickyDebuggingLab(q)) return 'Quick diagnosis';
     return this.isReactStaleClosuresLanding(q)
       ? 'React stale closures: direct answer'
       : 'Interview quick answer';
@@ -954,6 +962,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   fullAnswerHeading(q?: Question | null): string {
     if (this.isOutputQuestion(q)) return 'Deep dive';
     if (this.showAngularHttpCancellationLab(q)) return 'Cancellation patterns, proof, and production rules';
+    if (this.showCssStickyDebuggingLab(q)) return 'CSS sticky failure modes, proof, and fixes';
     if (this.isReactStaleClosuresLanding(q)) return 'Diagnosis table and production review';
     if (this.showAsyncRaceSimulator(q)) return 'How to prevent stale async UI';
     return 'Full interview answer';
@@ -1321,7 +1330,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   visibleQuestionHeadline(q?: Question | null): string {
     const title = this.visibleH1QuestionText(q);
-    const intentLabel = this.visibleH1IntentLabel(q);
+    const intentLabel = TRIVIA_H1_INTENT_LABEL;
     if (title && intentLabel) return `${title} - ${intentLabel}`;
     return title || intentLabel;
   }

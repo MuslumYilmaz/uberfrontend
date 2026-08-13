@@ -2407,7 +2407,7 @@
     "route": "/css/trivia/css-position-relative-absolute-fixed",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and pins it to the viewport.",
+    "summary": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and usually anchors to the viewport.",
     "tags": [
       "css",
       "position",
@@ -2528,6 +2528,30 @@
     "updatedAt": "2026-03-08",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-text-color"
+  },
+  {
+    "id": "css-position-sticky-not-working",
+    "family": "question",
+    "title": "Why is CSS position: sticky not working?",
+    "route": "/css/trivia/css-position-sticky-not-working",
+    "tech": "css",
+    "difficulty": "intermediate",
+    "summary": "A sticky element needs a non-auto inset on the sticky axis, the intended scroll container, and enough room inside its containing block to move.",
+    "tags": [
+      "css",
+      "position",
+      "layout",
+      "debugging",
+      "devtools",
+      "flexbox",
+      "grid",
+      "z-index"
+    ],
+    "access": "free",
+    "estimatedMinutes": 10,
+    "updatedAt": "2026-08-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-position-sticky-not-working"
   },
   {
     "id": "html-contact-form-labeled",

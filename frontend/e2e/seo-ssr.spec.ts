@@ -58,6 +58,12 @@ const EVENT_LOOP_H1 = 'JavaScript Event Loop Visualizer: Learn by Predicting';
 const EVENT_LOOP_DESCRIPTION =
   'Predict the output, then step through JavaScript’s call stack, microtasks, timers, and render opportunity in a 75-second browser event-loop challenge.';
 
+const CSS_STICKY_LAB_PATH = '/css/trivia/css-position-sticky-not-working';
+const CSS_STICKY_LAB_TITLE = 'CSS Sticky Not Working? 5 Causes and Fixes';
+const CSS_STICKY_LAB_H1 = 'CSS position: sticky not working? Diagnose the root cause';
+const CSS_STICKY_LAB_DESCRIPTION =
+  'Diagnose CSS position: sticky failures with five broken layouts. Inspect overflow, insets, container height, flex/grid stretch, then test the fix.';
+
 const ANGULAR_HTTP_CANCELLATION_LAB_PATH =
   '/angular/trivia/angular-http-what-actually-cancels-request';
 const ANGULAR_HTTP_CANCELLATION_LAB_TITLE =
@@ -141,6 +147,22 @@ const CASES = [
       'Predict the browser event loop',
       'Interview focus',
       'Full interview answer',
+    ],
+  },
+  {
+    path: CSS_STICKY_LAB_PATH,
+    titleIncludes: 'CSS Sticky Not Working\\? 5 Causes and Fixes',
+    h1: 'CSS position: sticky not working? Diagnose the root cause',
+    detail: true,
+    indexable: true,
+    expectNoMonaco: true,
+    bodyTextIncludes: [
+      'Interactive CSS debugging lab',
+      'Missing inset',
+      'Unexpected scroll container',
+      'No travel room',
+      'Flex or grid stretch',
+      'Hidden behind another layer',
     ],
   },
   {
@@ -988,6 +1010,77 @@ test.describe('seo-ssr', () => {
       url: expectedCanonical(EVENT_LOOP_PATH),
       mainEntityOfPage: expectedCanonical(EVENT_LOOP_PATH),
       isAccessibleForFree: true,
+    });
+  });
+
+  test('raw CSS sticky lab exposes exact SEO, useful no-JS diagnosis, the full answer, and supported schema', async ({ request }) => {
+    const html = await readRawHtml(request, CSS_STICKY_LAB_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(CSS_STICKY_LAB_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(CSS_STICKY_LAB_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(CSS_STICKY_LAB_H1);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(CSS_STICKY_LAB_PATH));
+    expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+    expect(bodyMarkup).toContain('data-testid="css-sticky-debugging-lab-placeholder"');
+    expect(bodyMarkup).not.toContain('<app-monaco-editor');
+
+    expectTextOrder(text, [
+      'Quick diagnosis',
+      'Diagnose why position: sticky is not working',
+      'Interview focus',
+      'Interview answer drill',
+      'CSS sticky failure modes, proof, and fixes',
+    ], 'raw CSS sticky lab HTML');
+    for (const expectedText of [
+      'Missing inset',
+      'Unexpected scroll container',
+      'No travel room',
+      'Flex or grid stretch',
+      'Hidden behind another layer',
+      'Inspect the ancestor chain in this order',
+      'Broken and fixed example',
+      'Sticky is not fixed',
+      'When z-index is relevant',
+      'Turn the diagnosis into assertions',
+      'Summary',
+    ]) {
+      expect(text, `CSS sticky raw HTML includes ${expectedText}`).toContain(
+        normalizeText(expectedText),
+      );
+    }
+
+    expect(schemaTypes).toContain('BreadcrumbList');
+    expect(schemaTypes).toContain('Article');
+    for (const forbiddenType of [
+      'TechArticle',
+      'Question',
+      'Quiz',
+      'FAQPage',
+      'QAPage',
+      'HowTo',
+      'SoftwareApplication',
+    ]) {
+      expect(schemaTypes, `CSS sticky schema excludes ${forbiddenType}`).not.toContain(
+        forbiddenType,
+      );
+    }
+    const article = schemaNodes.find((node) => node['@type'] === 'Article');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(CSS_STICKY_LAB_PATH),
+      headline: `${CSS_STICKY_LAB_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}`,
+      description: CSS_STICKY_LAB_DESCRIPTION,
+      url: expectedCanonical(CSS_STICKY_LAB_PATH),
+      mainEntityOfPage: expectedCanonical(CSS_STICKY_LAB_PATH),
+      isAccessibleForFree: true,
+      datePublished: '2026-08-12T00:00:00.000Z',
+      dateModified: '2026-08-12T00:00:00.000Z',
     });
   });
 

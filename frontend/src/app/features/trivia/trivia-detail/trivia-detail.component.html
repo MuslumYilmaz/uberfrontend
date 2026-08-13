@@ -212,6 +212,62 @@
                 }
             </section>
 
+            <section
+                *ngIf="showCssStickyDebuggingLab(q)"
+                id="css-sticky-debugging-lab"
+                class="css-sticky-debugging-lab-slot"
+                data-testid="css-sticky-debugging-lab-slot"
+                aria-label="CSS position sticky debugging lab">
+                @defer (on viewport; prefetch on idle) {
+                    <app-css-sticky-debugging-lab></app-css-sticky-debugging-lab>
+                } @placeholder {
+                    <div class="card css-sticky-debugging-shell" data-testid="css-sticky-debugging-lab-placeholder">
+                        <div class="css-sticky-debugging-shell__body">
+                            <p class="css-sticky-debugging-shell__eyebrow">Interactive CSS debugging lab</p>
+                            <h2>Diagnose why position: sticky is not working</h2>
+                            <p>
+                                Check the computed inset, actual scroll container, available travel, flex or grid
+                                alignment, and paint order before changing unrelated CSS.
+                            </p>
+                            <div class="css-sticky-debugging-shell__causes" aria-label="Five sticky failure checks">
+                                <details open>
+                                    <summary>Missing inset</summary>
+                                    <p>Add a non-auto inset on the sticky axis, such as <code>top: 1rem</code>.</p>
+                                </details>
+                                <details>
+                                    <summary>Unexpected scroll container</summary>
+                                    <p>Inspect ancestor overflow and verify which element actually scrolls.</p>
+                                </details>
+                                <details>
+                                    <summary>No travel room</summary>
+                                    <p>Compare the sticky element, containing block, and scroll range.</p>
+                                </details>
+                                <details>
+                                    <summary>Flex or grid stretch</summary>
+                                    <p>Verify item sizing before applying <code>align-self: start</code>.</p>
+                                </details>
+                                <details>
+                                    <summary>Hidden behind another layer</summary>
+                                    <p>Prove sticky behavior first, then inspect stacking contexts and z-index.</p>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                } @loading (minimum 120ms) {
+                    <div class="card css-sticky-debugging-shell css-sticky-debugging-shell--status" role="status">
+                        Preparing the CSS inspector…
+                    </div>
+                } @error {
+                    <div class="card css-sticky-debugging-shell css-sticky-debugging-shell--status" role="alert">
+                        <strong>The interactive inspector could not load.</strong>
+                        <span>The complete debugging guide remains available below.</span>
+                        <a [routerLink]="['/css', 'trivia', 'css-position-relative-absolute-fixed']">
+                            Review the CSS positioning model
+                        </a>
+                    </div>
+                }
+            </section>
+
             <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
 
             <app-angular-http-cancellation-lab

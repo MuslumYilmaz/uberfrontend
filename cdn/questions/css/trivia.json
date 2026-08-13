@@ -2026,7 +2026,7 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and pins it to the viewport. Use relative for anchoring children, absolute for overlays, and fixed for sticky UI like headers. Positioning affects stacking, layout flow, and performance; test scrolling and overlap edge cases.",
+    "description": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and usually anchors to the viewport. Use relative for anchoring children, absolute for overlays, and fixed for persistent viewport controls. Positioning affects stacking and layout flow, so test scrolling and overlap edge cases.",
     "answer": {
       "blocks": [
         {
@@ -2058,7 +2058,7 @@
               "fixed",
               "Viewport (browser window)",
               "❌ No",
-              "Sticky headers, floating buttons, or navigation bars that stay in view."
+              "Viewport-anchored controls, floating buttons, or persistent navigation."
             ]
           ],
           "caption": "Comparison of positioning types"
@@ -2078,11 +2078,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Positioning Hierarchy</strong><br><ul><li>Nested <code>absolute</code> elements look for the nearest ancestor with <code>position: relative</code> or <code>absolute</code> to align against.</li><li>Fixed elements always align with the viewport unless inside a transformed parent (e.g., <code>transform: translateZ(0)</code> creates a new stacking context).</li></ul>"
+          "text": "<strong>Positioning Hierarchy</strong><br><ul><li>An absolutely positioned element uses the nearest ancestor that establishes its absolute-positioning containing block; a positioned ancestor commonly provides that anchor.</li><li>A fixed element normally uses the initial containing block. Properties such as <code>transform</code>, <code>filter</code>, or <code>perspective</code> on an ancestor can establish a different fixed-positioning containing block, so inspect the ancestor chain before assuming the viewport is the reference.</li></ul>"
         },
         {
           "type": "text",
           "text": "<strong>Use Cases</strong><br><ul><li><code>relative</code>: fine-tune an element’s position for minor alignment.</li><li><code>absolute</code>: create dropdown menus or tooltips detached from normal layout flow.</li><li><code>fixed</code>: keep navigation bars or chat buttons visible during scrolling.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Debug sticky separately</strong><br><br><code>position: sticky</code> remains in normal flow and is constrained by a scrollport and containing block, so it is not just another name for fixed positioning. If a sticky header or sidebar scrolls away, use the <a href=\"/css/trivia/css-position-sticky-not-working\">CSS sticky debugging lab</a> to inspect its inset, real scroll container, available travel, flex or grid alignment, and paint order."
         },
         {
           "type": "text",
@@ -2134,6 +2138,151 @@
       ],
       "correctOptionId": "absolute-needs-positioned-ancestor-fixed-uses-viewport",
       "rereadPrompt": "Not quite. The key lesson is that `relative`, `absolute`, and `fixed` are different positioning models. `relative` keeps an element in flow, `absolute` looks for the nearest positioned ancestor, and `fixed` anchors to the viewport. Most \"absolute is broken\" bugs are really missing-parent-anchor bugs."
+    }
+  },
+  {
+    "id": "css-position-sticky-not-working",
+    "title": "Why is CSS position: sticky not working?",
+    "technology": "css",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "estimatedMinutes": 10,
+    "description": "A sticky element needs a non-auto inset on the sticky axis, the intended scroll container, and enough room inside its containing block to move. Flex or grid stretching can remove that room, while stacking contexts can make a correctly sticky element look hidden. Inspect computed styles and geometry before changing z-index.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>When <code>position: sticky</code> appears not to work, first prove four things: the element has a non-<code>auto</code> inset such as <code>top: 0</code>; you are scrolling the container sticky actually uses; that container has scroll range; and the sticky box has room to travel inside its containing block. If those checks pass but the element is covered, inspect paint order and stacking contexts. A larger <code>z-index</code> cannot repair missing scroll geometry."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Symptom",
+            "Likely cause",
+            "DevTools evidence",
+            "Smallest justified fix"
+          ],
+          "rows": [
+            [
+              "It behaves like relative positioning",
+              "Both insets on the sticky axis compute to auto",
+              "Computed <code>top</code>/<code>bottom</code> or logical insets are <code>auto</code>",
+              "Set one axis-appropriate inset, such as <code>inset-block-start: 0</code>"
+            ],
+            [
+              "It follows the wrong scroller",
+              "An ancestor establishes the nearest scroll container",
+              "Ancestor computed overflow and scroll range identify a different scroll owner",
+              "Keep the intended scroller and give it real range, or remove the accidental overflow rule"
+            ],
+            [
+              "It sticks only briefly or never visibly travels",
+              "The containing block is too short, or the sticky box consumes the available runway",
+              "Sticky height approaches parent height; parent end constrains the box immediately",
+              "Increase the containing block's useful height or reduce the sticky box's block size"
+            ],
+            [
+              "A flex/grid sidebar will not appear to move",
+              "Cross-axis stretching removes useful travel in this layout",
+              "Computed <code>align-self</code> and equal item/container dimensions confirm stretching",
+              "Use <code>align-self: start</code> only when the measurements prove stretch is the cause"
+            ],
+            [
+              "It sticks but disappears behind content",
+              "Paint order or an ancestor stacking context covers it",
+              "The top coordinate is correct, but <code>elementFromPoint()</code> finds another painted element",
+              "Fix the owning stacking context, then use the smallest layer value required"
+            ]
+          ],
+          "caption": "Treat sticky as a geometry problem first and a layering problem only after geometry passes."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Five failure cases in the debugging lab</strong><br><br>The lab above isolates one variable at a time: <code>missing-inset</code>, <code>unexpected-scroll-container</code>, <code>no-travel-room</code>, <code>flex-grid-stretch</code>, and <code>sticks-but-hidden</code>. Run the inspector before applying a fix. That baseline matters because several fixes can make the demo look different while leaving the original root cause unproven."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Inspect the ancestor chain in this order</strong><br><ol><li>Confirm the target's computed <code>position</code> is <code>sticky</code>; a more specific selector may have overridden it.</li><li>Check the inset for the axis you expect to stick. If both relevant insets are <code>auto</code>, sticky behaves like relative positioning on that axis.</li><li>Walk ancestors and record computed <code>overflow-x</code>/<code>overflow-y</code>. Do not assume the page viewport is the scroll owner.</li><li>For the actual scroll container, compare <code>scrollHeight</code> with <code>clientHeight</code> and verify its <code>scrollTop</code> changes.</li><li>Compare the sticky box with its containing block. Sticky is constrained when the opposite edge of that block is reached.</li><li>In flex and grid layouts, inspect <code>align-items</code>, <code>align-self</code>, and measured heights before changing alignment.</li><li>Only after the position changes correctly, inspect stacking-context owners and which element is painted at the sticky coordinates.</li></ol>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Broken and fixed example</strong><br><br>This markup has an intentional inner scroller. The broken rule declares sticky but provides no threshold on the block axis."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<div class=\"results\">\n  <aside class=\"filters\">Filters</aside>\n  <main class=\"items\">\n    <!-- enough results to make .results scroll -->\n  </main>\n</div>"
+        },
+        {
+          "type": "code",
+          "language": "css",
+          "code": ".results {\n  display: grid;\n  grid-template-columns: 12rem minmax(0, 1fr);\n  align-items: start;\n  max-block-size: 24rem;\n  overflow-y: auto;\n}\n\n/* Broken: no non-auto block-axis inset. */\n.filters {\n  position: sticky;\n}\n\n/* Fixed for this measured layout. */\n.filters {\n  position: sticky;\n  inset-block-start: 0;\n}"
+        },
+        {
+          "type": "text",
+          "text": "The fix is specific to the evidence. <code>overflow-y: auto</code> is correct here because <code>.results</code> is deliberately the scroller and has a constrained block size plus overflowing content. Do not copy a blanket rule that every ancestor must use <code>overflow: visible</code>. Likewise, <code>align-self: start</code> is useful when stretching removed the runway; it is not required for every sticky element."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Sticky is not fixed</strong><br><br>A sticky box remains in normal flow and is offset against a sticky view rectangle associated with its nearest relevant scrollport. It is also constrained by its containing block, so it stops sticking when that boundary reaches it. A fixed box is out of flow and normally uses the initial containing block. If the requirement is “stay visible for the entire viewport regardless of section boundaries,” that may be a fixed-position requirement rather than a broken sticky implementation. Review the <a href=\"/css/trivia/css-position-relative-absolute-fixed\">CSS positioning model for relative, absolute, and fixed boxes</a> before changing the behavior."
+        },
+        {
+          "type": "text",
+          "text": "<strong>When z-index is relevant</strong><br><br><code>position: sticky</code> creates a stacking context, but that does not guarantee it will paint above a sibling in another ancestor context. If controlled scrolling shows the box holding the correct inset while content still covers it, inspect the parent contexts, paint order, and backgrounds. Fix ownership at the appropriate layer boundary instead of escalating to <code>z-index: 999999</code>. The <a href=\"/css/trivia/css-z-index\">z-index and stacking-context guide</a> covers that failure separately. A transform on an ancestor can affect containing blocks or stacking, but it does not universally disable sticky positioning; prove the actual geometry and paint result."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Turn the diagnosis into assertions</strong><br><ul><li>The intended scroll owner has <code>scrollHeight &gt; clientHeight</code>, and a test can change its <code>scrollTop</code>.</li><li>Before the threshold, the sticky box moves with normal flow; after the threshold, its top remains within a small pixel tolerance of the resolved inset.</li><li>The sticky box never crosses the ending edge imposed by its containing block.</li><li>At the expected sticky coordinates, <code>document.elementFromPoint()</code> resolves to the sticky box or one of its descendants when it should be visible.</li><li>Repeat at narrow and wide container sizes because content wrapping can change both scroll range and runway. Continue with <a href=\"/css/trivia/css-make-element-responsive\">responsive CSS constraints</a> for that part of the test matrix.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Standards check</strong><br><br>The terminology and axis behavior here follow the <a href=\"https://drafts.csswg.org/css-position-3/#sticky-pos\" target=\"_blank\" rel=\"noopener noreferrer\">CSS Positioned Layout specification</a>: sticky insets reference the nearest relevant scrollport, and the box remains constrained by its containing block. MDN's <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position\" target=\"_blank\" rel=\"noopener noreferrer\"><code>position</code> reference</a> also documents the non-<code>auto</code> inset requirement and why the nearest ancestor with a scrolling mechanism may not be the ancestor you expected to scroll."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><ul><li>Start with computed <code>position</code> and a non-<code>auto</code> inset on the sticky axis.</li><li>Identify the actual scroll container from ancestor overflow and measured scroll range.</li><li>Measure containing-block runway and flex/grid stretching instead of guessing.</li><li>Use z-index only when scrolling proves the box is sticky but paint-order evidence shows it is covered.</li><li>Test geometry at responsive widths and keep each fix tied to the failure it actually proves.</li></ul>"
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "css",
+      "position",
+      "layout",
+      "debugging",
+      "devtools",
+      "flexbox",
+      "grid",
+      "z-index"
+    ],
+    "publishedAt": "2026-08-12",
+    "updatedAt": "2026-08-12",
+    "seo": {
+      "title": "CSS Sticky Not Working? 5 Causes and Fixes",
+      "h1": "CSS position: sticky not working? Diagnose the root cause",
+      "h1IntentLabel": "Interactive CSS debugging lab",
+      "description": "Diagnose CSS position: sticky failures with five broken layouts. Inspect overflow, insets, container height, flex/grid stretch, then test the fix."
+    },
+    "incidentCard": {
+      "title": "Sticky Root Cause Check",
+      "scenario": "A filter sidebar has `position: sticky`, but it scrolls away. One teammate says, \"Set z-index to 9999; sticky bugs are usually layering bugs.\" Another says, \"First prove the computed inset, identify the scroll container from ancestor overflow, and measure whether the element has room to travel. Use z-index only if scrolling proves it sticks but another layer covers it.\" Which response is better?",
+      "options": [
+        {
+          "id": "increase-z-index-before-checking-scroll-geometry",
+          "label": "The first response is better. A sufficiently large z-index forces sticky positioning to activate and makes the element use the viewport as its scroll container."
+        },
+        {
+          "id": "prove-inset-scroll-owner-and-travel-before-layering",
+          "label": "The second response is better. Prove the sticky inset, actual scroll owner, scroll range, and containing-block runway first. Investigate z-index only when geometry works and paint-order evidence shows the element is covered."
+        },
+        {
+          "id": "replace-sticky-with-fixed-without-measuring",
+          "label": "The safest response is to replace sticky with fixed immediately, because fixed and sticky have the same flow and containing-block behavior once an element starts scrolling."
+        }
+      ],
+      "correctOptionId": "prove-inset-scroll-owner-and-travel-before-layering",
+      "rereadPrompt": "Not quite. A z-index changes paint order, not the inset, scroll owner, scroll range, or containing-block runway that makes sticky geometry work. Measure those first; diagnose layering only after the element demonstrably sticks."
     }
   },
   {
@@ -2314,11 +2463,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Stacking Context</strong><br>Each positioned element with a <code>z-index</code> forms a new stacking context. Elements inside one context are layered relative to each other but cannot overlap elements outside that context. Contexts are created by certain properties like:<br><ul><li><code>position</code> (relative, absolute, fixed) with z-index.</li><li><code>opacity: 1</code></li><li><code>transform</code>, <code>filter</code>, or <code>perspective</code>.</li><li><code>isolation: isolate;</code></li></ul>"
+          "text": "<strong>Stacking Context</strong><br>Positioned elements with a non-<code>auto</code> <code>z-index</code> can establish a new stacking context; fixed and sticky positioned elements establish one even when <code>z-index</code> is <code>auto</code>. Descendants are ordered inside that context and cannot escape it merely by using a larger number. Other context triggers include:<br><ul><li><code>opacity</code> values below <code>1</code>.</li><li><code>transform</code>, <code>filter</code>, or <code>perspective</code> values other than <code>none</code>.</li><li><code>isolation: isolate;</code></li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Common Pitfalls</strong><br><ul><li>Setting <code>z-index</code> on an element without a positioning context (e.g., <code>position: static</code>) has no effect.</li><li>Nested stacking contexts can cause confusion — an element may appear behind another even if it has a higher z-index, depending on its parent’s context.</li></ul>"
+          "text": "<strong>Common Pitfalls</strong><br><ul><li>For ordinary boxes, a static-positioned element's <code>z-index</code> does not apply. Flex and grid items are an important exception: they can participate in z-ordering without becoming positioned.</li><li>Nested stacking contexts can cause confusion — an element may appear behind another even if it has a higher z-index, depending on its parent’s context.</li></ul>"
         },
         {
           "type": "text",
@@ -2326,15 +2475,19 @@
         },
         {
           "type": "text",
+          "text": "<strong>Sticky works but looks broken?</strong><br><br>If the element follows the sticky threshold but another layer covers it, then paint order or a parent stacking context is the likely problem. If it never reaches the threshold at all, changing <code>z-index</code> cannot fix the scroll geometry. Use the <a href=\"/css/trivia/css-position-sticky-not-working\">position: sticky diagnostic</a> to distinguish those two failures before changing the layer scale."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of z-index like layers in Photoshop — each element lives on a sheet. The higher the z-index, the closer to your eyes it appears. But if it's in a different folder (stacking context), it can’t overlap layers in another folder."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>z-index</code> controls visual stacking of positioned elements.</li><li>Works only inside stacking contexts.</li><li>Higher values appear above lower ones.</li><li>Context isolation can cause seemingly incorrect overlaps — always check parent elements.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li><code>z-index</code> controls visual stacking of positioned boxes and flex or grid items.</li><li>Comparisons happen inside stacking contexts, not on one global number line.</li><li>Higher values appear above lower values only when the relevant boxes are comparable in the same context.</li><li>Context isolation can cause seemingly incorrect overlaps — always check parent elements.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Ensure a dropdown appears above a sticky header and modal overlay.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting z-index only works on positioned elements.</li><li>Creating new stacking contexts with transforms or opacity.</li><li>Using huge z-index values without a scale.</li></ul><strong>Trade-off or test tip</strong><br>Central z-index scales reduce chaos. Test overlays in combination (dropdown + modal).</strong>"
+          "text": "<strong>Practical scenario</strong><br>Ensure a dropdown appears above a sticky header and modal overlay.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming <code>z-index</code> is global, or forgetting that flex and grid items are exceptions to the usual positioned-box rule.</li><li>Creating new stacking contexts with transforms or opacity below <code>1</code>.</li><li>Using huge z-index values without a scale.</li></ul><strong>Trade-off or test tip</strong><br>Central z-index scales reduce chaos. Test overlays in combination (dropdown + modal).</strong>"
         }
       ]
     },

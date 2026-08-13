@@ -71,7 +71,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "<strong>Practical scenario</strong><br>Ensure a dropdown appears above a sticky header and modal overlay.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting z-index only works on positioned elements.</li><li>Creating new stacking contexts with transforms or opacity.</li><li>Using huge z-index values without a scale.</li></ul><strong>Trade-off or test tip</strong><br>Central z-index scales reduce chaos. Test overlays in combination (dropdown + modal).</strong>"
+          "<strong>Practical scenario</strong><br>Ensure a dropdown appears above a sticky header and modal overlay.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming <code>z-index</code> is global, or forgetting that flex and grid items are exceptions to the usual positioned-box rule.</li><li>Creating new stacking contexts with transforms or opacity below <code>1</code>.</li><li>Using huge z-index values without a scale.</li></ul><strong>Trade-off or test tip</strong><br>Central z-index scales reduce chaos. Test overlays in combination (dropdown + modal).</strong>"
         ],
         "followUpConfusion": [
           "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of z-index like layers in Photoshop — each element lives on a sheet. The higher the z-index, the closer to your eyes it appears. But if it's in a different folder (stacking context), it can’t overlap layers in another folder."
@@ -118,7 +118,7 @@
           "<strong>Debug lens</strong><br><br>Most <code>z-index</code> bugs are not about picking a larger number. They happen because the wrong stacking context owns the layer order. Once opacity, transform, filters, or positioned ancestors create a new context, your huge z-index value may still lose. That is why z-index debugging is really stacking-context debugging."
         ],
         "followUpConfusion": [
-          "<strong>Common Pitfalls</strong><br><ul><li>Setting <code>z-index</code> on an element without a positioning context (e.g., <code>position: static</code>) has no effect.</li><li>Nested stacking contexts can cause confusion — an element may appear behind another even if it has a higher z-index, depending on its parent’s context.</li></ul>"
+          "<strong>Common Pitfalls</strong><br><ul><li>For ordinary boxes, a static-positioned element's <code>z-index</code> does not apply. Flex and grid items are an important exception: they can participate in z-ordering without becoming positioned.</li><li>Nested stacking contexts can cause confusion — an element may appear behind another even if it has a higher z-index, depending on its parent’s context.</li></ul>"
         ]
       },
       "theirEvidence": {

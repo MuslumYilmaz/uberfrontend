@@ -370,7 +370,7 @@ describe('TriviaDetailComponent', () => {
     expect(String(article?.keywords || '')).not.toContain('meta');
   });
 
-  it('uses question-level SEO H1 intent label for visible H1 and article headline', async () => {
+  it('uses a question-level H1 intent label while preserving the shared Article headline contract', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
         title: 'Angular HttpClient unsubscribe: 5 cancellation gotchas',
@@ -391,7 +391,7 @@ describe('TriviaDetailComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const { article } = expectCommonTriviaSchema(payload);
 
-    expect(article?.headline).toBe('What is closure? - Debugging interview answer');
+    expect(article?.headline).toBe('What is closure? - Frontend interview practice question');
   });
 
   it('keeps the interview-practice label alongside a question-level SEO H1 override', async () => {
@@ -2459,6 +2459,37 @@ describe('TriviaDetailComponent', () => {
     const fixture = await createLoadedFixture('free');
 
     expect(fixture.nativeElement.querySelector('[data-testid="javascript-event-loop-experience-slot"]')).toBeNull();
+  });
+
+  it('places the deferred CSS sticky lab after the quick answer and before interview practice', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'css-position-sticky-not-working',
+      title: 'Why is CSS position: sticky not working?',
+      technology: 'css' as any,
+      tags: ['css', 'position', 'debugging'],
+    });
+
+    const quickAnswer = Array.from(fixture.nativeElement.querySelectorAll('.card'))
+      .find((element: any) => element.querySelector('.card-head')?.textContent?.includes('Quick diagnosis')) as HTMLElement | undefined;
+    const labSlot = fixture.nativeElement.querySelector('[data-testid="css-sticky-debugging-lab-slot"]') as HTMLElement | null;
+    const interviewFocus = fixture.nativeElement.querySelector('.interview-focus') as HTMLElement | null;
+    const fullAnswer = fixture.nativeElement.querySelector('[data-testid="trivia-full-answer"]') as HTMLElement | null;
+
+    expect(quickAnswer).toBeTruthy();
+    expect(labSlot).toBeTruthy();
+    expect(interviewFocus).toBeTruthy();
+    expect(fullAnswer).toBeTruthy();
+    expect(quickAnswer!.compareDocumentPosition(labSlot!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(labSlot!.compareDocumentPosition(interviewFocus!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(interviewFocus!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(labSlot?.textContent || '').toContain('Diagnose why position: sticky is not working');
+    expect(labSlot?.textContent || '').toContain('Unexpected scroll container');
+  });
+
+  it('does not render the CSS sticky lab on other trivia questions', async () => {
+    const fixture = await createLoadedFixture('free');
+
+    expect(fixture.nativeElement.querySelector('[data-testid="css-sticky-debugging-lab-slot"]')).toBeNull();
   });
 
   it('uses a completed event-loop experience instead of the incident gate without auto-completing', async () => {

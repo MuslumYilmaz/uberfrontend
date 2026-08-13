@@ -1,0 +1,340 @@
+<section
+  class="sticky-lab"
+  data-testid="css-sticky-debugging-lab"
+  aria-labelledby="sticky-lab-title"
+>
+  <header class="sticky-lab__header">
+    <p class="sticky-lab__eyebrow">Interactive CSS debugging lab</p>
+    <h2 id="sticky-lab-title">Prove why sticky fails—then verify the fix</h2>
+    <p>
+      Edit the CSS for a trusted layout, run a real browser measurement, and inspect the
+      scroll owner, inset, available travel, and paint order. Your CSS stays inside this lab.
+    </p>
+    <div class="sticky-lab__meta" aria-label="Lab details">
+      <span>5 broken layouts</span>
+      <span>CSS-only editor</span>
+      <span>Computed-style evidence</span>
+    </div>
+  </header>
+
+  <nav class="sticky-lab__cases" aria-label="Sticky failure cases">
+    <fa-chip
+      *ngFor="let stickyCase of cases; trackBy: trackCase"
+      size="sm"
+      [label]="stickyCase.label"
+      [selected]="state().selectedCaseId === stickyCase.id"
+      [testId]="'sticky-case-' + stickyCase.id"
+      (chipClick)="selectCase(stickyCase.id)"
+    ></fa-chip>
+  </nav>
+
+  <article faCard padding="md" class="sticky-lab__case-summary">
+    <div>
+      <span>Current symptom</span>
+      <h3>{{ selectedCase().label }}</h3>
+    </div>
+    <p>{{ selectedCase().symptom }}</p>
+    <p class="sticky-lab__case-hint"><strong>Inspect:</strong> {{ selectedCase().inspectorHint }}</p>
+  </article>
+
+  <nav class="sticky-lab__mobile-tabs" aria-label="Lab workspace panels">
+    <fa-chip
+      label="Code"
+      size="sm"
+      [selected]="state().pane === 'code'"
+      (chipClick)="selectPane('code')"
+    ></fa-chip>
+    <fa-chip
+      label="Preview"
+      size="sm"
+      [selected]="state().pane === 'preview'"
+      (chipClick)="selectPane('preview')"
+    ></fa-chip>
+    <fa-chip
+      label="Inspector"
+      size="sm"
+      [selected]="state().pane === 'inspector'"
+      (chipClick)="selectPane('inspector')"
+    ></fa-chip>
+  </nav>
+
+  <div class="sticky-lab__workspace">
+    <section
+      faCard
+      padding="none"
+      class="sticky-lab__panel sticky-lab__panel--code"
+      [class.is-mobile-active]="state().pane === 'code'"
+      aria-labelledby="sticky-lab-code-title"
+    >
+      <header class="sticky-lab__panel-header">
+        <div>
+          <span>Editable input</span>
+          <h3 id="sticky-lab-code-title">CSS</h3>
+        </div>
+        <button
+          *ngIf="!state().editorActive"
+          faButton
+          type="button"
+          variant="primary"
+          size="sm"
+          data-testid="sticky-activate-editor"
+          (click)="activateEditor()"
+        >
+          Edit CSS
+        </button>
+      </header>
+
+      <div class="sticky-lab__editor-shell">
+        <pre
+          *ngIf="!state().editorActive"
+          class="sticky-lab__code-snapshot"
+          tabindex="0"
+          aria-label="CSS source preview"
+        ><code>{{ state().css }}</code></pre>
+
+        <ng-container *ngIf="state().editorActive">
+          <app-monaco-editor
+            *ngIf="!state().editorFallback; else fallbackEditor"
+            class="sticky-lab__monaco"
+            [code]="state().css"
+            language="css"
+            [modelKey]="'sticky-lab-' + state().selectedCaseId + '.css'"
+            [options]="editorOptions"
+            (codeChange)="onCssChange($event)"
+            (ready)="onEditorReady()"
+            (loadFailed)="onEditorLoadFailed()"
+          ></app-monaco-editor>
+          <ng-template #fallbackEditor>
+            <label class="sticky-lab__fallback-label" for="sticky-css-fallback">
+              CSS editor fallback
+            </label>
+            <textarea
+              id="sticky-css-fallback"
+              class="sticky-lab__fallback-editor"
+              data-testid="sticky-css-fallback"
+              spellcheck="false"
+              maxlength="20000"
+              [value]="state().css"
+              (input)="onCssChange($any($event.target).value)"
+            ></textarea>
+          </ng-template>
+        </ng-container>
+      </div>
+
+      <details class="sticky-lab__trusted-html">
+        <summary>View trusted HTML fixture (read-only)</summary>
+        <pre tabindex="0"><code>{{ selectedCase().html }}</code></pre>
+      </details>
+    </section>
+
+    <section
+      faCard
+      padding="none"
+      class="sticky-lab__panel sticky-lab__panel--preview"
+      [class.is-mobile-active]="state().pane === 'preview'"
+      aria-labelledby="sticky-lab-preview-title"
+    >
+      <header class="sticky-lab__panel-header">
+        <div>
+          <span>Isolated browser</span>
+          <h3 id="sticky-lab-preview-title">Preview</h3>
+        </div>
+        <span class="sticky-lab__status" [attr.data-state]="state().status">
+          {{ state().status }}
+        </span>
+      </header>
+      <div class="sticky-lab__preview-stage">
+        <iframe
+          #previewFrame
+          class="sticky-lab__preview-frame"
+          title="CSS sticky case preview"
+          sandbox="allow-scripts"
+          referrerpolicy="no-referrer"
+          data-testid="sticky-preview-frame"
+        ></iframe>
+        <div
+          *ngIf="state().status === 'activating' || state().status === 'running'"
+          class="sticky-lab__preview-overlay"
+          aria-hidden="true"
+        >
+          {{ state().status === 'running' ? 'Measuring geometry…' : 'Starting isolated preview…' }}
+        </div>
+      </div>
+    </section>
+
+    <section
+      faCard
+      padding="none"
+      class="sticky-lab__panel sticky-lab__panel--inspector"
+      [class.is-mobile-active]="state().pane === 'inspector'"
+      aria-labelledby="sticky-lab-inspector-title"
+    >
+      <header class="sticky-lab__panel-header">
+        <div>
+          <span>Measured evidence</span>
+          <h3 id="sticky-lab-inspector-title">Inspector</h3>
+        </div>
+        <span *ngIf="state().stale" class="sticky-lab__stale">Result is stale</span>
+      </header>
+
+      <div
+        class="sticky-lab__inspector-body"
+        data-focus-target="inspector-result"
+        tabindex="-1"
+      >
+        <p *ngIf="state().errorMessage" class="sticky-lab__error">
+          {{ state().errorMessage }}
+        </p>
+
+        <div *ngIf="!inspection() && !state().errorMessage" class="sticky-lab__empty-state">
+          <strong>No measurement yet</strong>
+          <p>Run the inspector to replace sticky folklore with computed values and geometry.</p>
+        </div>
+
+        <ng-container *ngIf="inspection() as result">
+          <div
+            class="sticky-lab__finding"
+            data-testid="sticky-inspection-finding"
+            [class.is-working]="result.working"
+          >
+            <span>{{ result.working ? 'Verified' : 'Finding' }}</span>
+            <strong>{{ findingLabel(result.finding) }}</strong>
+            <p>{{ result.summary }}</p>
+          </div>
+
+          <dl class="sticky-lab__computed">
+            <div>
+              <dt>actual scroll owner</dt>
+              <dd>{{ scrollOwner(result)?.selector || 'document viewport' }}</dd>
+            </div>
+            <div>
+              <dt>position</dt>
+              <dd>{{ result.computed.position }}</dd>
+            </div>
+            <div>
+              <dt>block-start inset</dt>
+              <dd>{{ result.computed.insetBlockStart }}</dd>
+            </div>
+            <div>
+              <dt>block-end inset</dt>
+              <dd>{{ result.computed.insetBlockEnd }}</dd>
+            </div>
+            <div>
+              <dt>z-index</dt>
+              <dd>{{ result.computed.zIndex }}</dd>
+            </div>
+            <div *ngIf="scrollOwner(result) as owner">
+              <dt>owner client → scroll height</dt>
+              <dd>{{ owner.clientHeight }} → {{ owner.scrollHeight }} px</dd>
+            </div>
+            <div>
+              <dt>max scroll</dt>
+              <dd>{{ result.geometry.maxScroll }} px</dd>
+            </div>
+            <div>
+              <dt>available travel</dt>
+              <dd>{{ result.geometry.availableTravel }} px</dd>
+            </div>
+            <div>
+              <dt>target → parent height</dt>
+              <dd>{{ result.geometry.targetHeight }} → {{ result.geometry.containingBlockHeight }} px</dd>
+            </div>
+            <div>
+              <dt>scrollTop before → after</dt>
+              <dd>{{ result.geometry.scrollTopBefore }} → {{ result.geometry.scrollTopAfter }} px</dd>
+            </div>
+            <div>
+              <dt>top before → after</dt>
+              <dd>{{ result.geometry.targetTopBefore }} → {{ result.geometry.targetTopAfter }}</dd>
+            </div>
+            <div>
+              <dt>scroll owner top</dt>
+              <dd>{{ result.geometry.scrollOwnerTop }} px</dd>
+            </div>
+          </dl>
+
+          <ul class="sticky-lab__evidence" aria-label="Inspector evidence">
+            <li *ngFor="let item of result.evidence">{{ item }}</li>
+          </ul>
+
+          <details *ngIf="result.ancestors.length" class="sticky-lab__ancestors">
+            <summary>Inspect ancestor chain ({{ result.ancestors.length }})</summary>
+            <ol>
+              <li *ngFor="let ancestor of result.ancestors; trackBy: trackAncestor">
+                <button
+                  faButton
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  [attr.aria-pressed]="highlightedAncestor() === ancestor.index"
+                  (click)="highlightAncestor(ancestor.index)"
+                >
+                  {{ ancestor.selector }}
+                </button>
+                <span
+                  *ngIf="result.suspectAncestorIndex === ancestor.index"
+                  class="sticky-lab__suspect"
+                >First suspect</span>
+                <code>
+                  overflow {{ ancestor.overflowX }}/{{ ancestor.overflowY }} ·
+                  {{ ancestor.display }} · align {{ ancestor.alignItems }}/{{ ancestor.alignSelf }} ·
+                  {{ ancestor.clientHeight }}/{{ ancestor.scrollHeight }} px
+                </code>
+              </li>
+            </ol>
+          </details>
+        </ng-container>
+      </div>
+    </section>
+  </div>
+
+  <div class="sticky-lab__actions">
+    <button
+      faButton
+      type="button"
+      variant="primary"
+      size="md"
+      data-testid="sticky-run-inspection"
+      [loading]="state().status === 'running'"
+      [disabled]="state().status === 'activating'"
+      (click)="runInspection()"
+    >
+      Run &amp; inspect
+    </button>
+    <button
+      faButton
+      type="button"
+      variant="neutral"
+      size="md"
+      data-testid="sticky-apply-fix"
+      [disabled]="state().status === 'running' || state().status === 'activating'"
+      (click)="applySuggestedFix()"
+    >
+      Apply suggested fix
+    </button>
+    <button
+      faButton
+      type="button"
+      variant="ghost"
+      size="md"
+      data-testid="sticky-reset"
+      (click)="reset()"
+    >
+      Reset
+    </button>
+  </div>
+
+  <p class="sticky-lab__fix-note">
+    <strong>Suggested fix:</strong> {{ selectedCase().suggestedFix }}
+  </p>
+  <p class="sticky-lab__privacy">
+    Only the selected case, action, timing bucket, and finding are measured. CSS and HTML are
+    never included in analytics.
+  </p>
+  <p
+    class="sticky-lab__live"
+    data-testid="sticky-lab-live"
+    aria-live="polite"
+    aria-atomic="true"
+  >{{ liveMessage() }}</p>
+</section>

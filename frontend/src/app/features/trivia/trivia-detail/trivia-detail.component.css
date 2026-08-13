@@ -1735,6 +1735,10 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   min-width: 0;
 }
 
+.css-sticky-debugging-shell {
+  min-height: 42rem;
+}
+
 .event-loop-experience-shell {
   min-width: 0;
   min-height: 64rem;
