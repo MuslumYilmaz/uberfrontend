@@ -3,6 +3,7 @@ import { buildCssStickyPreviewDocument } from './css-sticky-preview-document';
 
 describe('buildCssStickyPreviewDocument', () => {
   const ids = {
+    parentOrigin: 'https://frontendatlas.test',
     sessionId: '11111111111111111111111111111111',
     frameId: '22222222222222222222222222222222',
     readyRunToken: '33333333333333333333333333333333',
@@ -24,6 +25,9 @@ describe('buildCssStickyPreviewDocument', () => {
     expect(source).not.toContain('navigate-to');
     expect(source).toContain(`nonce="${ids.nonce}"`);
     expect(source).toContain('FA_CSS_STICKY_INSPECTOR');
+    expect(source).toContain(`"parentOrigin":"${ids.parentOrigin}"`);
+    expect(source).toContain('payload), config.parentOrigin)');
+    expect(source).toContain('event.origin !== config.parentOrigin');
     expect(source).toContain(CSS_STICKY_CASES[0].html);
     expect(source.match(/<script\b/g)?.length).toBe(1);
     expect(source.match(/id="fa-user-css"/g)?.length).toBe(1);
@@ -48,5 +52,22 @@ describe('buildCssStickyPreviewDocument', () => {
       ...ids,
       nonce: `bad\"><script src="https://attacker.invalid">`,
     })).toThrowError('CSS sticky preview could not create a safe document.');
+  });
+
+  it('rejects non-HTTP tuple origins before creating the child bridge', () => {
+    for (const parentOrigin of [
+      '*',
+      'null',
+      'file:///tmp/index.html',
+      'javascript:alert(1)',
+      'https://frontendatlas.test/path',
+      'https://frontendatlas.test?query=1',
+    ]) {
+      expect(() => buildCssStickyPreviewDocument(CSS_STICKY_CASES[0], {
+        ...ids,
+        parentOrigin,
+      })).withContext(parentOrigin)
+        .toThrowError('CSS sticky preview requires a trusted HTTP(S) parent origin.');
+    }
   });
 });

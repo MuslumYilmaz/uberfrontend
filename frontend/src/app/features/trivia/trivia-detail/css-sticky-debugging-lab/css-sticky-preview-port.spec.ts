@@ -22,6 +22,18 @@ describe('BrowserCssStickyPreviewPort', () => {
     port.destroy();
   });
 
+  it('fails closed before mounting under a non-HTTP parent origin', async () => {
+    const opaqueHost = { location: { origin: 'null' } } as unknown as Window;
+    const port = new BrowserCssStickyPreviewPort(opaqueHost);
+    const mounted = createFrame();
+
+    await expectAsync(port.mount(mounted.frame, 'missing-inset'))
+      .toBeRejectedWith(jasmine.objectContaining({ code: 'unavailable' }));
+    expect(mounted.srcdoc()).toBe('');
+    expect(mounted.postMessage).not.toHaveBeenCalled();
+    port.destroy();
+  });
+
   it('accepts ready only from the mounted frame with the current protocol IDs', fakeAsync(() => {
     const port = createPort();
     const mounted = createFrame();
@@ -31,12 +43,14 @@ describe('BrowserCssStickyPreviewPort', () => {
 
     dispatchChild({ ...readyMessage(ids), sessionId: 'forged' }, mounted.childWindow);
     dispatchChild(readyMessage(ids), {} as Window);
+    dispatchChild(readyMessage(ids), mounted.childWindow, 'https://attacker.invalid');
     flushMicrotasks();
     expect(ready).toBeFalse();
 
     dispatchChild(readyMessage(ids), mounted.childWindow);
     flushMicrotasks();
     expect(ready).toBeTrue();
+    expect(ids.parentOrigin).toBe(window.location.origin);
     expect(mounted.srcdoc()).toContain(`default-src 'none'`);
     port.destroy();
   }));
@@ -55,6 +69,7 @@ describe('BrowserCssStickyPreviewPort', () => {
     const command = latestCommand(mounted.postMessage);
 
     expect(command['css']).toContain('top: 0');
+    expect(mounted.postMessage.calls.mostRecent().args[1]).toBe('*');
     expect(mounted.srcdoc()).not.toContain(`.sticky-target { position: sticky; top: 0; }`);
     dispatchChild(resultMessage(command, validInspection()), foreignSource());
     dispatchChild(resultMessage({ ...command, runToken: 'stale' }, validInspection()), mounted.childWindow);
@@ -166,6 +181,7 @@ describe('BrowserCssStickyPreviewPort', () => {
     expect(highlight['kind']).toBe('highlight');
     expect(highlight['runId']).toBe(inspect['runId']);
     expect(highlight['runToken']).toBe(inspect['runToken']);
+    expect(mounted.postMessage.calls.mostRecent().args[1]).toBe('*');
 
     const calls = mounted.postMessage.calls.count();
     port.highlight(99);
@@ -227,13 +243,20 @@ async function readyFrameAsync(port: BrowserCssStickyPreviewPort): Promise<Frame
   return mounted;
 }
 
-function protocolIds(source: string): { sessionId: string; frameId: string; readyRunToken: string; caseId: string } {
+function protocolIds(source: string): {
+  parentOrigin: string;
+  sessionId: string;
+  frameId: string;
+  readyRunToken: string;
+  caseId: string;
+} {
   const read = (name: string): string => {
     const match = source.match(new RegExp(`"${name}":"([^"]+)"`));
     if (!match) throw new Error(`Missing ${name} in preview document`);
     return match[1];
   };
   return {
+    parentOrigin: read('parentOrigin'),
     sessionId: read('sessionId'),
     frameId: read('frameId'),
     readyRunToken: read('readyRunToken'),
@@ -272,11 +295,12 @@ function latestCommand(spy: jasmine.Spy): Record<string, unknown> {
   return spy.calls.mostRecent().args[0] as Record<string, unknown>;
 }
 
-function dispatchChild(data: Record<string, unknown>, source: Window): void {
+function dispatchChild(data: Record<string, unknown>, source: Window, origin = 'null'): void {
   const event = new Event('message') as MessageEvent;
   Object.defineProperties(event, {
     data: { configurable: true, value: data },
     source: { configurable: true, value: source },
+    origin: { configurable: true, value: origin },
   });
   window.dispatchEvent(event);
 }

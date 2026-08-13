@@ -12,6 +12,7 @@ import {
   CSS_STICKY_PREVIEW_CHANNEL,
   CSS_STICKY_PREVIEW_VERSION,
   CssStickyHostMessage,
+  normalizeCssStickyHttpOrigin,
   normalizeCssStickyInspection,
 } from './css-sticky-preview-protocol';
 
@@ -97,6 +98,10 @@ export class BrowserCssStickyPreviewPort implements CssStickyPreviewPort {
     if (!isSafelySandboxed(frame)) {
       return Promise.reject(new CssStickyPreviewError('unsafe-frame'));
     }
+    const parentOrigin = normalizeCssStickyHttpOrigin(this.hostWindow.location.origin);
+    if (!parentOrigin) {
+      return Promise.reject(new CssStickyPreviewError('unavailable'));
+    }
 
     this.resetMount();
     const stickyCase = getCssStickyCase(caseId);
@@ -122,6 +127,7 @@ export class BrowserCssStickyPreviewPort implements CssStickyPreviewPort {
 
     try {
       frame.srcdoc = buildCssStickyPreviewDocument(stickyCase, {
+        parentOrigin,
         sessionId: this.sessionId,
         frameId: this.frameId,
         readyRunToken: this.readyRunToken,
@@ -179,6 +185,9 @@ export class BrowserCssStickyPreviewPort implements CssStickyPreviewPort {
         runToken,
         css: request.css,
       };
+      // A sandboxed srcdoc without allow-same-origin has an opaque origin, so
+      // no exact targetOrigin can address it. The destination WindowProxy and
+      // authenticated protocol envelope pin this message to the mounted frame.
       this.frame?.contentWindow?.postMessage(message, '*');
     });
   }
@@ -203,6 +212,8 @@ export class BrowserCssStickyPreviewPort implements CssStickyPreviewPort {
       runToken: this.lastRunToken,
       ancestorIndex,
     };
+    // See inspect(): the intentionally opaque frame requires a wildcard
+    // targetOrigin; source and per-run protocol credentials are still checked.
     this.frame.contentWindow.postMessage(message, '*');
   }
 
@@ -213,7 +224,9 @@ export class BrowserCssStickyPreviewPort implements CssStickyPreviewPort {
   }
 
   private readonly onMessage = (event: MessageEvent<unknown>): void => {
-    if (!this.frame?.contentWindow || event.source !== this.frame.contentWindow) return;
+    if (!this.frame?.contentWindow
+      || event.source !== this.frame.contentWindow
+      || event.origin !== 'null') return;
     const payload = event.data;
     if (!isRecord(payload)
       || payload['channel'] !== CSS_STICKY_PREVIEW_CHANNEL

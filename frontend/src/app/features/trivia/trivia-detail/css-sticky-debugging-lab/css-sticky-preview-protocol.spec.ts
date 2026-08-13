@@ -2,10 +2,32 @@ import { CssStickyInspection } from './css-sticky-debugging-lab.model';
 import {
   CSS_STICKY_MAX_ANCESTORS,
   CSS_STICKY_MAX_STRING_LENGTH,
+  normalizeCssStickyHttpOrigin,
   normalizeCssStickyInspection,
 } from './css-sticky-preview-protocol';
 
 describe('CSS sticky preview protocol', () => {
+  it('accepts only canonical HTTP(S) tuple origins', () => {
+    expect(normalizeCssStickyHttpOrigin('https://frontendatlas.com'))
+      .toBe('https://frontendatlas.com');
+    expect(normalizeCssStickyHttpOrigin('http://localhost:4200'))
+      .toBe('http://localhost:4200');
+
+    for (const origin of [
+      null,
+      '*',
+      'null',
+      'file:///tmp/index.html',
+      'https://frontendatlas.com/',
+      'https://frontendatlas.com/path',
+      'https://frontendatlas.com#fragment',
+      'https://user:secret@frontendatlas.com',
+      'https://frontendatlas.com:443',
+    ]) {
+      expect(normalizeCssStickyHttpOrigin(origin)).withContext(String(origin)).toBeNull();
+    }
+  });
+
   it('bounds strings, numbers, evidence, and ancestor snapshots from the child', () => {
     const raw = validInspection() as unknown as Record<string, unknown>;
     raw['summary'] = 'x'.repeat(500);

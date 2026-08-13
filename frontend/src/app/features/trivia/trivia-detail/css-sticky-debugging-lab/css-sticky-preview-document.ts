@@ -14,6 +14,7 @@ import {
   CSS_STICKY_PREVIEW_CHANNEL,
   CSS_STICKY_PREVIEW_VERSION,
   CssStickyBridgeConfig,
+  normalizeCssStickyHttpOrigin,
 } from './css-sticky-preview-protocol';
 
 const TRUSTED_BASE_STYLES = `
@@ -28,11 +29,19 @@ body { padding: 12px; color: #172033; background: #f8fafc; }
 
 export function buildCssStickyPreviewDocument(
   stickyCase: CssStickyCase,
-  ids: { sessionId: string; frameId: string; readyRunToken: string; nonce: string },
+  ids: {
+    parentOrigin: string;
+    sessionId: string;
+    frameId: string;
+    readyRunToken: string;
+    nonce: string;
+  },
 ): string {
+  const parentOrigin = requireHttpOrigin(ids.parentOrigin);
   const config: CssStickyBridgeConfig = {
     channel: CSS_STICKY_PREVIEW_CHANNEL,
     version: CSS_STICKY_PREVIEW_VERSION,
+    parentOrigin,
     sessionId: ids.sessionId,
     frameId: ids.frameId,
     readyRunToken: ids.readyRunToken,
@@ -68,6 +77,12 @@ function requireHexId(value: string): string {
     throw new Error('CSS sticky preview could not create a safe document.');
   }
   return value;
+}
+
+function requireHttpOrigin(value: string): string {
+  const origin = normalizeCssStickyHttpOrigin(value);
+  if (origin) return origin;
+  throw new Error('CSS sticky preview requires a trusted HTTP(S) parent origin.');
 }
 
 function serializeForInlineScript(value: unknown): string {
@@ -159,7 +174,7 @@ function cssStickyChildBridge(
       sessionId: config.sessionId,
       frameId: config.frameId,
       caseId: config.caseId,
-    }, payload), '*');
+    }, payload), config.parentOrigin);
   };
   const restoreActiveScroll = (runId?: number, runToken?: string) => {
     if (!activeScrollOwner) return;
@@ -351,6 +366,7 @@ function cssStickyChildBridge(
   window.addEventListener('message', (event) => {
     const data = event.data as Record<string, unknown> | null;
     if (event.source !== parentWindow
+      || event.origin !== config.parentOrigin
       || !data
       || data['channel'] !== channel
       || data['version'] !== version

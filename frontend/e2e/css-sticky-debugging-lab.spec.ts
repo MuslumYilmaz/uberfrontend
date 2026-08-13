@@ -113,6 +113,68 @@ test.describe('CSS position sticky debugging lab', () => {
     await expect.poll(() => monacoRequests.length).toBeGreaterThan(0);
   });
 
+  test('rejects same-source child commands whose claimed parent origin is wrong', async ({ page }) => {
+    await loadDeferredLab(page);
+    const frame = page.frameLocator('[data-testid="sticky-preview-frame"]');
+
+    await frame.locator('body').evaluate(() => {
+      const scope = window as Window & { __stickyHostCommands?: Array<Record<string, unknown>> };
+      scope.__stickyHostCommands = [];
+      window.addEventListener('message', (event) => {
+        if (event.source === window.parent && event.data && typeof event.data === 'object') {
+          scope.__stickyHostCommands?.push(event.data as Record<string, unknown>);
+        }
+      });
+    });
+
+    await page.getByTestId('sticky-run-inspection').click();
+    await expect(page.getByTestId('sticky-inspection-finding')).toContainText('missing inset');
+
+    const state = await frame.locator('body').evaluate(() => {
+      const scope = window as Window & { __stickyHostCommands?: Array<Record<string, unknown>> };
+      const inspect = scope.__stickyHostCommands?.find((message) => message['kind'] === 'inspect');
+      const userStyle = document.getElementById('fa-user-css');
+      const firstAncestor = document.querySelector<HTMLElement>('[data-sticky-target]')?.parentElement;
+      if (!inspect || !userStyle || !firstAncestor) {
+        throw new Error('Sticky preview protocol state was unavailable.');
+      }
+      const cssBefore = userStyle.textContent;
+
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window.parent,
+        origin: 'https://attacker.invalid',
+        data: {
+          ...inspect,
+          runId: Number(inspect['runId']) + 100,
+          runToken: 'attacker-origin-run-token',
+          css: '[data-sticky-target] { display: none !important; }',
+        },
+      }));
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window.parent,
+        origin: 'https://attacker.invalid',
+        data: {
+          ...inspect,
+          kind: 'highlight',
+          ancestorIndex: 0,
+        },
+      }));
+
+      return {
+        cssBefore,
+        cssAfter: userStyle.textContent,
+        ancestorOutline: firstAncestor.style.outline,
+      };
+    });
+
+    expect(state.cssAfter).toBe(state.cssBefore);
+    expect(state.ancestorOutline).toBe('');
+
+    await page.getByTestId('sticky-apply-fix').click();
+    await page.getByTestId('sticky-run-inspection').click();
+    await expect(page.getByTestId('sticky-inspection-finding')).toContainText('working');
+  });
+
   test('keeps hostile CSS inside the sandbox and does not create breakout markup or requests', async ({ page }) => {
     const externalRequests: string[] = [];
     page.on('request', (request) => {

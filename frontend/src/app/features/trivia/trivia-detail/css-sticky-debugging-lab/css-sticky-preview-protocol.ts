@@ -15,6 +15,7 @@ export const CSS_STICKY_MAX_STRING_LENGTH = 80;
 export interface CssStickyBridgeConfig {
   readonly channel: typeof CSS_STICKY_PREVIEW_CHANNEL;
   readonly version: typeof CSS_STICKY_PREVIEW_VERSION;
+  readonly parentOrigin: string;
   readonly sessionId: string;
   readonly frameId: string;
   readonly readyRunToken: string;
@@ -23,6 +24,19 @@ export interface CssStickyBridgeConfig {
   readonly targetSelector: string;
   readonly expectedScrollOwnerSelector?: string;
   readonly suspectSelector?: string;
+}
+
+export function normalizeCssStickyHttpOrigin(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  try {
+    const parsed = new URL(value);
+    return (parsed.protocol === 'http:' || parsed.protocol === 'https:')
+      && parsed.origin === value
+      ? value
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 export type CssStickyHostMessage =
