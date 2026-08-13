@@ -246,6 +246,29 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
+  it('preserves the CSS sticky debugging lab SEO contract', () => {
+    const question = {
+      id: 'css-position-sticky-not-working',
+      title: 'Why is CSS position: sticky not working?',
+      technology: 'css',
+      seo: {
+        title: 'CSS Sticky Not Working? 5 Causes and Fixes',
+        description:
+          'Diagnose CSS position: sticky failures with five broken layouts. Inspect overflow, insets, container height, flex/grid stretch, then test the fix.',
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'css');
+
+    expect(title).toBe('CSS Sticky Not Working? 5 Causes and Fixes');
+    expect(title.length).toBeLessThanOrEqual(54);
+    expect(description).toBe(
+      'Diagnose CSS position: sticky failures with five broken layouts. Inspect overflow, insets, container height, flex/grid stretch, then test the fix.'
+    );
+    expect(description.length).toBeLessThanOrEqual(155);
+  });
+
   it('preserves interview-first React StrictMode useEffect SEO override', () => {
     const question = {
       id: 'react-strictmode-double-invoke-effects',

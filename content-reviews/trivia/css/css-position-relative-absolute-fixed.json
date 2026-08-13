@@ -30,7 +30,7 @@
           "<strong>Practical scenario</strong><br>Pin a badge to a card corner and a header to the top on scroll.<br><br><strong>Common pitfalls</strong><br><ul><li>Absolute elements escaping because the parent isn’t positioned.</li><li>Fixed elements causing overlay or z-index conflicts.</li><li>Ignoring mobile viewport and safe areas.</li></ul><strong>Trade-off or test tip</strong><br>Absolute positioning is simple but brittle. Test on scroll, resize, and mobile viewports.</strong>"
         ],
         "followUpConfusion": [
-          "Fixed elements always align with the viewport unless inside a transformed parent (e.g., <code>transform: translateZ(0)</code> creates a new stacking context)."
+          "A fixed element normally uses the initial containing block. Properties such as <code>transform</code>, <code>filter</code>, or <code>perspective</code> on an ancestor can establish a different fixed-positioning containing block, so inspect the ancestor chain before assuming the viewport is the reference."
         ]
       },
       "theirEvidence": {
@@ -74,7 +74,7 @@
           "Use Cases<br><ul><li><code>relative</code>: fine-tune an element’s position for minor alignment.</li><li><code>absolute</code>: create dropdown menus or tooltips detached from normal layout flow.</li><li><code>fixed</code>: keep navigation bars or chat buttons visible during scrolling.</li></ul>"
         ],
         "followUpConfusion": [
-          "Nested <code>absolute</code> elements look for the nearest ancestor with <code>position: relative</code> or <code>absolute</code> to align against."
+          "An absolutely positioned element uses the nearest ancestor that establishes its absolute-positioning containing block; a positioned ancestor commonly provides that anchor."
         ]
       },
       "theirEvidence": {
@@ -118,7 +118,7 @@
           "Absolute elements escaping because the parent isn’t positioned."
         ],
         "followUpConfusion": [
-          "Fixed elements always align with the viewport unless inside a transformed parent (e.g., <code>transform: translateZ(0)</code> creates a new stacking context)."
+          "A fixed element normally uses the initial containing block. Properties such as <code>transform</code>, <code>filter</code>, or <code>perspective</code> on an ancestor can establish a different fixed-positioning containing block, so inspect the ancestor chain before assuming the viewport is the reference."
         ]
       },
       "theirEvidence": {

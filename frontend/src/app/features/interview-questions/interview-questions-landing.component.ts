@@ -4030,7 +4030,7 @@ const HTML_CSS_LAYOUT_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
   {
     q: 'How does position sticky fail?',
     a: 'Sticky positioning depends on scroll containment, offsets, and available space inside the parent. It often fails when an ancestor has overflow that creates a different scroll container or when the sticky element has no room to move. Debug by inspecting ancestors and the element offsets, not just z-index.',
-    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    route: ['/css', 'trivia', 'css-position-sticky-not-working'],
     cta: 'Review positioning',
     level: 'advanced',
   },
@@ -4633,7 +4633,7 @@ const CSS_LAYOUT_QUESTIONS: CssFocusedQuestionItem[] = [
   {
     q: 'Why does position: sticky fail?',
     a: 'Sticky positioning depends on a scroll container, an inset value, and enough room inside the parent to move. Overflow on an ancestor can create a different scroll container than expected. Debug sticky by checking ancestor overflow and the element offset before changing z-index.',
-    route: ['/css', 'trivia', 'css-position-relative-absolute-fixed'],
+    route: ['/css', 'trivia', 'css-position-sticky-not-working'],
     cta: 'Debug sticky positioning',
     level: 'advanced',
   },

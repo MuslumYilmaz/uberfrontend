@@ -126,6 +126,7 @@
 /css/trivia/css-media-queries
 /css/trivia/css-padding-property
 /css/trivia/css-position-relative-absolute-fixed
+/css/trivia/css-position-sticky-not-working
 /css/trivia/css-pseudo-classes-elements
 /css/trivia/css-specificity-hierarchy
 /css/trivia/css-text-color

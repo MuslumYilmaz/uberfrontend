@@ -1,0 +1,145 @@
+{
+  "contentId": "css-position-sticky-not-working",
+  "tech": "css",
+  "query": "css sticky not working",
+  "reviewedAt": "2026-08-12",
+  "reviewedBy": "Codex AI draft",
+  "selection": {
+    "querySource": "seo_primary_keyword",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "position CSS property",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position",
+      "category": "canonical_docs",
+      "selectionReason": "MDN is the canonical reference surfaced for sticky semantics, including the non-auto inset requirement, the nearest ancestor with a scrolling mechanism, the containing-block constraint, and stacking-context behavior.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "MDN is authoritative on the position property's computed behavior and includes runnable examples for sticky positioning."
+      ],
+      "theirGaps": [
+        "The property reference does not package the main failure modes into one evidence-first production debugging sequence."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Five failure cases in the debugging lab</strong><br><br>The lab above isolates one variable at a time: <code>missing-inset</code>, <code>unexpected-scroll-container</code>, <code>no-travel-room</code>, <code>flex-grid-stretch</code>, and <code>sticks-but-hidden</code>. Run the inspector before applying a fix. That baseline matters because several fixes can make the demo look different while leaving the original root cause unproven."
+        ],
+        "actionableExamples": [
+          "<strong>Turn the diagnosis into assertions</strong><br><ul><li>The intended scroll owner has <code>scrollHeight &gt; clientHeight</code>, and a test can change its <code>scrollTop</code>.</li><li>Before the threshold, the sticky box moves with normal flow; after the threshold, its top remains within a small pixel tolerance of the resolved inset.</li><li>The sticky box never crosses the ending edge imposed by its containing block.</li><li>At the expected sticky coordinates, <code>document.elementFromPoint()</code> resolves to the sticky box or one of its descendants when it should be visible.</li><li>Repeat at narrow and wide container sizes because content wrapping can change both scroll range and runway. Continue with <a href=\"/css/trivia/css-make-element-responsive\">responsive CSS constraints</a> for that part of the test matrix.</li></ul>"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "MDN explains the underlying layout model accurately, while our page turns it into five recognizable failure cases and a diagnostic order."
+        ],
+        "actionableExamples": [
+          "MDN offers runnable property examples; our page adds measurable scroll-owner, threshold, containing-block, and paint-order assertions for debugging."
+        ],
+        "followUpConfusion": [
+          "MDN directly covers the two most important follow-ups: a non-auto inset is required on the sticky axis, and the nearest ancestor with a scrolling mechanism may not be the ancestor that visibly scrolls."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [],
+        "followUpConfusion": [
+          "Keep the standards-check block linked to MDN and CSS Positioned Layout, and add a writing-mode or horizontal-sticky example only if query evidence shows that follow-up demand."
+        ]
+      },
+      "winReason": "MDN remains the canonical behavior reference, but FrontendAtlas is more operational for this query because it converts the specification into five isolated failures, a DevTools inspection order, and geometry assertions."
+    },
+    {
+      "label": "CSS Interview Questions",
+      "url": "https://www.greatfrontend.com/questions/css-interview-questions",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd is directly relevant to the interview intent and explicitly lists sticky positioning, stacking contexts, and production CSS debugging among its mid-level topics.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "GreatFrontEnd provides a broad, credible CSS interview bank with worked answers and in-browser coding workspaces where applicable."
+      ],
+      "theirGaps": [
+        "The hub is not a dedicated sticky failure diagnosis and does not expose this query's ancestor-chain and geometry workflow on the landing page."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "<strong>Inspect the ancestor chain in this order</strong><br><ol><li>Confirm the target's computed <code>position</code> is <code>sticky</code>; a more specific selector may have overridden it.</li><li>Check the inset for the axis you expect to stick. If both relevant insets are <code>auto</code>, sticky behaves like relative positioning on that axis.</li><li>Walk ancestors and record computed <code>overflow-x</code>/<code>overflow-y</code>. Do not assume the page viewport is the scroll owner.</li><li>For the actual scroll container, compare <code>scrollHeight</code> with <code>clientHeight</code> and verify its <code>scrollTop</code> changes.</li><li>Compare the sticky box with its containing block. Sticky is constrained when the opposite edge of that block is reached.</li><li>In flex and grid layouts, inspect <code>align-items</code>, <code>align-self</code>, and measured heights before changing alignment.</li><li>Only after the position changes correctly, inspect stacking-context owners and which element is painted at the sticky coordinates.</li></ol>"
+        ],
+        "followUpConfusion": [
+          "<strong>When z-index is relevant</strong><br><br><code>position: sticky</code> creates a stacking context, but that does not guarantee it will paint above a sibling in another ancestor context. If controlled scrolling shows the box holding the correct inset while content still covers it, inspect the parent contexts, paint order, and backgrounds. Fix ownership at the appropriate layer boundary instead of escalating to <code>z-index: 999999</code>. The <a href=\"/css/trivia/css-z-index\">z-index and stacking-context guide</a> covers that failure separately. A transform on an ancestor can affect containing blocks or stacking, but it does not universally disable sticky positioning; prove the actual geometry and paint result."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "GreatFrontEnd names position: sticky quirks and stacking contexts as production interview topics, but our page gives the exact evidence sequence for this failure."
+        ],
+        "actionableExamples": [
+          "Its worked answers and in-browser CSS workspaces make it competitive on hands-on practice, while our page concentrates the workspace on five sticky cases."
+        ],
+        "followUpConfusion": [
+          "Our page explicitly separates scroll geometry from paint-order failure and warns that transform is not a universal sticky-disabling rule."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [],
+        "actionableExamples": [
+          "Keep all five fixtures runnable and preserve the visible broken-to-working proof so the dedicated lab remains at least as actionable as a general CSS workspace."
+        ],
+        "followUpConfusion": []
+      },
+      "winReason": "GreatFrontEnd is stronger for broad CSS interview breadth, but FrontendAtlas owns this narrow failure intent with an ancestor inspection order and a clear geometry-versus-layering decision."
+    },
+    {
+      "label": "How to Fix Issues With CSS Position Sticky Not Working?",
+      "url": "https://www.designcise.com/web/tutorial/how-to-fix-issues-with-css-position-sticky-not-working",
+      "category": "tutorial_reference",
+      "selectionReason": "Designcise is a query-direct troubleshooting tutorial that covers the missing threshold, ancestor overflow, insufficient room, flex stretching, and overriding-rule causes targeted by this page.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "The tutorial is focused, demonstrates each main cause, and includes a console snippet for locating ancestor overflow."
+      ],
+      "theirGaps": [
+        "It presents useful fixes but does not turn the diagnosis into scroll geometry and paint-order assertions, and some legacy browser notes are less central to current evergreen-browser debugging."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "The fix is specific to the evidence. <code>overflow-y: auto</code> is correct here because <code>.results</code> is deliberately the scroller and has a constrained block size plus overflowing content. Do not copy a blanket rule that every ancestor must use <code>overflow: visible</code>. Likewise, <code>align-self: start</code> is useful when stretching removed the runway; it is not required for every sticky element."
+        ],
+        "followUpConfusion": [
+          "<strong>Sticky is not fixed</strong><br><br>A sticky box remains in normal flow and is offset against a sticky view rectangle associated with its nearest relevant scrollport. It is also constrained by its containing block, so it stops sticking when that boundary reaches it. A fixed box is out of flow and normally uses the initial containing block. If the requirement is “stay visible for the entire viewport regardless of section boundaries,” that may be a fixed-position requirement rather than a broken sticky implementation. Review the <a href=\"/css/trivia/css-position-relative-absolute-fixed\">CSS positioning model for relative, absolute, and fixed boxes</a> before changing the behavior."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Both pages cover the production failures developers usually encounter: missing thresholds, overflow ancestors, short containers, stretching, and overridden declarations."
+        ],
+        "actionableExamples": [
+          "Designcise includes multiple fixed examples and an ancestor-overflow console snippet; our page adds a five-case lab, a measured evidence matrix, and testable browser assertions."
+        ],
+        "followUpConfusion": [
+          "Our page goes further on two likely follow-ups: when the requirement is actually fixed positioning, and when z-index can help only after sticky geometry already works."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a dedicated sticky table-header case only if GSC queries show that use case; keep the initial five-case scope focused meanwhile."
+        ],
+        "actionableExamples": [],
+        "followUpConfusion": []
+      },
+      "winReason": "Designcise is a strong static checklist, while FrontendAtlas adds evidence-bound fixes, real geometry assertions, and the sticky-versus-fixed and geometry-versus-layering decisions."
+    }
+  ]
+}
