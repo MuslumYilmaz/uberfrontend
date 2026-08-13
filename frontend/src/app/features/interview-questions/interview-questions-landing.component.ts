@@ -1064,7 +1064,7 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
       a: 'Yes. The page starts with Vue fundamentals, then moves into experienced-developer topics such as reactivity traps, Composition API design, Router, Pinia/Vuex, scenarios, testing, security, and performance.',
     },
     {
-      q: 'Does this page cover Vue 3 and Composition API interview questions?',
+      q: 'Does this page include Vue 3 interview questions and answers?',
       a: 'Yes. It covers Vue 3 reactivity, ref, reactive, computed values, watch, watchEffect, script setup, composables, Composition API trade-offs, Router, Pinia/Vuex, Teleport, Suspense, SSR, and Nuxt-style concerns.',
     },
     {
@@ -2859,10 +2859,10 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
 ];
 
 const VUE_EDITORIAL_SIGNAL: VueEditorialSignal = {
-  updatedLabel: 'Updated May 20, 2026',
+  updatedLabel: 'Updated August 13, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance',
-  dateModified: '2026-05-20T00:00:00.000Z',
+  dateModified: '2026-08-13T00:00:00.000Z',
 };
 
 const VUE_ANCHOR_ITEMS: VueAnchorItem[] = [
@@ -3107,8 +3107,6 @@ const VUE_SHORT_ANSWERS: VueShortAnswerItem[] = [
   {
     q: 'How do you improve Vue performance?',
     a: 'Start by reducing unnecessary reactive work, using computed values for cached derived state, keeping keys stable, splitting heavy components, and avoiding expensive template methods. For large lists, use pagination, windowing, or server-side constraints instead of rendering everything. Measure before optimizing because many Vue bottlenecks are data-shape or component-boundary problems.',
-    route: ['/guides', 'framework-prep', 'vue-prep-path'],
-    cta: 'Open Vue prep path',
     category: 'modern',
     level: 'advanced',
   },
@@ -3371,22 +3369,16 @@ const VUE_MODERN_QUESTIONS: VueModernQuestionItem[] = [
     level: 'advanced',
     q: 'What is Teleport used for in Vue?',
     a: 'Teleport renders part of a component subtree somewhere else in the DOM, such as moving a modal to a root overlay container. It keeps logical component ownership while changing DOM placement. Focus management, stacking, and cleanup still need to be handled correctly.',
-    route: ['/guides', 'framework-prep', 'vue-prep-path'],
-    cta: 'Open Vue prep path',
   },
   {
     level: 'advanced',
     q: 'What is Suspense used for in Vue?',
     a: 'Suspense can coordinate fallback UI while async dependencies inside a component tree resolve. It is useful around async setup and route-level loading patterns. The boundary placement matters because too broad a boundary hides too much UI and too narrow a boundary can create noisy loading states.',
-    route: ['/guides', 'framework-prep', 'vue-prep-path'],
-    cta: 'Open Vue prep path',
   },
   {
     level: 'advanced',
     q: 'How do SSR and Nuxt affect Vue interviews?',
     a: 'SSR renders HTML on the server, then the client hydrates it into an interactive Vue app. Nuxt adds routing, data loading, SSR conventions, and deployment structure around Vue. Hydration bugs often come from different server and client output, browser-only data during initial render, or unstable IDs.',
-    route: ['/guides', 'framework-prep', 'vue-prep-path'],
-    cta: 'Open Vue prep path',
   },
 ];
 
@@ -3395,15 +3387,11 @@ const VUE_TESTING_SECURITY_PERFORMANCE_QUESTIONS: VueFocusedQuestionItem[] = [
     level: 'intermediate',
     q: 'How should Vue component behavior be tested?',
     a: 'Test user-visible behavior through rendered output, interactions, emitted events, validation states, loading, and errors. Vue Test Utils helps mount components and interact with them, while tests should avoid depending on private implementation details. The goal is to prove the component contract, not the exact internal ref names.',
-    route: ['/guides', 'framework-prep', 'vue-prep-path'],
-    cta: 'Open Vue prep path',
   },
   {
     level: 'intermediate',
     q: 'How do Vitest and Vue Test Utils fit together?',
     a: 'Vitest runs assertions, mocks, timers, and test files, while Vue Test Utils renders Vue components and exposes wrapper utilities. Together they cover component behavior and smaller unit logic. A good test still waits for Vue async DOM updates before asserting rendered changes.',
-    route: ['/guides', 'framework-prep', 'vue-prep-path'],
-    cta: 'Open Vue prep path',
   },
   {
     level: 'advanced',
@@ -5509,7 +5497,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isVueHub()) {
-      return 'Vue.js interview questions and Vue JS answers for Vue 3 rounds, with short answers, reactivity scenarios, Composition API, Router, Pinia/Vuex, testing, security, performance, and coding prompts.';
+      return 'Review 65 Vue.js interview questions and answers for beginner-to-experienced frontend developers, covering Vue 3, Composition API, reactivity, Router, Pinia, testing, performance, and code scenarios.';
     }
 
     if (this.isReactHub()) {
@@ -6745,7 +6733,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'Thing', name: 'Vue reactivity and rendering questions' },
         { '@type': 'Thing', name: 'Vue component contract questions' },
         { '@type': 'Thing', name: 'Vue scenario and code questions' },
-        { '@type': 'Thing', name: 'Modern Vue 3 interview questions' },
+        { '@type': 'Thing', name: 'Vue 3 interview questions and answers' },
         { '@type': 'Thing', name: 'Vue Router and navigation guards' },
         { '@type': 'Thing', name: 'Vue Pinia and Vuex state management' },
         { '@type': 'Thing', name: 'Vue Test Utils and Vitest testing' },
@@ -7066,7 +7054,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       '@type': 'FAQPage',
       '@id': `${canonicalUrl}#vue-short-answers`,
       url: canonicalUrl,
-      name: 'Top Vue.js interview questions and short answers, beginner to advanced',
+      name: 'Vue.js interview questions and answers: beginner to advanced',
       mainEntity: this.vueShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
@@ -7133,7 +7121,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const seen = new Set<string>();
     const out: SchemaQuestionLink[] = [];
 
-    if (this.isReactHub()) {
+    if (this.isReactHub() || this.isVueHub()) {
       this.appendSchemaQuestionLinks(out, seen, this.triviaQuestions, 12);
       this.appendSchemaQuestionLinks(out, seen, this.codingQuestions, 8);
       return out;
