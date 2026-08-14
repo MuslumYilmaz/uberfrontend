@@ -1002,7 +1002,7 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
   ],
   javascript: [
     {
-      q: 'Are these JavaScript interview questions for beginners or experienced developers?',
+      q: 'Are these JavaScript interview questions and answers for beginners and experienced developers?',
       a: 'Yes. The short-answer grid starts with beginner fundamentals, then moves into intermediate and advanced topics such as async races, prototypes, browser events, XSS, and debugging.',
     },
     {
@@ -1011,15 +1011,15 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
     },
     {
       q: 'Where should I practice JavaScript coding interview questions?',
-      a: 'Start with the coding prompts on this page, then open the full JavaScript coding list for utilities such as sort, debounce, throttle, duplicate removal, cloning, and DOM traversal.',
+      a: 'Use this hub for short answers and output review, then open the JavaScript interview coding guide for implementation patterns and coding drills. The coding guide owns coding-practice intent; this page owns question-and-answer review.',
     },
     {
-      q: 'What are common mistakes in JavaScript interviews?',
-      a: 'Common misses include mutating inputs, sorting numbers without a comparator, losing this in callbacks, treating closures as frozen snapshots, ignoring rejected promises, and using JSON cloning as a universal deep-copy answer.',
+      q: 'Does this page include JavaScript interview questions and answers with async, output, and browser scenarios?',
+      a: 'Yes. It covers output tracing, Promises, async/await, the event loop, stale-response races, DOM events, browser storage, and XSS-safe DOM APIs.',
     },
     {
-      q: 'What are the best resources for JavaScript interview preparation?',
-      a: 'Use MDN for practical language reference, the ECMAScript specification for precise semantics, Chrome DevTools docs for debugging workflow, OWASP guidance for XSS prevention, and FrontendAtlas practice routes for interview drills.',
+      q: 'How should I prepare after reviewing these JavaScript interview questions?',
+      a: 'Use this hub for question-and-answer and output review. Use the JavaScript interview coding guide for implementation patterns and coding drills, then use the JavaScript prep path for a 7, 14, or 30-day study plan.',
     },
   ],
   react: [
@@ -1386,10 +1386,10 @@ const JAVASCRIPT_ANCHOR_ITEMS: JavaScriptAnchorItem[] = [
 ];
 
 const JAVASCRIPT_EDITORIAL_SIGNAL: JavaScriptEditorialSignal = {
-  updatedLabel: 'Updated May 19, 2026',
+  updatedLabel: 'Updated August 14, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '25 answers, 8 output questions, and 8 browser/DOM/security questions',
-  dateModified: '2026-05-19T00:00:00.000Z',
+  dateModified: '2026-08-14T00:00:00.000Z',
 };
 
 const JAVASCRIPT_OUTPUT_QUESTIONS: JavaScriptOutputQuestionItem[] = [
@@ -5500,6 +5500,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       return 'Review 65 Angular interview questions and answers for beginner-to-experienced frontend developers, covering RxJS, signals, change detection, dependency injection, testing, performance, and code scenarios.';
     }
 
+    if (this.isJavaScriptHub()) {
+      return 'Review 41 JavaScript interview questions and answers for beginner-to-experienced frontend developers, covering closures, Promises, async/await, the event loop, output tracing, DOM APIs, browser security, and coding scenarios.';
+    }
+
     return `${this.keywordSentenceCase()} and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice concise answers first, then expand into Study Plans, guides, and Company Prep.`;
   }
 
@@ -6999,7 +7003,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       '@type': 'FAQPage',
       '@id': `${canonicalUrl}#javascript-short-answers`,
       url: canonicalUrl,
-      name: 'Top JavaScript interview questions and short answers, beginner to advanced',
+      name: 'JavaScript interview questions and answers: beginner to advanced',
       mainEntity: this.javascriptShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
@@ -7117,7 +7121,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const seen = new Set<string>();
     const out: SchemaQuestionLink[] = [];
 
-    if (this.isReactHub() || this.isVueHub() || this.isAngularHub()) {
+    if (this.isJavaScriptHub() || this.isReactHub() || this.isVueHub() || this.isAngularHub()) {
       this.appendSchemaQuestionLinks(out, seen, this.triviaQuestions, 12);
       this.appendSchemaQuestionLinks(out, seen, this.codingQuestions, 8);
       return out;
